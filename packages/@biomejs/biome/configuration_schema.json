@@ -1419,6 +1419,13 @@
 						{ "type": "null" }
 					]
 				},
+				"noMisplacedAssertion": {
+					"description": "Succinct description of the rule.",
+					"anyOf": [
+						{ "$ref": "#/definitions/RuleConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noNamespaceImport": {
 					"description": "Disallow the use of namespace imports.",
 					"anyOf": [

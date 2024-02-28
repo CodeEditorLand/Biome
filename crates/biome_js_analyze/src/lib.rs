@@ -258,7 +258,9 @@ mod tests {
             String::from_utf8(buffer).unwrap()
         }
 
-        const SOURCE: &str = r#"<a href="class/html-css1/navigation/links#" onclick="window.location.href=index.html"> Home </a>
+        const SOURCE: &str = r#"describe(() => {
+	assert.equal("something", "something")
+})
         "#;
         // const SOURCE: &str = r#"document.querySelector("foo").value = document.querySelector("foo").value
         //
@@ -273,7 +275,7 @@ mod tests {
             closure_index: Some(0),
             dependencies_index: Some(1),
         };
-        let rule_filter = RuleFilter::Rule("a11y", "useValidAnchor");
+        let rule_filter = RuleFilter::Rule("nursery", "noMisplacedAssertion");
 
         options.configuration.rules.push_rule(
             RuleKey::new("nursery", "useHookAtTopLevel"),

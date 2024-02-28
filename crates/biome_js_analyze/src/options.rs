@@ -104,6 +104,7 @@ pub type NoLabelVar =
     <semantic_analyzers::suspicious::no_label_var::NoLabelVar as biome_analyze::Rule>::Options;
 pub type NoMisleadingCharacterClass = < semantic_analyzers :: nursery :: no_misleading_character_class :: NoMisleadingCharacterClass as biome_analyze :: Rule > :: Options ;
 pub type NoMisleadingInstantiator = < analyzers :: suspicious :: no_misleading_instantiator :: NoMisleadingInstantiator as biome_analyze :: Rule > :: Options ;
+pub type NoMisplacedAssertion = < analyzers :: nursery :: no_misplaced_assertion :: NoMisplacedAssertion as biome_analyze :: Rule > :: Options ;
 pub type NoMisrefactoredShorthandAssign = < analyzers :: suspicious :: no_misrefactored_shorthand_assign :: NoMisrefactoredShorthandAssign as biome_analyze :: Rule > :: Options ;
 pub type NoMultipleSpacesInRegularExpressionLiterals = < analyzers :: complexity :: no_multiple_spaces_in_regular_expression_literals :: NoMultipleSpacesInRegularExpressionLiterals as biome_analyze :: Rule > :: Options ;
 pub type NoNamespace =

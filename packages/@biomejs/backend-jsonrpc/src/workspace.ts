@@ -912,6 +912,10 @@ export interface Nursery {
 	 */
 	noMisleadingCharacterClass?: RuleConfiguration_for_Null;
 	/**
+	 * Succinct description of the rule.
+	 */
+	noMisplacedAssertion?: RuleConfiguration_for_Null;
+	/**
 	 * Disallow the use of namespace imports.
 	 */
 	noNamespaceImport?: RuleConfiguration_for_Null;
@@ -1838,6 +1842,7 @@ export type Category =
 	| "lint/nursery/noGlobalEval"
 	| "lint/nursery/noInvalidUseBeforeDeclaration"
 	| "lint/nursery/noMisleadingCharacterClass"
+	| "lint/nursery/noMisplacedAssertion"
 	| "lint/nursery/noNamespaceImport"
 	| "lint/nursery/noNodejsModules"
 	| "lint/nursery/noReExportAll"
