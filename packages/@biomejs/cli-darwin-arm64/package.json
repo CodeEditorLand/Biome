@@ -1,20 +1,40 @@
 {
-  "name": "@biomejs/cli-darwin-arm64",
-  "version": "1.8.3",
-  "license": "MIT OR Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/biomejs/biome.git",
-    "directory": "packages/@biomejs/biome/cli-darwin-arm64"
-  },
-  "engines": {
-    "node": ">=14.21.3"
-  },
-  "homepage": "https://biomejs.dev",
-  "os": [
-    "darwin"
-  ],
-  "cpu": [
-    "arm64"
-  ]
+	"author": {
+		"email": "Source/Open@Editor.Land",
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"url": "HTTPS://Editor.Land"
+	},
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
+	},
+	"cpu": [
+		"arm64"
+	],
+	"devDependencies": {
+		"@playform/build": "0.1.1"
+	},
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"license": "SEE LICENSE IN LICENSE",
+	"name": "@biomejs/cli-darwin-arm64",
+	"os": [
+		"darwin"
+	],
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
+	"scripts": {
+		"prepublishOnly": "Build 'Source/**/*.ts'"
+	},
+	"type": "module",
+	"version": "0.0.1"
 }

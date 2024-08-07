@@ -1,7 +1,0 @@
-(`data:text/javascript,
-    console.log("RUN");
-`);
-
-(String.raw`data:text/javascript,
-    console.log("RUN");
-`);

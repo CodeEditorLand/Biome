@@ -7,9 +7,7 @@
 	"bugs": {
 		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
 	},
-	"cpu": [
-		"x64"
-	],
+	"dependencies": {},
 	"devDependencies": {
 		"@playform/build": "0.1.1"
 	},
@@ -19,14 +17,8 @@
 		"land",
 		"playform"
 	],
-	"libc": [
-		"musl"
-	],
 	"license": "SEE LICENSE IN LICENSE",
-	"name": "@biomejs/cli-linux-x64-musl",
-	"os": [
-		"linux"
-	],
+	"name": "prettier-tests",
 	"private": false,
 	"publishConfig": {
 		"access": "public"
@@ -36,7 +28,8 @@
 		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
 	},
 	"scripts": {
-		"prepublishOnly": "Build 'Source/**/*.ts'"
+		"prepublishOnly": "Build 'Source/**/*.ts'",
+		"start": "node prepare_tests"
 	},
 	"type": "module",
 	"version": "0.0.1"

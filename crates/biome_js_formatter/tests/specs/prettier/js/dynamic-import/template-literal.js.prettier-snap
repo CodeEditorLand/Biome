@@ -1,7 +1,0 @@
-module = await (`data:text/javascript,
-    console.log("RUN");
-`);
-
-module = await (String.raw`data:text/javascript,
-    console.log("RUN");
-`);
