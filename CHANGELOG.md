@@ -17,6 +17,8 @@ our [guidelines for writing a good changelog entry](https://github.com/biomejs/b
 
 - Implement [css suppression action](https://github.com/biomejs/biome/issues/3278). Contributed by @togami2864
 - Add support of comments in `turbo.json`. Contributed by @Netail
+- Implement [semantic model for CSS](https://github.com/biomejs/biome/pull/3546). Contributed by @togami2864
+- Integrate CSS semantic model into the analyzer. Contributed by @togami2864
 
 ### CLI
 
@@ -172,7 +174,9 @@ our [guidelines for writing a good changelog entry](https://github.com/biomejs/b
 #### New features
 
 - Add support for GraphQL linting. Contributed by @ematipico
+
 - Add [nursery/noDynamicNamespaceImportAccess](https://biomejs.dev/linter/no-dynamic-namespace-import-access/). Contributed by @minht11
+
 - [noUndeclaredVariables](https://biomejs.dev/linter/rules/no-undeclared-variables/) no longer reports a direct reference to an enum member ([#2974](https://github.com/biomejs/biome/issues/2974)).
 
   In the following code, the `A` reference is no longer reported as an undeclared variable.
@@ -187,8 +191,13 @@ our [guidelines for writing a good changelog entry](https://github.com/biomejs/b
   Contributed by @Conaclos
 
 - Add [nursery/noIrregularWhitespace](https://biomejs.dev/linter/rules/no-irregular-whitespace). Contributed by @michellocana
+
 - Implement `noIrreguluarWhitespace` for CSS. Contributed by @DerTimonius
+
 - Add [nursery/useTrimStartEnd](https://biomejs.dev/linter/rules/use-trim-start-end/). Contributed by @chansuke
+
+- Add [nursery/noUselessEscapeInRegex](https://biomejs.dev/linter/rules/no-useless-escape-in-regex/).
+  Contributed by @Conaclos
 
 #### Enhancements
 
