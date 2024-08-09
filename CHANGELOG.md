@@ -47,6 +47,13 @@ our [guidelines for writing a good changelog entry](https://github.com/biomejs/b
 
     Contributed by @NiclasvanEyk
 
+- Add new options to the `lsp-proxy` and `start` commands:
+  - `--log-path`: a directory where to store the daemon logs. The commands also accepts the environment variable `BIOME_LOG_PATH`.
+  - `--log-prefix-name`: a prefix that's added to the file name of the logs. It defaults to `server.log`. The commands also accepts the environment variable `BIOME_LOG_PREFIX_NAME`.
+
+  @Contributed by @ematipico
+   
+
 #### Enhancements
 
 - When a `--reporter` is provided, and it's different from the default one, the value provided by via `--max-diagnostics` is ignored and **the limit is lifted**. Contributed by @ematipico
@@ -293,6 +300,13 @@ our [guidelines for writing a good changelog entry](https://github.com/biomejs/b
   Global TypeScript declaration files have no epxorts and no imports.
   All the declared types are available in all files of the project.
   Thus, it is not safe to propose renaming only in the declaration file.
+
+  Contributed by @Conaclos
+
+- [suspicious/noControlCharactersInRegex](https://www.biomejs.dev/linter/rules/no-control-characters-in-regex) now corretcly handle `\u` escapes in unicode-aware regexes.
+
+  Previously, the rule didn't consider regex with the `v` flags as unicode-aware regexes.
+  Moreover, `\uhhhh` was not handled in unicode-aware regexes.
 
   Contributed by @Conaclos
 
