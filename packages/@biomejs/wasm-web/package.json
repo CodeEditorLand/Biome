@@ -1,12 +1,4 @@
 {
-	"author": {
-		"email": "Source/Open@Editor.Land",
-		"name": "🖋️ Source — 👐🏻 Open —",
-		"url": "HTTPS://Editor.Land"
-	},
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
-	},
 	"collaborators": [
 		"Biome Developers and Contributors"
 	],
@@ -19,30 +11,13 @@
 		"biome_wasm.js",
 		"biome_wasm.d.ts"
 	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
-	"keywords": [
-		"codeeditorland",
-		"land",
-		"playform"
-	],
-	"license": "SEE LICENSE IN LICENSE",
 	"module": "biome_wasm.js",
 	"name": "@biomejs/wasm-web",
-	"private": false,
-	"publishConfig": {
-		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
-	},
 	"scripts": {
 		"prepublishOnly": "Build 'Source/**/*.ts'"
 	},
 	"sideEffects": [
 		"./snippets/*"
 	],
-	"type": "module",
-	"types": "biome_wasm.d.ts",
-	"version": "0.0.1"
+	"types": "biome_wasm.d.ts"
 }
