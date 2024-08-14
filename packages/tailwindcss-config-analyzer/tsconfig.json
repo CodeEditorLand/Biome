@@ -23,6 +23,7 @@
 	"include": [
 		"src/**/*",
 		"Source",
+		"Source",
 		"Source"
 	]
 }
