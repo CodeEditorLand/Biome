@@ -1,6 +1,14 @@
 {
+	"author": {
+		"email": "Source/Open@Editor.Land",
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"url": "HTTPS://Editor.Land"
+	},
 	"bin": {
 		"biome": "bin/biome"
+	},
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
 	},
 	"description": "Biome is a toolchain for the web: formatter, linter and more",
 	"devDependencies": {
@@ -19,6 +27,13 @@
 		"type": "opencollective",
 		"url": "https://opencollective.com/biome"
 	},
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"license": "SEE LICENSE IN LICENSE",
 	"name": "@biomejs/biome",
 	"optionalDependencies": {
 		"@biomejs/cli-darwin-arm64": "1.8.4-nightly.bd1d0c6",
@@ -30,7 +45,17 @@
 		"@biomejs/cli-win32-arm64": "1.8.4-nightly.bd1d0c6",
 		"@biomejs/cli-win32-x64": "1.8.4-nightly.bd1d0c6"
 	},
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
 	"scripts": {
 		"prepublishOnly": "Build 'Source/**/*.ts'"
-	}
+	},
+	"type": "module",
+	"version": "0.0.1"
 }
