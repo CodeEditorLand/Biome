@@ -1,1 +1,1 @@
-import type A, { B, C } from './a';
+import type A, { C } from './a';

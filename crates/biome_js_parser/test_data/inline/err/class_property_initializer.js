@@ -1,1 +1,3 @@
-class B { lorem = ; }
+class B {
+	lorem = ;
+}

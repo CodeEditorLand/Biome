@@ -1,2 +1,2 @@
-declare const a: { b: string }
+declare const a: { b: string };
 export = a.b;

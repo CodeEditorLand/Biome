@@ -1,1 +1,1 @@
-let a = async;
+const a = async;

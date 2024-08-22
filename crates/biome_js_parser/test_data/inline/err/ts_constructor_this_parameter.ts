@@ -1,1 +1,3 @@
-class C { constructor(this) {} }
+class C {
+	constructor(this) {}
+}

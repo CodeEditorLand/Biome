@@ -1,2 +1,10 @@
-do { } break (continue)
-do { } continue (break)
+do { }
+break
+(
+continue
+)
+do { }
+continue
+(
+break
+)

@@ -1,1 +1,1 @@
-let a = <number>b;
+const a = <number>b;

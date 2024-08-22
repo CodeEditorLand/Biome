@@ -1,3 +1,3 @@
-let a = async foo => {}
-let b = async (bar) => {}
-async (foo, bar, ...baz) => foo
+const a = async (foo) => {};
+const b = async (bar) => {};
+async (foo, bar, ...baz) => foo;

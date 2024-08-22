@@ -1,3 +1,3 @@
 abstract class A {
-    accessor [a: number]: string;
+	accessor [a: number]: string;
 }

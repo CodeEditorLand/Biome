@@ -1,4 +1,4 @@
-delete a['test'];
+delete a["test"];
 void a;
 typeof a;
 +1;

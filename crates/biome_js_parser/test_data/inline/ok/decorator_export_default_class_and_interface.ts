@@ -1,5 +1,9 @@
-export default interface A{};
-export default interface A{};
-export default class A{};
-export default interface A{};
-export default interface A{};
+export default type;
+A = {};
+export default type
+A = {};
+export default class A{}
+export default type
+A = {};
+export default type
+A = {};

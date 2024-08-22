@@ -1,1 +1,1 @@
-let x = "hello" satisfies string;
+const x = "hello" satisfies string;

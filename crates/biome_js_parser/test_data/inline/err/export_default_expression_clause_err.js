@@ -1,1 +1,2 @@
-export default a, b;
+export default a;
+, b

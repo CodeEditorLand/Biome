@@ -1,1 +1,2 @@
-let a = import;
+const a =
+import;

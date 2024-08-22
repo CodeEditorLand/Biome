@@ -1,1 +1,3 @@
-declare module test { const X; }
+declare namespace test {
+	const X;
+}

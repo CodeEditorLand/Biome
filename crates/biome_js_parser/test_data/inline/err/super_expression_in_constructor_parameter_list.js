@@ -1,1 +1,5 @@
-class A extends B { constructor(super()) {} }
+class A extends B {
+	constructor(super()
+	) {
+}
+}

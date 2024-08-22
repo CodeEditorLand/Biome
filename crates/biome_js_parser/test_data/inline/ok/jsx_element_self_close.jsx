@@ -1,3 +1,3 @@
 function f() {
-    return <div />
+	return <div />;
 }

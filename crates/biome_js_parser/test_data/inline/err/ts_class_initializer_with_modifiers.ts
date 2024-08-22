@@ -1,3 +1,3 @@
 class A {
-  public static { }
+	public static { }
 }

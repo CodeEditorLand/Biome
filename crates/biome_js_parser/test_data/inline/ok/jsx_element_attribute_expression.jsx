@@ -1,2 +1,2 @@
 <div id={1} />;
-<div className={prefix`none`} />;
+<div class={prefix`none`} />;

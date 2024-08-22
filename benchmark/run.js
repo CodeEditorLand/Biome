@@ -1,7 +1,7 @@
-import * as fs from "node:fs";
 import { execSync } from "node:child_process";
-import * as path from "node:path";
+import * as fs from "node:fs";
 import * as os from "node:os";
+import * as path from "node:path";
 
 const TMP_DIRECTORY = path.resolve("./target");
 
@@ -85,7 +85,8 @@ function benchmarkFormatter(biome) {
 		const prettierPaths = Object.entries(configuration.sourceDirectories)
 			.flatMap(([directory, extensions]) => {
 				return extensions.map(
-					(extension) => `'${path.join(directory, `**/*.${extension}`)}'`,
+					(extension) =>
+						`'${path.join(directory, `**/*.${extension}`)}'`,
 				);
 			})
 			.join(" ");
@@ -162,7 +163,10 @@ function benchmarkLinter(biome) {
 		);
 
 		const biomeConfig = fs.readFileSync("./bench.biome.json");
-		fs.writeFileSync(path.join(projectDirectory, "biome.json"), biomeConfig);
+		fs.writeFileSync(
+			path.join(projectDirectory, "biome.json"),
+			biomeConfig,
+		);
 
 		const eslintPaths = configuration.sourceDirectories
 			.map((directory) => `'${directory}/**'`)

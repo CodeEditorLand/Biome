@@ -2,6 +2,6 @@
 <A,>() => {};
 <const A,>() => {};
 <A extends B>() => {};
-<A=string>() => {};
+<A = string>() => {};
 <A, B>() => {};
 <A extends B<C>>() => {};

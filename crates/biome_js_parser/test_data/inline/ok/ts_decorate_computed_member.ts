@@ -1,4 +1,4 @@
 class Test {
-@test
-['a']: string;
+	@test
+	["a"]: string;
 }

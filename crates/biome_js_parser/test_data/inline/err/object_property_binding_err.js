@@ -1,3 +1,3 @@
-let { foo: , bar } = {}
-let { : lorem = "test" } = {}
-let { , ipsum: bazz } = {}
+const { foo: , bar } = {}
+const { : lorem = "test" } = {}
+const { , ipsum: bazz } = {}

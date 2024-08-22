@@ -1,3 +1,3 @@
-let a = { test: null };
+const a = { test: null };
 a.test?.;
 a.test?.<ab;

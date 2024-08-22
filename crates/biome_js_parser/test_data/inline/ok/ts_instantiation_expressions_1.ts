@@ -1,7 +1,7 @@
 class A {
- constructor() {
-   f<T> super();
- }
+	constructor() {
+		f < T > super();
+	}
 }
 f<TemplateStringsArray>``;
 f<T>(1);
@@ -47,7 +47,7 @@ f < T > delete a[field];
 f < T > typeof MyClass;
 f < T > void a;
 f<T> <= 1;
-f < T > (await 1);
+f<T>(await 1);
 f < T > import.meta;
 f < T > import("123");
 a < b >> c;

@@ -1,1 +1,1 @@
-let id = async => async;
+const id = (async) => async;

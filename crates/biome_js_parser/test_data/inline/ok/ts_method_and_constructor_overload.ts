@@ -1,8 +1,10 @@
 class Test {
-     constructor();
-     constructor(a: String) // ASI
-     constructor(a?: String) {}
-     async method(): Promise<String>;
-     method(a: String): Promise<String> // ASI
-     async method(a?: String): Promise<String> { return "test" }
+	constructor();
+	constructor(a: string); // ASI
+	constructor(a?: string) {}
+	async method(): Promise<string>;
+	method(a: string): Promise<string>; // ASI
+	async method(a?: string): Promise<string> {
+		return "test";
+	}
 }

@@ -1,1 +1,1 @@
-<div className={asdf asdf} />;
+<div class={asdf asdf} />;

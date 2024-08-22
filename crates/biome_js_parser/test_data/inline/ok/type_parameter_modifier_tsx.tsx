@@ -1,8 +1,10 @@
-<in T></in>;
-<out T></out>;
-<const T></const>;
-<in out T></in>;
-<out in T></out>;
-<in T extends={true}></in>;
-<out T extends={true}></out>;
-<in out T extends={true}></in>;
+<in T={true}></in>;
+<out T={true}></out>;
+<const T={true}>
+</
+const>;
+<in out={true} T={true}></in>;
+<out in={true} T={true}></out>;
+<in T={true} extends={true}></in>;
+<out T={true} extends={true}></out>;
+<in out={true} T={true} extends={true}></in>;

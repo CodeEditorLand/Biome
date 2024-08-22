@@ -527,7 +527,7 @@ export interface PartialJavascriptLinter {
 	 */
 	enabled?: boolean;
 }
-export interface PartialJavascriptOrganizeImports {}
+export type PartialJavascriptOrganizeImports = {};
 /**
  * Options that changes how the JavaScript parser behaves
  */
@@ -2159,7 +2159,7 @@ export interface HooksOptions {
 /**
  * Options for the `useHookAtTopLevel` rule have been deprecated, since we now use the React hook naming convention to determine whether a function is a hook.
  */
-export interface DeprecatedHooksOptions {}
+export type DeprecatedHooksOptions = {};
 export interface NoLabelWithoutControlOptions {
 	/**
 	 * Array of component names that should be considered the same as an `input` element.

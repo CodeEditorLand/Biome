@@ -1,6 +1,8 @@
 class A {
-  constructor() {
-    () => { super() };
-    () => super();
- }
+	constructor() {
+		() => {
+			super();
+		};
+		() => super();
+	}
 }

@@ -1,9 +1,9 @@
 interface A {
-    [a: number]: string;
+	[a: number]: string;
 }
 interface B {
-    [index: string]: { prop }
+	[index: string]: { prop };
 }
 interface C {
-    readonly [a: number]: string;
+	readonly [a: number]: string;
 }

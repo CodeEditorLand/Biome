@@ -1,5 +1,5 @@
 class Foo {
-  @dec static {
+	@dec static {
     this.a = "test";
   }
 }

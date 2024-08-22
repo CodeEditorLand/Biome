@@ -2,6 +2,6 @@ yield;
 await;
 async function test(await) {}
 function* test(yield) {}
-enum;
+enum
 implements;
 interface;

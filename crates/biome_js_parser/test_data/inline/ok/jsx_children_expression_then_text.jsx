@@ -1,5 +1,4 @@
 <test>
-    {/* comment */}
-     some
-     text
-</test>
+	{/* comment */}
+	some text
+</test>;

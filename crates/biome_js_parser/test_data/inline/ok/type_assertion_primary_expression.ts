@@ -1,1 +1,1 @@
-let a = <number>undefined;
+const a = <number>undefined;

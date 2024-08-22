@@ -1,3 +1,3 @@
-let a = {, foo}
-let b = { foo bar }
-let b = { foo
+const a = {, foo}
+const b = { foo bar }
+const b = { foo

@@ -1,1 +1,1 @@
-let a = <test>abcd</test>.c;
+const a = (<test>abcd</test>).c;

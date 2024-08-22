@@ -1,2 +1,2 @@
 type A = string[];
-type B = { a: number } [];
+type B = { a: number }[];

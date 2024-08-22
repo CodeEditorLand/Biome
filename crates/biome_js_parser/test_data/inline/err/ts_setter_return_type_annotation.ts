@@ -1,3 +1,3 @@
 class Test {
-    set a(value: string): void {}
+	set a(value: string): void {}
 }

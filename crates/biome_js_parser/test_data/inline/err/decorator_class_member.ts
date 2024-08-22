@@ -1,18 +1,18 @@
 class Foo {
-   @dec constructor() {}
-   @dec [index: string]: { props: string }
+	@dec constructor() {}
+	@dec [index: string]: { props: string }
 }
 class Quiz {
-   @dec public constructor() {}
+	@dec public constructor() {}
 }
 class Bar extends Foo {
-   @dec
+	@dec
    constructor();
-   constructor(a: String)
-   constructor(a?: String) {}
+	constructor(a: string);
+	constructor(a?: string) {}
 }
 declare class Baz {
-  @dec method();
-  @dec get foo();
-  @dec set foo(a);
+	@dec method();
+	@dec get foo();
+	@dec set foo(a);
 }

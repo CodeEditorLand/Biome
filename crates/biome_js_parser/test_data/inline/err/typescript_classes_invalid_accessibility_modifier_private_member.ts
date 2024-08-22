@@ -1,1 +1,5 @@
-class A { private #name; protected #other; public #baz; };
+class A {
+	private #name;
+	protected #other;
+	public #baz;
+}

@@ -1,2 +1,2 @@
 throw new Error("foo");
-throw "foo"
+throw "foo";

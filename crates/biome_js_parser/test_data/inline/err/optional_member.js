@@ -1,1 +1,3 @@
-class B { foo?; }
+class B {
+	foo?;
+}

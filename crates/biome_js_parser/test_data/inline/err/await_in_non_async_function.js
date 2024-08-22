@@ -1,1 +1,3 @@
-function test() { await 10; }
+function test() {
+	await 10;
+}

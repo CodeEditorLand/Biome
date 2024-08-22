@@ -1,2 +1,2 @@
-let a = async function() {};
-let b = async function foo() {};
+const a = async () => {};
+const b = async function foo() {};

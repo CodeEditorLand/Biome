@@ -1,2 +1,6 @@
-declare class A { prop!: string }
-class B { declare prop!: string }
+declare class A {
+	prop!: string
+}
+class B {
+	declare prop!: string
+}

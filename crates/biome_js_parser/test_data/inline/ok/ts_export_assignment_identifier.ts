@@ -1,5 +1,5 @@
-declare const a: { b: string }
+declare const a: { b: string };
 export = a;
-export = class {}
-export = function () {}
+export = class {};
+export = () => {};
 export = 4 + 3 + a;

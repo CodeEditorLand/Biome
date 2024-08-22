@@ -1,2 +1,2 @@
-let await = 10;
+const await = 10;
 console.log(await);

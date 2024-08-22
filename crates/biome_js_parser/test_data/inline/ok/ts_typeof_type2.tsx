@@ -1,2 +1,2 @@
-type X = typeof Array
+type X = typeof Array;
 <div>a</div>;

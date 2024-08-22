@@ -1,1 +1,1 @@
-let b = { foo) }
+const b = { foo) }

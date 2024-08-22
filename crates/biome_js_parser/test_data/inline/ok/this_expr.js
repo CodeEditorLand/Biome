@@ -1,2 +1,2 @@
-this
-this.foo
+this;
+this.foo;

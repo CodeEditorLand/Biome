@@ -1,3 +1,3 @@
 class A {
-    readonly static [a: number]: string;
+	readonly static [a: number]: string;
 }

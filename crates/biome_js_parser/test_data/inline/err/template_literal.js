@@ -1,2 +1,2 @@
-let a = `foo ${}`
-let b = `${a a}`
+const a = `foo ${}`
+const b = `${a a}`;

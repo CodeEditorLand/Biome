@@ -1,1 +1,4 @@
-class S{{}}
+class S {
+	{
+}
+}

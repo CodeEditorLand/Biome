@@ -1,2 +1,4 @@
-declare using x: null
-declare await using x: null
+declare;
+using x: null;
+declare;
+await using x: null;

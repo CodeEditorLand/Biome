@@ -1,2 +1,4 @@
-try {} catch (error: any) {}
-try {} catch (error: unknown) {}
+try {
+} catch (error: any) {}
+try {
+} catch (error: unknown) {}

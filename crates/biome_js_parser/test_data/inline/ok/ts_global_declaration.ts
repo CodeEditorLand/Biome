@@ -1,12 +1,10 @@
 declare module "./test" {
- global {
-     let VERSION: string;
- }
+	global {
+		let VERSION: string;
+	}
 }
 declare module "foo" {
- global
- { }
+	global {}
 }
 declare global {}
-declare global
-{ }
+declare global {}

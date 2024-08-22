@@ -1,3 +1,3 @@
 abstract class A {
-    abstract name: string = "";
+	abstract name: string = "";
 }

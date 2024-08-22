@@ -1,3 +1,11 @@
 // SCRIPT
-class A { static { await; } }
-class B { static { await 10; } }
+class A {
+	static {
+		await;
+	}
+}
+class B {
+	static {
+		await 10;
+	}
+}

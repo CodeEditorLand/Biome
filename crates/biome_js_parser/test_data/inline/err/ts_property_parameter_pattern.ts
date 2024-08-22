@@ -1,1 +1,6 @@
-class A { constructor(private { x, y }, protected [a, b]) {} }
+class A {
+	constructor(
+		private { x, y },
+		protected [a, b],
+	) {}
+}

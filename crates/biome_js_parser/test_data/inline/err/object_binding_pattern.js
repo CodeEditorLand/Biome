@@ -1,4 +1,8 @@
-let { 5 } } = { eval: "foo" };
-let { eval } = { eval: "foo" };
-let { 5, 6 } = { eval: "foo" };
-let { default , eval: } = {};
+const { 5 }
+} =
+{
+	eval: "foo";
+}
+const { eval } = { eval: "foo" };
+const { 5, 6 } = { eval: "foo" };
+const { default , eval: } = {};

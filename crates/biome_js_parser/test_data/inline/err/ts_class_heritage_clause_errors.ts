@@ -1,5 +1,5 @@
 class A {}
-interface Int {}
+type Int = {};
 class B implements Int extends A {}
 class C implements Int implements Int {}
 class D implements {}

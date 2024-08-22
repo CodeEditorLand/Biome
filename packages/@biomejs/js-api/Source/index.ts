@@ -204,7 +204,8 @@ export class Biome {
 			});
 
 			const hasErrors = diagnostics.some(
-				(diag) => diag.severity === "fatal" || diag.severity === "error",
+				(diag) =>
+					diag.severity === "fatal" || diag.severity === "error",
 			);
 			if (!hasErrors) {
 				if (options.range) {

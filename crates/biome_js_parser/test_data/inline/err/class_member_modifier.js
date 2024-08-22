@@ -1,1 +1,3 @@
-class A { abstract foo; }
+class A {
+	abstract foo;
+}

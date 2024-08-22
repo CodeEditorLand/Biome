@@ -1,7 +1,9 @@
-function foo() { continue; }
-while (true) {
-  continue foo;
+function foo() {
+	continue;
 }
-foo: {
-  continue foo;
+while (true) {
+	continue foo;
+}
+{
+	continue foo;
 }

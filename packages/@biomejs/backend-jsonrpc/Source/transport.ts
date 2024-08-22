@@ -185,9 +185,16 @@ export class Transport {
 				}
 
 				const header = this.pendingData.subarray(0, lineBreakIndex + 1);
-				this.pendingData = this.pendingData.subarray(lineBreakIndex + 1);
-				this.processIncomingHeader(this.readerState, header.toString("utf-8"));
-			} else if (this.pendingData.length >= this.readerState.contentLength) {
+				this.pendingData = this.pendingData.subarray(
+					lineBreakIndex + 1,
+				);
+				this.processIncomingHeader(
+					this.readerState,
+					header.toString("utf-8"),
+				);
+			} else if (
+				this.pendingData.length >= this.readerState.contentLength
+			) {
 				const body = this.pendingData.subarray(
 					0,
 					this.readerState.contentLength,
@@ -206,7 +213,10 @@ export class Transport {
 		}
 	}
 
-	private processIncomingHeader(readerState: ReaderStateHeader, line: string) {
+	private processIncomingHeader(
+		readerState: ReaderStateHeader,
+		line: string,
+	) {
 		if (line === "\r\n") {
 			const { contentLength, contentType } = readerState;
 			if (typeof contentLength !== "number") {

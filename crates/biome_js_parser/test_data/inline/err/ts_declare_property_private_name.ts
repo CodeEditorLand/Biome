@@ -1,1 +1,3 @@
-class A { declare #name(); };
+class A {
+	declare #name();
+}

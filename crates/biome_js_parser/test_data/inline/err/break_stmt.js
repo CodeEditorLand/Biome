@@ -1,4 +1,6 @@
-function foo() { break; }
+function foo() {
+	break;
+}
 while (true) {
-  break foo;
+	break foo;
 }

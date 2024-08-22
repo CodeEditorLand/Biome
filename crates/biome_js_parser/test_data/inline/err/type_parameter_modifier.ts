@@ -8,10 +8,14 @@ declare function foo<in T>()
 declare function foo<out T>()
 declare let foo: Foo<in T>
 declare let foo: Foo<out T>
-foo = function <in T>() {}
-foo = function <out T>() {}
-class Foo { foo<in T>(): T {} }
-class Foo { foo<out T>(): T {} }
+foo = function <in T>() {};
+foo = function <out T>() {};
+class Foo {
+	foo<in T>(): T {}
+}
+class Foo {
+	foo<out T>(): T {}
+}
 foo = { foo<in T>(): T {} };
 foo = { foo<out T>(): T {} };
 <in T>() => {};

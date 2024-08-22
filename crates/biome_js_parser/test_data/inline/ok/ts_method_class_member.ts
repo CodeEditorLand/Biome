@@ -1,3 +1,3 @@
 class Test {
-  test<A, B extends A, R>(a: A, b: B): R {}
+	test<A, B extends A, R>(a: A, b: B): R {}
 }

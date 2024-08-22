@@ -1,2 +1,2 @@
-let a = {};
-let b = {foo,}
+const a = {};
+const b = { foo };

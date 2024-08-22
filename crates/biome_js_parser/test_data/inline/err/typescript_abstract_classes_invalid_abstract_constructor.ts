@@ -1,1 +1,3 @@
-abstract class A { abstract constructor();};
+abstract class A {
+	abstract constructor();
+}

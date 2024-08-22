@@ -1,2 +1,2 @@
 @decorator
-class Foo { }
+class Foo {}

@@ -70,7 +70,10 @@
 		},
 		"organizeImports": {
 			"description": "The configuration of the import sorting",
-			"anyOf": [{ "$ref": "#/definitions/OrganizeImports" }, { "type": "null" }]
+			"anyOf": [
+				{ "$ref": "#/definitions/OrganizeImports" },
+				{ "type": "null" }
+			]
 		},
 		"overrides": {
 			"description": "A list of granular patterns that should be applied only to a sub set of files",
@@ -315,7 +318,10 @@
 			"type": "object",
 			"properties": {
 				"source": {
-					"anyOf": [{ "$ref": "#/definitions/Source" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Source" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -338,13 +344,19 @@
 			},
 			"additionalProperties": false
 		},
-		"ArrowParentheses": { "type": "string", "enum": ["always", "asNeeded"] },
+		"ArrowParentheses": {
+			"type": "string",
+			"enum": ["always", "asNeeded"]
+		},
 		"AssistsConfiguration": {
 			"type": "object",
 			"properties": {
 				"actions": {
 					"description": "Whether Biome should fail in CLI if the assists were not applied to the code.",
-					"anyOf": [{ "$ref": "#/definitions/Actions" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Actions" },
+						{ "type": "null" }
+					]
 				},
 				"enabled": {
 					"description": "Whether Biome should enable assists via LSP.",
@@ -352,16 +364,25 @@
 				},
 				"ignore": {
 					"description": "A list of Unix shell style patterns. The formatter will ignore files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"include": {
 					"description": "A list of Unix shell style patterns. The formatter will include files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
 		},
-		"AttributePosition": { "type": "string", "enum": ["auto", "multiline"] },
+		"AttributePosition": {
+			"type": "string",
+			"enum": ["auto", "multiline"]
+		},
 		"BracketSpacing": { "type": "boolean" },
 		"Complexity": {
 			"description": "A list of rules that belong to this group",
@@ -638,7 +659,10 @@
 				},
 				"match": {
 					"description": "Regular expression to enforce",
-					"anyOf": [{ "$ref": "#/definitions/Regex" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Regex" },
+						{ "type": "null" }
+					]
 				},
 				"selector": {
 					"description": "Declarations concerned by this convention",
@@ -914,7 +938,9 @@
 				"useHookAtTopLevel": {
 					"description": "Enforce that all React hooks are being called from the Top Level component functions.",
 					"anyOf": [
-						{ "$ref": "#/definitions/DeprecatedHooksConfiguration" },
+						{
+							"$ref": "#/definitions/DeprecatedHooksConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -966,7 +992,10 @@
 			"properties": {
 				"assists": {
 					"description": "CSS assists options",
-					"anyOf": [{ "$ref": "#/definitions/CssAssists" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/CssAssists" },
+						{ "type": "null" }
+					]
 				},
 				"formatter": {
 					"description": "CSS formatter options",
@@ -977,11 +1006,17 @@
 				},
 				"linter": {
 					"description": "CSS linter options",
-					"anyOf": [{ "$ref": "#/definitions/CssLinter" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/CssLinter" },
+						{ "type": "null" }
+					]
 				},
 				"parser": {
 					"description": "CSS parsing options",
-					"anyOf": [{ "$ref": "#/definitions/CssParser" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/CssParser" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -996,23 +1031,38 @@
 				},
 				"indentStyle": {
 					"description": "The indent style applied to CSS (and its super languages) files.",
-					"anyOf": [{ "$ref": "#/definitions/IndentStyle" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentStyle" },
+						{ "type": "null" }
+					]
 				},
 				"indentWidth": {
 					"description": "The size of the indentation applied to CSS (and its super languages) files. Default to 2.",
-					"anyOf": [{ "$ref": "#/definitions/IndentWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentWidth" },
+						{ "type": "null" }
+					]
 				},
 				"lineEnding": {
 					"description": "The type of line ending applied to CSS (and its super languages) files.",
-					"anyOf": [{ "$ref": "#/definitions/LineEnding" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineEnding" },
+						{ "type": "null" }
+					]
 				},
 				"lineWidth": {
 					"description": "What's the max width of a line applied to CSS (and its super languages) files. Defaults to 80.",
-					"anyOf": [{ "$ref": "#/definitions/LineWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineWidth" },
+						{ "type": "null" }
+					]
 				},
 				"quoteStyle": {
 					"description": "The type of quotes used in CSS code. Defaults to double.",
-					"anyOf": [{ "$ref": "#/definitions/QuoteStyle" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/QuoteStyle" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -1057,7 +1107,11 @@
 		"FilenameCase": {
 			"description": "Supported cases for file names.",
 			"oneOf": [
-				{ "description": "camelCase", "type": "string", "enum": ["camelCase"] },
+				{
+					"description": "camelCase",
+					"type": "string",
+					"enum": ["camelCase"]
+				},
 				{
 					"description": "Match an export name",
 					"type": "string",
@@ -1116,7 +1170,10 @@
 			"properties": {
 				"ignore": {
 					"description": "A list of Unix shell style patterns. Biome will ignore files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"ignoreUnknown": {
 					"description": "Tells Biome to not emit diagnostics when handling files that doesn't know",
@@ -1124,7 +1181,10 @@
 				},
 				"include": {
 					"description": "A list of Unix shell style patterns. Biome will handle only those files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"maxSize": {
 					"description": "The maximum allowed size for source code files in bytes. Files above this limit will be ignored for performance reasons. Defaults to 1 MiB",
@@ -1190,31 +1250,52 @@
 				},
 				"ignore": {
 					"description": "A list of Unix shell style patterns. The formatter will ignore files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"include": {
 					"description": "A list of Unix shell style patterns. The formatter will include files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"indentSize": {
 					"description": "The size of the indentation, 2 by default (deprecated, use `indent-width`)",
-					"anyOf": [{ "$ref": "#/definitions/IndentWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentWidth" },
+						{ "type": "null" }
+					]
 				},
 				"indentStyle": {
 					"description": "The indent style.",
-					"anyOf": [{ "$ref": "#/definitions/IndentStyle" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentStyle" },
+						{ "type": "null" }
+					]
 				},
 				"indentWidth": {
 					"description": "The size of the indentation, 2 by default",
-					"anyOf": [{ "$ref": "#/definitions/IndentWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentWidth" },
+						{ "type": "null" }
+					]
 				},
 				"lineEnding": {
 					"description": "The type of line ending.",
-					"anyOf": [{ "$ref": "#/definitions/LineEnding" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineEnding" },
+						{ "type": "null" }
+					]
 				},
 				"lineWidth": {
 					"description": "What's the max width of a line. Defaults to 80.",
-					"anyOf": [{ "$ref": "#/definitions/LineWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineWidth" },
+						{ "type": "null" }
+					]
 				},
 				"useEditorconfig": {
 					"description": "Use any `.editorconfig` files to configure the formatter. Configuration in `biome.json` will override `.editorconfig` configuration. Default: false.",
@@ -1260,23 +1341,38 @@
 				},
 				"indentStyle": {
 					"description": "The indent style applied to GraphQL files.",
-					"anyOf": [{ "$ref": "#/definitions/IndentStyle" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentStyle" },
+						{ "type": "null" }
+					]
 				},
 				"indentWidth": {
 					"description": "The size of the indentation applied to GraphQL files. Default to 2.",
-					"anyOf": [{ "$ref": "#/definitions/IndentWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentWidth" },
+						{ "type": "null" }
+					]
 				},
 				"lineEnding": {
 					"description": "The type of line ending applied to GraphQL files.",
-					"anyOf": [{ "$ref": "#/definitions/LineEnding" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineEnding" },
+						{ "type": "null" }
+					]
 				},
 				"lineWidth": {
 					"description": "What's the max width of a line applied to GraphQL files. Defaults to 80.",
-					"anyOf": [{ "$ref": "#/definitions/LineWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineWidth" },
+						{ "type": "null" }
+					]
 				},
 				"quoteStyle": {
 					"description": "The type of quotes used in GraphQL code. Defaults to double.",
-					"anyOf": [{ "$ref": "#/definitions/QuoteStyle" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/QuoteStyle" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -1308,7 +1404,10 @@
 					"format": "uint8",
 					"minimum": 0.0
 				},
-				"name": { "description": "The name of the hook.", "type": "string" },
+				"name": {
+					"description": "The name of the hook.",
+					"type": "string"
+				},
 				"stableResult": {
 					"description": "Whether the result of the hook is stable.\n\nSet to `true` to mark the identity of the hook's return value as stable, or use a number/an array of numbers to mark the \"positions\" in the return array as stable.\n\nFor example, for React's `useRef()` hook the value would be `true`, while for `useState()` it would be `[1]`.",
 					"allOf": [{ "$ref": "#/definitions/StableHookResult" }]
@@ -1373,11 +1472,17 @@
 				},
 				"globals": {
 					"description": "A list of global bindings that should be ignored by the analyzers\n\nIf defined here, they should not emit diagnostics.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"jsxRuntime": {
 					"description": "Indicates the type of runtime or transformation used for interpreting JSX.",
-					"anyOf": [{ "$ref": "#/definitions/JsxRuntime" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/JsxRuntime" },
+						{ "type": "null" }
+					]
 				},
 				"linter": {
 					"description": "Linter options",
@@ -1437,27 +1542,45 @@
 				},
 				"indentSize": {
 					"description": "The size of the indentation applied to JavaScript (and its super languages) files. Default to 2.",
-					"anyOf": [{ "$ref": "#/definitions/IndentWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentWidth" },
+						{ "type": "null" }
+					]
 				},
 				"indentStyle": {
 					"description": "The indent style applied to JavaScript (and its super languages) files.",
-					"anyOf": [{ "$ref": "#/definitions/IndentStyle" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentStyle" },
+						{ "type": "null" }
+					]
 				},
 				"indentWidth": {
 					"description": "The size of the indentation applied to JavaScript (and its super languages) files. Default to 2.",
-					"anyOf": [{ "$ref": "#/definitions/IndentWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentWidth" },
+						{ "type": "null" }
+					]
 				},
 				"jsxQuoteStyle": {
 					"description": "The type of quotes used in JSX. Defaults to double.",
-					"anyOf": [{ "$ref": "#/definitions/QuoteStyle" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/QuoteStyle" },
+						{ "type": "null" }
+					]
 				},
 				"lineEnding": {
 					"description": "The type of line ending applied to JavaScript (and its super languages) files.",
-					"anyOf": [{ "$ref": "#/definitions/LineEnding" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineEnding" },
+						{ "type": "null" }
+					]
 				},
 				"lineWidth": {
 					"description": "What's the max width of a line applied to JavaScript (and its super languages) files. Defaults to 80.",
-					"anyOf": [{ "$ref": "#/definitions/LineWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineWidth" },
+						{ "type": "null" }
+					]
 				},
 				"quoteProperties": {
 					"description": "When properties in objects are quoted. Defaults to asNeeded.",
@@ -1468,11 +1591,17 @@
 				},
 				"quoteStyle": {
 					"description": "The type of quotes used in JavaScript code. Defaults to double.",
-					"anyOf": [{ "$ref": "#/definitions/QuoteStyle" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/QuoteStyle" },
+						{ "type": "null" }
+					]
 				},
 				"semicolons": {
 					"description": "Whether the formatter prints semicolons for all statements or only in for statements where it is necessary because of ASI.",
-					"anyOf": [{ "$ref": "#/definitions/Semicolons" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Semicolons" },
+						{ "type": "null" }
+					]
 				},
 				"trailingComma": {
 					"description": "Print trailing commas wherever possible in multi-line comma-separated syntactic structures. Defaults to \"all\".",
@@ -1534,7 +1663,10 @@
 			"properties": {
 				"assists": {
 					"description": "Assists options",
-					"anyOf": [{ "$ref": "#/definitions/JsonAssists" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/JsonAssists" },
+						{ "type": "null" }
+					]
 				},
 				"formatter": {
 					"description": "Formatting options",
@@ -1545,11 +1677,17 @@
 				},
 				"linter": {
 					"description": "Linting options",
-					"anyOf": [{ "$ref": "#/definitions/JsonLinter" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/JsonLinter" },
+						{ "type": "null" }
+					]
 				},
 				"parser": {
 					"description": "Parsing options",
-					"anyOf": [{ "$ref": "#/definitions/JsonParser" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/JsonParser" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -1563,23 +1701,38 @@
 				},
 				"indentSize": {
 					"description": "The size of the indentation applied to JSON (and its super languages) files. Default to 2.",
-					"anyOf": [{ "$ref": "#/definitions/IndentWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentWidth" },
+						{ "type": "null" }
+					]
 				},
 				"indentStyle": {
 					"description": "The indent style applied to JSON (and its super languages) files.",
-					"anyOf": [{ "$ref": "#/definitions/IndentStyle" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentStyle" },
+						{ "type": "null" }
+					]
 				},
 				"indentWidth": {
 					"description": "The size of the indentation applied to JSON (and its super languages) files. Default to 2.",
-					"anyOf": [{ "$ref": "#/definitions/IndentWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentWidth" },
+						{ "type": "null" }
+					]
 				},
 				"lineEnding": {
 					"description": "The type of line ending applied to JSON (and its super languages) files.",
-					"anyOf": [{ "$ref": "#/definitions/LineEnding" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineEnding" },
+						{ "type": "null" }
+					]
 				},
 				"lineWidth": {
 					"description": "What's the max width of a line applied to JSON (and its super languages) files. Defaults to 80.",
-					"anyOf": [{ "$ref": "#/definitions/LineWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineWidth" },
+						{ "type": "null" }
+					]
 				},
 				"trailingCommas": {
 					"description": "Print trailing commas wherever possible in multi-line comma-separated syntactic structures. Defaults to \"none\".",
@@ -1662,7 +1815,11 @@
 						"typeAlias"
 					]
 				},
-				{ "description": "All kinds", "type": "string", "enum": ["any"] },
+				{
+					"description": "All kinds",
+					"type": "string",
+					"enum": ["any"]
+				},
 				{
 					"description": "All type definitions: classes, enums, interfaces, and type aliases",
 					"type": "string",
@@ -1769,15 +1926,24 @@
 				},
 				"ignore": {
 					"description": "A list of Unix shell style patterns. The formatter will ignore files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"include": {
 					"description": "A list of Unix shell style patterns. The formatter will include files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"rules": {
 					"description": "List of rules",
-					"anyOf": [{ "$ref": "#/definitions/Rules" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Rules" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -1825,7 +1991,11 @@
 		},
 		"NoLabelWithoutControlOptions": {
 			"type": "object",
-			"required": ["inputComponents", "labelAttributes", "labelComponents"],
+			"required": [
+				"inputComponents",
+				"labelAttributes",
+				"labelComponents"
+			],
 			"properties": {
 				"inputComponents": {
 					"description": "Array of component names that should be considered the same as an `input` element.",
@@ -1968,7 +2138,9 @@
 				"noLabelWithoutControl": {
 					"description": "Enforce that a label element or component has a text label and an associated input.",
 					"anyOf": [
-						{ "$ref": "#/definitions/NoLabelWithoutControlConfiguration" },
+						{
+							"$ref": "#/definitions/NoLabelWithoutControlConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -1989,7 +2161,9 @@
 				"noRestrictedImports": {
 					"description": "Disallow specified modules when loaded by import or require.",
 					"anyOf": [
-						{ "$ref": "#/definitions/RestrictedImportsConfiguration" },
+						{
+							"$ref": "#/definitions/RestrictedImportsConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -2196,7 +2370,9 @@
 				"useImportExtensions": {
 					"description": "Enforce file extensions for relative imports.",
 					"anyOf": [
-						{ "$ref": "#/definitions/UseImportExtensionsConfiguration" },
+						{
+							"$ref": "#/definitions/UseImportExtensionsConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -2224,7 +2400,9 @@
 				"useSortedClasses": {
 					"description": "Enforce the sorting of CSS utility classes.",
 					"anyOf": [
-						{ "$ref": "#/definitions/UtilityClassSortingConfiguration" },
+						{
+							"$ref": "#/definitions/UtilityClassSortingConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -2266,7 +2444,9 @@
 				"useValidAutocomplete": {
 					"description": "Use valid values for the autocomplete attribute on input elements.",
 					"anyOf": [
-						{ "$ref": "#/definitions/UseValidAutocompleteConfiguration" },
+						{
+							"$ref": "#/definitions/UseValidAutocompleteConfiguration"
+						},
 						{ "type": "null" }
 					]
 				}
@@ -2282,11 +2462,17 @@
 				},
 				"ignore": {
 					"description": "A list of Unix shell style patterns. The formatter will ignore files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"include": {
 					"description": "A list of Unix shell style patterns. The formatter will include files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2315,23 +2501,38 @@
 				},
 				"indentSize": {
 					"description": "The size of the indentation, 2 by default (deprecated, use `indent-width`)",
-					"anyOf": [{ "$ref": "#/definitions/IndentWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentWidth" },
+						{ "type": "null" }
+					]
 				},
 				"indentStyle": {
 					"description": "The indent style.",
-					"anyOf": [{ "$ref": "#/definitions/IndentStyle" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentStyle" },
+						{ "type": "null" }
+					]
 				},
 				"indentWidth": {
 					"description": "The size of the indentation, 2 by default",
-					"anyOf": [{ "$ref": "#/definitions/IndentWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/IndentWidth" },
+						{ "type": "null" }
+					]
 				},
 				"lineEnding": {
 					"description": "The type of line ending.",
-					"anyOf": [{ "$ref": "#/definitions/LineEnding" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineEnding" },
+						{ "type": "null" }
+					]
 				},
 				"lineWidth": {
 					"description": "What's the max width of a line. Defaults to 80.",
-					"anyOf": [{ "$ref": "#/definitions/LineWidth" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/LineWidth" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2345,7 +2546,10 @@
 				},
 				"rules": {
 					"description": "List of rules",
-					"anyOf": [{ "$ref": "#/definitions/Rules" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Rules" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2373,7 +2577,9 @@
 				"formatter": {
 					"description": "Specific configuration for the Json language",
 					"anyOf": [
-						{ "$ref": "#/definitions/OverrideFormatterConfiguration" },
+						{
+							"$ref": "#/definitions/OverrideFormatterConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -2386,11 +2592,17 @@
 				},
 				"ignore": {
 					"description": "A list of Unix shell style patterns. The formatter will ignore files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"include": {
 					"description": "A list of Unix shell style patterns. The formatter will include files/folders that will match these patterns.",
-					"anyOf": [{ "$ref": "#/definitions/StringSet" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StringSet" },
+						{ "type": "null" }
+					]
 				},
 				"javascript": {
 					"description": "Specific configuration for the JavaScript language",
@@ -2416,7 +2628,9 @@
 				"organizeImports": {
 					"description": "Specific configuration for the Json language",
 					"anyOf": [
-						{ "$ref": "#/definitions/OverrideOrganizeImportsConfiguration" },
+						{
+							"$ref": "#/definitions/OverrideOrganizeImportsConfiguration"
+						},
 						{ "type": "null" }
 					]
 				}
@@ -2470,7 +2684,10 @@
 			},
 			"additionalProperties": false
 		},
-		"QuoteProperties": { "type": "string", "enum": ["asNeeded", "preserve"] },
+		"QuoteProperties": {
+			"type": "string",
+			"enum": ["asNeeded", "preserve"]
+		},
 		"QuoteStyle": { "type": "string", "enum": ["double", "single"] },
 		"Regex": { "type": "string" },
 		"RestrictedGlobalsConfiguration": {
@@ -2538,11 +2755,16 @@
 			"properties": {
 				"fix": {
 					"description": "The kind of the code actions emitted by the rule",
-					"anyOf": [{ "$ref": "#/definitions/FixKind" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/FixKind" },
+						{ "type": "null" }
+					]
 				},
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
@@ -2557,7 +2779,9 @@
 			"properties": {
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
@@ -2572,15 +2796,22 @@
 			"properties": {
 				"fix": {
 					"description": "The kind of the code actions emitted by the rule",
-					"anyOf": [{ "$ref": "#/definitions/FixKind" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/FixKind" },
+						{ "type": "null" }
+					]
 				},
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
-					"allOf": [{ "$ref": "#/definitions/ConsistentArrayTypeOptions" }]
+					"allOf": [
+						{ "$ref": "#/definitions/ConsistentArrayTypeOptions" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2591,11 +2822,15 @@
 			"properties": {
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
-					"allOf": [{ "$ref": "#/definitions/DeprecatedHooksOptions" }]
+					"allOf": [
+						{ "$ref": "#/definitions/DeprecatedHooksOptions" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2606,11 +2841,15 @@
 			"properties": {
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
-					"allOf": [{ "$ref": "#/definitions/FilenamingConventionOptions" }]
+					"allOf": [
+						{ "$ref": "#/definitions/FilenamingConventionOptions" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2621,11 +2860,16 @@
 			"properties": {
 				"fix": {
 					"description": "The kind of the code actions emitted by the rule",
-					"anyOf": [{ "$ref": "#/definitions/FixKind" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/FixKind" },
+						{ "type": "null" }
+					]
 				},
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2636,7 +2880,9 @@
 			"properties": {
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
@@ -2651,15 +2897,22 @@
 			"properties": {
 				"fix": {
 					"description": "The kind of the code actions emitted by the rule",
-					"anyOf": [{ "$ref": "#/definitions/FixKind" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/FixKind" },
+						{ "type": "null" }
+					]
 				},
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
-					"allOf": [{ "$ref": "#/definitions/NamingConventionOptions" }]
+					"allOf": [
+						{ "$ref": "#/definitions/NamingConventionOptions" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2670,11 +2923,15 @@
 			"properties": {
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
-					"allOf": [{ "$ref": "#/definitions/NoLabelWithoutControlOptions" }]
+					"allOf": [
+						{ "$ref": "#/definitions/NoLabelWithoutControlOptions" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2685,7 +2942,9 @@
 			"properties": {
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2696,11 +2955,15 @@
 			"properties": {
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
-					"allOf": [{ "$ref": "#/definitions/RestrictedGlobalsOptions" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RestrictedGlobalsOptions" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2711,11 +2974,15 @@
 			"properties": {
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
-					"allOf": [{ "$ref": "#/definitions/RestrictedImportsOptions" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RestrictedImportsOptions" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2726,15 +2993,22 @@
 			"properties": {
 				"fix": {
 					"description": "The kind of the code actions emitted by the rule",
-					"anyOf": [{ "$ref": "#/definitions/FixKind" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/FixKind" },
+						{ "type": "null" }
+					]
 				},
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
-					"allOf": [{ "$ref": "#/definitions/UseImportExtensionsOptions" }]
+					"allOf": [
+						{ "$ref": "#/definitions/UseImportExtensionsOptions" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2745,11 +3019,15 @@
 			"properties": {
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
-					"allOf": [{ "$ref": "#/definitions/UseValidAutocompleteOptions" }]
+					"allOf": [
+						{ "$ref": "#/definitions/UseValidAutocompleteOptions" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2760,15 +3038,22 @@
 			"properties": {
 				"fix": {
 					"description": "The kind of the code actions emitted by the rule",
-					"anyOf": [{ "$ref": "#/definitions/FixKind" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/FixKind" },
+						{ "type": "null" }
+					]
 				},
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
-					"allOf": [{ "$ref": "#/definitions/UtilityClassSortingOptions" }]
+					"allOf": [
+						{ "$ref": "#/definitions/UtilityClassSortingOptions" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -2779,11 +3064,16 @@
 			"properties": {
 				"fix": {
 					"description": "The kind of the code actions emitted by the rule",
-					"anyOf": [{ "$ref": "#/definitions/FixKind" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/FixKind" },
+						{ "type": "null" }
+					]
 				},
 				"level": {
 					"description": "The severity of the emitted diagnostics by the rule",
-					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+					"allOf": [
+						{ "$ref": "#/definitions/RulePlainConfiguration" }
+					]
 				},
 				"options": {
 					"description": "Rule's options",
@@ -2796,36 +3086,60 @@
 			"type": "object",
 			"properties": {
 				"a11y": {
-					"anyOf": [{ "$ref": "#/definitions/A11y" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/A11y" },
+						{ "type": "null" }
+					]
 				},
 				"all": {
 					"description": "It enables ALL rules. The rules that belong to `nursery` won't be enabled.",
 					"type": ["boolean", "null"]
 				},
 				"complexity": {
-					"anyOf": [{ "$ref": "#/definitions/Complexity" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Complexity" },
+						{ "type": "null" }
+					]
 				},
 				"correctness": {
-					"anyOf": [{ "$ref": "#/definitions/Correctness" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Correctness" },
+						{ "type": "null" }
+					]
 				},
 				"nursery": {
-					"anyOf": [{ "$ref": "#/definitions/Nursery" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Nursery" },
+						{ "type": "null" }
+					]
 				},
 				"performance": {
-					"anyOf": [{ "$ref": "#/definitions/Performance" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Performance" },
+						{ "type": "null" }
+					]
 				},
 				"recommended": {
 					"description": "It enables the lint rules recommended by Biome. `true` by default.",
 					"type": ["boolean", "null"]
 				},
 				"security": {
-					"anyOf": [{ "$ref": "#/definitions/Security" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Security" },
+						{ "type": "null" }
+					]
 				},
 				"style": {
-					"anyOf": [{ "$ref": "#/definitions/Style" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Style" },
+						{ "type": "null" }
+					]
 				},
 				"suspicious": {
-					"anyOf": [{ "$ref": "#/definitions/Suspicious" }, { "type": "null" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/Suspicious" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -3012,7 +3326,9 @@
 				"noRestrictedGlobals": {
 					"description": "This rule allows you to specify global variable names that you don’t want to use in your application.",
 					"anyOf": [
-						{ "$ref": "#/definitions/RestrictedGlobalsConfiguration" },
+						{
+							"$ref": "#/definitions/RestrictedGlobalsConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -3072,7 +3388,9 @@
 				"useConsistentArrayType": {
 					"description": "Require consistently using either T\\[] or Array\\<T>",
 					"anyOf": [
-						{ "$ref": "#/definitions/ConsistentArrayTypeConfiguration" },
+						{
+							"$ref": "#/definitions/ConsistentArrayTypeConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -3114,7 +3432,9 @@
 				"useFilenamingConvention": {
 					"description": "Enforce naming conventions for JavaScript and TypeScript filenames.",
 					"anyOf": [
-						{ "$ref": "#/definitions/FilenamingConventionConfiguration" },
+						{
+							"$ref": "#/definitions/FilenamingConventionConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -3149,7 +3469,9 @@
 				"useNamingConvention": {
 					"description": "Enforce naming conventions for everything across a codebase.",
 					"anyOf": [
-						{ "$ref": "#/definitions/NamingConventionConfiguration" },
+						{
+							"$ref": "#/definitions/NamingConventionConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -3759,7 +4081,10 @@
 			"type": "object",
 			"required": ["allowInvalidRoles", "ignoreNonDom"],
 			"properties": {
-				"allowInvalidRoles": { "type": "array", "items": { "type": "string" } },
+				"allowInvalidRoles": {
+					"type": "array",
+					"items": { "type": "string" }
+				},
 				"ignoreNonDom": { "type": "boolean" }
 			},
 			"additionalProperties": false

@@ -1,3 +1,3 @@
 {
- export { pain } from "life";
+	export { pain } from "life";
 }

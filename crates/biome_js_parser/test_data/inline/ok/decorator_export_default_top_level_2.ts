@@ -1,2 +1,4 @@
-@first.field @second @(() => decorator)()
+@first.field
+@second
+@(() => decorator)()
 export default class Bar {}

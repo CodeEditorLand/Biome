@@ -66,7 +66,8 @@ function introspectVariants(context: TailwindContext): Set<VariantSpec> {
 		for (const value of values) {
 			const composedVariantName = `${name}-${value}`;
 
-			const composedVariantOffset = variantOffsets.get(composedVariantName);
+			const composedVariantOffset =
+				variantOffsets.get(composedVariantName);
 			if (!composedVariantOffset) continue;
 
 			variants.add({

@@ -1,1 +1,4 @@
-declare const a, b, c, d = "test";
+declare const a,
+	b,
+	c,
+	d = "test";

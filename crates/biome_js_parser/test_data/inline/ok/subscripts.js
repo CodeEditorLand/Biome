@@ -1,2 +1,2 @@
-foo`bar`
-foo(bar)(baz)(baz)[bar]
+foo`bar`;
+foo(bar)(baz)(baz)[bar];

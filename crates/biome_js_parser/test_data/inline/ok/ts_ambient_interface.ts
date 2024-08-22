@@ -1,1 +1,4 @@
-declare interface A { b: string, c: number }
+declare interface A {
+	b: string;
+	c: number;
+}

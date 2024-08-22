@@ -1,2 +1,4 @@
 // SCRIPT
-class A { constructor(readonly, private, protected, public) {} }
+class A {
+	constructor(readonly, private, protected, public) {}
+}

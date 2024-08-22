@@ -1,3 +1,3 @@
 class A {
-    accessor static foo = 1;
+	accessor static foo = 1;
 }

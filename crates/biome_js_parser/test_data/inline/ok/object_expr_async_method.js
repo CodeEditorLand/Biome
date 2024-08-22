@@ -1,4 +1,4 @@
-let a = {
-  async foo() {},
-  async *foo() {}
-}
+const a = {
+	async foo() {},
+	async *foo() {},
+};

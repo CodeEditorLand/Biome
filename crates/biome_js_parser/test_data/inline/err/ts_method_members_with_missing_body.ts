@@ -1,4 +1,6 @@
 class Test {
-     constructor() method() get test()
-     set test(value)
+	constructor()
+	method()
+	get test()
+	set test(value)
 }

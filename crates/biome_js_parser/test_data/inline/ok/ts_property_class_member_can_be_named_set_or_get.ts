@@ -1,1 +1,4 @@
-class B { set: String; get: Number }
+class B {
+	set: string;
+	get: number;
+}

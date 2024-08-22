@@ -1,3 +1,3 @@
 class Setters {
-  set foo() {}
+	set foo() {}
 }
