@@ -7,7 +7,9 @@
 		"downlevelIteration": true,
 		"forceConsistentCasingInFileNames": true,
 		"jsx": "react-jsx",
-		"lib": ["ESNext"],
+		"lib": [
+			"ESNext"
+		],
 		"module": "NodeNext",
 		"moduleDetection": "force",
 		"moduleResolution": "NodeNext",
@@ -20,6 +22,7 @@
 	"extends": "@playform/build/tsconfig",
 	"include": [
 		"src/**/*",
+		"Source",
 		"Source",
 		"Source",
 		"Source",
