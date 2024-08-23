@@ -71,16 +71,16 @@ New entries must be placed in a section entitled `Unreleased`. Read our
     the value provided by via `--max-diagnostics` is ignored and **the limit is
     lifted**. Contributed by @ematipico
 
--   `biome init` now generates a new config file with more options set. This
-    change intends to improve discoverability of the options and to set the more
-    commonly used options to their default values. Contributed by @Conaclos
--   The `--verbose` flag how reports the list of files that were evaluated, and
-    the list of files that were fixed. The **evaluated** files are the those
-    files that can be handled by Biome, files that are ignored, don't have an
-    extension or have an extension that Biome can't evaluate are excluded by
-    this list. The **fixed** files are those files that were handled by Biome
-    and _changed_. Files that stays the same after the process are excluded from
-    this list.
+- `biome init` now generates a new config file with more options set.
+  This change intends to improve discoverability of the options and to set the more commonly used options to their default values.
+  Contributed by @Conaclos
+
+- The `--verbose` flag now reports the list of files that were evaluated, and the list of files that were fixed.
+  The **evaluated** files are the those files that can be handled by Biome, files that are ignored, don't have an extension or have an extension that Biome can't evaluate are excluded by this list.
+  The **fixed** files are those files that were handled by Biome and *changed*. Files that stays the same after the process are excluded from this list.
+
+  ```shell
+   VERBOSE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
     ```shell
     VERBOSE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -99,6 +99,16 @@ New entries must be placed in a section entitled `Unreleased`. Read our
     ```
 
     Contributed by @ematipico
+
+- Allow passing `nursery` to the `--only` and `--skip` filters.
+
+  The `--only` option allows you to run a given rule or rule group.
+  The `--skip` option allows you to skip the execution of a given group or a given rule.
+
+  Previously, it was not possible to pass `nursery`.
+  This restriction is now removed, as it may make sense to skip the nursery rules that a project has enabled.
+
+  Contributed by @Conaclos
 
 #### Bug fixes
 
@@ -217,9 +227,7 @@ New entries must be placed in a section entitled `Unreleased`. Read our
 
 #### Bug fixes
 
--   Keep the parentheses around `infer` declarations in type unions and type
-    intersections ([#3419](https://github.com/biomejs/biome/issues/3419)).
-    Contributed by @Conaclos
+- Keep the parentheses around `infer ... extends` declarations in type unions and type intersections ([#3419](https://github.com/biomejs/biome/issues/3419)). Contributed by @Conaclos
 
 -   Keep parentheses around a `yield` expression inside a type assertion.
 
@@ -967,9 +975,8 @@ New entries must be placed in a section entitled `Unreleased`. Read our
     biome lint --skip=style --skip=suspicious/noExplicitAny
     ```
 
-    You can also use `--only` and `--skip` together. `--skip` oevrrides
-    `--only`. The following command executes only the rules from the `style`
-    group, but the `style/useNamingConvention` rule.
+  You can also use `--only` and `--skip` together. `--skip` overrides `--only`.
+  The following command executes only the rules from the `style` group, but the `style/useNamingConvention` rule.
 
     ```shell
     biome lint --only=style --skip=style/useNamingConvention
