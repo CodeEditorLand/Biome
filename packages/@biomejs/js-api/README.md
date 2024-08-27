@@ -5,7 +5,7 @@ Official JavaScript bindings for [Biome](https://biomejs.dev/)
 > **Warning**:
 > The API is currently in alpha. It is not yet ready for production use. We appreciate your support and feedback as we work to make it ready for everyone.
 
-## Installation
+## 🚀 Installation
 
 ```shell
 npm i @biomejs/js-api
@@ -17,7 +17,7 @@ You need to install one of the `@biomejs/wasm-*` package as a **peer dependency*
 - `@biomejs/wasm-nodejs`: Install this package if you're using Node.js to load the WebAssembly bundle use the `fs` API
 - `@biomejs/wasm-web`: Install this package if you are targeting the web platform to load the WASM bundle using the `fetch` API
 
-## Usage
+## 🛠️ Usage
 
 ```js
 import { Biome, Distribution } from "@biomejs/js-api";
