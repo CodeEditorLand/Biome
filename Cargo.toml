@@ -87,7 +87,7 @@ edition = "2021"
 homepage = "https://biomejs.dev/"
 keywords = ["parser", "linter", "formatter"]
 license = "MIT OR Apache-2.0"
-repository = "https://github.com/biomejs/biome"
+repository = "HTTPS://GitHub.Com/biomejs/biome"
 
 [profile.release-with-debug]
 debug = true
