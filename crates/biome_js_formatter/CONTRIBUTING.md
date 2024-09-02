@@ -27,7 +27,6 @@ impl Format for Buzz {
 	 write!(f, [token("Hello"), dynamic_token(&self.blast)])
  }
 }
-
 ```
 
 ## Rules when formatting AST nodes

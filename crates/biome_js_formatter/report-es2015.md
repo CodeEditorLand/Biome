@@ -59,7 +59,6 @@
    ]) {
    }
  }
-
 ```
 
 **Prettier Similarity**: 85.00%
@@ -1606,7 +1605,6 @@
      }
    }
  }
-
 ```
 
 **Prettier Similarity**: 90.91%
@@ -2902,7 +2900,6 @@
 +    if (b);/* comment 6f */
      else return 2;
  }
-
 ```
 
 **Prettier Similarity**: 97.56%
@@ -2957,7 +2954,6 @@
      x.b
    ).call(null)
  }
-
 ```
 
 **Prettier Similarity**: 61.11%
@@ -3002,7 +2998,6 @@
 +      new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
    };
  }
-
 ```
 
 **Prettier Similarity**: 45.45%
@@ -3149,7 +3144,6 @@
      2_000_000,
    );
  }
-
 ```
 
 **Prettier Similarity**: 66.67%
@@ -3641,7 +3635,6 @@
 +);
 +
  }
-
 ```
 
 **Prettier Similarity**: 33.33%
@@ -3826,7 +3819,6 @@
 +}
  }
  catch (err) {}
-
 ```
 
 **Prettier Similarity**: 42.86%
@@ -4048,7 +4040,6 @@
 ```diff
 -while (false) function foo() {}
 +while (false) function foo(){}
-
 ```
 
 **Prettier Similarity**: 0.00%
@@ -4139,7 +4130,6 @@
 +// foo();bar();//comment5b
 +// break;// comment5c
 +// }
-
 ```
 
 **Prettier Similarity**: 74.07%
@@ -4352,7 +4342,6 @@
  function x() {
    inject(() => {});
  }
-
 ```
 
 **Prettier Similarity**: 87.10%
@@ -4412,7 +4401,6 @@
 +    throw new Error("Invalid value");
    }
  }
-
 ```
 
 **Prettier Similarity**: 53.85%

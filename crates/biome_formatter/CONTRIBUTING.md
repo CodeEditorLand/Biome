@@ -401,7 +401,6 @@ mod formatter {
         tests_macros::gen_tests! {"tests/specs/html/**/*.html", crate::spec_test::run, ""}
     }
 }
-
 ```
 
 This code will generate a test function for each `html` file found inside `tests/specs/html`. For each test function, it will run the function `spec_test::run`.
