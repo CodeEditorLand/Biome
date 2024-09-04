@@ -6,7 +6,18 @@ export interface SupportsFeatureParams {
 }
 export type FeatureName = FeatureKind[];
 export interface BiomePath {
+	/**
+	 * Determines the kind of the file inside Biome. Some files are considered as configuration files, others as manifest files, and others as files to handle
+	 */
+	kind: FileKind;
+	/**
+	 * The path to the file
+	 */
 	path: string;
+	/**
+	 * Whether this path (usually a file) was fixed as a result of a format/lint/check command with the `--write` filag.
+	 */
+	was_written: boolean;
 }
 export type FeatureKind =
 	| "Format"
@@ -14,6 +25,16 @@ export type FeatureKind =
 	| "OrganizeImports"
 	| "Search"
 	| "Assists";
+export type FileKind = FileKind2[];
+/**
+ * The priority of the file
+ */
+export type FileKind2 =
+	| "Config"
+	| "Manifest"
+	| "Ignore"
+	| "Inspectable"
+	| "Handleable";
 export interface SupportsFeatureResult {
 	reason?: SupportKind;
 }
@@ -662,6 +683,10 @@ export type VcsClientKind = "git";
  */
 export interface Source {
 	/**
+	 * Enforce props sorting in JSX elements.
+	 */
+	sortJsxProps?: RuleAssistConfiguration;
+	/**
 	 * Sorts the keys of a JSON object in natural order
 	 */
 	useSortedKeys?: RuleAssistConfiguration;
@@ -1143,10 +1168,6 @@ export interface Nursery {
 	 */
 	noDuplicateFontNames?: RuleConfiguration_for_Null;
 	/**
-	 * Disallow two keys with the same name inside a JSON object.
-	 */
-	noDuplicateJsonKeys?: RuleConfiguration_for_Null;
-	/**
 	 * Disallow duplicate selectors within keyframe blocks.
 	 */
 	noDuplicateSelectorsKeyframeBlock?: RuleConfiguration_for_Null;
@@ -1162,6 +1183,10 @@ export interface Nursery {
 	 * Disallow CSS empty blocks.
 	 */
 	noEmptyBlock?: RuleConfiguration_for_Null;
+	/**
+	 * Disallow TypeScript enum.
+	 */
+	noEnum?: RuleConfiguration_for_Null;
 	/**
 	 * Disallow variables from evolving into any type through reassignments.
 	 */
@@ -1202,6 +1227,10 @@ export interface Nursery {
 	 * Disallow specified modules when loaded by import or require.
 	 */
 	noRestrictedImports?: RuleConfiguration_for_RestrictedImportsOptions;
+	/**
+	 * Disallow user defined types.
+	 */
+	noRestrictedTypes?: RuleFixConfiguration_for_NoRestrictedTypesOptions;
 	/**
 	 * Disallow shorthand properties that override related longhand properties.
 	 */
@@ -1279,6 +1308,10 @@ export interface Nursery {
 	 */
 	useAdjacentOverloadSignatures?: RuleConfiguration_for_Null;
 	/**
+	 * Enforce that ARIA properties are valid for the roles that are supported by the element.
+	 */
+	useAriaPropsSupportedByRole?: RuleConfiguration_for_Null;
+	/**
 	 * Enforce the use of new for all builtins, except String, Number, Boolean, Symbol and BigInt.
 	 */
 	useConsistentBuiltinInstantiation?: RuleFixConfiguration_for_Null;
@@ -1290,6 +1323,10 @@ export interface Nursery {
 	 * Disallows invalid named grid areas in CSS Grid Layouts.
 	 */
 	useConsistentGridAreas?: RuleConfiguration_for_Null;
+	/**
+	 * Require consistent accessibility modifiers on class properties and methods.
+	 */
+	useConsistentMemberAccessibility?: RuleConfiguration_for_ConsistentMemberAccessibilityOptions;
 	/**
 	 * Use Date.now() to get the number of milliseconds since the Unix Epoch.
 	 */
@@ -1669,7 +1706,7 @@ export interface Suspicious {
 	/**
 	 * Require the use of === and !==
 	 */
-	noDoubleEquals?: RuleFixConfiguration_for_Null;
+	noDoubleEquals?: RuleFixConfiguration_for_NoDoubleEqualsOptions;
 	/**
 	 * Disallow duplicate case labels.
 	 */
@@ -1683,9 +1720,9 @@ export interface Suspicious {
 	 */
 	noDuplicateJsxProps?: RuleConfiguration_for_Null;
 	/**
-	 * Prevents object literals having more than one property declaration for the same name.
+	 * Disallow two keys with the same name inside objects.
 	 */
-	noDuplicateObjectKeys?: RuleFixConfiguration_for_Null;
+	noDuplicateObjectKeys?: RuleConfiguration_for_Null;
 	/**
 	 * Disallow duplicate function parameter name.
 	 */
@@ -1914,6 +1951,12 @@ export type RuleConfiguration_for_NoLabelWithoutControlOptions =
 export type RuleConfiguration_for_RestrictedImportsOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_RestrictedImportsOptions;
+export type RuleFixConfiguration_for_NoRestrictedTypesOptions =
+	| RulePlainConfiguration
+	| RuleWithFixOptions_for_NoRestrictedTypesOptions;
+export type RuleConfiguration_for_ConsistentMemberAccessibilityOptions =
+	| RulePlainConfiguration
+	| RuleWithOptions_for_ConsistentMemberAccessibilityOptions;
 export type RuleFixConfiguration_for_UseImportExtensionsOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_UseImportExtensionsOptions;
@@ -1935,6 +1978,9 @@ export type RuleConfiguration_for_FilenamingConventionOptions =
 export type RuleFixConfiguration_for_NamingConventionOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_NamingConventionOptions;
+export type RuleFixConfiguration_for_NoDoubleEqualsOptions =
+	| RulePlainConfiguration
+	| RuleWithFixOptions_for_NoDoubleEqualsOptions;
 export type RulePlainConfiguration = "warn" | "error" | "info" | "off";
 export interface RuleWithFixOptions_for_Null {
 	/**
@@ -2038,6 +2084,30 @@ export interface RuleWithOptions_for_RestrictedImportsOptions {
 	 */
 	options: RestrictedImportsOptions;
 }
+export interface RuleWithFixOptions_for_NoRestrictedTypesOptions {
+	/**
+	 * The kind of the code actions emitted by the rule
+	 */
+	fix?: FixKind;
+	/**
+	 * The severity of the emitted diagnostics by the rule
+	 */
+	level: RulePlainConfiguration;
+	/**
+	 * Rule's options
+	 */
+	options: NoRestrictedTypesOptions;
+}
+export interface RuleWithOptions_for_ConsistentMemberAccessibilityOptions {
+	/**
+	 * The severity of the emitted diagnostics by the rule
+	 */
+	level: RulePlainConfiguration;
+	/**
+	 * Rule's options
+	 */
+	options: ConsistentMemberAccessibilityOptions;
+}
 export interface RuleWithFixOptions_for_UseImportExtensionsOptions {
 	/**
 	 * The kind of the code actions emitted by the rule
@@ -2124,6 +2194,20 @@ export interface RuleWithFixOptions_for_NamingConventionOptions {
 	 */
 	options: NamingConventionOptions;
 }
+export interface RuleWithFixOptions_for_NoDoubleEqualsOptions {
+	/**
+	 * The kind of the code actions emitted by the rule
+	 */
+	fix?: FixKind;
+	/**
+	 * The severity of the emitted diagnostics by the rule
+	 */
+	level: RulePlainConfiguration;
+	/**
+	 * Rule's options
+	 */
+	options: NoDoubleEqualsOptions;
+}
 /**
  * Used to identify the kind of code action emitted by a rule
  */
@@ -2182,6 +2266,12 @@ export interface RestrictedImportsOptions {
 	 * A list of names that should trigger the rule
 	 */
 	paths: {};
+}
+export interface NoRestrictedTypesOptions {
+	types: {};
+}
+export interface ConsistentMemberAccessibilityOptions {
+	accessibility: Accessibility;
 }
 export interface UseImportExtensionsOptions {
 	/**
@@ -2255,6 +2345,17 @@ export interface NamingConventionOptions {
 	 */
 	strictCase: boolean;
 }
+/**
+ * Rule's options
+ */
+export interface NoDoubleEqualsOptions {
+	/**
+	* If `true`, an exception is made when comparing with `null`, as it's often relied on to check both for `null` or `undefined`.
+
+If `false`, no such exception will be made. 
+	 */
+	ignoreNull: boolean;
+}
 export interface Hook {
 	/**
 	* The "position" of the closure function, starting from zero.
@@ -2279,8 +2380,9 @@ Set to `true` to mark the identity of the hook's return value as stable, or use 
 
 For example, for React's `useRef()` hook the value would be `true`, while for `useState()` it would be `[1]`. 
 	 */
-	stableResult: StableHookResult;
+	stableResult?: StableHookResult;
 }
+export type Accessibility = "noPublic" | "explicit" | "none";
 export type ConsistentArrayType = "shorthand" | "generic";
 export type FilenameCases = FilenameCase[];
 export interface Convention {
@@ -2383,12 +2485,9 @@ export interface RegisterProjectFolderParams {
 	setAsCurrentWorkspace: boolean;
 }
 export type ProjectKey = string;
-export interface UpdateProjectParams {
-	path: BiomePath;
-}
-export interface OpenProjectParams {
+export interface SetManifestForProjectParams {
 	content: string;
-	path: BiomePath;
+	manifest_path: BiomePath;
 	version: number;
 }
 export interface OpenFileParams {
@@ -2623,11 +2722,11 @@ export type Category =
 	| "lint/nursery/noDuplicateAtImportRules"
 	| "lint/nursery/noDuplicateElseIf"
 	| "lint/nursery/noDuplicateFontNames"
-	| "lint/nursery/noDuplicateJsonKeys"
 	| "lint/nursery/noDuplicateSelectorsKeyframeBlock"
 	| "lint/nursery/noDuplicatedFields"
 	| "lint/nursery/noDynamicNamespaceImportAccess"
 	| "lint/nursery/noEmptyBlock"
+	| "lint/nursery/noEnum"
 	| "lint/nursery/noEvolvingTypes"
 	| "lint/nursery/noExportedImports"
 	| "lint/nursery/noImportantInKeyframe"
@@ -2639,6 +2738,7 @@ export type Category =
 	| "lint/nursery/noMissingGenericFamilyKeyword"
 	| "lint/nursery/noReactSpecificProps"
 	| "lint/nursery/noRestrictedImports"
+	| "lint/nursery/noRestrictedTypes"
 	| "lint/nursery/noShorthandPropertyOverrides"
 	| "lint/nursery/noStaticElementInteractions"
 	| "lint/nursery/noSubstr"
@@ -2657,10 +2757,12 @@ export type Category =
 	| "lint/nursery/noValueAtRule"
 	| "lint/nursery/noYodaExpression"
 	| "lint/nursery/useAdjacentOverloadSignatures"
+	| "lint/nursery/useAriaPropsSupportedByRole"
 	| "lint/nursery/useBiomeSuppressionComment"
 	| "lint/nursery/useConsistentBuiltinInstantiation"
 	| "lint/nursery/useConsistentCurlyBraces"
 	| "lint/nursery/useConsistentGridAreas"
+	| "lint/nursery/useConsistentMemberAccessibility"
 	| "lint/nursery/useDateNow"
 	| "lint/nursery/useDefaultSwitchClause"
 	| "lint/nursery/useDeprecatedReason"
@@ -2794,6 +2896,7 @@ export type Category =
 	| "format"
 	| "check"
 	| "ci"
+	| "stdin"
 	| "configuration"
 	| "organizeImports"
 	| "assists"
@@ -3061,8 +3164,7 @@ export interface Workspace {
 	registerProjectFolder(
 		params: RegisterProjectFolderParams,
 	): Promise<ProjectKey>;
-	updateCurrentManifest(params: UpdateProjectParams): Promise<void>;
-	openProject(params: OpenProjectParams): Promise<void>;
+	setManifestForProject(params: SetManifestForProjectParams): Promise<void>;
 	openFile(params: OpenFileParams): Promise<void>;
 	changeFile(params: ChangeFileParams): Promise<void>;
 	closeFile(params: CloseFileParams): Promise<void>;
@@ -3095,11 +3197,8 @@ export function createWorkspace(transport: Transport): Workspace {
 		registerProjectFolder(params) {
 			return transport.request("biome/register_project_folder", params);
 		},
-		updateCurrentManifest(params) {
-			return transport.request("biome/update_current_manifest", params);
-		},
-		openProject(params) {
-			return transport.request("biome/open_project", params);
+		setManifestForProject(params) {
+			return transport.request("biome/set_manifest_for_project", params);
 		},
 		openFile(params) {
 			return transport.request("biome/open_file", params);

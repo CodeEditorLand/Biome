@@ -314,6 +314,10 @@
 			},
 			"additionalProperties": false
 		},
+		"Accessibility": {
+			"type": "string",
+			"enum": ["noPublic", "explicit", "none"]
+		},
 		"Actions": {
 			"type": "object",
 			"properties": {
@@ -647,6 +651,20 @@
 			"required": ["syntax"],
 			"properties": {
 				"syntax": { "$ref": "#/definitions/ConsistentArrayType" }
+			},
+			"additionalProperties": false
+		},
+		"ConsistentMemberAccessibilityConfiguration": {
+			"anyOf": [
+				{ "$ref": "#/definitions/RulePlainConfiguration" },
+				{ "$ref": "#/definitions/RuleWithConsistentMemberAccessibilityOptions" }
+			]
+		},
+		"ConsistentMemberAccessibilityOptions": {
+			"type": "object",
+			"required": ["accessibility"],
+			"properties": {
+				"accessibility": { "$ref": "#/definitions/Accessibility" }
 			},
 			"additionalProperties": false
 		},
@@ -1093,6 +1111,15 @@
 			},
 			"additionalProperties": false
 		},
+		"CustomRestrictedType": {
+			"type": "object",
+			"required": ["message"],
+			"properties": {
+				"message": { "type": "string" },
+				"use": { "type": ["string", "null"] }
+			},
+			"additionalProperties": false
+		},
 		"DeprecatedHooksConfiguration": {
 			"anyOf": [
 				{ "$ref": "#/definitions/RulePlainConfiguration" },
@@ -1390,7 +1417,7 @@
 		},
 		"Hook": {
 			"type": "object",
-			"required": ["name", "stableResult"],
+			"required": ["name"],
 			"properties": {
 				"closureIndex": {
 					"description": "The \"position\" of the closure function, starting from zero.\n\nFor example, for React's `useEffect()` hook, the closure index is 0.",
@@ -1410,7 +1437,10 @@
 				},
 				"stableResult": {
 					"description": "Whether the result of the hook is stable.\n\nSet to `true` to mark the identity of the hook's return value as stable, or use a number/an array of numbers to mark the \"positions\" in the return array as stable.\n\nFor example, for React's `useRef()` hook the value would be `true`, while for `useState()` it would be `[1]`.",
-					"allOf": [{ "$ref": "#/definitions/StableHookResult" }]
+					"anyOf": [
+						{ "$ref": "#/definitions/StableHookResult" },
+						{ "type": "null" }
+					]
 				}
 			},
 			"additionalProperties": false
@@ -1983,6 +2013,23 @@
 			},
 			"additionalProperties": false
 		},
+		"NoDoubleEqualsConfiguration": {
+			"anyOf": [
+				{ "$ref": "#/definitions/RulePlainConfiguration" },
+				{ "$ref": "#/definitions/RuleWithNoDoubleEqualsOptions" }
+			]
+		},
+		"NoDoubleEqualsOptions": {
+			"description": "Rule's options",
+			"type": "object",
+			"properties": {
+				"ignoreNull": {
+					"description": "If `true`, an exception is made when comparing with `null`, as it's often relied on to check both for `null` or `undefined`.\n\nIf `false`, no such exception will be made.",
+					"type": "boolean"
+				}
+			},
+			"additionalProperties": false
+		},
 		"NoLabelWithoutControlConfiguration": {
 			"anyOf": [
 				{ "$ref": "#/definitions/RulePlainConfiguration" },
@@ -2011,6 +2058,25 @@
 					"description": "Array of component names that should be considered the same as a `label` element.",
 					"type": "array",
 					"items": { "type": "string" }
+				}
+			},
+			"additionalProperties": false
+		},
+		"NoRestrictedTypesConfiguration": {
+			"anyOf": [
+				{ "$ref": "#/definitions/RulePlainConfiguration" },
+				{ "$ref": "#/definitions/RuleWithNoRestrictedTypesOptions" }
+			]
+		},
+		"NoRestrictedTypesOptions": {
+			"type": "object",
+			"required": ["types"],
+			"properties": {
+				"types": {
+					"type": "object",
+					"additionalProperties": {
+						"$ref": "#/definitions/CustomRestrictedType"
+					}
 				}
 			},
 			"additionalProperties": false
@@ -2058,13 +2124,6 @@
 						{ "type": "null" }
 					]
 				},
-				"noDuplicateJsonKeys": {
-					"description": "Disallow two keys with the same name inside a JSON object.",
-					"anyOf": [
-						{ "$ref": "#/definitions/RuleConfiguration" },
-						{ "type": "null" }
-					]
-				},
 				"noDuplicateSelectorsKeyframeBlock": {
 					"description": "Disallow duplicate selectors within keyframe blocks.",
 					"anyOf": [
@@ -2088,6 +2147,13 @@
 				},
 				"noEmptyBlock": {
 					"description": "Disallow CSS empty blocks.",
+					"anyOf": [
+						{ "$ref": "#/definitions/RuleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"noEnum": {
+					"description": "Disallow TypeScript enum.",
 					"anyOf": [
 						{ "$ref": "#/definitions/RuleConfiguration" },
 						{ "type": "null" }
@@ -2164,6 +2230,13 @@
 						{
 							"$ref": "#/definitions/RestrictedImportsConfiguration"
 						},
+						{ "type": "null" }
+					]
+				},
+				"noRestrictedTypes": {
+					"description": "Disallow user defined types.",
+					"anyOf": [
+						{ "$ref": "#/definitions/NoRestrictedTypesConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -2297,6 +2370,13 @@
 						{ "type": "null" }
 					]
 				},
+				"useAriaPropsSupportedByRole": {
+					"description": "Enforce that ARIA properties are valid for the roles that are supported by the element.",
+					"anyOf": [
+						{ "$ref": "#/definitions/RuleConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useConsistentBuiltinInstantiation": {
 					"description": "Enforce the use of new for all builtins, except String, Number, Boolean, Symbol and BigInt.",
 					"anyOf": [
@@ -2315,6 +2395,15 @@
 					"description": "Disallows invalid named grid areas in CSS Grid Layouts.",
 					"anyOf": [
 						{ "$ref": "#/definitions/RuleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useConsistentMemberAccessibility": {
+					"description": "Require consistent accessibility modifiers on class properties and methods.",
+					"anyOf": [
+						{
+							"$ref": "#/definitions/ConsistentMemberAccessibilityConfiguration"
+						},
 						{ "type": "null" }
 					]
 				},
@@ -2816,6 +2905,23 @@
 			},
 			"additionalProperties": false
 		},
+		"RuleWithConsistentMemberAccessibilityOptions": {
+			"type": "object",
+			"required": ["level", "options"],
+			"properties": {
+				"level": {
+					"description": "The severity of the emitted diagnostics by the rule",
+					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+				},
+				"options": {
+					"description": "Rule's options",
+					"allOf": [
+						{ "$ref": "#/definitions/ConsistentMemberAccessibilityOptions" }
+					]
+				}
+			},
+			"additionalProperties": false
+		},
 		"RuleWithDeprecatedHooksOptions": {
 			"type": "object",
 			"required": ["level", "options"],
@@ -2917,6 +3023,25 @@
 			},
 			"additionalProperties": false
 		},
+		"RuleWithNoDoubleEqualsOptions": {
+			"type": "object",
+			"required": ["level", "options"],
+			"properties": {
+				"fix": {
+					"description": "The kind of the code actions emitted by the rule",
+					"anyOf": [{ "$ref": "#/definitions/FixKind" }, { "type": "null" }]
+				},
+				"level": {
+					"description": "The severity of the emitted diagnostics by the rule",
+					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+				},
+				"options": {
+					"description": "Rule's options",
+					"allOf": [{ "$ref": "#/definitions/NoDoubleEqualsOptions" }]
+				}
+			},
+			"additionalProperties": false
+		},
 		"RuleWithNoLabelWithoutControlOptions": {
 			"type": "object",
 			"required": ["level", "options"],
@@ -2945,6 +3070,25 @@
 					"allOf": [
 						{ "$ref": "#/definitions/RulePlainConfiguration" }
 					]
+				}
+			},
+			"additionalProperties": false
+		},
+		"RuleWithNoRestrictedTypesOptions": {
+			"type": "object",
+			"required": ["level", "options"],
+			"properties": {
+				"fix": {
+					"description": "The kind of the code actions emitted by the rule",
+					"anyOf": [{ "$ref": "#/definitions/FixKind" }, { "type": "null" }]
+				},
+				"level": {
+					"description": "The severity of the emitted diagnostics by the rule",
+					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+				},
+				"options": {
+					"description": "Rule's options",
+					"allOf": [{ "$ref": "#/definitions/NoRestrictedTypesOptions" }]
 				}
 			},
 			"additionalProperties": false
@@ -3204,6 +3348,13 @@
 			"description": "A list of rules that belong to this group",
 			"type": "object",
 			"properties": {
+				"sortJsxProps": {
+					"description": "Enforce props sorting in JSX elements.",
+					"anyOf": [
+						{ "$ref": "#/definitions/RuleAssistConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useSortedKeys": {
 					"description": "Sorts the keys of a JSON object in natural order",
 					"anyOf": [
@@ -3686,7 +3837,7 @@
 				"noDoubleEquals": {
 					"description": "Require the use of === and !==",
 					"anyOf": [
-						{ "$ref": "#/definitions/RuleFixConfiguration" },
+						{ "$ref": "#/definitions/NoDoubleEqualsConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -3712,9 +3863,9 @@
 					]
 				},
 				"noDuplicateObjectKeys": {
-					"description": "Prevents object literals having more than one property declaration for the same name.",
+					"description": "Disallow two keys with the same name inside objects.",
 					"anyOf": [
-						{ "$ref": "#/definitions/RuleFixConfiguration" },
+						{ "$ref": "#/definitions/RuleConfiguration" },
 						{ "type": "null" }
 					]
 				},
