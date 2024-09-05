@@ -2013,6 +2013,24 @@
 			},
 			"additionalProperties": false
 		},
+		"NoConsoleConfiguration": {
+			"anyOf": [
+				{ "$ref": "#/definitions/RulePlainConfiguration" },
+				{ "$ref": "#/definitions/RuleWithNoConsoleOptions" }
+			]
+		},
+		"NoConsoleOptions": {
+			"type": "object",
+			"required": ["allow"],
+			"properties": {
+				"allow": {
+					"description": "Allowed calls on the console object.",
+					"type": "array",
+					"items": { "type": "string" }
+				}
+			},
+			"additionalProperties": false
+		},
 		"NoDoubleEqualsConfiguration": {
 			"anyOf": [
 				{ "$ref": "#/definitions/RulePlainConfiguration" },
@@ -2092,7 +2110,7 @@
 				"noConsole": {
 					"description": "Disallow the use of console.",
 					"anyOf": [
-						{ "$ref": "#/definitions/RuleFixConfiguration" },
+						{ "$ref": "#/definitions/NoConsoleConfiguration" },
 						{ "type": "null" }
 					]
 				},
@@ -3019,6 +3037,25 @@
 					"allOf": [
 						{ "$ref": "#/definitions/NamingConventionOptions" }
 					]
+				}
+			},
+			"additionalProperties": false
+		},
+		"RuleWithNoConsoleOptions": {
+			"type": "object",
+			"required": ["level", "options"],
+			"properties": {
+				"fix": {
+					"description": "The kind of the code actions emitted by the rule",
+					"anyOf": [{ "$ref": "#/definitions/FixKind" }, { "type": "null" }]
+				},
+				"level": {
+					"description": "The severity of the emitted diagnostics by the rule",
+					"allOf": [{ "$ref": "#/definitions/RulePlainConfiguration" }]
+				},
+				"options": {
+					"description": "Rule's options",
+					"allOf": [{ "$ref": "#/definitions/NoConsoleOptions" }]
 				}
 			},
 			"additionalProperties": false

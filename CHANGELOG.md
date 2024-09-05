@@ -165,6 +165,8 @@ New entries must be placed in a section entitled `Unreleased`. Read our
 
 - Allow `aria-label` on heading to prevent `useHeadingContent` diagnostic ([#3767](https://github.com/biomejs/biome/pull/3767)). Contributed by @anthonyshew
 
+- Fix edge case [#3791](https://github.com/biomejs/biome/issues/3791) for rule `noFocusedTests` being used with non-string-like expressions ([#3793](https://github.com/biomejs/biome/pull/3793)). Contributed by @h-a-n-a
+
 ### Configuration
 
 -   Add support for loading configuration from `.editorconfig` files
@@ -507,6 +509,8 @@ New entries must be placed in a section entitled `Unreleased`. Read our
   Contributed by @ematipico
 
 - The rule `noRedundantUseStrict` no longer reports `use strict` when the `package.json` marks the file as a script using the field `"type": "commonjs"`. Contributed by @ematipico
+
+- [noConsole](https://biomejs.dev/linter/rules/no-console/) now accepts an option that specifies some allowed calls on `console`. Contributed by @Conaclos
 
 #### Bug fixes
 
