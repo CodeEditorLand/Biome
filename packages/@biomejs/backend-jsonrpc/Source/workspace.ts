@@ -1204,6 +1204,10 @@ export interface Nursery {
 	 */
 	noInvalidDirectionInLinearGradient?: RuleConfiguration_for_Null;
 	/**
+	 * Disallows invalid named grid areas in CSS Grid Layouts.
+	 */
+	noInvalidGridAreas?: RuleConfiguration_for_Null;
+	/**
 	 * Disallow the use of @import at-rules in invalid positions.
 	 */
 	noInvalidPositionAtImportRule?: RuleConfiguration_for_Null;
@@ -1262,11 +1266,11 @@ export interface Nursery {
 	/**
 	 * Disallow unknown pseudo-class selectors.
 	 */
-	noUnknownPseudoClassSelector?: RuleConfiguration_for_Null;
+	noUnknownPseudoClass?: RuleConfiguration_for_Null;
 	/**
 	 * Disallow unknown pseudo-element selectors.
 	 */
-	noUnknownSelectorPseudoElement?: RuleConfiguration_for_Null;
+	noUnknownPseudoElement?: RuleConfiguration_for_Null;
 	/**
 	 * Disallow unknown CSS units.
 	 */
@@ -1319,10 +1323,6 @@ export interface Nursery {
 	 * This rule enforces consistent use of curly braces inside JSX attributes and JSX children.
 	 */
 	useConsistentCurlyBraces?: RuleFixConfiguration_for_Null;
-	/**
-	 * Disallows invalid named grid areas in CSS Grid Layouts.
-	 */
-	useConsistentGridAreas?: RuleConfiguration_for_Null;
 	/**
 	 * Require consistent accessibility modifiers on class properties and methods.
 	 */
@@ -2769,8 +2769,8 @@ export type Category =
 	| "lint/nursery/noUnknownFunction"
 	| "lint/nursery/noUnknownMediaFeatureName"
 	| "lint/nursery/noUnknownProperty"
-	| "lint/nursery/noUnknownPseudoClassSelector"
-	| "lint/nursery/noUnknownSelectorPseudoElement"
+	| "lint/nursery/noUnknownPseudoClass"
+	| "lint/nursery/noUnknownPseudoElement"
 	| "lint/nursery/noUnknownUnit"
 	| "lint/nursery/noUnmatchableAnbSelector"
 	| "lint/nursery/noUnusedFunctionParameters"
@@ -2784,7 +2784,7 @@ export type Category =
 	| "lint/nursery/useBiomeSuppressionComment"
 	| "lint/nursery/useConsistentBuiltinInstantiation"
 	| "lint/nursery/useConsistentCurlyBraces"
-	| "lint/nursery/useConsistentGridAreas"
+	| "lint/nursery/noInvalidGridAreas"
 	| "lint/nursery/useConsistentMemberAccessibility"
 	| "lint/nursery/useDateNow"
 	| "lint/nursery/useDefaultSwitchClause"

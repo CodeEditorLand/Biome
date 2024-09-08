@@ -2205,6 +2205,13 @@
 						{ "type": "null" }
 					]
 				},
+				"noInvalidGridAreas": {
+					"description": "Disallows invalid named grid areas in CSS Grid Layouts.",
+					"anyOf": [
+						{ "$ref": "#/definitions/RuleConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noInvalidPositionAtImportRule": {
 					"description": "Disallow the use of @import at-rules in invalid positions.",
 					"anyOf": [
@@ -2307,14 +2314,14 @@
 						{ "type": "null" }
 					]
 				},
-				"noUnknownPseudoClassSelector": {
+				"noUnknownPseudoClass": {
 					"description": "Disallow unknown pseudo-class selectors.",
 					"anyOf": [
 						{ "$ref": "#/definitions/RuleConfiguration" },
 						{ "type": "null" }
 					]
 				},
-				"noUnknownSelectorPseudoElement": {
+				"noUnknownPseudoElement": {
 					"description": "Disallow unknown pseudo-element selectors.",
 					"anyOf": [
 						{ "$ref": "#/definitions/RuleConfiguration" },
@@ -2406,13 +2413,6 @@
 					"description": "This rule enforces consistent use of curly braces inside JSX attributes and JSX children.",
 					"anyOf": [
 						{ "$ref": "#/definitions/RuleFixConfiguration" },
-						{ "type": "null" }
-					]
-				},
-				"useConsistentGridAreas": {
-					"description": "Disallows invalid named grid areas in CSS Grid Layouts.",
-					"anyOf": [
-						{ "$ref": "#/definitions/RuleConfiguration" },
 						{ "type": "null" }
 					]
 				},
