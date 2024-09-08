@@ -15,6 +15,7 @@ New entries must be placed in a section entitled `Unreleased`. Read our
 #### New features
 
 - Implement [nursery/useConsistentMemberAccessibility](https://github.com/biomejs/biome/issues/3271). Contributed by @seitarof
+- Implement [nursery/noDuplicateCustomProperties](https://github.com/biomejs/biome/issues/2784). Contributed by @chansuke
 
 #### Enhancements
 
