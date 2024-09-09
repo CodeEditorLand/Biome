@@ -548,7 +548,7 @@ export interface PartialJavascriptLinter {
 	 */
 	enabled?: boolean;
 }
-export type PartialJavascriptOrganizeImports = {};
+export interface PartialJavascriptOrganizeImports {}
 /**
  * Options that changes how the JavaScript parser behaves
  */
@@ -1240,6 +1240,10 @@ export interface Nursery {
 	 */
 	noRestrictedTypes?: RuleFixConfiguration_for_NoRestrictedTypesOptions;
 	/**
+	 * Disallow usage of sensitive data such as API keys and tokens.
+	 */
+	noSecrets?: RuleConfiguration_for_Null;
+	/**
 	 * Disallow shorthand properties that override related longhand properties.
 	 */
 	noShorthandPropertyOverrides?: RuleConfiguration_for_Null;
@@ -1708,7 +1712,7 @@ export interface Suspicious {
 	 */
 	noDebugger?: RuleFixConfiguration_for_Null;
 	/**
-	 * Require the use of === and !==
+	 * Require the use of === and !==.
 	 */
 	noDoubleEquals?: RuleFixConfiguration_for_NoDoubleEqualsOptions;
 	/**
@@ -2759,6 +2763,7 @@ export type Category =
 	| "lint/nursery/noExportedImports"
 	| "lint/nursery/noImportantInKeyframe"
 	| "lint/nursery/noInvalidDirectionInLinearGradient"
+	| "lint/nursery/noInvalidGridAreas"
 	| "lint/nursery/noInvalidPositionAtImportRule"
 	| "lint/nursery/noIrregularWhitespace"
 	| "lint/nursery/noLabelWithoutControl"
@@ -2767,6 +2772,7 @@ export type Category =
 	| "lint/nursery/noReactSpecificProps"
 	| "lint/nursery/noRestrictedImports"
 	| "lint/nursery/noRestrictedTypes"
+	| "lint/nursery/noSecrets"
 	| "lint/nursery/noShorthandPropertyOverrides"
 	| "lint/nursery/noStaticElementInteractions"
 	| "lint/nursery/noSubstr"
@@ -2789,7 +2795,6 @@ export type Category =
 	| "lint/nursery/useBiomeSuppressionComment"
 	| "lint/nursery/useConsistentBuiltinInstantiation"
 	| "lint/nursery/useConsistentCurlyBraces"
-	| "lint/nursery/noInvalidGridAreas"
 	| "lint/nursery/useConsistentMemberAccessibility"
 	| "lint/nursery/useDateNow"
 	| "lint/nursery/useDefaultSwitchClause"

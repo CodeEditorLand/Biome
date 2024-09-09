@@ -1,1 +1,0 @@
-type Classlike = new (arg: unknown) => string;
