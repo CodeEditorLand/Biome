@@ -12,7 +12,7 @@
 	],
 	"description": "WebAssembly bindings to the Biome workspace API",
 	"devDependencies": {
-		"@playform/build": "0.1.4"
+		"@playform/build": "0.1.6"
 	},
 	"files": [
 		"biome_wasm_bg.wasm",

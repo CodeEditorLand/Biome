@@ -12,7 +12,7 @@
 	},
 	"description": "Biome is a toolchain for the web: formatter, linter and more",
 	"devDependencies": {
-		"@playform/build": "0.1.4"
+		"@playform/build": "0.1.6"
 	},
 	"files": [
 		"bin/biome",
