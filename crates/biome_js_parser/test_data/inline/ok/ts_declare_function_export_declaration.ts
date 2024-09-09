@@ -1,3 +1,3 @@
-declare module "x" {
-	export function test(option: any): void;
+declare module 'x' {
+  export function test(option: any): void
 }

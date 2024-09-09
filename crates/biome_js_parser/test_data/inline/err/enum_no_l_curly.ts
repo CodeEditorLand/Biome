@@ -1,2 +1,2 @@
-enum
-enum A
+enum;
+enum A;

@@ -1,3 +1,3 @@
 let global;
-global; // not a global declaration
+global // not a global declaration
 console.log("a");

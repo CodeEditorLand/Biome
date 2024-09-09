@@ -1,5 +1,3 @@
 class foo {
-	get;
-	{
-}
+ get {}
 }

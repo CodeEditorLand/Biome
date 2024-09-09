@@ -1,2 +1,1 @@
-const foo = bar;
-throw foo;
+let foo = bar throw foo

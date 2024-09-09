@@ -1,3 +1,2 @@
 // SCRIPT
-for (var i = 0 in []) {
-}
+for (var i = 0 in []) {}

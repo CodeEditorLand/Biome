@@ -794,6 +794,7 @@
      "result"
    );
  }
+
 ```
 
 **Prettier Similarity**: 96.41%
@@ -1128,6 +1129,7 @@
 -  await using ab = c;
 +  await using \u0061b = c;
  }
+
 ```
 
 **Prettier Similarity**: 66.67%
@@ -1155,6 +1157,7 @@
      /*0*/ for await (/*1*/ /*2*/ /*3*/ await using /*4*/ /*5*/ b /*6*/ of /*7*/ x /*8*/ /*9*/);
    }
  }
+
 ```
 
 **Prettier Similarity**: 89.47%
@@ -1166,6 +1169,7 @@
 -  using ab = c;
 +  using \u0061b = c;
  }
+
 ```
 
 **Prettier Similarity**: 66.67%
@@ -1419,6 +1423,7 @@
 +    if (b); /* comment 6f */
      else return 2;
  }
+
 ```
 
 **Prettier Similarity**: 97.73%
@@ -1481,6 +1486,7 @@
      x.b
    ).call(null)
  }
+
 ```
 
 **Prettier Similarity**: 61.11%
@@ -1518,6 +1524,7 @@
 +	await thing()
 +).blah
  }
+
 ```
 
 **Prettier Similarity**: 28.57%
@@ -1537,6 +1544,7 @@
 +      new Float32Array([0, 0, 1, 0, 1, 1, 0, 1]),
    };
  }
+
 ```
 
 **Prettier Similarity**: 45.45%
@@ -1872,6 +1880,7 @@
 +);
 +
  }
+
 ```
 
 **Prettier Similarity**: 33.33%
@@ -1956,6 +1965,7 @@
 +}
  }
  catch (err) {}
+
 ```
 
 **Prettier Similarity**: 42.86%
@@ -2037,6 +2047,7 @@
 ```diff
 -while (false) function foo() {}
 +while (false) function foo(){}
+
 ```
 
 **Prettier Similarity**: 0.00%
@@ -2162,6 +2173,7 @@
  function x() {
    inject(() => {});
  }
+
 ```
 
 **Prettier Similarity**: 87.10%
@@ -2463,6 +2475,7 @@
      </>
    );
  }
+
 ```
 
 **Prettier Similarity**: 77.36%
@@ -2632,6 +2645,7 @@
 +{
 +  prop1: "myPropVal";
 +}
+
 ```
 
 **Prettier Similarity**: 45.45%
@@ -2848,6 +2862,7 @@
      )?.rotation;
    }
  }
+
 ```
 
 **Prettier Similarity**: 73.68%
@@ -2882,6 +2897,7 @@
  class B {
    constructor<>() {}
  }
+
 ```
 
 **Prettier Similarity**: 96.15%
@@ -2901,6 +2917,7 @@
 -  foo /* 3 */(/* 2 */);
 +  foo(/* 2 */) /* 3 */;
  }
+
 ```
 
 **Prettier Similarity**: 80.00%
@@ -2912,6 +2929,7 @@
 -  "username": string;
 +  username: string;
  }
+
 ```
 
 **Prettier Similarity**: 66.67%
@@ -3097,6 +3115,7 @@
  
    abstract foo13 /* foo */(/* bar */); /* baz */
  }
+
 ```
 
 **Prettier Similarity**: 84.62%
@@ -3240,6 +3259,7 @@
 -  abstract baz(): number;
 +  abstract baz() : number;
  }
+
 ```
 
 **Prettier Similarity**: 98.18%
@@ -3266,6 +3286,7 @@
  
    static abstract foo_e();
  }
+
 ```
 
 **Prettier Similarity**: 73.33%
@@ -3288,6 +3309,7 @@
 -  private abstract foo_w(): number;
 +  private abstract foo_w() : number;
  }
+
 ```
 
 **Prettier Similarity**: 84.62%
@@ -3329,6 +3351,7 @@
 +  private abstract ['h'];
 +  static abstract ['i'];
  }
+
 ```
 
 **Prettier Similarity**: 50.00%
@@ -3389,6 +3412,7 @@
    @Output() change = new EventEmitter<any>();
    @Input() label: string;
  }
+
 ```
 
 **Prettier Similarity**: 87.50%
@@ -3420,6 +3444,7 @@
 +  )
    topics: Topic[];
  }
+
 ```
 
 **Prettier Similarity**: 82.61%
@@ -3464,6 +3489,7 @@
 +    // comment
 +    abstract property: Array<string>
  }
+
 ```
 
 **Prettier Similarity**: 94.29%
@@ -3693,6 +3719,7 @@
      SomeLongTypeSomeLongTypeSomeLongTypeSomeLongType,
      ToBreakLineToBreakLineToBreakLine
    > {}
+
 ```
 
 **Prettier Similarity**: 93.33%
@@ -4229,6 +4256,7 @@
    method<const T extends U>() {}
    method<T, const U>() {}
  }
+
 ```
 
 **Prettier Similarity**: 96.88%
@@ -4293,6 +4321,7 @@
      filepath?: string;
    },
  >() {}
+
 ```
 
 **Prettier Similarity**: 96.97%

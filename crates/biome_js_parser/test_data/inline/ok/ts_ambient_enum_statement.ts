@@ -1,10 +1,2 @@
-declare enum A {
-	X,
-	Y,
-	Z,
-}
-declare enum B {
-	X,
-	Y,
-	Z,
-}
+declare enum A { X, Y, Z }
+declare const enum B { X, Y, Z }

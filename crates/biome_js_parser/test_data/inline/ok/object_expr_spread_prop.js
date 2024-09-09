@@ -1,1 +1,1 @@
-const a = { ...foo };
+let a = {...foo}

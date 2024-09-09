@@ -1,4 +1,4 @@
-const obj = {};
+let obj = {};
 <a {...obj, other} />;
 <a ...obj} />;
 <a {obj} />;

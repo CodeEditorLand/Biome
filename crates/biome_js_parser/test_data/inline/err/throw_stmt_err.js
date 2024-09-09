@@ -1,3 +1,3 @@
 throw
-new Error("oh no :(");
+new Error("oh no :(")
 throw;

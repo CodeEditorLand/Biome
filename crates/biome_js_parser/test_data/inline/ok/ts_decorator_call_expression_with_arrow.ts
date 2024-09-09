@@ -1,4 +1,4 @@
 export class Foo {
-	@Decorator((val) => val)
-	badField!: number;
+ @Decorator((val) => val)
+ badField!: number
 }

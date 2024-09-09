@@ -1,6 +1,6 @@
-const a = "b";
-const [c, b] = [1, 2];
-const [d, ...abcd] = [1];
-const [e = "default", x] = [];
-const [, f, ...rest] = [];
-const [[...rest2], { g }] = [];
+let a = "b";
+let [c, b] = [1, 2];
+let [d, ...abcd] = [1];
+let [e = "default", x] = []
+let [, f, ...rest] = []
+let [[...rest2], { g }] = []

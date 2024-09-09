@@ -1,2 +1,1 @@
-let a = \;
-foo();
+let a = \; foo();

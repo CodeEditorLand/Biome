@@ -1,3 +1,1 @@
-declare class A {
-	async method();
-}
+declare class A { async method(); }

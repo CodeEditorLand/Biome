@@ -1,3 +1,3 @@
-const [...abcd] = a;
-const [...[x, y]] = b;
-const [...[...a]] = c;
+let [ ...abcd ] = a;
+let [ ...[x, y] ] = b;
+let [ ...[ ...a ] ] = c;

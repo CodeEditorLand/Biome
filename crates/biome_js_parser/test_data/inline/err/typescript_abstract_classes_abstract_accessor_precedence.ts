@@ -1,3 +1,1 @@
-abstract class A {
-	accessor abstract foo: number;
-}
+abstract class A { accessor abstract foo: number; }

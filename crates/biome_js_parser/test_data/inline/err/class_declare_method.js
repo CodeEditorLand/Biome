@@ -1,3 +1,1 @@
-class B {
-	declare fn() {}
-}
+class B { declare fn() {} }

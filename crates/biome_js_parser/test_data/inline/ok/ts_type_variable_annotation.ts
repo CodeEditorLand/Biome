@@ -1,4 +1,3 @@
-let a = "test",
-	b!: number;
-let a; // ASI
-!function test() {};
+let a: string = "test", b!: number;
+let a // ASI
+!function test() {}

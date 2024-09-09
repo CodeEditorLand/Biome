@@ -1,2 +1,3 @@
-<closing /* some comment */ />;
-<open></ /* some comment */ open>;
+<closing / /* some comment */ >;
+<open><
+/* some comment */ / open>;

@@ -1,6 +1,6 @@
-const x: any = "string";
-const y = x as string;
-const z = x as const;
-const not_an_as_expression = x;
+let x: any = "string";
+let y = x as string;
+let z = x as const;
+let not_an_as_expression = x
 as;
-const precedence = (("hello" as const) + 3) as number as number;
+let precedence = "hello" as const + 3 as number as number;

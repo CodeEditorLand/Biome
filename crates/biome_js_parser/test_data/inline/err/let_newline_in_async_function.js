@@ -1,4 +1,4 @@
 async function f() {
-	const await;
-	0;
+  let
+  await 0;
 }

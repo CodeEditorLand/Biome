@@ -1,3 +1,3 @@
-import();
+import()
 import(...["foo"])
-import("foo", { assert: { type: "json" } }, "bar");
+import("foo", { assert: { type: 'json' } }, "bar")

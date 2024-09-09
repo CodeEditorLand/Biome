@@ -1,2 +1,2 @@
-const a = () => {};
-const b = function foo() {};
+let a = function() {}
+let b = function foo() {}

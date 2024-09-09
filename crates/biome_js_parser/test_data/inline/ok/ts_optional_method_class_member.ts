@@ -1,3 +1,1 @@
-class A {
-	test?() {}
-}
+class A { test?() {} }

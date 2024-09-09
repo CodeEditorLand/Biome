@@ -1,4 +1,2 @@
-const { ...abcd } = a;
-const {
-	b: { ...a },
-} = c;
+let { ...abcd } = a;
+let { b: { ...a } } = c;

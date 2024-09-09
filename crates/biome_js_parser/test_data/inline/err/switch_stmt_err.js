@@ -3,10 +3,7 @@ switch {}
 switch { var i = 0 }
 switch { var i = 0; case "bar": {} }
 switch (foo) {
-	default: {
-	}
-	default: {}
+  default: {}
+  default: {}
 }
-switch (foo) {
-	case :
-}
+switch (foo) { case : }

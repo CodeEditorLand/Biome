@@ -1,3 +1,3 @@
-declare namespace a {
-	function test(): string;
+declare module a {
+  function test(): string;
 }

@@ -1,6 +1,6 @@
-const b = {
-	foo() {},
-	bar(a, b, c) {},
-	["foo" + "bar"](a) {},
-	5(...rest) {},
-};
+let b = {
+  foo() {},
+  "bar"(a, b, c) {},
+  ["foo" + "bar"](a) {},
+  5(...rest) {}
+}

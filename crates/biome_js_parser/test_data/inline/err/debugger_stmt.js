@@ -1,6 +1,5 @@
 function foo() {
-	debugger;
-	{
-		var something = "lorem";
-	}
+  debugger {
+    var something = "lorem";
+  }
 }

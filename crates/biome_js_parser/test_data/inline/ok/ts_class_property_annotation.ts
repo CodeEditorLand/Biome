@@ -1,5 +1,5 @@
 class A {
-	a: string;
-	b?: string = "test";
-	c!: string;
+  a: string;
+  b?: string = "test";
+  c!: string;
 }

@@ -2,4 +2,4 @@
 (function await() {});
 (function yield() {});
 (async function yield() {});
-(function* await() {});
+(function* await() {})

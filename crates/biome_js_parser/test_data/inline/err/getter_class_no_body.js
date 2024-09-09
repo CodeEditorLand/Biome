@@ -1,3 +1,3 @@
 class Getters {
-	get foo()
+  get foo()
 }

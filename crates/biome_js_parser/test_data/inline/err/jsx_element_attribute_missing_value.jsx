@@ -1,3 +1,3 @@
 function f() {
-	return <div string_literal= ></div>;
+    return <div string_literal= ></div>;
 }

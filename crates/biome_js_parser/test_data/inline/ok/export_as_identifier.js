@@ -1,2 +1,2 @@
 export { as };
-export { as };
+export { as as as }

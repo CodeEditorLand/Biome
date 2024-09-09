@@ -1,3 +1,2 @@
-@before
-@after
-export default abstract class Foo {}
+ @before
+ export default @after abstract class Foo { }

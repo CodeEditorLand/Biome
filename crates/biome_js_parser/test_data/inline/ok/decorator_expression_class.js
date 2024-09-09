@@ -1,9 +1,4 @@
-const a =
-	@decorator
-	class {};
-const b =
-	@first
-	@second
-	class foo {
-		constructor() {}
-	};
+let a = @decorator class {};
+let b = @first @second class foo {
+ constructor() {}
+}

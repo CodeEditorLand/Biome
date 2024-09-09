@@ -1,2 +1,2 @@
 foo;
-const accessor = 5;
+let accessor = 5;

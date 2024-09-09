@@ -1,1 +1,1 @@
-type A = [ ...name?: string[] ];
+type A = [ ...name?: string[] ]

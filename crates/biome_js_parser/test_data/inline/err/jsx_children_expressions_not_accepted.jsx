@@ -1,6 +1,6 @@
 <div>
-	{import.meta}
-	{class A{}}
-	{super()}
-	{new.target}
-</div>;
+  {import.meta}
+  {class A{}}
+  {super()}
+  {new.target}
+</div>

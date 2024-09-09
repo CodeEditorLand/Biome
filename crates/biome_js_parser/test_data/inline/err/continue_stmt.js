@@ -1,9 +1,7 @@
-function foo() {
-	continue;
-}
+function foo() { continue; }
 while (true) {
-	continue foo;
+  continue foo;
 }
-{
-	continue foo;
+foo: {
+  continue foo;
 }

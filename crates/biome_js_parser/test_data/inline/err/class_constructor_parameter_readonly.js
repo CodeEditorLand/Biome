@@ -1,3 +1,1 @@
-class B {
-	constructor(readonly b) {}
-}
+class B { constructor(readonly b) {} }

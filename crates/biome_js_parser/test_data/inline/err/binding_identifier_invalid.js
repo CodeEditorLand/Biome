@@ -1,10 +1,8 @@
-async () => {
-	const await = 5;
-};
-function* foo() {
-	const yield = 5;
+async () => { let await = 5; }
+function *foo() {
+   let yield = 5;
 }
-const eval = 5;
-const let = 5;
+let eval = 5;
+let let = 5;
 const let = 5;
 let a, a;

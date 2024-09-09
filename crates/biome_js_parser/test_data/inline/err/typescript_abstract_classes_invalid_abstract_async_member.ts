@@ -1,3 +1,1 @@
-abstract class B {
-	abstract async a();
-}
+abstract class B { abstract async a(); }

@@ -1,1 +1,1 @@
-export type A = {};
+export interface A {}

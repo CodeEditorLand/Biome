@@ -1,3 +1,2 @@
 @before
-@after
-export default class Foo {}
+export default @after class Foo { }

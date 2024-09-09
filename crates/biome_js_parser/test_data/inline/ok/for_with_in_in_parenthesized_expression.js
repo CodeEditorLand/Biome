@@ -1,1 +1,1 @@
-for (true, ("selectionStart" in true); ; ) {}
+for((true,"selectionStart"in true);;) {}

@@ -1,1 +1,1 @@
-const b = { a: true };
+let b = { a: true }

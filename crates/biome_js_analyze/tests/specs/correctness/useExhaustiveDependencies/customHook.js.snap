@@ -1,0 +1,78 @@
+---
+source: crates/biome_js_analyze/tests/spec_tests.rs
+expression: customHook.js
+---
+# Input
+```jsx
+import { useEffect } from "react";
+
+function MyComponent() {
+    let a = 1;
+    useEffect(() => {
+        console.log(a);
+    }, []);
+
+    useMyEffect(() => {
+        console.log(a);
+    }, []);
+
+    useMyEffect(() => {
+       console.log(a);
+    });
+}
+
+```
+
+# Diagnostics
+```
+customHook.js:5:5 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! This hook does not specify all of its dependencies: a
+  
+    3 │ function MyComponent() {
+    4 │     let a = 1;
+  > 5 │     useEffect(() => {
+      │     ^^^^^^^^^
+    6 │         console.log(a);
+    7 │     }, []);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+    4 │     let a = 1;
+    5 │     useEffect(() => {
+  > 6 │         console.log(a);
+      │                     ^
+    7 │     }, []);
+    8 │ 
+  
+  i Either include it or remove the dependency array
+  
+
+```
+
+```
+customHook.js:9:5 lint/correctness/useExhaustiveDependencies ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! This hook does not specify all of its dependencies: a
+  
+     7 │     }, []);
+     8 │ 
+   > 9 │     useMyEffect(() => {
+       │     ^^^^^^^^^^^
+    10 │         console.log(a);
+    11 │     }, []);
+  
+  i This dependency is not specified in the hook dependency list.
+  
+     9 │     useMyEffect(() => {
+  > 10 │         console.log(a);
+       │                     ^
+    11 │     }, []);
+    12 │ 
+  
+  i Either include it or remove the dependency array
+  
+
+```
+
+

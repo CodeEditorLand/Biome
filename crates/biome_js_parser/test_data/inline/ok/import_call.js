@@ -1,2 +1,2 @@
-import("foo");
-import("foo", { assert: { type: "json" } });
+import("foo")
+import("foo", { assert: { type: 'json' } })

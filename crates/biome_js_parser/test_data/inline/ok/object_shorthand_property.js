@@ -1,2 +1,2 @@
-const { a, b } = c;
-const { d = "default", e = call() } = c;
+let { a, b } = c
+let { d = "default", e = call() } = c

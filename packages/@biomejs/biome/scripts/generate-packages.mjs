@@ -59,7 +59,9 @@ function copyBinaryToNativePackage(platform, arch) {
 	const binaryTarget = resolve(packageRoot, `biome${ext}`);
 
 	if (!fs.existsSync(binarySource)) {
-		console.error(`Source for binary for ${buildName} not found at: ${binarySource}`);
+		console.error(
+			`Source for binary for ${buildName} not found at: ${binarySource}`,
+		);
 		process.exit(1);
 	}
 
@@ -73,9 +75,7 @@ function updateWasmPackage(target) {
 	const packageRoot = resolve(PACKAGES_ROOT, `wasm-${target}`);
 
 	const manifestPath = resolve(packageRoot, "package.json");
-	const manifest = JSON.parse(
-		fs.readFileSync(manifestPath).toString("utf-8"),
-	);
+	const manifest = JSON.parse(fs.readFileSync(manifestPath).toString("utf-8"));
 
 	const { version } = rootManifest;
 	manifest.name = packageName;

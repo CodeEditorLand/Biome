@@ -1,5 +1,5 @@
-const a = class {};
-const b = class foo {
-	constructor() {}
-};
-foo[class {}];
+let a = class {};
+let b = class foo {
+ constructor() {}
+}
+foo[class {}]

@@ -1,4 +1,4 @@
 class Foo {
-	constructor(@dec x) {}
-	method(@dec x) {}
+   constructor(@dec x) {}
+   method(@dec x) {}
 }

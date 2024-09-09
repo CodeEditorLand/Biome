@@ -46,13 +46,13 @@ It **outputs detailed and contextualized diagnostics** that help you to improve 
 **Biome** is designed from the start to be used [interactively within an editor](https://biomejs.dev/guides/integrate-in-editor/).
 It can format and lint malformed code as you are writing it.
 
-### 🚀 Installation
+### Installation
 
 ```shell
 npm install --save-dev --save-exact @biomejs/biome
 ```
 
-### 🛠️ Usage
+### Usage
 
 ```shell
 # format files

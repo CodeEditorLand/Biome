@@ -1,3 +1,4 @@
 class A {
-	static foo() {}
+  static
+  foo() {}
 }

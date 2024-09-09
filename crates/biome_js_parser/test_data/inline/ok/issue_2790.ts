@@ -1,3 +1,3 @@
 var x: {
-	readonly [A in keyof B]?: any;
+  readonly [A in keyof B]?: any;
 };

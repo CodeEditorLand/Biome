@@ -1,1 +1,1 @@
-const a = `${foo} bar
+let a = `${foo} bar

@@ -1,3 +1,3 @@
-export const a = ;
+export let a = ;
 export const b;
 export let d, c;

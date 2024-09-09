@@ -1,2 +1,2 @@
-const obj = {};
+let obj = {};
 <a {...obj} />;

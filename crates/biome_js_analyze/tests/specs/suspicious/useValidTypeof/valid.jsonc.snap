@@ -1,0 +1,20 @@
+---
+source: crates/biome_js_analyze/tests/spec_tests.rs
+expression: valid.jsonc
+---
+# Input
+```cjs
+typeof foo === 'string'
+```
+
+# Input
+```cjs
+typeof bar == 'undefined'
+```
+
+# Input
+```cjs
+typeof bar === typeof qux
+```
+
+

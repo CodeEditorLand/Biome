@@ -1,4 +1,3 @@
 class A {
-	#
-	test;
+	# test;
 }

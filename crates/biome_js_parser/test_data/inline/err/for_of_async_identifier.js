@@ -1,2 +1,2 @@
 let async;
-for (async of [1]);
+for (async of [1]) ;

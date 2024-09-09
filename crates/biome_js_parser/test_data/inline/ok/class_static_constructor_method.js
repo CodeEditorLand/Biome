@@ -1,3 +1,1 @@
-class B {
-	static constructor() {}
-}
+class B { static constructor() {} }

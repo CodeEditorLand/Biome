@@ -1,4 +1,10 @@
 <></>;
 <>abcd</>;
-<> whitespace</>;
-</*comment */></>;
+<>   whitespace
+</>;
+<
+  /*comment */
+  >
+  <
+  /
+>;

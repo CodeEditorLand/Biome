@@ -1,4 +1,4 @@
-type A = {};
+interface A {}
 interface B implements A {}
 interface C extends A extends B {}
 interface D extends {}

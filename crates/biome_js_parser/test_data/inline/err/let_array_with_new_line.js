@@ -1,3 +1,3 @@
 // SCRIPT
-L: const
+L: let
 [a] = 0;

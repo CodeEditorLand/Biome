@@ -2,7 +2,7 @@
 
 Fuzzers and associated utilities for automatic testing of Biome.
 
-## 🛠️ Usage
+## Usage
 
 To use the fuzzers provided in this directory, start by invoking:
 

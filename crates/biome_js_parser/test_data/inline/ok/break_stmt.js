@@ -1,10 +1,9 @@
 while (true) {
-	break;
-	foo: {
-		break foo;
-	}
+  break;
+  foo: {
+   break foo;
+  }
 }
-while (true) {
-	break;
-	out;
+out: while (true) {
+  break out;
 }

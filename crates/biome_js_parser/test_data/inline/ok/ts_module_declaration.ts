@@ -1,6 +1,4 @@
-declare namespace a {}
-declare namespace a.b.c.d {}
-declare namespace a.b {
-	function test(): string;
-}
-namespace X {}
+declare module a {}
+declare module a.b.c.d {}
+declare module a.b { function test(): string }
+module X {}

@@ -1,3 +1,3 @@
-const { a b } = c
-const { = "test" } = c
-const { , d } = c
+let { a b } = c
+let { = "test" } = c
+let { , d } = c

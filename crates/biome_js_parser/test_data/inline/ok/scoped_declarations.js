@@ -1,5 +1,5 @@
-const a = {
-	test() {
-		const a = "inner";
-	},
+let a = {
+  test() {
+    let a = "inner";
+  }
 };

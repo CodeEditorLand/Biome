@@ -1,3 +1,3 @@
 abstract class A {
-	abstract [a: number]: string;
+    abstract [a: number]: string;
 }

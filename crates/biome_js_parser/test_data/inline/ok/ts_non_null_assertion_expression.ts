@@ -1,6 +1,6 @@
-const a = { b: {} };
+let a = { b: {} };
 a!;
 function test() {}
-test()!;
-a.b.c!;
-a!;
+test()!
+	a.b.c!;
+a!!!!!!;

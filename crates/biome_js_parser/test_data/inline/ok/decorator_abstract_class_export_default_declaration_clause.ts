@@ -1,2 +1,2 @@
 @decorator
-export default abstract class Foo {}
+export default abstract class Foo { }

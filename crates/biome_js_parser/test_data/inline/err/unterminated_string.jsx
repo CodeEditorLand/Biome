@@ -1,7 +1,6 @@
-const f = () =>
-	(
-		<div
+const f = () => (
+    <div
         aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa="a'
-      bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb="b={true}"
+      bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb="b"
     />
-	);
+  );

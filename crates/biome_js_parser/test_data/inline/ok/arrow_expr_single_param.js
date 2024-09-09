@@ -1,5 +1,6 @@
 // SCRIPT
-(foo) => {};
-(yield) => {};
-(await) => {};
-(baz) => {};
+foo => {}
+yield => {}
+await => {}
+baz =>
+{}

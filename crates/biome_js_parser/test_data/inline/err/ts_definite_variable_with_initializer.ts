@@ -1,1 +1,1 @@
-const a!: string = "test";
+let a!: string = "test";

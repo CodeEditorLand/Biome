@@ -1,6 +1,6 @@
 function foo() {
-	@decorator
+     @decorator
      export class Foo { }
-	@first.field @second @(() => decorator)()
+     @first.field @second @(() => decorator)()
      export class Bar {}
 }

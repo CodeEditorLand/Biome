@@ -1,5 +1,5 @@
 () => {
-	return;
-	return foo;
-	return;
-};
+  return;
+  return foo;
+  return
+}

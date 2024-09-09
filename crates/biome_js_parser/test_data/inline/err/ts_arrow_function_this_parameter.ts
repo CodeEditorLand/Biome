@@ -1,1 +1,1 @@
-const a = (this: string) => {}
+let a = (this: string) => {}

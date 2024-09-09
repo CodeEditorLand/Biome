@@ -1,2 +1,2 @@
 function foo() {}
-for (foo(("call" in foo)); ; ) {}
+for (foo("call" in foo);;) {}

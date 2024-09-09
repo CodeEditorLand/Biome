@@ -1,2 +1,2 @@
-type A = {};
+interface A {}
 interface B extends A, {}

@@ -1,3 +1,1 @@
-class B {
-	declare foo
-}
+class B { declare foo }

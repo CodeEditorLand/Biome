@@ -1,3 +1,2 @@
 @decorator
-export default type;
-A = {};
+export default interface A { }

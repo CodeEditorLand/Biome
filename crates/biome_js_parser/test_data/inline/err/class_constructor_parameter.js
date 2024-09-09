@@ -1,3 +1,1 @@
-class B {
-	constructor(protected b) {}
-}
+class B { constructor(protected b) {} }

@@ -1,2 +1,1 @@
-try {
-} catch (error: Error) {}
+try {} catch (error: Error) {}

@@ -1,6 +1,6 @@
 abstract class Qux {
-	@dec declare static foo: string;
+  @dec declare static foo: string;
 }
 class Bar {
-	@dec readonly foo = "123";
+   @dec readonly foo = '123';
 }

@@ -1,7 +1,3 @@
-const a = async (await) => {};
-async () => {
-	(a = await) => {};
-};
-async () => {
-	(a = await 10) => {};
-};
+let a = async await => {}
+async() => { (a = await) => {} };
+async() => { (a = await 10) => {} };

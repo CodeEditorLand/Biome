@@ -1,6 +1,6 @@
 class A {
-	[a: number]: string;
+    [a: number]: string;
 }
 class B {
-	[index: string]: { prop };
+    [index: string]: { prop }
 }

@@ -1,4 +1,4 @@
 class A {
-	static async *constructor() {}
-	static *constructor() {}
+	static async * constructor() {}
+	static * constructor() {}
 }

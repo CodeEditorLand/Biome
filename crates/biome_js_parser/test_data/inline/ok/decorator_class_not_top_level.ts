@@ -1,8 +1,6 @@
 if (a) {
-	@dec
-	class MyClass {}
+  @dec class MyClass {}
 }
 function foo() {
-	@dec
-	class MyClass {}
+  @dec class MyClass {}
 }

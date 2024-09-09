@@ -1,2 +1,2 @@
-const { foo: bar } = {};
-const { foo: bar_bar = baz } = {};
+let { foo: bar  } = {}
+let { foo: bar_bar = baz } = {}

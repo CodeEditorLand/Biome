@@ -1,3 +1,2 @@
-const a = { /: 6, /: /foo/ };
-const b = { { };
-}
+let a = { /: 6, /: /foo/ }
+let b = {{}}

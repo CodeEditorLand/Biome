@@ -1,3 +1,1 @@
-class foo {
-	get foo() {}
-}
+class foo { ;;;;;;;;;; get foo() {};;;;}

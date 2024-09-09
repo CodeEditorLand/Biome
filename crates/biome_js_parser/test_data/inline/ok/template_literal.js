@@ -1,5 +1,5 @@
-const a = `foo ${bar}`;
-const b = ``;
-const c = `${foo}`;
-const d = `foo`;
-const e = `${{ a: "string" }}`;
+let a = `foo ${bar}`;
+let b = ``;
+let c = `${foo}`;
+let d = `foo`;
+let e = `${{ a: "string" }}`;

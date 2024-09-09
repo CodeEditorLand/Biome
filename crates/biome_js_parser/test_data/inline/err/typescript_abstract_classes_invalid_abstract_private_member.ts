@@ -1,3 +1,1 @@
-abstract class A {
-	abstract #name();
-}
+abstract class A { abstract #name(); };
