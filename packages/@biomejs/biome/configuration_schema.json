@@ -1062,6 +1062,12 @@
 			"additionalProperties": false
 		},
 		"CustomRestrictedType": {
+			"anyOf": [
+				{ "type": "string" },
+				{ "$ref": "#/definitions/CustomRestrictedTypeOptions" }
+			]
+		},
+		"CustomRestrictedTypeOptions": {
 			"type": "object",
 			"required": ["message"],
 			"properties": {
@@ -1936,6 +1942,13 @@
 				"all": {
 					"description": "It enables ALL rules for this group.",
 					"type": ["boolean", "null"]
+				},
+				"noCommonJs": {
+					"description": "Disallow use of CommonJs module system in favor of ESM style imports.",
+					"anyOf": [
+						{ "$ref": "#/definitions/RuleConfiguration" },
+						{ "type": "null" }
+					]
 				},
 				"noConsole": {
 					"description": "Disallow the use of console.",
