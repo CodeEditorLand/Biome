@@ -1,0 +1,17 @@
+{
+	"$schema": "../../../../../../packages/@biomejs/biome/configuration_schema.json",
+	"linter": {
+		"rules": {
+			"nursery": {
+				"noRestrictedImports": {
+					"level": "error",
+					"options": {
+						"paths": {
+							"node:fs": "Importing from node:fs is forbidden"
+						}
+					}
+				}
+			}
+		}
+	}
+}
