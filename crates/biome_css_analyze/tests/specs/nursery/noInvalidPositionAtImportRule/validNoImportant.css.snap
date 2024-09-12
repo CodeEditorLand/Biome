@@ -1,9 +1,0 @@
----
-source: crates/biome_css_analyze/tests/spec_tests.rs
-expression: validNoImportant.css
----
-# Input
-```css
-a {}
-
-```
