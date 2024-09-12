@@ -1,0 +1,16 @@
+---
+source: crates/biome_js_analyze/tests/spec_tests.rs
+expression: userDefinedValid.jsx
+---
+# Input
+```jsx
+function Fragment() {}
+let React = { Fragment };
+<>
+    <Fragment>test</Fragment>
+    <React.Fragment>test</React.Fragment>
+</>
+
+```
+
+
