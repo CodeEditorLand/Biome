@@ -7,9 +7,7 @@
 	"bugs": {
 		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
 	},
-	"cpu": [
-		"arm64"
-	],
+	"dependencies": {},
 	"devDependencies": {
 		"@playform/build": "0.1.6"
 	},
@@ -20,10 +18,7 @@
 		"playform"
 	],
 	"license": "SEE LICENSE IN LICENSE",
-	"name": "@biomejs/cli-darwin-arm64",
-	"os": [
-		"darwin"
-	],
+	"name": "prettier-tests",
 	"private": false,
 	"publishConfig": {
 		"access": "public"
@@ -33,7 +28,8 @@
 		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
 	},
 	"scripts": {
-		"prepublishOnly": "Build 'Source/**/*.ts'"
+		"prepublishOnly": "Build 'Source/**/*.ts'",
+		"start": "node prepare_tests"
 	},
 	"type": "module",
 	"version": "0.0.1"
