@@ -1,0 +1,31 @@
+---
+source: crates/biome_js_analyze/tests/spec_tests.rs
+expression: malformedOptions.js
+---
+# Input
+```jsx
+
+```
+
+# Diagnostics
+```
+malformedOptions.options:9:25 deserialize ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Found an unknown value `kebab-case`.
+  
+     7 │ 					"level": "error",
+     8 │ 					"options": {
+   > 9 │ 						"enumMemberCase": "kebab-case"
+       │ 						                  ^^^^^^^^^^^^
+    10 │ 					}
+    11 │ 				}
+  
+  i Accepted values:
+  
+  - camelCase
+  - CONSTANT_CASE
+  - PascalCase
+  - snake_case
+  
+
+```

@@ -1,0 +1,85 @@
+---
+source: crates/biome_cli/tests/snap_test.rs
+expression: content
+---
+## `biome.json`
+
+```json
+{ "formatter": { "enabled": true } }
+```
+
+## `.prettierrc`
+
+```prettierrc
+{
+        "overrides": [{
+            "files": ["**/*.test.js"],
+            "options": { "useTabs": false }
+        }, {
+            "files": ["**/*.spec.js"],
+            "options": { "semi": true, "singleQuote": true }
+        }, {
+            "files": ["**/*.ts"],
+            "options": { "useTabs": false, "semi": true, "singleQuote": true }
+        }]
+    }
+```
+
+# Emitted Messages
+
+```block
+biome.json migrate ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i Configuration file can be updated.
+  
+    1    │ - {·"formatter":·{·"enabled":·true·}·}
+       1 │ + {
+       2 │ + → "formatter":·{
+       3 │ + → → "enabled":·true,
+       4 │ + → → "useEditorconfig":·true,
+       5 │ + → → "formatWithErrors":·false,
+       6 │ + → → "indentStyle":·"space",
+       7 │ + → → "indentWidth":·2,
+       8 │ + → → "lineEnding":·"lf",
+       9 │ + → → "lineWidth":·80,
+      10 │ + → → "attributePosition":·"auto",
+      11 │ + → → "bracketSpacing":·true
+      12 │ + → },
+      13 │ + → "javascript":·{
+      14 │ + → → "formatter":·{
+      15 │ + → → → "jsxQuoteStyle":·"double",
+      16 │ + → → → "quoteProperties":·"asNeeded",
+      17 │ + → → → "trailingCommas":·"all",
+      18 │ + → → → "semicolons":·"asNeeded",
+      19 │ + → → → "arrowParentheses":·"always",
+      20 │ + → → → "bracketSameLine":·false,
+      21 │ + → → → "quoteStyle":·"single",
+      22 │ + → → → "attributePosition":·"auto",
+      23 │ + → → → "bracketSpacing":·true
+      24 │ + → → }
+      25 │ + → },
+      26 │ + → "overrides":·[
+      27 │ + → → {·"include":·["**/*.test.js"],·"formatter":·{·"indentStyle":·"space"·}·},
+      28 │ + → → {
+      29 │ + → → → "include":·["**/*.spec.js"],
+      30 │ + → → → "javascript":·{
+      31 │ + → → → → "formatter":·{·"semicolons":·"always",·"quoteStyle":·"single"·}
+      32 │ + → → → }
+      33 │ + → → },
+      34 │ + → → {
+      35 │ + → → → "include":·["**/*.ts"],
+      36 │ + → → → "javascript":·{
+      37 │ + → → → → "formatter":·{·"semicolons":·"always",·"quoteStyle":·"single"·}
+      38 │ + → → → },
+      39 │ + → → → "formatter":·{·"indentStyle":·"space"·}
+      40 │ + → → }
+      41 │ + → ]
+      42 │ + }
+      43 │ + 
+  
+
+```
+
+```block
+Run the command with the option --write to apply the changes.
+```
