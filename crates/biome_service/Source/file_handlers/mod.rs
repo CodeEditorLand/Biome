@@ -106,7 +106,7 @@ impl From<&Path> for DocumentFileSource {
 }
 
 impl DocumentFileSource {
-    #[instrument(level = "debug")]
+    #[instrument(level = "debug", fields(result))]
     fn try_from_well_known(path: &Path) -> Result<Self, FileSourceError> {
         if let Ok(file_source) = JsonFileSource::try_from_well_known(path) {
             return Ok(file_source.into());
@@ -130,7 +130,7 @@ impl DocumentFileSource {
             .map_or(DocumentFileSource::Unknown, |file_source| file_source)
     }
 
-    #[instrument(level = "debug")]
+    #[instrument(level = "debug", fields(result))]
     fn try_from_extension(extension: &OsStr) -> Result<Self, FileSourceError> {
         if let Ok(file_source) = JsonFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
@@ -144,9 +144,9 @@ impl DocumentFileSource {
         if let Ok(file_source) = GraphqlFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
         }
-        if let Ok(file_source) = HtmlFileSource::try_from_extension(extension) {
-            return Ok(file_source.into());
-        }
+        //if let Ok(file_source) = HtmlFileSource::try_from_extension(extension) {
+        //    return Ok(file_source.into());
+        //}
         Err(FileSourceError::UnknownExtension)
     }
 
@@ -156,7 +156,7 @@ impl DocumentFileSource {
             .map_or(DocumentFileSource::Unknown, |file_source| file_source)
     }
 
-    #[instrument(level = "debug")]
+    #[instrument(level = "debug", fields(result))]
     fn try_from_language_id(language_id: &str) -> Result<Self, FileSourceError> {
         if let Ok(file_source) = JsonFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
@@ -170,9 +170,9 @@ impl DocumentFileSource {
         if let Ok(file_source) = GraphqlFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
         }
-        if let Ok(file_source) = HtmlFileSource::try_from_language_id(language_id) {
-            return Ok(file_source.into());
-        }
+        //if let Ok(file_source) = HtmlFileSource::try_from_language_id(language_id) {
+        //    return Ok(file_source.into());
+        //}
         Err(FileSourceError::UnknownLanguageId)
     }
 
@@ -187,7 +187,7 @@ impl DocumentFileSource {
             .map_or(DocumentFileSource::Unknown, |file_source| file_source)
     }
 
-    #[instrument(level = "debug")]
+    #[instrument(level = "debug", fields(result))]
     fn try_from_path(path: &Path) -> Result<Self, FileSourceError> {
         if let Ok(file_source) = Self::try_from_well_known(path) {
             return Ok(file_source);
@@ -311,9 +311,10 @@ impl DocumentFileSource {
                 EmbeddingKind::Svelte => SVELTE_FENCE.is_match(content),
                 EmbeddingKind::None => true,
             },
-            DocumentFileSource::Json(_) | DocumentFileSource::Css(_) => true,
-            DocumentFileSource::Graphql(_) => true,
-            DocumentFileSource::Html(_) => true,
+            DocumentFileSource::Css(_)
+            | DocumentFileSource::Graphql(_)
+            | DocumentFileSource::Json(_) => true,
+            DocumentFileSource::Html(_) => false,
             DocumentFileSource::Unknown => false,
         }
     }
