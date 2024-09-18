@@ -61,24 +61,26 @@ fn parse_element(p: &mut HtmlParser) -> ParsedSyntax {
 
     p.bump(T![<]);
     let opening_tag_name = p.cur_text().to_string();
-    let should_be_self_closing = VOID_ELEMENTS.contains(&opening_tag_name.as_str());
+    let should_be_self_closing = VOID_ELEMENTS
+        .iter()
+        .any(|tag| tag.eq_ignore_ascii_case(opening_tag_name.as_str()));
     parse_literal(p).or_add_diagnostic(p, expected_element_name);
 
     AttributeList.parse_list(p);
 
     if p.at(T![/]) {
         p.bump(T![/]);
-        p.expect(T![>]);
+        p.expect_with_context(T![>], HtmlLexContext::OutsideTag);
         Present(m.complete(p, HTML_SELF_CLOSING_ELEMENT))
     } else {
         if should_be_self_closing {
             if p.at(T![/]) {
                 p.bump(T![/]);
             }
-            p.expect(T![>]);
+            p.expect_with_context(T![>], HtmlLexContext::OutsideTag);
             return Present(m.complete(p, HTML_SELF_CLOSING_ELEMENT));
         }
-        p.expect_with_context(T![>], HtmlLexContext::ElementList);
+        p.expect_with_context(T![>], HtmlLexContext::OutsideTag);
         let opening = m.complete(p, HTML_OPENING_ELEMENT);
         loop {
             ElementList.parse_list(p);
@@ -106,7 +108,9 @@ fn parse_closing_element(p: &mut HtmlParser) -> ParsedSyntax {
     let m = p.start();
     p.bump(T![<]);
     p.bump(T![/]);
-    let should_be_self_closing = VOID_ELEMENTS.contains(&p.cur_text());
+    let should_be_self_closing = VOID_ELEMENTS
+        .iter()
+        .any(|tag| tag.eq_ignore_ascii_case(p.cur_text()));
     if should_be_self_closing {
         p.error(void_element_should_not_have_closing_tag(p, p.cur_range()).into_diagnostic(p));
     }
@@ -128,7 +132,7 @@ impl ParseNodeList for ElementList {
             T![<] => parse_element(p),
             HTML_LITERAL => {
                 let m = p.start();
-                p.bump(HTML_LITERAL);
+                p.bump_with_context(HTML_LITERAL, HtmlLexContext::OutsideTag);
                 Present(m.complete(p, HTML_CONTENT))
             }
             _ => Absent,
