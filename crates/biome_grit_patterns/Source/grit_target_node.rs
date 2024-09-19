@@ -386,7 +386,7 @@ impl<'a> Iterator for AncestorIterator<'a> {
     type Item = GritTargetNode<'a>;
 
     fn next(&mut self) -> Option<Self::Item> {
-        let node = self.node.as_ref().cloned()?;
+        let node = self.node.clone()?;
         self.node = node.parent();
         Some(node)
     }
@@ -506,6 +506,9 @@ impl<'a> AstCursor for GritTargetNodeCursor<'a> {
     }
 
     fn goto_next_sibling(&mut self) -> bool {
+        if self.node == self.root {
+            return false;
+        }
         match self.node.next_sibling() {
             Some(sibling) => {
                 self.node = sibling;
