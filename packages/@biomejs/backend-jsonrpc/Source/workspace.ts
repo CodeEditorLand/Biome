@@ -24,7 +24,8 @@ export type FeatureKind =
 	| "Lint"
 	| "OrganizeImports"
 	| "Search"
-	| "Assists";
+	| "Assists"
+	| "Debug";
 export type FileKind = FileKind2[];
 /**
  * The priority of the file
@@ -35,15 +36,9 @@ export type FileKind2 =
 	| "Ignore"
 	| "Inspectable"
 	| "Handleable";
-export interface SupportsFeatureResult {
-	reason?: SupportKind;
+export interface FileFeaturesResult {
+	features_supported: {};
 }
-export type SupportKind =
-	| "Supported"
-	| "Ignored"
-	| "Protected"
-	| "FeatureNotEnabled"
-	| "FileNotSupported";
 export interface UpdateSettingsParams {
 	configuration: PartialConfiguration;
 	gitignore_matches: string[];
@@ -1259,6 +1254,10 @@ export interface Nursery {
 	 * Disallow missing var function for css variables.
 	 */
 	noMissingVarFunction?: RuleConfiguration_for_Null;
+	/**
+	 * Disallow octal escape sequences in string literals
+	 */
+	noOctalEscape?: RuleConfiguration_for_Null;
 	/**
 	 * Disallow the use of process.env.
 	 */
@@ -2831,9 +2830,10 @@ export type Category =
 	| "lint/nursery/noInvalidPositionAtImportRule"
 	| "lint/nursery/noIrregularWhitespace"
 	| "lint/nursery/noMissingGenericFamilyKeyword"
+	| "lint/nursery/noMissingVarFunction"
+	| "lint/nursery/noOctalEscape"
 	| "lint/nursery/noProcessEnv"
 	| "lint/nursery/noReactSpecificProps"
-	| "lint/nursery/noMissingVarFunction"
 	| "lint/nursery/noRestrictedImports"
 	| "lint/nursery/noRestrictedTypes"
 	| "lint/nursery/noSecrets"
@@ -3263,7 +3263,7 @@ export interface RenameResult {
 }
 export type Configuration = PartialConfiguration;
 export interface Workspace {
-	fileFeatures(params: SupportsFeatureParams): Promise<SupportsFeatureResult>;
+	fileFeatures(params: SupportsFeatureParams): Promise<FileFeaturesResult>;
 	updateSettings(params: UpdateSettingsParams): Promise<void>;
 	registerProjectFolder(
 		params: RegisterProjectFolderParams,
