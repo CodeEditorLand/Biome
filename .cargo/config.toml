@@ -1,22 +1,8 @@
-[build]
-target-dir = "Target"
-
-[cargo-new]
-vcs = "git"
-
-[profile.release]
-opt-level = 3
-codegen-units = 1
-debug = false
-lto = true
-panic = "abort"
-strip = true
-
 [alias]
-biome-cli = "run -p biome_cli --release --"
-biome-cli-dev = "run -p biome_cli --"
-codegen = "run -p xtask_codegen --"
-codegen-bindings = "run -p xtask_codegen --features schema -- bindings"
+biome-cli             = "run -p biome_cli --release --"
+biome-cli-dev         = "run -p biome_cli --"
+codegen               = "run -p xtask_codegen --"
+codegen-bindings      = "run -p xtask_codegen --features schema -- bindings"
 codegen-configuration = "run -p xtask_codegen --features configuration -- configuration"
 # updates a newly created crate
 codegen-license = "run -p xtask_codegen --features license -- license"
@@ -49,3 +35,6 @@ documentation = """
 format = "fmt --all --verbose"
 lint = "clippy --workspace --all-targets -- --deny warnings"
 new-crate = "run -p xtask_codegen -- new-crate"
+
+[profile.release]
+lto = true

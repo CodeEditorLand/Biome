@@ -5,7 +5,8 @@ Profile-*.json
 .idea
 .vs
 # Release artifacts
-**# Ignore test files that contributors could create locally
+**/target
+# Ignore test files that contributors could create locally
 **/test.*
 # Ignore third-party files
 **/node_modules

@@ -7,8 +7,8 @@ use biome_js_syntax::JsFileSource;
 use libfuzzer_sys::Corpus;
 
 pub fn do_fuzz(case: &[u8]) -> Corpus {
-	let parse_type = JsFileSource::jsx();
-	rome_common::fuzz_js_formatter_with_source_type(case, parse_type)
+    let parse_type = JsFileSource::jsx();
+    rome_common::fuzz_js_formatter_with_source_type(case, parse_type)
 }
 
 #[cfg(not(feature = "rome_all"))]
