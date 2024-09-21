@@ -8,14 +8,7 @@ use biome_js_syntax::JsConstructorClassMember;
 pub(crate) struct FormatJsConstructorClassMember;
 
 impl FormatNodeRule<JsConstructorClassMember> for FormatJsConstructorClassMember {
-    fn fmt_fields(&self, node: &JsConstructorClassMember, f: &mut JsFormatter) -> FormatResult<()> {
-        write![
-            f,
-            [
-                node.modifiers().format(),
-                space(),
-                FormatAnyJsMethodMember::from(node.clone())
-            ]
-        ]
-    }
+	fn fmt_fields(&self, node: &JsConstructorClassMember, f: &mut JsFormatter) -> FormatResult<()> {
+		write![f, [node.modifiers().format(), space(), FormatAnyJsMethodMember::from(node.clone())]]
+	}
 }

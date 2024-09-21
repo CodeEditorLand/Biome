@@ -8,14 +8,14 @@ use rustc_hash::FxHashMap;
 #[derive(Debug, Default, Clone, Deserializable)]
 #[deserializable(unknown_fields = "allow")]
 pub struct TsConfigJson {
-    base_url: Option<String>,
-    paths: FxHashMap<String, Vec<String>>,
+	base_url: Option<String>,
+	paths: FxHashMap<String, Vec<String>>,
 }
 
 impl Manifest for TsConfigJson {
-    type Language = JsonLanguage;
+	type Language = JsonLanguage;
 
-    fn deserialize_manifest(root: &LanguageRoot<Self::Language>) -> Deserialized<Self> {
-        deserialize_from_json_ast::<TsConfigJson>(root, "")
-    }
+	fn deserialize_manifest(root: &LanguageRoot<Self::Language>) -> Deserialized<Self> {
+		deserialize_from_json_ast::<TsConfigJson>(root, "")
+	}
 }

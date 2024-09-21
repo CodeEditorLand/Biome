@@ -7,7 +7,7 @@ use biome_js_syntax::JsMethodObjectMember;
 pub(crate) struct FormatJsMethodObjectMember;
 
 impl FormatNodeRule<JsMethodObjectMember> for FormatJsMethodObjectMember {
-    fn fmt_fields(&self, node: &JsMethodObjectMember, f: &mut JsFormatter) -> FormatResult<()> {
-        FormatAnyJsMethodMember::from(node.clone()).fmt(f)
-    }
+	fn fmt_fields(&self, node: &JsMethodObjectMember, f: &mut JsFormatter) -> FormatResult<()> {
+		FormatAnyJsMethodMember::from(node.clone()).fmt(f)
+	}
 }

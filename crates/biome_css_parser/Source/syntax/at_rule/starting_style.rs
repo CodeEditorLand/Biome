@@ -12,7 +12,7 @@ use biome_parser::prelude::*;
 /// which is a custom at-rule used for specific parsing scenarios.
 #[inline]
 pub(crate) fn is_at_starting_style_at_rule(p: &mut CssParser) -> bool {
-    p.at(T![starting_style])
+	p.at(T![starting_style])
 }
 
 /// Parses a `@starting-style` at-rule in a CSS stylesheet.
@@ -41,19 +41,19 @@ pub(crate) fn is_at_starting_style_at_rule(p: &mut CssParser) -> bool {
 /// ```
 #[inline]
 pub(crate) fn parse_starting_style_at_rule(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_starting_style_at_rule(p) {
-        return Absent;
-    }
+	if !is_at_starting_style_at_rule(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T![starting_style]);
+	p.bump(T![starting_style]);
 
-    if p.state().is_nesting_block {
-        parse_declaration_block(p);
-    } else {
-        parse_rule_block(p);
-    };
+	if p.state().is_nesting_block {
+		parse_declaration_block(p);
+	} else {
+		parse_rule_block(p);
+	};
 
-    Present(m.complete(p, CSS_STARTING_STYLE_AT_RULE))
+	Present(m.complete(p, CSS_STARTING_STYLE_AT_RULE))
 }

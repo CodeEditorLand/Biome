@@ -7,11 +7,11 @@ use biome_js_syntax::JsObjectAssignmentPatternProperty;
 pub(crate) struct FormatJsObjectAssignmentPatternProperty;
 
 impl FormatNodeRule<JsObjectAssignmentPatternProperty> for FormatJsObjectAssignmentPatternProperty {
-    fn fmt_fields(
-        &self,
-        node: &JsObjectAssignmentPatternProperty,
-        f: &mut JsFormatter,
-    ) -> FormatResult<()> {
-        write!(f, [AnyJsAssignmentLike::from(node.clone())])
-    }
+	fn fmt_fields(
+		&self,
+		node: &JsObjectAssignmentPatternProperty,
+		f: &mut JsFormatter,
+	) -> FormatResult<()> {
+		write!(f, [AnyJsAssignmentLike::from(node.clone())])
+	}
 }

@@ -16,23 +16,23 @@ use crate::SemanticEventExtractor;
 /// Build the complete [SemanticModel] of a parsed file.
 /// For a push based model to build the [SemanticModel], see [SemanticModelBuilder].
 pub fn semantic_model(root: &GraphqlRoot) -> SemanticModel {
-    let mut extractor = SemanticEventExtractor::default();
-    let mut builder = SemanticModelBuilder::new(root.clone());
+	let mut extractor = SemanticEventExtractor::default();
+	let mut builder = SemanticModelBuilder::new(root.clone());
 
-    let root = root.syntax();
-    for node in root.preorder() {
-        match node {
-            biome_graphql_syntax::WalkEvent::Enter(node) => {
-                builder.push_node(&node);
-                extractor.enter(&node);
-            }
-            biome_graphql_syntax::WalkEvent::Leave(node) => extractor.leave(&node),
-        }
-    }
+	let root = root.syntax();
+	for node in root.preorder() {
+		match node {
+			biome_graphql_syntax::WalkEvent::Enter(node) => {
+				builder.push_node(&node);
+				extractor.enter(&node);
+			}
+			biome_graphql_syntax::WalkEvent::Leave(node) => extractor.leave(&node),
+		}
+	}
 
-    while let Some(e) = extractor.pop() {
-        builder.push_event(e);
-    }
+	while let Some(e) = extractor.pop() {
+		builder.push_event(e);
+	}
 
-    builder.build()
+	builder.build()
 }

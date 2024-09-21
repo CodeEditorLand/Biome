@@ -11,32 +11,32 @@ use serde::{Deserialize, Serialize};
 #[partial(cfg_attr(feature = "schema", derive(schemars::JsonSchema)))]
 #[partial(serde(deny_unknown_fields, rename_all = "camelCase"))]
 pub struct AssistsConfiguration {
-    /// Whether Biome should enable assists via LSP.
-    #[partial(bpaf(long("assists-enabled"), argument("true|false")))]
-    pub enabled: bool,
+	/// Whether Biome should enable assists via LSP.
+	#[partial(bpaf(long("assists-enabled"), argument("true|false")))]
+	pub enabled: bool,
 
-    /// Whether Biome should fail in CLI if the assists were not applied to the code.
-    #[partial(bpaf(pure(Default::default()), optional, hide))]
-    pub actions: Actions,
+	/// Whether Biome should fail in CLI if the assists were not applied to the code.
+	#[partial(bpaf(pure(Default::default()), optional, hide))]
+	pub actions: Actions,
 
-    /// A list of Unix shell style patterns. The formatter will ignore files/folders that will
-    /// match these patterns.
-    #[partial(bpaf(hide))]
-    pub ignore: StringSet,
+	/// A list of Unix shell style patterns. The formatter will ignore files/folders that will
+	/// match these patterns.
+	#[partial(bpaf(hide))]
+	pub ignore: StringSet,
 
-    /// A list of Unix shell style patterns. The formatter will include files/folders that will
-    /// match these patterns.
-    #[partial(bpaf(hide))]
-    pub include: StringSet,
+	/// A list of Unix shell style patterns. The formatter will include files/folders that will
+	/// match these patterns.
+	#[partial(bpaf(hide))]
+	pub include: StringSet,
 }
 
 impl Default for AssistsConfiguration {
-    fn default() -> Self {
-        Self {
-            enabled: true,
-            actions: Actions::default(),
-            ignore: StringSet::default(),
-            include: StringSet::default(),
-        }
-    }
+	fn default() -> Self {
+		Self {
+			enabled: true,
+			actions: Actions::default(),
+			ignore: StringSet::default(),
+			include: StringSet::default(),
+		}
+	}
 }

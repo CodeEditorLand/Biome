@@ -2,17 +2,17 @@ use biome_console::fmt::Display;
 use biome_console::markup;
 use biome_diagnostics::adapters::{BpafError, IoError, SerdeJsonError};
 use biome_diagnostics::{
-    Advices, Category, Diagnostic, Error, LogCategory, MessageAndDescription, Severity, Visit,
+	Advices, Category, Diagnostic, Error, LogCategory, MessageAndDescription, Severity, Visit,
 };
 use biome_service::WorkspaceError;
 use std::process::{ExitCode, Termination};
 use std::{env::current_exe, fmt::Debug};
 
 fn command_name() -> String {
-    current_exe()
-        .ok()
-        .and_then(|path| Some(path.file_name()?.to_str()?.to_string()))
-        .unwrap_or_else(|| String::from("biome"))
+	current_exe()
+		.ok()
+		.and_then(|path| Some(path.file_name()?.to_str()?.to_string()))
+		.unwrap_or_else(|| String::from("biome"))
 }
 
 /// A diagnostic that is emitted when running biome via CLI.
@@ -20,44 +20,44 @@ fn command_name() -> String {
 /// When displaying the diagnostic,
 #[derive(Debug, Diagnostic)]
 pub enum CliDiagnostic {
-    /// Returned when it is called with a subcommand it doesn't know
-    UnknownCommand(UnknownCommand),
-    /// Return by the help command when it is called with a subcommand it doesn't know
-    UnknownCommandHelp(UnknownCommandHelp),
-    /// Returned when the value of a command line argument could not be parsed
-    ParseError(ParseDiagnostic),
-    /// Returned when the CLI  doesn't recognize a command line argument
-    UnexpectedArgument(UnexpectedArgument),
-    /// Returned when a required argument is not present in the command line
-    MissingArgument(MissingArgument),
-    /// Returned when a subcommand is called without any arguments
-    EmptyArguments(EmptyArguments),
-    /// Returned when a subcommand is called with an unsupported combination of arguments
-    IncompatibleArguments(IncompatibleArguments),
-    /// Returned by a traversal command when error diagnostics were emitted
-    CheckError(CheckError),
-    /// Emitted when a file is fixed, but it still contains diagnostics.
-    ///
-    /// This happens when these diagnostics come from rules that don't have a code action.
-    FileCheck(FileCheck),
-    /// When an argument is higher than the expected maximum
-    OverflowNumberArgument(OverflowNumberArgument),
-    /// Wrapper for an underlying `biome_service` error
-    WorkspaceError(WorkspaceError),
-    /// Wrapper for an underlying `std::io` error
-    IoError(IoDiagnostic),
-    /// The daemon is not running
-    ServerNotRunning(ServerNotRunning),
-    /// The end configuration (`biome.json` + other options) is incompatible with the command
-    IncompatibleEndConfiguration(IncompatibleEndConfiguration),
-    /// No files processed during the file system traversal
-    NoFilesWereProcessed(NoFilesWereProcessed),
-    /// Errors thrown when running the `biome migrate` command
-    MigrateError(MigrationDiagnostic),
-    /// Emitted during the reporting phase
-    Report(ReportDiagnostic),
-    /// Emitted when there's an error emitted when using stdin mode
-    Stdin(StdinDiagnostic),
+	/// Returned when it is called with a subcommand it doesn't know
+	UnknownCommand(UnknownCommand),
+	/// Return by the help command when it is called with a subcommand it doesn't know
+	UnknownCommandHelp(UnknownCommandHelp),
+	/// Returned when the value of a command line argument could not be parsed
+	ParseError(ParseDiagnostic),
+	/// Returned when the CLI  doesn't recognize a command line argument
+	UnexpectedArgument(UnexpectedArgument),
+	/// Returned when a required argument is not present in the command line
+	MissingArgument(MissingArgument),
+	/// Returned when a subcommand is called without any arguments
+	EmptyArguments(EmptyArguments),
+	/// Returned when a subcommand is called with an unsupported combination of arguments
+	IncompatibleArguments(IncompatibleArguments),
+	/// Returned by a traversal command when error diagnostics were emitted
+	CheckError(CheckError),
+	/// Emitted when a file is fixed, but it still contains diagnostics.
+	///
+	/// This happens when these diagnostics come from rules that don't have a code action.
+	FileCheck(FileCheck),
+	/// When an argument is higher than the expected maximum
+	OverflowNumberArgument(OverflowNumberArgument),
+	/// Wrapper for an underlying `biome_service` error
+	WorkspaceError(WorkspaceError),
+	/// Wrapper for an underlying `std::io` error
+	IoError(IoDiagnostic),
+	/// The daemon is not running
+	ServerNotRunning(ServerNotRunning),
+	/// The end configuration (`biome.json` + other options) is incompatible with the command
+	IncompatibleEndConfiguration(IncompatibleEndConfiguration),
+	/// No files processed during the file system traversal
+	NoFilesWereProcessed(NoFilesWereProcessed),
+	/// Errors thrown when running the `biome migrate` command
+	MigrateError(MigrationDiagnostic),
+	/// Emitted during the reporting phase
+	Report(ReportDiagnostic),
+	/// Emitted when there's an error emitted when using stdin mode
+	Stdin(StdinDiagnostic),
 }
 
 #[derive(Debug, Diagnostic)]
@@ -70,7 +70,7 @@ pub enum CliDiagnostic {
     ),
 )]
 pub struct UnknownCommand {
-    command_name: String,
+	command_name: String,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -83,7 +83,7 @@ category = "flags/invalid",
     ),
 )]
 pub struct UnknownCommandHelp {
-    command_name: String,
+	command_name: String,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -92,11 +92,11 @@ pub struct UnknownCommandHelp {
     severity = Error,
 )]
 pub struct ParseDiagnostic {
-    #[message]
-    #[description]
-    message: MessageAndDescription,
-    #[source]
-    source: Option<Error>,
+	#[message]
+	#[description]
+	message: MessageAndDescription,
+	#[source]
+	source: Option<Error>,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -109,9 +109,9 @@ pub struct ParseDiagnostic {
     ),
 )]
 pub struct UnexpectedArgument {
-    argument: String,
-    #[advice]
-    help: CliAdvice,
+	argument: String,
+	#[advice]
+	help: CliAdvice,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -124,9 +124,9 @@ pub struct UnexpectedArgument {
     ),
 )]
 pub struct MissingArgument {
-    argument: String,
-    #[advice]
-    advice: CliAdvice,
+	argument: String,
+	#[advice]
+	advice: CliAdvice,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -147,8 +147,8 @@ pub struct EmptyArguments;
     )
 )]
 pub struct IncompatibleArguments {
-    first_argument: String,
-    second_argument: String,
+	first_argument: String,
+	second_argument: String,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -156,11 +156,11 @@ pub struct IncompatibleArguments {
     severity = Error,
 )]
 pub struct CheckError {
-    #[category]
-    category: &'static Category,
+	#[category]
+	category: &'static Category,
 
-    #[message]
-    message: MessageAndDescription,
+	#[message]
+	message: MessageAndDescription,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -168,15 +168,15 @@ pub struct CheckError {
     severity = Error,
 )]
 pub struct FileCheck {
-    #[message]
-    #[description]
-    pub message: MessageAndDescription,
+	#[message]
+	#[description]
+	pub message: MessageAndDescription,
 
-    #[location(resource)]
-    pub file_path: String,
+	#[location(resource)]
+	pub file_path: String,
 
-    #[category]
-    pub category: &'static Category,
+	#[category]
+	pub category: &'static Category,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -189,8 +189,8 @@ pub struct FileCheck {
     )
 )]
 pub struct OverflowNumberArgument {
-    argument: String,
-    maximum: u16,
+	argument: String,
+	maximum: u16,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -200,8 +200,8 @@ pub struct OverflowNumberArgument {
     message = "Errors occurred while executing I/O operations."
 )]
 pub struct IoDiagnostic {
-    #[source]
-    source: Option<Error>,
+	#[source]
+	source: Option<Error>,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -223,7 +223,7 @@ pub struct ServerNotRunning;
     )
 )]
 pub struct IncompatibleEndConfiguration {
-    reason: String,
+	reason: String,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -244,7 +244,7 @@ pub struct NoFilesWereProcessed;
 	)
 )]
 pub struct MigrationDiagnostic {
-    pub reason: String,
+	pub reason: String,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -254,121 +254,113 @@ pub struct MigrationDiagnostic {
     tags(DEPRECATED_CODE)
 )]
 pub struct DeprecatedArgument {
-    #[message]
-    pub message: MessageAndDescription,
+	#[message]
+	pub message: MessageAndDescription,
 }
 
 impl DeprecatedArgument {
-    pub fn new(message: impl Display) -> Self {
-        Self {
-            message: MessageAndDescription::from(markup! {{message}}.to_owned()),
-        }
-    }
+	pub fn new(message: impl Display) -> Self {
+		Self { message: MessageAndDescription::from(markup! {{message}}.to_owned()) }
+	}
 }
 
 #[derive(Debug, Diagnostic)]
 pub enum ReportDiagnostic {
-    /// Emitted when trying to serialise the report
-    Serialization(SerdeJsonError),
+	/// Emitted when trying to serialise the report
+	Serialization(SerdeJsonError),
 }
 
 /// Advices for the [CliDiagnostic]
 #[derive(Debug, Default)]
 struct CliAdvice {
-    /// Used to print the help command
-    sub_command: String,
+	/// Used to print the help command
+	sub_command: String,
 }
 
 impl CliAdvice {
-    fn new_with_help(sub_command: impl Into<String>) -> Self {
-        Self {
-            sub_command: sub_command.into(),
-        }
-    }
+	fn new_with_help(sub_command: impl Into<String>) -> Self {
+		Self { sub_command: sub_command.into() }
+	}
 }
 
 impl Advices for CliAdvice {
-    fn record(&self, visitor: &mut dyn Visit) -> std::io::Result<()> {
-        let command_name = command_name();
-        let help_sub_command = format!("{} {} --help", command_name, &self.sub_command);
-        visitor.record_log(
-            LogCategory::Info,
-            &markup! { "Type the following command for more information" },
-        )?;
-        visitor.record_command(&help_sub_command)?;
+	fn record(&self, visitor: &mut dyn Visit) -> std::io::Result<()> {
+		let command_name = command_name();
+		let help_sub_command = format!("{} {} --help", command_name, &self.sub_command);
+		visitor.record_log(
+			LogCategory::Info,
+			&markup! { "Type the following command for more information" },
+		)?;
+		visitor.record_command(&help_sub_command)?;
 
-        Ok(())
-    }
+		Ok(())
+	}
 }
 
 impl CliDiagnostic {
-    /// Returned when a subcommand is called with an unsupported combination of arguments
-    pub fn incompatible_arguments(
-        first_argument: impl Into<String>,
-        second_argument: impl Into<String>,
-    ) -> Self {
-        Self::IncompatibleArguments(IncompatibleArguments {
-            first_argument: first_argument.into(),
-            second_argument: second_argument.into(),
-        })
-    }
+	/// Returned when a subcommand is called with an unsupported combination of arguments
+	pub fn incompatible_arguments(
+		first_argument: impl Into<String>,
+		second_argument: impl Into<String>,
+	) -> Self {
+		Self::IncompatibleArguments(IncompatibleArguments {
+			first_argument: first_argument.into(),
+			second_argument: second_argument.into(),
+		})
+	}
 
-    /// To throw when there's been an error while parsing an argument
-    pub fn parse_error_bpaf(source: bpaf::ParseFailure) -> Self {
-        Self::ParseError(ParseDiagnostic {
-            source: Some(Error::from(BpafError::from(source))),
-            message: MessageAndDescription::from("Failed to parse CLI arguments.".to_string()),
-        })
-    }
+	/// To throw when there's been an error while parsing an argument
+	pub fn parse_error_bpaf(source: bpaf::ParseFailure) -> Self {
+		Self::ParseError(ParseDiagnostic {
+			source: Some(Error::from(BpafError::from(source))),
+			message: MessageAndDescription::from("Failed to parse CLI arguments.".to_string()),
+		})
+	}
 
-    /// Returned when it is called with a subcommand it doesn't know
-    pub fn unknown_command(command: impl Into<String>) -> Self {
-        Self::UnknownCommand(UnknownCommand {
-            command_name: command.into(),
-        })
-    }
+	/// Returned when it is called with a subcommand it doesn't know
+	pub fn unknown_command(command: impl Into<String>) -> Self {
+		Self::UnknownCommand(UnknownCommand { command_name: command.into() })
+	}
 
-    /// Returned when a subcommand is called without any arguments
-    pub fn empty_arguments() -> Self {
-        Self::EmptyArguments(EmptyArguments)
-    }
+	/// Returned when a subcommand is called without any arguments
+	pub fn empty_arguments() -> Self {
+		Self::EmptyArguments(EmptyArguments)
+	}
 
-    /// Returned when a required argument is not present in the command line
-    pub fn missing_argument(argument: impl Into<String>, subcommand: impl Into<String>) -> Self {
-        Self::MissingArgument(MissingArgument {
-            argument: argument.into(),
-            advice: CliAdvice::new_with_help(subcommand),
-        })
-    }
+	/// Returned when a required argument is not present in the command line
+	pub fn missing_argument(argument: impl Into<String>, subcommand: impl Into<String>) -> Self {
+		Self::MissingArgument(MissingArgument {
+			argument: argument.into(),
+			advice: CliAdvice::new_with_help(subcommand),
+		})
+	}
 
-    /// When no files were processed while traversing the file system
-    pub fn no_files_processed() -> Self {
-        Self::NoFilesWereProcessed(NoFilesWereProcessed)
-    }
+	/// When no files were processed while traversing the file system
+	pub fn no_files_processed() -> Self {
+		Self::NoFilesWereProcessed(NoFilesWereProcessed)
+	}
 
-    /// Returned when the CLI  doesn't recognize a command line argument
-    pub fn unexpected_argument(argument: impl Into<String>, subcommand: impl Into<String>) -> Self {
-        Self::UnexpectedArgument(UnexpectedArgument {
-            argument: argument.into(),
-            help: CliAdvice::new_with_help(subcommand),
-        })
-    }
+	/// Returned when the CLI  doesn't recognize a command line argument
+	pub fn unexpected_argument(argument: impl Into<String>, subcommand: impl Into<String>) -> Self {
+		Self::UnexpectedArgument(UnexpectedArgument {
+			argument: argument.into(),
+			help: CliAdvice::new_with_help(subcommand),
+		})
+	}
 
-    /// When there's been error inside the workspace
-    pub fn workspace_error(error: WorkspaceError) -> Self {
-        Self::WorkspaceError(error)
-    }
+	/// When there's been error inside the workspace
+	pub fn workspace_error(error: WorkspaceError) -> Self {
+		Self::WorkspaceError(error)
+	}
 
-    /// An I/O error
-    pub fn io_error(error: std::io::Error) -> Self {
-        Self::IoError(IoDiagnostic {
-            source: Some(Error::from(IoError::from(error))),
-        })
-    }
+	/// An I/O error
+	pub fn io_error(error: std::io::Error) -> Self {
+		Self::IoError(IoDiagnostic { source: Some(Error::from(IoError::from(error))) })
+	}
 
-    /// Emitted when errors were emitted while running `check` command
-    pub fn check_error(category: &'static Category) -> Self {
-        Self::CheckError(CheckError {
+	/// Emitted when errors were emitted while running `check` command
+	pub fn check_error(category: &'static Category) -> Self {
+		Self::CheckError(CheckError {
             category,
             message: MessageAndDescription::from(
                 markup! {
@@ -377,11 +369,11 @@ impl CliDiagnostic {
                 .to_owned(),
             ),
         })
-    }
+	}
 
-    /// Emitted when warnings were emitted while running `check` command
-    pub fn check_warnings(category: &'static Category) -> Self {
-        Self::CheckError(CheckError {
+	/// Emitted when warnings were emitted while running `check` command
+	pub fn check_warnings(category: &'static Category) -> Self {
+		Self::CheckError(CheckError {
             category,
             message: MessageAndDescription::from(
                 markup! {
@@ -390,11 +382,11 @@ impl CliDiagnostic {
                 .to_owned(),
             ),
         })
-    }
+	}
 
-    /// Emitted when errors were emitted while apply code fixes
-    pub fn apply_error(category: &'static Category) -> Self {
-        Self::CheckError(CheckError {
+	/// Emitted when errors were emitted while apply code fixes
+	pub fn apply_error(category: &'static Category) -> Self {
+		Self::CheckError(CheckError {
             category,
             message: MessageAndDescription::from(
                 markup! {
@@ -403,10 +395,10 @@ impl CliDiagnostic {
                 .to_owned(),
             ),
         })
-    }
-    /// Emitted when warnings were emitted while apply code fixes
-    pub fn apply_warnings(category: &'static Category) -> Self {
-        Self::CheckError(CheckError {
+	}
+	/// Emitted when warnings were emitted while apply code fixes
+	pub fn apply_warnings(category: &'static Category) -> Self {
+		Self::CheckError(CheckError {
             category,
             message: MessageAndDescription::from(
                 markup! {
@@ -415,64 +407,57 @@ impl CliDiagnostic {
                 .to_owned(),
             ),
         })
-    }
+	}
 
-    pub fn stdin() -> Self {
-        Self::Stdin(StdinDiagnostic::default())
-    }
+	pub fn stdin() -> Self {
+		Self::Stdin(StdinDiagnostic::default())
+	}
 
-    /// Emitted when the server is not running
-    pub fn server_not_running() -> Self {
-        Self::ServerNotRunning(ServerNotRunning)
-    }
+	/// Emitted when the server is not running
+	pub fn server_not_running() -> Self {
+		Self::ServerNotRunning(ServerNotRunning)
+	}
 
-    /// Emitted when the end configuration (`biome.json` file + CLI arguments + LSP configuration)
-    /// results in a combination of options that doesn't allow to run the command correctly.
-    ///
-    /// A reason needs to be provided
-    pub fn incompatible_end_configuration(reason: impl Into<String>) -> Self {
-        Self::IncompatibleEndConfiguration(IncompatibleEndConfiguration {
-            reason: reason.into(),
-        })
-    }
+	/// Emitted when the end configuration (`biome.json` file + CLI arguments + LSP configuration)
+	/// results in a combination of options that doesn't allow to run the command correctly.
+	///
+	/// A reason needs to be provided
+	pub fn incompatible_end_configuration(reason: impl Into<String>) -> Self {
+		Self::IncompatibleEndConfiguration(IncompatibleEndConfiguration { reason: reason.into() })
+	}
 
-    /// Emitted when an argument value is greater than the allowed value
-    pub fn overflown_argument(argument: impl Into<String>, maximum: u16) -> Self {
-        Self::OverflowNumberArgument(OverflowNumberArgument {
-            argument: argument.into(),
-            maximum,
-        })
-    }
+	/// Emitted when an argument value is greater than the allowed value
+	pub fn overflown_argument(argument: impl Into<String>, maximum: u16) -> Self {
+		Self::OverflowNumberArgument(OverflowNumberArgument { argument: argument.into(), maximum })
+	}
 
-    /// Return by the help command when it is called with a subcommand it doesn't know
-    pub fn new_unknown_help(command: impl Into<String>) -> Self {
-        Self::UnknownCommandHelp(UnknownCommandHelp {
-            command_name: command.into(),
-        })
-    }
+	/// Return by the help command when it is called with a subcommand it doesn't know
+	pub fn new_unknown_help(command: impl Into<String>) -> Self {
+		Self::UnknownCommandHelp(UnknownCommandHelp { command_name: command.into() })
+	}
 }
 
 impl From<WorkspaceError> for CliDiagnostic {
-    fn from(error: WorkspaceError) -> Self {
-        CliDiagnostic::workspace_error(error)
-    }
+	fn from(error: WorkspaceError) -> Self {
+		CliDiagnostic::workspace_error(error)
+	}
 }
 
 impl From<std::io::Error> for CliDiagnostic {
-    fn from(error: std::io::Error) -> Self {
-        CliDiagnostic::io_error(error)
-    }
+	fn from(error: std::io::Error) -> Self {
+		CliDiagnostic::io_error(error)
+	}
 }
 
 impl Termination for CliDiagnostic {
-    fn report(self) -> ExitCode {
-        let severity = self.severity();
-        if severity >= Severity::Error {
-            ExitCode::FAILURE
-        } else {
-            ExitCode::SUCCESS
-        }
-    }
+	fn report(self) -> ExitCode {
+		let severity = self.severity();
+		if severity >= Severity::Error {
+			ExitCode::FAILURE
+		} else {
+			ExitCode::SUCCESS
+		}
+	}
 }
 
 #[derive(Debug, Diagnostic)]
@@ -485,14 +470,14 @@ category = "internalError/fs",
     )
 )]
 pub struct DeprecatedConfigurationFile {
-    #[location(resource)]
-    pub path: String,
+	#[location(resource)]
+	pub path: String,
 }
 
 impl DeprecatedConfigurationFile {
-    pub fn new(path: impl Into<String>) -> Self {
-        Self { path: path.into() }
-    }
+	pub fn new(path: impl Into<String>) -> Self {
+		Self { path: path.into() }
+	}
 }
 
 #[derive(Debug, Default, Diagnostic)]
@@ -505,14 +490,14 @@ pub struct StdinDiagnostic {}
 
 #[cfg(test)]
 mod test {
-    use crate::CliDiagnostic;
+	use crate::CliDiagnostic;
 
-    #[test]
-    fn termination_diagnostic_size() {
-        assert_eq!(
-            std::mem::size_of::<CliDiagnostic>(),
-            96,
-            "you successfully decreased the size of the diagnostic!"
-        )
-    }
+	#[test]
+	fn termination_diagnostic_size() {
+		assert_eq!(
+			std::mem::size_of::<CliDiagnostic>(),
+			96,
+			"you successfully decreased the size of the diagnostic!"
+		)
+	}
 }

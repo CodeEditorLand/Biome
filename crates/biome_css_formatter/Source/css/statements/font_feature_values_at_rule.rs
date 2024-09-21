@@ -6,26 +6,17 @@ use biome_formatter::write;
 pub(crate) struct FormatCssFontFeatureValuesAtRule;
 
 impl FormatNodeRule<CssFontFeatureValuesAtRule> for FormatCssFontFeatureValuesAtRule {
-    fn fmt_fields(
-        &self,
-        node: &CssFontFeatureValuesAtRule,
-        f: &mut CssFormatter,
-    ) -> FormatResult<()> {
-        let CssFontFeatureValuesAtRuleFields {
-            font_feature_values_token,
-            names,
-            block,
-        } = node.as_fields();
+	fn fmt_fields(
+		&self,
+		node: &CssFontFeatureValuesAtRule,
+		f: &mut CssFormatter,
+	) -> FormatResult<()> {
+		let CssFontFeatureValuesAtRuleFields { font_feature_values_token, names, block } =
+			node.as_fields();
 
-        write!(
-            f,
-            [
-                font_feature_values_token.format(),
-                space(),
-                names.format(),
-                space(),
-                block.format()
-            ]
-        )
-    }
+		write!(
+			f,
+			[font_feature_values_token.format(), space(), names.format(), space(), block.format()]
+		)
+	}
 }

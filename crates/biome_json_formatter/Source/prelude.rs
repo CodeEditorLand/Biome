@@ -3,7 +3,7 @@
 
 #[allow(unused_imports)]
 pub(crate) use crate::{
-    AsFormat, FormatNodeRule, FormattedIterExt as _, IntoFormat, JsonFormatContext, JsonFormatter,
+	AsFormat, FormatNodeRule, FormattedIterExt as _, IntoFormat, JsonFormatContext, JsonFormatter,
 };
 pub(crate) use biome_formatter::prelude::*;
 #[allow(unused_imports)]

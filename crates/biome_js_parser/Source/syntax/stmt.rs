@@ -11,15 +11,15 @@ use super::typescript::*;
 use crate::parser::RecoveryResult;
 use crate::prelude::*;
 use crate::state::{
-    BreakableKind, ChangeParserState, EnableStrictMode, EnableStrictModeSnapshot, EnterBreakable,
-    LabelledItem, StrictMode as StrictModeState, WithLabel,
+	BreakableKind, ChangeParserState, EnableStrictMode, EnableStrictModeSnapshot, EnterBreakable,
+	LabelledItem, StrictMode as StrictModeState, WithLabel,
 };
 use crate::syntax::assignment::expression_to_assignment_pattern;
 use crate::syntax::class::{parse_class_declaration, parse_decorators, parse_initializer_clause};
 use crate::syntax::expr::{
-    is_at_expression, is_at_identifier, is_nth_at_identifier,
-    parse_assignment_expression_or_higher, parse_expression_or_recover_to_next_statement,
-    parse_identifier, ExpressionContext,
+	is_at_expression, is_at_identifier, is_nth_at_identifier,
+	parse_assignment_expression_or_higher, parse_expression_or_recover_to_next_statement,
+	parse_identifier, ExpressionContext,
 };
 use crate::syntax::function::{is_at_async_function, parse_function_declaration, LineBreak};
 use crate::syntax::js_parse_error;
@@ -38,40 +38,40 @@ use biome_parser::ParserProgress;
 use biome_rowan::SyntaxKind;
 
 pub const STMT_RECOVERY_SET: TokenSet<JsSyntaxKind> = token_set![
-    L_CURLY,
-    VAR_KW,
-    FUNCTION_KW,
-    IF_KW,
-    FOR_KW,
-    DO_KW,
-    WHILE_KW,
-    CONTINUE_KW,
-    BREAK_KW,
-    RETURN_KW,
-    WITH_KW,
-    SWITCH_KW,
-    THROW_KW,
-    TRY_KW,
-    DEBUGGER_KW,
-    FUNCTION_KW,
-    CLASS_KW,
-    IMPORT_KW,
-    EXPORT_KW,
-    ABSTRACT_KW,
-    INTERFACE_KW,
-    ENUM_KW,
-    TYPE_KW,
-    DECLARE_KW,
-    MODULE_KW,
-    NAMESPACE_KW,
-    LET_KW,
-    CONST_KW,
-    USING_KW,
-    MODULE_KW,
-    NAMESPACE_KW,
-    GLOBAL_KW,
-    T![@],
-    T![;]
+	L_CURLY,
+	VAR_KW,
+	FUNCTION_KW,
+	IF_KW,
+	FOR_KW,
+	DO_KW,
+	WHILE_KW,
+	CONTINUE_KW,
+	BREAK_KW,
+	RETURN_KW,
+	WITH_KW,
+	SWITCH_KW,
+	THROW_KW,
+	TRY_KW,
+	DEBUGGER_KW,
+	FUNCTION_KW,
+	CLASS_KW,
+	IMPORT_KW,
+	EXPORT_KW,
+	ABSTRACT_KW,
+	INTERFACE_KW,
+	ENUM_KW,
+	TYPE_KW,
+	DECLARE_KW,
+	MODULE_KW,
+	NAMESPACE_KW,
+	LET_KW,
+	CONST_KW,
+	USING_KW,
+	MODULE_KW,
+	NAMESPACE_KW,
+	GLOBAL_KW,
+	T![@],
+	T![;]
 ];
 
 /// Consume an explicit semicolon, or try to automatically insert one,
@@ -84,26 +84,23 @@ pub const STMT_RECOVERY_SET: TokenSet<JsSyntaxKind> = token_set![
 // let foo5
 // function foo6() { return true }
 pub(crate) fn semi(p: &mut JsParser, err_range: TextRange) -> bool {
-    // test_err js semicolons_err
-    // let foo = bar throw foo
+	// test_err js semicolons_err
+	// let foo = bar throw foo
 
-    if !optional_semi(p) {
-        let err = p
-            .err_builder(
-                "Expected a semicolon or an implicit semicolon after a statement, but found none",
-                p.cur_range(),
-            )
-            .with_detail(
-                p.cur_range(),
-                "An explicit or implicit semicolon is expected here...",
-            )
-            .with_detail(err_range, "...Which is required to end this statement");
+	if !optional_semi(p) {
+		let err = p
+			.err_builder(
+				"Expected a semicolon or an implicit semicolon after a statement, but found none",
+				p.cur_range(),
+			)
+			.with_detail(p.cur_range(), "An explicit or implicit semicolon is expected here...")
+			.with_detail(err_range, "...Which is required to end this statement");
 
-        p.error(err);
-        false
-    } else {
-        true
-    }
+		p.error(err);
+		false
+	} else {
+		true
+	}
 }
 
 /// Eats a semicolon if present but doesn't add an error none is present and the automatic
@@ -112,40 +109,40 @@ pub(crate) fn semi(p: &mut JsParser, err_range: TextRange) -> bool {
 /// Returns false if neither a semicolon was present and the current position doesn't allow an automatic
 /// semicolon insertion.
 pub(crate) fn optional_semi(p: &mut JsParser) -> bool {
-    if p.eat(T![;]) {
-        return true;
-    }
+	if p.eat(T![;]) {
+		return true;
+	}
 
-    is_semi(p, 0)
+	is_semi(p, 0)
 }
 
 pub(super) fn is_semi(p: &mut JsParser, offset: usize) -> bool {
-    p.nth_at(offset, T![;])
-        || p.nth_at(offset, EOF)
-        || p.nth_at(offset, T!['}'])
-        || p.has_nth_preceding_line_break(offset)
+	p.nth_at(offset, T![;])
+		|| p.nth_at(offset, EOF)
+		|| p.nth_at(offset, T!['}'])
+		|| p.has_nth_preceding_line_break(offset)
 }
 
 #[derive(Debug, Clone, Copy, Eq, PartialEq)]
 pub(crate) enum StatementContext {
-    If,
-    Label,
-    Do,
-    While,
-    With,
-    For,
-    // Block, Switch consequence, etc.
-    StatementList,
+	If,
+	Label,
+	Do,
+	While,
+	With,
+	For,
+	// Block, Switch consequence, etc.
+	StatementList,
 }
 
 impl StatementContext {
-    pub(crate) fn is_single_statement(&self) -> bool {
-        !matches!(self, StatementContext::StatementList)
-    }
+	pub(crate) fn is_single_statement(&self) -> bool {
+		!matches!(self, StatementContext::StatementList)
+	}
 
-    pub(crate) fn is_statement_list(&self) -> bool {
-        matches!(self, StatementContext::StatementList)
-    }
+	pub(crate) fn is_statement_list(&self) -> bool {
+		matches!(self, StatementContext::StatementList)
+	}
 }
 
 /// A generic statement such as a block, if, while, with, etc
@@ -155,253 +152,253 @@ impl StatementContext {
 ///
 /// If not passed, [STMT_RECOVERY_SET] will be used as recovery set
 pub(crate) fn parse_statement(p: &mut JsParser, context: StatementContext) -> ParsedSyntax {
-    match p.cur() {
-        // test_err js import_decl_not_top_level
-        // {
-        //  import foo from "bar";
-        // }
+	match p.cur() {
+		// test_err js import_decl_not_top_level
+		// {
+		//  import foo from "bar";
+		// }
 
-        // make sure we dont try parsing import.meta or import() as declarations
-        T![import] if !token_set![T![.], T!['(']].contains(p.nth(1)) => {
-            let mut import = parse_import_or_import_equals_declaration(p).unwrap();
+		// make sure we dont try parsing import.meta or import() as declarations
+		T![import] if !token_set![T![.], T!['(']].contains(p.nth(1)) => {
+			let mut import = parse_import_or_import_equals_declaration(p).unwrap();
 
-            if import.kind(p) == TS_IMPORT_EQUALS_DECLARATION {
-                return Present(import);
-            }
+			if import.kind(p) == TS_IMPORT_EQUALS_DECLARATION {
+				return Present(import);
+			}
 
-            import.change_kind(p, JS_BOGUS_STATEMENT);
+			import.change_kind(p, JS_BOGUS_STATEMENT);
 
-            let error = match p.source_type().module_kind() {
-                ModuleKind::Script => p
-                    .err_builder(
-                        "Illegal use of an import declaration outside of a module",
-                        import.range(p),
-                    )
-                    .with_hint("not allowed inside scripts"),
-                ModuleKind::Module => p
-                    .err_builder(
-                        "Illegal use of an import declaration not at the top level",
-                        import.range(p),
-                    )
-                    .with_hint("move this declaration to the top level"),
-            };
+			let error = match p.source_type().module_kind() {
+				ModuleKind::Script => p
+					.err_builder(
+						"Illegal use of an import declaration outside of a module",
+						import.range(p),
+					)
+					.with_hint("not allowed inside scripts"),
+				ModuleKind::Module => p
+					.err_builder(
+						"Illegal use of an import declaration not at the top level",
+						import.range(p),
+					)
+					.with_hint("move this declaration to the top level"),
+			};
 
-            p.error(error);
-            Present(import)
-        }
-        // test_err js export_decl_not_top_level
-        // {
-        //  export { pain } from "life";
-        // }
-        T![export] => parse_non_top_level_export(p, Absent),
-        T![;] => parse_empty_statement(p),
-        T!['{'] => parse_block_stmt(p),
-        T![if] => parse_if_statement(p),
-        T![with] => parse_with_statement(p),
-        T![while] => parse_while_statement(p),
-        T![const] | T![enum] if is_at_ts_enum_declaration(p) => {
-            // test_err js enum_in_js
-            // enum A {}
-            TypeScript.parse_exclusive_syntax(p, parse_ts_enum_declaration, |p, declaration| {
-                ts_only_syntax_error(p, "'enum's", declaration.range(p))
-            })
-        }
-        T![var] => parse_variable_statement(p, context),
-        T![const] => parse_variable_statement(p, context),
-        T![using] if is_nth_at_using_declaration(p, 0) => parse_variable_statement(p, context),
-        T![await] => {
-            if is_nth_at_using_declaration(p, 0) {
-                parse_variable_statement(p, context)
-            } else {
-                parse_expression_statement(p)
-            }
-        }
-        T![for] => parse_for_statement(p),
-        T![do] => parse_do_statement(p),
-        T![switch] => parse_switch_statement(p),
-        T![try] => parse_try_statement(p),
-        T![return] => parse_return_statement(p),
-        T![break] => parse_break_statement(p),
-        T![continue] => parse_continue_statement(p),
-        T![throw] => parse_throw_statement(p),
-        T![debugger] => parse_debugger_statement(p),
-        // function and async function
-        T![function] => parse_function_declaration(p, context),
-        T![async] if is_at_async_function(p, LineBreak::DoCheck) => {
-            parse_function_declaration(p, context)
-        }
-        // class and abstract class
-        T![class] => parse_class_declaration(p, Absent, context),
-        T![@] => {
-            let decorator_list = parse_decorators(p);
+			p.error(error);
+			Present(import)
+		}
+		// test_err js export_decl_not_top_level
+		// {
+		//  export { pain } from "life";
+		// }
+		T![export] => parse_non_top_level_export(p, Absent),
+		T![;] => parse_empty_statement(p),
+		T!['{'] => parse_block_stmt(p),
+		T![if] => parse_if_statement(p),
+		T![with] => parse_with_statement(p),
+		T![while] => parse_while_statement(p),
+		T![const] | T![enum] if is_at_ts_enum_declaration(p) => {
+			// test_err js enum_in_js
+			// enum A {}
+			TypeScript.parse_exclusive_syntax(p, parse_ts_enum_declaration, |p, declaration| {
+				ts_only_syntax_error(p, "'enum's", declaration.range(p))
+			})
+		}
+		T![var] => parse_variable_statement(p, context),
+		T![const] => parse_variable_statement(p, context),
+		T![using] if is_nth_at_using_declaration(p, 0) => parse_variable_statement(p, context),
+		T![await] => {
+			if is_nth_at_using_declaration(p, 0) {
+				parse_variable_statement(p, context)
+			} else {
+				parse_expression_statement(p)
+			}
+		}
+		T![for] => parse_for_statement(p),
+		T![do] => parse_do_statement(p),
+		T![switch] => parse_switch_statement(p),
+		T![try] => parse_try_statement(p),
+		T![return] => parse_return_statement(p),
+		T![break] => parse_break_statement(p),
+		T![continue] => parse_continue_statement(p),
+		T![throw] => parse_throw_statement(p),
+		T![debugger] => parse_debugger_statement(p),
+		// function and async function
+		T![function] => parse_function_declaration(p, context),
+		T![async] if is_at_async_function(p, LineBreak::DoCheck) => {
+			parse_function_declaration(p, context)
+		}
+		// class and abstract class
+		T![class] => parse_class_declaration(p, Absent, context),
+		T![@] => {
+			let decorator_list = parse_decorators(p);
 
-            match p.cur() {
-                T![export] if p.nth_at(1, T![class]) => {
-                    // test_err js decorator_export
-                    // function foo() {
-                    //      @decorator
-                    //      export class Foo { }
-                    //      @first.field @second @(() => decorator)()
-                    //      export class Bar {}
-                    // }
-                    parse_non_top_level_export(p, decorator_list)
-                }
-                T![class] => {
-                    // test js decorator_class_declaration
-                    // function foo() {
-                    //      @decorator
-                    //      class Foo { }
-                    //      @first.field @second @(() => decorator)()
-                    //      class Bar {}
-                    // }
-                    parse_class_declaration(p, decorator_list, context)
-                }
-                T![abstract] if is_at_ts_abstract_class_declaration(p, LineBreak::DoCheck) => {
-                    // test ts decorator_abstract_class_declaration
-                    // function foo() {
-                    //      @decorator abstract class A {}
-                    //      @first.field @second @(() => decorator)()
-                    //      abstract class Bar {}
-                    // }
-                    TypeScript.parse_exclusive_syntax(
-                        p,
-                        |p| parse_class_declaration(p, decorator_list, context),
-                        |p, abstract_class| {
-                            ts_only_syntax_error(p, "abstract classes", abstract_class.range(p))
-                        },
-                    )
-                }
-                _ => {
-                    // test_err js decorator_class_declaration
-                    // function bar() {
-                    //      @decorator
-                    //      let a;
-                    //      @decorator @decorator2
-                    //      function Foo() { }
-                    // }
-                    decorator_list
-                        .add_diagnostic_if_present(p, decorators_not_allowed)
-                        .map(|mut marker| {
-                            marker.change_kind(p, JS_BOGUS_STATEMENT);
-                            marker
-                        });
+			match p.cur() {
+				T![export] if p.nth_at(1, T![class]) => {
+					// test_err js decorator_export
+					// function foo() {
+					//      @decorator
+					//      export class Foo { }
+					//      @first.field @second @(() => decorator)()
+					//      export class Bar {}
+					// }
+					parse_non_top_level_export(p, decorator_list)
+				}
+				T![class] => {
+					// test js decorator_class_declaration
+					// function foo() {
+					//      @decorator
+					//      class Foo { }
+					//      @first.field @second @(() => decorator)()
+					//      class Bar {}
+					// }
+					parse_class_declaration(p, decorator_list, context)
+				}
+				T![abstract] if is_at_ts_abstract_class_declaration(p, LineBreak::DoCheck) => {
+					// test ts decorator_abstract_class_declaration
+					// function foo() {
+					//      @decorator abstract class A {}
+					//      @first.field @second @(() => decorator)()
+					//      abstract class Bar {}
+					// }
+					TypeScript.parse_exclusive_syntax(
+						p,
+						|p| parse_class_declaration(p, decorator_list, context),
+						|p, abstract_class| {
+							ts_only_syntax_error(p, "abstract classes", abstract_class.range(p))
+						},
+					)
+				}
+				_ => {
+					// test_err js decorator_class_declaration
+					// function bar() {
+					//      @decorator
+					//      let a;
+					//      @decorator @decorator2
+					//      function Foo() { }
+					// }
+					decorator_list.add_diagnostic_if_present(p, decorators_not_allowed).map(
+						|mut marker| {
+							marker.change_kind(p, JS_BOGUS_STATEMENT);
+							marker
+						},
+					);
 
-                    parse_statement(p, context)
-                }
-            }
-        }
-        T![abstract] if is_at_ts_abstract_class_declaration(p, LineBreak::DoCheck) => {
-            // test_err js abstract_class_in_js
-            // abstract class A {}
-            TypeScript.parse_exclusive_syntax(
-                p,
-                |p| parse_class_declaration(p, Absent, context),
-                |p, abstract_class| {
-                    ts_only_syntax_error(p, "abstract classes", abstract_class.range(p))
-                },
-            )
-        }
-        T![ident] if p.nth_at(1, T![:]) => parse_labeled_statement(p, context),
-        _ if is_at_identifier(p) && p.nth_at(1, T![:]) => parse_labeled_statement(p, context),
-        T![let]
-            if is_nth_at_let_variable_statement(p, 0)
-                && (p.cur_text() == "let" || !p.has_nth_preceding_line_break(1)) =>
-        {
-            // test_err js let_newline_in_async_function
-            // async function f() {
-            //   let
-            //   await 0;
-            // }
+					parse_statement(p, context)
+				}
+			}
+		}
+		T![abstract] if is_at_ts_abstract_class_declaration(p, LineBreak::DoCheck) => {
+			// test_err js abstract_class_in_js
+			// abstract class A {}
+			TypeScript.parse_exclusive_syntax(
+				p,
+				|p| parse_class_declaration(p, Absent, context),
+				|p, abstract_class| {
+					ts_only_syntax_error(p, "abstract classes", abstract_class.range(p))
+				},
+			)
+		}
+		T![ident] if p.nth_at(1, T![:]) => parse_labeled_statement(p, context),
+		_ if is_at_identifier(p) && p.nth_at(1, T![:]) => parse_labeled_statement(p, context),
+		T![let]
+			if is_nth_at_let_variable_statement(p, 0)
+				&& (p.cur_text() == "let" || !p.has_nth_preceding_line_break(1)) =>
+		{
+			// test_err js let_newline_in_async_function
+			// async function f() {
+			//   let
+			//   await 0;
+			// }
 
-            // test js let_asi_rule
-            // // SCRIPT
-            // let // NO ASI
-            // x = 1;
-            // for await (var x of []) let // ASI
-            // x = 1;
+			// test js let_asi_rule
+			// // SCRIPT
+			// let // NO ASI
+			// x = 1;
+			// for await (var x of []) let // ASI
+			// x = 1;
 
-            // test_err js let_array_with_new_line
-            // // SCRIPT
-            // L: let
-            // [a] = 0;
-            if p.nth_at(1, T!['['])
-                || context.is_statement_list()
-                || !p.has_nth_preceding_line_break(1)
-            {
-                parse_variable_statement(p, context)
-            } else {
-                parse_expression_statement(p)
-            }
-        }
-        T![type]
-            if !p.has_nth_preceding_line_break(1)
-                && (is_nth_at_identifier(p, 1) || is_nth_at_metavariable(p, 1)) =>
-        {
-            // test ts ts_type_variable
-            // let type;
-            // type = getFlowTypeInConstructor(symbol, getDeclaringConstructor(symbol)!);
-            TypeScript.parse_exclusive_syntax(
-                p,
-                parse_ts_type_alias_declaration,
-                |p, type_alias| ts_only_syntax_error(p, "type alias", type_alias.range(p)),
-            )
-        }
-        T![interface] if is_at_ts_interface_declaration(p) => {
-            TypeScript.parse_exclusive_syntax(p, parse_ts_interface_declaration, |p, interface| {
-                ts_only_syntax_error(p, "interface", interface.range(p))
-            })
-        }
-        T![declare] if is_at_ts_declare_statement(p) => {
-            let declare_range = p.cur_range();
-            TypeScript.parse_exclusive_syntax(p, parse_ts_declare_statement, |p, _| {
-                p.err_builder(
-                    "The 'declare' modifier can only be used in TypeScript files.",
-                    declare_range,
-                )
-            })
-        }
-        T![async] if is_at_async_function(p, LineBreak::DoNotCheck) => {
-            parse_function_declaration(p, context)
-        }
-        T![module] | T![namespace] | T![global] if is_nth_at_any_ts_namespace_declaration(p, 0) => {
-            let name = p.cur_range();
-            TypeScript.parse_exclusive_syntax(
-                p,
-                parse_any_ts_namespace_declaration_statement,
-                |p, declaration| {
-                    ts_only_syntax_error(p, p.text(name.as_range()), declaration.range(p))
-                },
-            )
-        }
-        _ if is_at_expression(p) || is_at_metavariable(p) => parse_expression_statement(p),
-        _ => Absent,
-    }
+			// test_err js let_array_with_new_line
+			// // SCRIPT
+			// L: let
+			// [a] = 0;
+			if p.nth_at(1, T!['['])
+				|| context.is_statement_list()
+				|| !p.has_nth_preceding_line_break(1)
+			{
+				parse_variable_statement(p, context)
+			} else {
+				parse_expression_statement(p)
+			}
+		}
+		T![type]
+			if !p.has_nth_preceding_line_break(1)
+				&& (is_nth_at_identifier(p, 1) || is_nth_at_metavariable(p, 1)) =>
+		{
+			// test ts ts_type_variable
+			// let type;
+			// type = getFlowTypeInConstructor(symbol, getDeclaringConstructor(symbol)!);
+			TypeScript.parse_exclusive_syntax(
+				p,
+				parse_ts_type_alias_declaration,
+				|p, type_alias| ts_only_syntax_error(p, "type alias", type_alias.range(p)),
+			)
+		}
+		T![interface] if is_at_ts_interface_declaration(p) => {
+			TypeScript.parse_exclusive_syntax(p, parse_ts_interface_declaration, |p, interface| {
+				ts_only_syntax_error(p, "interface", interface.range(p))
+			})
+		}
+		T![declare] if is_at_ts_declare_statement(p) => {
+			let declare_range = p.cur_range();
+			TypeScript.parse_exclusive_syntax(p, parse_ts_declare_statement, |p, _| {
+				p.err_builder(
+					"The 'declare' modifier can only be used in TypeScript files.",
+					declare_range,
+				)
+			})
+		}
+		T![async] if is_at_async_function(p, LineBreak::DoNotCheck) => {
+			parse_function_declaration(p, context)
+		}
+		T![module] | T![namespace] | T![global] if is_nth_at_any_ts_namespace_declaration(p, 0) => {
+			let name = p.cur_range();
+			TypeScript.parse_exclusive_syntax(
+				p,
+				parse_any_ts_namespace_declaration_statement,
+				|p, declaration| {
+					ts_only_syntax_error(p, p.text(name.as_range()), declaration.range(p))
+				},
+			)
+		}
+		_ if is_at_expression(p) || is_at_metavariable(p) => parse_expression_statement(p),
+		_ => Absent,
+	}
 }
 
 pub(crate) fn parse_non_top_level_export(
-    p: &mut JsParser,
-    decorator_list: ParsedSyntax,
+	p: &mut JsParser,
+	decorator_list: ParsedSyntax,
 ) -> ParsedSyntax {
-    parse_export(p, decorator_list).map(|mut export| {
-        let error = match p.source_type().module_kind() {
-            ModuleKind::Module => p
-                .err_builder(
-                    "Illegal use of an export declaration not at the top level",
-                    export.range(p),
-                )
-                .with_hint("move this declaration to the top level"),
-            ModuleKind::Script => p
-                .err_builder(
-                    "Illegal use of an export declaration outside of a module",
-                    export.range(p),
-                )
-                .with_hint("not allowed inside scripts"),
-        };
+	parse_export(p, decorator_list).map(|mut export| {
+		let error = match p.source_type().module_kind() {
+			ModuleKind::Module => p
+				.err_builder(
+					"Illegal use of an export declaration not at the top level",
+					export.range(p),
+				)
+				.with_hint("move this declaration to the top level"),
+			ModuleKind::Script => p
+				.err_builder(
+					"Illegal use of an export declaration outside of a module",
+					export.range(p),
+				)
+				.with_hint("not allowed inside scripts"),
+		};
 
-        p.error(error);
-        export.change_kind(p, JS_BOGUS_STATEMENT);
-        export
-    })
+		p.error(error);
+		export.change_kind(p, JS_BOGUS_STATEMENT);
+		export
+	})
 }
 
 // test js labeled_statement
@@ -423,8 +420,8 @@ pub(crate) fn parse_non_top_level_export(
 // test_err js labelled_function_declaration_strict_mode
 // label1: function a() {}
 fn parse_labeled_statement(p: &mut JsParser, context: StatementContext) -> ParsedSyntax {
-    let labelled_statement = p.start();
-    let x = parse_identifier(p, JS_LABEL).map(|identifier| {
+	let labelled_statement = p.start();
+	let x = parse_identifier(p, JS_LABEL).map(|identifier| {
 		fn parse_body(p: &mut JsParser, context: StatementContext) -> ParsedSyntax {
 			if is_at_identifier(p) && p.nth_at(1, T![:]) && StrictMode.is_unsupported(p) {
 				// Re-use the parent context to catch `if (true) label1: label2: function A() {}
@@ -483,12 +480,12 @@ fn parse_labeled_statement(p: &mut JsParser, context: StatementContext) -> Parse
         }
         identifier
     });
-    if x.is_absent() {
-        labelled_statement.abandon(p);
-        ParsedSyntax::Absent
-    } else {
-        ParsedSyntax::Present(labelled_statement.complete(p, JS_LABELED_STATEMENT))
-    }
+	if x.is_absent() {
+		labelled_statement.abandon(p);
+		ParsedSyntax::Absent
+	} else {
+		ParsedSyntax::Present(labelled_statement.complete(p, JS_LABELED_STATEMENT))
+	}
 }
 
 // test js ts_keyword_assignments
@@ -507,18 +504,18 @@ fn parse_labeled_statement(p: &mut JsParser, context: StatementContext) -> Parse
 // public = 4;
 // implements = 5;
 fn parse_expression_statement(p: &mut JsParser) -> ParsedSyntax {
-    let start = p.cur_range().start();
+	let start = p.cur_range().start();
 
-    let expr =
-        parse_expression_or_recover_to_next_statement(p, false, ExpressionContext::default());
+	let expr =
+		parse_expression_or_recover_to_next_statement(p, false, ExpressionContext::default());
 
-    if let Ok(expr) = expr {
-        let m = expr.precede(p);
-        semi(p, TextRange::new(start, p.cur_range().end()));
-        Present(m.complete(p, JS_EXPRESSION_STATEMENT))
-    } else {
-        Absent
-    }
+	if let Ok(expr) = expr {
+		let m = expr.precede(p);
+		semi(p, TextRange::new(start, p.cur_range().end()));
+		Present(m.complete(p, JS_EXPRESSION_STATEMENT))
+	} else {
+		Absent
+	}
 }
 
 // test js debugger_stmt
@@ -533,14 +530,14 @@ fn parse_expression_statement(p: &mut JsParser) -> ParsedSyntax {
 
 /// A debugger statement such as `debugger;`
 fn parse_debugger_statement(p: &mut JsParser) -> ParsedSyntax {
-    if !p.at(T![debugger]) {
-        return Absent;
-    }
-    let m = p.start();
-    let range = p.cur_range();
-    p.expect(T![debugger]); // debugger keyword
-    semi(p, range);
-    Present(m.complete(p, JS_DEBUGGER_STATEMENT))
+	if !p.at(T![debugger]) {
+		return Absent;
+	}
+	let m = p.start();
+	let range = p.cur_range();
+	p.expect(T![debugger]); // debugger keyword
+	semi(p, range);
+	Present(m.complete(p, JS_DEBUGGER_STATEMENT))
 }
 
 /// A throw statement such as `throw new Error("uh oh");`
@@ -548,35 +545,35 @@ fn parse_debugger_statement(p: &mut JsParser) -> ParsedSyntax {
 // throw new Error("foo");
 // throw "foo"
 fn parse_throw_statement(p: &mut JsParser) -> ParsedSyntax {
-    // test_err js throw_stmt_err
-    // throw
-    // new Error("oh no :(")
-    // throw;
-    if !p.at(T![throw]) {
-        return Absent;
-    }
-    let m = p.start();
-    let start = p.cur_range().start();
-    p.expect(T![throw]); // throw keyword
-    if p.has_preceding_line_break() {
-        let mut err = p
-            .err_builder(
-                "Linebreaks between a throw statement and the error to be thrown are not allowed",
-                p.cur_range(),
-            )
-            .with_hint("A linebreak is not allowed here");
+	// test_err js throw_stmt_err
+	// throw
+	// new Error("oh no :(")
+	// throw;
+	if !p.at(T![throw]) {
+		return Absent;
+	}
+	let m = p.start();
+	let start = p.cur_range().start();
+	p.expect(T![throw]); // throw keyword
+	if p.has_preceding_line_break() {
+		let mut err = p
+			.err_builder(
+				"Linebreaks between a throw statement and the error to be thrown are not allowed",
+				p.cur_range(),
+			)
+			.with_hint("A linebreak is not allowed here");
 
-        if is_at_expression(p) {
-            err = err.with_detail(p.cur_range(), "Help: did you mean to throw this?");
-        }
+		if is_at_expression(p) {
+			err = err.with_detail(p.cur_range(), "Help: did you mean to throw this?");
+		}
 
-        p.error(err);
-    } else {
-        parse_expression_or_recover_to_next_statement(p, false, ExpressionContext::default()).ok();
-    }
+		p.error(err);
+	} else {
+		parse_expression_or_recover_to_next_statement(p, false, ExpressionContext::default()).ok();
+	}
 
-    semi(p, TextRange::new(start, p.cur_range().end()));
-    Present(m.complete(p, JS_THROW_STATEMENT))
+	semi(p, TextRange::new(start, p.cur_range().end()));
+	Present(m.complete(p, JS_THROW_STATEMENT))
 }
 
 // test js break_stmt
@@ -598,42 +595,42 @@ fn parse_throw_statement(p: &mut JsParser) -> ParsedSyntax {
 
 /// A break statement with an optional label such as `break a;`
 fn parse_break_statement(p: &mut JsParser) -> ParsedSyntax {
-    if !p.at(T![break]) {
-        return Absent;
-    }
-    let m = p.start();
-    let start = p.cur_range();
-    p.expect(T![break]); // break keyword
+	if !p.at(T![break]) {
+		return Absent;
+	}
+	let m = p.start();
+	let start = p.cur_range();
+	p.expect(T![break]); // break keyword
 
-    let error = if !p.has_preceding_line_break() && is_at_identifier(p) {
-        let label_name = p.cur_text();
+	let error = if !p.has_preceding_line_break() && is_at_identifier(p) {
+		let label_name = p.cur_text();
 
-        let error = match p.state().get_labelled_item(label_name) {
-            Some(_) => None,
-            None => Some(
-                p.err_builder(
-                    format!("Use of undefined statement label `{label_name}`",),
-                    p.cur_range(),
-                )
-                .with_hint("This label is used, but it is never defined"),
-            ),
-        };
-        let _ = parse_identifier(p, JS_LABEL);
-        error
-    } else if !p.state().break_allowed() {
-        Some(p.err_builder("A `break` statement can only be used within an enclosing iteration or switch statement.", start, ))
-    } else {
-        None
-    };
+		let error = match p.state().get_labelled_item(label_name) {
+			Some(_) => None,
+			None => Some(
+				p.err_builder(
+					format!("Use of undefined statement label `{label_name}`",),
+					p.cur_range(),
+				)
+				.with_hint("This label is used, but it is never defined"),
+			),
+		};
+		let _ = parse_identifier(p, JS_LABEL);
+		error
+	} else if !p.state().break_allowed() {
+		Some(p.err_builder("A `break` statement can only be used within an enclosing iteration or switch statement.", start, ))
+	} else {
+		None
+	};
 
-    semi(p, TextRange::new(start.start(), p.cur_range().end()));
+	semi(p, TextRange::new(start.start(), p.cur_range().end()));
 
-    if let Some(error) = error {
-        p.error(error);
-        Present(m.complete(p, JS_BOGUS_STATEMENT))
-    } else {
-        Present(m.complete(p, JS_BREAK_STATEMENT))
-    }
+	if let Some(error) = error {
+		p.error(error);
+		Present(m.complete(p, JS_BOGUS_STATEMENT))
+	} else {
+		Present(m.complete(p, JS_BREAK_STATEMENT))
+	}
 }
 
 // test js continue_stmt
@@ -655,19 +652,19 @@ fn parse_break_statement(p: &mut JsParser) -> ParsedSyntax {
 // }
 /// A continue statement with an optional label such as `continue a;`
 fn parse_continue_statement(p: &mut JsParser) -> ParsedSyntax {
-    if !p.at(T![continue]) {
-        return Absent;
-    }
-    let m = p.start();
-    let start = p.cur_range();
-    p.expect(T![continue]); // continue keyword
+	if !p.at(T![continue]) {
+		return Absent;
+	}
+	let m = p.start();
+	let start = p.cur_range();
+	p.expect(T![continue]); // continue keyword
 
-    // test js async_continue_stmt
-    // async: for(a of b) continue async;
-    let error = if !p.has_preceding_line_break() && is_at_identifier(p) {
-        let label_name = p.cur_text();
+	// test js async_continue_stmt
+	// async: for(a of b) continue async;
+	let error = if !p.has_preceding_line_break() && is_at_identifier(p) {
+		let label_name = p.cur_text();
 
-        let error = match p.state().get_labelled_item(label_name) {
+		let error = match p.state().get_labelled_item(label_name) {
 			Some(LabelledItem::Iteration(_)) => None,
 			Some(LabelledItem::Other(range)) => {
 				Some(p.err_builder("A `continue` statement can only jump to a label of an enclosing `for`, `while` or `do while` statement.", p.cur_range())
@@ -686,25 +683,25 @@ fn parse_continue_statement(p: &mut JsParser) -> ParsedSyntax {
 			}
 		};
 
-        let _ = parse_identifier(p, JS_LABEL);
-        error
-    } else if !p.state().continue_allowed() {
-        Some(
+		let _ = parse_identifier(p, JS_LABEL);
+		error
+	} else if !p.state().continue_allowed() {
+		Some(
             p.err_builder(
                 "A `continue` statement can only be used within an enclosing `for`, `while` or `do while` statement.",start ),
         )
-    } else {
-        None
-    };
+	} else {
+		None
+	};
 
-    semi(p, TextRange::new(start.start(), p.cur_range().end()));
+	semi(p, TextRange::new(start.start(), p.cur_range().end()));
 
-    if let Some(error) = error {
-        p.error(error);
-        Present(m.complete(p, JS_BOGUS_STATEMENT))
-    } else {
-        Present(m.complete(p, JS_CONTINUE_STATEMENT))
-    }
+	if let Some(error) = error {
+		p.error(error);
+		Present(m.complete(p, JS_BOGUS_STATEMENT))
+	} else {
+		Present(m.complete(p, JS_CONTINUE_STATEMENT))
+	}
 }
 
 // test js return_stmt
@@ -715,46 +712,44 @@ fn parse_continue_statement(p: &mut JsParser) -> ParsedSyntax {
 // }
 /// A return statement with an optional value such as `return a;`
 fn parse_return_statement(p: &mut JsParser) -> ParsedSyntax {
-    // test_err js return_stmt_err
-    // return;
-    // return foo;
-    if !p.at(T![return]) {
-        return Absent;
-    }
-    let m = p.start();
-    let start = p.cur_range().start();
-    p.expect(T![return]);
-    if !p.has_preceding_line_break() {
-        parse_expression(p, ExpressionContext::default()).ok();
-    }
+	// test_err js return_stmt_err
+	// return;
+	// return foo;
+	if !p.at(T![return]) {
+		return Absent;
+	}
+	let m = p.start();
+	let start = p.cur_range().start();
+	p.expect(T![return]);
+	if !p.has_preceding_line_break() {
+		parse_expression(p, ExpressionContext::default()).ok();
+	}
 
-    semi(p, TextRange::new(start, p.cur_range().end()));
-    let mut complete = m.complete(p, JS_RETURN_STATEMENT);
+	semi(p, TextRange::new(start, p.cur_range().end()));
+	let mut complete = m.complete(p, JS_RETURN_STATEMENT);
 
-    // The frontmatter of Astro files is executed inside a function during the compilation, so it's safe to have illegal returns
-    if !p.state().in_function() && !p.source_type.as_embedding_kind().is_astro() {
-        let err = p.err_builder(
-            "Illegal return statement outside of a function",
-            complete.range(p),
-        );
+	// The frontmatter of Astro files is executed inside a function during the compilation, so it's safe to have illegal returns
+	if !p.state().in_function() && !p.source_type.as_embedding_kind().is_astro() {
+		let err =
+			p.err_builder("Illegal return statement outside of a function", complete.range(p));
 
-        p.error(err);
-        complete.change_kind(p, JS_BOGUS_STATEMENT);
-    }
-    Present(complete)
+		p.error(err);
+		complete.change_kind(p, JS_BOGUS_STATEMENT);
+	}
+	Present(complete)
 }
 
 // test js empty_stmt
 // ;
 /// An empty statement denoted by a single semicolon.
 fn parse_empty_statement(p: &mut JsParser) -> ParsedSyntax {
-    if p.at(T![;]) {
-        let m = p.start();
-        p.bump_any(); // bump ;
-        m.complete(p, JS_EMPTY_STATEMENT).into()
-    } else {
-        Absent
-    }
+	if p.at(T![;]) {
+		let m = p.start();
+		p.bump_any(); // bump ;
+		m.complete(p, JS_EMPTY_STATEMENT).into()
+	} else {
+		Absent
+	}
 }
 
 // test js block_stmt
@@ -763,33 +758,30 @@ fn parse_empty_statement(p: &mut JsParser) -> ParsedSyntax {
 // { foo = bar; }
 /// A block statement consisting of statements wrapped in curly brackets.
 pub(crate) fn parse_block_stmt(p: &mut JsParser) -> ParsedSyntax {
-    parse_block_impl(p, JS_BLOCK_STATEMENT)
+	parse_block_impl(p, JS_BLOCK_STATEMENT)
 }
 
 /// A block wrapped in curly brackets. Can either be a function body or a block statement.
 pub(super) fn parse_block_impl(p: &mut JsParser, block_kind: JsSyntaxKind) -> ParsedSyntax {
-    if !p.at(T!['{']) {
-        return Absent;
-    }
+	if !p.at(T!['{']) {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.bump(T!['{']);
+	let m = p.start();
+	p.bump(T!['{']);
 
-    let (statement_list, strict_snapshot) = if block_kind == JS_FUNCTION_BODY {
-        parse_directives(p)
-    } else {
-        (p.start(), None)
-    };
+	let (statement_list, strict_snapshot) =
+		if block_kind == JS_FUNCTION_BODY { parse_directives(p) } else { (p.start(), None) };
 
-    parse_statements(p, true, statement_list);
+	parse_statements(p, true, statement_list);
 
-    p.expect(T!['}']);
+	p.expect(T!['}']);
 
-    if let Some(strict_snapshot) = strict_snapshot {
-        EnableStrictMode::restore(p.state_mut(), strict_snapshot);
-    }
+	if let Some(strict_snapshot) = strict_snapshot {
+		EnableStrictMode::restore(p.state_mut(), strict_snapshot);
+	}
 
-    Present(m.complete(p, block_kind))
+	Present(m.complete(p, block_kind))
 }
 
 // test js directives
@@ -836,110 +828,105 @@ pub(super) fn parse_block_impl(p: &mut JsParser, block_kind: JsSyntaxKind) -> Pa
 /// * The marker for the following statement list. May already contain a parsed out expression statement
 /// * A checkpoint containing the previous strict mode
 pub(crate) fn parse_directives(p: &mut JsParser) -> (Marker, Option<EnableStrictModeSnapshot>) {
-    let list = p.start();
-    let mut directives_list = list.complete(p, JS_DIRECTIVE_LIST);
-    let mut strict_mode_snapshot: Option<EnableStrictModeSnapshot> = None;
-    let mut progress = ParserProgress::default();
+	let list = p.start();
+	let mut directives_list = list.complete(p, JS_DIRECTIVE_LIST);
+	let mut strict_mode_snapshot: Option<EnableStrictModeSnapshot> = None;
+	let mut progress = ParserProgress::default();
 
-    let statement_list = loop {
-        progress.assert_progressing(p);
-        // Certainly not a directive, start statement list
-        if !p.at(JS_STRING_LITERAL) {
-            break p.start();
-        }
+	let statement_list = loop {
+		progress.assert_progressing(p);
+		// Certainly not a directive, start statement list
+		if !p.at(JS_STRING_LITERAL) {
+			break p.start();
+		}
 
-        let expression = parse_expression(p, ExpressionContext::default())
-            .expect("A string token always yields a valid expression");
+		let expression = parse_expression(p, ExpressionContext::default())
+			.expect("A string token always yields a valid expression");
 
-        // Something like "use strict".length isn't a valid directive
-        if expression.kind(p) != JS_STRING_LITERAL_EXPRESSION {
-            // Turned out not to be a directive.
-            // Start statement list before the just parsed expression statement
-            let statement = expression.precede(p).complete(p, JS_EXPRESSION_STATEMENT);
-            break statement.precede(p);
-        }
+		// Something like "use strict".length isn't a valid directive
+		if expression.kind(p) != JS_STRING_LITERAL_EXPRESSION {
+			// Turned out not to be a directive.
+			// Start statement list before the just parsed expression statement
+			let statement = expression.precede(p).complete(p, JS_EXPRESSION_STATEMENT);
+			break statement.precede(p);
+		}
 
-        let directive_range = expression.range(p);
-        let directive = expression.undo_completion(p);
-        semi(p, directive_range);
+		let directive_range = expression.range(p);
+		let directive = expression.undo_completion(p);
+		semi(p, directive_range);
 
-        let directive_text = p.text(directive_range);
+		let directive_text = p.text(directive_range);
 
-        let directive_is_use_strict =
-            directive_text == "\"use strict\"" || directive_text == "'use strict'";
+		let directive_is_use_strict =
+			directive_text == "\"use strict\"" || directive_text == "'use strict'";
 
-        if directive_is_use_strict && strict_mode_snapshot.is_none() {
-            strict_mode_snapshot = Some(
-                EnableStrictMode(StrictModeState::Explicit(directive_range)).apply(p.state_mut()),
-            );
-        }
+		if directive_is_use_strict && strict_mode_snapshot.is_none() {
+			strict_mode_snapshot = Some(
+				EnableStrictMode(StrictModeState::Explicit(directive_range)).apply(p.state_mut()),
+			);
+		}
 
-        directive.complete(p, JS_DIRECTIVE);
+		directive.complete(p, JS_DIRECTIVE);
 
-        // Extend the directive list to include the just parsed directive
-        directives_list = directives_list
-            .undo_completion(p)
-            .complete(p, JS_DIRECTIVE_LIST);
-    };
+		// Extend the directive list to include the just parsed directive
+		directives_list = directives_list.undo_completion(p).complete(p, JS_DIRECTIVE_LIST);
+	};
 
-    (statement_list, strict_mode_snapshot)
+	(statement_list, strict_mode_snapshot)
 }
 
 /// Top level items or items inside of a block statement, this also handles module items so we can
 /// easily recover from erroneous module declarations in scripts
 pub(crate) fn parse_statements(p: &mut JsParser, stop_on_r_curly: bool, statement_list: Marker) {
-    let mut progress = ParserProgress::default();
+	let mut progress = ParserProgress::default();
 
-    // test_err js statements_closing_curly
-    // {
-    // "name": "troublesome-lib",
-    // "typings": "lib/index.d.ts",
-    // "version": "0.0.1"
-    // }
-    let recovery_set = if stop_on_r_curly {
-        // Don't eat over the closing '}'
-        STMT_RECOVERY_SET.union(token_set![T!['}']])
-    } else {
-        STMT_RECOVERY_SET
-    };
+	// test_err js statements_closing_curly
+	// {
+	// "name": "troublesome-lib",
+	// "typings": "lib/index.d.ts",
+	// "version": "0.0.1"
+	// }
+	let recovery_set = if stop_on_r_curly {
+		// Don't eat over the closing '}'
+		STMT_RECOVERY_SET.union(token_set![T!['}']])
+	} else {
+		STMT_RECOVERY_SET
+	};
 
-    while !p.at(EOF) {
-        progress.assert_progressing(p);
-        if stop_on_r_curly && p.at(T!['}']) {
-            break;
-        }
+	while !p.at(EOF) {
+		progress.assert_progressing(p);
+		if stop_on_r_curly && p.at(T!['}']) {
+			break;
+		}
 
-        if parse_metavariable(p).is_present() {
-            continue;
-        }
+		if parse_metavariable(p).is_present() {
+			continue;
+		}
 
-        if parse_statement(p, StatementContext::StatementList)
-            .or_recover_with_token_set(
-                p,
-                &ParseRecoveryTokenSet::new(JS_BOGUS_STATEMENT, recovery_set),
-                expected_statement,
-            )
-            .is_err()
-        {
-            break;
-        }
-    }
+		if parse_statement(p, StatementContext::StatementList)
+			.or_recover_with_token_set(
+				p,
+				&ParseRecoveryTokenSet::new(JS_BOGUS_STATEMENT, recovery_set),
+				expected_statement,
+			)
+			.is_err()
+		{
+			break;
+		}
+	}
 
-    statement_list.complete(p, JS_STATEMENT_LIST);
+	statement_list.complete(p, JS_STATEMENT_LIST);
 }
 
 /// An expression wrapped in parentheses such as `()`
 /// Returns `true` if the closing parentheses is present
 fn parenthesized_expression(p: &mut JsParser) -> bool {
-    let has_l_paren = p.expect(T!['(']);
+	let has_l_paren = p.expect(T!['(']);
 
-    parse_expression(
-        p,
-        ExpressionContext::default().and_object_expression_allowed(has_l_paren),
-    )
-    .or_add_diagnostic(p, js_parse_error::expected_expression);
+	parse_expression(p, ExpressionContext::default().and_object_expression_allowed(has_l_paren))
+		.or_add_diagnostic(p, js_parse_error::expected_expression);
 
-    p.expect(T![')'])
+	p.expect(T![')'])
 }
 
 /// An if statement such as `if (foo) { bar(); }`
@@ -949,34 +936,34 @@ fn parenthesized_expression(p: &mut JsParser) -> bool {
 // if (true) false
 // if (bar) {} else if (true) {} else {}
 fn parse_if_statement(p: &mut JsParser) -> ParsedSyntax {
-    // test_err js if_stmt_err
-    // if (true) else {}
-    // if (true) else
-    // if else {}
-    // if () {} else {}
-    // if (true)}}}} {}
-    if !p.at(T![if]) {
-        return Absent;
-    }
+	// test_err js if_stmt_err
+	// if (true) else {}
+	// if (true) else
+	// if else {}
+	// if () {} else {}
+	// if (true)}}}} {}
+	if !p.at(T![if]) {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.expect(T![if]);
+	let m = p.start();
+	p.expect(T![if]);
 
-    // (test)
-    parenthesized_expression(p);
+	// (test)
+	parenthesized_expression(p);
 
-    // body
-    parse_statement(p, StatementContext::If).or_add_diagnostic(p, expected_statement);
+	// body
+	parse_statement(p, StatementContext::If).or_add_diagnostic(p, expected_statement);
 
-    // else clause
-    if p.at(T![else]) {
-        let else_clause = p.start();
-        p.expect(T![else]);
-        parse_statement(p, StatementContext::If).or_add_diagnostic(p, expected_statement);
-        else_clause.complete(p, JS_ELSE_CLAUSE);
-    }
+	// else clause
+	if p.at(T![else]) {
+		let else_clause = p.start();
+		p.expect(T![else]);
+		parse_statement(p, StatementContext::If).or_add_diagnostic(p, expected_statement);
+		else_clause.complete(p, JS_ELSE_CLAUSE);
+	}
 
-    Present(m.complete(p, JS_IF_STATEMENT))
+	Present(m.complete(p, JS_IF_STATEMENT))
 }
 
 // test js with_statement
@@ -988,26 +975,23 @@ fn parse_if_statement(p: &mut JsParser) -> ParsedSyntax {
 // }
 /// A with statement such as `with (foo) something()`
 fn parse_with_statement(p: &mut JsParser) -> ParsedSyntax {
-    if !p.at(T![with]) {
-        return Absent;
-    }
+	if !p.at(T![with]) {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.expect(T![with]);
-    parenthesized_expression(p);
+	let m = p.start();
+	p.expect(T![with]);
+	parenthesized_expression(p);
 
-    parse_statement(p, StatementContext::With).or_add_diagnostic(p, expected_statement);
+	parse_statement(p, StatementContext::With).or_add_diagnostic(p, expected_statement);
 
-    let with_stmt = m.complete(p, JS_WITH_STATEMENT);
+	let with_stmt = m.complete(p, JS_WITH_STATEMENT);
 
-    // or SloppyMode.exclusive_syntax(...) but this reads better with the error message, saying that
-    // it's only forbidden in strict mode
-    StrictMode.excluding_syntax(p, with_stmt, |p, marker| {
-        p.err_builder(
-            "`with` statements are not allowed in strict mode",
-            marker.range(p),
-        )
-    })
+	// or SloppyMode.exclusive_syntax(...) but this reads better with the error message, saying that
+	// it's only forbidden in strict mode
+	StrictMode.excluding_syntax(p, with_stmt, |p, marker| {
+		p.err_builder("`with` statements are not allowed in strict mode", marker.range(p))
+	})
 }
 
 /// A while statement such as `while(true) { do_something() }`
@@ -1015,54 +999,54 @@ fn parse_with_statement(p: &mut JsParser) -> ParsedSyntax {
 // while (true) {}
 // while (5) {}
 fn parse_while_statement(p: &mut JsParser) -> ParsedSyntax {
-    // test_err js while_stmt_err
-    // while true {}
-    // while {}
-    // while (true {}
-    // while true) }
-    if !p.at(T![while]) {
-        return Absent;
-    }
-    let m = p.start();
-    p.expect(T![while]);
-    parenthesized_expression(p);
+	// test_err js while_stmt_err
+	// while true {}
+	// while {}
+	// while (true {}
+	// while true) }
+	if !p.at(T![while]) {
+		return Absent;
+	}
+	let m = p.start();
+	p.expect(T![while]);
+	parenthesized_expression(p);
 
-    p.with_state(EnterBreakable(BreakableKind::Iteration), |p| {
-        parse_statement(p, StatementContext::While)
-    })
-    .or_add_diagnostic(p, expected_statement);
+	p.with_state(EnterBreakable(BreakableKind::Iteration), |p| {
+		parse_statement(p, StatementContext::While)
+	})
+	.or_add_diagnostic(p, expected_statement);
 
-    Present(m.complete(p, JS_WHILE_STATEMENT))
+	Present(m.complete(p, JS_WHILE_STATEMENT))
 }
 
 pub(crate) fn is_nth_at_variable_declarations(p: &mut JsParser, n: usize) -> bool {
-    match p.nth(n) {
-        T![var] | T![const] => true,
-        T![await] | T![using] if is_nth_at_using_declaration(p, n) => true,
-        T![let] if is_nth_at_let_variable_statement(p, n) => true,
-        _ => false,
-    }
+	match p.nth(n) {
+		T![var] | T![const] => true,
+		T![await] | T![using] if is_nth_at_using_declaration(p, n) => true,
+		T![let] if is_nth_at_let_variable_statement(p, n) => true,
+		_ => false,
+	}
 }
 
 pub(crate) fn is_nth_at_using_declaration(p: &mut JsParser, n: usize) -> bool {
-    let (maybe_using, next_cursor) = match p.nth(n) {
-        T![using] => (true, n + 1),
-        T![await] if p.nth_at(n + 1, T![using]) => (true, n + 2),
-        _ => (false, n + 1),
-    };
+	let (maybe_using, next_cursor) = match p.nth(n) {
+		T![using] => (true, n + 1),
+		T![await] if p.nth_at(n + 1, T![using]) => (true, n + 2),
+		_ => (false, n + 1),
+	};
 
-    maybe_using
-        && !p.has_nth_preceding_line_break(next_cursor)
-        && !p.nth_at(next_cursor, T![await])
-        && is_nth_at_identifier(p, next_cursor)
+	maybe_using
+		&& !p.has_nth_preceding_line_break(next_cursor)
+		&& !p.nth_at(next_cursor, T![await])
+		&& is_nth_at_identifier(p, next_cursor)
 }
 
 pub(crate) fn is_nth_at_let_variable_statement(p: &mut JsParser, n: usize) -> bool {
-    if !p.nth_at(n, T![let]) {
-        return false;
-    }
+	if !p.nth_at(n, T![let]) {
+		return false;
+	}
 
-    matches!(p.nth(n + 1), T!['{'] | T!['[']) || is_nth_at_identifier(p, n + 1)
+	matches!(p.nth(n + 1), T!['{'] | T!['[']) || is_nth_at_identifier(p, n + 1)
 }
 
 /// A var, const, using or let declaration statement such as `var a = 5, b;` or `let {a, b} = foo;`
@@ -1111,17 +1095,17 @@ pub(crate) fn is_nth_at_let_variable_statement(p: &mut JsParser, n: usize) -> bo
 // await let s;
 // await const t = 1;
 pub(crate) fn parse_variable_statement(
-    p: &mut JsParser,
-    context: StatementContext,
+	p: &mut JsParser,
+	context: StatementContext,
 ) -> ParsedSyntax {
-    // test_err js var_decl_err
-    // var a =;
-    // const b = 5 let c = 5;
-    let start = p.cur_range().start();
-    let is_var = p.at(T![var]);
-    let is_await_using = p.at(T![await]) && p.nth_at(1, T![using]);
+	// test_err js var_decl_err
+	// var a =;
+	// const b = 5 let c = 5;
+	let start = p.cur_range().start();
+	let is_var = p.at(T![var]);
+	let is_await_using = p.at(T![await]) && p.nth_at(1, T![using]);
 
-    parse_variable_declaration(p, VariableDeclarationParent::VariableStatement).map(|declaration| {
+	parse_variable_declaration(p, VariableDeclarationParent::VariableStatement).map(|declaration| {
         let m = declaration.precede(p);
         semi(p, TextRange::new(start, p.cur_range().start()));
 
@@ -1166,29 +1150,29 @@ pub(crate) fn parse_variable_statement(
 }
 
 pub(super) fn parse_variable_declaration(
-    p: &mut JsParser,
-    declaration_context: VariableDeclarationParent,
+	p: &mut JsParser,
+	declaration_context: VariableDeclarationParent,
 ) -> ParsedSyntax {
-    let m = p.start();
-    if eat_variable_declaration(p, declaration_context).is_some() {
-        Present(m.complete(p, JS_VARIABLE_DECLARATION))
-    } else {
-        m.abandon(p);
-        Absent
-    }
+	let m = p.start();
+	if eat_variable_declaration(p, declaration_context).is_some() {
+		Present(m.complete(p, JS_VARIABLE_DECLARATION))
+	} else {
+		m.abandon(p);
+		Absent
+	}
 }
 
 /// What's the parent node of the variable declaration
 #[derive(Clone, Debug, Copy, Eq, PartialEq)]
 pub(super) enum VariableDeclarationParent {
-    /// Declaration inside a `for...of` or `for...in` or `for (;;)` loop
-    For,
+	/// Declaration inside a `for...of` or `for...in` or `for (;;)` loop
+	For,
 
-    /// Declaration as part of a variable statement (`let a`, `const b`, or `var c`).
-    VariableStatement,
+	/// Declaration as part of a variable statement (`let a`, `const b`, or `var c`).
+	VariableStatement,
 
-    /// Declaration as part of another statement, like `export let ...` or `declare let a`
-    Clause,
+	/// Declaration as part of another statement, like `export let ...` or `declare let a`
+	Clause,
 }
 
 /// Parses and consume variable declarations like `var`/`let`/`const`/`using`/`await using`.
@@ -1197,52 +1181,50 @@ pub(super) enum VariableDeclarationParent {
 /// * the second element is the range of all variable declarations except the first one. Is [None] if
 ///   there's only one declaration.
 fn eat_variable_declaration(
-    p: &mut JsParser,
-    declaration_parent: VariableDeclarationParent,
+	p: &mut JsParser,
+	declaration_parent: VariableDeclarationParent,
 ) -> Option<(CompletedMarker, Option<TextRange>)> {
-    let mut context = VariableDeclaratorContext::new(declaration_parent);
+	let mut context = VariableDeclaratorContext::new(declaration_parent);
 
-    match p.cur() {
-        T![var] => {
-            p.bump(T![var]);
-        }
-        T![const] => {
-            p.bump(T![const]);
-            context.kind_name = Some("const");
-        }
-        T![let] => {
-            p.bump(T![let]);
-            context.kind_name = Some("let");
-        }
-        T![using] => {
-            p.bump(T![using]);
-            context.kind_name = Some("using");
-        }
-        T![await] if p.nth_at(1, T![using]) => {
-            p.bump(T![await]);
-            p.bump(T![using]);
-            context.kind_name = Some("using");
-        }
-        _ => {
-            return None;
-        }
-    }
+	match p.cur() {
+		T![var] => {
+			p.bump(T![var]);
+		}
+		T![const] => {
+			p.bump(T![const]);
+			context.kind_name = Some("const");
+		}
+		T![let] => {
+			p.bump(T![let]);
+			context.kind_name = Some("let");
+		}
+		T![using] => {
+			p.bump(T![using]);
+			context.kind_name = Some("using");
+		}
+		T![await] if p.nth_at(1, T![using]) => {
+			p.bump(T![await]);
+			p.bump(T![using]);
+			context.kind_name = Some("using");
+		}
+		_ => {
+			return None;
+		}
+	}
 
-    let mut variable_declarator_list = VariableDeclaratorList {
-        declarator_context: context,
-        remaining_declarator_range: None,
-    };
-    let list = variable_declarator_list.parse_list(p);
+	let mut variable_declarator_list =
+		VariableDeclaratorList { declarator_context: context, remaining_declarator_range: None };
+	let list = variable_declarator_list.parse_list(p);
 
-    p.state_mut().name_map.clear();
-    Some((list, variable_declarator_list.remaining_declarator_range))
+	p.state_mut().name_map.clear();
+	Some((list, variable_declarator_list.remaining_declarator_range))
 }
 
 struct VariableDeclaratorList {
-    declarator_context: VariableDeclaratorContext,
-    // Range of the declarators succeeding the first declarator
-    // None until this hits the second declarator
-    remaining_declarator_range: Option<TextRange>,
+	declarator_context: VariableDeclaratorContext,
+	// Range of the declarators succeeding the first declarator
+	// None until this hits the second declarator
+	remaining_declarator_range: Option<TextRange>,
 }
 
 // test_err js variable_declarator_list_incomplete
@@ -1252,86 +1234,82 @@ struct VariableDeclaratorList {
 // const;
 // const
 impl ParseSeparatedList for VariableDeclaratorList {
-    type Kind = JsSyntaxKind;
-    type Parser<'source> = JsParser<'source>;
+	type Kind = JsSyntaxKind;
+	type Parser<'source> = JsParser<'source>;
 
-    const LIST_KIND: Self::Kind = JS_VARIABLE_DECLARATOR_LIST;
+	const LIST_KIND: Self::Kind = JS_VARIABLE_DECLARATOR_LIST;
 
-    fn parse_element(&mut self, p: &mut JsParser) -> ParsedSyntax {
-        parse_variable_declarator(p, &self.declarator_context).map(|declarator| {
-            if self.declarator_context.is_first {
-                self.declarator_context.is_first = false;
-            } else if let Some(range) = self.remaining_declarator_range.as_mut() {
-                *range = TextRange::new(range.start(), declarator.range(p).end());
-            } else {
-                self.remaining_declarator_range = Some(declarator.range(p));
-            }
-            declarator
-        })
-    }
+	fn parse_element(&mut self, p: &mut JsParser) -> ParsedSyntax {
+		parse_variable_declarator(p, &self.declarator_context).map(|declarator| {
+			if self.declarator_context.is_first {
+				self.declarator_context.is_first = false;
+			} else if let Some(range) = self.remaining_declarator_range.as_mut() {
+				*range = TextRange::new(range.start(), declarator.range(p).end());
+			} else {
+				self.remaining_declarator_range = Some(declarator.range(p));
+			}
+			declarator
+		})
+	}
 
-    fn is_at_list_end(&self, p: &mut JsParser) -> bool {
-        if self.declarator_context.is_first {
-            false
-        } else {
-            !p.at(T![,])
-        }
-    }
+	fn is_at_list_end(&self, p: &mut JsParser) -> bool {
+		if self.declarator_context.is_first {
+			false
+		} else {
+			!p.at(T![,])
+		}
+	}
 
-    fn recover(&mut self, p: &mut JsParser, parsed_element: ParsedSyntax) -> RecoveryResult {
-        parsed_element.or_recover_with_token_set(
-            p,
-            &ParseRecoveryTokenSet::new(JS_BOGUS, STMT_RECOVERY_SET.union(token_set!(T![,])))
-                .enable_recovery_on_line_break(),
-            expected_binding,
-        )
-    }
+	fn recover(&mut self, p: &mut JsParser, parsed_element: ParsedSyntax) -> RecoveryResult {
+		parsed_element.or_recover_with_token_set(
+			p,
+			&ParseRecoveryTokenSet::new(JS_BOGUS, STMT_RECOVERY_SET.union(token_set!(T![,])))
+				.enable_recovery_on_line_break(),
+			expected_binding,
+		)
+	}
 
-    fn separating_element_kind(&mut self) -> JsSyntaxKind {
-        T![,]
-    }
+	fn separating_element_kind(&mut self) -> JsSyntaxKind {
+		T![,]
+	}
 
-    fn finish_list(&mut self, p: &mut JsParser, m: Marker) -> CompletedMarker {
-        if self.declarator_context.is_first {
-            let m = m.complete(p, JS_BOGUS);
-            let range = m.range(p);
-            p.error(expected_binding(p, range));
-            m
-        } else {
-            m.complete(p, Self::LIST_KIND)
-        }
-    }
+	fn finish_list(&mut self, p: &mut JsParser, m: Marker) -> CompletedMarker {
+		if self.declarator_context.is_first {
+			let m = m.complete(p, JS_BOGUS);
+			let range = m.range(p);
+			p.error(expected_binding(p, range));
+			m
+		} else {
+			m.complete(p, Self::LIST_KIND)
+		}
+	}
 }
 
 struct VariableDeclaratorContext {
-    /// What kind of variable declaration is this (`var`, `let`, `const`, 'using')
-    kind_name: Option<&'static str>,
-    /// Is this the first declaration in the declaration list (a first, b second in `let a, b`)
-    is_first: bool,
-    /// What's the parent of the variable declaration
-    parent: VariableDeclarationParent,
+	/// What kind of variable declaration is this (`var`, `let`, `const`, 'using')
+	kind_name: Option<&'static str>,
+	/// Is this the first declaration in the declaration list (a first, b second in `let a, b`)
+	is_first: bool,
+	/// What's the parent of the variable declaration
+	parent: VariableDeclarationParent,
 }
 
 impl VariableDeclaratorContext {
-    fn new(parent: VariableDeclarationParent) -> Self {
-        Self {
-            parent,
-            kind_name: None,
-            is_first: true,
-        }
-    }
+	fn new(parent: VariableDeclarationParent) -> Self {
+		Self { parent, kind_name: None, is_first: true }
+	}
 
-    fn is_var(&self) -> bool {
-        self.kind_name.is_none()
-    }
+	fn is_var(&self) -> bool {
+		self.kind_name.is_none()
+	}
 
-    fn is_const(&self) -> bool {
-        matches!(self.kind_name, Some("const"))
-    }
+	fn is_const(&self) -> bool {
+		matches!(self.kind_name, Some("const"))
+	}
 
-    fn is_using(&self) -> bool {
-        matches!(self.kind_name, Some("using"))
-    }
+	fn is_using(&self) -> bool {
+		matches!(self.kind_name, Some("using"))
+	}
 }
 
 // test js scoped_declarations
@@ -1353,14 +1331,14 @@ impl VariableDeclaratorContext {
 //
 // A single declarator, either `ident` or `ident = assign_expr`
 fn parse_variable_declarator(
-    p: &mut JsParser,
-    context: &VariableDeclaratorContext,
+	p: &mut JsParser,
+	context: &VariableDeclaratorContext,
 ) -> ParsedSyntax {
-    p.state_mut().duplicate_binding_parent = context.kind_name;
-    let id = parse_binding_pattern(p, ExpressionContext::default());
-    p.state_mut().duplicate_binding_parent = None;
+	p.state_mut().duplicate_binding_parent = context.kind_name;
+	let id = parse_binding_pattern(p, ExpressionContext::default());
+	p.state_mut().duplicate_binding_parent = None;
 
-    id.map(|id| {
+	id.map(|id| {
         let id_kind = id.kind(p);
         let id_range = id.range(p);
         let m = id.precede(p);
@@ -1516,21 +1494,21 @@ fn parse_variable_declarator(
 // let a // ASI
 // !function test() {}
 fn parse_ts_variable_annotation(p: &mut JsParser) -> ParsedSyntax {
-    if !p.at(T![!]) {
-        return parse_ts_type_annotation(p, TypeContext::default());
-    }
+	if !p.at(T![!]) {
+		return parse_ts_type_annotation(p, TypeContext::default());
+	}
 
-    if p.has_preceding_line_break() {
-        return Absent;
-    }
+	if p.has_preceding_line_break() {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.bump(T![!]);
+	let m = p.start();
+	p.bump(T![!]);
 
-    parse_ts_type_annotation(p, TypeContext::default())
-        .or_add_diagnostic(p, |_, _| expected_token(T![:]));
+	parse_ts_type_annotation(p, TypeContext::default())
+		.or_add_diagnostic(p, |_, _| expected_token(T![:]));
 
-    Present(m.complete(p, TS_DEFINITE_VARIABLE_ANNOTATION))
+	Present(m.complete(p, TS_DEFINITE_VARIABLE_ANNOTATION))
 }
 
 // A do.. while statement, such as `do {} while (true)`
@@ -1552,181 +1530,179 @@ fn parse_ts_variable_annotation(p: &mut JsParser) -> ParsedSyntax {
 // do { throw Error("foo") } while (true)
 // do { break; } while (true)
 fn parse_do_statement(p: &mut JsParser) -> ParsedSyntax {
-    // test_err js do_while_stmt_err
-    // do while (true)
-    // do while ()
-    // do while true
+	// test_err js do_while_stmt_err
+	// do while (true)
+	// do while ()
+	// do while true
 
-    // test_err js do_while_no_continue_break
-    // do { } break (continue)
-    // do { } continue (break)
-    if !p.at(T![do]) {
-        return Absent;
-    }
-    let m = p.start();
-    let start = p.cur_range().start();
-    p.expect(T![do]);
+	// test_err js do_while_no_continue_break
+	// do { } break (continue)
+	// do { } continue (break)
+	if !p.at(T![do]) {
+		return Absent;
+	}
+	let m = p.start();
+	let start = p.cur_range().start();
+	p.expect(T![do]);
 
-    p.with_state(EnterBreakable(BreakableKind::Iteration), |p| {
-        parse_statement(p, StatementContext::Do)
-    })
-    .or_add_diagnostic(p, expected_statement);
+	p.with_state(EnterBreakable(BreakableKind::Iteration), |p| {
+		parse_statement(p, StatementContext::Do)
+	})
+	.or_add_diagnostic(p, expected_statement);
 
-    p.expect(T![while]);
+	p.expect(T![while]);
 
-    // test js do-while-asi
-    // do do do ; while (x) while (x) while (x) x = 39;
-    // do do ; while (x); while (x) x = 39
-    if parenthesized_expression(p) {
-        optional_semi(p);
-    } else {
-        let end_range = p.cur_range().end();
-        semi(p, TextRange::new(start, end_range));
-    }
-    Present(m.complete(p, JS_DO_WHILE_STATEMENT))
+	// test js do-while-asi
+	// do do do ; while (x) while (x) while (x) x = 39;
+	// do do ; while (x); while (x) x = 39
+	if parenthesized_expression(p) {
+		optional_semi(p);
+	} else {
+		let end_range = p.cur_range().end();
+		semi(p, TextRange::new(start, end_range));
+	}
+	Present(m.complete(p, JS_DO_WHILE_STATEMENT))
 }
 
 /// Parses the header of a for statement into the current node and returns whatever it is a for in/of or "regular" for statement
 fn parse_for_head(p: &mut JsParser, has_l_paren: bool, is_for_await: bool) -> JsSyntaxKind {
-    // for (;...
-    if p.at(T![;]) {
-        parse_normal_for_head(p);
-        return JS_FOR_STATEMENT;
-    }
+	// for (;...
+	if p.at(T![;]) {
+		parse_normal_for_head(p);
+		return JS_FOR_STATEMENT;
+	}
 
-    // `for (let...` | `for (const...` | `for (var...`
+	// `for (let...` | `for (const...` | `for (var...`
 
-    if is_nth_at_variable_declarations(p, 0) {
-        let m = p.start();
+	if is_nth_at_variable_declarations(p, 0) {
+		let m = p.start();
 
-        let (declarations, additional_declarations) =
-            eat_variable_declaration(p, VariableDeclarationParent::For).unwrap();
+		let (declarations, additional_declarations) =
+			eat_variable_declaration(p, VariableDeclarationParent::For).unwrap();
 
-        let is_in = p.at(T![in]);
-        let is_of = p.at(T![of]);
+		let is_in = p.at(T![in]);
+		let is_of = p.at(T![of]);
 
-        if is_in || is_of {
-            // remove the intermediate list node created by parse variable declarations that is not needed
-            // for a ForInOrOfInitializer where the variable declaration is a direct child.
-            declarations.undo_completion(p).abandon(p);
+		if is_in || is_of {
+			// remove the intermediate list node created by parse variable declarations that is not needed
+			// for a ForInOrOfInitializer where the variable declaration is a direct child.
+			declarations.undo_completion(p).abandon(p);
 
-            if let Some(additional_declarations_range) = additional_declarations {
-                p.error(
-                    p.err_builder(
-                        format!(
-                            "Only a single declaration is allowed in a `for...{}` statement.",
-                            if is_of { "of" } else { "in" },
-                        ),
-                        additional_declarations_range,
-                    )
-                    .with_hint("additional declarations"),
-                );
-            }
+			if let Some(additional_declarations_range) = additional_declarations {
+				p.error(
+					p.err_builder(
+						format!(
+							"Only a single declaration is allowed in a `for...{}` statement.",
+							if is_of { "of" } else { "in" },
+						),
+						additional_declarations_range,
+					)
+					.with_hint("additional declarations"),
+				);
+			}
 
-            m.complete(p, JS_FOR_VARIABLE_DECLARATION);
+			m.complete(p, JS_FOR_VARIABLE_DECLARATION);
 
-            parse_for_of_or_in_head(p)
-        } else {
-            m.complete(p, JS_VARIABLE_DECLARATION);
-            parse_normal_for_head(p);
-            JS_FOR_STATEMENT
-        }
-    } else {
-        // for (some_expression`
-        let checkpoint = p.checkpoint();
+			parse_for_of_or_in_head(p)
+		} else {
+			m.complete(p, JS_VARIABLE_DECLARATION);
+			parse_normal_for_head(p);
+			JS_FOR_STATEMENT
+		}
+	} else {
+		// for (some_expression`
+		let checkpoint = p.checkpoint();
 
-        let starts_with_async_of =
-            p.at(T![async]) && p.nth_at(1, T![of]) && p.cur_text() == "async";
-        let init_expr = parse_expression(
-            p,
-            ExpressionContext::default()
-                .and_include_in(false)
-                .and_object_expression_allowed(has_l_paren),
-        );
+		let starts_with_async_of =
+			p.at(T![async]) && p.nth_at(1, T![of]) && p.cur_text() == "async";
+		let init_expr = parse_expression(
+			p,
+			ExpressionContext::default()
+				.and_include_in(false)
+				.and_object_expression_allowed(has_l_paren),
+		);
 
-        if p.at(T![in]) || p.at(T![of]) {
-            // for (assignment_pattern in ...
-            if let Present(assignment_expr) = init_expr {
-                let mut assignment =
-                    expression_to_assignment_pattern(p, assignment_expr, checkpoint);
+		if p.at(T![in]) || p.at(T![of]) {
+			// for (assignment_pattern in ...
+			if let Present(assignment_expr) = init_expr {
+				let mut assignment =
+					expression_to_assignment_pattern(p, assignment_expr, checkpoint);
 
-                if TypeScript.is_supported(p)
-                    && p.at(T![in])
-                    && matches!(
-                        assignment.kind(p),
-                        JS_ARRAY_ASSIGNMENT_PATTERN | JS_OBJECT_ASSIGNMENT_PATTERN
-                    )
-                {
-                    let err = p.err_builder("the left hand side of a `for..in` statement cannot be a destructuring pattern", assignment.range(p));
-                    p.error(err);
-                    assignment.change_to_bogus(p);
-                } else if !is_for_await && starts_with_async_of {
-                    //  for ( [lookahead ∉ { let, async of }] LeftHandSideExpression[?Yield, ?Await] of AssignmentExpression[+In, ?Yield, ?Await] ) Statement[?Yield, ?Await, ?Return]
-                    // [+Await] for await ( [lookahead ≠ let] LeftHandSideExpression[?Yield, ?Await] of AssignmentExpression[+In, ?Yield, ?Await] ) Statement[?Yield, ?Await, ?Return]
+				if TypeScript.is_supported(p)
+					&& p.at(T![in]) && matches!(
+					assignment.kind(p),
+					JS_ARRAY_ASSIGNMENT_PATTERN | JS_OBJECT_ASSIGNMENT_PATTERN
+				) {
+					let err = p.err_builder("the left hand side of a `for..in` statement cannot be a destructuring pattern", assignment.range(p));
+					p.error(err);
+					assignment.change_to_bogus(p);
+				} else if !is_for_await && starts_with_async_of {
+					//  for ( [lookahead ∉ { let, async of }] LeftHandSideExpression[?Yield, ?Await] of AssignmentExpression[+In, ?Yield, ?Await] ) Statement[?Yield, ?Await, ?Return]
+					// [+Await] for await ( [lookahead ≠ let] LeftHandSideExpression[?Yield, ?Await] of AssignmentExpression[+In, ?Yield, ?Await] ) Statement[?Yield, ?Await, ?Return]
 
-                    // test js for_await_async_identifier
-                    // let async;
-                    // async function fn() {
-                    //   for await (async of [7]);
-                    // }
+					// test js for_await_async_identifier
+					// let async;
+					// async function fn() {
+					//   for await (async of [7]);
+					// }
 
-                    // test_err js for_of_async_identifier
-                    // let async;
-                    // for (async of [1]) ;
-                    p.error(p.err_builder(
-                        "The left-hand side of a `for...of` statement may not be `async`",
-                        assignment.range(p),
-                    ));
-                    assignment.change_to_bogus(p);
-                }
-            }
+					// test_err js for_of_async_identifier
+					// let async;
+					// for (async of [1]) ;
+					p.error(p.err_builder(
+						"The left-hand side of a `for...of` statement may not be `async`",
+						assignment.range(p),
+					));
+					assignment.change_to_bogus(p);
+				}
+			}
 
-            return parse_for_of_or_in_head(p);
-        }
+			return parse_for_of_or_in_head(p);
+		}
 
-        init_expr.or_add_diagnostic(p, js_parse_error::expected_expression);
+		init_expr.or_add_diagnostic(p, js_parse_error::expected_expression);
 
-        parse_normal_for_head(p);
-        JS_FOR_STATEMENT
-    }
+		parse_normal_for_head(p);
+		JS_FOR_STATEMENT
+	}
 }
 
 /// Parses the parenthesized part of a non for in or for of statement
 /// Expects to be positioned right after the initializer
 fn parse_normal_for_head(p: &mut JsParser) {
-    p.expect(T![;]);
+	p.expect(T![;]);
 
-    if !p.at(T![;]) {
-        parse_expression(p, ExpressionContext::default())
-            .or_add_diagnostic(p, js_parse_error::expected_expression);
-    }
+	if !p.at(T![;]) {
+		parse_expression(p, ExpressionContext::default())
+			.or_add_diagnostic(p, js_parse_error::expected_expression);
+	}
 
-    p.expect(T![;]);
+	p.expect(T![;]);
 
-    if !p.at(T![')']) {
-        parse_expression(p, ExpressionContext::default())
-            .or_add_diagnostic(p, js_parse_error::expected_expression);
-    }
+	if !p.at(T![')']) {
+		parse_expression(p, ExpressionContext::default())
+			.or_add_diagnostic(p, js_parse_error::expected_expression);
+	}
 }
 
 /// Expects to be positioned right before the of or in keyword
 fn parse_for_of_or_in_head(p: &mut JsParser) -> JsSyntaxKind {
-    let is_in = p.at(T![in]);
+	let is_in = p.at(T![in]);
 
-    if is_in {
-        p.bump_any();
-        parse_expression(p, ExpressionContext::default())
-            .or_add_diagnostic(p, js_parse_error::expected_expression);
+	if is_in {
+		p.bump_any();
+		parse_expression(p, ExpressionContext::default())
+			.or_add_diagnostic(p, js_parse_error::expected_expression);
 
-        JS_FOR_IN_STATEMENT
-    } else {
-        p.expect(T![of]);
+		JS_FOR_IN_STATEMENT
+	} else {
+		p.expect(T![of]);
 
-        parse_assignment_expression_or_higher(p, ExpressionContext::default())
-            .or_add_diagnostic(p, js_parse_error::expected_expression_assignment);
+		parse_assignment_expression_or_higher(p, ExpressionContext::default())
+			.or_add_diagnostic(p, js_parse_error::expected_expression_assignment);
 
-        JS_FOR_OF_STATEMENT
-    }
+		JS_FOR_OF_STATEMENT
+	}
 }
 
 /// Either a traditional for statement or a for.. in statement
@@ -1739,198 +1715,192 @@ fn parse_for_of_or_in_head(p: &mut JsParser) -> JsSyntaxKind {
 // for (let i = 5, j = 6; i < j; ++j) {}
 // for await (let a of []) {}
 fn parse_for_statement(p: &mut JsParser) -> ParsedSyntax {
-    // test_err js for_stmt_err
-    // for ;; {}
-    // for let i = 5; i < 10; i++ {}
-    // for let i = 5; i < 10; ++i {}
-    // for (in []) {}
-    // for (let i, j = 6 of []) {}
-    // for await (let a in []) {}
-    // for await (let i = 0; i < 10; ++i) {}
-    // for (let [a];;) {}
-    if !p.at(T![for]) {
-        return Absent;
-    }
+	// test_err js for_stmt_err
+	// for ;; {}
+	// for let i = 5; i < 10; i++ {}
+	// for let i = 5; i < 10; ++i {}
+	// for (in []) {}
+	// for (let i, j = 6 of []) {}
+	// for await (let a in []) {}
+	// for await (let i = 0; i < 10; ++i) {}
+	// for (let [a];;) {}
+	if !p.at(T![for]) {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.expect(T![for]);
+	let m = p.start();
+	p.expect(T![for]);
 
-    let mut await_range = None;
-    if p.at(T![await]) {
-        await_range = Some(p.cur_range());
-        p.expect(T![await]);
-    }
+	let mut await_range = None;
+	if p.at(T![await]) {
+		await_range = Some(p.cur_range());
+		p.expect(T![await]);
+	}
 
-    let has_l_paren = p.expect(T!['(']);
-    let kind = parse_for_head(p, has_l_paren, await_range.is_some());
-    p.expect(T![')']);
+	let has_l_paren = p.expect(T!['(']);
+	let kind = parse_for_head(p, has_l_paren, await_range.is_some());
+	p.expect(T![')']);
 
-    p.with_state(EnterBreakable(BreakableKind::Iteration), |p| {
-        parse_statement(p, StatementContext::For)
-    })
-    .or_add_diagnostic(p, expected_statement);
+	p.with_state(EnterBreakable(BreakableKind::Iteration), |p| {
+		parse_statement(p, StatementContext::For)
+	})
+	.or_add_diagnostic(p, expected_statement);
 
-    let mut completed = m.complete(p, kind);
+	let mut completed = m.complete(p, kind);
 
-    if kind != JS_FOR_OF_STATEMENT {
-        if let Some(await_range) = await_range {
-            p.error(
-                p.err_builder(
-                    "await can only be used in conjunction with `for...of` statements",
-                    await_range,
-                )
-                .with_detail(await_range, "Remove the await here")
-                .with_detail(
-                    completed.range(p),
-                    "or convert this to a `for...of` statement",
-                ),
-            );
-            completed.change_kind(p, JS_BOGUS_STATEMENT)
-        }
-    }
+	if kind != JS_FOR_OF_STATEMENT {
+		if let Some(await_range) = await_range {
+			p.error(
+				p.err_builder(
+					"await can only be used in conjunction with `for...of` statements",
+					await_range,
+				)
+				.with_detail(await_range, "Remove the await here")
+				.with_detail(completed.range(p), "or convert this to a `for...of` statement"),
+			);
+			completed.change_kind(p, JS_BOGUS_STATEMENT)
+		}
+	}
 
-    Present(completed)
+	Present(completed)
 }
 
 struct SwitchCaseStatementList;
 
 impl ParseNodeList for SwitchCaseStatementList {
-    type Kind = JsSyntaxKind;
-    type Parser<'source> = JsParser<'source>;
+	type Kind = JsSyntaxKind;
+	type Parser<'source> = JsParser<'source>;
 
-    const LIST_KIND: Self::Kind = JS_STATEMENT_LIST;
+	const LIST_KIND: Self::Kind = JS_STATEMENT_LIST;
 
-    fn parse_element(&mut self, p: &mut JsParser) -> ParsedSyntax {
-        parse_statement(p, StatementContext::StatementList)
-    }
+	fn parse_element(&mut self, p: &mut JsParser) -> ParsedSyntax {
+		parse_statement(p, StatementContext::StatementList)
+	}
 
-    fn is_at_list_end(&self, p: &mut JsParser) -> bool {
-        p.at_ts(token_set![T![default], T![case], T!['}']])
-    }
+	fn is_at_list_end(&self, p: &mut JsParser) -> bool {
+		p.at_ts(token_set![T![default], T![case], T!['}']])
+	}
 
-    fn recover(
-        &mut self,
-        p: &mut JsParser,
-        parsed_element: ParsedSyntax,
-    ) -> parser::RecoveryResult {
-        parsed_element.or_recover_with_token_set(
-            p,
-            &ParseRecoveryTokenSet::new(JS_BOGUS_STATEMENT, STMT_RECOVERY_SET),
-            js_parse_error::expected_case,
-        )
-    }
+	fn recover(
+		&mut self,
+		p: &mut JsParser,
+		parsed_element: ParsedSyntax,
+	) -> parser::RecoveryResult {
+		parsed_element.or_recover_with_token_set(
+			p,
+			&ParseRecoveryTokenSet::new(JS_BOGUS_STATEMENT, STMT_RECOVERY_SET),
+			js_parse_error::expected_case,
+		)
+	}
 }
 
 // We return the range in case its a default clause so we can report multiple default clauses in a better way
 fn parse_switch_clause(p: &mut JsParser, first_default: &mut Option<TextRange>) -> ParsedSyntax {
-    let m = p.start();
-    match p.cur() {
-        T![default] => {
-            // in case we have two `default` expression, we mark the second one
-            // as `JS_CASE_CLAUSE` where the "default" keyword is an bogus node
-            let syntax_kind = if first_default.is_some() {
-                let discriminant = p.start();
-                p.bump_any(); // interpret `default` as the test of the case
-                discriminant.complete(p, JS_BOGUS_EXPRESSION);
-                JS_CASE_CLAUSE
-            } else {
-                p.expect(T![default]);
-                JS_DEFAULT_CLAUSE
-            };
+	let m = p.start();
+	match p.cur() {
+		T![default] => {
+			// in case we have two `default` expression, we mark the second one
+			// as `JS_CASE_CLAUSE` where the "default" keyword is an bogus node
+			let syntax_kind = if first_default.is_some() {
+				let discriminant = p.start();
+				p.bump_any(); // interpret `default` as the test of the case
+				discriminant.complete(p, JS_BOGUS_EXPRESSION);
+				JS_CASE_CLAUSE
+			} else {
+				p.expect(T![default]);
+				JS_DEFAULT_CLAUSE
+			};
 
-            p.expect(T![:]);
-            SwitchCaseStatementList.parse_list(p);
-            let default = m.complete(p, syntax_kind);
-            if let Some(first_default_range) = first_default {
-                let err = p
-                    .err_builder(
-                        "Multiple default clauses inside of a switch statement are not allowed",
-                        default.range(p),
-                    )
-                    .with_detail(default.range(p), "a second clause here is not allowed")
-                    .with_detail(
-                        *first_default_range,
-                        "the first default clause is defined here",
-                    );
+			p.expect(T![:]);
+			SwitchCaseStatementList.parse_list(p);
+			let default = m.complete(p, syntax_kind);
+			if let Some(first_default_range) = first_default {
+				let err = p
+					.err_builder(
+						"Multiple default clauses inside of a switch statement are not allowed",
+						default.range(p),
+					)
+					.with_detail(default.range(p), "a second clause here is not allowed")
+					.with_detail(*first_default_range, "the first default clause is defined here");
 
-                p.error(err);
-            }
+				p.error(err);
+			}
 
-            Present(default)
-        }
-        T![case] => {
-            p.expect(T![case]);
-            parse_expression(p, ExpressionContext::default())
-                .or_add_diagnostic(p, js_parse_error::expected_expression);
-            p.expect(T![:]);
+			Present(default)
+		}
+		T![case] => {
+			p.expect(T![case]);
+			parse_expression(p, ExpressionContext::default())
+				.or_add_diagnostic(p, js_parse_error::expected_expression);
+			p.expect(T![:]);
 
-            SwitchCaseStatementList.parse_list(p);
-            Present(m.complete(p, JS_CASE_CLAUSE))
-        }
-        _ => {
-            m.abandon(p);
-            Absent
-        }
-    }
+			SwitchCaseStatementList.parse_list(p);
+			Present(m.complete(p, JS_CASE_CLAUSE))
+		}
+		_ => {
+			m.abandon(p);
+			Absent
+		}
+	}
 }
 #[derive(Default)]
 struct SwitchCasesList {
-    first_default: Option<TextRange>,
+	first_default: Option<TextRange>,
 }
 
 impl ParseNodeList for SwitchCasesList {
-    type Kind = JsSyntaxKind;
-    type Parser<'source> = JsParser<'source>;
+	type Kind = JsSyntaxKind;
+	type Parser<'source> = JsParser<'source>;
 
-    const LIST_KIND: Self::Kind = JS_SWITCH_CASE_LIST;
+	const LIST_KIND: Self::Kind = JS_SWITCH_CASE_LIST;
 
-    fn parse_element(&mut self, p: &mut JsParser) -> ParsedSyntax {
-        let clause = parse_switch_clause(p, &mut self.first_default);
+	fn parse_element(&mut self, p: &mut JsParser) -> ParsedSyntax {
+		let clause = parse_switch_clause(p, &mut self.first_default);
 
-        if let Present(marker) = &clause {
-            if marker.kind(p) == JS_DEFAULT_CLAUSE && self.first_default.is_none() {
-                self.first_default = Some(marker.range(p));
-            }
-        }
+		if let Present(marker) = &clause {
+			if marker.kind(p) == JS_DEFAULT_CLAUSE && self.first_default.is_none() {
+				self.first_default = Some(marker.range(p));
+			}
+		}
 
-        clause
-    }
+		clause
+	}
 
-    fn is_at_list_end(&self, p: &mut JsParser) -> bool {
-        p.at(T!['}'])
-    }
+	fn is_at_list_end(&self, p: &mut JsParser) -> bool {
+		p.at(T!['}'])
+	}
 
-    fn recover(&mut self, p: &mut JsParser, parsed_element: ParsedSyntax) -> RecoveryResult {
-        if let Present(marker) = parsed_element {
-            Ok(marker)
-        } else {
-            let m = p.start();
-            let statements = p.start();
+	fn recover(&mut self, p: &mut JsParser, parsed_element: ParsedSyntax) -> RecoveryResult {
+		if let Present(marker) = parsed_element {
+			Ok(marker)
+		} else {
+			let m = p.start();
+			let statements = p.start();
 
-            let recovered_element = parsed_element.or_recover_with_token_set(
-                p,
-                &ParseRecoveryTokenSet::new(
-                    JS_BOGUS_STATEMENT,
-                    token_set![T![default], T![case], T!['}']],
-                )
-                .enable_recovery_on_line_break(),
-                js_parse_error::expected_case_or_default,
-            );
+			let recovered_element = parsed_element.or_recover_with_token_set(
+				p,
+				&ParseRecoveryTokenSet::new(
+					JS_BOGUS_STATEMENT,
+					token_set![T![default], T![case], T!['}']],
+				)
+				.enable_recovery_on_line_break(),
+				js_parse_error::expected_case_or_default,
+			);
 
-            match recovered_element {
-                Ok(marker) => {
-                    statements.complete(p, JS_STATEMENT_LIST);
-                    m.complete(p, JS_CASE_CLAUSE);
-                    Ok(marker)
-                }
-                Err(err) => {
-                    statements.abandon(p);
-                    m.abandon(p);
-                    Err(err)
-                }
-            }
-        }
-    }
+			match recovered_element {
+				Ok(marker) => {
+					statements.complete(p, JS_STATEMENT_LIST);
+					m.complete(p, JS_CASE_CLAUSE);
+					Ok(marker)
+				}
+				Err(err) => {
+					statements.abandon(p);
+					m.abandon(p);
+					Err(err)
+				}
+			}
+		}
+	}
 }
 
 /// A switch statement such as
@@ -1947,64 +1917,64 @@ impl ParseNodeList for SwitchCasesList {
 //  default:
 // }
 fn parse_switch_statement(p: &mut JsParser) -> ParsedSyntax {
-    // test_err js switch_stmt_err
-    // switch foo {}
-    // switch {}
-    // switch { var i = 0 }
-    // switch { var i = 0; case "bar": {} }
-    // switch (foo) {
-    //   default: {}
-    //   default: {}
-    // }
-    // switch (foo) { case : }
+	// test_err js switch_stmt_err
+	// switch foo {}
+	// switch {}
+	// switch { var i = 0 }
+	// switch { var i = 0; case "bar": {} }
+	// switch (foo) {
+	//   default: {}
+	//   default: {}
+	// }
+	// switch (foo) { case : }
 
-    if !p.at(T![switch]) {
-        return Absent;
-    }
-    let m = p.start();
-    p.expect(T![switch]);
-    parenthesized_expression(p);
-    p.expect(T!['{']);
+	if !p.at(T![switch]) {
+		return Absent;
+	}
+	let m = p.start();
+	p.expect(T![switch]);
+	parenthesized_expression(p);
+	p.expect(T!['{']);
 
-    p.with_state(EnterBreakable(BreakableKind::Switch), |p| {
-        SwitchCasesList::default().parse_list(p)
-    });
+	p.with_state(EnterBreakable(BreakableKind::Switch), |p| {
+		SwitchCasesList::default().parse_list(p)
+	});
 
-    p.expect(T!['}']);
-    Present(m.complete(p, JS_SWITCH_STATEMENT))
+	p.expect(T!['}']);
+	Present(m.complete(p, JS_SWITCH_STATEMENT))
 }
 
 fn parse_catch_clause(p: &mut JsParser) -> ParsedSyntax {
-    if !p.at(T![catch]) {
-        return Absent;
-    }
+	if !p.at(T![catch]) {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.expect(T![catch]);
+	let m = p.start();
+	p.expect(T![catch]);
 
-    parse_catch_declaration(p).ok();
-    parse_block_stmt(p).or_add_diagnostic(p, js_parse_error::expected_block_statement);
+	parse_catch_declaration(p).ok();
+	parse_block_stmt(p).or_add_diagnostic(p, js_parse_error::expected_block_statement);
 
-    Present(m.complete(p, JS_CATCH_CLAUSE))
+	Present(m.complete(p, JS_CATCH_CLAUSE))
 }
 
 fn parse_catch_declaration(p: &mut JsParser) -> ParsedSyntax {
-    if !p.at(T!['(']) {
-        return Absent;
-    }
+	if !p.at(T!['(']) {
+		return Absent;
+	}
 
-    let declaration_marker = p.start();
+	let declaration_marker = p.start();
 
-    p.bump_any(); // bump (
-    parse_binding_pattern(p, ExpressionContext::default()).or_add_diagnostic(p, expected_binding);
+	p.bump_any(); // bump (
+	parse_binding_pattern(p, ExpressionContext::default()).or_add_diagnostic(p, expected_binding);
 
-    // test ts ts_catch_declaration
-    // try {} catch (error: any) {}
-    // try {} catch (error: unknown) {}
-    if p.at(T![:]) && is_nth_at_identifier(p, 1) {
-        // test_err ts ts_catch_declaration_non_any_unknown_type_annotation
-        // try {} catch (error: Error) {}
-        JsSyntaxFeature::TypeScript
+	// test ts ts_catch_declaration
+	// try {} catch (error: any) {}
+	// try {} catch (error: unknown) {}
+	if p.at(T![:]) && is_nth_at_identifier(p, 1) {
+		// test_err ts ts_catch_declaration_non_any_unknown_type_annotation
+		// try {} catch (error: Error) {}
+		JsSyntaxFeature::TypeScript
             .parse_exclusive_syntax(
                 p,
                 |p| {
@@ -2027,11 +1997,11 @@ fn parse_catch_declaration(p: &mut JsParser) -> ParsedSyntax {
                 },
             )
             .ok();
-    }
+	}
 
-    p.expect(T![')']);
+	p.expect(T![')']);
 
-    Present(declaration_marker.complete(p, JS_CATCH_DECLARATION))
+	Present(declaration_marker.complete(p, JS_CATCH_DECLARATION))
 }
 
 /// A try statement such as
@@ -2050,32 +2020,32 @@ fn parse_catch_declaration(p: &mut JsParser) -> ParsedSyntax {
 // try {} catch (e) {} finally {}
 // try {} finally {}
 pub(crate) fn parse_try_statement(p: &mut JsParser) -> ParsedSyntax {
-    // TODO: recover from `try catch` and `try finally`. The issue is block_items
-    // will cause infinite recursion because parsing a stmt would not consume the catch token
-    // and block_items would not exit, and if we exited on any error that would greatly limit
-    // block_items error recovery
+	// TODO: recover from `try catch` and `try finally`. The issue is block_items
+	// will cause infinite recursion because parsing a stmt would not consume the catch token
+	// and block_items would not exit, and if we exited on any error that would greatly limit
+	// block_items error recovery
 
-    if !p.at(T![try]) {
-        return Absent;
-    }
+	if !p.at(T![try]) {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.expect(T![try]);
+	let m = p.start();
+	p.expect(T![try]);
 
-    parse_block_stmt(p).or_add_diagnostic(p, js_parse_error::expected_block_statement);
+	parse_block_stmt(p).or_add_diagnostic(p, js_parse_error::expected_block_statement);
 
-    let catch = parse_catch_clause(p);
+	let catch = parse_catch_clause(p);
 
-    if p.at(T![finally]) {
-        catch.ok();
+	if p.at(T![finally]) {
+		catch.ok();
 
-        let finalizer = p.start();
-        p.expect(T![finally]);
-        parse_block_stmt(p).or_add_diagnostic(p, js_parse_error::expected_block_statement);
-        finalizer.complete(p, JS_FINALLY_CLAUSE);
-        Present(m.complete(p, JS_TRY_FINALLY_STATEMENT))
-    } else {
-        catch.or_add_diagnostic(p, js_parse_error::expected_catch_clause);
-        Present(m.complete(p, JS_TRY_STATEMENT))
-    }
+		let finalizer = p.start();
+		p.expect(T![finally]);
+		parse_block_stmt(p).or_add_diagnostic(p, js_parse_error::expected_block_statement);
+		finalizer.complete(p, JS_FINALLY_CLAUSE);
+		Present(m.complete(p, JS_TRY_FINALLY_STATEMENT))
+	} else {
+		catch.or_add_diagnostic(p, js_parse_error::expected_catch_clause);
+		Present(m.complete(p, JS_TRY_STATEMENT))
+	}
 }

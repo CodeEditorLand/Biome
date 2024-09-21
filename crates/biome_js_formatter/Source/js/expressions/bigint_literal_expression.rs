@@ -11,30 +11,30 @@ use std::borrow::Cow;
 pub(crate) struct FormatJsBigintLiteralExpression;
 
 impl FormatNodeRule<JsBigintLiteralExpression> for FormatJsBigintLiteralExpression {
-    fn fmt_fields(
-        &self,
-        node: &JsBigintLiteralExpression,
-        f: &mut JsFormatter,
-    ) -> FormatResult<()> {
-        let JsBigintLiteralExpressionFields { value_token } = node.as_fields();
-        let value_token = value_token?;
+	fn fmt_fields(
+		&self,
+		node: &JsBigintLiteralExpression,
+		f: &mut JsFormatter,
+	) -> FormatResult<()> {
+		let JsBigintLiteralExpressionFields { value_token } = node.as_fields();
+		let value_token = value_token?;
 
-        let original = value_token.text_trimmed();
-        match original.to_ascii_lowercase_cow() {
-            Cow::Borrowed(_) => write![f, [value_token.format()]],
-            Cow::Owned(lowercase) => {
-                write!(
-                    f,
-                    [format_replaced(
-                        &value_token,
-                        &dynamic_text(&lowercase, value_token.text_trimmed_range().start())
-                    )]
-                )
-            }
-        }
-    }
+		let original = value_token.text_trimmed();
+		match original.to_ascii_lowercase_cow() {
+			Cow::Borrowed(_) => write![f, [value_token.format()]],
+			Cow::Owned(lowercase) => {
+				write!(
+					f,
+					[format_replaced(
+						&value_token,
+						&dynamic_text(&lowercase, value_token.text_trimmed_range().start())
+					)]
+				)
+			}
+		}
+	}
 
-    fn needs_parentheses(&self, item: &JsBigintLiteralExpression) -> bool {
-        item.needs_parentheses()
-    }
+	fn needs_parentheses(&self, item: &JsBigintLiteralExpression) -> bool {
+		item.needs_parentheses()
+	}
 }

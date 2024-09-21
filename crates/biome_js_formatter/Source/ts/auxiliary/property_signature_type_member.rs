@@ -8,29 +8,29 @@ use biome_js_syntax::{TsPropertySignatureTypeMember, TsPropertySignatureTypeMemb
 pub struct FormatTsPropertySignatureTypeMember;
 
 impl FormatNodeRule<TsPropertySignatureTypeMember> for FormatTsPropertySignatureTypeMember {
-    fn fmt_fields(
-        &self,
-        node: &TsPropertySignatureTypeMember,
-        f: &mut JsFormatter,
-    ) -> FormatResult<()> {
-        let TsPropertySignatureTypeMemberFields {
-            readonly_token,
-            name,
-            optional_token,
-            type_annotation,
-            separator_token,
-        } = node.as_fields();
+	fn fmt_fields(
+		&self,
+		node: &TsPropertySignatureTypeMember,
+		f: &mut JsFormatter,
+	) -> FormatResult<()> {
+		let TsPropertySignatureTypeMemberFields {
+			readonly_token,
+			name,
+			optional_token,
+			type_annotation,
+			separator_token,
+		} = node.as_fields();
 
-        write![
-            f,
-            [
-                readonly_token.format(),
-                maybe_space(readonly_token.is_some()),
-                name.format(),
-                optional_token.format(),
-                type_annotation.format(),
-                FormatTypeMemberSeparator::new(separator_token.as_ref())
-            ]
-        ]
-    }
+		write![
+			f,
+			[
+				readonly_token.format(),
+				maybe_space(readonly_token.is_some()),
+				name.format(),
+				optional_token.format(),
+				type_annotation.format(),
+				FormatTypeMemberSeparator::new(separator_token.as_ref())
+			]
+		]
+	}
 }

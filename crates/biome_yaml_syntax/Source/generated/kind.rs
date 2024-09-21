@@ -6,123 +6,123 @@
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 #[repr(u16)]
 pub enum YamlSyntaxKind {
-    #[doc(hidden)]
-    TOMBSTONE,
-    #[doc = r" Marks the end of the file. May have trivia attached"]
-    EOF,
-    #[doc = r" Any Unicode BOM character that may be present at the start of"]
-    #[doc = r" a file."]
-    UNICODE_BOM,
-    COLON,
-    COMMA,
-    L_CURLY,
-    R_CURLY,
-    L_BRACK,
-    R_BRACK,
-    DASH,
-    PERCENT,
-    STAR,
-    HASH,
-    BANG,
-    AT,
-    SHL,
-    AMP,
-    PIPE,
-    R_ANGLE,
-    TILDE,
-    BACKTICK,
-    DOC_START,
-    DOC_END,
-    NULL_KW,
-    YAML_STRING_VALUE,
-    YAML_NUMBER_VALUE,
-    YAML_BOOLEAN_VALUE,
-    YAML_NULL_VALUE,
-    YAML_BLOCK_VALUE,
-    YAML_IDENTIFIER,
-    NEWLINE,
-    WHITESPACE,
-    IDENT,
-    COMMENT,
-    YAML_ROOT,
-    YAML_DOCUMENT_LIST,
-    YAML_DOCUMENT,
-    YAML_ARRAY_INLINE,
-    YAML_ARRAY_INLINE_LIST,
-    YAML_OBJECT,
-    YAML_OBJECT_MEMBER,
-    YAML_OBJECT_MEMBER_LIST,
-    YAML_ARRAY,
-    YAML_ARRAY_ITEM,
-    YAML_ARRAY_ITEM_LIST,
-    YAML_BLOCK_LITERAL,
-    YAML_BLOCK_FOLDED,
-    YAML_BOGUS,
-    YAML_BOGUS_VALUE,
-    #[doc(hidden)]
-    __LAST,
+	#[doc(hidden)]
+	TOMBSTONE,
+	#[doc = r" Marks the end of the file. May have trivia attached"]
+	EOF,
+	#[doc = r" Any Unicode BOM character that may be present at the start of"]
+	#[doc = r" a file."]
+	UNICODE_BOM,
+	COLON,
+	COMMA,
+	L_CURLY,
+	R_CURLY,
+	L_BRACK,
+	R_BRACK,
+	DASH,
+	PERCENT,
+	STAR,
+	HASH,
+	BANG,
+	AT,
+	SHL,
+	AMP,
+	PIPE,
+	R_ANGLE,
+	TILDE,
+	BACKTICK,
+	DOC_START,
+	DOC_END,
+	NULL_KW,
+	YAML_STRING_VALUE,
+	YAML_NUMBER_VALUE,
+	YAML_BOOLEAN_VALUE,
+	YAML_NULL_VALUE,
+	YAML_BLOCK_VALUE,
+	YAML_IDENTIFIER,
+	NEWLINE,
+	WHITESPACE,
+	IDENT,
+	COMMENT,
+	YAML_ROOT,
+	YAML_DOCUMENT_LIST,
+	YAML_DOCUMENT,
+	YAML_ARRAY_INLINE,
+	YAML_ARRAY_INLINE_LIST,
+	YAML_OBJECT,
+	YAML_OBJECT_MEMBER,
+	YAML_OBJECT_MEMBER_LIST,
+	YAML_ARRAY,
+	YAML_ARRAY_ITEM,
+	YAML_ARRAY_ITEM_LIST,
+	YAML_BLOCK_LITERAL,
+	YAML_BLOCK_FOLDED,
+	YAML_BOGUS,
+	YAML_BOGUS_VALUE,
+	#[doc(hidden)]
+	__LAST,
 }
 use self::YamlSyntaxKind::*;
 impl YamlSyntaxKind {
-    pub const fn is_punct(self) -> bool {
-        match self {
-            COLON | COMMA | L_CURLY | R_CURLY | L_BRACK | R_BRACK | DASH | PERCENT | STAR
-            | HASH | BANG | AT | SHL | AMP | PIPE | R_ANGLE | TILDE | BACKTICK | DOC_START
-            | DOC_END => true,
-            _ => false,
-        }
-    }
-    pub const fn is_literal(self) -> bool {
-        match self {
-            YAML_STRING_VALUE | YAML_NUMBER_VALUE | YAML_BOOLEAN_VALUE | YAML_NULL_VALUE
-            | YAML_BLOCK_VALUE | YAML_IDENTIFIER => true,
-            _ => false,
-        }
-    }
-    pub const fn is_list(self) -> bool {
-        match self {
-            YAML_DOCUMENT_LIST
-            | YAML_ARRAY_INLINE_LIST
-            | YAML_OBJECT_MEMBER_LIST
-            | YAML_ARRAY_ITEM_LIST => true,
-            _ => false,
-        }
-    }
-    pub fn from_keyword(ident: &str) -> Option<YamlSyntaxKind> {
-        let kw = match ident {
-            "null" => NULL_KW,
-            _ => return None,
-        };
-        Some(kw)
-    }
-    pub const fn to_string(&self) -> Option<&'static str> {
-        let tok = match self {
-            COLON => ":",
-            COMMA => ",",
-            L_CURLY => "{",
-            R_CURLY => "}",
-            L_BRACK => "[",
-            R_BRACK => "]",
-            DASH => "-",
-            PERCENT => "%",
-            STAR => "*",
-            HASH => "#",
-            BANG => "!",
-            AT => "@",
-            SHL => "<<",
-            AMP => "&",
-            PIPE => "|",
-            R_ANGLE => ">",
-            TILDE => "~",
-            BACKTICK => "`",
-            DOC_START => "---",
-            DOC_END => "...",
-            NULL_KW => "null",
-            YAML_STRING_VALUE => "string value",
-            _ => return None,
-        };
-        Some(tok)
-    }
+	pub const fn is_punct(self) -> bool {
+		match self {
+			COLON | COMMA | L_CURLY | R_CURLY | L_BRACK | R_BRACK | DASH | PERCENT | STAR
+			| HASH | BANG | AT | SHL | AMP | PIPE | R_ANGLE | TILDE | BACKTICK | DOC_START
+			| DOC_END => true,
+			_ => false,
+		}
+	}
+	pub const fn is_literal(self) -> bool {
+		match self {
+			YAML_STRING_VALUE | YAML_NUMBER_VALUE | YAML_BOOLEAN_VALUE | YAML_NULL_VALUE
+			| YAML_BLOCK_VALUE | YAML_IDENTIFIER => true,
+			_ => false,
+		}
+	}
+	pub const fn is_list(self) -> bool {
+		match self {
+			YAML_DOCUMENT_LIST
+			| YAML_ARRAY_INLINE_LIST
+			| YAML_OBJECT_MEMBER_LIST
+			| YAML_ARRAY_ITEM_LIST => true,
+			_ => false,
+		}
+	}
+	pub fn from_keyword(ident: &str) -> Option<YamlSyntaxKind> {
+		let kw = match ident {
+			"null" => NULL_KW,
+			_ => return None,
+		};
+		Some(kw)
+	}
+	pub const fn to_string(&self) -> Option<&'static str> {
+		let tok = match self {
+			COLON => ":",
+			COMMA => ",",
+			L_CURLY => "{",
+			R_CURLY => "}",
+			L_BRACK => "[",
+			R_BRACK => "]",
+			DASH => "-",
+			PERCENT => "%",
+			STAR => "*",
+			HASH => "#",
+			BANG => "!",
+			AT => "@",
+			SHL => "<<",
+			AMP => "&",
+			PIPE => "|",
+			R_ANGLE => ">",
+			TILDE => "~",
+			BACKTICK => "`",
+			DOC_START => "---",
+			DOC_END => "...",
+			NULL_KW => "null",
+			YAML_STRING_VALUE => "string value",
+			_ => return None,
+		};
+		Some(tok)
+	}
 }
 #[doc = r" Utility macro for creating a SyntaxKind through simple macro syntax"]
 #[macro_export]

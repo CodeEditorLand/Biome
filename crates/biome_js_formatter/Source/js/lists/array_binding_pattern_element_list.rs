@@ -6,13 +6,13 @@ use biome_js_syntax::JsArrayBindingPatternElementList;
 pub(crate) struct FormatJsArrayBindingPatternElementList;
 
 impl FormatRule<JsArrayBindingPatternElementList> for FormatJsArrayBindingPatternElementList {
-    type Context = JsFormatContext;
+	type Context = JsFormatContext;
 
-    fn fmt(
-        &self,
-        node: &JsArrayBindingPatternElementList,
-        formatter: &mut JsFormatter,
-    ) -> FormatResult<()> {
-        write_array_node(node, formatter)
-    }
+	fn fmt(
+		&self,
+		node: &JsArrayBindingPatternElementList,
+		formatter: &mut JsFormatter,
+	) -> FormatResult<()> {
+		write_array_node(node, formatter)
+	}
 }

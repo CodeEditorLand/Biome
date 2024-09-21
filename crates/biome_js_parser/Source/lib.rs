@@ -131,9 +131,9 @@ mod token_source;
 use crate::prelude::*;
 pub(crate) use crate::ParsedSyntax::{Absent, Present};
 pub use crate::{
-    lexer::{JsLexContext, JsReLexContext},
-    options::JsParserOptions,
-    parse::*,
+	lexer::{JsLexContext, JsReLexContext},
+	options::JsParserOptions,
+	parse::*,
 };
 use biome_js_factory::JsSyntaxFactory;
 use biome_js_syntax::{JsLanguage, JsSyntaxKind, LanguageVariant};
@@ -143,26 +143,26 @@ pub(crate) use state::{JsParserState, StrictMode};
 use std::fmt::Debug;
 
 pub enum JsSyntaxFeature {
-    #[allow(unused)]
-    #[doc(alias = "LooseMode")]
-    SloppyMode,
-    StrictMode,
-    TypeScript,
-    Jsx,
+	#[allow(unused)]
+	#[doc(alias = "LooseMode")]
+	SloppyMode,
+	StrictMode,
+	TypeScript,
+	Jsx,
 }
 
 impl SyntaxFeature for JsSyntaxFeature {
-    type Parser<'source> = JsParser<'source>;
+	type Parser<'source> = JsParser<'source>;
 
-    fn is_supported(&self, p: &JsParser) -> bool {
-        match self {
-            JsSyntaxFeature::SloppyMode => p.state().strict().is_none(),
-            JsSyntaxFeature::StrictMode => p.state().strict().is_some(),
-            JsSyntaxFeature::TypeScript => p.source_type().language().is_typescript(),
-            JsSyntaxFeature::Jsx => p.source_type().variant() == LanguageVariant::Jsx,
-        }
-    }
+	fn is_supported(&self, p: &JsParser) -> bool {
+		match self {
+			JsSyntaxFeature::SloppyMode => p.state().strict().is_none(),
+			JsSyntaxFeature::StrictMode => p.state().strict().is_some(),
+			JsSyntaxFeature::TypeScript => p.source_type().language().is_typescript(),
+			JsSyntaxFeature::Jsx => p.source_type().variant() == LanguageVariant::Jsx,
+		}
+	}
 }
 
 pub(crate) type JsLosslessTreeSink<'source> =
-    LosslessTreeSink<'source, JsLanguage, JsSyntaxFactory>;
+	LosslessTreeSink<'source, JsLanguage, JsSyntaxFactory>;

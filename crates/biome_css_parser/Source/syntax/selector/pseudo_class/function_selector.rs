@@ -2,8 +2,8 @@ use crate::parser::CssParser;
 use crate::syntax::css_modules::{local_or_global_not_allowed, CSS_MODULES_SCOPE_SET};
 use crate::syntax::parse_error::expected_selector;
 use crate::syntax::selector::{
-    eat_or_recover_selector_function_close_token, parse_selector,
-    recover_selector_function_parameter,
+	eat_or_recover_selector_function_close_token, parse_selector,
+	recover_selector_function_parameter,
 };
 use biome_css_syntax::CssSyntaxKind::CSS_PSEUDO_CLASS_FUNCTION_SELECTOR;
 use biome_css_syntax::CssSyntaxKind::*;
@@ -18,7 +18,7 @@ use biome_parser::Parser;
 /// pseudo-class function selector, which is part of the CSS Modules syntax.
 #[inline]
 pub(crate) fn is_at_pseudo_class_function_selector(p: &mut CssParser) -> bool {
-    p.at_ts(CSS_MODULES_SCOPE_SET) && p.nth_at(1, T!['('])
+	p.at_ts(CSS_MODULES_SCOPE_SET) && p.nth_at(1, T!['('])
 }
 
 /// Parses a pseudo-class function selector for CSS Modules.
@@ -38,43 +38,43 @@ pub(crate) fn is_at_pseudo_class_function_selector(p: &mut CssParser) -> bool {
 /// ```
 #[inline]
 pub(crate) fn parse_pseudo_class_function_selector(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_pseudo_class_function_selector(p) {
-        return Absent;
-    }
+	if !is_at_pseudo_class_function_selector(p) {
+		return Absent;
+	}
 
-    if p.options().is_css_modules_disabled() {
-        // :local and :global are not standard CSS features
-        // provide a hint on how to enable parsing of these pseudo-classes
-        p.error(local_or_global_not_allowed(p, p.cur_range()));
+	if p.options().is_css_modules_disabled() {
+		// :local and :global are not standard CSS features
+		// provide a hint on how to enable parsing of these pseudo-classes
+		p.error(local_or_global_not_allowed(p, p.cur_range()));
 
-        // Skip the entire pseudo-class function selector
-        // Skip until the next closing parenthesis
-        while !p.eat(T![')']) {
-            p.bump_any();
-        }
+		// Skip the entire pseudo-class function selector
+		// Skip until the next closing parenthesis
+		while !p.eat(T![')']) {
+			p.bump_any();
+		}
 
-        return Absent;
-    }
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump_ts(CSS_MODULES_SCOPE_SET);
-    p.bump(T!['(']);
+	p.bump_ts(CSS_MODULES_SCOPE_SET);
+	p.bump(T!['(']);
 
-    let kind = match parse_selector(p) {
-        Present(selector) => {
-            if eat_or_recover_selector_function_close_token(p, selector, expected_selector) {
-                CSS_PSEUDO_CLASS_FUNCTION_SELECTOR
-            } else {
-                CSS_BOGUS_PSEUDO_CLASS
-            }
-        }
-        Absent => {
-            recover_selector_function_parameter(p, expected_selector);
-            p.expect(T![')']);
-            CSS_BOGUS_PSEUDO_CLASS
-        }
-    };
+	let kind = match parse_selector(p) {
+		Present(selector) => {
+			if eat_or_recover_selector_function_close_token(p, selector, expected_selector) {
+				CSS_PSEUDO_CLASS_FUNCTION_SELECTOR
+			} else {
+				CSS_BOGUS_PSEUDO_CLASS
+			}
+		}
+		Absent => {
+			recover_selector_function_parameter(p, expected_selector);
+			p.expect(T![')']);
+			CSS_BOGUS_PSEUDO_CLASS
+		}
+	};
 
-    Present(m.complete(p, kind))
+	Present(m.complete(p, kind))
 }

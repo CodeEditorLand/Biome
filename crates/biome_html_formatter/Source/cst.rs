@@ -7,25 +7,25 @@ use biome_html_syntax::{map_syntax_node, HtmlSyntaxNode};
 pub struct FormatHtmlSyntaxNode;
 
 impl biome_formatter::FormatRule<HtmlSyntaxNode> for FormatHtmlSyntaxNode {
-    type Context = HtmlFormatContext;
+	type Context = HtmlFormatContext;
 
-    fn fmt(&self, node: &HtmlSyntaxNode, f: &mut HtmlFormatter) -> FormatResult<()> {
-        map_syntax_node!(node.clone(), node => node.format().fmt(f))
-    }
+	fn fmt(&self, node: &HtmlSyntaxNode, f: &mut HtmlFormatter) -> FormatResult<()> {
+		map_syntax_node!(node.clone(), node => node.format().fmt(f))
+	}
 }
 
 impl AsFormat<HtmlFormatContext> for HtmlSyntaxNode {
-    type Format<'a> = FormatRefWithRule<'a, HtmlSyntaxNode, FormatHtmlSyntaxNode>;
+	type Format<'a> = FormatRefWithRule<'a, HtmlSyntaxNode, FormatHtmlSyntaxNode>;
 
-    fn format(&self) -> Self::Format<'_> {
-        FormatRefWithRule::new(self, FormatHtmlSyntaxNode)
-    }
+	fn format(&self) -> Self::Format<'_> {
+		FormatRefWithRule::new(self, FormatHtmlSyntaxNode)
+	}
 }
 
 impl IntoFormat<HtmlFormatContext> for HtmlSyntaxNode {
-    type Format = FormatOwnedWithRule<HtmlSyntaxNode, FormatHtmlSyntaxNode>;
+	type Format = FormatOwnedWithRule<HtmlSyntaxNode, FormatHtmlSyntaxNode>;
 
-    fn into_format(self) -> Self::Format {
-        FormatOwnedWithRule::new(self, FormatHtmlSyntaxNode)
-    }
+	fn into_format(self) -> Self::Format {
+		FormatOwnedWithRule::new(self, FormatHtmlSyntaxNode)
+	}
 }

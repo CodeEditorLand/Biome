@@ -5,15 +5,15 @@ use biome_js_syntax::JsClassMemberList;
 pub(crate) struct FormatJsClassMemberList;
 
 impl FormatRule<JsClassMemberList> for FormatJsClassMemberList {
-    type Context = JsFormatContext;
+	type Context = JsFormatContext;
 
-    fn fmt(&self, node: &JsClassMemberList, f: &mut JsFormatter) -> FormatResult<()> {
-        let mut join = f.join_nodes_with_hardline();
+	fn fmt(&self, node: &JsClassMemberList, f: &mut JsFormatter) -> FormatResult<()> {
+		let mut join = f.join_nodes_with_hardline();
 
-        for member in node {
-            join.entry(member.syntax(), &format_or_verbatim(member.format()));
-        }
+		for member in node {
+			join.entry(member.syntax(), &format_or_verbatim(member.format()));
+		}
 
-        join.finish()
-    }
+		join.finish()
+	}
 }

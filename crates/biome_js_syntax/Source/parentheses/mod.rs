@@ -47,8 +47,8 @@ mod tstype;
 
 /// Node that may be parenthesized to ensure it forms valid syntax or to improve readability
 pub trait NeedsParentheses: biome_rowan::AstNode<Language = crate::JsLanguage> {
-    /// Returns `true` if this node requires parentheses to form valid syntax or improve readability.
-    ///
-    /// Returns `false` if the parentheses can be omitted safely without changing the semantic.
-    fn needs_parentheses(&self) -> bool;
+	/// Returns `true` if this node requires parentheses to form valid syntax or improve readability.
+	///
+	/// Returns `false` if the parentheses can be omitted safely without changing the semantic.
+	fn needs_parentheses(&self) -> bool;
 }

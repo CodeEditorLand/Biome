@@ -15,7 +15,7 @@ use biome_rowan::SyntaxKind;
 /// This function verifies if the current token matches the `@namespace` rule.
 #[inline]
 pub(crate) fn is_at_namespace_at_rule(p: &mut CssParser) -> bool {
-    p.at(T![namespace])
+	p.at(T![namespace])
 }
 
 /// Parses a `@namespace` at-rule in a CSS stylesheet.
@@ -29,53 +29,53 @@ pub(crate) fn is_at_namespace_at_rule(p: &mut CssParser) -> bool {
 /// This function identifies and parses these `@namespace` rules within CSS stylesheets.
 #[inline]
 pub(crate) fn parse_namespace_at_rule(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_namespace_at_rule(p) {
-        return Absent;
-    }
+	if !is_at_namespace_at_rule(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T![namespace]);
+	p.bump(T![namespace]);
 
-    if !is_at_namespace_url(p) {
-        // If we aren't at a namespace URL, then we are at a prefix,
-        // and we need to try to parse it.
-        // The problem is that both `url` and `src` are valid identifiers.
-        parse_regular_identifier(p).ok();
-    }
+	if !is_at_namespace_url(p) {
+		// If we aren't at a namespace URL, then we are at a prefix,
+		// and we need to try to parse it.
+		// The problem is that both `url` and `src` are valid identifiers.
+		parse_regular_identifier(p).ok();
+	}
 
-    let kind = match parse_namespace_url(p).or_recover(
-        p,
-        &NamespaceUrlParseRecovery,
-        expected_any_namespace_url,
-    ) {
-        Ok(m) => {
-            if m.kind(p).is_bogus() {
-                CSS_BOGUS_AT_RULE
-            } else {
-                CSS_NAMESPACE_AT_RULE
-            }
-        }
-        Err(_) => CSS_BOGUS_AT_RULE,
-    };
+	let kind = match parse_namespace_url(p).or_recover(
+		p,
+		&NamespaceUrlParseRecovery,
+		expected_any_namespace_url,
+	) {
+		Ok(m) => {
+			if m.kind(p).is_bogus() {
+				CSS_BOGUS_AT_RULE
+			} else {
+				CSS_NAMESPACE_AT_RULE
+			}
+		}
+		Err(_) => CSS_BOGUS_AT_RULE,
+	};
 
-    p.expect(T![;]);
+	p.expect(T![;]);
 
-    Present(m.complete(p, kind))
+	Present(m.complete(p, kind))
 }
 
 struct NamespaceUrlParseRecovery;
 
 impl ParseRecovery for NamespaceUrlParseRecovery {
-    type Kind = CssSyntaxKind;
-    type Parser<'source> = CssParser<'source>;
-    const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
+	type Kind = CssSyntaxKind;
+	type Parser<'source> = CssParser<'source>;
+	const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
-    fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
-        // @namespace  2131 ; <--- recovery point
-        // invalid url ^^^^
-        p.at(T![;]) || p.has_nth_preceding_line_break(1)
-    }
+	fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
+		// @namespace  2131 ; <--- recovery point
+		// invalid url ^^^^
+		p.at(T![;]) || p.has_nth_preceding_line_break(1)
+	}
 }
 
 /// Checks if the current token in the parser is either a URL function or a string, indicating a namespace URL.
@@ -84,19 +84,19 @@ impl ParseRecovery for NamespaceUrlParseRecovery {
 /// It checks for either a URL function or a string token.
 #[inline]
 pub(crate) fn is_at_namespace_url(p: &mut CssParser) -> bool {
-    is_at_url_function(p) || is_at_string(p)
+	is_at_url_function(p) || is_at_string(p)
 }
 
 /// Parses the URL of a namespace in a `@namespace` rule.
 #[inline]
 pub(crate) fn parse_namespace_url(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_namespace_url(p) {
-        return Absent;
-    }
+	if !is_at_namespace_url(p) {
+		return Absent;
+	}
 
-    if is_at_url_function(p) {
-        parse_url_function(p)
-    } else {
-        parse_string(p)
-    }
+	if is_at_url_function(p) {
+		parse_url_function(p)
+	} else {
+		parse_string(p)
+	}
 }

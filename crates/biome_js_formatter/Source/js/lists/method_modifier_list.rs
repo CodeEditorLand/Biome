@@ -6,9 +6,9 @@ use biome_js_syntax::JsMethodModifierList;
 pub(crate) struct FormatJsMethodModifierList;
 
 impl FormatRule<JsMethodModifierList> for FormatJsMethodModifierList {
-    type Context = JsFormatContext;
+	type Context = JsFormatContext;
 
-    fn fmt(&self, node: &JsMethodModifierList, f: &mut JsFormatter) -> FormatResult<()> {
-        FormatModifiers::from(node.clone()).fmt(f)
-    }
+	fn fmt(&self, node: &JsMethodModifierList, f: &mut JsFormatter) -> FormatResult<()> {
+		FormatModifiers::from(node.clone()).fmt(f)
+	}
 }

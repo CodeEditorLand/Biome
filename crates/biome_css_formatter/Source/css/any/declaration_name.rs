@@ -5,11 +5,11 @@ use biome_css_syntax::AnyCssDeclarationName;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatAnyCssDeclarationName;
 impl FormatRule<AnyCssDeclarationName> for FormatAnyCssDeclarationName {
-    type Context = CssFormatContext;
-    fn fmt(&self, node: &AnyCssDeclarationName, f: &mut CssFormatter) -> FormatResult<()> {
-        match node {
-            AnyCssDeclarationName::CssDashedIdentifier(node) => node.format().fmt(f),
-            AnyCssDeclarationName::CssIdentifier(node) => node.format().fmt(f),
-        }
-    }
+	type Context = CssFormatContext;
+	fn fmt(&self, node: &AnyCssDeclarationName, f: &mut CssFormatter) -> FormatResult<()> {
+		match node {
+			AnyCssDeclarationName::CssDashedIdentifier(node) => node.format().fmt(f),
+			AnyCssDeclarationName::CssIdentifier(node) => node.format().fmt(f),
+		}
+	}
 }

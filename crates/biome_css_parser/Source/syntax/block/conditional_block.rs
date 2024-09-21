@@ -18,9 +18,9 @@ use crate::syntax::block::{parse_declaration_or_rule_list_block, parse_rule_bloc
 ///
 #[inline]
 pub(crate) fn parse_conditional_block(p: &mut CssParser) -> CompletedMarker {
-    if p.state_mut().is_nesting_block {
-        parse_declaration_or_rule_list_block(p)
-    } else {
-        parse_rule_block(p)
-    }
+	if p.state_mut().is_nesting_block {
+		parse_declaration_or_rule_list_block(p)
+	} else {
+		parse_rule_block(p)
+	}
 }

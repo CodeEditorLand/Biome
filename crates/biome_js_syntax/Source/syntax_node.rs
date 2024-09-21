@@ -15,8 +15,8 @@ use serde::Serialize;
 pub struct JsLanguage;
 
 impl Language for JsLanguage {
-    type Kind = JsSyntaxKind;
-    type Root = AnyJsRoot;
+	type Kind = JsSyntaxKind;
+	type Root = AnyJsRoot;
 }
 
 pub type JsSyntaxNode = biome_rowan::SyntaxNode<JsLanguage>;

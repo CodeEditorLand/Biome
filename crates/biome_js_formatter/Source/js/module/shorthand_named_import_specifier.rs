@@ -8,20 +8,17 @@ use biome_js_syntax::JsShorthandNamedImportSpecifierFields;
 pub(crate) struct FormatJsShorthandNamedImportSpecifier;
 
 impl FormatNodeRule<JsShorthandNamedImportSpecifier> for FormatJsShorthandNamedImportSpecifier {
-    fn fmt_fields(
-        &self,
-        node: &JsShorthandNamedImportSpecifier,
-        f: &mut JsFormatter,
-    ) -> FormatResult<()> {
-        let JsShorthandNamedImportSpecifierFields {
-            type_token,
-            local_name,
-        } = node.as_fields();
+	fn fmt_fields(
+		&self,
+		node: &JsShorthandNamedImportSpecifier,
+		f: &mut JsFormatter,
+	) -> FormatResult<()> {
+		let JsShorthandNamedImportSpecifierFields { type_token, local_name } = node.as_fields();
 
-        if let Some(type_token) = type_token {
-            write!(f, [type_token.format(), space()])?;
-        }
+		if let Some(type_token) = type_token {
+			write!(f, [type_token.format(), space()])?;
+		}
 
-        write![f, [local_name.format()]]
-    }
+		write![f, [local_name.format()]]
+	}
 }

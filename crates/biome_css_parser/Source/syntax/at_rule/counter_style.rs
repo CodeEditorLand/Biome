@@ -12,36 +12,36 @@ use biome_parser::prelude::*;
 
 #[inline]
 pub(crate) fn is_at_counter_style_at_rule(p: &mut CssParser) -> bool {
-    p.at(T![counter_style])
+	p.at(T![counter_style])
 }
 
 #[inline]
 pub(crate) fn parse_counter_style_at_rule(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_counter_style_at_rule(p) {
-        return Absent;
-    }
+	if !is_at_counter_style_at_rule(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T![counter_style]);
+	p.bump(T![counter_style]);
 
-    let kind = if parse_custom_identifier(p, CssLexContext::Regular)
-        .or_recover_with_token_set(
-            p,
-            &ParseRecoveryTokenSet::new(CSS_BOGUS, COUNTER_STYLE_RECOVERY_SET)
-                .enable_recovery_on_line_break(),
-            expected_non_css_wide_keyword_identifier,
-        )
-        .is_ok()
-    {
-        CSS_COUNTER_STYLE_AT_RULE
-    } else {
-        CSS_BOGUS_AT_RULE
-    };
+	let kind = if parse_custom_identifier(p, CssLexContext::Regular)
+		.or_recover_with_token_set(
+			p,
+			&ParseRecoveryTokenSet::new(CSS_BOGUS, COUNTER_STYLE_RECOVERY_SET)
+				.enable_recovery_on_line_break(),
+			expected_non_css_wide_keyword_identifier,
+		)
+		.is_ok()
+	{
+		CSS_COUNTER_STYLE_AT_RULE
+	} else {
+		CSS_BOGUS_AT_RULE
+	};
 
-    parse_declaration_block(p);
+	parse_declaration_block(p);
 
-    Present(m.complete(p, kind))
+	Present(m.complete(p, kind))
 }
 
 const COUNTER_STYLE_RECOVERY_SET: TokenSet<CssSyntaxKind> = token_set![T!['{']];

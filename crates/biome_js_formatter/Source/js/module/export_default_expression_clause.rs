@@ -10,25 +10,22 @@ use biome_js_syntax::JsExportDefaultExpressionClauseFields;
 pub(crate) struct FormatJsExportDefaultExpressionClause;
 
 impl FormatNodeRule<JsExportDefaultExpressionClause> for FormatJsExportDefaultExpressionClause {
-    fn fmt_fields(
-        &self,
-        node: &JsExportDefaultExpressionClause,
-        f: &mut JsFormatter,
-    ) -> FormatResult<()> {
-        let JsExportDefaultExpressionClauseFields {
-            default_token,
-            expression,
-            semicolon_token,
-        } = node.as_fields();
+	fn fmt_fields(
+		&self,
+		node: &JsExportDefaultExpressionClause,
+		f: &mut JsFormatter,
+	) -> FormatResult<()> {
+		let JsExportDefaultExpressionClauseFields { default_token, expression, semicolon_token } =
+			node.as_fields();
 
-        write!(
-            f,
-            [
-                default_token.format(),
-                space(),
-                expression.format(),
-                FormatStatementSemicolon::new(semicolon_token.as_ref())
-            ]
-        )
-    }
+		write!(
+			f,
+			[
+				default_token.format(),
+				space(),
+				expression.format(),
+				FormatStatementSemicolon::new(semicolon_token.as_ref())
+			]
+		)
+	}
 }

@@ -8,28 +8,28 @@ use biome_js_syntax::JsSetterObjectMemberFields;
 pub(crate) struct FormatJsSetterObjectMember;
 
 impl FormatNodeRule<JsSetterObjectMember> for FormatJsSetterObjectMember {
-    fn fmt_fields(&self, node: &JsSetterObjectMember, f: &mut JsFormatter) -> FormatResult<()> {
-        let JsSetterObjectMemberFields {
-            set_token,
-            name,
-            l_paren_token,
-            parameter,
-            r_paren_token,
-            body,
-        } = node.as_fields();
+	fn fmt_fields(&self, node: &JsSetterObjectMember, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsSetterObjectMemberFields {
+			set_token,
+			name,
+			l_paren_token,
+			parameter,
+			r_paren_token,
+			body,
+		} = node.as_fields();
 
-        write![
-            f,
-            [
-                set_token.format(),
-                space(),
-                name.format(),
-                l_paren_token.format(),
-                parameter.format(),
-                r_paren_token.format(),
-                space(),
-                body.format(),
-            ]
-        ]
-    }
+		write![
+			f,
+			[
+				set_token.format(),
+				space(),
+				name.format(),
+				l_paren_token.format(),
+				parameter.format(),
+				r_paren_token.format(),
+				space(),
+				body.format(),
+			]
+		]
+	}
 }

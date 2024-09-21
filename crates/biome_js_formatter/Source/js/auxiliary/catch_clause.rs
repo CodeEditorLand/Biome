@@ -7,19 +7,15 @@ use biome_js_syntax::JsCatchClauseFields;
 pub(crate) struct FormatJsCatchClause;
 
 impl FormatNodeRule<JsCatchClause> for FormatJsCatchClause {
-    fn fmt_fields(&self, node: &JsCatchClause, f: &mut JsFormatter) -> FormatResult<()> {
-        let JsCatchClauseFields {
-            catch_token,
-            declaration,
-            body,
-        } = node.as_fields();
+	fn fmt_fields(&self, node: &JsCatchClause, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsCatchClauseFields { catch_token, declaration, body } = node.as_fields();
 
-        write!(f, [catch_token.format(), space()])?;
+		write!(f, [catch_token.format(), space()])?;
 
-        if let Some(declaration) = declaration {
-            write![f, [declaration.format(), space()]]?;
-        }
+		if let Some(declaration) = declaration {
+			write![f, [declaration.format(), space()]]?;
+		}
 
-        write!(f, [body.format()])
-    }
+		write!(f, [body.format()])
+	}
 }

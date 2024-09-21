@@ -12,8 +12,8 @@ use biome_rowan::Language;
 pub struct HtmlLanguage;
 
 impl Language for HtmlLanguage {
-    type Kind = HtmlSyntaxKind;
-    type Root = HtmlRoot;
+	type Kind = HtmlSyntaxKind;
+	type Root = HtmlRoot;
 }
 
 pub type HtmlSyntaxNode = biome_rowan::SyntaxNode<HtmlLanguage>;

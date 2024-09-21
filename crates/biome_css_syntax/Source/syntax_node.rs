@@ -12,8 +12,8 @@ use biome_rowan::Language;
 pub struct CssLanguage;
 
 impl Language for CssLanguage {
-    type Kind = CssSyntaxKind;
-    type Root = CssRoot;
+	type Kind = CssSyntaxKind;
+	type Root = CssRoot;
 }
 
 pub type CssSyntaxNode = biome_rowan::SyntaxNode<CssLanguage>;

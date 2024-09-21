@@ -9,14 +9,14 @@ use biome_js_syntax::TsEmptyExternalModuleDeclarationBodyFields;
 pub struct FormatTsEmptyExternalModuleDeclarationBody;
 
 impl FormatNodeRule<TsEmptyExternalModuleDeclarationBody>
-    for FormatTsEmptyExternalModuleDeclarationBody
+	for FormatTsEmptyExternalModuleDeclarationBody
 {
-    fn fmt_fields(
-        &self,
-        node: &TsEmptyExternalModuleDeclarationBody,
-        f: &mut JsFormatter,
-    ) -> FormatResult<()> {
-        let TsEmptyExternalModuleDeclarationBodyFields { semicolon_token } = node.as_fields();
-        write![f, [FormatOptionalSemicolon::new(Some(&semicolon_token?))]]
-    }
+	fn fmt_fields(
+		&self,
+		node: &TsEmptyExternalModuleDeclarationBody,
+		f: &mut JsFormatter,
+	) -> FormatResult<()> {
+		let TsEmptyExternalModuleDeclarationBodyFields { semicolon_token } = node.as_fields();
+		write![f, [FormatOptionalSemicolon::new(Some(&semicolon_token?))]]
+	}
 }

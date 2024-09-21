@@ -6,11 +6,11 @@ use grit_pattern_matcher::pattern::PrReturn;
 pub(crate) struct PrReturnCompiler;
 
 impl PrReturnCompiler {
-    pub(crate) fn from_node(
-        node: &GritPredicateReturn,
-        context: &mut NodeCompilationContext,
-    ) -> Result<PrReturn<GritQueryContext>, CompileError> {
-        let pattern = PatternCompiler::from_node_with_rhs(&node.pattern()?, context, true)?;
-        Ok(PrReturn::new(pattern))
-    }
+	pub(crate) fn from_node(
+		node: &GritPredicateReturn,
+		context: &mut NodeCompilationContext,
+	) -> Result<PrReturn<GritQueryContext>, CompileError> {
+		let pattern = PatternCompiler::from_node_with_rhs(&node.pattern()?, context, true)?;
+		Ok(PrReturn::new(pattern))
+	}
 }

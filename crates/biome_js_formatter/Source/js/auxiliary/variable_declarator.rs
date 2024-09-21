@@ -7,7 +7,7 @@ use biome_js_syntax::JsVariableDeclarator;
 pub(crate) struct FormatJsVariableDeclarator;
 
 impl FormatNodeRule<JsVariableDeclarator> for FormatJsVariableDeclarator {
-    fn fmt_fields(&self, node: &JsVariableDeclarator, f: &mut JsFormatter) -> FormatResult<()> {
-        write![f, [AnyJsAssignmentLike::from(node.clone())]]
-    }
+	fn fmt_fields(&self, node: &JsVariableDeclarator, f: &mut JsFormatter) -> FormatResult<()> {
+		write![f, [AnyJsAssignmentLike::from(node.clone())]]
+	}
 }

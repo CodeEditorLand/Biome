@@ -37,29 +37,29 @@ mod tree_builder;
 pub use biome_text_size::{TextLen, TextRange, TextSize};
 
 pub use crate::{
-    ast::*,
-    file_source::FileSourceError,
-    green::{NodeCache, RawSyntaxKind},
-    syntax::{
-        chain_trivia_pieces, trim_leading_trivia_pieces, trim_trailing_trivia_pieces,
-        ChainTriviaPiecesIterator, Language, SendNode, SyntaxElement, SyntaxElementChildren,
-        SyntaxKind, SyntaxList, SyntaxNode, SyntaxNodeChildren, SyntaxNodeOptionExt,
-        SyntaxRewriter, SyntaxSlot, SyntaxSlots, SyntaxToken, SyntaxTriviaPiece,
-        SyntaxTriviaPieceComments, TriviaPiece, TriviaPieceKind, VisitNodeSignal,
-    },
-    syntax_factory::*,
-    syntax_node_text::SyntaxNodeText,
-    token_text::TokenText,
-    tree_builder::{Checkpoint, TreeBuilder},
-    utility_types::{Direction, NodeOrToken, TokenAtOffset, WalkEvent},
+	ast::*,
+	file_source::FileSourceError,
+	green::{NodeCache, RawSyntaxKind},
+	syntax::{
+		chain_trivia_pieces, trim_leading_trivia_pieces, trim_trailing_trivia_pieces,
+		ChainTriviaPiecesIterator, Language, SendNode, SyntaxElement, SyntaxElementChildren,
+		SyntaxKind, SyntaxList, SyntaxNode, SyntaxNodeChildren, SyntaxNodeOptionExt,
+		SyntaxRewriter, SyntaxSlot, SyntaxSlots, SyntaxToken, SyntaxTriviaPiece,
+		SyntaxTriviaPieceComments, TriviaPiece, TriviaPieceKind, VisitNodeSignal,
+	},
+	syntax_factory::*,
+	syntax_node_text::SyntaxNodeText,
+	token_text::TokenText,
+	tree_builder::{Checkpoint, TreeBuilder},
+	utility_types::{Direction, NodeOrToken, TokenAtOffset, WalkEvent},
 };
 
 pub(crate) use crate::green::{GreenNode, GreenNodeData, GreenToken, GreenTokenData};
 
 pub fn check_live() -> Option<String> {
-    if cursor::has_live() || green::has_live() {
-        Some(countme::get_all().to_string())
-    } else {
-        None
-    }
+	if cursor::has_live() || green::has_live() {
+		Some(countme::get_all().to_string())
+	} else {
+		None
+	}
 }

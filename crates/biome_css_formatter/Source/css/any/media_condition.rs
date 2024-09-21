@@ -5,13 +5,13 @@ use biome_css_syntax::AnyCssMediaCondition;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatAnyCssMediaCondition;
 impl FormatRule<AnyCssMediaCondition> for FormatAnyCssMediaCondition {
-    type Context = CssFormatContext;
-    fn fmt(&self, node: &AnyCssMediaCondition, f: &mut CssFormatter) -> FormatResult<()> {
-        match node {
-            AnyCssMediaCondition::AnyCssMediaInParens(node) => node.format().fmt(f),
-            AnyCssMediaCondition::CssMediaAndCondition(node) => node.format().fmt(f),
-            AnyCssMediaCondition::CssMediaNotCondition(node) => node.format().fmt(f),
-            AnyCssMediaCondition::CssMediaOrCondition(node) => node.format().fmt(f),
-        }
-    }
+	type Context = CssFormatContext;
+	fn fmt(&self, node: &AnyCssMediaCondition, f: &mut CssFormatter) -> FormatResult<()> {
+		match node {
+			AnyCssMediaCondition::AnyCssMediaInParens(node) => node.format().fmt(f),
+			AnyCssMediaCondition::CssMediaAndCondition(node) => node.format().fmt(f),
+			AnyCssMediaCondition::CssMediaNotCondition(node) => node.format().fmt(f),
+			AnyCssMediaCondition::CssMediaOrCondition(node) => node.format().fmt(f),
+		}
+	}
 }

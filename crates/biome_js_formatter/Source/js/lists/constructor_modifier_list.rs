@@ -6,11 +6,9 @@ use biome_rowan::AstNodeList;
 pub(crate) struct FormatJsConstructorModifierList;
 
 impl FormatRule<JsConstructorModifierList> for FormatJsConstructorModifierList {
-    type Context = JsFormatContext;
+	type Context = JsFormatContext;
 
-    fn fmt(&self, node: &JsConstructorModifierList, f: &mut JsFormatter) -> FormatResult<()> {
-        f.join_with(&space())
-            .entries(node.iter().formatted())
-            .finish()
-    }
+	fn fmt(&self, node: &JsConstructorModifierList, f: &mut JsFormatter) -> FormatResult<()> {
+		f.join_with(&space()).entries(node.iter().formatted()).finish()
+	}
 }

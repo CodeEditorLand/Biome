@@ -5,14 +5,14 @@ use crate::{diagnostics::MigrationDiagnostic, CliDiagnostic};
 /// Imports `specifier` using Node's `import()` or node's `require()` and
 /// returns the JSONified content of its default export.
 pub(crate) fn load_config(specifier: &str) -> Result<Resolution, CliDiagnostic> {
-    let content_output = Command::new("node")
+	let content_output = Command::new("node")
         .env("NODE_NO_WARNINGS", "1")
         .arg("--eval")
         .arg(format!(
             "{UNCYCLE_FUNCTION} import('{specifier}').then((c) => console.log(JSON.stringify(uncycle(c.default))))"
         ))
         .output();
-    match content_output {
+	match content_output {
         Err(_) => {
             Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
                 reason: "The `node` program doesn't exist or cannot be invoked by Biome.\n`node` is invoked to resolve ESLint configurations written in JavaScript.\nThis includes shared configurations and plugin configurations imported with ESLint's `extends`.".to_string()
@@ -59,11 +59,11 @@ pub(crate) fn load_config(specifier: &str) -> Result<Resolution, CliDiagnostic> 
 
 #[derive(Debug)]
 pub(crate) struct Resolution {
-    /// Resolved path of the file.
-    /// May be empty if the resolution failed.
-    pub(crate) resolved_path: String,
-    /// File content in JSON
-    pub(crate) content: String,
+	/// Resolved path of the file.
+	/// May be empty if the resolution failed.
+	pub(crate) resolved_path: String,
+	/// File content in JSON
+	pub(crate) content: String,
 }
 
 /// JavaScript function used to remove cyclic references.

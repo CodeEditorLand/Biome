@@ -50,56 +50,56 @@ use biome_parser::prelude::*;
 
 #[inline]
 pub(crate) fn is_at_at_rule(p: &mut CssParser) -> bool {
-    p.at(T![@])
+	p.at(T![@])
 }
 
 #[inline]
 pub(crate) fn parse_at_rule(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_at_rule(p) {
-        return Absent;
-    }
+	if !is_at_at_rule(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T![@]);
+	p.bump(T![@]);
 
-    // Show the error under the token next to the '@'
-    let range = p.cur_range();
+	// Show the error under the token next to the '@'
+	let range = p.cur_range();
 
-    let kind = match parse_any_at_rule(p) {
-        Present(_) => CSS_AT_RULE,
-        Absent => {
-            p.error(expected_any_at_rule(p, range));
-            CSS_BOGUS_RULE
-        }
-    };
+	let kind = match parse_any_at_rule(p) {
+		Present(_) => CSS_AT_RULE,
+		Absent => {
+			p.error(expected_any_at_rule(p, range));
+			CSS_BOGUS_RULE
+		}
+	};
 
-    Present(m.complete(p, kind))
+	Present(m.complete(p, kind))
 }
 
 #[inline]
 pub(crate) fn parse_any_at_rule(p: &mut CssParser) -> ParsedSyntax {
-    match p.cur() {
-        T![charset] => parse_charset_at_rule(p),
-        T![color_profile] => parse_color_profile_at_rule(p),
-        T![counter_style] => parse_counter_style_at_rule(p),
-        T![container] => parse_container_at_rule(p),
-        T![font_face] => parse_font_face_at_rule(p),
-        T![font_feature_values] => parse_font_feature_values_at_rule(p),
-        T![font_palette_values] => parse_font_palette_values_at_rule(p),
-        T![media] => parse_media_at_rule(p),
-        T![keyframes] => parse_keyframes_at_rule(p),
-        T![page] => parse_page_at_rule(p),
-        T![layer] => parse_layer_at_rule(p),
-        T![scope] => parse_scope_at_rule(p),
-        T![supports] => parse_supports_at_rule(p),
-        T![import] => parse_import_at_rule(p),
-        T![namespace] => parse_namespace_at_rule(p),
-        T![starting_style] => parse_starting_style_at_rule(p),
-        T![document] => parse_document_at_rule(p),
-        T![property] => parse_property_at_rule(p),
-        T![value] => parse_value_at_rule(p),
-        _ if is_at_unknown_at_rule(p) => parse_unknown_at_rule(p),
-        _ => Absent,
-    }
+	match p.cur() {
+		T![charset] => parse_charset_at_rule(p),
+		T![color_profile] => parse_color_profile_at_rule(p),
+		T![counter_style] => parse_counter_style_at_rule(p),
+		T![container] => parse_container_at_rule(p),
+		T![font_face] => parse_font_face_at_rule(p),
+		T![font_feature_values] => parse_font_feature_values_at_rule(p),
+		T![font_palette_values] => parse_font_palette_values_at_rule(p),
+		T![media] => parse_media_at_rule(p),
+		T![keyframes] => parse_keyframes_at_rule(p),
+		T![page] => parse_page_at_rule(p),
+		T![layer] => parse_layer_at_rule(p),
+		T![scope] => parse_scope_at_rule(p),
+		T![supports] => parse_supports_at_rule(p),
+		T![import] => parse_import_at_rule(p),
+		T![namespace] => parse_namespace_at_rule(p),
+		T![starting_style] => parse_starting_style_at_rule(p),
+		T![document] => parse_document_at_rule(p),
+		T![property] => parse_property_at_rule(p),
+		T![value] => parse_value_at_rule(p),
+		_ if is_at_unknown_at_rule(p) => parse_unknown_at_rule(p),
+		_ => Absent,
+	}
 }

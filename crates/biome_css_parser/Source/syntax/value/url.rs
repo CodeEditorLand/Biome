@@ -16,7 +16,7 @@ const URL_SET: TokenSet<CssSyntaxKind> = token_set![T![url], T![src]];
 
 /// Determines if the current position of the parser is at the beginning of a URL function.
 pub(crate) fn is_at_url_function(p: &mut CssParser) -> bool {
-    p.at_ts(URL_SET) && p.nth_at(1, T!['('])
+	p.at_ts(URL_SET) && p.nth_at(1, T!['('])
 }
 
 /// Parses a URL function from the current position of the CSS parser.
@@ -55,26 +55,26 @@ pub(crate) fn is_at_url_function(p: &mut CssParser) -> bool {
 /// Here, `<url-modifier>` represents any modifiers that might be applied to the URL, such as
 /// resolution-based adjustments or format hints.
 pub(crate) fn parse_url_function(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_url_function(p) {
-        return Absent;
-    }
-    let m = p.start();
+	if !is_at_url_function(p) {
+		return Absent;
+	}
+	let m = p.start();
 
-    p.bump_ts(URL_SET);
+	p.bump_ts(URL_SET);
 
-    if is_nth_at_function(p, 1) {
-        // we need to check if the next token is a function or not
-        // to cover the case of `src(var(--foo));`
-        p.bump(T!['(']);
-    } else {
-        p.bump_with_context(T!['('], CssLexContext::UrlRawValue);
-        parse_url_value(p).ok();
-    }
+	if is_nth_at_function(p, 1) {
+		// we need to check if the next token is a function or not
+		// to cover the case of `src(var(--foo));`
+		p.bump(T!['(']);
+	} else {
+		p.bump_with_context(T!['('], CssLexContext::UrlRawValue);
+		parse_url_value(p).ok();
+	}
 
-    UrlModifierList.parse_list(p);
-    p.expect(T![')']);
+	UrlModifierList.parse_list(p);
+	p.expect(T![')']);
 
-    Present(m.complete(p, CSS_URL_FUNCTION))
+	Present(m.complete(p, CSS_URL_FUNCTION))
 }
 
 /// Determines if the current position of the parser is at a URL value.
@@ -83,7 +83,7 @@ pub(crate) fn parse_url_function(p: &mut CssParser) -> ParsedSyntax {
 /// or a string.
 #[inline]
 pub(crate) fn is_at_url_value(p: &mut CssParser) -> bool {
-    is_at_url_value_raw(p) || is_at_string(p)
+	is_at_url_value_raw(p) || is_at_string(p)
 }
 
 /// Parses a URL value from the current position of the CSS parser.
@@ -92,95 +92,95 @@ pub(crate) fn is_at_url_value(p: &mut CssParser) -> bool {
 /// If the current position is at a string, it parses using `parse_string`; otherwise, it uses `parse_url_value_raw` for a raw URL.
 #[inline]
 pub(crate) fn parse_url_value(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_url_value(p) {
-        return Absent;
-    }
+	if !is_at_url_value(p) {
+		return Absent;
+	}
 
-    if is_at_string(p) {
-        parse_string(p)
-    } else {
-        parse_url_value_raw(p)
-    }
+	if is_at_string(p) {
+		parse_string(p)
+	} else {
+		parse_url_value_raw(p)
+	}
 }
 
 /// Determines if the current position of the parser is at a raw URL value.
 #[inline]
 pub(crate) fn is_at_url_value_raw(p: &mut CssParser) -> bool {
-    p.at(CSS_URL_VALUE_RAW_LITERAL)
+	p.at(CSS_URL_VALUE_RAW_LITERAL)
 }
 
 /// Parses a raw URL value from the current position of the CSS parser.
 #[inline]
 pub(crate) fn parse_url_value_raw(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_url_value_raw(p) {
-        return Absent;
-    }
+	if !is_at_url_value_raw(p) {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.expect(CSS_URL_VALUE_RAW_LITERAL);
-    Present(m.complete(p, CSS_URL_VALUE_RAW))
+	let m = p.start();
+	p.expect(CSS_URL_VALUE_RAW_LITERAL);
+	Present(m.complete(p, CSS_URL_VALUE_RAW))
 }
 
 struct UrlModifierListParseRecovery;
 
 impl ParseRecovery for UrlModifierListParseRecovery {
-    type Kind = CssSyntaxKind;
-    type Parser<'source> = CssParser<'source>;
-    const RECOVERED_KIND: Self::Kind = CSS_BOGUS_URL_MODIFIER;
+	type Kind = CssSyntaxKind;
+	type Parser<'source> = CssParser<'source>;
+	const RECOVERED_KIND: Self::Kind = CSS_BOGUS_URL_MODIFIER;
 
-    fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
-        // url("//aa.com/img.svg" foo "bar" func(test));
-        //                              ^    ^
-        // "bar" is an invalid modifier |____| func is the recovery point
-        //
-        // url("//aa.com/img.svg" foo "bar"  );
-        //                              ^    ^
-        // "bar" is an invalid modifier |____| ')' is the recovery point
-        p.at(T![')']) || is_at_url_modifier(p)
-    }
+	fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
+		// url("//aa.com/img.svg" foo "bar" func(test));
+		//                              ^    ^
+		// "bar" is an invalid modifier |____| func is the recovery point
+		//
+		// url("//aa.com/img.svg" foo "bar"  );
+		//                              ^    ^
+		// "bar" is an invalid modifier |____| ')' is the recovery point
+		p.at(T![')']) || is_at_url_modifier(p)
+	}
 }
 
 struct UrlModifierList;
 
 impl ParseNodeList for UrlModifierList {
-    type Kind = CssSyntaxKind;
-    type Parser<'source> = CssParser<'source>;
-    const LIST_KIND: Self::Kind = CSS_URL_MODIFIER_LIST;
+	type Kind = CssSyntaxKind;
+	type Parser<'source> = CssParser<'source>;
+	const LIST_KIND: Self::Kind = CSS_URL_MODIFIER_LIST;
 
-    fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
-        parse_url_modifier(p)
-    }
+	fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
+		parse_url_modifier(p)
+	}
 
-    fn is_at_list_end(&self, p: &mut Self::Parser<'_>) -> bool {
-        p.at(T![')'])
-    }
+	fn is_at_list_end(&self, p: &mut Self::Parser<'_>) -> bool {
+		p.at(T![')'])
+	}
 
-    fn recover(
-        &mut self,
-        p: &mut Self::Parser<'_>,
-        parsed_element: ParsedSyntax,
-    ) -> RecoveryResult {
-        parsed_element.or_recover(p, &UrlModifierListParseRecovery, expected_url_modifier)
-    }
+	fn recover(
+		&mut self,
+		p: &mut Self::Parser<'_>,
+		parsed_element: ParsedSyntax,
+	) -> RecoveryResult {
+		parsed_element.or_recover(p, &UrlModifierListParseRecovery, expected_url_modifier)
+	}
 }
 
 /// This function determines if the current token is either an identifier or any function,
 /// indicating a potential modifier for a URL in CSS.
 #[inline]
 pub(crate) fn is_at_url_modifier(p: &mut CssParser) -> bool {
-    is_at_identifier(p) || is_at_function(p)
+	is_at_identifier(p) || is_at_function(p)
 }
 
 /// Parses a URL modifier, which can be either a simple function or a regular identifier.
 #[inline]
 pub(crate) fn parse_url_modifier(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_url_modifier(p) {
-        return Absent;
-    }
+	if !is_at_url_modifier(p) {
+		return Absent;
+	}
 
-    if is_at_function(p) {
-        parse_function(p)
-    } else {
-        parse_regular_identifier(p)
-    }
+	if is_at_function(p) {
+		parse_function(p)
+	} else {
+		parse_regular_identifier(p)
+	}
 }

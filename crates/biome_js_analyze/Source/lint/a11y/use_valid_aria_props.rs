@@ -8,92 +8,93 @@ use biome_js_syntax::JsxAttribute;
 use biome_rowan::{AstNode, AstNodeList, BatchMutationExt};
 
 declare_lint_rule! {
-    /// Ensures that ARIA properties `aria-*` are all valid.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```jsx, expect_diagnostic
-    /// <input className="" aria-labell="" />
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div aria-lorem="foobar" />;
-    /// ```
-    ///
-    /// ## Accessibility guidelines
-    /// - [WCAG 4.1.2](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)
-    pub UseValidAriaProps {
-        version: "1.0.0",
-        name: "useValidAriaProps",
-        language: "jsx",
-        sources: &[RuleSource::EslintJsxA11y("aria-props")],
-        recommended: true,
-        fix_kind: FixKind::Unsafe,
-    }
+	/// Ensures that ARIA properties `aria-*` are all valid.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```jsx, expect_diagnostic
+	/// <input className="" aria-labell="" />
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div aria-lorem="foobar" />;
+	/// ```
+	///
+	/// ## Accessibility guidelines
+	/// - [WCAG 4.1.2](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)
+	pub UseValidAriaProps {
+		version: "1.0.0",
+		name: "useValidAriaProps",
+		language: "jsx",
+		sources: &[RuleSource::EslintJsxA11y("aria-props")],
+		recommended: true,
+		fix_kind: FixKind::Unsafe,
+	}
 }
 
 impl Rule for UseValidAriaProps {
-    type Query = Aria<AnyJsxElement>;
-    type State = JsxAttribute;
-    type Signals = Vec<Self::State>;
-    type Options = ();
+	type Query = Aria<AnyJsxElement>;
+	type State = JsxAttribute;
+	type Signals = Vec<Self::State>;
+	type Options = ();
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let node = ctx.query();
-        let aria_properties = ctx.aria_properties();
+	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+		let node = ctx.query();
+		let aria_properties = ctx.aria_properties();
 
-        // check attributes that belong only to HTML elements
-        if node.is_element() {
-            let attributes: Vec<_> = node
-                .attributes()
-                .iter()
-                .filter_map(|attribute| {
-                    let attribute = attribute.as_jsx_attribute()?;
-                    let attribute_name =
-                        attribute.name().ok()?.as_jsx_name()?.value_token().ok()?;
-                    if attribute_name.text_trimmed().starts_with("aria-")
-                        && aria_properties
-                            .get_property(attribute_name.text_trimmed())
-                            .is_none()
-                    {
-                        Some(attribute.clone())
-                    } else {
-                        None
-                    }
-                })
-                .collect();
+		// check attributes that belong only to HTML elements
+		if node.is_element() {
+			let attributes: Vec<_> = node
+				.attributes()
+				.iter()
+				.filter_map(|attribute| {
+					let attribute = attribute.as_jsx_attribute()?;
+					let attribute_name =
+						attribute.name().ok()?.as_jsx_name()?.value_token().ok()?;
+					if attribute_name.text_trimmed().starts_with("aria-")
+						&& aria_properties.get_property(attribute_name.text_trimmed()).is_none()
+					{
+						Some(attribute.clone())
+					} else {
+						None
+					}
+				})
+				.collect();
 
-            attributes
-        } else {
-            vec![]
-        }
-    }
+			attributes
+		} else {
+			vec![]
+		}
+	}
 
-    fn diagnostic(ctx: &RuleContext<Self>, attribute: &Self::State) -> Option<RuleDiagnostic> {
-        let node = ctx.query();
-        let attribute_name = attribute.name().ok()?.as_jsx_name()?.value_token().ok()?;
-        Some(RuleDiagnostic::new(
-            rule_category!(),
-            node.range(),
-            markup! {
-                "The element contains invalid ARIA attribute(s)"
-            },
-        ).detail(
-            attribute.range(),
-            markup! {
-                    <Emphasis>{attribute_name.text_trimmed()}</Emphasis>" is not a valid ARIA attribute."
-                },
-        ))
-    }
+	fn diagnostic(ctx: &RuleContext<Self>, attribute: &Self::State) -> Option<RuleDiagnostic> {
+		let node = ctx.query();
+		let attribute_name = attribute.name().ok()?.as_jsx_name()?.value_token().ok()?;
+		Some(
+			RuleDiagnostic::new(
+				rule_category!(),
+				node.range(),
+				markup! {
+					"The element contains invalid ARIA attribute(s)"
+				},
+			)
+			.detail(
+				attribute.range(),
+				markup! {
+					<Emphasis>{attribute_name.text_trimmed()}</Emphasis>" is not a valid ARIA attribute."
+				},
+			),
+		)
+	}
 
-    fn action(ctx: &RuleContext<Self>, attribute: &Self::State) -> Option<JsRuleAction> {
-        let mut mutation = ctx.root().begin();
+	fn action(ctx: &RuleContext<Self>, attribute: &Self::State) -> Option<JsRuleAction> {
+		let mut mutation = ctx.root().begin();
 
-        mutation.remove_node(attribute.clone());
+		mutation.remove_node(attribute.clone());
 
-        Some(JsRuleAction::new(
+		Some(JsRuleAction::new(
             ActionCategory::QuickFix,
             ctx.metadata().applicability(),
 
@@ -102,5 +103,5 @@ impl Rule for UseValidAriaProps {
                     .to_owned(),
             mutation,
         ))
-    }
+	}
 }

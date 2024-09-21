@@ -6,101 +6,101 @@
 #[derive(Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Debug)]
 #[repr(u16)]
 pub enum HtmlSyntaxKind {
-    #[doc(hidden)]
-    TOMBSTONE,
-    #[doc = r" Marks the end of the file. May have trivia attached"]
-    EOF,
-    #[doc = r" Any Unicode BOM character that may be present at the start of"]
-    #[doc = r" a file."]
-    UNICODE_BOM,
-    L_ANGLE,
-    R_ANGLE,
-    SLASH,
-    EQ,
-    BANG,
-    MINUS,
-    NULL_KW,
-    TRUE_KW,
-    FALSE_KW,
-    DOCTYPE_KW,
-    HTML_KW,
-    HTML_STRING_LITERAL,
-    HTML_LITERAL,
-    ERROR_TOKEN,
-    NEWLINE,
-    WHITESPACE,
-    IDENT,
-    COMMENT,
-    HTML_IDENT,
-    HTML_ROOT,
-    HTML_DIRECTIVE,
-    HTML_SELF_CLOSING_TAG,
-    HTML_ELEMENT,
-    HTML_OPENING_ELEMENT,
-    HTML_CLOSING_ELEMENT,
-    HTML_SELF_CLOSING_ELEMENT,
-    HTML_ATTRIBUTE,
-    HTML_ATTRIBUTE_INITIALIZER_CLAUSE,
-    HTML_STRING,
-    HTML_NAME,
-    HTML_ELEMENT_LIST,
-    HTML_ATTRIBUTE_LIST,
-    HTML_CONTENT,
-    HTML_BOGUS,
-    HTML_BOGUS_ELEMENT,
-    HTML_BOGUS_ATTRIBUTE,
-    #[doc(hidden)]
-    __LAST,
+	#[doc(hidden)]
+	TOMBSTONE,
+	#[doc = r" Marks the end of the file. May have trivia attached"]
+	EOF,
+	#[doc = r" Any Unicode BOM character that may be present at the start of"]
+	#[doc = r" a file."]
+	UNICODE_BOM,
+	L_ANGLE,
+	R_ANGLE,
+	SLASH,
+	EQ,
+	BANG,
+	MINUS,
+	NULL_KW,
+	TRUE_KW,
+	FALSE_KW,
+	DOCTYPE_KW,
+	HTML_KW,
+	HTML_STRING_LITERAL,
+	HTML_LITERAL,
+	ERROR_TOKEN,
+	NEWLINE,
+	WHITESPACE,
+	IDENT,
+	COMMENT,
+	HTML_IDENT,
+	HTML_ROOT,
+	HTML_DIRECTIVE,
+	HTML_SELF_CLOSING_TAG,
+	HTML_ELEMENT,
+	HTML_OPENING_ELEMENT,
+	HTML_CLOSING_ELEMENT,
+	HTML_SELF_CLOSING_ELEMENT,
+	HTML_ATTRIBUTE,
+	HTML_ATTRIBUTE_INITIALIZER_CLAUSE,
+	HTML_STRING,
+	HTML_NAME,
+	HTML_ELEMENT_LIST,
+	HTML_ATTRIBUTE_LIST,
+	HTML_CONTENT,
+	HTML_BOGUS,
+	HTML_BOGUS_ELEMENT,
+	HTML_BOGUS_ATTRIBUTE,
+	#[doc(hidden)]
+	__LAST,
 }
 use self::HtmlSyntaxKind::*;
 impl HtmlSyntaxKind {
-    pub const fn is_punct(self) -> bool {
-        match self {
-            L_ANGLE | R_ANGLE | SLASH | EQ | BANG | MINUS => true,
-            _ => false,
-        }
-    }
-    pub const fn is_literal(self) -> bool {
-        match self {
-            HTML_STRING_LITERAL | HTML_LITERAL => true,
-            _ => false,
-        }
-    }
-    pub const fn is_list(self) -> bool {
-        match self {
-            HTML_ELEMENT_LIST | HTML_ATTRIBUTE_LIST => true,
-            _ => false,
-        }
-    }
-    pub fn from_keyword(ident: &str) -> Option<HtmlSyntaxKind> {
-        let kw = match ident {
-            "null" => NULL_KW,
-            "true" => TRUE_KW,
-            "false" => FALSE_KW,
-            "doctype" => DOCTYPE_KW,
-            "html" => HTML_KW,
-            _ => return None,
-        };
-        Some(kw)
-    }
-    pub const fn to_string(&self) -> Option<&'static str> {
-        let tok = match self {
-            L_ANGLE => "<",
-            R_ANGLE => ">",
-            SLASH => "/",
-            EQ => "=",
-            BANG => "!",
-            MINUS => "-",
-            NULL_KW => "null",
-            TRUE_KW => "true",
-            FALSE_KW => "false",
-            DOCTYPE_KW => "doctype",
-            HTML_KW => "html",
-            HTML_STRING_LITERAL => "string literal",
-            _ => return None,
-        };
-        Some(tok)
-    }
+	pub const fn is_punct(self) -> bool {
+		match self {
+			L_ANGLE | R_ANGLE | SLASH | EQ | BANG | MINUS => true,
+			_ => false,
+		}
+	}
+	pub const fn is_literal(self) -> bool {
+		match self {
+			HTML_STRING_LITERAL | HTML_LITERAL => true,
+			_ => false,
+		}
+	}
+	pub const fn is_list(self) -> bool {
+		match self {
+			HTML_ELEMENT_LIST | HTML_ATTRIBUTE_LIST => true,
+			_ => false,
+		}
+	}
+	pub fn from_keyword(ident: &str) -> Option<HtmlSyntaxKind> {
+		let kw = match ident {
+			"null" => NULL_KW,
+			"true" => TRUE_KW,
+			"false" => FALSE_KW,
+			"doctype" => DOCTYPE_KW,
+			"html" => HTML_KW,
+			_ => return None,
+		};
+		Some(kw)
+	}
+	pub const fn to_string(&self) -> Option<&'static str> {
+		let tok = match self {
+			L_ANGLE => "<",
+			R_ANGLE => ">",
+			SLASH => "/",
+			EQ => "=",
+			BANG => "!",
+			MINUS => "-",
+			NULL_KW => "null",
+			TRUE_KW => "true",
+			FALSE_KW => "false",
+			DOCTYPE_KW => "doctype",
+			HTML_KW => "html",
+			HTML_STRING_LITERAL => "string literal",
+			_ => return None,
+		};
+		Some(tok)
+	}
 }
 #[doc = r" Utility macro for creating a SyntaxKind through simple macro syntax"]
 #[macro_export]

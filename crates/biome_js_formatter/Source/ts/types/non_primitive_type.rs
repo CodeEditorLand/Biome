@@ -7,9 +7,9 @@ use biome_js_syntax::{TsNonPrimitiveType, TsNonPrimitiveTypeFields};
 pub struct FormatTsNonPrimitiveType;
 
 impl FormatNodeRule<TsNonPrimitiveType> for FormatTsNonPrimitiveType {
-    fn fmt_fields(&self, node: &TsNonPrimitiveType, f: &mut JsFormatter) -> FormatResult<()> {
-        let TsNonPrimitiveTypeFields { object_token } = node.as_fields();
+	fn fmt_fields(&self, node: &TsNonPrimitiveType, f: &mut JsFormatter) -> FormatResult<()> {
+		let TsNonPrimitiveTypeFields { object_token } = node.as_fields();
 
-        write![f, [object_token.format()]]
-    }
+		write![f, [object_token.format()]]
+	}
 }

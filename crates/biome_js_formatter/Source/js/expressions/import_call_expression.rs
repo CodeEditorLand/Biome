@@ -9,16 +9,13 @@ use biome_js_syntax::JsImportCallExpressionFields;
 pub(crate) struct FormatJsImportCallExpression;
 
 impl FormatNodeRule<JsImportCallExpression> for FormatJsImportCallExpression {
-    fn fmt_fields(&self, node: &JsImportCallExpression, f: &mut JsFormatter) -> FormatResult<()> {
-        let JsImportCallExpressionFields {
-            import_token,
-            arguments,
-        } = node.as_fields();
+	fn fmt_fields(&self, node: &JsImportCallExpression, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsImportCallExpressionFields { import_token, arguments } = node.as_fields();
 
-        write![f, [import_token.format(), arguments.format()]]
-    }
+		write![f, [import_token.format(), arguments.format()]]
+	}
 
-    fn needs_parentheses(&self, item: &JsImportCallExpression) -> bool {
-        item.needs_parentheses()
-    }
+	fn needs_parentheses(&self, item: &JsImportCallExpression) -> bool {
+		item.needs_parentheses()
+	}
 }

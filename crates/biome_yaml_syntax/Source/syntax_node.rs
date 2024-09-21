@@ -5,8 +5,8 @@ use biome_rowan::Language;
 pub struct YamlLanguage;
 
 impl Language for YamlLanguage {
-    type Kind = YamlSyntaxKind;
-    type Root = YamlRoot;
+	type Kind = YamlSyntaxKind;
+	type Root = YamlRoot;
 }
 
 pub type YamlSyntaxNode = biome_rowan::SyntaxNode<YamlLanguage>;

@@ -17,7 +17,7 @@ use biome_parser::prelude::*;
 /// the `import` rule token.
 #[inline]
 pub(crate) fn is_at_import_at_rule(p: &mut CssParser) -> bool {
-    p.at(T![import])
+	p.at(T![import])
 }
 
 /// Parses a `@import` rule in a CSS stylesheet.
@@ -27,37 +27,37 @@ pub(crate) fn is_at_import_at_rule(p: &mut CssParser) -> bool {
 /// for more details on the `@import` rule.
 #[inline]
 pub(crate) fn parse_import_at_rule(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_import_at_rule(p) {
-        return Absent;
-    }
+	if !is_at_import_at_rule(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T![import]);
+	p.bump(T![import]);
 
-    let kind = if is_at_import_url(p) {
-        parse_import_url(p).ok();
-        CSS_IMPORT_AT_RULE
-    } else {
-        CSS_BOGUS_AT_RULE
-    };
+	let kind = if is_at_import_url(p) {
+		parse_import_url(p).ok();
+		CSS_IMPORT_AT_RULE
+	} else {
+		CSS_BOGUS_AT_RULE
+	};
 
-    //  An optional cascade layer name, or for an anonymous layer.
-    if is_at_import_named_layer(p) {
-        parse_import_named_layer(p).ok();
-    } else if is_at_import_anonymous_layer(p) {
-        parse_import_anonymous_layer(p).ok();
-    }
+	//  An optional cascade layer name, or for an anonymous layer.
+	if is_at_import_named_layer(p) {
+		parse_import_named_layer(p).ok();
+	} else if is_at_import_anonymous_layer(p) {
+		parse_import_anonymous_layer(p).ok();
+	}
 
-    if is_at_import_supports(p) {
-        parse_import_supports(p).ok(); // TODO handle error
-    }
+	if is_at_import_supports(p) {
+		parse_import_supports(p).ok(); // TODO handle error
+	}
 
-    MediaQueryList::new(T![;]).parse_list(p);
+	MediaQueryList::new(T![;]).parse_list(p);
 
-    p.expect(T![;]);
+	p.expect(T![;]);
 
-    Present(m.complete(p, kind))
+	Present(m.complete(p, kind))
 }
 
 /// Checks if the current token in the parser is a URL or a string, indicating the start of a URL import.
@@ -67,7 +67,7 @@ pub(crate) fn parse_import_at_rule(p: &mut CssParser) -> ParsedSyntax {
 /// the location of the resource to import.
 #[inline]
 pub(crate) fn is_at_import_url(p: &mut CssParser) -> bool {
-    is_at_url_function(p) || is_at_string(p)
+	is_at_url_function(p) || is_at_string(p)
 }
 
 /// Parses the URL component of an `@import` rule in CSS.
@@ -76,15 +76,15 @@ pub(crate) fn is_at_import_url(p: &mut CssParser) -> bool {
 /// If it is, the function then parses the URL, either as a URL function or as a string.
 #[inline]
 pub(crate) fn parse_import_url(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_import_url(p) {
-        return Absent;
-    }
+	if !is_at_import_url(p) {
+		return Absent;
+	}
 
-    if is_at_url_function(p) {
-        parse_url_function(p)
-    } else {
-        parse_string(p)
-    }
+	if is_at_url_function(p) {
+		parse_url_function(p)
+	} else {
+		parse_string(p)
+	}
 }
 
 /// Determines if the current parsing position is at an anonymous layer within an `@import` rule.
@@ -94,19 +94,19 @@ pub(crate) fn parse_import_url(p: &mut CssParser) -> ParsedSyntax {
 /// This function is typically used in parsing logic to identify anonymous layer declarations within `@import` rules.
 #[inline]
 pub(crate) fn is_at_import_anonymous_layer(p: &mut CssParser) -> bool {
-    p.at(T![layer])
+	p.at(T![layer])
 }
 
 /// Parses an anonymous layer within an `@import` rule in a CSS stylesheet.
 #[inline]
 pub(crate) fn parse_import_anonymous_layer(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_import_anonymous_layer(p) {
-        return Absent;
-    }
+	if !is_at_import_anonymous_layer(p) {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.bump(T![layer]);
-    Present(m.complete(p, CSS_IMPORT_ANONYMOUS_LAYER))
+	let m = p.start();
+	p.bump(T![layer]);
+	Present(m.complete(p, CSS_IMPORT_ANONYMOUS_LAYER))
 }
 
 /// Checks if the current token in the parser is the start of a named layer in an `@import` rule.
@@ -115,7 +115,7 @@ pub(crate) fn parse_import_anonymous_layer(p: &mut CssParser) -> ParsedSyntax {
 /// It's used to identify named layer declarations in CSS `@import` rules.
 #[inline]
 pub(crate) fn is_at_import_named_layer(p: &mut CssParser) -> bool {
-    p.at(T![layer]) && p.nth_at(1, T!['('])
+	p.at(T![layer]) && p.nth_at(1, T!['('])
 }
 
 /// Parses a named layer within an `@import` rule in a CSS stylesheet.
@@ -125,18 +125,18 @@ pub(crate) fn is_at_import_named_layer(p: &mut CssParser) -> bool {
 /// and expecting a closing `')'` token to complete the parse.
 #[inline]
 pub(crate) fn parse_import_named_layer(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_import_named_layer(p) {
-        return Absent;
-    }
+	if !is_at_import_named_layer(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T![layer]);
-    p.bump(T!['(']);
-    LayerNameList.parse_list(p);
-    p.expect(T![')']);
+	p.bump(T![layer]);
+	p.bump(T!['(']);
+	LayerNameList.parse_list(p);
+	p.expect(T![')']);
 
-    Present(m.complete(p, CSS_IMPORT_NAMED_LAYER))
+	Present(m.complete(p, CSS_IMPORT_NAMED_LAYER))
 }
 
 /// Checks if the current token in the parser is the start of a `supports` condition in an `@import` rule.
@@ -145,26 +145,26 @@ pub(crate) fn parse_import_named_layer(p: &mut CssParser) -> ParsedSyntax {
 /// in CSS `@import` rules.
 #[inline]
 pub(crate) fn is_at_import_supports(p: &mut CssParser) -> bool {
-    p.at(T![supports])
+	p.at(T![supports])
 }
 
 /// Parses a `supports` condition within an `@import` rule in a CSS stylesheet.
 #[inline]
 pub(crate) fn parse_import_supports(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_import_supports(p) {
-        return Absent;
-    }
+	if !is_at_import_supports(p) {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.bump(T![supports]);
-    p.bump(T!['(']);
+	let m = p.start();
+	p.bump(T![supports]);
+	p.bump(T!['(']);
 
-    if is_at_declaration(p) {
-        parse_declaration(p).ok(); // TODO handle error
-    } else {
-        parse_any_supports_condition(p).ok(); // TODO handle error
-    }
+	if is_at_declaration(p) {
+		parse_declaration(p).ok(); // TODO handle error
+	} else {
+		parse_any_supports_condition(p).ok(); // TODO handle error
+	}
 
-    p.expect(T![')']);
-    Present(m.complete(p, CSS_IMPORT_SUPPORTS))
+	p.expect(T![')']);
+	Present(m.complete(p, CSS_IMPORT_SUPPORTS))
 }

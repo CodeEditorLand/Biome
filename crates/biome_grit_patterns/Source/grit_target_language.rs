@@ -136,60 +136,56 @@ macro_rules! generate_target_language {
 }
 
 generate_target_language! {
-    [JsTargetLanguage, GritJsParser]
+	[JsTargetLanguage, GritJsParser]
 }
 
 impl GritTargetLanguage {
-    /// Returns the target language to use for the given file extension.
-    pub fn from_extension(extension: &str) -> Option<Self> {
-        match extension {
-            "cjs" | "js" | "jsx" | "mjs" | "ts" | "tsx" => {
-                Some(Self::JsTargetLanguage(JsTargetLanguage))
-            }
-            _ => None,
-        }
-    }
+	/// Returns the target language to use for the given file extension.
+	pub fn from_extension(extension: &str) -> Option<Self> {
+		match extension {
+			"cjs" | "js" | "jsx" | "mjs" | "ts" | "tsx" => {
+				Some(Self::JsTargetLanguage(JsTargetLanguage))
+			}
+			_ => None,
+		}
+	}
 
-    /// Returns `true` when the text `content` contains an identifier for a
-    /// metavariable using bracket syntax.
-    ///
-    /// The metavariable may occur anywhere inside `content`.
-    pub fn matches_bracket_metavariable(&self, content: &str) -> bool {
-        self.metavariable_bracket_regex().is_match(content)
-    }
+	/// Returns `true` when the text `content` contains an identifier for a
+	/// metavariable using bracket syntax.
+	///
+	/// The metavariable may occur anywhere inside `content`.
+	pub fn matches_bracket_metavariable(&self, content: &str) -> bool {
+		self.metavariable_bracket_regex().is_match(content)
+	}
 
-    /// Returns `true` when the text `content` is a metavariable identifier.
-    ///
-    /// No other text is allowed inside `content`.
-    pub fn matches_exact_metavariable(&self, content: &str) -> bool {
-        self.exact_variable_regex().is_match(content)
-    }
+	/// Returns `true` when the text `content` is a metavariable identifier.
+	///
+	/// No other text is allowed inside `content`.
+	pub fn matches_exact_metavariable(&self, content: &str) -> bool {
+		self.exact_variable_regex().is_match(content)
+	}
 
-    /// Returns `true` when the text `content` contains a metavariable
-    /// identifier with its prefix replaced with the
-    /// `[Self::metavariable_prefix_substitute()].
-    ///
-    /// The metavariable may occur anywhere inside `content`.
-    pub fn matches_replaced_metavariable(&self, content: &str) -> bool {
-        self.replaced_metavariable_regex().is_match(content)
-    }
+	/// Returns `true` when the text `content` contains a metavariable
+	/// identifier with its prefix replaced with the
+	/// `[Self::metavariable_prefix_substitute()].
+	///
+	/// The metavariable may occur anywhere inside `content`.
+	pub fn matches_replaced_metavariable(&self, content: &str) -> bool {
+		self.replaced_metavariable_regex().is_match(content)
+	}
 
-    pub fn parse_snippet_contexts(&self, source: &str) -> Vec<SnippetTree<GritTargetTree>> {
-        let source = self.substitute_metavariable_prefix(source);
-        self.snippet_context_strings()
-            .iter()
-            .map(|(pre, post)| self.get_parser().parse_snippet(pre, &source, post))
-            .filter(|result| {
-                result
-                    .tree
-                    .root_node()
-                    .descendants()
-                    .map_or(false, |mut descendants| {
-                        !descendants.any(|descendant| descendant.kind().is_bogus())
-                    })
-            })
-            .collect()
-    }
+	pub fn parse_snippet_contexts(&self, source: &str) -> Vec<SnippetTree<GritTargetTree>> {
+		let source = self.substitute_metavariable_prefix(source);
+		self.snippet_context_strings()
+			.iter()
+			.map(|(pre, post)| self.get_parser().parse_snippet(pre, &source, post))
+			.filter(|result| {
+				result.tree.root_node().descendants().map_or(false, |mut descendants| {
+					!descendants.any(|descendant| descendant.kind().is_bogus())
+				})
+			})
+			.collect()
+	}
 }
 
 /// Trait to be implemented by the language-specific implementations.
@@ -197,159 +193,150 @@ impl GritTargetLanguage {
 /// This is used to make language implementations a little easier, by not
 /// forcing them to reimplement methods that are common across implementations.
 trait GritTargetLanguageImpl {
-    type Kind: SyntaxKind;
+	type Kind: SyntaxKind;
 
-    fn language_name(&self) -> &'static str;
+	fn language_name(&self) -> &'static str;
 
-    /// Returns the syntax kind for a node by name.
-    ///
-    /// This is the inverse of [Self::name_for_kind()].
-    ///
-    /// For compatibility with existing Grit snippets (as well as the online
-    /// Grit playground), node names should be aligned with TreeSitter's
-    /// `ts_language_symbol_for_name()`.
-    fn kind_by_name(&self, node_name: &str) -> Option<Self::Kind>;
+	/// Returns the syntax kind for a node by name.
+	///
+	/// This is the inverse of [Self::name_for_kind()].
+	///
+	/// For compatibility with existing Grit snippets (as well as the online
+	/// Grit playground), node names should be aligned with TreeSitter's
+	/// `ts_language_symbol_for_name()`.
+	fn kind_by_name(&self, node_name: &str) -> Option<Self::Kind>;
 
-    /// Returns the node name for a given syntax kind.
-    ///
-    /// This is the inverse of [Self::kind_by_name()].
-    ///
-    /// For compatibility with existing Grit snippets (as well as the online
-    /// Grit playground), node names should be aligned with TreeSitter's
-    /// `ts_language_symbol_name()`.
-    fn name_for_kind(&self, kind: GritTargetSyntaxKind) -> &'static str;
+	/// Returns the node name for a given syntax kind.
+	///
+	/// This is the inverse of [Self::kind_by_name()].
+	///
+	/// For compatibility with existing Grit snippets (as well as the online
+	/// Grit playground), node names should be aligned with TreeSitter's
+	/// `ts_language_symbol_name()`.
+	fn name_for_kind(&self, kind: GritTargetSyntaxKind) -> &'static str;
 
-    /// Returns the slots with their names for the given node kind.
-    ///
-    /// For compatibility with existing Grit snippets (as well as the online
-    /// Grit playground), node names should be aligned with TreeSitter's
-    /// `ts_language_field_name_for_id()`.
-    fn named_slots_for_kind(&self, kind: GritTargetSyntaxKind) -> &'static [(&'static str, u32)];
+	/// Returns the slots with their names for the given node kind.
+	///
+	/// For compatibility with existing Grit snippets (as well as the online
+	/// Grit playground), node names should be aligned with TreeSitter's
+	/// `ts_language_field_name_for_id()`.
+	fn named_slots_for_kind(&self, kind: GritTargetSyntaxKind) -> &'static [(&'static str, u32)];
 
-    /// Strings that provide context for parsing snippets.
-    ///
-    /// Snippet contexts help when a snippet is a valid AST subtree, but needs
-    /// to be in a larger tree to parse. For example, matching on a table name
-    /// like ` $schema.$table` in SQL is not valid SQL by itself, only when
-    /// surrounded by something like `SELECT x from $schema.$table` is the
-    /// snippet valid.
-    ///
-    /// This method returns a list of strings that are used to match the snippet
-    /// in the larger tree. For example, the SQL implementation returns
-    /// `["SELECT 1 from ", ";"]` to match a table name in a SQL query.
-    fn snippet_context_strings(&self) -> &[(&'static str, &'static str)];
+	/// Strings that provide context for parsing snippets.
+	///
+	/// Snippet contexts help when a snippet is a valid AST subtree, but needs
+	/// to be in a larger tree to parse. For example, matching on a table name
+	/// like ` $schema.$table` in SQL is not valid SQL by itself, only when
+	/// surrounded by something like `SELECT x from $schema.$table` is the
+	/// snippet valid.
+	///
+	/// This method returns a list of strings that are used to match the snippet
+	/// in the larger tree. For example, the SQL implementation returns
+	/// `["SELECT 1 from ", ";"]` to match a table name in a SQL query.
+	fn snippet_context_strings(&self) -> &[(&'static str, &'static str)];
 
-    /// Determines whether the given target node is a comment.
-    ///
-    /// This is allowed to return `true` for nodes whose kind would not return
-    /// `true` when passed directly to [is_comment_kind()].
-    fn is_comment(&self, node: &GritTargetNode) -> bool {
-        Self::is_comment_kind(node.kind())
-    }
+	/// Determines whether the given target node is a comment.
+	///
+	/// This is allowed to return `true` for nodes whose kind would not return
+	/// `true` when passed directly to [is_comment_kind()].
+	fn is_comment(&self, node: &GritTargetNode) -> bool {
+		Self::is_comment_kind(node.kind())
+	}
 
-    /// Determines whether the given kind is a comment kind.
-    fn is_comment_kind(kind: GritTargetSyntaxKind) -> bool;
+	/// Determines whether the given kind is a comment kind.
+	fn is_comment_kind(kind: GritTargetSyntaxKind) -> bool;
 
-    /// Returns the syntax kind for metavariables.
-    fn metavariable_kind() -> Self::Kind;
+	/// Returns the syntax kind for metavariables.
+	fn metavariable_kind() -> Self::Kind;
 
-    /// Returns whether the given syntax kind is an "alternative" kind for
-    /// metavariables.
-    ///
-    /// For example, in JavaScript, the content of a template string may also
-    /// contain metavariables.
-    ///
-    /// Note that any node kind for which this returns `true` should have a
-    /// (trimmed) text representation which corresponds exactly to the
-    /// metavariable representation.
-    fn is_alternative_metavariable_kind(_kind: GritTargetSyntaxKind) -> bool {
-        false
-    }
+	/// Returns whether the given syntax kind is an "alternative" kind for
+	/// metavariables.
+	///
+	/// For example, in JavaScript, the content of a template string may also
+	/// contain metavariables.
+	///
+	/// Note that any node kind for which this returns `true` should have a
+	/// (trimmed) text representation which corresponds exactly to the
+	/// metavariable representation.
+	fn is_alternative_metavariable_kind(_kind: GritTargetSyntaxKind) -> bool {
+		false
+	}
 
-    /// Returns an optional "equivalence class" for the given syntax kind.
-    ///
-    /// Equivalence classes allow leaf nodes to be classified as being equal,
-    /// even when their text representations or syntax kinds differ.
-    fn get_equivalence_class(
-        &self,
-        _kind: GritTargetSyntaxKind,
-        _text: &str,
-    ) -> Result<Option<LeafEquivalenceClass>, CompileError> {
-        Ok(None)
-    }
+	/// Returns an optional "equivalence class" for the given syntax kind.
+	///
+	/// Equivalence classes allow leaf nodes to be classified as being equal,
+	/// even when their text representations or syntax kinds differ.
+	fn get_equivalence_class(
+		&self,
+		_kind: GritTargetSyntaxKind,
+		_text: &str,
+	) -> Result<Option<LeafEquivalenceClass>, CompileError> {
+		Ok(None)
+	}
 }
 
 pub trait GritTargetParser: Parser<Tree = GritTargetTree> {
-    #[allow(clippy::wrong_self_convention)]
-    fn from_cached_parse_result(
-        &self,
-        parse: &AnyParse,
-        path: Option<&Path>,
-        logs: &mut AnalysisLogs,
-    ) -> Option<GritTargetTree>;
+	#[allow(clippy::wrong_self_convention)]
+	fn from_cached_parse_result(
+		&self,
+		parse: &AnyParse,
+		path: Option<&Path>,
+		logs: &mut AnalysisLogs,
+	) -> Option<GritTargetTree>;
 }
 
 #[derive(Clone, Debug)]
 pub struct LeafEquivalenceClass {
-    representative: String,
-    class: Vec<LeafNormalizer>,
+	representative: String,
+	class: Vec<LeafNormalizer>,
 }
 
 impl LeafEquivalenceClass {
-    pub fn are_equivalent(&self, kind: GritTargetSyntaxKind, text: &str) -> bool {
-        self.class
-            .iter()
-            .find(|eq| eq.kind == kind)
-            .is_some_and(|normalizer| {
-                normalizer
-                    .normalize(text)
-                    .is_some_and(|s| s == self.representative)
-            })
-    }
+	pub fn are_equivalent(&self, kind: GritTargetSyntaxKind, text: &str) -> bool {
+		self.class.iter().find(|eq| eq.kind == kind).is_some_and(|normalizer| {
+			normalizer.normalize(text).is_some_and(|s| s == self.representative)
+		})
+	}
 
-    pub(crate) fn new(
-        representative: &str,
-        kind: GritTargetSyntaxKind,
-        members: &[LeafNormalizer],
-    ) -> Result<Option<Self>, CompileError> {
-        if let Some(normalizer) = members.iter().find(|norm| norm.kind == kind) {
-            let rep = normalizer
-                .normalize(representative)
-                .ok_or(CompileError::NormalizationError)?;
-            Ok(Some(Self {
-                representative: rep.to_owned(),
-                class: members.to_owned(),
-            }))
-        } else {
-            Ok(None)
-        }
-    }
+	pub(crate) fn new(
+		representative: &str,
+		kind: GritTargetSyntaxKind,
+		members: &[LeafNormalizer],
+	) -> Result<Option<Self>, CompileError> {
+		if let Some(normalizer) = members.iter().find(|norm| norm.kind == kind) {
+			let rep =
+				normalizer.normalize(representative).ok_or(CompileError::NormalizationError)?;
+			Ok(Some(Self { representative: rep.to_owned(), class: members.to_owned() }))
+		} else {
+			Ok(None)
+		}
+	}
 }
 
 #[derive(Clone, Debug)]
 pub(crate) struct LeafNormalizer {
-    kind: GritTargetSyntaxKind,
-    normalizer: fn(&str) -> Option<&str>,
+	kind: GritTargetSyntaxKind,
+	normalizer: fn(&str) -> Option<&str>,
 }
 
 impl LeafNormalizer {
-    fn normalize<'a>(&self, s: &'a str) -> Option<&'a str> {
-        (self.normalizer)(s)
-    }
+	fn normalize<'a>(&self, s: &'a str) -> Option<&'a str> {
+		(self.normalizer)(s)
+	}
 
-    pub(crate) const fn new(
-        kind: GritTargetSyntaxKind,
-        normalizer: fn(&str) -> Option<&str>,
-    ) -> Self {
-        Self { kind, normalizer }
-    }
+	pub(crate) const fn new(
+		kind: GritTargetSyntaxKind,
+		normalizer: fn(&str) -> Option<&str>,
+	) -> Self {
+		Self { kind, normalizer }
+	}
 
-    pub(crate) fn kind(&self) -> GritTargetSyntaxKind {
-        self.kind
-    }
+	pub(crate) fn kind(&self) -> GritTargetSyntaxKind {
+		self.kind
+	}
 }
 
 fn normalize_quoted_string(string: &str) -> Option<&str> {
-    // Strip the quotes, regardless of type:
-    (string.len() >= 2).then(|| &string[1..string.len() - 1])
+	// Strip the quotes, regardless of type:
+	(string.len() >= 2).then(|| &string[1..string.len() - 1])
 }

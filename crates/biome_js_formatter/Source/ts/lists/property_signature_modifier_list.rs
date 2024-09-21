@@ -6,9 +6,9 @@ use biome_js_syntax::TsPropertySignatureModifierList;
 pub struct FormatTsPropertySignatureModifierList;
 
 impl FormatRule<TsPropertySignatureModifierList> for FormatTsPropertySignatureModifierList {
-    type Context = JsFormatContext;
+	type Context = JsFormatContext;
 
-    fn fmt(&self, node: &TsPropertySignatureModifierList, f: &mut JsFormatter) -> FormatResult<()> {
-        FormatModifiers::from(node.clone()).fmt(f)
-    }
+	fn fmt(&self, node: &TsPropertySignatureModifierList, f: &mut JsFormatter) -> FormatResult<()> {
+		FormatModifiers::from(node.clone()).fmt(f)
+	}
 }
