@@ -4,7 +4,7 @@ use crate::span::Span;
 use crate::syntax::class::parse_initializer_clause;
 use crate::syntax::expr::{is_nth_at_identifier, parse_identifier, ExpressionContext};
 use crate::syntax::js_parse_error::{
-	expected_binding, expected_identifier, expected_object_member_name,
+    expected_binding, expected_identifier, expected_object_member_name,
 };
 use crate::syntax::object::{is_at_object_member_name, parse_object_member_name};
 use crate::syntax::pattern::{ParseArrayPattern, ParseObjectPattern, ParseWithDefaultPattern};
@@ -16,28 +16,28 @@ use biome_parser::diagnostic::expected_any;
 use biome_rowan::SyntaxKind as SyntaxKindTrait;
 
 pub(crate) fn parse_binding_pattern(p: &mut JsParser, context: ExpressionContext) -> ParsedSyntax {
-	match p.cur() {
-		T!['['] => ArrayBindingPattern.parse_array_pattern(p),
-		T!['{'] if context.is_object_expression_allowed() => {
-			ObjectBindingPattern.parse_object_pattern(p)
-		}
-		_ => parse_identifier_binding(p),
-	}
+    match p.cur() {
+        T!['['] => ArrayBindingPattern.parse_array_pattern(p),
+        T!['{'] if context.is_object_expression_allowed() => {
+            ObjectBindingPattern.parse_object_pattern(p)
+        }
+        _ => parse_identifier_binding(p),
+    }
 }
 
 #[inline]
 pub(crate) fn is_at_identifier_binding(p: &mut JsParser) -> bool {
-	is_nth_at_identifier_binding(p, 0)
+    is_nth_at_identifier_binding(p, 0)
 }
 
 #[inline]
 pub(crate) fn is_nth_at_identifier_binding(p: &mut JsParser, n: usize) -> bool {
-	is_nth_at_identifier(p, n) || is_nth_at_metavariable(p, n)
+    is_nth_at_identifier(p, n) || is_nth_at_metavariable(p, n)
 }
 
 #[inline]
 pub(crate) fn parse_binding(p: &mut JsParser) -> ParsedSyntax {
-	parse_identifier_binding(p)
+    parse_identifier_binding(p)
 }
 
 // test_err js binding_identifier_invalid
@@ -62,13 +62,13 @@ pub(crate) fn parse_binding(p: &mut JsParser) -> ParsedSyntax {
 /// * it is named "yield" inside of a generator function or in strict mode
 /// * it is named "await" inside of an async function
 pub(crate) fn parse_identifier_binding(p: &mut JsParser) -> ParsedSyntax {
-	if is_at_metavariable(p) {
-		return parse_metavariable(p);
-	}
+    if is_at_metavariable(p) {
+        return parse_metavariable(p);
+    }
 
-	let parsed = parse_identifier(p, JS_IDENTIFIER_BINDING);
+    let parsed = parse_identifier(p, JS_IDENTIFIER_BINDING);
 
-	parsed.map(|mut identifier| {
+    parsed.map(|mut identifier| {
         if identifier.kind(p).is_bogus() {
             return identifier;
         }
@@ -142,20 +142,20 @@ pub(crate) fn parse_identifier_binding(p: &mut JsParser) -> ParsedSyntax {
 struct ArrayBindingPatternWithDefault;
 
 impl ParseWithDefaultPattern for ArrayBindingPatternWithDefault {
-	#[inline]
-	fn pattern_with_default_kind() -> JsSyntaxKind {
-		JS_ARRAY_BINDING_PATTERN_ELEMENT
-	}
+    #[inline]
+    fn pattern_with_default_kind() -> JsSyntaxKind {
+        JS_ARRAY_BINDING_PATTERN_ELEMENT
+    }
 
-	#[inline]
-	fn expected_pattern_error(p: &JsParser, range: TextRange) -> ParseDiagnostic {
-		expected_binding(p, range)
-	}
+    #[inline]
+    fn expected_pattern_error(p: &JsParser, range: TextRange) -> ParseDiagnostic {
+        expected_binding(p, range)
+    }
 
-	#[inline]
-	fn parse_pattern(&self, p: &mut JsParser) -> ParsedSyntax {
-		parse_binding_pattern(p, ExpressionContext::default())
-	}
+    #[inline]
+    fn parse_pattern(&self, p: &mut JsParser) -> ParsedSyntax {
+        parse_binding_pattern(p, ExpressionContext::default())
+    }
 }
 
 struct ArrayBindingPattern;
@@ -184,34 +184,43 @@ struct ArrayBindingPattern;
 // let [ ...c = "default" ] = a;
 // let [ ...rest, other_assignment ] = a;
 impl ParseArrayPattern<ArrayBindingPatternWithDefault> for ArrayBindingPattern {
-	#[inline]
-	fn bogus_pattern_kind() -> JsSyntaxKind {
-		JS_BOGUS_BINDING
-	}
+    #[inline]
+    fn bogus_pattern_kind() -> JsSyntaxKind {
+        JS_BOGUS_BINDING
+    }
 
-	#[inline]
-	fn array_pattern_kind() -> JsSyntaxKind {
-		JS_ARRAY_BINDING_PATTERN
-	}
+    #[inline]
+    fn array_pattern_kind() -> JsSyntaxKind {
+        JS_ARRAY_BINDING_PATTERN
+    }
 
-	#[inline]
-	fn rest_pattern_kind() -> JsSyntaxKind {
-		JS_ARRAY_BINDING_PATTERN_REST_ELEMENT
-	}
+    #[inline]
+    fn rest_pattern_kind() -> JsSyntaxKind {
+        JS_ARRAY_BINDING_PATTERN_REST_ELEMENT
+    }
 
-	fn list_kind() -> JsSyntaxKind {
-		JS_ARRAY_BINDING_PATTERN_ELEMENT_LIST
-	}
+    fn list_kind() -> JsSyntaxKind {
+        JS_ARRAY_BINDING_PATTERN_ELEMENT_LIST
+    }
 
-	#[inline]
-	fn expected_element_error(p: &JsParser, range: TextRange) -> ParseDiagnostic {
-		expected_any(&["identifier", "object pattern", "array pattern", "rest pattern"], range, p)
-	}
+    #[inline]
+    fn expected_element_error(p: &JsParser, range: TextRange) -> ParseDiagnostic {
+        expected_any(
+            &[
+                "identifier",
+                "object pattern",
+                "array pattern",
+                "rest pattern",
+            ],
+            range,
+            p,
+        )
+    }
 
-	#[inline]
-	fn pattern_with_default(&self) -> ArrayBindingPatternWithDefault {
-		ArrayBindingPatternWithDefault
-	}
+    #[inline]
+    fn pattern_with_default(&self) -> ArrayBindingPatternWithDefault {
+        ArrayBindingPatternWithDefault
+    }
 }
 
 // test_err js object_binding_pattern
@@ -222,111 +231,111 @@ impl ParseArrayPattern<ArrayBindingPatternWithDefault> for ArrayBindingPattern {
 struct ObjectBindingPattern;
 
 impl ParseObjectPattern for ObjectBindingPattern {
-	#[inline]
-	fn bogus_pattern_kind() -> JsSyntaxKind {
-		JS_BOGUS_BINDING
-	}
+    #[inline]
+    fn bogus_pattern_kind() -> JsSyntaxKind {
+        JS_BOGUS_BINDING
+    }
 
-	#[inline]
-	fn object_pattern_kind() -> JsSyntaxKind {
-		JS_OBJECT_BINDING_PATTERN
-	}
+    #[inline]
+    fn object_pattern_kind() -> JsSyntaxKind {
+        JS_OBJECT_BINDING_PATTERN
+    }
 
-	fn list_kind() -> JsSyntaxKind {
-		JS_OBJECT_BINDING_PATTERN_PROPERTY_LIST
-	}
+    fn list_kind() -> JsSyntaxKind {
+        JS_OBJECT_BINDING_PATTERN_PROPERTY_LIST
+    }
 
-	#[inline]
-	fn expected_property_pattern_error(p: &JsParser, range: TextRange) -> ParseDiagnostic {
-		expected_any(&["identifier", "member name", "rest pattern"], range, p)
-	}
+    #[inline]
+    fn expected_property_pattern_error(p: &JsParser, range: TextRange) -> ParseDiagnostic {
+        expected_any(&["identifier", "member name", "rest pattern"], range, p)
+    }
 
-	// test js object_property_binding
-	// let { foo: bar  } = {}
-	// let { foo: bar_bar = baz } = {}
-	//
-	// test_err js object_property_binding_err
-	// let { foo: , bar } = {}
-	// let { : lorem = "test" } = {}
-	// let { , ipsum: bazz } = {}
-	//
-	// test js object_shorthand_property
-	// let { a, b } = c
-	// let { d = "default", e = call() } = c
-	//
-	// test_err js object_shorthand_property_err
-	// let { a b } = c
-	// let { = "test" } = c
-	// let { , d } = c
-	fn parse_property_pattern(&self, p: &mut JsParser) -> ParsedSyntax {
-		if !is_at_object_member_name(p)
-			&& !is_at_metavariable(p)
-			&& !p.at_ts(token_set![T![:], T![=]])
-		{
-			return Absent;
-		}
+    // test js object_property_binding
+    // let { foo: bar  } = {}
+    // let { foo: bar_bar = baz } = {}
+    //
+    // test_err js object_property_binding_err
+    // let { foo: , bar } = {}
+    // let { : lorem = "test" } = {}
+    // let { , ipsum: bazz } = {}
+    //
+    // test js object_shorthand_property
+    // let { a, b } = c
+    // let { d = "default", e = call() } = c
+    //
+    // test_err js object_shorthand_property_err
+    // let { a b } = c
+    // let { = "test" } = c
+    // let { , d } = c
+    fn parse_property_pattern(&self, p: &mut JsParser) -> ParsedSyntax {
+        if !is_at_object_member_name(p)
+            && !is_at_metavariable(p)
+            && !p.at_ts(token_set![T![:], T![=]])
+        {
+            return Absent;
+        }
 
-		let m = p.start();
+        let m = p.start();
 
-		let kind = if p.at(T![=])
-			|| ((is_at_identifier_binding(p) || is_at_metavariable(p)) && !p.nth_at(1, T![:]))
-		{
-			parse_binding(p).or_add_diagnostic(p, expected_identifier);
-			JS_OBJECT_BINDING_PATTERN_SHORTHAND_PROPERTY
-		} else {
-			parse_object_member_name(p).or_add_diagnostic(p, expected_object_member_name);
-			if p.expect(T![:]) {
-				parse_binding_pattern(p, ExpressionContext::default())
-					.or_add_diagnostic(p, expected_binding);
-			}
-			JS_OBJECT_BINDING_PATTERN_PROPERTY
-		};
+        let kind = if p.at(T![=])
+            || ((is_at_identifier_binding(p) || is_at_metavariable(p)) && !p.nth_at(1, T![:]))
+        {
+            parse_binding(p).or_add_diagnostic(p, expected_identifier);
+            JS_OBJECT_BINDING_PATTERN_SHORTHAND_PROPERTY
+        } else {
+            parse_object_member_name(p).or_add_diagnostic(p, expected_object_member_name);
+            if p.expect(T![:]) {
+                parse_binding_pattern(p, ExpressionContext::default())
+                    .or_add_diagnostic(p, expected_binding);
+            }
+            JS_OBJECT_BINDING_PATTERN_PROPERTY
+        };
 
-		// test js destructuring_initializer_binding
-		// const { value, f = (value) => value } = item
-		let parent = p.state_mut().duplicate_binding_parent.take();
-		parse_initializer_clause(p, ExpressionContext::default()).ok();
-		p.state_mut().duplicate_binding_parent = parent;
+        // test js destructuring_initializer_binding
+        // const { value, f = (value) => value } = item
+        let parent = p.state_mut().duplicate_binding_parent.take();
+        parse_initializer_clause(p, ExpressionContext::default()).ok();
+        p.state_mut().duplicate_binding_parent = parent;
 
-		Present(m.complete(p, kind))
-	}
+        Present(m.complete(p, kind))
+    }
 
-	// test js rest_property_binding
-	// let { ...abcd } = a;
-	// let { b: { ...a } } = c;
-	//
-	// test_err js rest_property_binding_err
-	// let { ... } = a;
-	// let { ...c = "default" } = a;
-	// let { ...{a} } = b;
-	// let { ...rest, other_assignment } = a;
-	// let { ...rest2, } = a;
-	// async function test() {
-	//   let { ...await } = a;
-	// }
-	fn parse_rest_property_pattern(&self, p: &mut JsParser) -> ParsedSyntax {
-		if p.at(T![...]) {
-			let m = p.start();
-			p.bump(T![...]);
+    // test js rest_property_binding
+    // let { ...abcd } = a;
+    // let { b: { ...a } } = c;
+    //
+    // test_err js rest_property_binding_err
+    // let { ... } = a;
+    // let { ...c = "default" } = a;
+    // let { ...{a} } = b;
+    // let { ...rest, other_assignment } = a;
+    // let { ...rest2, } = a;
+    // async function test() {
+    //   let { ...await } = a;
+    // }
+    fn parse_rest_property_pattern(&self, p: &mut JsParser) -> ParsedSyntax {
+        if p.at(T![...]) {
+            let m = p.start();
+            p.bump(T![...]);
 
-			let inner = parse_binding_pattern(p, ExpressionContext::default())
-				.or_add_diagnostic(p, expected_identifier);
+            let inner = parse_binding_pattern(p, ExpressionContext::default())
+                .or_add_diagnostic(p, expected_identifier);
 
-			if let Some(mut inner) = inner {
-				if inner.kind(p) != JS_IDENTIFIER_BINDING {
-					let inner_range = inner.range(p);
-					// Don't add multiple errors
-					if inner.kind(p) != JS_BOGUS_BINDING {
-						p.error(p.err_builder("Expected identifier binding", inner_range,).with_hint( "Object rest patterns must bind to an identifier, other patterns are not allowed."));
-					}
+            if let Some(mut inner) = inner {
+                if inner.kind(p) != JS_IDENTIFIER_BINDING {
+                    let inner_range = inner.range(p);
+                    // Don't add multiple errors
+                    if inner.kind(p) != JS_BOGUS_BINDING {
+                        p.error(p.err_builder("Expected identifier binding", inner_range,).with_hint( "Object rest patterns must bind to an identifier, other patterns are not allowed."));
+                    }
 
-					inner.change_kind(p, JS_BOGUS_BINDING);
-				}
-			}
+                    inner.change_kind(p, JS_BOGUS_BINDING);
+                }
+            }
 
-			Present(m.complete(p, JS_OBJECT_BINDING_PATTERN_REST))
-		} else {
-			Absent
-		}
-	}
+            Present(m.complete(p, JS_OBJECT_BINDING_PATTERN_REST))
+        } else {
+            Absent
+        }
+    }
 }

@@ -30,17 +30,17 @@ use std::path::Path;
 
 /// Compiles a Grit pattern from the given source string.
 pub fn compile_pattern(
-	source: &str,
-	path: Option<&Path>,
-	language: GritTargetLanguage,
+    source: &str,
+    path: Option<&Path>,
+    language: GritTargetLanguage,
 ) -> Result<GritQuery, CompileError> {
-	let parsed = parse_grit(source);
-	if parsed.has_errors() {
-		return Err(CompileError::ParsePatternError(
-			// TODO: We may want to preserve other diagnostics too.
-			parsed.into_diagnostics().remove(0),
-		));
-	}
+    let parsed = parse_grit(source);
+    if parsed.has_errors() {
+        return Err(CompileError::ParsePatternError(
+            // TODO: We may want to preserve other diagnostics too.
+            parsed.into_diagnostics().remove(0),
+        ));
+    }
 
-	GritQuery::from_node(parsed.tree(), path, language)
+    GritQuery::from_node(parsed.tree(), path, language)
 }

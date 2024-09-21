@@ -16,5 +16,5 @@ pub use web::is_global as is_web_global;
 /// assert!(is_global(&"Math"));
 /// ```
 pub fn is_global(name: &str) -> bool {
-	is_language_global(name) || is_web_global(name) || is_node_global(name)
+    is_language_global(name) || is_web_global(name) || is_node_global(name)
 }

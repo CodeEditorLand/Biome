@@ -12,8 +12,8 @@ use biome_rowan::Language;
 pub struct MarkdownLanguage;
 
 impl Language for MarkdownLanguage {
-	type Kind = MarkdownSyntaxKind;
-	type Root = MarkdownDocument;
+    type Kind = MarkdownSyntaxKind;
+    type Root = MarkdownDocument;
 }
 
 pub type MarkdownSyntaxNode = biome_rowan::SyntaxNode<MarkdownLanguage>;

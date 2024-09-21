@@ -8,9 +8,12 @@ use biome_js_syntax::JsSpreadFields;
 pub(crate) struct FormatJsSpread;
 
 impl FormatNodeRule<JsSpread> for FormatJsSpread {
-	fn fmt_fields(&self, node: &JsSpread, f: &mut JsFormatter) -> FormatResult<()> {
-		let JsSpreadFields { dotdotdot_token, argument } = node.as_fields();
+    fn fmt_fields(&self, node: &JsSpread, f: &mut JsFormatter) -> FormatResult<()> {
+        let JsSpreadFields {
+            dotdotdot_token,
+            argument,
+        } = node.as_fields();
 
-		write![f, [dotdotdot_token.format(), argument.format()]]
-	}
+        write![f, [dotdotdot_token.format(), argument.format()]]
+    }
 }

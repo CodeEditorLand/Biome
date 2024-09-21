@@ -9,17 +9,17 @@ use biome_js_syntax::TsMethodSignatureTypeMember;
 pub struct FormatTsMethodSignatureTypeMember;
 
 impl FormatNodeRule<TsMethodSignatureTypeMember> for FormatTsMethodSignatureTypeMember {
-	fn fmt_fields(
-		&self,
-		node: &TsMethodSignatureTypeMember,
-		f: &mut JsFormatter,
-	) -> FormatResult<()> {
-		write![
-			f,
-			[
-				FormatAnyJsMethodMember::from(node.clone()),
-				FormatTypeMemberSeparator::new(node.separator_token().as_ref())
-			]
-		]
-	}
+    fn fmt_fields(
+        &self,
+        node: &TsMethodSignatureTypeMember,
+        f: &mut JsFormatter,
+    ) -> FormatResult<()> {
+        write![
+            f,
+            [
+                FormatAnyJsMethodMember::from(node.clone()),
+                FormatTypeMemberSeparator::new(node.separator_token().as_ref())
+            ]
+        ]
+    }
 }

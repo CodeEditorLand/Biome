@@ -1,10 +1,10 @@
 #![cfg(test)]
 #![allow(unused_mut, unused_variables, unused_assignments)]
 
-use super::{MarkdownLexer, TextSize};
-use crate::lexer::MarkdownLexContext;
-use biome_markdown_syntax::MarkdownSyntaxKind::*;
 use biome_parser::lexer::Lexer;
+use biome_markdown_syntax::MarkdownSyntaxKind::*;
+use crate::lexer::MarkdownLexContext;
+use super::{MarkdownLexer, TextSize};
 use quickcheck_macros::quickcheck;
 use std::sync::mpsc::channel;
 use std::thread;
@@ -24,7 +24,7 @@ macro_rules! assert_lex {
         while lexer.next_token(MarkdownLexContext::default()) != EOF {
             tokens.push((lexer.current(), lexer.current_range()));
         }
-
+        
         $(
             assert_eq!(
                 tokens[idx].0,
@@ -68,46 +68,49 @@ macro_rules! assert_lex {
 // It parses random strings and puts them back together with the produced tokens and compares
 #[quickcheck]
 fn losslessness(string: String) -> bool {
-	// using an mpsc channel allows us to spawn a thread and spawn the lexer there, then if
-	// it takes more than 2 seconds we panic because it is 100% infinite recursion
-	let cloned = string.clone();
-	let (sender, receiver) = channel();
-	thread::spawn(move || {
-		let mut lexer = MarkdownLexer::from_str(&cloned);
-		let mut tokens = vec![];
+    // using an mpsc channel allows us to spawn a thread and spawn the lexer there, then if
+    // it takes more than 2 seconds we panic because it is 100% infinite recursion
+    let cloned = string.clone();
+    let (sender, receiver) = channel();
+    thread::spawn(move || {
+        let mut lexer = MarkdownLexer::from_str(&cloned);
+        let mut tokens = vec![];
 
-		while lexer.next_token(MarkdownLexContext::default()) != EOF {
-			tokens.push(lexer.current_range());
-		}
+        while lexer.next_token(MarkdownLexContext::default()) != EOF {
+            tokens.push(lexer.current_range());
+        }
 
-		sender.send(tokens).expect("Could not send tokens to receiver");
-	});
-	let token_ranges = receiver
-		.recv_timeout(Duration::from_secs(2))
-		.unwrap_or_else(|_| panic!("Lexer is infinitely recursing with this code: ->{string}<-"));
+        sender
+            .send(tokens)
+            .expect("Could not send tokens to receiver");
+    });
+    let token_ranges = receiver
+        .recv_timeout(Duration::from_secs(2))
+        .unwrap_or_else(|_| panic!("Lexer is infinitely recursing with this code: ->{string}<-"));
 
-	let mut new_str = String::with_capacity(string.len());
-	let mut idx = TextSize::from(0);
+    let mut new_str = String::with_capacity(string.len());
+    let mut idx = TextSize::from(0);
 
-	for range in token_ranges {
-		new_str.push_str(&string[range]);
-		idx += range.len();
-	}
+    for range in token_ranges {
+        new_str.push_str(&string[range]);
+        idx += range.len();
+    }
 
-	string == new_str
+    string == new_str
 }
 
 #[test]
 fn empty() {
-	assert_lex! {
-		"",
-	}
+    assert_lex! {
+        "",
+    }
 }
 
 #[test]
 fn textual() {
-	assert_lex! {
-		"+",
-		MARKDOWN_TEXTUAL_LITERAL:1,
-	}
+    assert_lex! {
+        "+",
+        MARKDOWN_TEXTUAL_LITERAL:1,
+    }
 }
+

@@ -181,12 +181,12 @@ mod syntax_rewriter;
 use biome_formatter::format_element::tag::Label;
 use biome_formatter::prelude::*;
 use biome_formatter::{
-	comments::Comments, write, CstFormatContext, Format, FormatLanguage, FormatToken,
-	TransformSourceMap,
+    comments::Comments, write, CstFormatContext, Format, FormatLanguage, FormatToken,
+    TransformSourceMap,
 };
 use biome_formatter::{Buffer, FormatOwnedWithRule, FormatRefWithRule, Formatted, Printed};
 use biome_js_syntax::{
-	AnyJsDeclaration, AnyJsStatement, JsLanguage, JsSyntaxKind, JsSyntaxNode, JsSyntaxToken,
+    AnyJsDeclaration, AnyJsStatement, JsLanguage, JsSyntaxKind, JsSyntaxNode, JsSyntaxToken,
 };
 use biome_rowan::TextRange;
 use biome_rowan::{AstNode, SyntaxNode};
@@ -198,24 +198,24 @@ use crate::syntax_rewriter::transform;
 
 /// Used to get an object that knows how to format this object.
 pub(crate) trait AsFormat<Context> {
-	type Format<'a>: biome_formatter::Format<Context>
-	where
-		Self: 'a;
+    type Format<'a>: biome_formatter::Format<Context>
+    where
+        Self: 'a;
 
-	/// Returns an object that is able to format this object.
-	fn format(&self) -> Self::Format<'_>;
+    /// Returns an object that is able to format this object.
+    fn format(&self) -> Self::Format<'_>;
 }
 
 /// Implement [AsFormat] for references to types that implement [AsFormat].
 impl<T, C> AsFormat<C> for &T
 where
-	T: AsFormat<C>,
+    T: AsFormat<C>,
 {
-	type Format<'a> = T::Format<'a> where Self: 'a;
+    type Format<'a> = T::Format<'a> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		AsFormat::format(&**self)
-	}
+    fn format(&self) -> Self::Format<'_> {
+        AsFormat::format(&**self)
+    }
 }
 
 /// Implement [AsFormat] for [SyntaxResult] where `T` implements [AsFormat].
@@ -223,16 +223,16 @@ where
 /// Useful to format mandatory AST fields without having to unwrap the value first.
 impl<T, C> AsFormat<C> for biome_rowan::SyntaxResult<T>
 where
-	T: AsFormat<C>,
+    T: AsFormat<C>,
 {
-	type Format<'a> = biome_rowan::SyntaxResult<T::Format<'a>> where Self: 'a;
+    type Format<'a> = biome_rowan::SyntaxResult<T::Format<'a>> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		match self {
-			Ok(value) => Ok(value.format()),
-			Err(err) => Err(*err),
-		}
-	}
+    fn format(&self) -> Self::Format<'_> {
+        match self {
+            Ok(value) => Ok(value.format()),
+            Err(err) => Err(*err),
+        }
+    }
 }
 
 /// Implement [AsFormat] for [Option] when `T` implements [AsFormat]
@@ -240,33 +240,33 @@ where
 /// Allows to call format on optional AST fields without having to unwrap the field first.
 impl<T, C> AsFormat<C> for Option<T>
 where
-	T: AsFormat<C>,
+    T: AsFormat<C>,
 {
-	type Format<'a> = Option<T::Format<'a>> where Self: 'a;
+    type Format<'a> = Option<T::Format<'a>> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		self.as_ref().map(|value| value.format())
-	}
+    fn format(&self) -> Self::Format<'_> {
+        self.as_ref().map(|value| value.format())
+    }
 }
 
 /// Used to convert this object into an object that can be formatted.
 ///
 /// The difference to [AsFormat] is that this trait takes ownership of `self`.
 pub(crate) trait IntoFormat<Context> {
-	type Format: biome_formatter::Format<Context>;
+    type Format: biome_formatter::Format<Context>;
 
-	fn into_format(self) -> Self::Format;
+    fn into_format(self) -> Self::Format;
 }
 
 impl<T, Context> IntoFormat<Context> for biome_rowan::SyntaxResult<T>
 where
-	T: IntoFormat<Context>,
+    T: IntoFormat<Context>,
 {
-	type Format = biome_rowan::SyntaxResult<T::Format>;
+    type Format = biome_rowan::SyntaxResult<T::Format>;
 
-	fn into_format(self) -> Self::Format {
-		self.map(IntoFormat::into_format)
-	}
+    fn into_format(self) -> Self::Format {
+        self.map(IntoFormat::into_format)
+    }
 }
 
 /// Implement [IntoFormat] for [Option] when `T` implements [IntoFormat]
@@ -274,60 +274,63 @@ where
 /// Allows to call format on optional AST fields without having to unwrap the field first.
 impl<T, Context> IntoFormat<Context> for Option<T>
 where
-	T: IntoFormat<Context>,
+    T: IntoFormat<Context>,
 {
-	type Format = Option<T::Format>;
+    type Format = Option<T::Format>;
 
-	fn into_format(self) -> Self::Format {
-		self.map(IntoFormat::into_format)
-	}
+    fn into_format(self) -> Self::Format {
+        self.map(IntoFormat::into_format)
+    }
 }
 
 /// Formatting specific [Iterator] extensions
 pub(crate) trait FormattedIterExt {
-	/// Converts every item to an object that knows how to format it.
-	fn formatted<Context>(self) -> FormattedIter<Self, Self::Item, Context>
-	where
-		Self: Iterator + Sized,
-		Self::Item: IntoFormat<Context>,
-	{
-		FormattedIter { inner: self, options: std::marker::PhantomData }
-	}
+    /// Converts every item to an object that knows how to format it.
+    fn formatted<Context>(self) -> FormattedIter<Self, Self::Item, Context>
+    where
+        Self: Iterator + Sized,
+        Self::Item: IntoFormat<Context>,
+    {
+        FormattedIter {
+            inner: self,
+            options: std::marker::PhantomData,
+        }
+    }
 }
 
 impl<I> FormattedIterExt for I where I: std::iter::Iterator {}
 
 pub(crate) struct FormattedIter<Iter, Item, Context>
 where
-	Iter: Iterator<Item = Item>,
+    Iter: Iterator<Item = Item>,
 {
-	inner: Iter,
-	options: std::marker::PhantomData<Context>,
+    inner: Iter,
+    options: std::marker::PhantomData<Context>,
 }
 
 impl<Iter, Item, Context> std::iter::Iterator for FormattedIter<Iter, Item, Context>
 where
-	Iter: Iterator<Item = Item>,
-	Item: IntoFormat<Context>,
+    Iter: Iterator<Item = Item>,
+    Item: IntoFormat<Context>,
 {
-	type Item = Item::Format;
+    type Item = Item::Format;
 
-	fn next(&mut self) -> Option<Self::Item> {
-		Some(self.inner.next()?.into_format())
-	}
+    fn next(&mut self) -> Option<Self::Item> {
+        Some(self.inner.next()?.into_format())
+    }
 }
 
 impl<Iter, Item, Context> std::iter::FusedIterator for FormattedIter<Iter, Item, Context>
 where
-	Iter: std::iter::FusedIterator<Item = Item>,
-	Item: IntoFormat<Context>,
+    Iter: std::iter::FusedIterator<Item = Item>,
+    Item: IntoFormat<Context>,
 {
 }
 
 impl<Iter, Item, Context> std::iter::ExactSizeIterator for FormattedIter<Iter, Item, Context>
 where
-	Iter: Iterator<Item = Item> + std::iter::ExactSizeIterator,
-	Item: IntoFormat<Context>,
+    Iter: Iterator<Item = Item> + std::iter::ExactSizeIterator,
+    Item: IntoFormat<Context>,
 {
 }
 
@@ -336,157 +339,159 @@ pub(crate) type JsFormatter<'buf> = Formatter<'buf, JsFormatContext>;
 /// Rule for formatting a JavaScript [AstNode].
 pub(crate) trait FormatNodeRule<N>
 where
-	N: AstNode<Language = JsLanguage>,
+    N: AstNode<Language = JsLanguage>,
 {
-	fn fmt(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
-		if self.is_suppressed(node, f) {
-			return write!(f, [format_suppressed_node(node.syntax())]);
-		}
+    fn fmt(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
+        if self.is_suppressed(node, f) {
+            return write!(f, [format_suppressed_node(node.syntax())]);
+        }
 
-		self.fmt_leading_comments(node, f)?;
-		self.fmt_node(node, f)?;
-		self.fmt_dangling_comments(node, f)?;
-		self.fmt_trailing_comments(node, f)
-	}
+        self.fmt_leading_comments(node, f)?;
+        self.fmt_node(node, f)?;
+        self.fmt_dangling_comments(node, f)?;
+        self.fmt_trailing_comments(node, f)
+    }
 
-	/// Formats the node without comments. Ignores any suppression comments.
-	fn fmt_node(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
-		let needs_parentheses = self.needs_parentheses(node);
+    /// Formats the node without comments. Ignores any suppression comments.
+    fn fmt_node(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
+        let needs_parentheses = self.needs_parentheses(node);
 
-		if needs_parentheses {
-			write!(f, [text("(")])?;
-		}
+        if needs_parentheses {
+            write!(f, [text("(")])?;
+        }
 
-		self.fmt_fields(node, f)?;
+        self.fmt_fields(node, f)?;
 
-		if needs_parentheses {
-			write!(f, [text(")")])?;
-		}
+        if needs_parentheses {
+            write!(f, [text(")")])?;
+        }
 
-		Ok(())
-	}
+        Ok(())
+    }
 
-	/// Formats the node's fields.
-	fn fmt_fields(&self, item: &N, f: &mut JsFormatter) -> FormatResult<()>;
+    /// Formats the node's fields.
+    fn fmt_fields(&self, item: &N, f: &mut JsFormatter) -> FormatResult<()>;
 
-	/// Returns whether the node requires parens.
-	fn needs_parentheses(&self, item: &N) -> bool {
-		let _ = item;
-		false
-	}
+    /// Returns whether the node requires parens.
+    fn needs_parentheses(&self, item: &N) -> bool {
+        let _ = item;
+        false
+    }
 
-	/// Returns `true` if the node has a suppression comment and should use the same formatting as in the source document.
-	fn is_suppressed(&self, node: &N, f: &JsFormatter) -> bool {
-		f.context().comments().is_suppressed(node.syntax())
-	}
+    /// Returns `true` if the node has a suppression comment and should use the same formatting as in the source document.
+    fn is_suppressed(&self, node: &N, f: &JsFormatter) -> bool {
+        f.context().comments().is_suppressed(node.syntax())
+    }
 
-	/// Formats the [leading comments](biome_formatter::comments#leading-comments) of the node.
-	///
-	/// You may want to override this method if you want to manually handle the formatting of comments
-	/// inside of the `fmt_fields` method or customize the formatting of the leading comments.
-	fn fmt_leading_comments(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
-		format_leading_comments(node.syntax()).fmt(f)
-	}
+    /// Formats the [leading comments](biome_formatter::comments#leading-comments) of the node.
+    ///
+    /// You may want to override this method if you want to manually handle the formatting of comments
+    /// inside of the `fmt_fields` method or customize the formatting of the leading comments.
+    fn fmt_leading_comments(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
+        format_leading_comments(node.syntax()).fmt(f)
+    }
 
-	/// Formats the [dangling comments](biome_formatter::comments#dangling-comments) of the node.
-	///
-	/// You should override this method if the node handled by this rule can have dangling comments because the
-	/// default implementation formats the dangling comments at the end of the node, which isn't ideal but ensures that
-	/// no comments are dropped.
-	///
-	/// A node can have dangling comments if all its children are tokens or if all node childrens are optional.
-	fn fmt_dangling_comments(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
-		format_dangling_comments(node.syntax()).with_soft_block_indent().fmt(f)
-	}
+    /// Formats the [dangling comments](biome_formatter::comments#dangling-comments) of the node.
+    ///
+    /// You should override this method if the node handled by this rule can have dangling comments because the
+    /// default implementation formats the dangling comments at the end of the node, which isn't ideal but ensures that
+    /// no comments are dropped.
+    ///
+    /// A node can have dangling comments if all its children are tokens or if all node childrens are optional.
+    fn fmt_dangling_comments(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
+        format_dangling_comments(node.syntax())
+            .with_soft_block_indent()
+            .fmt(f)
+    }
 
-	/// Formats the [trailing comments](biome_formatter::comments#trailing-comments) of the node.
-	///
-	/// You may want to override this method if you want to manually handle the formatting of comments
-	/// inside of the `fmt_fields` method or customize the formatting of the trailing comments.
-	fn fmt_trailing_comments(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
-		format_trailing_comments(node.syntax()).fmt(f)
-	}
+    /// Formats the [trailing comments](biome_formatter::comments#trailing-comments) of the node.
+    ///
+    /// You may want to override this method if you want to manually handle the formatting of comments
+    /// inside of the `fmt_fields` method or customize the formatting of the trailing comments.
+    fn fmt_trailing_comments(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
+        format_trailing_comments(node.syntax()).fmt(f)
+    }
 }
 
 /// Rule for formatting an bogus node.
 pub(crate) trait FormatBogusNodeRule<N>
 where
-	N: AstNode<Language = JsLanguage>,
+    N: AstNode<Language = JsLanguage>,
 {
-	fn fmt(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
-		format_bogus_node(node.syntax()).fmt(f)
-	}
+    fn fmt(&self, node: &N, f: &mut JsFormatter) -> FormatResult<()> {
+        format_bogus_node(node.syntax()).fmt(f)
+    }
 }
 
 /// Format implementation specific to JavaScript tokens.
 pub(crate) type FormatJsSyntaxToken = FormatToken<JsFormatContext>;
 
 impl AsFormat<JsFormatContext> for JsSyntaxToken {
-	type Format<'a> = FormatRefWithRule<'a, JsSyntaxToken, FormatJsSyntaxToken>;
+    type Format<'a> = FormatRefWithRule<'a, JsSyntaxToken, FormatJsSyntaxToken>;
 
-	fn format(&self) -> Self::Format<'_> {
-		FormatRefWithRule::new(self, FormatJsSyntaxToken::default())
-	}
+    fn format(&self) -> Self::Format<'_> {
+        FormatRefWithRule::new(self, FormatJsSyntaxToken::default())
+    }
 }
 
 impl IntoFormat<JsFormatContext> for JsSyntaxToken {
-	type Format = FormatOwnedWithRule<JsSyntaxToken, FormatJsSyntaxToken>;
+    type Format = FormatOwnedWithRule<JsSyntaxToken, FormatJsSyntaxToken>;
 
-	fn into_format(self) -> Self::Format {
-		FormatOwnedWithRule::new(self, FormatJsSyntaxToken::default())
-	}
+    fn into_format(self) -> Self::Format {
+        FormatOwnedWithRule::new(self, FormatJsSyntaxToken::default())
+    }
 }
 
 #[derive(Debug, Clone)]
 pub struct JsFormatLanguage {
-	options: JsFormatOptions,
+    options: JsFormatOptions,
 }
 impl JsFormatLanguage {
-	pub fn new(options: JsFormatOptions) -> Self {
-		Self { options }
-	}
+    pub fn new(options: JsFormatOptions) -> Self {
+        Self { options }
+    }
 }
 
 impl FormatLanguage for JsFormatLanguage {
-	type SyntaxLanguage = JsLanguage;
-	type Context = JsFormatContext;
-	type FormatRule = FormatJsSyntaxNode;
+    type SyntaxLanguage = JsLanguage;
+    type Context = JsFormatContext;
+    type FormatRule = FormatJsSyntaxNode;
 
-	fn transform(
-		&self,
-		root: &SyntaxNode<Self::SyntaxLanguage>,
-	) -> Option<(SyntaxNode<Self::SyntaxLanguage>, TransformSourceMap)> {
-		Some(transform(root.clone()))
-	}
+    fn transform(
+        &self,
+        root: &SyntaxNode<Self::SyntaxLanguage>,
+    ) -> Option<(SyntaxNode<Self::SyntaxLanguage>, TransformSourceMap)> {
+        Some(transform(root.clone()))
+    }
 
-	fn is_range_formatting_node(&self, node: &JsSyntaxNode) -> bool {
-		let kind = node.kind();
+    fn is_range_formatting_node(&self, node: &JsSyntaxNode) -> bool {
+        let kind = node.kind();
 
-		// Do not format variable declaration nodes, format the whole statement instead
-		if matches!(kind, JsSyntaxKind::JS_VARIABLE_DECLARATION) {
-			return false;
-		}
+        // Do not format variable declaration nodes, format the whole statement instead
+        if matches!(kind, JsSyntaxKind::JS_VARIABLE_DECLARATION) {
+            return false;
+        }
 
-		AnyJsStatement::can_cast(kind)
-			|| AnyJsDeclaration::can_cast(kind)
-			|| matches!(
-				kind,
-				JsSyntaxKind::JS_DIRECTIVE | JsSyntaxKind::JS_EXPORT | JsSyntaxKind::JS_IMPORT
-			)
-	}
+        AnyJsStatement::can_cast(kind)
+            || AnyJsDeclaration::can_cast(kind)
+            || matches!(
+                kind,
+                JsSyntaxKind::JS_DIRECTIVE | JsSyntaxKind::JS_EXPORT | JsSyntaxKind::JS_IMPORT
+            )
+    }
 
-	fn options(&self) -> &JsFormatOptions {
-		&self.options
-	}
+    fn options(&self) -> &JsFormatOptions {
+        &self.options
+    }
 
-	fn create_context(
-		self,
-		root: &JsSyntaxNode,
-		source_map: Option<TransformSourceMap>,
-	) -> Self::Context {
-		let comments = Comments::from_node(root, &JsCommentStyle, source_map.as_ref());
-		JsFormatContext::new(self.options, comments).with_source_map(source_map)
-	}
+    fn create_context(
+        self,
+        root: &JsSyntaxNode,
+        source_map: Option<TransformSourceMap>,
+    ) -> Self::Context {
+        let comments = Comments::from_node(root, &JsCommentStyle, source_map.as_ref());
+        JsFormatContext::new(self.options, comments).with_source_map(source_map)
+    }
 }
 
 /// Formats a range within a file, supported by Biome
@@ -501,21 +506,21 @@ impl FormatLanguage for JsFormatLanguage {
 /// It returns a [Formatted] result with a range corresponding to the
 /// range of the input that was effectively overwritten by the formatter
 pub fn format_range(
-	options: JsFormatOptions,
-	root: &JsSyntaxNode,
-	range: TextRange,
+    options: JsFormatOptions,
+    root: &JsSyntaxNode,
+    range: TextRange,
 ) -> FormatResult<Printed> {
-	biome_formatter::format_range(root, range, JsFormatLanguage::new(options))
+    biome_formatter::format_range(root, range, JsFormatLanguage::new(options))
 }
 
 /// Formats a JavaScript (and its super languages) file based on its features.
 ///
 /// It returns a [Formatted] result, which the user can use to override a file.
 pub fn format_node(
-	options: JsFormatOptions,
-	root: &JsSyntaxNode,
+    options: JsFormatOptions,
+    root: &JsSyntaxNode,
 ) -> FormatResult<Formatted<JsFormatContext>> {
-	biome_formatter::format_node(root, JsFormatLanguage::new(options))
+    biome_formatter::format_node(root, JsFormatLanguage::new(options))
 }
 
 /// Formats a single node within a file, supported by Biome.
@@ -529,40 +534,40 @@ pub fn format_node(
 ///
 /// It returns a [Formatted] result
 pub fn format_sub_tree(options: JsFormatOptions, root: &JsSyntaxNode) -> FormatResult<Printed> {
-	biome_formatter::format_sub_tree(root, JsFormatLanguage::new(options))
+    biome_formatter::format_sub_tree(root, JsFormatLanguage::new(options))
 }
 
 #[derive(Copy, Clone, Debug)]
 pub(crate) enum JsLabels {
-	MemberChain,
+    MemberChain,
 }
 
 impl Label for JsLabels {
-	fn id(&self) -> u64 {
-		*self as u64
-	}
+    fn id(&self) -> u64 {
+        *self as u64
+    }
 
-	fn debug_name(&self) -> &'static str {
-		match self {
-			JsLabels::MemberChain => "MemberChain",
-		}
-	}
+    fn debug_name(&self) -> &'static str {
+        match self {
+            JsLabels::MemberChain => "MemberChain",
+        }
+    }
 }
 
 #[cfg(test)]
 mod tests {
 
-	use super::format_range;
+    use super::format_range;
 
-	use crate::context::JsFormatOptions;
-	use biome_formatter::IndentStyle;
-	use biome_js_parser::{parse, parse_script, JsParserOptions};
-	use biome_js_syntax::JsFileSource;
-	use biome_rowan::{TextRange, TextSize};
+    use crate::context::JsFormatOptions;
+    use biome_formatter::IndentStyle;
+    use biome_js_parser::{parse, parse_script, JsParserOptions};
+    use biome_js_syntax::JsFileSource;
+    use biome_rowan::{TextRange, TextSize};
 
-	#[test]
-	fn test_range_formatting() {
-		let input = "
+    #[test]
+    fn test_range_formatting() {
+        let input = "
 while(
     true
 ) {
@@ -585,158 +590,167 @@ while(
 }
 ";
 
-		// Start the formatting range two characters before the "let" keywords,
-		// in the middle of the indentation whitespace for the line
-		let range_start = TextSize::try_from(input.find("let").unwrap() - 2).unwrap();
-		let range_end = TextSize::try_from(input.find("const").unwrap()).unwrap();
+        // Start the formatting range two characters before the "let" keywords,
+        // in the middle of the indentation whitespace for the line
+        let range_start = TextSize::try_from(input.find("let").unwrap() - 2).unwrap();
+        let range_end = TextSize::try_from(input.find("const").unwrap()).unwrap();
 
-		let tree = parse_script(input, JsParserOptions::default());
-		let result = format_range(
-			JsFormatOptions::new(JsFileSource::js_script())
-				.with_indent_style(IndentStyle::Space)
-				.with_indent_width(4.try_into().unwrap()),
-			&tree.syntax(),
-			TextRange::new(range_start, range_end),
-		);
+        let tree = parse_script(input, JsParserOptions::default());
+        let result = format_range(
+            JsFormatOptions::new(JsFileSource::js_script())
+                .with_indent_style(IndentStyle::Space)
+                .with_indent_width(4.try_into().unwrap()),
+            &tree.syntax(),
+            TextRange::new(range_start, range_end),
+        );
 
-		let result = result.expect("range formatting failed");
-		assert_eq!(
+        let result = result.expect("range formatting failed");
+        assert_eq!(
             result.as_code(),
             "function func() {\n        func(/* comment */);\n\n        let array = [1, 2];\n    }\n\n    function func2() {\n        const no_format = () => {};\n    }"
         );
-		assert_eq!(
-			result.range(),
-			Some(TextRange::new(range_start - TextSize::from(56), range_end + TextSize::from(40)))
-		);
-	}
+        assert_eq!(
+            result.range(),
+            Some(TextRange::new(
+                range_start - TextSize::from(56),
+                range_end + TextSize::from(40)
+            ))
+        );
+    }
 
-	#[test]
-	fn test_range_formatting_indentation() {
-		let input = "
+    #[test]
+    fn test_range_formatting_indentation() {
+        let input = "
 function() {
          const veryLongIdentifierToCauseALineBreak = { veryLongKeyToCauseALineBreak: 'veryLongValueToCauseALineBreak' }
 }
 ";
 
-		let range_start = TextSize::try_from(input.find("const").unwrap()).unwrap();
-		let range_end = TextSize::try_from(input.find('}').unwrap()).unwrap();
+        let range_start = TextSize::try_from(input.find("const").unwrap()).unwrap();
+        let range_end = TextSize::try_from(input.find('}').unwrap()).unwrap();
 
-		let tree = parse_script(input, JsParserOptions::default());
-		let result = format_range(
-			JsFormatOptions::new(JsFileSource::js_script())
-				.with_indent_style(IndentStyle::Space)
-				.with_indent_width(4.try_into().unwrap()),
-			&tree.syntax(),
-			TextRange::new(range_start, range_end),
-		);
+        let tree = parse_script(input, JsParserOptions::default());
+        let result = format_range(
+            JsFormatOptions::new(JsFileSource::js_script())
+                .with_indent_style(IndentStyle::Space)
+                .with_indent_width(4.try_into().unwrap()),
+            &tree.syntax(),
+            TextRange::new(range_start, range_end),
+        );
 
-		let result = result.expect("range formatting failed");
-		// As a result of the indentation normalization, the number of spaces within
-		// the object expression is currently rounded down from an odd indentation level
-		assert_eq!(
+        let result = result.expect("range formatting failed");
+        // As a result of the indentation normalization, the number of spaces within
+        // the object expression is currently rounded down from an odd indentation level
+        assert_eq!(
             result.as_code(),
             "const veryLongIdentifierToCauseALineBreak = {\n            veryLongKeyToCauseALineBreak: \"veryLongValueToCauseALineBreak\",\n        };"
         );
-		assert_eq!(
-			result.range(),
-			Some(TextRange::new(range_start, range_end + TextSize::from(1)))
-		);
-	}
+        assert_eq!(
+            result.range(),
+            Some(TextRange::new(range_start, range_end + TextSize::from(1)))
+        );
+    }
 
-	#[test]
-	fn test_range_formatting_whitespace() {
-		let input = "               ";
+    #[test]
+    fn test_range_formatting_whitespace() {
+        let input = "               ";
 
-		let range_start = TextSize::from(5);
-		let range_end = TextSize::from(5);
+        let range_start = TextSize::from(5);
+        let range_end = TextSize::from(5);
 
-		let tree = parse_script(input, JsParserOptions::default());
-		let result = format_range(
-			JsFormatOptions::new(JsFileSource::js_script())
-				.with_indent_style(IndentStyle::Space)
-				.with_indent_width(4.try_into().unwrap()),
-			&tree.syntax(),
-			TextRange::new(range_start, range_end),
-		);
+        let tree = parse_script(input, JsParserOptions::default());
+        let result = format_range(
+            JsFormatOptions::new(JsFileSource::js_script())
+                .with_indent_style(IndentStyle::Space)
+                .with_indent_width(4.try_into().unwrap()),
+            &tree.syntax(),
+            TextRange::new(range_start, range_end),
+        );
 
-		let result = result.expect("range formatting failed");
-		assert_eq!(result.as_code(), "");
-		assert_eq!(result.range(), Some(TextRange::new(range_start, range_end)));
-	}
+        let result = result.expect("range formatting failed");
+        assert_eq!(result.as_code(), "");
+        assert_eq!(result.range(), Some(TextRange::new(range_start, range_end)));
+    }
 
-	#[test]
-	fn test_range_formatting_middle_of_token() {
-		let input = r#"/* */ function Foo(){
+    #[test]
+    fn test_range_formatting_middle_of_token() {
+        let input = r#"/* */ function Foo(){
 /**/
 }
 "#;
 
-		let range = TextRange::new(TextSize::from(16), TextSize::from(28));
+        let range = TextRange::new(TextSize::from(16), TextSize::from(28));
 
-		debug_assert_eq!(
-			&input[range],
-			r#"oo(){
+        debug_assert_eq!(
+            &input[range],
+            r#"oo(){
 /**/
 }"#
-		);
+        );
 
-		let tree = parse_script(input, JsParserOptions::default());
-		let result = format_range(
-			JsFormatOptions::new(JsFileSource::js_script())
-				.with_indent_style(IndentStyle::Space)
-				.with_indent_width(4.try_into().unwrap()),
-			&tree.syntax(),
-			range,
-		)
-		.expect("Range formatting failed");
+        let tree = parse_script(input, JsParserOptions::default());
+        let result = format_range(
+            JsFormatOptions::new(JsFileSource::js_script())
+                .with_indent_style(IndentStyle::Space)
+                .with_indent_width(4.try_into().unwrap()),
+            &tree.syntax(),
+            range,
+        )
+        .expect("Range formatting failed");
 
-		assert_eq!(
-			result.as_code(),
-			r#"/* */ function Foo() {
+        assert_eq!(
+            result.as_code(),
+            r#"/* */ function Foo() {
     /**/
 }"#
-		);
-		assert_eq!(result.range(), Some(TextRange::new(TextSize::from(0), TextSize::from(28))))
-	}
+        );
+        assert_eq!(
+            result.range(),
+            Some(TextRange::new(TextSize::from(0), TextSize::from(28)))
+        )
+    }
 
-	#[test]
-	fn range_formatting_trailing_comments() {
-		let input = r#"let fn =a((x ) => {
+    #[test]
+    fn range_formatting_trailing_comments() {
+        let input = r#"let fn =a((x ) => {
           quux (); //
         });
 "#;
 
-		let range = TextRange::new(TextSize::from(28), TextSize::from(41));
+        let range = TextRange::new(TextSize::from(28), TextSize::from(41));
 
-		debug_assert_eq!(&input[range], r#"  quux (); //"#);
+        debug_assert_eq!(&input[range], r#"  quux (); //"#);
 
-		let tree = parse_script(input, JsParserOptions::default());
-		let result = format_range(
-			JsFormatOptions::new(JsFileSource::js_script())
-				.with_indent_style(IndentStyle::Space)
-				.with_indent_width(4.try_into().unwrap()),
-			&tree.syntax(),
-			range,
-		)
-		.expect("Range formatting failed");
+        let tree = parse_script(input, JsParserOptions::default());
+        let result = format_range(
+            JsFormatOptions::new(JsFileSource::js_script())
+                .with_indent_style(IndentStyle::Space)
+                .with_indent_width(4.try_into().unwrap()),
+            &tree.syntax(),
+            range,
+        )
+        .expect("Range formatting failed");
 
-		assert_eq!(result.as_code(), r#"quux(); //"#);
-		assert_eq!(result.range(), Some(TextRange::new(TextSize::from(30), TextSize::from(41))))
-	}
+        assert_eq!(result.as_code(), r#"quux(); //"#);
+        assert_eq!(
+            result.range(),
+            Some(TextRange::new(TextSize::from(30), TextSize::from(41)))
+        )
+    }
 
-	#[test]
-	fn format_range_out_of_bounds() {
-		let src = "statement();";
+    #[test]
+    fn format_range_out_of_bounds() {
+        let src = "statement();";
 
-		let syntax = JsFileSource::js_module();
-		let tree = parse(src, syntax, JsParserOptions::default());
+        let syntax = JsFileSource::js_module();
+        let tree = parse(src, syntax, JsParserOptions::default());
 
-		let result = format_range(
-			JsFormatOptions::new(syntax),
-			&tree.syntax(),
-			TextRange::new(TextSize::from(0), TextSize::of(src) + TextSize::from(5)),
-		);
+        let result = format_range(
+            JsFormatOptions::new(syntax),
+            &tree.syntax(),
+            TextRange::new(TextSize::from(0), TextSize::of(src) + TextSize::from(5)),
+        );
 
-		assert!(result.is_err());
-	}
+        assert!(result.is_err());
+    }
 }

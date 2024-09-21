@@ -9,24 +9,24 @@ use biome_js_syntax::JsObjectAssignmentPattern;
 pub(crate) struct FormatJsObjectAssignmentPattern;
 
 impl FormatNodeRule<JsObjectAssignmentPattern> for FormatJsObjectAssignmentPattern {
-	fn fmt_fields(
-		&self,
-		node: &JsObjectAssignmentPattern,
-		f: &mut JsFormatter,
-	) -> FormatResult<()> {
-		write!(f, [JsObjectPatternLike::from(node.clone())])
-	}
+    fn fmt_fields(
+        &self,
+        node: &JsObjectAssignmentPattern,
+        f: &mut JsFormatter,
+    ) -> FormatResult<()> {
+        write!(f, [JsObjectPatternLike::from(node.clone())])
+    }
 
-	fn needs_parentheses(&self, item: &JsObjectAssignmentPattern) -> bool {
-		item.needs_parentheses()
-	}
+    fn needs_parentheses(&self, item: &JsObjectAssignmentPattern) -> bool {
+        item.needs_parentheses()
+    }
 
-	fn fmt_dangling_comments(
-		&self,
-		_: &JsObjectAssignmentPattern,
-		_: &mut JsFormatter,
-	) -> FormatResult<()> {
-		// Handled inside of `JsObjectPatternLike`
-		Ok(())
-	}
+    fn fmt_dangling_comments(
+        &self,
+        _: &JsObjectAssignmentPattern,
+        _: &mut JsFormatter,
+    ) -> FormatResult<()> {
+        // Handled inside of `JsObjectPatternLike`
+        Ok(())
+    }
 }

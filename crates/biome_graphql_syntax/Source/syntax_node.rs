@@ -14,8 +14,8 @@ use serde::Serialize;
 pub struct GraphqlLanguage;
 
 impl Language for GraphqlLanguage {
-	type Kind = GraphqlSyntaxKind;
-	type Root = GraphqlRoot;
+    type Kind = GraphqlSyntaxKind;
+    type Root = GraphqlRoot;
 }
 
 pub type GraphqlSyntaxNode = biome_rowan::SyntaxNode<GraphqlLanguage>;

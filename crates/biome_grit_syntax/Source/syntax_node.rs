@@ -14,8 +14,8 @@ use serde::Serialize;
 pub struct GritLanguage;
 
 impl Language for GritLanguage {
-	type Kind = GritSyntaxKind;
-	type Root = GritRoot;
+    type Kind = GritSyntaxKind;
+    type Root = GritRoot;
 }
 
 pub type GritSyntaxNode = biome_rowan::SyntaxNode<GritLanguage>;

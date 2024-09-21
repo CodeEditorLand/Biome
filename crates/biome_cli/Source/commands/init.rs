@@ -5,11 +5,14 @@ use biome_fs::ConfigName;
 use biome_service::configuration::create_config;
 
 pub(crate) fn init(mut session: CliSession, emit_jsonc: bool) -> Result<(), CliDiagnostic> {
-	let fs = &mut session.app.fs;
-	create_config(fs, PartialConfiguration::init(), emit_jsonc)?;
-	let file_created =
-		if emit_jsonc { ConfigName::biome_jsonc() } else { ConfigName::biome_json() };
-	session.app.console.log(markup! {
+    let fs = &mut session.app.fs;
+    create_config(fs, PartialConfiguration::init(), emit_jsonc)?;
+    let file_created = if emit_jsonc {
+        ConfigName::biome_jsonc()
+    } else {
+        ConfigName::biome_json()
+    };
+    session.app.console.log(markup! {
 "
 Welcome to Biome! Let's get you started...
 
@@ -40,5 +43,5 @@ Welcome to Biome! Let's get you started...
      Seek for help on Discord: "<Hyperlink href="https://discord.gg/BypW39g6Yc">"https://discord.gg/BypW39g6Yc"</Hyperlink>"
 "
     });
-	Ok(())
+    Ok(())
 }

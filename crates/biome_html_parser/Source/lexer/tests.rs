@@ -14,33 +14,35 @@ use std::time::Duration;
 // It parses random strings and puts them back together with the produced tokens and compares
 #[quickcheck]
 fn losslessness(string: String) -> bool {
-	// using an mpsc channel allows us to spawn a thread and spawn the lexer there, then if
-	// it takes more than 2 seconds we panic because it is 100% infinite recursion
-	let cloned = string.clone();
-	let (sender, receiver) = channel();
-	thread::spawn(move || {
-		let mut lexer = HtmlLexer::from_str(&cloned);
-		let mut tokens = vec![];
+    // using an mpsc channel allows us to spawn a thread and spawn the lexer there, then if
+    // it takes more than 2 seconds we panic because it is 100% infinite recursion
+    let cloned = string.clone();
+    let (sender, receiver) = channel();
+    thread::spawn(move || {
+        let mut lexer = HtmlLexer::from_str(&cloned);
+        let mut tokens = vec![];
 
-		while lexer.next_token(HtmlLexContext::default()) != EOF {
-			tokens.push(lexer.current_range());
-		}
+        while lexer.next_token(HtmlLexContext::default()) != EOF {
+            tokens.push(lexer.current_range());
+        }
 
-		sender.send(tokens).expect("Could not send tokens to receiver");
-	});
-	let token_ranges = receiver
-		.recv_timeout(Duration::from_secs(2))
-		.unwrap_or_else(|_| panic!("Lexer is infinitely recursing with this code: ->{string}<-"));
+        sender
+            .send(tokens)
+            .expect("Could not send tokens to receiver");
+    });
+    let token_ranges = receiver
+        .recv_timeout(Duration::from_secs(2))
+        .unwrap_or_else(|_| panic!("Lexer is infinitely recursing with this code: ->{string}<-"));
 
-	let mut new_str = String::with_capacity(string.len());
-	let mut idx = TextSize::from(0);
+    let mut new_str = String::with_capacity(string.len());
+    let mut idx = TextSize::from(0);
 
-	for range in token_ranges {
-		new_str.push_str(&string[range]);
-		idx += range.len();
-	}
+    for range in token_ranges {
+        new_str.push_str(&string[range]);
+        idx += range.len();
+    }
 
-	string == new_str
+    string == new_str
 }
 
 // Assert the result of lexing a piece of source code,
@@ -102,188 +104,188 @@ macro_rules! assert_lex {
 
 #[test]
 fn doctype_key() {
-	assert_lex! {
-		HtmlLexContext::Doctype,
-		"doctype",
-		DOCTYPE_KW: 7,
-	}
+    assert_lex! {
+        HtmlLexContext::Doctype,
+        "doctype",
+        DOCTYPE_KW: 7,
+    }
 }
 
 #[test]
 fn doctype_upper_key() {
-	assert_lex! {
-			HtmlLexContext::Doctype,
-		"DOCTYPE",
-		DOCTYPE_KW: 7,
-	}
+    assert_lex! {
+            HtmlLexContext::Doctype,
+        "DOCTYPE",
+        DOCTYPE_KW: 7,
+    }
 }
 
 #[test]
 fn string_literal() {
-	assert_lex! {
-		"\"data-attribute\"",
-		HTML_STRING_LITERAL: 16,
-	}
+    assert_lex! {
+        "\"data-attribute\"",
+        HTML_STRING_LITERAL: 16,
+    }
 }
 
 #[test]
 fn self_closing() {
-	assert_lex! {
-		"<div />",
-		L_ANGLE: 1,
-		HTML_LITERAL: 3,
-		WHITESPACE: 1,
-		SLASH: 1
-		R_ANGLE: 1
-	}
+    assert_lex! {
+        "<div />",
+        L_ANGLE: 1,
+        HTML_LITERAL: 3,
+        WHITESPACE: 1,
+        SLASH: 1
+        R_ANGLE: 1
+    }
 }
 
 #[test]
 fn element() {
-	assert_lex! {
-		"<div></div>",
-		L_ANGLE: 1,
-		HTML_LITERAL: 3,
-		R_ANGLE: 1,
-		L_ANGLE: 1,
-		SLASH: 1,
-		HTML_LITERAL: 3,
-		R_ANGLE: 1,
-	}
+    assert_lex! {
+        "<div></div>",
+        L_ANGLE: 1,
+        HTML_LITERAL: 3,
+        R_ANGLE: 1,
+        L_ANGLE: 1,
+        SLASH: 1,
+        HTML_LITERAL: 3,
+        R_ANGLE: 1,
+    }
 }
 
 #[test]
 fn html_text() {
-	assert_lex! {
-		HtmlLexContext::OutsideTag,
-		"abcdefghijklmnopqrstuvwxyz!@_-:;",
-		HTML_LITERAL: 32,
-	}
+    assert_lex! {
+        HtmlLexContext::OutsideTag,
+        "abcdefghijklmnopqrstuvwxyz!@_-:;",
+        HTML_LITERAL: 32,
+    }
 }
 
 #[test]
 fn doctype_with_quirk() {
-	assert_lex! {
-		HtmlLexContext::Doctype,
-		"<!DOCTYPE HTML>",
-		L_ANGLE: 1,
-		BANG: 1,
-		DOCTYPE_KW: 7,
-		WHITESPACE: 1,
-		HTML_KW: 4,
-		R_ANGLE: 1,
-	}
+    assert_lex! {
+        HtmlLexContext::Doctype,
+        "<!DOCTYPE HTML>",
+        L_ANGLE: 1,
+        BANG: 1,
+        DOCTYPE_KW: 7,
+        WHITESPACE: 1,
+        HTML_KW: 4,
+        R_ANGLE: 1,
+    }
 }
 
 #[test]
 fn doctype_with_quirk_and_system() {
-	assert_lex! {
-		HtmlLexContext::Doctype,
-		"<!DOCTYPE HTML \"+//silmaril//dtd html pro v0r11 19970101//\">",
-		L_ANGLE: 1,
-		BANG: 1,
-		DOCTYPE_KW: 7,
-		WHITESPACE: 1,
-		HTML_KW: 4,
-		WHITESPACE: 1,
-		HTML_STRING_LITERAL: 44,
-		R_ANGLE: 1,
-	}
+    assert_lex! {
+        HtmlLexContext::Doctype,
+        "<!DOCTYPE HTML \"+//silmaril//dtd html pro v0r11 19970101//\">",
+        L_ANGLE: 1,
+        BANG: 1,
+        DOCTYPE_KW: 7,
+        WHITESPACE: 1,
+        HTML_KW: 4,
+        WHITESPACE: 1,
+        HTML_STRING_LITERAL: 44,
+        R_ANGLE: 1,
+    }
 }
 
 #[test]
 fn element_with_attributes() {
-	assert_lex! {
-		"<div class='joy and happiness'>",
-		L_ANGLE: 1,
-		HTML_LITERAL: 3,
-		WHITESPACE: 1,
-		HTML_LITERAL: 5,
-		EQ:1,
-		HTML_STRING_LITERAL: 19,
-		R_ANGLE: 1,
-	}
+    assert_lex! {
+        "<div class='joy and happiness'>",
+        L_ANGLE: 1,
+        HTML_LITERAL: 3,
+        WHITESPACE: 1,
+        HTML_LITERAL: 5,
+        EQ:1,
+        HTML_STRING_LITERAL: 19,
+        R_ANGLE: 1,
+    }
 }
 
 #[test]
 fn element_with_dashed_attributes() {
-	assert_lex! {
-		"<div aria-hidden>",
-		L_ANGLE: 1,
-		HTML_LITERAL: 3,
-		WHITESPACE: 1,
-		HTML_LITERAL: 11,
-		R_ANGLE: 1,
-	}
+    assert_lex! {
+        "<div aria-hidden>",
+        L_ANGLE: 1,
+        HTML_LITERAL: 3,
+        WHITESPACE: 1,
+        HTML_LITERAL: 11,
+        R_ANGLE: 1,
+    }
 }
 
 #[test]
 fn html_element() {
-	assert_lex! {
-		"<html></html>",
-		L_ANGLE: 1,
-		HTML_LITERAL: 4,
-		R_ANGLE: 1,
-		L_ANGLE: 1,
-		SLASH: 1,
-		HTML_LITERAL: 4,
-		R_ANGLE: 1,
-	}
+    assert_lex! {
+        "<html></html>",
+        L_ANGLE: 1,
+        HTML_LITERAL: 4,
+        R_ANGLE: 1,
+        L_ANGLE: 1,
+        SLASH: 1,
+        HTML_LITERAL: 4,
+        R_ANGLE: 1,
+    }
 }
 
 #[test]
 fn html_text_spaces() {
-	assert_lex! {
-		HtmlLexContext::OutsideTag,
-		"Lorem ipsum dolor sit amet, consectetur.",
-		HTML_LITERAL: 40,
-	}
+    assert_lex! {
+        HtmlLexContext::OutsideTag,
+        "Lorem ipsum dolor sit amet, consectetur.",
+        HTML_LITERAL: 40,
+    }
 }
 
 #[test]
 fn html_text_spaces_with_lines() {
-	assert_lex! {
-		HtmlLexContext::OutsideTag,
-		"Lorem ipsum dolor sit
-		amet, consectetur.",
-		HTML_LITERAL: 21,
-		NEWLINE: 1,
-		WHITESPACE: 8,
-		HTML_LITERAL: 18,
-	}
+    assert_lex! {
+        HtmlLexContext::OutsideTag,
+        "Lorem ipsum dolor sit
+        amet, consectetur.",
+        HTML_LITERAL: 21,
+        NEWLINE: 1,
+        WHITESPACE: 8,
+        HTML_LITERAL: 18,
+    }
 }
 
 #[test]
 fn unquoted_attribute_value_1() {
-	assert_lex! {
-		HtmlLexContext::AttributeValue,
-		"value",
-		HTML_STRING_LITERAL: 5,
-	}
+    assert_lex! {
+        HtmlLexContext::AttributeValue,
+        "value",
+        HTML_STRING_LITERAL: 5,
+    }
 }
 
 #[test]
 fn unquoted_attribute_value_2() {
-	assert_lex! {
-		HtmlLexContext::AttributeValue,
-		"value value\tvalue\n",
-		HTML_STRING_LITERAL: 5,
-		WHITESPACE: 1,
-		HTML_STRING_LITERAL: 5,
-		WHITESPACE: 1,
-		HTML_STRING_LITERAL: 5,
-		NEWLINE: 1,
-	}
+    assert_lex! {
+        HtmlLexContext::AttributeValue,
+        "value value\tvalue\n",
+        HTML_STRING_LITERAL: 5,
+        WHITESPACE: 1,
+        HTML_STRING_LITERAL: 5,
+        WHITESPACE: 1,
+        HTML_STRING_LITERAL: 5,
+        NEWLINE: 1,
+    }
 }
 
 #[test]
 fn unquoted_attribute_value_invalid_chars() {
-	assert_lex! {
-		HtmlLexContext::AttributeValue,
-		"?<='\"`",
-		ERROR_TOKEN: 1,
-		L_ANGLE: 1,
-		ERROR_TOKEN: 1,
-		ERROR_TOKEN: 3,
-	}
+    assert_lex! {
+        HtmlLexContext::AttributeValue,
+        "?<='\"`",
+        ERROR_TOKEN: 1,
+        L_ANGLE: 1,
+        ERROR_TOKEN: 1,
+        ERROR_TOKEN: 3,
+    }
 }

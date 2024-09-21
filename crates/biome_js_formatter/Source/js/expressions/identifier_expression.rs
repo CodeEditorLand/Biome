@@ -9,13 +9,13 @@ use biome_js_syntax::JsIdentifierExpressionFields;
 pub(crate) struct FormatJsIdentifierExpression;
 
 impl FormatNodeRule<JsIdentifierExpression> for FormatJsIdentifierExpression {
-	fn fmt_fields(&self, node: &JsIdentifierExpression, f: &mut JsFormatter) -> FormatResult<()> {
-		let JsIdentifierExpressionFields { name } = node.as_fields();
+    fn fmt_fields(&self, node: &JsIdentifierExpression, f: &mut JsFormatter) -> FormatResult<()> {
+        let JsIdentifierExpressionFields { name } = node.as_fields();
 
-		write![f, [name.format()]]
-	}
+        write![f, [name.format()]]
+    }
 
-	fn needs_parentheses(&self, item: &JsIdentifierExpression) -> bool {
-		item.needs_parentheses()
-	}
+    fn needs_parentheses(&self, item: &JsIdentifierExpression) -> bool {
+        item.needs_parentheses()
+    }
 }

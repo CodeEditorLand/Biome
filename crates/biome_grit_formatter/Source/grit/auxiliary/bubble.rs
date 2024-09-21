@@ -4,7 +4,7 @@ use biome_rowan::AstNode;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritBubble;
 impl FormatNodeRule<GritBubble> for FormatGritBubble {
-	fn fmt_fields(&self, node: &GritBubble, f: &mut GritFormatter) -> FormatResult<()> {
-		format_verbatim_node(node.syntax()).fmt(f)
-	}
+    fn fmt_fields(&self, node: &GritBubble, f: &mut GritFormatter) -> FormatResult<()> {
+        format_verbatim_node(node.syntax()).fmt(f)
+    }
 }

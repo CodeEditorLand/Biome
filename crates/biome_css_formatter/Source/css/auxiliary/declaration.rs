@@ -5,15 +5,18 @@ use biome_formatter::write;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssDeclaration;
 impl FormatNodeRule<CssDeclaration> for FormatCssDeclaration {
-	fn fmt_fields(&self, node: &CssDeclaration, f: &mut CssFormatter) -> FormatResult<()> {
-		let CssDeclarationFields { property, important } = node.as_fields();
+    fn fmt_fields(&self, node: &CssDeclaration, f: &mut CssFormatter) -> FormatResult<()> {
+        let CssDeclarationFields {
+            property,
+            important,
+        } = node.as_fields();
 
-		write!(f, [property.format()])?;
+        write!(f, [property.format()])?;
 
-		if important.is_some() {
-			write!(f, [space(), important.format()])?;
-		}
+        if important.is_some() {
+            write!(f, [space(), important.format()])?;
+        }
 
-		Ok(())
-	}
+        Ok(())
+    }
 }

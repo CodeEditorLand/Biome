@@ -10,17 +10,23 @@ use biome_js_syntax::{JsLiteralMemberName, JsSyntaxKind};
 pub(crate) struct FormatJsLiteralMemberName;
 
 impl FormatNodeRule<JsLiteralMemberName> for FormatJsLiteralMemberName {
-	fn fmt_fields(&self, node: &JsLiteralMemberName, f: &mut JsFormatter) -> FormatResult<()> {
-		let JsLiteralMemberNameFields { value } = node.as_fields();
+    fn fmt_fields(&self, node: &JsLiteralMemberName, f: &mut JsFormatter) -> FormatResult<()> {
+        let JsLiteralMemberNameFields { value } = node.as_fields();
 
-		let value = value?;
+        let value = value?;
 
-		match value.kind() {
-			JsSyntaxKind::JS_STRING_LITERAL => {
-				write![f, [FormatLiteralStringToken::new(&value, StringLiteralParentKind::Member)]]
-			}
-			JsSyntaxKind::JS_NUMBER_LITERAL => format_number_token(&value).fmt(f),
-			_ => write![f, [value.format()]],
-		}
-	}
+        match value.kind() {
+            JsSyntaxKind::JS_STRING_LITERAL => {
+                write![
+                    f,
+                    [FormatLiteralStringToken::new(
+                        &value,
+                        StringLiteralParentKind::Member
+                    )]
+                ]
+            }
+            JsSyntaxKind::JS_NUMBER_LITERAL => format_number_token(&value).fmt(f),
+            _ => write![f, [value.format()]],
+        }
+    }
 }

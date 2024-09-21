@@ -12,52 +12,62 @@ use crate::yaml_kinds_src::YAML_KINDS_SRC;
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::{format_ident, quote};
 
-pub const LANGUAGE_PREFIXES: [&str; 10] =
-	["js_", "ts_", "jsx_", "tsx_", "css_", "json_", "grit_", "html_", "yaml_", "markdown_"];
+pub const LANGUAGE_PREFIXES: [&str; 10] = [
+    "js_",
+    "ts_",
+    "jsx_",
+    "tsx_",
+    "css_",
+    "json_",
+    "grit_",
+    "html_",
+    "yaml_",
+    "markdown_",
+];
 
 #[derive(Debug, Eq, Copy, Clone, PartialEq)]
 pub enum LanguageKind {
-	Js,
-	Css,
-	Json,
-	Graphql,
-	Grit,
-	Html,
-	Yaml,
-	Markdown,
+    Js,
+    Css,
+    Json,
+    Graphql,
+    Grit,
+    Html,
+    Yaml,
+    Markdown,
 }
 
 impl std::fmt::Display for LanguageKind {
-	fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
-		match self {
-			LanguageKind::Js => write!(f, "js"),
-			LanguageKind::Css => write!(f, "css"),
-			LanguageKind::Json => write!(f, "json"),
-			LanguageKind::Graphql => write!(f, "graphql"),
-			LanguageKind::Grit => write!(f, "grit"),
-			LanguageKind::Html => write!(f, "html"),
-			LanguageKind::Yaml => write!(f, "yaml"),
-			LanguageKind::Markdown => write!(f, "markdown"),
-		}
-	}
+    fn fmt(&self, f: &mut std::fmt::Formatter) -> std::fmt::Result {
+        match self {
+            LanguageKind::Js => write!(f, "js"),
+            LanguageKind::Css => write!(f, "css"),
+            LanguageKind::Json => write!(f, "json"),
+            LanguageKind::Graphql => write!(f, "graphql"),
+            LanguageKind::Grit => write!(f, "grit"),
+            LanguageKind::Html => write!(f, "html"),
+            LanguageKind::Yaml => write!(f, "yaml"),
+            LanguageKind::Markdown => write!(f, "markdown"),
+        }
+    }
 }
 
 pub const ALL_LANGUAGE_KIND: [LanguageKind; 8] = [
-	LanguageKind::Js,
-	LanguageKind::Css,
-	LanguageKind::Json,
-	LanguageKind::Graphql,
-	LanguageKind::Grit,
-	LanguageKind::Html,
-	LanguageKind::Yaml,
-	LanguageKind::Markdown,
+    LanguageKind::Js,
+    LanguageKind::Css,
+    LanguageKind::Json,
+    LanguageKind::Graphql,
+    LanguageKind::Grit,
+    LanguageKind::Html,
+    LanguageKind::Yaml,
+    LanguageKind::Markdown,
 ];
 
 impl FromStr for LanguageKind {
-	type Err = String;
+    type Err = String;
 
-	fn from_str(kind: &str) -> Result<Self, Self::Err> {
-		match kind {
+    fn from_str(kind: &str) -> Result<Self, Self::Err> {
+        match kind {
             "js" => Ok(LanguageKind::Js),
             "css" => Ok(LanguageKind::Css),
             "json" => Ok(LanguageKind::Json),
@@ -70,7 +80,7 @@ impl FromStr for LanguageKind {
                 "Language {kind} not supported, please use: `js`, `css`, `json`, `grit`, `graphql`, `html`, `yaml` or `markdown`"
             )),
         }
-	}
+    }
 }
 
 /// A helper macro to make it easier to define functions that return tokens for a specific language kind.
@@ -103,47 +113,47 @@ macro_rules! define_language_kind_functions {
 }
 
 impl LanguageKind {
-	define_language_kind_functions!([Js, Css, Json, Graphql, Grit, Html, Yaml, Markdown]);
+    define_language_kind_functions!([Js, Css, Json, Graphql, Grit, Html, Yaml, Markdown]);
 
-	pub(crate) fn syntax_crate_ident(&self) -> Ident {
-		Ident::new(self.syntax_crate_name().as_str(), Span::call_site())
-	}
+    pub(crate) fn syntax_crate_ident(&self) -> Ident {
+        Ident::new(self.syntax_crate_name().as_str(), Span::call_site())
+    }
 
-	pub fn formatter_crate_name(&self) -> String {
-		format!("biome_{self}_formatter")
-	}
+    pub fn formatter_crate_name(&self) -> String {
+        format!("biome_{self}_formatter")
+    }
 
-	pub fn syntax_crate_name(&self) -> String {
-		format!("biome_{self}_syntax")
-	}
+    pub fn syntax_crate_name(&self) -> String {
+        format!("biome_{self}_syntax")
+    }
 
-	pub fn factory_crate_name(&self) -> String {
-		format!("biome_{self}_factory")
-	}
+    pub fn factory_crate_name(&self) -> String {
+        format!("biome_{self}_factory")
+    }
 
-	pub fn kinds(&self) -> KindsSrc {
-		match self {
-			LanguageKind::Js => JS_KINDS_SRC,
-			LanguageKind::Css => CSS_KINDS_SRC,
-			LanguageKind::Json => JSON_KINDS_SRC,
-			LanguageKind::Graphql => GRAPHQL_KINDS_SRC,
-			LanguageKind::Grit => GRIT_KINDS_SRC,
-			LanguageKind::Html => HTML_KINDS_SRC,
-			LanguageKind::Yaml => YAML_KINDS_SRC,
-			LanguageKind::Markdown => MARKDOWN_KINDS_SRC,
-		}
-	}
+    pub fn kinds(&self) -> KindsSrc {
+        match self {
+            LanguageKind::Js => JS_KINDS_SRC,
+            LanguageKind::Css => CSS_KINDS_SRC,
+            LanguageKind::Json => JSON_KINDS_SRC,
+            LanguageKind::Graphql => GRAPHQL_KINDS_SRC,
+            LanguageKind::Grit => GRIT_KINDS_SRC,
+            LanguageKind::Html => HTML_KINDS_SRC,
+            LanguageKind::Yaml => YAML_KINDS_SRC,
+            LanguageKind::Markdown => MARKDOWN_KINDS_SRC,
+        }
+    }
 
-	pub fn load_grammar(&self) -> &'static str {
-		match self {
-			LanguageKind::Js => include_str!("../js.ungram"),
-			LanguageKind::Css => include_str!("../css.ungram"),
-			LanguageKind::Json => include_str!("../json.ungram"),
-			LanguageKind::Graphql => include_str!("../graphql.ungram"),
-			LanguageKind::Grit => include_str!("../gritql.ungram"),
-			LanguageKind::Html => include_str!("../html.ungram"),
-			LanguageKind::Yaml => include_str!("../yaml.ungram"),
-			LanguageKind::Markdown => include_str!("../markdown.ungram"),
-		}
-	}
+    pub fn load_grammar(&self) -> &'static str {
+        match self {
+            LanguageKind::Js => include_str!("../js.ungram"),
+            LanguageKind::Css => include_str!("../css.ungram"),
+            LanguageKind::Json => include_str!("../json.ungram"),
+            LanguageKind::Graphql => include_str!("../graphql.ungram"),
+            LanguageKind::Grit => include_str!("../gritql.ungram"),
+            LanguageKind::Html => include_str!("../html.ungram"),
+            LanguageKind::Yaml => include_str!("../yaml.ungram"),
+            LanguageKind::Markdown => include_str!("../markdown.ungram"),
+        }
+    }
 }

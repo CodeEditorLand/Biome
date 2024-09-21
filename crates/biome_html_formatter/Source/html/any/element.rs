@@ -5,13 +5,13 @@ use biome_html_syntax::AnyHtmlElement;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatAnyHtmlElement;
 impl FormatRule<AnyHtmlElement> for FormatAnyHtmlElement {
-	type Context = HtmlFormatContext;
-	fn fmt(&self, node: &AnyHtmlElement, f: &mut HtmlFormatter) -> FormatResult<()> {
-		match node {
-			AnyHtmlElement::HtmlBogusElement(node) => node.format().fmt(f),
-			AnyHtmlElement::HtmlContent(node) => node.format().fmt(f),
-			AnyHtmlElement::HtmlElement(node) => node.format().fmt(f),
-			AnyHtmlElement::HtmlSelfClosingElement(node) => node.format().fmt(f),
-		}
-	}
+    type Context = HtmlFormatContext;
+    fn fmt(&self, node: &AnyHtmlElement, f: &mut HtmlFormatter) -> FormatResult<()> {
+        match node {
+            AnyHtmlElement::HtmlBogusElement(node) => node.format().fmt(f),
+            AnyHtmlElement::HtmlContent(node) => node.format().fmt(f),
+            AnyHtmlElement::HtmlElement(node) => node.format().fmt(f),
+            AnyHtmlElement::HtmlSelfClosingElement(node) => node.format().fmt(f),
+        }
+    }
 }

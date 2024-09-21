@@ -8,18 +8,22 @@ use biome_js_syntax::JsRestParameterFields;
 pub(crate) struct FormatJsRestParameter;
 
 impl FormatNodeRule<JsRestParameter> for FormatJsRestParameter {
-	fn fmt_fields(&self, node: &JsRestParameter, f: &mut JsFormatter) -> FormatResult<()> {
-		let JsRestParameterFields { decorators, dotdotdot_token, binding, type_annotation } =
-			node.as_fields();
+    fn fmt_fields(&self, node: &JsRestParameter, f: &mut JsFormatter) -> FormatResult<()> {
+        let JsRestParameterFields {
+            decorators,
+            dotdotdot_token,
+            binding,
+            type_annotation,
+        } = node.as_fields();
 
-		write![
-			f,
-			[
-				decorators.format(),
-				dotdotdot_token.format(),
-				binding.format(),
-				type_annotation.format(),
-			]
-		]
-	}
+        write![
+            f,
+            [
+                decorators.format(),
+                dotdotdot_token.format(),
+                binding.format(),
+                type_annotation.format(),
+            ]
+        ]
+    }
 }

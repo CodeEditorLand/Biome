@@ -8,13 +8,13 @@ use biome_js_syntax::JsxString;
 pub struct FormatJsxString;
 
 impl FormatNodeRule<JsxString> for FormatJsxString {
-	fn fmt_fields(&self, node: &JsxString, f: &mut JsFormatter) -> FormatResult<()> {
-		write![
-			f,
-			[FormatLiteralStringToken::new(
-				&node.value_token()?,
-				StringLiteralParentKind::Expression
-			)]
-		]
-	}
+    fn fmt_fields(&self, node: &JsxString, f: &mut JsFormatter) -> FormatResult<()> {
+        write![
+            f,
+            [FormatLiteralStringToken::new(
+                &node.value_token()?,
+                StringLiteralParentKind::Expression
+            )]
+        ]
+    }
 }

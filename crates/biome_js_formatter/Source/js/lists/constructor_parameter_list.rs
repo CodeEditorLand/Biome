@@ -8,13 +8,13 @@ use biome_js_syntax::JsConstructorParameterList;
 pub(crate) struct FormatJsConstructorParameterList;
 
 impl FormatRule<JsConstructorParameterList> for FormatJsConstructorParameterList {
-	type Context = JsFormatContext;
+    type Context = JsFormatContext;
 
-	fn fmt(&self, node: &JsConstructorParameterList, f: &mut JsFormatter) -> FormatResult<()> {
-		FormatJsAnyParameterList::with_layout(
-			&AnyJsParameterList::from(node.clone()),
-			ParameterLayout::Default,
-		)
-		.fmt(f)
-	}
+    fn fmt(&self, node: &JsConstructorParameterList, f: &mut JsFormatter) -> FormatResult<()> {
+        FormatJsAnyParameterList::with_layout(
+            &AnyJsParameterList::from(node.clone()),
+            ParameterLayout::Default,
+        )
+        .fmt(f)
+    }
 }

@@ -354,17 +354,17 @@ use syn::{parse_macro_input, DeriveInput};
 #[proc_macro_derive(Deserializable, attributes(deserializable))]
 #[proc_macro_error]
 pub fn derive_deserializable(input: TokenStream) -> TokenStream {
-	let input = parse_macro_input!(input as DeriveInput);
+    let input = parse_macro_input!(input as DeriveInput);
 
-	let input = deserializable_derive::DeriveInput::parse(input);
+    let input = deserializable_derive::DeriveInput::parse(input);
 
-	let tokens = deserializable_derive::generate_deserializable(input);
+    let tokens = deserializable_derive::generate_deserializable(input);
 
-	if false {
-		panic!("{tokens}");
-	}
+    if false {
+        panic!("{tokens}");
+    }
 
-	TokenStream::from(tokens)
+    TokenStream::from(tokens)
 }
 
 /// Derives the [biome_deserialize::Merge] trait for a custom enum or
@@ -372,17 +372,17 @@ pub fn derive_deserializable(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(Merge)]
 #[proc_macro_error]
 pub fn derive_mergeable(input: TokenStream) -> TokenStream {
-	let input = parse_macro_input!(input as DeriveInput);
+    let input = parse_macro_input!(input as DeriveInput);
 
-	let input = merge_derive::DeriveInput::parse(input);
+    let input = merge_derive::DeriveInput::parse(input);
 
-	let tokens = merge_derive::generate_merge(input);
+    let tokens = merge_derive::generate_merge(input);
 
-	if false {
-		panic!("{tokens}");
-	}
+    if false {
+        panic!("{tokens}");
+    }
 
-	TokenStream::from(tokens)
+    TokenStream::from(tokens)
 }
 
 /// Generates a "partial" struct from another.
@@ -445,15 +445,15 @@ pub fn derive_mergeable(input: TokenStream) -> TokenStream {
 #[proc_macro_derive(Partial, attributes(partial))]
 #[proc_macro_error]
 pub fn derive_partial(input: TokenStream) -> TokenStream {
-	let input = parse_macro_input!(input as DeriveInput);
+    let input = parse_macro_input!(input as DeriveInput);
 
-	let input = partial_derive::DeriveInput::parse(input);
+    let input = partial_derive::DeriveInput::parse(input);
 
-	let tokens = partial_derive::generate_partial(input);
+    let tokens = partial_derive::generate_partial(input);
 
-	if false {
-		panic!("{tokens}");
-	}
+    if false {
+        panic!("{tokens}");
+    }
 
-	TokenStream::from(tokens)
+    TokenStream::from(tokens)
 }

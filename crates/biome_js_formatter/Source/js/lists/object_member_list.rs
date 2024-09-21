@@ -7,20 +7,20 @@ use biome_rowan::{AstNode, AstSeparatedList};
 pub(crate) struct FormatJsObjectMemberList;
 
 impl FormatRule<JsObjectMemberList> for FormatJsObjectMemberList {
-	type Context = JsFormatContext;
+    type Context = JsFormatContext;
 
-	fn fmt(&self, node: &JsObjectMemberList, f: &mut JsFormatter) -> FormatResult<()> {
-		let trailing_separator = FormatTrailingCommas::ES5.trailing_separator(f.options());
+    fn fmt(&self, node: &JsObjectMemberList, f: &mut JsFormatter) -> FormatResult<()> {
+        let trailing_separator = FormatTrailingCommas::ES5.trailing_separator(f.options());
 
-		let mut join = f.join_nodes_with_soft_line();
+        let mut join = f.join_nodes_with_soft_line();
 
-		for (element, formatted) in node
-			.elements()
-			.zip(node.format_separated(",").with_trailing_separator(trailing_separator))
-		{
-			join.entry(element.node()?.syntax(), &formatted);
-		}
+        for (element, formatted) in node.elements().zip(
+            node.format_separated(",")
+                .with_trailing_separator(trailing_separator),
+        ) {
+            join.entry(element.node()?.syntax(), &formatted);
+        }
 
-		join.finish()
-	}
+        join.finish()
+    }
 }

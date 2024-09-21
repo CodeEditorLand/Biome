@@ -8,13 +8,13 @@ use biome_js_syntax::JsFunctionExportDefaultDeclaration;
 pub(crate) struct FormatJsFunctionExportDefaultDeclaration;
 
 impl FormatNodeRule<JsFunctionExportDefaultDeclaration>
-	for FormatJsFunctionExportDefaultDeclaration
+    for FormatJsFunctionExportDefaultDeclaration
 {
-	fn fmt_fields(
-		&self,
-		node: &JsFunctionExportDefaultDeclaration,
-		f: &mut JsFormatter,
-	) -> FormatResult<()> {
-		write![f, [FormatFunction::from(node.clone())]]
-	}
+    fn fmt_fields(
+        &self,
+        node: &JsFunctionExportDefaultDeclaration,
+        f: &mut JsFormatter,
+    ) -> FormatResult<()> {
+        write![f, [FormatFunction::from(node.clone())]]
+    }
 }

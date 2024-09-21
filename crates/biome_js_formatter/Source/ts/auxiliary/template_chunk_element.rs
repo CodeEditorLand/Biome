@@ -7,11 +7,11 @@ use biome_js_syntax::TsTemplateChunkElement;
 pub struct FormatTsTemplateChunkElement;
 
 impl FormatNodeRule<TsTemplateChunkElement> for FormatTsTemplateChunkElement {
-	fn fmt_fields(
-		&self,
-		node: &TsTemplateChunkElement,
-		formatter: &mut JsFormatter,
-	) -> FormatResult<()> {
-		AnyTemplateChunkElement::from(node.clone()).fmt(formatter)
-	}
+    fn fmt_fields(
+        &self,
+        node: &TsTemplateChunkElement,
+        formatter: &mut JsFormatter,
+    ) -> FormatResult<()> {
+        AnyTemplateChunkElement::from(node.clone()).fmt(formatter)
+    }
 }

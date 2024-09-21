@@ -6,9 +6,9 @@ use biome_js_syntax::TsTemplateElementList;
 pub struct FormatTsTemplateElementList;
 
 impl FormatRule<TsTemplateElementList> for FormatTsTemplateElementList {
-	type Context = JsFormatContext;
+    type Context = JsFormatContext;
 
-	fn fmt(&self, node: &TsTemplateElementList, f: &mut JsFormatter) -> FormatResult<()> {
-		AnyTemplateElementList::TsTemplateElementList(node.clone()).fmt(f)
-	}
+    fn fmt(&self, node: &TsTemplateElementList, f: &mut JsFormatter) -> FormatResult<()> {
+        AnyTemplateElementList::TsTemplateElementList(node.clone()).fmt(f)
+    }
 }

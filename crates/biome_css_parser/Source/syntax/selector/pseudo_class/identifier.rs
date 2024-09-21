@@ -9,11 +9,11 @@ use biome_parser::Parser;
 
 #[inline]
 pub(crate) fn parse_pseudo_class_identifier(p: &mut CssParser) -> ParsedSyntax {
-	if !is_at_identifier(p) {
-		return Absent;
-	}
+    if !is_at_identifier(p) {
+        return Absent;
+    }
 
-	let m = p.start();
-	parse_selector_identifier(p).or_add_diagnostic(p, expected_identifier);
-	Present(m.complete(p, CSS_PSEUDO_CLASS_IDENTIFIER))
+    let m = p.start();
+    parse_selector_identifier(p).or_add_diagnostic(p, expected_identifier);
+    Present(m.complete(p, CSS_PSEUDO_CLASS_IDENTIFIER))
 }

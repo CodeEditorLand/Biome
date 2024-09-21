@@ -4,132 +4,132 @@ use Dispatch::*;
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
 #[repr(u8)]
 pub enum Dispatch {
-	/// Error token
-	ERR,
+    /// Error token
+    ERR,
 
-	/// Whitespace
-	WHS,
+    /// Whitespace
+    WHS,
 
-	/// Exclamation
-	EXL,
+    /// Exclamation
+    EXL,
 
-	/// Single `'` or Double quote `"`
-	QOT,
+    /// Single `'` or Double quote `"`
+    QOT,
 
-	/// ASCII letter or `_`
-	IDT,
+    /// ASCII letter or `_`
+    IDT,
 
-	/// Dollar sign `$`
-	DOL,
+    /// Dollar sign `$`
+    DOL,
 
-	/// Hash `#`
-	HAS,
+    /// Hash `#`
+    HAS,
 
-	/// Percentage `%`
-	PRC,
+    /// Percentage `%`
+    PRC,
 
-	/// Ampersand `&`
-	AMP,
+    /// Ampersand `&`
+    AMP,
 
-	/// Left paren `(`
-	PNO,
+    /// Left paren `(`
+    PNO,
 
-	/// Right paren `)`
-	PNC,
+    /// Right paren `)`
+    PNC,
 
-	/// Multiply `*`
-	MUL,
+    /// Multiply `*`
+    MUL,
 
-	/// Plus `+`
-	PLS,
+    /// Plus `+`
+    PLS,
 
-	/// Comma `,`
-	COM,
+    /// Comma `,`
+    COM,
 
-	/// Minus `-`
-	MIN,
+    /// Minus `-`
+    MIN,
 
-	/// Dot `.`
-	PRD,
+    /// Dot `.`
+    PRD,
 
-	/// Slash `/`
-	SLH,
+    /// Slash `/`
+    SLH,
 
-	/// Zero 0
-	ZER,
+    /// Zero 0
+    ZER,
 
-	/// Digit (1-9)
-	DIG,
+    /// Digit (1-9)
+    DIG,
 
-	/// Colon `:`
-	COL,
+    /// Colon `:`
+    COL,
 
-	/// Semicolon `;`
-	SEM,
+    /// Semicolon `;`
+    SEM,
 
-	///`Less than `<`
-	LSS,
+    ///`Less than `<`
+    LSS,
 
-	/// Equal `=`
-	EQL,
+    /// Equal `=`
+    EQL,
 
-	/// More than `>`
-	MOR,
-	/// Question `?`
-	QST,
-	/// At `@`
-	AT_,
+    /// More than `>`
+    MOR,
+    /// Question `?`
+    QST,
+    /// At `@`
+    AT_,
 
-	/// Left bracket `[`
-	BTO,
+    /// Left bracket `[`
+    BTO,
 
-	/// Backslash `\`
-	BSL,
+    /// Backslash `\`
+    BSL,
 
-	/// Right bracket `]`
-	BTC,
+    /// Right bracket `]`
+    BTC,
 
-	/// `^`
-	CRT,
+    /// `^`
+    CRT,
 
-	/// Tick `
-	TPL,
+    /// Tick `
+    TPL,
 
-	/// Left curly bracket `{`
-	BEO,
+    /// Left curly bracket `{`
+    BEO,
 
-	/// Pipe `|`
-	PIP,
+    /// Pipe `|`
+    PIP,
 
-	/// Right curly bracket `}`
-	BEC,
+    /// Right curly bracket `}`
+    BEC,
 
-	/// Tilde `~`
-	TLD,
+    /// Tilde `~`
+    TLD,
 
-	/// Unicode range (non ASCII)
-	UNI,
+    /// Unicode range (non ASCII)
+    UNI,
 }
 
 // A lookup table mapping any incoming byte to a handler function
 // This is taken from the ratel project lexer and modified
 // FIXME: Should we ignore the first ascii control chars which are nearly never seen instead of returning Err?
 pub(crate) static DISPATCHER: [Dispatch; 256] = [
-	//0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F   //
-	ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, WHS, WHS, WHS, WHS, WHS, ERR, ERR, // 0
-	ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, // 1
-	WHS, EXL, QOT, HAS, DOL, PRC, AMP, QOT, PNO, PNC, MUL, PLS, COM, MIN, PRD, SLH, // 2
-	ZER, DIG, DIG, DIG, DIG, DIG, DIG, DIG, DIG, DIG, COL, SEM, LSS, EQL, MOR, QST, // 3
-	AT_, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, // 4
-	IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, BTO, BSL, BTC, CRT, IDT, // 5
-	TPL, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, // 6
-	IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, BEO, PIP, BEC, TLD, ERR, // 7
-	UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // 8
-	UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // 9
-	UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // A
-	UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // B
-	UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // C
-	UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // D
-	UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // E
-	UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // F
+    //0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F   //
+    ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, WHS, WHS, WHS, WHS, WHS, ERR, ERR, // 0
+    ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, // 1
+    WHS, EXL, QOT, HAS, DOL, PRC, AMP, QOT, PNO, PNC, MUL, PLS, COM, MIN, PRD, SLH, // 2
+    ZER, DIG, DIG, DIG, DIG, DIG, DIG, DIG, DIG, DIG, COL, SEM, LSS, EQL, MOR, QST, // 3
+    AT_, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, // 4
+    IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, BTO, BSL, BTC, CRT, IDT, // 5
+    TPL, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, // 6
+    IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, IDT, BEO, PIP, BEC, TLD, ERR, // 7
+    UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // 8
+    UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // 9
+    UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // A
+    UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // B
+    UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // C
+    UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // D
+    UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // E
+    UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, UNI, // F
 ];

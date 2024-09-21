@@ -7,11 +7,11 @@ use biome_js_syntax::TsIndexSignatureModifierList;
 pub struct FormatTsIndexSignatureModifierList;
 
 impl FormatRule<TsIndexSignatureModifierList> for FormatTsIndexSignatureModifierList {
-	type Context = JsFormatContext;
+    type Context = JsFormatContext;
 
-	fn fmt(&self, node: &TsIndexSignatureModifierList, f: &mut JsFormatter) -> FormatResult<()> {
-		f.join_with(&space())
-			.entries(sort_modifiers_by_precedence(node).into_iter().formatted())
-			.finish()
-	}
+    fn fmt(&self, node: &TsIndexSignatureModifierList, f: &mut JsFormatter) -> FormatResult<()> {
+        f.join_with(&space())
+            .entries(sort_modifiers_by_precedence(node).into_iter().formatted())
+            .finish()
+    }
 }

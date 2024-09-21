@@ -8,18 +8,18 @@ use biome_js_syntax::JsArrayBindingPatternElementFields;
 pub(crate) struct FormatJsArrayBindingPatternElement;
 
 impl FormatNodeRule<JsArrayBindingPatternElement> for FormatJsArrayBindingPatternElement {
-	fn fmt_fields(
-		&self,
-		node: &JsArrayBindingPatternElement,
-		f: &mut JsFormatter,
-	) -> FormatResult<()> {
-		let JsArrayBindingPatternElementFields { pattern, init } = node.as_fields();
+    fn fmt_fields(
+        &self,
+        node: &JsArrayBindingPatternElement,
+        f: &mut JsFormatter,
+    ) -> FormatResult<()> {
+        let JsArrayBindingPatternElementFields { pattern, init } = node.as_fields();
 
-		write!(f, [pattern.format()])?;
-		if let Some(init) = init {
-			write!(f, [space(), init.format()])?;
-		}
+        write!(f, [pattern.format()])?;
+        if let Some(init) = init {
+            write!(f, [space(), init.format()])?;
+        }
 
-		Ok(())
-	}
+        Ok(())
+    }
 }

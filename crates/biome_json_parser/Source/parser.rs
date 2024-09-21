@@ -7,82 +7,88 @@ use biome_parser::token_source::Trivia;
 use biome_parser::ParserContext;
 
 pub(crate) struct JsonParser<'source> {
-	context: ParserContext<JsonSyntaxKind>,
-	source: JsonTokenSource<'source>,
-	options: JsonParserOptions,
+    context: ParserContext<JsonSyntaxKind>,
+    source: JsonTokenSource<'source>,
+    options: JsonParserOptions,
 }
 
 #[derive(Default, Debug, Clone, Copy)]
 pub struct JsonParserOptions {
-	pub allow_comments: bool,
-	pub allow_trailing_commas: bool,
+    pub allow_comments: bool,
+    pub allow_trailing_commas: bool,
 }
 
 impl JsonParserOptions {
-	pub fn with_allow_comments(mut self) -> Self {
-		self.allow_comments = true;
-		self
-	}
+    pub fn with_allow_comments(mut self) -> Self {
+        self.allow_comments = true;
+        self
+    }
 
-	pub fn with_allow_trailing_commas(mut self) -> Self {
-		self.allow_trailing_commas = true;
-		self
-	}
+    pub fn with_allow_trailing_commas(mut self) -> Self {
+        self.allow_trailing_commas = true;
+        self
+    }
 }
 
 impl From<&JsonFileSource> for JsonParserOptions {
-	fn from(file_source: &JsonFileSource) -> Self {
-		let options = Self::default();
-		if file_source.allow_comments() {
-			options.with_allow_comments();
-		}
-		if file_source.allow_trailing_commas() {
-			options.with_allow_trailing_commas();
-		}
-		options
-	}
+    fn from(file_source: &JsonFileSource) -> Self {
+        let options = Self::default();
+        if file_source.allow_comments() {
+            options.with_allow_comments();
+        }
+        if file_source.allow_trailing_commas() {
+            options.with_allow_trailing_commas();
+        }
+        options
+    }
 }
 
 impl<'source> JsonParser<'source> {
-	pub fn new(source: &'source str, options: JsonParserOptions) -> Self {
-		Self {
-			context: ParserContext::default(),
-			source: JsonTokenSource::from_str(source, options),
-			options,
-		}
-	}
+    pub fn new(source: &'source str, options: JsonParserOptions) -> Self {
+        Self {
+            context: ParserContext::default(),
+            source: JsonTokenSource::from_str(source, options),
+            options,
+        }
+    }
 
-	pub fn finish(self) -> (Vec<Event<JsonSyntaxKind>>, Vec<ParseDiagnostic>, Vec<Trivia>) {
-		let (trivia, lexer_diagnostics) = self.source.finish();
-		let (events, parse_diagnostics) = self.context.finish();
+    pub fn finish(
+        self,
+    ) -> (
+        Vec<Event<JsonSyntaxKind>>,
+        Vec<ParseDiagnostic>,
+        Vec<Trivia>,
+    ) {
+        let (trivia, lexer_diagnostics) = self.source.finish();
+        let (events, parse_diagnostics) = self.context.finish();
 
-		let diagnostics = merge_diagnostics(lexer_diagnostics, parse_diagnostics);
+        let diagnostics = merge_diagnostics(lexer_diagnostics, parse_diagnostics);
 
-		(events, diagnostics, trivia)
-	}
+        (events, diagnostics, trivia)
+    }
 
-	pub fn options(&self) -> &JsonParserOptions {
-		&self.options
-	}
+    pub fn options(&self) -> &JsonParserOptions {
+        &self.options
+    }
 }
 
 impl<'source> Parser for JsonParser<'source> {
-	type Kind = JsonSyntaxKind;
-	type Source = JsonTokenSource<'source>;
+    type Kind = JsonSyntaxKind;
+    type Source = JsonTokenSource<'source>;
 
-	fn context(&self) -> &ParserContext<Self::Kind> {
-		&self.context
-	}
+    fn context(&self) -> &ParserContext<Self::Kind> {
+        &self.context
+    }
 
-	fn context_mut(&mut self) -> &mut ParserContext<Self::Kind> {
-		&mut self.context
-	}
+    fn context_mut(&mut self) -> &mut ParserContext<Self::Kind> {
+        &mut self.context
+    }
 
-	fn source(&self) -> &Self::Source {
-		&self.source
-	}
+    fn source(&self) -> &Self::Source {
+        &self.source
+    }
 
-	fn source_mut(&mut self) -> &mut Self::Source {
-		&mut self.source
-	}
+    fn source_mut(&mut self) -> &mut Self::Source {
+        &mut self.source
+    }
 }

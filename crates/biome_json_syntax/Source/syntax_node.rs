@@ -12,8 +12,8 @@ use biome_rowan::Language;
 pub struct JsonLanguage;
 
 impl Language for JsonLanguage {
-	type Kind = JsonSyntaxKind;
-	type Root = JsonRoot;
+    type Kind = JsonSyntaxKind;
+    type Root = JsonRoot;
 }
 
 pub type JsonSyntaxNode = biome_rowan::SyntaxNode<JsonLanguage>;

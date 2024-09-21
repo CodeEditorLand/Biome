@@ -8,101 +8,101 @@ use biome_rowan::AstNode;
 use std::slice::Iter;
 
 declare_lint_rule! {
-	/// Enforce that ARIA state and property values are valid.
-	///
-	/// ## Examples
-	///
-	/// ### Invalid
-	///
-	/// ```jsx, expect_diagnostic
-	/// <span role="checkbox" aria-checked="test">some text</span>
-	/// ```
-	///
-	/// ```jsx, expect_diagnostic
-	/// <span aria-labelledby="">some text</span>
-	/// ```
-	///
-	/// ```jsx, expect_diagnostic
-	/// <span aria-valuemax="hey">some text</span>
-	/// ```
-	///
-	/// ```jsx, expect_diagnostic
-	/// <span aria-orientation="hey">some text</span>
-	/// ```
-	///
-	/// ### Valid
-	///
-	/// ```jsx
-	/// <>
-	///     <span role="checkbox" aria-checked={checked} >some text</span>
-	///     <span aria-labelledby="fooId barId" >some text</span>
-	/// </>
-	/// ```
-	///
-	/// ## Accessibility guidelines
-	///
-	/// - [WCAG 4.1.2](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)
-	///
-	/// ### Resources
-	///
-	/// - [ARIA Spec, States and Properties](https://www.w3.org/TR/wai-aria/#states_and_properties)
-	/// - [Chrome Audit Rules, AX_ARIA_04](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_04)
-	pub UseValidAriaValues {
-		version: "1.0.0",
-		name: "useValidAriaValues",
-		language: "jsx",
-		sources: &[RuleSource::EslintJsxA11y("aria-proptypes")],
-		recommended: true,
-	}
+    /// Enforce that ARIA state and property values are valid.
+    ///
+    /// ## Examples
+    ///
+    /// ### Invalid
+    ///
+    /// ```jsx, expect_diagnostic
+    /// <span role="checkbox" aria-checked="test">some text</span>
+    /// ```
+    ///
+    /// ```jsx, expect_diagnostic
+    /// <span aria-labelledby="">some text</span>
+    /// ```
+    ///
+    /// ```jsx, expect_diagnostic
+    /// <span aria-valuemax="hey">some text</span>
+    /// ```
+    ///
+    /// ```jsx, expect_diagnostic
+    /// <span aria-orientation="hey">some text</span>
+    /// ```
+    ///
+    /// ### Valid
+    ///
+    /// ```jsx
+    /// <>
+    ///     <span role="checkbox" aria-checked={checked} >some text</span>
+    ///     <span aria-labelledby="fooId barId" >some text</span>
+    /// </>
+    /// ```
+    ///
+    /// ## Accessibility guidelines
+    ///
+    /// - [WCAG 4.1.2](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)
+    ///
+    /// ### Resources
+    ///
+    /// - [ARIA Spec, States and Properties](https://www.w3.org/TR/wai-aria/#states_and_properties)
+    /// - [Chrome Audit Rules, AX_ARIA_04](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_04)
+    pub UseValidAriaValues {
+        version: "1.0.0",
+        name: "useValidAriaValues",
+        language: "jsx",
+        sources: &[RuleSource::EslintJsxA11y("aria-proptypes")],
+        recommended: true,
+    }
 }
 
 pub struct UseValidAriaValuesState {
-	attribute_value_range: TextRange,
-	allowed_values: Iter<'static, &'static str>,
-	attribute_name: JsSyntaxToken,
-	property_type: AriaPropertyTypeEnum,
+    attribute_value_range: TextRange,
+    allowed_values: Iter<'static, &'static str>,
+    attribute_name: JsSyntaxToken,
+    property_type: AriaPropertyTypeEnum,
 }
 
 impl Rule for UseValidAriaValues {
-	type Query = Aria<JsxAttribute>;
-	type State = UseValidAriaValuesState;
-	type Signals = Option<Self::State>;
-	type Options = ();
+    type Query = Aria<JsxAttribute>;
+    type State = UseValidAriaValuesState;
+    type Signals = Option<Self::State>;
+    type Options = ();
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-		let node = ctx.query();
-		let aria_properties = ctx.aria_properties();
+    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+        let node = ctx.query();
+        let aria_properties = ctx.aria_properties();
 
-		let attribute_name = node.name().ok()?.as_jsx_name()?.value_token().ok()?;
+        let attribute_name = node.name().ok()?.as_jsx_name()?.value_token().ok()?;
 
-		if let Some(aria_property) = aria_properties.get_property(attribute_name.text_trimmed()) {
-			let attribute_value_range = node.range();
-			let attribute_static_value = node.as_static_value()?;
-			let attribute_text = attribute_static_value.text();
-			if !aria_property.contains_correct_value(attribute_text) {
-				return Some(UseValidAriaValuesState {
-					attribute_value_range,
-					allowed_values: aria_property.values(),
-					attribute_name,
-					property_type: aria_property.property_type(),
-				});
-			}
-		}
+        if let Some(aria_property) = aria_properties.get_property(attribute_name.text_trimmed()) {
+            let attribute_value_range = node.range();
+            let attribute_static_value = node.as_static_value()?;
+            let attribute_text = attribute_static_value.text();
+            if !aria_property.contains_correct_value(attribute_text) {
+                return Some(UseValidAriaValuesState {
+                    attribute_value_range,
+                    allowed_values: aria_property.values(),
+                    attribute_name,
+                    property_type: aria_property.property_type(),
+                });
+            }
+        }
 
-		None
-	}
+        None
+    }
 
-	fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-		let attribute_name = state.attribute_name.text_trimmed();
-		let diagnostic = RuleDiagnostic::new(
-			rule_category!(),
-			state.attribute_value_range,
-			markup! {
-				"The value of the ARIA attribute "<Emphasis>{attribute_name}</Emphasis>" is not correct."
-			},
-		);
+    fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+        let attribute_name = state.attribute_name.text_trimmed();
+        let diagnostic = RuleDiagnostic::new(
+            rule_category!(),
+            state.attribute_value_range,
+            markup! {
+                "The value of the ARIA attribute "<Emphasis>{attribute_name}</Emphasis>" is not correct."
+            },
+        );
 
-		let diagnostic = match state.property_type {
+        let diagnostic = match state.property_type {
             AriaPropertyTypeEnum::Boolean => {
                 diagnostic.footer_list(
                     markup!{
@@ -173,6 +173,6 @@ impl Rule for UseValidAriaValues {
             }
         };
 
-		Some(diagnostic)
-	}
+        Some(diagnostic)
+    }
 }

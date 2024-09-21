@@ -8,8 +8,8 @@ use biome_js_syntax::JsDefaultImportSpecifierFields;
 pub(crate) struct FormatJsDefaultImportSpecifier;
 
 impl FormatNodeRule<JsDefaultImportSpecifier> for FormatJsDefaultImportSpecifier {
-	fn fmt_fields(&self, node: &JsDefaultImportSpecifier, f: &mut JsFormatter) -> FormatResult<()> {
-		let JsDefaultImportSpecifierFields { local_name } = node.as_fields();
-		write![f, [local_name.format()]]
-	}
+    fn fmt_fields(&self, node: &JsDefaultImportSpecifier, f: &mut JsFormatter) -> FormatResult<()> {
+        let JsDefaultImportSpecifierFields { local_name } = node.as_fields();
+        write![f, [local_name.format()]]
+    }
 }

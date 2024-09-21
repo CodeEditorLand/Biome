@@ -5,14 +5,14 @@ use biome_grit_syntax::AnyGritDefinition;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatAnyGritDefinition;
 impl FormatRule<AnyGritDefinition> for FormatAnyGritDefinition {
-	type Context = GritFormatContext;
-	fn fmt(&self, node: &AnyGritDefinition, f: &mut GritFormatter) -> FormatResult<()> {
-		match node {
-			AnyGritDefinition::AnyGritPattern(node) => node.format().fmt(f),
-			AnyGritDefinition::GritBogusDefinition(node) => node.format().fmt(f),
-			AnyGritDefinition::GritFunctionDefinition(node) => node.format().fmt(f),
-			AnyGritDefinition::GritPatternDefinition(node) => node.format().fmt(f),
-			AnyGritDefinition::GritPredicateDefinition(node) => node.format().fmt(f),
-		}
-	}
+    type Context = GritFormatContext;
+    fn fmt(&self, node: &AnyGritDefinition, f: &mut GritFormatter) -> FormatResult<()> {
+        match node {
+            AnyGritDefinition::AnyGritPattern(node) => node.format().fmt(f),
+            AnyGritDefinition::GritBogusDefinition(node) => node.format().fmt(f),
+            AnyGritDefinition::GritFunctionDefinition(node) => node.format().fmt(f),
+            AnyGritDefinition::GritPatternDefinition(node) => node.format().fmt(f),
+            AnyGritDefinition::GritPredicateDefinition(node) => node.format().fmt(f),
+        }
+    }
 }

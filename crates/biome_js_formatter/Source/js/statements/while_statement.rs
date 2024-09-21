@@ -9,20 +9,25 @@ use biome_js_syntax::JsWhileStatementFields;
 pub(crate) struct FormatJsWhileStatement;
 
 impl FormatNodeRule<JsWhileStatement> for FormatJsWhileStatement {
-	fn fmt_fields(&self, node: &JsWhileStatement, f: &mut JsFormatter) -> FormatResult<()> {
-		let JsWhileStatementFields { while_token, l_paren_token, test, r_paren_token, body } =
-			node.as_fields();
+    fn fmt_fields(&self, node: &JsWhileStatement, f: &mut JsFormatter) -> FormatResult<()> {
+        let JsWhileStatementFields {
+            while_token,
+            l_paren_token,
+            test,
+            r_paren_token,
+            body,
+        } = node.as_fields();
 
-		write!(
-			f,
-			[group(&format_args![
-				while_token.format(),
-				space(),
-				l_paren_token.format(),
-				group(&soft_block_indent(&test.format())),
-				r_paren_token.format(),
-				FormatStatementBody::new(&body?)
-			])]
-		)
-	}
+        write!(
+            f,
+            [group(&format_args![
+                while_token.format(),
+                space(),
+                l_paren_token.format(),
+                group(&soft_block_indent(&test.format())),
+                r_paren_token.format(),
+                FormatStatementBody::new(&body?)
+            ])]
+        )
+    }
 }

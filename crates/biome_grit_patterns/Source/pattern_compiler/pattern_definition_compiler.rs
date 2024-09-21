@@ -8,37 +8,37 @@ use std::collections::BTreeMap;
 pub struct PatternDefinitionCompiler;
 
 impl PatternDefinitionCompiler {
-	pub fn from_node(
-		node: GritPatternDefinition,
-		context: &mut NodeCompilationContext,
-	) -> Result<PatternDefinition<GritQueryContext>, CompileError> {
-		let name = node.name()?.text();
-		let name = name.trim();
-		let mut local_vars = BTreeMap::new();
-		let (scope_index, mut context) = create_scope!(context, local_vars);
-		// important that this occurs first, as calls assume
-		// that parameters are registered first
-		let params = context.get_variables(
-			&context
-				.compilation
-				.pattern_definition_info
-				.get(name)
-				.ok_or_else(|| CompileError::UnknownFunctionOrPattern(name.to_owned()))?
-				.parameters,
-		);
+    pub fn from_node(
+        node: GritPatternDefinition,
+        context: &mut NodeCompilationContext,
+    ) -> Result<PatternDefinition<GritQueryContext>, CompileError> {
+        let name = node.name()?.text();
+        let name = name.trim();
+        let mut local_vars = BTreeMap::new();
+        let (scope_index, mut context) = create_scope!(context, local_vars);
+        // important that this occurs first, as calls assume
+        // that parameters are registered first
+        let params = context.get_variables(
+            &context
+                .compilation
+                .pattern_definition_info
+                .get(name)
+                .ok_or_else(|| CompileError::UnknownFunctionOrPattern(name.to_owned()))?
+                .parameters,
+        );
 
-		let body = Pattern::And(Box::new(AndCompiler::from_patterns(
-			node.body()?.patterns(),
-			&mut context,
-		)?));
+        let body = Pattern::And(Box::new(AndCompiler::from_patterns(
+            node.body()?.patterns(),
+            &mut context,
+        )?));
 
-		let pattern_def = PatternDefinition::new(
-			name.to_owned(),
-			scope_index,
-			params,
-			local_vars.values().copied().collect(),
-			body,
-		);
-		Ok(pattern_def)
-	}
+        let pattern_def = PatternDefinition::new(
+            name.to_owned(),
+            scope_index,
+            params,
+            local_vars.values().copied().collect(),
+            body,
+        );
+        Ok(pattern_def)
+    }
 }

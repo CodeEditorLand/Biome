@@ -8,18 +8,18 @@ use biome_js_syntax::JsArrayAssignmentPatternElementFields;
 pub(crate) struct FormatJsArrayAssignmentPatternElement;
 
 impl FormatNodeRule<JsArrayAssignmentPatternElement> for FormatJsArrayAssignmentPatternElement {
-	fn fmt_fields(
-		&self,
-		node: &JsArrayAssignmentPatternElement,
-		f: &mut JsFormatter,
-	) -> FormatResult<()> {
-		let JsArrayAssignmentPatternElementFields { pattern, init } = node.as_fields();
+    fn fmt_fields(
+        &self,
+        node: &JsArrayAssignmentPatternElement,
+        f: &mut JsFormatter,
+    ) -> FormatResult<()> {
+        let JsArrayAssignmentPatternElementFields { pattern, init } = node.as_fields();
 
-		write!(f, [pattern.format()?,])?;
-		if let Some(init) = init {
-			write!(f, [space(), init.format()])?;
-		}
+        write!(f, [pattern.format()?,])?;
+        if let Some(init) = init {
+            write!(f, [space(), init.format()])?;
+        }
 
-		Ok(())
-	}
+        Ok(())
+    }
 }
