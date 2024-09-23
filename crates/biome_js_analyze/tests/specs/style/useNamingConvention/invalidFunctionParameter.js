@@ -1,1 +1,0 @@
-function f(_snake_case, CONSTANT_CASE) {}
