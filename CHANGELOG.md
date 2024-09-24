@@ -29,6 +29,24 @@ our [guidelines for writing a good changelog entry](https://github.com/biomejs/b
 
 ### Linter
 
+#### Bug fixes
+
+- [noUselessStringConcat](https://biomejs.dev/linter/rules/no-useless-string-concat/) no longer panics when it encounters malformed code. Contributed by @Conaclos
+
+- [noUnusedFunctionParameters](https://biomejs.dev/linter/rules/no-unused-function-parameters/) no longer reports unused parameters inside an object pattern with a rest parameter.
+
+  In the following code, the rule no longer reports `a` as unused.
+
+  ```js
+  function f({ a, ...rest }) {
+    return rest;
+  }
+  ```
+
+  This matches the behavior of [noUnusedVariables](https://biomejs.dev/linter/rules/no-unused-variables/).
+
+  Contributed by @Conaclos
+
 ### Parser
 
 ## v1.9.2 (2024-09-19)
@@ -69,7 +87,7 @@ our [guidelines for writing a good changelog entry](https://github.com/biomejs/b
 #### New features
 
 - Add [nursery/noMissingVarFunction](https://biomejs.dev/linter/rules/no-missing-var-function). Contributed by @michellocana
-- Add [nursery/useComponentExportOnlyModules]((https://biomejs.dev/linter/rules/use-component-export-only-modules). Use this rule in React projects to enforce a code styling that fits React Refresh. Contributed by @GunseiKPaseri
+- Add [nursery/useComponentExportOnlyModules](https://biomejs.dev/linter/rules/use-component-export-only-modules). Use this rule in React projects to enforce a code styling that fits React Refresh. Contributed by @GunseiKPaseri
 
 #### Bug fixes
 
