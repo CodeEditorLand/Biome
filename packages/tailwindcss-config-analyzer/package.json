@@ -1,38 +1,38 @@
 {
-	"author": {
-		"email": "Source/Open@Editor.Land",
-		"name": "🖋️ Source — 👐🏻 Open —",
-		"url": "HTTPS://Editor.Land"
-	},
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
-	},
-	"dependencies": {},
+	"name": "tailwindcss-config-analyzer",
+	"version": "0.0.1",
+	"private": false,
 	"description": "Tools to introspect Tailwind CSS configurations for integration with Biome",
-	"devDependencies": {
-		"@playform/build": "0.1.6",
-		"@types/bun": "1.1.10",
-		"read-package-up": "11.0.0"
-	},
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
 	"keywords": [
 		"codeeditorland",
 		"land",
 		"playform"
 	],
-	"license": "SEE LICENSE IN LICENSE",
-	"name": "tailwindcss-config-analyzer",
-	"private": false,
-	"publishConfig": {
-		"access": "public"
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
 	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"email": "Source/Open@Editor.Land",
+		"url": "HTTPS://Editor.Land"
+	},
+	"type": "module",
 	"scripts": {
 		"prepublishOnly": "Build 'Source/**/*.ts'"
 	},
-	"type": "module",
-	"version": "0.0.1"
+	"dependencies": {},
+	"devDependencies": {
+		"@playform/build": "0.1.6",
+		"@types/bun": "1.1.10",
+		"read-package-up": "11.0.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
 }

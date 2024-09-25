@@ -1,37 +1,37 @@
 {
-	"author": {
-		"email": "Source/Open@Editor.Land",
-		"name": "🖋️ Source — 👐🏻 Open —",
-		"url": "HTTPS://Editor.Land"
-	},
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
-	},
+	"name": "@biomejs/benchmark",
+	"version": "0.0.1",
+	"private": false,
 	"description": "",
-	"devDependencies": {
-		"@playform/build": "0.1.6",
-		"dprint": "0.47.2"
-	},
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
 	"keywords": [
 		"codeeditorland",
 		"land",
 		"playform"
 	],
-	"license": "SEE LICENSE IN LICENSE",
-	"main": "run.js",
-	"name": "@biomejs/benchmark",
-	"private": false,
-	"publishConfig": {
-		"access": "public"
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
 	},
 	"repository": {
 		"type": "git",
 		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
 	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"email": "Source/Open@Editor.Land",
+		"url": "HTTPS://Editor.Land"
+	},
+	"type": "module",
+	"main": "run.js",
 	"scripts": {
 		"prepublishOnly": "Build 'Source/**/*.ts'"
 	},
-	"type": "module",
-	"version": "0.0.1"
+	"devDependencies": {
+		"@playform/build": "0.1.6",
+		"dprint": "0.47.2"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
 }
