@@ -1,28 +1,25 @@
 [package]
-authors.workspace    = true
+authors.workspace = true
 categories.workspace = true
-description          = "Metadata about ARIA properties and ARIA roles"
-edition.workspace    = true
-homepage.workspace   = true
-keywords.workspace   = true
-license.workspace    = true
-name                 = "biome_aria_metadata"
+description = "Metadata about ARIA properties and ARIA roles"
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license.workspace = true
+name = "biome_aria_metadata"
 repository.workspace = true
-version              = "0.5.7"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+version = "0.5.7"
 
 [dependencies]
 
-
 [build-dependencies]
 biome_string_case = { workspace = true }
-prettyplease      = "0.2.22"
-proc-macro2       = { workspace = true, features = ["span-locations"] }
-quote             = { workspace = true }
-serde             = { workspace = true }
-serde_json        = { workspace = true }
-syn               = "2.0.76"
+prettyplease = "0.2.22"
+proc-macro2 = { workspace = true, features = ["span-locations"] }
+quote = { workspace = true }
+serde = { workspace = true }
+serde_json = { workspace = true }
+syn = "2.0.76"
 
 [lints]
 workspace = true
