@@ -37,8 +37,8 @@
 		"test:ci": "pnpm build && vitest run"
 	},
 	"devDependencies": {
-		"@playform/build": "0.1.6",
-		"@types/node": "20.16.5"
+		"@playform/build": "0.1.7",
+		"@types/node": "22.7.2"
 	},
 	"optionalDependencies": {
 		"@biomejs/cli-darwin-arm64": "1.9.3",

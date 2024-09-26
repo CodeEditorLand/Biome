@@ -51,7 +51,7 @@
 		"@biomejs/wasm-bundler": "link:../wasm-bundler",
 		"@biomejs/wasm-nodejs": "link:../wasm-nodejs",
 		"@biomejs/wasm-web": "link:../wasm-web",
-		"@playform/build": "0.1.6"
+		"@playform/build": "0.1.7"
 	},
 	"peerDependenciesMeta": {
 		"@biomejs/wasm-bundler": {
