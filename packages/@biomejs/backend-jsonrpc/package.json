@@ -1,17 +1,29 @@
 {
-	"author": {
-		"email": "Source/Open@Editor.Land",
-		"name": "🖋️ Source — 👐🏻 Open —",
-		"url": "HTTPS://Editor.Land"
-	},
+	"name": "@biomejs/backend-jsonrpc",
+	"version": "0.0.1",
+	"private": false,
+	"description": "Bindings to the JSON-RPC Workspace API of the Biome daemon",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
 	"bugs": {
 		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
 	},
-	"description": "Bindings to the JSON-RPC Workspace API of the Biome daemon",
-	"devDependencies": {
-		"@playform/build": "0.1.6",
-		"@types/node": "20.16.5"
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
 	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"email": "Source/Open@Editor.Land",
+		"url": "HTTPS://Editor.Land"
+	},
+	"type": "module",
+	"main": "dist/index.js",
 	"files": [
 		"dist/",
 		"README.md",
@@ -19,15 +31,15 @@
 		"LICENSE-MIT",
 		"ROME-LICENSE-MIT"
 	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
-	"keywords": [
-		"codeeditorland",
-		"land",
-		"playform"
-	],
-	"license": "SEE LICENSE IN LICENSE",
-	"main": "dist/index.js",
-	"name": "@biomejs/backend-jsonrpc",
+	"scripts": {
+		"build": "tsc",
+		"prepublishOnly": "Build 'Source/**/*.ts'",
+		"test:ci": "pnpm build && vitest run"
+	},
+	"devDependencies": {
+		"@playform/build": "0.1.6",
+		"@types/node": "20.16.5"
+	},
 	"optionalDependencies": {
 		"@biomejs/cli-darwin-arm64": "1.9.3",
 		"@biomejs/cli-darwin-x64": "1.9.3",
@@ -38,19 +50,7 @@
 		"@biomejs/cli-win32-arm64": "1.9.3",
 		"@biomejs/cli-win32-x64": "1.9.3"
 	},
-	"private": false,
 	"publishConfig": {
 		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
-	},
-	"scripts": {
-		"build": "tsc",
-		"prepublishOnly": "Build 'Source/**/*.ts'",
-		"test:ci": "pnpm build && vitest run"
-	},
-	"type": "module",
-	"version": "0.0.1"
+	}
 }
