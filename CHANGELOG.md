@@ -52,6 +52,28 @@ our [guidelines for writing a good changelog entry](https://github.com/biomejs/b
 
 #### Bug fixes
 
+- [noMisleadingCharacterClass](https://biomejs.dev/linter/rules/no-misleading-character-class/) no longer reports issues outside of character classes.
+
+  The following code is no longer reported:
+
+  ```js
+  /[a-z]👍/;
+  ```
+
+  Contributed by @Conaclos
+
+- [noUndeclaredDependencies](https://biomejs.dev/linter/rules/no-undeclared-dependencies/) no longer reports Node.js builtin modules as undeclared dependencies.
+
+  The rule no longer reports the following code:
+
+  ```js
+  import * as fs from "fs";
+  ```
+
+  Contributed by @Conaclos
+
+- [noUselessEscapeInRegex](https://biomejs.dev/linter/rules/no-useless-escape-in-regex/) no longer panics on regexes that start with an empty character class. Contributed by @Conaclos
+
 - [noUselessStringConcat](https://biomejs.dev/linter/rules/no-useless-string-concat/) no longer panics when it encounters malformed code. Contributed by @Conaclos
 
 - [noUnusedFunctionParameters](https://biomejs.dev/linter/rules/no-unused-function-parameters/) no longer reports unused parameters inside an object pattern with a rest parameter.
@@ -96,6 +118,10 @@ our [guidelines for writing a good changelog entry](https://github.com/biomejs/b
 - [noUselessFragments](https://biomejs.dev/linter/rules/no-useless-fragments/) don't create invaild JSX code when Fragments children contains JSX Expression and in a LogicalExpression. Contributed by @fireairforce
 
 ### Parser
+
+#### Bug fixes
+
+- Forbid undefined as type name for typescript parser. Contributed by @fireairforce
 
 ## v1.9.2 (2024-09-19)
 

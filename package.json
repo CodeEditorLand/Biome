@@ -1,35 +1,14 @@
 {
-	"name": "@biomejs/monorepo",
-	"version": "0.0.1",
-	"private": false,
-	"keywords": [
-		"codeeditorland",
-		"land",
-		"playform"
-	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
-	"author": {
-		"name": "🖋️ Source — 👐🏻 Open —",
-		"email": "Source/Open@Editor.Land",
-		"url": "HTTPS://Editor.Land"
-	},
-	"type": "module",
-	"scripts": {
-		"ci": "cargo biome-cli-dev ci",
-		"prepublishOnly": "Build 'Source/**/*.ts'"
-	},
-	"devDependencies": {
-		"@playform/build": "0.1.7"
-	},
-	"publishConfig": {
-		"access": "public"
-	}
+  "name": "@biomejs/monorepo",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "check:apply": "cargo biome-cli-dev check --fix --unsafe",
+    "check": "cargo biome-cli-dev check",
+    "ci": "cargo biome-cli-dev ci"
+  },
+  "keywords": [],
+  "author": "Biome Developers and Contributors",
+  "license": "MIT OR Apache-2.0",
+  "packageManager": "pnpm@9.9.0"
 }

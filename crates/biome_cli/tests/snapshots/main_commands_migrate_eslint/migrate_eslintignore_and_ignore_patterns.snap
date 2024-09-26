@@ -1,0 +1,65 @@
+---
+source: crates/biome_cli/tests/snap_test.rs
+expression: content
+---
+## `biome.json`
+
+```json
+{ "linter": { "enabled": true } }
+```
+
+## `.eslintignore`
+
+```eslintignore
+*.test.js
+```
+
+## `.eslintrc.json`
+
+```json
+{
+        "ignorePatterns": ["**/*.spec.js", "!x.spec.js", "/dist"],
+        "rules": { "eqeqeq": "off" }
+    }
+```
+
+# Emitted Messages
+
+```block
+.eslintrc.json:2:44 deserialize ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Negated patterns are not supported.
+  
+    1 │ {
+  > 2 │         "ignorePatterns": ["**/*.spec.js", "!x.spec.js", "/dist"],
+      │                                            ^^^^^^^^^^^^
+    3 │         "rules": { "eqeqeq": "off" }
+    4 │     }
+  
+
+```
+
+```block
+biome.json migrate ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i Configuration file can be updated.
+  
+    1    │ - {·"linter":·{·"enabled":·true·}·}
+       1 │ + {
+       2 │ + → "linter":·{
+       3 │ + → → "enabled":·true,
+       4 │ + → → "rules":·{
+       5 │ + → → → "recommended":·false,
+       6 │ + → → → "suspicious":·{·"noDoubleEquals":·"off"·}
+       7 │ + → → },
+       8 │ + → → "ignore":·["**/*.spec.js",·"./dist",·"**/*.test.js"]
+       9 │ + → }
+      10 │ + }
+      11 │ + 
+  
+
+```
+
+```block
+Run the command with the option --write to apply the changes.
+```
