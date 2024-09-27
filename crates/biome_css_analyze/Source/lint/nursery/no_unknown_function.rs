@@ -53,6 +53,7 @@ impl Rule for NoUnknownFunction {
 
 	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
+
 		let function_name = node.name().ok()?.text();
 
 		// We don't have a semantic model yet, so we can't determine if functions are defined elsewhere.

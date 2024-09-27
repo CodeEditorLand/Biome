@@ -60,6 +60,7 @@ impl Rule for UseTopLevelRegex {
 		// Ignore regular expressions with the g and/or y flags, as calling test/exec has side effects.
 		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex#avoiding_side_effects
 		let (_, flags) = regex.decompose().ok()?;
+
 		let flags = flags.text();
 		if flags.contains('g') || flags.contains('y') {
 			return None;
@@ -75,6 +76,7 @@ impl Rule for UseTopLevelRegex {
 							| AnyJsControlFlowRoot::JsScript(_)
 					)
 				}
+
 				Err(node) => {
 					if let Some(node) = JsPropertyClassMember::cast(node) {
 						node.modifiers().iter().any(|modifier| {

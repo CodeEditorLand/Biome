@@ -437,6 +437,7 @@ fn parse_labeled_statement(p: &mut JsParser, context: StatementContext) -> Parse
 		p.bump(T![:]);
 
 		let identifier_range = identifier.range(p);
+
 		let is_valid_identifier = !identifier.kind(p).is_bogus();
         let label = p.text(identifier_range);
 

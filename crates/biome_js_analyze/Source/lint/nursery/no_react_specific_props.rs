@@ -55,8 +55,11 @@ impl Rule for NoReactSpecificProps {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let attribute = ctx.query();
+
 		let name = attribute.name().ok()?;
+
 		let range = name.range();
+
 		let name = name.text();
 
 		if REACT_SPECIFIC_JSX_PROPS.contains(&name.as_str()) {
@@ -83,6 +86,7 @@ impl Rule for NoReactSpecificProps {
 
 	fn action(ctx: &RuleContext<Self>, (_, replacement): &Self::State) -> Option<JsRuleAction> {
 		let mut mutation = ctx.root().begin();
+
 		let original_name_node = ctx.query().name().ok()?;
 
 		let new_name_node = AnyJsxAttributeName::JsxName(jsx_name(jsx_ident(replacement)));

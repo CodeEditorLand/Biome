@@ -123,12 +123,17 @@ impl Rule for NoLabelWithoutControl {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
+
 		let options = ctx.options();
+
 		let label_attributes = &options.label_attributes;
+
 		let label_components = &options.label_components;
+
 		let input_components = &options.input_components;
 
 		let element_name = get_element_name(node)?;
+
 		let is_allowed_element = label_components.contains(&element_name)
 			|| DEFAULT_LABEL_COMPONENTS.contains(&element_name.as_str());
 
@@ -137,6 +142,7 @@ impl Rule for NoLabelWithoutControl {
 		}
 
 		let has_text_content = has_accessible_label(node, label_attributes);
+
 		let has_control_association =
 			has_for_attribute(node)? || has_nested_control(node, input_components);
 
@@ -149,6 +155,7 @@ impl Rule for NoLabelWithoutControl {
 
 	fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
+
 		let mut diagnostic = RuleDiagnostic::new(
 			rule_category!(),
 			node.range(),

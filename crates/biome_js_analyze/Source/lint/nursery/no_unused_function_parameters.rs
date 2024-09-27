@@ -97,9 +97,11 @@ impl Rule for NoUnusedFunctionParameters {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let binding = ctx.query();
+
 		let declaration = binding.declaration()?;
 
 		let name = binding.name_token().ok()?;
+
 		let name = name.text_trimmed();
 
 		if name.starts_with('_') {

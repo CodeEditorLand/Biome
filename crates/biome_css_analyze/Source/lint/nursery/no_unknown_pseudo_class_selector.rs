@@ -113,6 +113,7 @@ impl Rule for NoUnknownPseudoClass {
 
 	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let pseudo_class = ctx.query();
+
 		let (name, span) = match pseudo_class {
 			AnyPseudoLike::CssBogusPseudoClass(class) => Some((class.text(), class.range())),
 			AnyPseudoLike::CssPseudoClassFunctionCompoundSelector(selector) => {
@@ -195,6 +196,7 @@ impl Rule for NoUnknownPseudoClass {
 
 	fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
 		let Self::State { class_name, span, class_type } = state;
+
 		let mut diag = RuleDiagnostic::new(
 			rule_category!(),
 			span,

@@ -79,6 +79,7 @@ impl Rule for NoUselessStringConcat {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
+
 		let parent_binary_expression = get_parent_binary_expression(node);
 
 		// Prevent duplicated error reportings when the parent is a useless concatenation too, i.e.: "a" + "b" + "c"
@@ -108,8 +109,11 @@ impl Rule for NoUselessStringConcat {
 
 	fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
 		let node = ctx.query();
+
 		let mut mutation = ctx.root().begin();
+
 		let left = node.left().ok();
+
 		let right = node.right().ok();
 
 		if is_numeric_calculation(&left) || is_numeric_calculation(&right) {
@@ -117,6 +121,7 @@ impl Rule for NoUselessStringConcat {
 		}
 
 		let left_string = extract_string_value(&left);
+
 		let right_string = extract_string_value(&right);
 
 		let fix_result = match (left, left_string, right_string) {
@@ -218,6 +223,7 @@ fn is_binary_expression_with_literal_string(expression: &Option<AnyJsExpression>
 			&binary_expression.left().ok(),
 			Some(AnyJsExpression::JsIdentifierExpression(_))
 		);
+
 		let has_right_string_expression = is_string_expression(&binary_expression.right().ok());
 
 		return !has_left_identifier_expression && has_right_string_expression;
@@ -264,6 +270,7 @@ fn is_concatenation(binary_expression: &JsBinaryExpression) -> Option<TextRange>
 		} else {
 			left.map(|left| left.range().start())
 		};
+
 		let range_end = right.map(|right| right.range().end());
 
 		return match (range_start, range_end) {
@@ -397,12 +404,16 @@ fn concat_binary_expression(
 
 	if is_string_expression(&current_right) {
 		let value = extract_string_value(&left_binary_expression.right().ok()).unwrap();
+
 		let concatenated_string = value + right_string_value;
+
 		let string_literal_expression =
 			AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::from(
 				js_string_literal_expression(js_string_literal(&concatenated_string)),
 			));
+
 		let left = left_binary_expression.left().unwrap();
+
 		let operator = left_binary_expression.operator_token().unwrap();
 
 		return match left {

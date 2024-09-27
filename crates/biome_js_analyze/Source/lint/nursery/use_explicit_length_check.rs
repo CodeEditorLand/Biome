@@ -139,7 +139,9 @@ impl Rule for UseExplicitLengthCheck {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let member_expr = ctx.query();
+
 		let member_name = member_expr.member().ok()?;
+
 		let member_name = member_name.as_js_name()?.value_token().ok()?.token_text_trimmed();
 
 		if !LENGTH_MEMBER_NAMES.contains(&member_name.text()) {
@@ -150,6 +152,7 @@ impl Rule for UseExplicitLengthCheck {
 		// That requires type inference. Example: `{ length: "not a number" }`
 
 		let member_expr_syntax = member_expr.syntax();
+
 		let parent_syntax = member_expr_syntax.parent()?;
 
 		if let Some((binary_expr, mut len_check, is_possibly_valid)) =
@@ -220,6 +223,7 @@ impl Rule for UseExplicitLengthCheck {
 			LengthCheck::Zero => ("=== 0", "zero"),
 			LengthCheck::NonZero => ("> 0", "not zero"),
 		};
+
 		let member_name = state.member_name.text();
 		Some(RuleDiagnostic::new(
 			rule_category!(),
@@ -232,7 +236,9 @@ impl Rule for UseExplicitLengthCheck {
 
 	fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
 		let member_expr = ctx.query();
+
 		let mut mutation = ctx.root().begin();
+
 		let operator_kind = match state.check {
 			LengthCheck::Zero => T![===],
 			LengthCheck::NonZero => T![>],
@@ -249,6 +255,7 @@ impl Rule for UseExplicitLengthCheck {
 		);
 
 		let mut new_node = new_binary_expr.into_syntax();
+
 		let parent = state.node.syntax().parent()?;
 		// In cases like `export default!foo.length` -> `export default foo.length === 0`
 		// we need to add a space between keyword and expression
@@ -268,6 +275,7 @@ impl Rule for UseExplicitLengthCheck {
 			LengthCheck::Zero => "=== 0",
 			LengthCheck::NonZero => "> 0",
 		};
+
 		let member_name = state.member_name.text();
 		Some(JsRuleAction::new(
             ActionCategory::QuickFix,

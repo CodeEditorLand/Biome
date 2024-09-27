@@ -136,6 +136,7 @@ impl Rule for NoMisplacedAssertion {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
+
 		let model = ctx.model();
 
 		if let Some(call_text) = node.to_assertion_call() {

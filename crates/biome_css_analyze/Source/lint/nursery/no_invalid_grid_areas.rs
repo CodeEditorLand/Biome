@@ -231,6 +231,7 @@ fn has_partial_match(grid_areas_props: &GridAreasProps) -> Option<GridAreasProp>
 
 	for (text, range) in grid_areas_props {
 		let prop = clean_text(text);
+
 		let parts: FxHashSet<String> =
 			prop.split_whitespace().map(|part| part.to_string()).collect();
 		for part in parts {

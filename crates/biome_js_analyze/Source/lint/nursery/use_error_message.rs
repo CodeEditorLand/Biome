@@ -56,9 +56,11 @@ impl Rule for UseErrorMessage {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
+
 		let callee = node.callee().ok()?;
 
 		let (reference, name) = global_identifier(&callee.omit_parentheses())?;
+
 		let name_text = name.text();
 
 		if BUILTIN_ERRORS.binary_search(&name_text).is_err()
@@ -68,6 +70,7 @@ impl Rule for UseErrorMessage {
 		}
 
 		let argument_position = if name_text == "AggregateError" { 1 } else { 0 };
+
 		let arguments = node.arguments()?;
 
 		let has_spread = arguments

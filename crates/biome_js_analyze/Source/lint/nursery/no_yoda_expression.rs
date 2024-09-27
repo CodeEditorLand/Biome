@@ -78,7 +78,9 @@ impl Rule for NoYodaExpression {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
+
 		let left = node.left().ok()?;
+
 		let right = node.right().ok()?;
 
 		let has_yoda_expression = node.is_comparison_operator()
@@ -108,22 +110,35 @@ impl Rule for NoYodaExpression {
 
 	fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
 		let node = ctx.query();
+
 		let parent_statement = node.parent::<AnyJsStatement>();
+
 		let parent_expression = node.parent::<AnyJsExpression>();
+
 		let parent_yield_argument = node.parent::<JsYieldArgument>();
+
 		let mut mutation = node.clone().begin();
 
 		let left = node.left().ok()?;
+
 		let right = node.right().ok()?;
+
 		let operator_token = node.operator_token().ok()?;
+
 		let flipped_operator = flip_operator(node.operator().ok()?)?;
 
 		let left_leading_trivia = extract_leading_trivia(&left);
+
 		let left_trailing_trivia = extract_trailing_trivia(&left);
+
 		let right_leading_trivia = extract_leading_trivia(&right);
+
 		let right_trailing_trivia = extract_trailing_trivia(&right);
+
 		let operator_leading_trivia = operator_token.leading_trivia().pieces();
+
 		let operator_trailing_trivia = operator_token.trailing_trivia().pieces();
+
 		let whitespace = make::token(T!(==))
 			.with_trailing_trivia([(TriviaPieceKind::Whitespace, " ")])
 			.trailing_trivia()
@@ -143,6 +158,7 @@ impl Rule for NoYodaExpression {
 			}
 			_ => false,
 		};
+
 		let has_missing_right_trivia = match (
 			right.clone().syntax().last_trailing_trivia(),
 			parent_statement.clone(),
@@ -161,9 +177,11 @@ impl Rule for NoYodaExpression {
 		} else {
 			clone_with_trivia(right, left_leading_trivia, left_trailing_trivia)?
 		};
+
 		let new_operator = token(flipped_operator)
 			.prepend_trivia_pieces(operator_leading_trivia)
 			.append_trivia_pieces(operator_trailing_trivia);
+
 		let new_right = if has_missing_right_trivia {
 			clone_with_trivia(left, right_leading_trivia, right_trailing_trivia)?
 				.append_trivia_pieces(whitespace.clone())?

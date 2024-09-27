@@ -43,7 +43,9 @@ impl Rule for NoInvalidPositionAtImportRule {
 
 	fn run(ctx: &RuleContext<Self>) -> Vec<Self::State> {
 		let node = ctx.query();
+
 		let mut is_invalid_position = false;
+
 		let mut invalid_import_list = Vec::new();
 
 		for rule in node {

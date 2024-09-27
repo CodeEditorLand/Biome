@@ -64,9 +64,11 @@ impl Rule for NoDuplicateFontNames {
 
 	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
+
 		let property_name = node.name().ok()?.text().to_lowercase();
 
 		let is_font_family = property_name == "font-family";
+
 		let is_font = property_name == "font";
 
 		if !is_font_family && !is_font {
@@ -74,8 +76,11 @@ impl Rule for NoDuplicateFontNames {
 		}
 
 		let mut unquoted_family_names: HashSet<String> = HashSet::new();
+
 		let mut family_names: HashSet<String> = HashSet::new();
+
 		let value_list = node.value();
+
 		let font_families = if is_font {
 			find_font_family(value_list)
 		} else {

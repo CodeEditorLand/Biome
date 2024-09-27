@@ -62,8 +62,11 @@ impl Rule for NoEvolvingTypes {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let source_type = ctx.source_type::<JsFileSource>().language();
+
 		let is_ts_source = source_type.is_typescript();
+
 		let node = ctx.query();
+
 		let is_declaration = source_type.is_definition_file();
 
 		if is_declaration || !is_ts_source {

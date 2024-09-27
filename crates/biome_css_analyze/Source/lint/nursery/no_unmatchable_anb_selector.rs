@@ -69,6 +69,7 @@ impl Rule for NoUnmatchableAnbSelector {
 
 	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
+
 		let nth = node.nth().ok()?;
 		if is_unmatchable(&nth) && !is_within_not_pseudo_class(&nth) {
 			return Some(node.clone());

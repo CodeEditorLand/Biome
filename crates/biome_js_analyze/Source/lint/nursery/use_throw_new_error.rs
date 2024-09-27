@@ -68,6 +68,7 @@ impl Rule for UseThrowNewError {
 		}
 
 		let callee = &node.callee().ok()?.omit_parentheses();
+
 		let name = match callee {
 			AnyJsExpression::JsIdentifierExpression(ident_expr) => {
 				Some(ident_expr.name().ok()?.value_token().ok()?.token_text_trimmed())
@@ -87,6 +88,7 @@ impl Rule for UseThrowNewError {
 
 	fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
+
 		let name = state.text();
 
 		Some(RuleDiagnostic::new(
@@ -102,6 +104,7 @@ impl Rule for UseThrowNewError {
 
 	fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
 		let node = ctx.query();
+
 		let mut mutation = ctx.root().begin();
 
 		let new_expression = convert_call_expression_to_new_expression(node)?;

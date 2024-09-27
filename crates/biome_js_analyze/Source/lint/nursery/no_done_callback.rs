@@ -72,6 +72,7 @@ impl Rule for NoDoneCallback {
 		}
 
 		let arguments = &node.arguments().ok()?;
+
 		let callee_name = callee.get_callee_object_name()?;
 
 		let argument_index = match callee_name.text_trimmed() {
@@ -79,9 +80,11 @@ impl Rule for NoDoneCallback {
 			"it" | "test" => 1, // for test.each() and test() we want the second argument
 			_ => return None,
 		};
+
 		let argument = arguments.get_arguments_by_index([argument_index]).first()?.clone();
 
 		let callback = argument?;
+
 		let callback = callback.as_any_js_expression()?;
 
 		match callback {

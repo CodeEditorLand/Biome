@@ -42,7 +42,9 @@ impl Rule for NoDuplicateObjectKeys {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let query = ctx.query();
+
 		let mut names = FxHashMap::<JsonMemberName, Vec<TextRange>>::default();
+
 		let mut keys_found = FxHashMap::<String, JsonMemberName>::default();
 		for member in query.json_member_list().iter().flatten() {
 			let name = member.name();
@@ -70,7 +72,9 @@ impl Rule for NoDuplicateObjectKeys {
 
 	fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
 		let (original, ranges) = state;
+
 		let name = original.inner_string_text().ok()?;
+
 		let mut diagnostic = RuleDiagnostic::new(
 			rule_category!(),
 			original.range(),

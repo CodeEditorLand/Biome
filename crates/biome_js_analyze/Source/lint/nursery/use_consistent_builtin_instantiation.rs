@@ -122,7 +122,9 @@ impl Rule for UseConsistentBuiltinInstantiation {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
+
 		let (callee, creation_rule) = extract_callee_and_rule(node)?;
+
 		let (reference, name) = global_identifier(&callee.omit_parentheses())?;
 
 		let name_text = name.text();

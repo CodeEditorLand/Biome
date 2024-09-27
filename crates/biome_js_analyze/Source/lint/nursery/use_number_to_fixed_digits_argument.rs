@@ -109,6 +109,7 @@ impl Rule for UseNumberToFixedDigitsArgument {
 		));
 
 		let previous_args = ctx.query().arguments().ok()?.args();
+
 		let new_args = make::js_call_argument_list([arg], []);
 
 		mutation.replace_node::<JsCallArgumentList>(previous_args, new_args);

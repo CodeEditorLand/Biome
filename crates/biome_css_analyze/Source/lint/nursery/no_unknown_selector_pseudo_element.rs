@@ -65,6 +65,7 @@ impl Rule for NoUnknownPseudoElement {
 
 	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let node: &CssPseudoElementSelector = ctx.query();
+
 		let pseudo_element = node.element().ok()?;
 
 		let pseudo_element_name = match &pseudo_element {

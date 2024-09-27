@@ -62,6 +62,7 @@ impl Rule for NoDuplicateAtImportRules {
 
 	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
+
 		let mut import_url_map: HashMap<String, HashSet<String>> = HashMap::new();
 		for rule in node {
 			match rule {

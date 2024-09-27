@@ -77,10 +77,13 @@ impl Rule for UseSemanticElements {
 		let role_attribute = state;
 
 		let static_value = role_attribute.as_static_value()?;
+
 		let role_value = static_value.as_string_constant()?;
+
 		let candidate = AriaRoles.get_elements_by_role(role_value);
 
 		let mut result_elements: Vec<&str> = vec![];
+
 		let mut result_attributes: Vec<(&str, &str)> = vec![];
 		if let Some(elements) = candidate {
 			for element in elements {

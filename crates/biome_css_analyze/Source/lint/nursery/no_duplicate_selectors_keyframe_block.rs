@@ -53,6 +53,7 @@ impl Rule for NoDuplicateSelectorsKeyframeBlock {
 
 	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
+
 		let mut selector_list = HashSet::new();
 		for keyframe_item in node.items() {
 			match keyframe_item {

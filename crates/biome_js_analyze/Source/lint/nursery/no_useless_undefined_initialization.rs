@@ -68,6 +68,7 @@ impl Rule for NoUselessUndefinedInitialization {
 		let statement = ctx.query();
 
 		let mut signals = vec![];
+
 		let Ok(node) = statement.declaration() else {
 			return signals;
 		};
@@ -117,9 +118,11 @@ impl Rule for NoUselessUndefinedInitialization {
 
 	fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
 		let node = ctx.query();
+
 		let assignment_statement = node.clone();
 
 		let current_declaration_statement = node.clone().declaration().ok()?;
+
 		let declarators = current_declaration_statement.declarators();
 
 		let current_declaration = declarators
@@ -144,9 +147,11 @@ impl Rule for NoUselessUndefinedInitialization {
 
 		// Save the separators too
 		let separators_syntax = declarators.clone().into_syntax();
+
 		let separators: Vec<JsSyntaxToken> = separators_syntax.tokens().collect();
 
 		let new_declaration = current_declaration.clone().with_initializer(None);
+
 		let new_declarators: Vec<JsVariableDeclarator> = declarators
 			.clone()
 			.into_iter()

@@ -76,6 +76,7 @@ impl Rule for UseGenericFontNames {
 
 	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
+
 		let property_name = node.name().ok()?.text().to_lowercase();
 
 		// Ignore `@font-face`. See more detail: https://drafts.csswg.org/css-fonts/#font-face-rule
@@ -84,6 +85,7 @@ impl Rule for UseGenericFontNames {
 		}
 
 		let is_font_family = property_name == "font-family";
+
 		let is_font = property_name == "font";
 
 		if !is_font_family && !is_font {

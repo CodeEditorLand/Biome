@@ -53,6 +53,7 @@ impl Rule for NoUndeclaredDependencies {
 		}
 
 		let token_text = node.inner_string_text()?;
+
 		let text = token_text.text();
 
 		// Ignore relative path imports
@@ -62,6 +63,7 @@ impl Rule for NoUndeclaredDependencies {
 		}
 
 		let mut parts = text.split('/');
+
 		let mut pointer = 0;
 		if let Some(maybe_scope) = parts.next() {
 			pointer += maybe_scope.len();

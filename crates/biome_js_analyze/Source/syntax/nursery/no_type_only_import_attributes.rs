@@ -93,6 +93,7 @@ impl Rule for NoTypeOnlyImportAttributes {
 
 	fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
+
 		let import_or_export =
 			if matches!(node, AnyJsModuleItem::JsImport(_)) { "import" } else { "export" };
 		Some(

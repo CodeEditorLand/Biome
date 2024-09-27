@@ -67,6 +67,7 @@ impl Rule for UseThrowOnlyError {
 
 	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
+
 		let expr = node.argument().ok()?.omit_parentheses();
 
 		is_invalid_throw_value(&expr).and(Some(()))

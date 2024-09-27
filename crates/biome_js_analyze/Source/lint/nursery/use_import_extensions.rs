@@ -178,6 +178,7 @@ impl Rule for UseImportExtensions {
 		let mut mutation = ctx.root().begin();
 
 		let (suggested_path, extension) = state.suggestion.clone()?;
+
 		let new_module_name = if ctx.as_preferred_quote().is_double() {
 			make::js_string_literal(&suggested_path)
 		} else {
