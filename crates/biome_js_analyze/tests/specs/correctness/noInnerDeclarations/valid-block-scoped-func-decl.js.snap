@@ -1,0 +1,16 @@
+---
+source: crates/biome_js_analyze/tests/spec_tests.rs
+expression: valid-block-scoped-func-decl.js
+---
+# Input
+```jsx
+// ensure we are in esm
+export {}
+
+{
+    function f() {}
+}
+
+```
+
+

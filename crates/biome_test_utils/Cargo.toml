@@ -1,30 +1,32 @@
 [package]
-authors.workspace = true
+authors.workspace    = true
 categories.workspace = true
-description = "Utilities for tests"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license.workspace = true
-name = "biome_test_utils"
-publish = false
+description          = "Utilities for tests"
+edition.workspace    = true
+homepage.workspace   = true
+keywords.workspace   = true
+license.workspace    = true
+name                 = "biome_test_utils"
+publish              = false
 repository.workspace = true
-version = "0.0.0"
+version              = "0.0.0"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-biome_analyze = { workspace = true }
+biome_analyze       = { workspace = true }
 biome_configuration = { workspace = true }
-biome_console = { workspace = true }
-biome_deserialize = { workspace = true }
-biome_diagnostics = { workspace = true }
-biome_json_parser = { workspace = true }
-biome_project = { workspace = true }
-biome_rowan = { workspace = true }
-biome_service = { workspace = true }
-countme = { workspace = true, features = ["enable"] }
-json_comments = "0.2.2"
-serde_json = { workspace = true }
-similar = { workspace = true }
+biome_console       = { workspace = true }
+biome_deserialize   = { workspace = true }
+biome_diagnostics   = { workspace = true }
+biome_json_parser   = { workspace = true }
+biome_project       = { workspace = true }
+biome_rowan         = { workspace = true }
+biome_service       = { workspace = true }
+countme             = { workspace = true, features = ["enable"] }
+json_comments       = "0.2.2"
+serde_json          = { workspace = true }
+similar             = { workspace = true }
 
 [lints]
 workspace = true

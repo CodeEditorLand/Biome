@@ -31,15 +31,41 @@ our [guidelines for writing a good changelog entry](https://github.com/biomejs/b
 
 - Fix [#4077](https://github.com/biomejs/biome/issues/4077): Grit queries no longer need to match the statement's trailing semicolon. Contributed by @arendjr
 
+- Fix [#4102](https://github.com/biomejs/biome/issues/4102). Now the CLI command `lint` doesn't exit with an error code when using `--write`/`--fix`. Contributed by @ematipico
+
 ### Configuration
 
 ### Editors
+
+- Fix a case where CSS files weren't correctly linted using the default configuration. Contributed by @ematipico
 
 ### Formatter
 
 #### Bug fixes
 
 - Fix [#3924](https://github.com/biomejs/biome/issues/3924) where GraphQL formatter panics in block comments with empty line. Contributed by @vohoanglong0107
+
+- Fix a case where raw values inside `url()` functions weren't properly trimmed.
+  ```diff
+  .value {
+  -  background: url(
+  -   whitespace-around-string
+  -  );
+  + background: url(whitespace-around-string);
+  }
+  ```
+  Contributed by @ematipico
+
+- Fixed [#4076](https://github.com/biomejs/biome/issues/4076), where a media query wasn't correctly formatted:
+  ```diff
+  .class {
+  -  @media (1024px <= width <=1280px) {
+  +  @media (1024px <= width <= 1280px) {
+     color: red;
+     }
+  }
+  ```
+  Contributed by @blaze-d83
 
 ### JavaScript API
 
