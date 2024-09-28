@@ -7,7 +7,7 @@
 	"author": "Victorien Elvinger",
 	"type": "module",
 	"dependencies": {
-		"happy-dom": "^15.7.4"
+		"happy-dom": "15.7.4"
 	},
 	"engines": {
 		"node": ">=20.0.0"
