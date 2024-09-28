@@ -1,20 +1,20 @@
 {
-  "name": "@biomejs/cli-darwin-x64",
-  "version": "1.8.3",
-  "license": "MIT OR Apache-2.0",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/biomejs/biome.git",
-    "directory": "packages/@biomejs/biome/cli-darwin-x64"
-  },
-  "engines": {
-    "node": ">=14.21.3"
-  },
-  "homepage": "https://biomejs.dev",
-  "os": [
-    "darwin"
-  ],
-  "cpu": [
-    "x64"
-  ]
+	"name": "@biomejs/cli-darwin-x64",
+	"version": "1.8.3",
+	"homepage": "https://biomejs.dev",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/biomejs/biome.git",
+		"directory": "packages/@biomejs/biome/cli-darwin-x64"
+	},
+	"license": "MIT OR Apache-2.0",
+	"engines": {
+		"node": ">=14.21.3"
+	},
+	"os": [
+		"darwin"
+	],
+	"cpu": [
+		"x64"
+	]
 }

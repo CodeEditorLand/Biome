@@ -1,57 +1,57 @@
 {
-  "name": "@biomejs/backend-jsonrpc",
-  "version": "1.9.3",
-  "main": "dist/index.js",
-  "scripts": {
-    "test": "vitest",
-    "test:ci": "pnpm build && vitest run",
-    "tsc": "tsc --noEmit",
-    "build": "tsc"
-  },
-  "files": [
-    "dist/",
-    "README.md",
-    "LICENSE-APACHE",
-    "LICENSE-MIT",
-    "ROME-LICENSE-MIT"
-  ],
-  "homepage": "https://biomejs.dev",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/biomejs/biome.git",
-    "directory": "npm/backend-jsonrpc"
-  },
-  "author": "Biome Developers and Contributors",
-  "bugs": "https://github.com/biomejs/biome/issues",
-  "description": "Bindings to the JSON-RPC Workspace API of the Biome daemon",
-  "keywords": [
-    "JavaScript",
-    "TypeScript",
-    "format",
-    "lint",
-    "toolchain"
-  ],
-  "engines": {
-    "node": ">=14.21.3"
-  },
-  "license": "MIT OR Apache-2.0",
-  "devDependencies": {
-    "@types/node": "20.16.5",
-    "typescript": "5.6.2",
-    "vite": "5.4.7",
-    "vitest": "1.6.0"
-  },
-  "publishConfig": {
-    "provenance": true
-  },
-  "optionalDependencies": {
-    "@biomejs/cli-win32-x64": "1.9.3",
-    "@biomejs/cli-win32-arm64": "1.9.3",
-    "@biomejs/cli-darwin-x64": "1.9.3",
-    "@biomejs/cli-darwin-arm64": "1.9.3",
-    "@biomejs/cli-linux-x64": "1.9.3",
-    "@biomejs/cli-linux-arm64": "1.9.3",
-    "@biomejs/cli-linux-x64-musl": "1.9.3",
-    "@biomejs/cli-linux-arm64-musl": "1.9.3"
-  }
+	"name": "@biomejs/backend-jsonrpc",
+	"version": "1.9.3",
+	"description": "Bindings to the JSON-RPC Workspace API of the Biome daemon",
+	"keywords": [
+		"JavaScript",
+		"TypeScript",
+		"format",
+		"lint",
+		"toolchain"
+	],
+	"homepage": "https://biomejs.dev",
+	"bugs": "https://github.com/biomejs/biome/issues",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/biomejs/biome.git",
+		"directory": "npm/backend-jsonrpc"
+	},
+	"license": "MIT OR Apache-2.0",
+	"author": "Biome Developers and Contributors",
+	"main": "dist/index.js",
+	"files": [
+		"dist/",
+		"README.md",
+		"LICENSE-APACHE",
+		"LICENSE-MIT",
+		"ROME-LICENSE-MIT"
+	],
+	"scripts": {
+		"build": "tsc",
+		"test": "vitest",
+		"test:ci": "pnpm build && vitest run",
+		"tsc": "tsc --noEmit"
+	},
+	"devDependencies": {
+		"@types/node": "20.16.5",
+		"typescript": "5.6.2",
+		"vite": "5.4.7",
+		"vitest": "1.6.0"
+	},
+	"optionalDependencies": {
+		"@biomejs/cli-darwin-arm64": "1.9.3",
+		"@biomejs/cli-darwin-x64": "1.9.3",
+		"@biomejs/cli-linux-arm64": "1.9.3",
+		"@biomejs/cli-linux-arm64-musl": "1.9.3",
+		"@biomejs/cli-linux-x64": "1.9.3",
+		"@biomejs/cli-linux-x64-musl": "1.9.3",
+		"@biomejs/cli-win32-arm64": "1.9.3",
+		"@biomejs/cli-win32-x64": "1.9.3"
+	},
+	"engines": {
+		"node": ">=14.21.3"
+	},
+	"publishConfig": {
+		"provenance": true
+	}
 }
