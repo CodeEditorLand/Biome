@@ -11,10 +11,9 @@ import { z, b , a} from "lodash"
 
 a ==b
 
-debugger
+debugger 
 
 let f;
-
 		let f;"#;
 
 const MAIN_2: &str = r#"import { z} from "z"
@@ -22,10 +21,9 @@ import { z, b , a} from "lodash"
 
 a ==b
 
-debugger
+debugger 
 
 let f;
-
 		let f;"#;
 
 #[test]

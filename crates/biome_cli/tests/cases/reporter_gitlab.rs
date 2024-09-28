@@ -22,11 +22,8 @@ debugger
 let f;
 let f;
 let f;
-
 		let f;
-
 		let f;
-
 		let f;"#;
 
 const MAIN_2: &str = r#"import { z} from "z"
@@ -45,11 +42,8 @@ debugger
 let f;
 let f;
 let f;
-
 		let f;
-
 		let f;
-
 		let f;"#;
 
 #[test]

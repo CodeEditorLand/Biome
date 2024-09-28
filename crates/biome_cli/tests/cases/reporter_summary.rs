@@ -14,19 +14,16 @@ a ==b
 a ==b
 a ==b
 
-debugger
-debugger
-debugger
-debugger
+debugger 
+debugger 
+debugger 
+debugger 
 
 let f;
 let f;
 let f;
-
 		let f;
-
 		let f;
-
 		let f;"#;
 
 const MAIN_2: &str = r#"import { z} from "z"
@@ -37,19 +34,16 @@ a ==b
 a ==b
 a ==b
 
-debugger
-debugger
-debugger
-debugger
+debugger 
+debugger 
+debugger 
+debugger 
 
 let f;
 let f;
 let f;
-
 		let f;
-
 		let f;
-
 		let f;"#;
 
 #[test]
