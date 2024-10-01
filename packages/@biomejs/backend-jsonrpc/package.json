@@ -1,4 +1,12 @@
 {
+	"author": {
+		"email": "Source/Open@Editor.Land",
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"url": "HTTPS://Editor.Land"
+	},
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
+	},
 	"description": "Bindings to the JSON-RPC Workspace API of the Biome daemon",
 	"devDependencies": {
 		"@playform/build": "",
@@ -11,6 +19,13 @@
 		"LICENSE-MIT",
 		"ROME-LICENSE-MIT"
 	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"license": "SEE LICENSE IN LICENSE",
 	"main": "dist/index.js",
 	"name": "@biomejs/backend-jsonrpc",
 	"optionalDependencies": {
@@ -23,9 +38,19 @@
 		"@biomejs/cli-win32-arm64": "1.9.3",
 		"@biomejs/cli-win32-x64": "1.9.3"
 	},
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
 	"scripts": {
 		"build": "tsc",
 		"prepublishOnly": "Build 'Source/**/*.ts'",
 		"test:ci": "pnpm build && vitest run"
-	}
+	},
+	"type": "module",
+	"version": "0.0.1"
 }

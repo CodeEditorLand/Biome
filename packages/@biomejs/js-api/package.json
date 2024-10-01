@@ -1,4 +1,12 @@
 {
+	"author": {
+		"email": "Source/Open@Editor.Land",
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"url": "HTTPS://Editor.Land"
+	},
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
+	},
 	"description": "JavaScript APIs for the Biome package",
 	"devDependencies": {
 		"@biomejs/wasm-bundler": "link:../wasm-bundler",
@@ -13,6 +21,13 @@
 		"ROME-LICENSE-MIT",
 		"dist/"
 	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"license": "SEE LICENSE IN LICENSE",
 	"main": "./dist/index.js",
 	"name": "@biomejs/js-api",
 	"peerDependenciesMeta": {
@@ -25,6 +40,14 @@
 		"@biomejs/wasm-web": {
 			"optional": true
 		}
+	},
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
 	},
 	"scripts": {
 		"biome:check": "cargo biome-cli-dev check .",
@@ -41,5 +64,7 @@
 		"prepublishOnly": "Build 'Source/**/*.ts'",
 		"test:ci": "vitest run"
 	},
-	"types": "./dist/index.d.ts"
+	"type": "module",
+	"types": "./dist/index.d.ts",
+	"version": "0.0.1"
 }
