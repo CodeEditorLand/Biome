@@ -6,9 +6,7 @@
 		"esModuleInterop": true,
 		"exactOptionalPropertyTypes": true,
 		"isolatedModules": true,
-		"lib": [
-			"ES2021"
-		],
+		"lib": ["ES2021"],
 		"module": "Node16",
 		"noEmit": true,
 		"noFallthroughCasesInSwitch": false,
@@ -24,9 +22,5 @@
 		"verbatimModuleSyntax": true
 	},
 	"extends": "@playform/build/tsconfig",
-	"include": [
-		"src",
-		"src",
-		"src"
-	]
+	"include": ["src"]
 }

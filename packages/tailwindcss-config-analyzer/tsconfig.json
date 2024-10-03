@@ -1,29 +1,18 @@
 {
 	"compilerOptions": {
-		"allowJs": true,
-		"allowSyntheticDefaultImports": true,
-		"baseUrl": "./",
-		"declaration": true,
-		"downlevelIteration": true,
-		"forceConsistentCasingInFileNames": true,
-		"jsx": "react-jsx",
-		"lib": [
-			"ESNext"
-		],
+		"lib": ["ESNext"],
 		"module": "NodeNext",
-		"moduleDetection": "force",
+		"target": "esnext",
 		"moduleResolution": "NodeNext",
-		"outDir": "Target",
-		"rootDir": "src",
-		"skipLibCheck": true,
+		"moduleDetection": "force",
 		"strict": true,
-		"target": "esnext"
+		"downlevelIteration": true,
+		"skipLibCheck": true,
+		"declaration": true,
+		"jsx": "react-jsx",
+		"allowSyntheticDefaultImports": true,
+		"forceConsistentCasingInFileNames": true,
+		"allowJs": true
 	},
-	"extends": "@playform/build/tsconfig",
-	"include": [
-		"src/**/*",
-		"src",
-		"src",
-		"src"
-	]
+	"include": ["src/**/*"]
 }
