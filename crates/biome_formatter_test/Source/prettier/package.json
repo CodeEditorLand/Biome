@@ -1,0 +1,36 @@
+{
+	"author": {
+		"email": "Source/Open@Editor.Land",
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"url": "HTTPS://Editor.Land"
+	},
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@playform/build": ""
+	},
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"license": "SEE LICENSE IN LICENSE",
+	"name": "prettier-tests",
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
+	"scripts": {
+		"prepublishOnly": "Build 'Source/**/*.ts'",
+		"start": "node prepare_tests"
+	},
+	"type": "module",
+	"version": "0.0.1"
+}
