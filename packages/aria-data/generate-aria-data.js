@@ -103,8 +103,8 @@ function parseAriaSpec(doc, { url, version }) {
 				),
 			),
 			valueType:
-				def.querySelector(".property-value a, .state-value a")?.textContent ??
-				null,
+				def.querySelector(".property-value a, .state-value a")
+					?.textContent ?? null,
 			values: parseAttributeValues(
 				def.querySelectorAll(".value-name, .value-description"),
 			),
@@ -135,8 +135,8 @@ function parseAriaSpec(doc, { url, version }) {
 				),
 			),
 			valueType:
-				def.querySelector(".property-value a, .state-value a")?.textContent ??
-				null,
+				def.querySelector(".property-value a, .state-value a")
+					?.textContent ?? null,
 			values: parseAttributeValues(
 				def.querySelectorAll(".value-name, .value-description"),
 			),
@@ -156,7 +156,8 @@ const DESCRIPTION_REGEX = /(?:\[Deprecated in ARIA ([\d.]+)\])?[ ]?(.+)/;
 function parseDescription(node) {
 	const text = node?.textContent;
 	if (text != null) {
-		const [_, deprecatedInVersion, description] = text.match(DESCRIPTION_REGEX);
+		const [_, deprecatedInVersion, description] =
+			text.match(DESCRIPTION_REGEX);
 		return { deprecatedInVersion, description };
 	}
 	return {};
@@ -174,7 +175,9 @@ function parseNamesFrom(node) {
 			.map((name) => name.trim())
 			.filter(
 				(name) =>
-					name === "author" || name === "contents" || name === "prohibited",
+					name === "author" ||
+					name === "contents" ||
+					name === "prohibited",
 			) ?? []
 	);
 }
@@ -196,7 +199,9 @@ function parseConceptList(node, version) {
 	if (node != null) {
 		const list = textContents(node.querySelectorAll("li"));
 		if (list != null) {
-			return list.flatMap((attribute) => parseConcept(attribute, version));
+			return list.flatMap((attribute) =>
+				parseConcept(attribute, version),
+			);
 		}
 		// There is a single attribute (no list)
 		return parseConcept(node.textContent, version);
@@ -308,7 +313,9 @@ function parseAttributeValues(nodeList) {
 		for (let i = 0; i < arrayed.length; i += 2) {
 			const defaultIndex = arrayed[i].indexOf(" (default)");
 			const isDefault = defaultIndex !== -1;
-			const value = isDefault ? arrayed[i].slice(0, defaultIndex) : arrayed[i];
+			const value = isDefault
+				? arrayed[i].slice(0, defaultIndex)
+				: arrayed[i];
 			result[value] = {
 				description: arrayed[i + 1],
 				isDefault,
