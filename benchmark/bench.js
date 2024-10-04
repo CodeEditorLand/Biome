@@ -1,5 +1,4 @@
 #!/usr/bin/node
-
 import { execSync } from "node:child_process";
 import * as fs from "node:fs";
 import * as path from "node:path";
@@ -9,7 +8,13 @@ import * as util from "node:util";
 const REPOSITORIES = {
 	eslint: {
 		repository: "https://github.com/eslint/eslint.git",
-		lintedDirs: ["lib", "messages", "tests/lib", "tests/performance", "tools"],
+		lintedDirs: [
+			"lib",
+			"messages",
+			"tests/lib",
+			"tests/performance",
+			"tools",
+		],
 	},
 	prettier: {
 		repository: "https://github.com/prettier/prettier.git",
@@ -44,7 +49,9 @@ function benchmarkFormatter(biomeBin, options) {
 		console.info("");
 
 		const dirs = config.formattedDirs.join(" ");
-		const dirGlobs = config.formattedDirs.map((dir) => `"${dir}/**"`).join(" ");
+		const dirGlobs = config.formattedDirs
+			.map((dir) => `"${dir}/**"`)
+			.join(" ");
 		const biomeCommand = `${biomeBin} format --config-path=../../ --write --max-diagnostics=0 ${dirs}`;
 		const benchCommands = {
 			prettier: `../../node_modules/.bin/prettier --config=../../.prettierrc.json --ignore-path=../../.prettierignore  --write --log-level=error ${dirs}`,
@@ -52,7 +59,11 @@ function benchmarkFormatter(biomeBin, options) {
 			// "parallel-prettier": `../../node_modules/.bin/pprettier --write --concurrency ${os.cpus().length} ${dirGlobs}`,
 			dprint: `../../node_modules/dprint/dprint fmt --config=../../dprint.json ${dirGlobs}`,
 			biome: biomeCommand,
-			"biome-1-thread": withEnvVariable("RAYON_NUM_THREADS", "1", biomeCommand),
+			"biome-1-thread": withEnvVariable(
+				"RAYON_NUM_THREADS",
+				"1",
+				biomeCommand,
+			),
 		};
 
 		let suite = "";
@@ -103,7 +114,11 @@ function benchmarkLinter(biomeBin, options) {
 			eslint: `../../node_modules/.bin/eslint --quiet --config=../../eslint.config.js --no-ignore ${dirs}`,
 			"ts-eslint": `../../node_modules/.bin/eslint --quiet --config=../../ts-eslint.config.js --no-ignore ${dirs}`,
 			biome: biomeCmd,
-			"biome-1-thread": withEnvVariable("RAYON_NUM_THREADS", "1", biomeCmd),
+			"biome-1-thread": withEnvVariable(
+				"RAYON_NUM_THREADS",
+				"1",
+				biomeCmd,
+			),
 			"ts-biome": `"${biomeBin}" lint --config-path=../../ts-biome.json --max-diagnostics=0 ${dirs}`,
 		};
 
