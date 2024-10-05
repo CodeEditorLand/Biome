@@ -12,13 +12,14 @@ use biome_rowan::Language;
 pub struct HtmlLanguage;
 
 impl Language for HtmlLanguage {
-    type Kind = HtmlSyntaxKind;
-    type Root = HtmlRoot;
+	type Kind = HtmlSyntaxKind;
+	type Root = HtmlRoot;
 }
 
 pub type HtmlSyntaxNode = biome_rowan::SyntaxNode<HtmlLanguage>;
 pub type HtmlSyntaxToken = biome_rowan::SyntaxToken<HtmlLanguage>;
 pub type HtmlSyntaxElement = biome_rowan::SyntaxElement<HtmlLanguage>;
 pub type HtmlSyntaxNodeChildren = biome_rowan::SyntaxNodeChildren<HtmlLanguage>;
-pub type HtmlSyntaxElementChildren = biome_rowan::SyntaxElementChildren<HtmlLanguage>;
+pub type HtmlSyntaxElementChildren =
+	biome_rowan::SyntaxElementChildren<HtmlLanguage>;
 pub type HtmlSyntaxList = biome_rowan::SyntaxList<HtmlLanguage>;

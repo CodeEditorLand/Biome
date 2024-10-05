@@ -1,15 +1,15 @@
 use crate::{
-    js_kinds_src::{AstSrc, Field},
-    language_kind::LanguageKind,
+	js_kinds_src::{AstSrc, Field},
+	language_kind::LanguageKind,
 };
 use biome_string_case::Case;
 use xtask::Result;
 
 pub fn generate_target_language_constants(
-    ast: &AstSrc,
-    _language_kind: LanguageKind,
+	ast: &AstSrc,
+	_language_kind: LanguageKind,
 ) -> Result<String> {
-    let disregarded_slots: Vec<String> = ast
+	let disregarded_slots: Vec<String> = ast
         .nodes
         .iter()
         .flat_map(|node| {
@@ -31,9 +31,9 @@ pub fn generate_target_language_constants(
                 .collect::<Vec<_>>()
         })
         .collect();
-    let disregarded_slots = disregarded_slots.join("\n    ");
+	let disregarded_slots = disregarded_slots.join("\n    ");
 
-    let result = format!(
+	let result = format!(
         "use crate::grit_target_language::DisregardedSlotCondition::{{self, *}};
 use biome_js_syntax::JsSyntaxKind::{{self, *}};
 
@@ -43,7 +43,7 @@ pub(crate) const DISREGARDED_SNIPPET_SLOTS: &[(JsSyntaxKind, u32, DisregardedSlo
 "
     );
 
-    let pretty = xtask::reformat(result)?;
+	let pretty = xtask::reformat(result)?;
 
-    Ok(pretty)
+	Ok(pretty)
 }

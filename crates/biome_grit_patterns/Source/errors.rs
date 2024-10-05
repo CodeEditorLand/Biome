@@ -2,95 +2,97 @@ use std::fmt::Debug;
 
 use biome_console::{fmt::Formatter, markup};
 use biome_diagnostics::Location;
-use biome_diagnostics::{category, Category, Diagnostic, LogCategory, Severity};
+use biome_diagnostics::{
+	category, Category, Diagnostic, LogCategory, Severity,
+};
 use biome_parser::diagnostic::ParseDiagnostic;
 use biome_rowan::SyntaxError;
 use grit_util::ByteRange;
 
 #[derive(Debug)]
 pub enum CompileError {
-    /// Indicates the (top-level) pattern could not be parsed.
-    ParsePatternError(ParseDiagnostic),
+	/// Indicates the (top-level) pattern could not be parsed.
+	ParsePatternError(ParseDiagnostic),
 
-    /// Used for missing syntax nodes.
-    MissingSyntaxNode,
+	/// Used for missing syntax nodes.
+	MissingSyntaxNode,
 
-    /// A built-in function call was discovered in an unexpected context.
-    UnexpectedBuiltinCall(String),
+	/// A built-in function call was discovered in an unexpected context.
+	UnexpectedBuiltinCall(String),
 
-    /// A metavariables was discovered in an unexpected context.
-    UnexpectedMetavariable,
+	/// A metavariables was discovered in an unexpected context.
+	UnexpectedMetavariable,
 
-    /// If a function with the same name is defined multiple times.
-    DuplicateFunctionDefinition(String),
+	/// If a function with the same name is defined multiple times.
+	DuplicateFunctionDefinition(String),
 
-    /// If a function or bubble pattern has multiple parameters with the same name.
-    DuplicateParameters,
+	/// If a function or bubble pattern has multiple parameters with the same name.
+	DuplicateParameters,
 
-    /// If a function with the same name is defined multiple times.
-    DuplicatePatternDefinition(String),
+	/// If a function with the same name is defined multiple times.
+	DuplicatePatternDefinition(String),
 
-    /// If a function with the same name is defined multiple times.
-    DuplicatePredicateDefinition(String),
+	/// If a function with the same name is defined multiple times.
+	DuplicatePredicateDefinition(String),
 
-    /// A metavariable was expected at the given range.
-    InvalidMetavariableRange(ByteRange),
+	/// A metavariable was expected at the given range.
+	InvalidMetavariableRange(ByteRange),
 
-    /// Raw snippets are only allowed on the right-hand side of a rule.
-    InvalidRawSnippetPosition,
+	/// Raw snippets are only allowed on the right-hand side of a rule.
+	InvalidRawSnippetPosition,
 
-    /// Regular expressions are not allowed on the right-hand side of a rule.
-    InvalidRegexPosition,
+	/// Regular expressions are not allowed on the right-hand side of a rule.
+	InvalidRegexPosition,
 
-    /// Incorrect reference to a metavariable.
-    MetavariableNotFound(String),
+	/// Incorrect reference to a metavariable.
+	MetavariableNotFound(String),
 
-    /// Tried to declare or assign a Grit reserved metavariable.
-    ReservedMetavariable(String),
+	/// Tried to declare or assign a Grit reserved metavariable.
+	ReservedMetavariable(String),
 
-    /// When an unsupported node kind was discovered during compilation.
-    UnsupportedKind(u16),
+	/// When an unsupported node kind was discovered during compilation.
+	UnsupportedKind(u16),
 
-    /// When an unexpected node kind was discovered during compilation.
-    UnexpectedKind(u16),
+	/// When an unexpected node kind was discovered during compilation.
+	UnexpectedKind(u16),
 
-    /// When trying to use an unrecognized function or pattern.
-    UnknownFunctionOrPattern(String),
+	/// When trying to use an unrecognized function or pattern.
+	UnknownFunctionOrPattern(String),
 
-    /// A literal value was too large or too small.
-    LiteralOutOfRange(String),
+	/// A literal value was too large or too small.
+	LiteralOutOfRange(String),
 
-    /// A pattern is required to compile a Grit query.
-    MissingPattern,
+	/// A pattern is required to compile a Grit query.
+	MissingPattern,
 
-    /// A node inside a code snippet failed to be normalized for its
-    /// equivalence class.
-    NormalizationError,
+	/// A node inside a code snippet failed to be normalized for its
+	/// equivalence class.
+	NormalizationError,
 
-    /// Bracketed metavariables are only allowed on the right-hand side of
-    /// rewrite.
-    InvalidBracketedMetavariable,
+	/// Bracketed metavariables are only allowed on the right-hand side of
+	/// rewrite.
+	InvalidBracketedMetavariable,
 
-    /// Unexpected function call argument.
-    FunctionArgument(NodeLikeArgumentError),
+	/// Unexpected function call argument.
+	FunctionArgument(NodeLikeArgumentError),
 
-    /// Unknown function or predicate.
-    UnknownFunctionOrPredicate(String),
+	/// Unknown function or predicate.
+	UnknownFunctionOrPredicate(String),
 
-    /// Unknown target language.
-    UnknownTargetLanguage(String),
+	/// Unknown target language.
+	UnknownTargetLanguage(String),
 
-    /// Unknown variable.
-    UnknownVariable(String),
+	/// Unknown variable.
+	UnknownVariable(String),
 }
 
 impl Diagnostic for CompileError {
-    fn category(&self) -> Option<&'static Category> {
-        Some(category!("parse"))
-    }
+	fn category(&self) -> Option<&'static Category> {
+		Some(category!("parse"))
+	}
 
-    fn message(&self, fmt: &mut Formatter<'_>) -> std::io::Result<()> {
-        match self {
+	fn message(&self, fmt: &mut Formatter<'_>) -> std::io::Result<()> {
+		match self {
             CompileError::ParsePatternError(diagnostic) => {
                 fmt.write_markup(markup! { "Error parsing pattern: " })?;
                 diagnostic.message(fmt)
@@ -163,25 +165,35 @@ impl Diagnostic for CompileError {
                 fmt.write_markup(markup! { "Unknown variable: "{{var}} })
             }
         }
-    }
+	}
 
-    fn location(&self) -> Location<'_> {
-        match self {
-            CompileError::ParsePatternError(diagnostic) => diagnostic.location(),
-            _ => Location::default(),
-        }
-    }
+	fn location(&self) -> Location<'_> {
+		match self {
+			CompileError::ParsePatternError(diagnostic) => {
+				diagnostic.location()
+			},
+			_ => Location::default(),
+		}
+	}
 
-    fn description(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            CompileError::ParsePatternError(diagnostic) => diagnostic.description(fmt),
-            CompileError::FunctionArgument(error) => error.fmt(fmt),
-            _ => Ok(()),
-        }
-    }
+	fn description(
+		&self,
+		fmt: &mut std::fmt::Formatter<'_>,
+	) -> std::fmt::Result {
+		match self {
+			CompileError::ParsePatternError(diagnostic) => {
+				diagnostic.description(fmt)
+			},
+			CompileError::FunctionArgument(error) => error.fmt(fmt),
+			_ => Ok(()),
+		}
+	}
 
-    fn advices(&self, visitor: &mut dyn biome_diagnostics::Visit) -> std::io::Result<()> {
-        match self {
+	fn advices(
+		&self,
+		visitor: &mut dyn biome_diagnostics::Visit,
+	) -> std::io::Result<()> {
+		match self {
             CompileError::UnexpectedBuiltinCall(name) => visitor.record_log(
                 LogCategory::Info,
                 &markup! { "Built-in "{{name}}" can only be used on the right-hand side of a rewrite" }
@@ -193,48 +205,40 @@ impl Diagnostic for CompileError {
             ),
             _ => Ok(()),
         }
-    }
+	}
 
-    fn severity(&self) -> Severity {
-        Severity::Error
-    }
+	fn severity(&self) -> Severity {
+		Severity::Error
+	}
 }
 
 impl From<SyntaxError> for CompileError {
-    fn from(error: SyntaxError) -> Self {
-        match error {
-            SyntaxError::MissingRequiredChild => Self::MissingSyntaxNode,
-            SyntaxError::UnexpectedMetavariable => Self::UnexpectedMetavariable,
-        }
-    }
+	fn from(error: SyntaxError) -> Self {
+		match error {
+			SyntaxError::MissingRequiredChild => Self::MissingSyntaxNode,
+			SyntaxError::UnexpectedMetavariable => Self::UnexpectedMetavariable,
+		}
+	}
 }
 
 impl From<NodeLikeArgumentError> for CompileError {
-    fn from(error: NodeLikeArgumentError) -> Self {
-        Self::FunctionArgument(error)
-    }
+	fn from(error: NodeLikeArgumentError) -> Self {
+		Self::FunctionArgument(error)
+	}
 }
 
 #[derive(Debug)]
 pub enum NodeLikeArgumentError {
-    /// Duplicate arguments in invocation.
-    DuplicateArguments { name: String },
-    /// Only variables are allowed as arguments.
-    ExpectedVariable { name: String },
-    /// When a named argument is missing its name.
-    MissingArgumentName { name: String, variable: String },
-    /// Used when too many arguments are specified.
-    TooManyArguments { name: String, max_args: usize },
-    /// Unknown argument given in function
-    UnknownArgument {
-        name: String,
-        argument: String,
-        valid_args: Vec<String>,
-    },
-    /// Used when an invalid argument is used in a function call.
-    UnknownVariable {
-        name: String,
-        arg_name: String,
-        valid_vars: Vec<String>,
-    },
+	/// Duplicate arguments in invocation.
+	DuplicateArguments { name: String },
+	/// Only variables are allowed as arguments.
+	ExpectedVariable { name: String },
+	/// When a named argument is missing its name.
+	MissingArgumentName { name: String, variable: String },
+	/// Used when too many arguments are specified.
+	TooManyArguments { name: String, max_args: usize },
+	/// Unknown argument given in function
+	UnknownArgument { name: String, argument: String, valid_args: Vec<String> },
+	/// Used when an invalid argument is used in a function call.
+	UnknownVariable { name: String, arg_name: String, valid_vars: Vec<String> },
 }

@@ -11,4 +11,5 @@ mod utils;
 #[doc(hidden)]
 pub use biome_js_syntax as syntax;
 
-pub type JsSyntaxTreeBuilder = TreeBuilder<'static, JsLanguage, JsSyntaxFactory>;
+pub type JsSyntaxTreeBuilder =
+	TreeBuilder<'static, JsLanguage, JsSyntaxFactory>;

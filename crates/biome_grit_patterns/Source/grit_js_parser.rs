@@ -1,6 +1,6 @@
 use crate::{
-    grit_analysis_ext::GritAnalysisExt, grit_target_language::GritTargetParser,
-    grit_tree::GritTargetTree,
+	grit_analysis_ext::GritAnalysisExt, grit_target_language::GritTargetParser,
+	grit_tree::GritTargetTree,
 };
 use biome_js_parser::{parse, JsParserOptions};
 use biome_js_syntax::JsFileSource;
@@ -11,70 +11,71 @@ use std::path::Path;
 pub struct GritJsParser;
 
 impl GritTargetParser for GritJsParser {
-    fn from_cached_parse_result(
-        &self,
-        parse: &AnyParse,
-        path: Option<&Path>,
-        logs: &mut AnalysisLogs,
-    ) -> Option<GritTargetTree> {
-        for diagnostic in parse.diagnostics() {
-            logs.push(diagnostic.to_log(path));
-        }
+	fn from_cached_parse_result(
+		&self,
+		parse: &AnyParse,
+		path: Option<&Path>,
+		logs: &mut AnalysisLogs,
+	) -> Option<GritTargetTree> {
+		for diagnostic in parse.diagnostics() {
+			logs.push(diagnostic.to_log(path));
+		}
 
-        Some(GritTargetTree::new(parse.syntax().into()))
-    }
+		Some(GritTargetTree::new(parse.syntax().into()))
+	}
 }
 
 impl Parser for GritJsParser {
-    type Tree = GritTargetTree;
+	type Tree = GritTargetTree;
 
-    fn parse_file(
-        &mut self,
-        body: &str,
-        path: Option<&Path>,
-        logs: &mut AnalysisLogs,
-        _old_tree: FileOrigin<'_, GritTargetTree>,
-    ) -> Option<GritTargetTree> {
-        let parse_result = parse(
-            body,
-            JsFileSource::tsx(),
-            JsParserOptions::default().with_metavariables(),
-        );
+	fn parse_file(
+		&mut self,
+		body: &str,
+		path: Option<&Path>,
+		logs: &mut AnalysisLogs,
+		_old_tree: FileOrigin<'_, GritTargetTree>,
+	) -> Option<GritTargetTree> {
+		let parse_result = parse(
+			body,
+			JsFileSource::tsx(),
+			JsParserOptions::default().with_metavariables(),
+		);
 
-        for diagnostic in parse_result.diagnostics() {
-            logs.push(diagnostic.to_log(path));
-        }
+		for diagnostic in parse_result.diagnostics() {
+			logs.push(diagnostic.to_log(path));
+		}
 
-        Some(GritTargetTree::new(parse_result.syntax().into()))
-    }
+		Some(GritTargetTree::new(parse_result.syntax().into()))
+	}
 
-    fn parse_snippet(
-        &mut self,
-        prefix: &'static str,
-        source: &str,
-        postfix: &'static str,
-    ) -> SnippetTree<GritTargetTree> {
-        let context = format!("{prefix}{source}{postfix}");
+	fn parse_snippet(
+		&mut self,
+		prefix: &'static str,
+		source: &str,
+		postfix: &'static str,
+	) -> SnippetTree<GritTargetTree> {
+		let context = format!("{prefix}{source}{postfix}");
 
-        let len = if cfg!(target_arch = "wasm32") {
-            |src: &str| src.chars().count() as u32
-        } else {
-            |src: &str| src.len() as u32
-        };
+		let len = if cfg!(target_arch = "wasm32") {
+			|src: &str| src.chars().count() as u32
+		} else {
+			|src: &str| src.len() as u32
+		};
 
-        let parse_result = parse(
-            &context,
-            JsFileSource::tsx(),
-            JsParserOptions::default().with_metavariables(),
-        );
+		let parse_result = parse(
+			&context,
+			JsFileSource::tsx(),
+			JsParserOptions::default().with_metavariables(),
+		);
 
-        SnippetTree {
-            tree: GritTargetTree::new(parse_result.syntax().into()),
-            source: source.to_owned(),
-            prefix,
-            postfix,
-            snippet_start: (len(prefix) + len(source) - len(source.trim_start())),
-            snippet_end: (len(prefix) + len(source.trim_end())),
-        }
-    }
+		SnippetTree {
+			tree: GritTargetTree::new(parse_result.syntax().into()),
+			source: source.to_owned(),
+			prefix,
+			postfix,
+			snippet_start: (len(prefix) + len(source)
+				- len(source.trim_start())),
+			snippet_end: (len(prefix) + len(source.trim_end())),
+		}
+	}
 }

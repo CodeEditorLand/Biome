@@ -337,60 +337,60 @@ macro_rules! best_fitting {
 
 #[cfg(test)]
 mod tests {
-    use crate::prelude::*;
-    use crate::{write, FormatState, SimpleFormatOptions, VecBuffer};
+	use crate::prelude::*;
+	use crate::{write, FormatState, SimpleFormatOptions, VecBuffer};
 
-    struct TestFormat;
+	struct TestFormat;
 
-    impl Format<()> for TestFormat {
-        fn fmt(&self, f: &mut Formatter<()>) -> FormatResult<()> {
-            write!(f, [text("test")])
-        }
-    }
+	impl Format<()> for TestFormat {
+		fn fmt(&self, f: &mut Formatter<()>) -> FormatResult<()> {
+			write!(f, [text("test")])
+		}
+	}
 
-    #[test]
-    fn test_single_element() {
-        let mut state = FormatState::new(());
-        let mut buffer = VecBuffer::new(&mut state);
+	#[test]
+	fn test_single_element() {
+		let mut state = FormatState::new(());
+		let mut buffer = VecBuffer::new(&mut state);
 
-        write![&mut buffer, [TestFormat]].unwrap();
+		write![&mut buffer, [TestFormat]].unwrap();
 
-        assert_eq!(
-            buffer.into_vec(),
-            vec![FormatElement::StaticText { text: "test" }]
-        );
-    }
+		assert_eq!(
+			buffer.into_vec(),
+			vec![FormatElement::StaticText { text: "test" }]
+		);
+	}
 
-    #[test]
-    fn test_multiple_elements() {
-        let mut state = FormatState::new(());
-        let mut buffer = VecBuffer::new(&mut state);
+	#[test]
+	fn test_multiple_elements() {
+		let mut state = FormatState::new(());
+		let mut buffer = VecBuffer::new(&mut state);
 
-        write![
-            &mut buffer,
-            [text("a"), space(), text("simple"), space(), TestFormat]
-        ]
-        .unwrap();
+		write![
+			&mut buffer,
+			[text("a"), space(), text("simple"), space(), TestFormat]
+		]
+		.unwrap();
 
-        assert_eq!(
-            buffer.into_vec(),
-            vec![
-                FormatElement::StaticText { text: "a" },
-                FormatElement::Space,
-                FormatElement::StaticText { text: "simple" },
-                FormatElement::Space,
-                FormatElement::StaticText { text: "test" }
-            ]
-        );
-    }
+		assert_eq!(
+			buffer.into_vec(),
+			vec![
+				FormatElement::StaticText { text: "a" },
+				FormatElement::Space,
+				FormatElement::StaticText { text: "simple" },
+				FormatElement::Space,
+				FormatElement::StaticText { text: "test" }
+			]
+		);
+	}
 
-    #[test]
-    fn best_fitting_variants_print_as_lists() {
-        use crate::prelude::*;
-        use crate::{format, format_args, Formatted};
+	#[test]
+	fn best_fitting_variants_print_as_lists() {
+		use crate::prelude::*;
+		use crate::{format, format_args, Formatted};
 
-        // The second variant below should be selected when printing at a width of 30
-        let formatted_best_fitting = format!(
+		// The second variant below should be selected when printing at a width of 30
+		let formatted_best_fitting = format!(
             SimpleFormatContext::default(),
             [
                 text("aVeryLongIdentifier"),
@@ -433,70 +433,70 @@ mod tests {
         )
         .unwrap();
 
-        // This matches the IR above except that the `best_fitting` was replaced with
-        // the contents of its second variant.
-        let formatted_normal_list = format!(
-            SimpleFormatContext::default(),
-            [
-                text("aVeryLongIdentifier"),
-                soft_line_break_or_space(),
-                format_args![
-                    text("Start"),
-                    soft_line_break(),
-                    &group(&soft_block_indent(&format_args![
-                        text("1,"),
-                        soft_line_break_or_space(),
-                        text("2,"),
-                        soft_line_break_or_space(),
-                        text("3"),
-                    ])),
-                    soft_line_break_or_space(),
-                    &soft_block_indent(&format_args![
-                        text("1,"),
-                        soft_line_break_or_space(),
-                        text("2,"),
-                        soft_line_break_or_space(),
-                        group(&format_args!(
-                            text("A,"),
-                            soft_line_break_or_space(),
-                            text("B")
-                        )),
-                        soft_line_break_or_space(),
-                        text("3")
-                    ]),
-                    soft_line_break_or_space(),
-                    text("End")
-                ],
-            ]
-        )
-        .unwrap();
+		// This matches the IR above except that the `best_fitting` was replaced with
+		// the contents of its second variant.
+		let formatted_normal_list = format!(
+			SimpleFormatContext::default(),
+			[
+				text("aVeryLongIdentifier"),
+				soft_line_break_or_space(),
+				format_args![
+					text("Start"),
+					soft_line_break(),
+					&group(&soft_block_indent(&format_args![
+						text("1,"),
+						soft_line_break_or_space(),
+						text("2,"),
+						soft_line_break_or_space(),
+						text("3"),
+					])),
+					soft_line_break_or_space(),
+					&soft_block_indent(&format_args![
+						text("1,"),
+						soft_line_break_or_space(),
+						text("2,"),
+						soft_line_break_or_space(),
+						group(&format_args!(
+							text("A,"),
+							soft_line_break_or_space(),
+							text("B")
+						)),
+						soft_line_break_or_space(),
+						text("3")
+					]),
+					soft_line_break_or_space(),
+					text("End")
+				],
+			]
+		)
+		.unwrap();
 
-        let best_fitting_code = Formatted::new(
-            formatted_best_fitting.into_document(),
-            SimpleFormatContext::new(SimpleFormatOptions {
-                line_width: 30.try_into().unwrap(),
-                ..SimpleFormatOptions::default()
-            }),
-        )
-        .print()
-        .expect("Document to be valid")
-        .as_code()
-        .to_string();
+		let best_fitting_code = Formatted::new(
+			formatted_best_fitting.into_document(),
+			SimpleFormatContext::new(SimpleFormatOptions {
+				line_width: 30.try_into().unwrap(),
+				..SimpleFormatOptions::default()
+			}),
+		)
+		.print()
+		.expect("Document to be valid")
+		.as_code()
+		.to_string();
 
-        let normal_list_code = Formatted::new(
-            formatted_normal_list.into_document(),
-            SimpleFormatContext::new(SimpleFormatOptions {
-                line_width: 30.try_into().unwrap(),
-                ..SimpleFormatOptions::default()
-            }),
-        )
-        .print()
-        .expect("Document to be valid")
-        .as_code()
-        .to_string();
+		let normal_list_code = Formatted::new(
+			formatted_normal_list.into_document(),
+			SimpleFormatContext::new(SimpleFormatOptions {
+				line_width: 30.try_into().unwrap(),
+				..SimpleFormatOptions::default()
+			}),
+		)
+		.print()
+		.expect("Document to be valid")
+		.as_code()
+		.to_string();
 
-        // The variant that "fits" will print its contents as if it were a normal list
-        // outside of a BestFitting element.
-        assert_eq!(best_fitting_code, normal_list_code);
-    }
+		// The variant that "fits" will print its contents as if it were a normal list
+		// outside of a BestFitting element.
+		assert_eq!(best_fitting_code, normal_list_code);
+	}
 }

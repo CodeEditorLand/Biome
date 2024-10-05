@@ -9,4 +9,5 @@ pub mod make;
 #[doc(hidden)]
 pub use biome_json_syntax as syntax;
 
-pub type JsonSyntaxTreeBuilder = TreeBuilder<'static, JsonLanguage, JsonSyntaxFactory>;
+pub type JsonSyntaxTreeBuilder =
+	TreeBuilder<'static, JsonLanguage, JsonSyntaxFactory>;

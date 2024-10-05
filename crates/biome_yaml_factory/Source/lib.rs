@@ -9,4 +9,5 @@ pub use crate::generated::YamlSyntaxFactory;
 #[doc(hidden)]
 pub use biome_yaml_syntax as syntax;
 
-pub type YamlSyntaxTreeBuilder = TreeBuilder<'static, YamlLanguage, YamlSyntaxFactory>;
+pub type YamlSyntaxTreeBuilder =
+	TreeBuilder<'static, YamlLanguage, YamlSyntaxFactory>;

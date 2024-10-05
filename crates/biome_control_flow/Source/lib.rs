@@ -14,39 +14,34 @@ use crate::builder::BlockId;
 /// function as a graph of [BasicBlock]
 #[derive(Debug, Clone)]
 pub struct ControlFlowGraph<L: Language> {
-    /// List of blocks that make up this function
-    pub blocks: Vec<BasicBlock<L>>,
-    /// The function node this CFG was built for in the syntax tree
-    pub node: SyntaxNode<L>,
+	/// List of blocks that make up this function
+	pub blocks: Vec<BasicBlock<L>>,
+	/// The function node this CFG was built for in the syntax tree
+	pub node: SyntaxNode<L>,
 }
 
 impl<L: Language> ControlFlowGraph<L> {
-    fn new(node: SyntaxNode<L>) -> Self {
-        ControlFlowGraph {
-            blocks: vec![BasicBlock::new(None, None)],
-            node,
-        }
-    }
+	fn new(node: SyntaxNode<L>) -> Self {
+		ControlFlowGraph { blocks: vec![BasicBlock::new(None, None)], node }
+	}
 
-    /// Returns the block identified by `id`.
-    pub fn get(&self, id: BlockId) -> &BasicBlock<L> {
-        // SAFETY: safe conversion because a block id corresponds to its index in `self.blocks`.
-        let block_index = id.index() as usize;
-        &self.blocks[block_index]
-    }
+	/// Returns the block identified by `id`.
+	pub fn get(&self, id: BlockId) -> &BasicBlock<L> {
+		// SAFETY: safe conversion because a block id corresponds to its index in `self.blocks`.
+		let block_index = id.index() as usize;
+		&self.blocks[block_index]
+	}
 
-    /// Returns pairs that contain a block identifier and the associated block
-    pub fn block_id_iter(&self) -> impl Iterator<Item = (BlockId, &BasicBlock<L>)> {
-        // SAFETY: safe conversion because a block id corresponds to its index in `self.blocks`.
-        self.blocks.iter().enumerate().map(|(index, block)| {
-            (
-                BlockId {
-                    index: index as u32,
-                },
-                block,
-            )
-        })
-    }
+	/// Returns pairs that contain a block identifier and the associated block
+	pub fn block_id_iter(
+		&self,
+	) -> impl Iterator<Item = (BlockId, &BasicBlock<L>)> {
+		// SAFETY: safe conversion because a block id corresponds to its index in `self.blocks`.
+		self.blocks
+			.iter()
+			.enumerate()
+			.map(|(index, block)| (BlockId { index: index as u32 }, block))
+	}
 }
 
 /// A basic block represents an atomic unit of control flow, a flat list of
@@ -58,24 +53,24 @@ impl<L: Language> ControlFlowGraph<L> {
 /// encountered.
 #[derive(Debug, Clone)]
 pub struct BasicBlock<L: Language> {
-    pub instructions: Vec<Instruction<L>>,
-    /// List of handlers to execute when an exception is thrown from this block
-    pub exception_handlers: Vec<ExceptionHandler>,
-    /// List of handlers to execute when the function returns from this block
-    pub cleanup_handlers: Vec<ExceptionHandler>,
+	pub instructions: Vec<Instruction<L>>,
+	/// List of handlers to execute when an exception is thrown from this block
+	pub exception_handlers: Vec<ExceptionHandler>,
+	/// List of handlers to execute when the function returns from this block
+	pub cleanup_handlers: Vec<ExceptionHandler>,
 }
 
 impl<L: Language> BasicBlock<L> {
-    fn new(
-        exception_handlers: impl IntoIterator<Item = ExceptionHandler>,
-        cleanup_handlers: impl IntoIterator<Item = ExceptionHandler>,
-    ) -> Self {
-        Self {
-            instructions: Vec::new(),
-            exception_handlers: exception_handlers.into_iter().collect(),
-            cleanup_handlers: cleanup_handlers.into_iter().collect(),
-        }
-    }
+	fn new(
+		exception_handlers: impl IntoIterator<Item = ExceptionHandler>,
+		cleanup_handlers: impl IntoIterator<Item = ExceptionHandler>,
+	) -> Self {
+		Self {
+			instructions: Vec::new(),
+			exception_handlers: exception_handlers.into_iter().collect(),
+			cleanup_handlers: cleanup_handlers.into_iter().collect(),
+		}
+	}
 }
 
 /// Instructions are used to represent statements or expressions being executed
@@ -88,43 +83,43 @@ impl<L: Language> BasicBlock<L> {
 /// the control flow of the program accurately.
 #[derive(Debug, Clone)]
 pub struct Instruction<L: Language> {
-    pub kind: InstructionKind,
-    pub node: Option<SyntaxElement<L>>,
+	pub kind: InstructionKind,
+	pub node: Option<SyntaxElement<L>>,
 }
 
 /// The different types of supported [Instruction]
 #[derive(Copy, Clone, Debug)]
 pub enum InstructionKind {
-    /// Indicates the [SyntaxNode] associated with this
-    /// instruction is to be evaluated at this point in the program
-    Statement,
-    /// This instruction may cause the control flow to diverge towards `block`,
-    /// either unconditionally if `conditional` is set to `false`, or after
-    /// evaluating the associated syntax node otherwise
-    Jump {
-        conditional: bool,
-        block: BlockId,
-        /// Set to `true` for the terminating jump instruction out of a
-        /// `finally` clause, the target block can be reinterpreted to the next
-        /// exception handler instead if the control flow is currently unwinding
-        finally_fallthrough: bool,
-    },
-    /// This instruction causes the control flow to unconditionally abort the
-    /// execution of the function, for example is JavaScript this can be
-    /// triggered by a `return` or `throw` statement
-    Return,
+	/// Indicates the [SyntaxNode] associated with this
+	/// instruction is to be evaluated at this point in the program
+	Statement,
+	/// This instruction may cause the control flow to diverge towards `block`,
+	/// either unconditionally if `conditional` is set to `false`, or after
+	/// evaluating the associated syntax node otherwise
+	Jump {
+		conditional: bool,
+		block: BlockId,
+		/// Set to `true` for the terminating jump instruction out of a
+		/// `finally` clause, the target block can be reinterpreted to the next
+		/// exception handler instead if the control flow is currently unwinding
+		finally_fallthrough: bool,
+	},
+	/// This instruction causes the control flow to unconditionally abort the
+	/// execution of the function, for example is JavaScript this can be
+	/// triggered by a `return` or `throw` statement
+	Return,
 }
 
 #[derive(Debug, Clone, Copy)]
 pub struct ExceptionHandler {
-    pub kind: ExceptionHandlerKind,
-    pub target: BlockId,
+	pub kind: ExceptionHandlerKind,
+	pub target: BlockId,
 }
 
 #[derive(Debug, Clone, Copy)]
 pub enum ExceptionHandlerKind {
-    Catch,
-    Finally,
+	Catch,
+	Finally,
 }
 
 /// The Display implementation for [ControlFlowGraph] prints a flowchart in
@@ -175,123 +170,119 @@ pub enum ExceptionHandlerKind {
 ///     block_1_inst_1 --> block_3
 /// ```
 impl<L: Language> Display for ControlFlowGraph<L> {
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        writeln!(fmt, "flowchart TB")?;
+	fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+		writeln!(fmt, "flowchart TB")?;
 
-        let mut links = FxHashMap::default();
-        for (id, block) in self.blocks.iter().enumerate() {
-            if fmt.alternate() {
-                writeln!(fmt, "    subgraph block_{id}")?;
-                writeln!(fmt, "        direction TB")?;
-            } else {
-                write!(fmt, "    block_{id}[\"<b>block_{id}</b><br/>")?;
-            }
+		let mut links = FxHashMap::default();
+		for (id, block) in self.blocks.iter().enumerate() {
+			if fmt.alternate() {
+				writeln!(fmt, "    subgraph block_{id}")?;
+				writeln!(fmt, "        direction TB")?;
+			} else {
+				write!(fmt, "    block_{id}[\"<b>block_{id}</b><br/>")?;
+			}
 
-            for (index, inst) in block.instructions.iter().enumerate() {
-                if fmt.alternate() {
-                    write!(fmt, "        ")?;
+			for (index, inst) in block.instructions.iter().enumerate() {
+				if fmt.alternate() {
+					write!(fmt, "        ")?;
 
-                    if let Some(index) = index.checked_sub(1) {
-                        write!(fmt, "block_{id}_inst_{index} --> ")?;
-                    }
+					if let Some(index) = index.checked_sub(1) {
+						write!(fmt, "block_{id}_inst_{index} --> ")?;
+					}
 
-                    writeln!(fmt, "block_{id}_inst_{index}[\"{inst}\"]")?;
-                } else {
-                    if index > 0 {
-                        write!(fmt, "<br/>")?;
-                    }
+					writeln!(fmt, "block_{id}_inst_{index}[\"{inst}\"]")?;
+				} else {
+					if index > 0 {
+						write!(fmt, "<br/>")?;
+					}
 
-                    write!(fmt, "{inst}")?;
-                }
+					write!(fmt, "{inst}")?;
+				}
 
-                if let InstructionKind::Jump {
-                    conditional, block, ..
-                } = inst.kind
-                {
-                    let condition = inst
-                        .node
-                        .as_ref()
-                        .filter(|_| conditional)
-                        .map(|node| (node.kind(), node.text_trimmed_range()));
-                    links.insert((id, index, block.index()), condition);
-                }
-            }
+				if let InstructionKind::Jump { conditional, block, .. } =
+					inst.kind
+				{
+					let condition =
+						inst.node.as_ref().filter(|_| conditional).map(
+							|node| (node.kind(), node.text_trimmed_range()),
+						);
+					links.insert((id, index, block.index()), condition);
+				}
+			}
 
-            if fmt.alternate() {
-                writeln!(fmt, "    end")?;
-            } else {
-                writeln!(fmt, "\"]")?;
-            }
-        }
+			if fmt.alternate() {
+				writeln!(fmt, "    end")?;
+			} else {
+				writeln!(fmt, "\"]")?;
+			}
+		}
 
-        writeln!(fmt)?;
+		writeln!(fmt)?;
 
-        for ((id, index, to), condition) in links {
-            write!(fmt, "    block_{id}")?;
+		for ((id, index, to), condition) in links {
+			write!(fmt, "    block_{id}")?;
 
-            if fmt.alternate() {
-                write!(fmt, "_inst_{index}")?;
-            }
+			if fmt.alternate() {
+				write!(fmt, "_inst_{index}")?;
+			}
 
-            if let Some((cond, range)) = condition {
-                write!(fmt, " -- \"{cond:?} {range:?}\"")?;
-            }
+			if let Some((cond, range)) = condition {
+				write!(fmt, " -- \"{cond:?} {range:?}\"")?;
+			}
 
-            writeln!(fmt, " --> block_{to}")?;
-        }
+			writeln!(fmt, " --> block_{to}")?;
+		}
 
-        Ok(())
-    }
+		Ok(())
+	}
 }
 
 impl<L: Language> Display for Instruction<L> {
-    fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
-        match self.kind {
-            InstructionKind::Statement => {
-                if let Some(node) = &self.node {
-                    write!(
-                        fmt,
-                        "Statement({:?} {:?})",
-                        node.kind(),
-                        node.text_trimmed_range()
-                    )
-                } else {
-                    write!(fmt, "Statement")
-                }
-            }
+	fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+		match self.kind {
+			InstructionKind::Statement => {
+				if let Some(node) = &self.node {
+					write!(
+						fmt,
+						"Statement({:?} {:?})",
+						node.kind(),
+						node.text_trimmed_range()
+					)
+				} else {
+					write!(fmt, "Statement")
+				}
+			},
 
-            InstructionKind::Jump {
-                conditional: true,
-                block,
-                ..
-            } if self.node.is_some() => {
-                // SAFETY: Checked by the above call to `is_some`
-                let node = self.node.as_ref().unwrap();
-                write!(
-                    fmt,
-                    "Jump {{ condition: {:?} {:?}, block: {} }}",
-                    node.kind(),
-                    node.text_trimmed_range(),
-                    block.index()
-                )
-            }
+			InstructionKind::Jump { conditional: true, block, .. }
+				if self.node.is_some() =>
+			{
+				// SAFETY: Checked by the above call to `is_some`
+				let node = self.node.as_ref().unwrap();
+				write!(
+					fmt,
+					"Jump {{ condition: {:?} {:?}, block: {} }}",
+					node.kind(),
+					node.text_trimmed_range(),
+					block.index()
+				)
+			},
 
-            InstructionKind::Jump { block, .. } => {
-                write!(fmt, "Jump {{ block: {} }}", block.index())
-            }
+			InstructionKind::Jump { block, .. } => {
+				write!(fmt, "Jump {{ block: {} }}", block.index())
+			},
 
-            InstructionKind::Return => {
-                if let Some(node) = &self.node {
-                    write!(
-                        fmt,
-                        "Return({:?} {:?})",
-                        node.kind(),
-                        node.text_trimmed_range()
-                    )
-                } else {
-                    write!(fmt, "Return")
-                }
-            }
-        }
-    }
+			InstructionKind::Return => {
+				if let Some(node) = &self.node {
+					write!(
+						fmt,
+						"Return({:?} {:?})",
+						node.kind(),
+						node.text_trimmed_range()
+					)
+				} else {
+					write!(fmt, "Return")
+				}
+			},
+		}
+	}
 }

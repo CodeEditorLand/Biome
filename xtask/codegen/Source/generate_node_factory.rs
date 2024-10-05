@@ -5,14 +5,17 @@ use biome_string_case::Case;
 use quote::{format_ident, quote};
 use xtask::Result;
 
-pub fn generate_node_factory(ast: &AstSrc, language_kind: LanguageKind) -> Result<String> {
-    let syntax_crate = language_kind.syntax_crate_ident();
-    let syntax_kind = language_kind.syntax_kind();
-    let syntax_token = language_kind.syntax_token();
-    let syntax_node = language_kind.syntax_node();
-    let syntax_element = language_kind.syntax_element();
+pub fn generate_node_factory(
+	ast: &AstSrc,
+	language_kind: LanguageKind,
+) -> Result<String> {
+	let syntax_crate = language_kind.syntax_crate_ident();
+	let syntax_kind = language_kind.syntax_kind();
+	let syntax_token = language_kind.syntax_token();
+	let syntax_node = language_kind.syntax_node();
+	let syntax_element = language_kind.syntax_element();
 
-    let nodes =
+	let nodes =
         ast.nodes.iter().map(|node| {
             let type_name = format_ident!("{}", node.name);
             let kind = format_ident!("{}", Case::Constant.convert(&node.name));
@@ -137,84 +140,84 @@ pub fn generate_node_factory(ast: &AstSrc, language_kind: LanguageKind) -> Resul
             }
         });
 
-    let lists = ast.lists().map(|(name, list)| {
-        let list_name = format_ident!("{}", name);
-        let kind = format_ident!("{}", Case::Constant.convert(name));
-        let factory_name = format_ident!("{}", Case::Snake.convert(name));
-        let item = format_ident!("{}", list.element_name);
+	let lists = ast.lists().map(|(name, list)| {
+		let list_name = format_ident!("{}", name);
+		let kind = format_ident!("{}", Case::Constant.convert(name));
+		let factory_name = format_ident!("{}", Case::Snake.convert(name));
+		let item = format_ident!("{}", list.element_name);
 
-        if list.separator.is_some() {
-            quote! {
-                pub fn #factory_name<I, S>(items: I, separators: S) -> #list_name
-                where
-                    I: IntoIterator<Item = #item>,
-                    I::IntoIter: ExactSizeIterator,
-                    S: IntoIterator<Item = #syntax_token>,
-                    S::IntoIter: ExactSizeIterator,
-                {
-                    let mut items = items.into_iter();
-                    let mut separators = separators.into_iter();
-                    let length = items.len() + separators.len();
-                    #list_name::unwrap_cast(SyntaxNode::new_detached(
-                        #syntax_kind::#kind,
-                        (0..length).map(|index| {
-                            if index % 2 == 0 {
-                                Some(items.next()?.into_syntax().into())
-                            } else {
-                                Some(separators.next()?.into())
-                            }
-                        }),
-                    ))
-                }
-            }
-        } else {
-            quote! {
-                pub fn #factory_name<I>(items: I) -> #list_name
-                where
-                    I: IntoIterator<Item = #item>,
-                    I::IntoIter: ExactSizeIterator,
-                {
-                    #list_name::unwrap_cast(SyntaxNode::new_detached(
-                        #syntax_kind::#kind,
-                        items
-                            .into_iter()
-                            .map(|item| Some(item.into_syntax().into())),
-                    ))
-                }
-            }
-        }
-    });
+		if list.separator.is_some() {
+			quote! {
+				pub fn #factory_name<I, S>(items: I, separators: S) -> #list_name
+				where
+					I: IntoIterator<Item = #item>,
+					I::IntoIter: ExactSizeIterator,
+					S: IntoIterator<Item = #syntax_token>,
+					S::IntoIter: ExactSizeIterator,
+				{
+					let mut items = items.into_iter();
+					let mut separators = separators.into_iter();
+					let length = items.len() + separators.len();
+					#list_name::unwrap_cast(SyntaxNode::new_detached(
+						#syntax_kind::#kind,
+						(0..length).map(|index| {
+							if index % 2 == 0 {
+								Some(items.next()?.into_syntax().into())
+							} else {
+								Some(separators.next()?.into())
+							}
+						}),
+					))
+				}
+			}
+		} else {
+			quote! {
+				pub fn #factory_name<I>(items: I) -> #list_name
+				where
+					I: IntoIterator<Item = #item>,
+					I::IntoIter: ExactSizeIterator,
+				{
+					#list_name::unwrap_cast(SyntaxNode::new_detached(
+						#syntax_kind::#kind,
+						items
+							.into_iter()
+							.map(|item| Some(item.into_syntax().into())),
+					))
+				}
+			}
+		}
+	});
 
-    let bogus = ast.bogus.iter().map(|name| {
-        let bogus_name = format_ident!("{}", name);
-        let kind = format_ident!("{}", Case::Constant.convert(name));
-        let factory_name = format_ident!("{}", Case::Snake.convert(name));
+	let bogus = ast.bogus.iter().map(|name| {
+		let bogus_name = format_ident!("{}", name);
+		let kind = format_ident!("{}", Case::Constant.convert(name));
+		let factory_name = format_ident!("{}", Case::Snake.convert(name));
 
-        quote! {
-            pub fn #factory_name<I>(slots: I) -> #bogus_name
-            where
-                I: IntoIterator<Item = Option<SyntaxElement>>,
-                I::IntoIter: ExactSizeIterator,
-            {
-                #bogus_name::unwrap_cast(SyntaxNode::new_detached(
-                    #syntax_kind::#kind,
-                    slots
-                ))
-            }
-        }
-    });
+		quote! {
+			pub fn #factory_name<I>(slots: I) -> #bogus_name
+			where
+				I: IntoIterator<Item = Option<SyntaxElement>>,
+				I::IntoIter: ExactSizeIterator,
+			{
+				#bogus_name::unwrap_cast(SyntaxNode::new_detached(
+					#syntax_kind::#kind,
+					slots
+				))
+			}
+		}
+	});
 
-    let output = quote! {
-        #![allow(clippy::redundant_closure)]
-        #![allow(clippy::too_many_arguments)]
-        use #syntax_crate::{*, #syntax_token as SyntaxToken, #syntax_node as SyntaxNode, #syntax_element as SyntaxElement};
-        use biome_rowan::AstNode;
+	let output = quote! {
+		#![allow(clippy::redundant_closure)]
+		#![allow(clippy::too_many_arguments)]
+		use #syntax_crate::{*, #syntax_token as SyntaxToken, #syntax_node as SyntaxNode, #syntax_element as SyntaxElement};
+		use biome_rowan::AstNode;
 
-        #(#nodes)*
-        #(#lists)*
-        #(#bogus)*
-    };
+		#(#nodes)*
+		#(#lists)*
+		#(#bogus)*
+	};
 
-    let pretty = xtask::reformat(output)?;
-    Ok(pretty)
+	let pretty = xtask::reformat(output)?;
+	Ok(pretty)
 }

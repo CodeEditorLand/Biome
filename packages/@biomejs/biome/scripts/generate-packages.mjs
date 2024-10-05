@@ -75,7 +75,9 @@ function updateWasmPackage(target) {
 	const packageRoot = resolve(PACKAGES_ROOT, `wasm-${target}`);
 
 	const manifestPath = resolve(packageRoot, "package.json");
-	const manifest = JSON.parse(fs.readFileSync(manifestPath).toString("utf-8"));
+	const manifest = JSON.parse(
+		fs.readFileSync(manifestPath).toString("utf-8"),
+	);
 
 	const { version } = rootManifest;
 	manifest.name = packageName;

@@ -12,13 +12,14 @@ use biome_rowan::Language;
 pub struct JsonLanguage;
 
 impl Language for JsonLanguage {
-    type Kind = JsonSyntaxKind;
-    type Root = JsonRoot;
+	type Kind = JsonSyntaxKind;
+	type Root = JsonRoot;
 }
 
 pub type JsonSyntaxNode = biome_rowan::SyntaxNode<JsonLanguage>;
 pub type JsonSyntaxToken = biome_rowan::SyntaxToken<JsonLanguage>;
 pub type JsonSyntaxElement = biome_rowan::SyntaxElement<JsonLanguage>;
 pub type JsonSyntaxNodeChildren = biome_rowan::SyntaxNodeChildren<JsonLanguage>;
-pub type JsonSyntaxElementChildren = biome_rowan::SyntaxElementChildren<JsonLanguage>;
+pub type JsonSyntaxElementChildren =
+	biome_rowan::SyntaxElementChildren<JsonLanguage>;
 pub type JsonSyntaxList = biome_rowan::SyntaxList<JsonLanguage>;

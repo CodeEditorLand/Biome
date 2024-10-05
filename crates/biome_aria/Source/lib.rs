@@ -21,25 +21,25 @@ pub use roles::AriaRoles;
 /// assert!(is_aria_property_valid("aria-checked"));
 /// ```
 pub fn is_aria_property_valid(property: &str) -> bool {
-    AriaPropertiesEnum::from_str(property).is_ok()
+	AriaPropertiesEnum::from_str(property).is_ok()
 }
 
 #[cfg(test)]
 mod test {
-    use crate::roles::AriaRoles;
+	use crate::roles::AriaRoles;
 
-    #[test]
-    fn property_is_required() {
-        let roles = AriaRoles;
+	#[test]
+	fn property_is_required() {
+		let roles = AriaRoles;
 
-        let role = roles.get_role("checkbox");
+		let role = roles.get_role("checkbox");
 
-        assert!(role.is_some());
+		assert!(role.is_some());
 
-        let role = role.unwrap();
+		let role = role.unwrap();
 
-        assert!(role.is_property_required("aria-checked"));
-        assert!(!role.is_property_required("aria-sort"));
-        assert!(!role.is_property_required("aria-bnlabla"));
-    }
+		assert!(role.is_property_required("aria-checked"));
+		assert!(!role.is_property_required("aria-sort"));
+		assert!(!role.is_property_required("aria-bnlabla"));
+	}
 }

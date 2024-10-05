@@ -1,17 +1,22 @@
 use super::js_kinds_src::AstSrc;
-use crate::generate_nodes::{get_field_predicate, group_fields_for_ordering, token_kind_to_code};
+use crate::generate_nodes::{
+	get_field_predicate, group_fields_for_ordering, token_kind_to_code,
+};
 use crate::language_kind::LanguageKind;
 use biome_string_case::Case;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use xtask::Result;
 
-pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Result<String> {
-    let syntax_crate = language_kind.syntax_crate_ident();
-    let syntax_kind = language_kind.syntax_kind();
-    let factory_kind = language_kind.syntax_factory();
+pub fn generate_syntax_factory(
+	ast: &AstSrc,
+	language_kind: LanguageKind,
+) -> Result<String> {
+	let syntax_crate = language_kind.syntax_crate_ident();
+	let syntax_kind = language_kind.syntax_kind();
+	let factory_kind = language_kind.syntax_factory();
 
-    let normal_node_arms = ast.nodes.iter().map(|node| {
+	let normal_node_arms = ast.nodes.iter().map(|node| {
         let kind = format_ident!("{}", Case::Constant.convert(&node.name));
         let expected_len = node.fields.len();
 
@@ -127,7 +132,7 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
         }
     });
 
-    let lists = ast.lists().map(|(name, data)| {
+	let lists = ast.lists().map(|(name, data)| {
         let element_type = format_ident!("{}", data.element_name);
         let kind = format_ident!("{}", Case::Constant.convert(name));
         if let Some(separator) = &data.separator {
@@ -143,39 +148,39 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
         }
     });
 
-    let bogus_kinds = ast
-        .bogus
-        .iter()
-        .map(|node| format_ident!("{}", Case::Constant.convert(node)));
+	let bogus_kinds = ast
+		.bogus
+		.iter()
+		.map(|node| format_ident!("{}", Case::Constant.convert(node)));
 
-    let output = quote! {
-        use #syntax_crate::{*, #syntax_kind, #syntax_kind::*, T};
-        use biome_rowan::{AstNode, ParsedChildren, RawNodeSlots, RawSyntaxNode, SyntaxFactory, SyntaxKind};
+	let output = quote! {
+		use #syntax_crate::{*, #syntax_kind, #syntax_kind::*, T};
+		use biome_rowan::{AstNode, ParsedChildren, RawNodeSlots, RawSyntaxNode, SyntaxFactory, SyntaxKind};
 
-        #[derive(Debug)]
-        pub struct #factory_kind;
+		#[derive(Debug)]
+		pub struct #factory_kind;
 
-        impl SyntaxFactory for #factory_kind {
-            type Kind = #syntax_kind;
+		impl SyntaxFactory for #factory_kind {
+			type Kind = #syntax_kind;
 
-            #[allow(unused_mut)]
-            fn make_syntax(
-                kind: Self::Kind,
-                children: ParsedChildren<Self::Kind>,
-            ) -> RawSyntaxNode<Self::Kind>
-            {
-                match kind {
-                    #(#bogus_kinds)|* => {
-                        RawSyntaxNode::new(kind, children.into_iter().map(Some))
-                    },
-                    #(#normal_node_arms),*,
-                    #(#lists),*,
-                    _ => unreachable!("Is {:?} a token?", kind),
-                }
-            }
-        }
-    };
+			#[allow(unused_mut)]
+			fn make_syntax(
+				kind: Self::Kind,
+				children: ParsedChildren<Self::Kind>,
+			) -> RawSyntaxNode<Self::Kind>
+			{
+				match kind {
+					#(#bogus_kinds)|* => {
+						RawSyntaxNode::new(kind, children.into_iter().map(Some))
+					},
+					#(#normal_node_arms),*,
+					#(#lists),*,
+					_ => unreachable!("Is {:?} a token?", kind),
+				}
+			}
+		}
+	};
 
-    let pretty = xtask::reformat(output)?;
-    Ok(pretty)
+	let pretty = xtask::reformat(output)?;
+	Ok(pretty)
 }

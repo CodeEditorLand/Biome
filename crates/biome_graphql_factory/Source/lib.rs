@@ -8,4 +8,5 @@ pub use crate::generated::GraphqlSyntaxFactory;
 #[doc(hidden)]
 pub use biome_graphql_syntax as syntax;
 
-pub type GritSyntaxTreeBuilder = TreeBuilder<'static, GraphqlLanguage, GraphqlSyntaxFactory>;
+pub type GritSyntaxTreeBuilder =
+	TreeBuilder<'static, GraphqlLanguage, GraphqlSyntaxFactory>;

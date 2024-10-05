@@ -8,4 +8,5 @@ pub use crate::generated::GritSyntaxFactory;
 #[doc(hidden)]
 pub use biome_grit_syntax as syntax;
 
-pub type GritSyntaxTreeBuilder = TreeBuilder<'static, GritLanguage, GritSyntaxFactory>;
+pub type GritSyntaxTreeBuilder =
+	TreeBuilder<'static, GritLanguage, GritSyntaxFactory>;

@@ -12,13 +12,15 @@ use biome_rowan::Language;
 pub struct MarkdownLanguage;
 
 impl Language for MarkdownLanguage {
-    type Kind = MarkdownSyntaxKind;
-    type Root = MdDocument;
+	type Kind = MarkdownSyntaxKind;
+	type Root = MdDocument;
 }
 
 pub type MarkdownSyntaxNode = biome_rowan::SyntaxNode<MarkdownLanguage>;
 pub type MarkdownSyntaxToken = biome_rowan::SyntaxToken<MarkdownLanguage>;
 pub type MarkdownSyntaxElement = biome_rowan::SyntaxElement<MarkdownLanguage>;
-pub type MarkdownSyntaxNodeChildren = biome_rowan::SyntaxNodeChildren<MarkdownLanguage>;
-pub type MarkdownSyntaxElementChildren = biome_rowan::SyntaxElementChildren<MarkdownLanguage>;
+pub type MarkdownSyntaxNodeChildren =
+	biome_rowan::SyntaxNodeChildren<MarkdownLanguage>;
+pub type MarkdownSyntaxElementChildren =
+	biome_rowan::SyntaxElementChildren<MarkdownLanguage>;
 pub type MarkdownSyntaxList = biome_rowan::SyntaxList<MarkdownLanguage>;

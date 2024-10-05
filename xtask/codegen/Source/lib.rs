@@ -38,112 +38,118 @@ pub use self::ast::generate_ast;
 pub use self::formatter::generate_formatters;
 pub use self::generate_analyzer::generate_analyzer;
 pub use self::generate_crate::generate_crate;
-pub use self::generate_new_analyzer_rule::{generate_new_analyzer_rule, LanguageKind};
+pub use self::generate_new_analyzer_rule::{
+	generate_new_analyzer_rule, LanguageKind,
+};
 pub use self::parser_tests::generate_parser_tests;
 pub use self::unicode::generate_tables;
 
 pub enum UpdateResult {
-    NotUpdated,
-    Updated,
+	NotUpdated,
+	Updated,
 }
 
 /// A helper to update file on disk if it has changed.
 /// With verify = false,
-pub fn update(path: &Path, contents: &str, mode: &Mode) -> Result<UpdateResult> {
-    match fs2::read_to_string(path) {
-        Ok(old_contents) if old_contents == contents => {
-            return Ok(UpdateResult::NotUpdated);
-        }
-        _ => (),
-    }
+pub fn update(
+	path: &Path,
+	contents: &str,
+	mode: &Mode,
+) -> Result<UpdateResult> {
+	match fs2::read_to_string(path) {
+		Ok(old_contents) if old_contents == contents => {
+			return Ok(UpdateResult::NotUpdated);
+		},
+		_ => (),
+	}
 
-    if *mode == Mode::Verify {
-        anyhow::bail!("`{}` is not up-to-date", path.display());
-    }
+	if *mode == Mode::Verify {
+		anyhow::bail!("`{}` is not up-to-date", path.display());
+	}
 
-    eprintln!("updating {}", path.display());
-    if let Some(parent) = path.parent() {
-        if !parent.exists() {
-            fs2::create_dir_all(parent)?;
-        }
-    }
-    fs2::write(path, contents)?;
-    Ok(UpdateResult::Updated)
+	eprintln!("updating {}", path.display());
+	if let Some(parent) = path.parent() {
+		if !parent.exists() {
+			fs2::create_dir_all(parent)?;
+		}
+	}
+	fs2::write(path, contents)?;
+	Ok(UpdateResult::Updated)
 }
 
 pub fn to_capitalized(s: &str) -> String {
-    let mut c = s.chars();
-    match c.next() {
-        None => String::new(),
-        Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
-    }
+	let mut c = s.chars();
+	match c.next() {
+		None => String::new(),
+		Some(f) => f.to_uppercase().collect::<String>() + c.as_str(),
+	}
 }
 
 #[derive(Debug, Clone, Bpaf)]
 #[bpaf(options)]
 pub enum TaskCommand {
-    /// Generates formatters for each language
-    #[bpaf(command)]
-    Formatter,
-    /// Generate factory functions for the analyzer and the configuration of the analyzers
-    #[bpaf(command)]
-    Analyzer,
-    /// Generate the part of the configuration that depends on some metadata
-    #[bpaf(command)]
-    Configuration,
-    #[bpaf(command)]
-    MigrateEslint,
-    /// Generate the JSON schema for the Biome configuration file format
-    #[bpaf(command)]
-    Schema,
-    /// Generate TypeScript definitions for the JavaScript bindings to the Workspace API
-    #[bpaf(command)]
-    Bindings,
-    /// It updates the file that contains licenses
-    #[bpaf(command)]
-    License,
-    /// Transforms ungram files into AST
-    #[bpaf(command)]
-    Grammar(Vec<String>),
-    /// Extracts parser inline comments into test files
-    #[bpaf(command)]
-    Test,
-    /// Generates unicode table inside lexer
-    #[bpaf(command)]
-    Unicode,
-    /// Creates a new lint rule
-    #[bpaf(command, long("new-lintrule"))]
-    NewRule {
-        /// Path of the rule
-        #[bpaf(long("kind"))]
-        kind: LanguageKind,
+	/// Generates formatters for each language
+	#[bpaf(command)]
+	Formatter,
+	/// Generate factory functions for the analyzer and the configuration of the analyzers
+	#[bpaf(command)]
+	Analyzer,
+	/// Generate the part of the configuration that depends on some metadata
+	#[bpaf(command)]
+	Configuration,
+	#[bpaf(command)]
+	MigrateEslint,
+	/// Generate the JSON schema for the Biome configuration file format
+	#[bpaf(command)]
+	Schema,
+	/// Generate TypeScript definitions for the JavaScript bindings to the Workspace API
+	#[bpaf(command)]
+	Bindings,
+	/// It updates the file that contains licenses
+	#[bpaf(command)]
+	License,
+	/// Transforms ungram files into AST
+	#[bpaf(command)]
+	Grammar(Vec<String>),
+	/// Extracts parser inline comments into test files
+	#[bpaf(command)]
+	Test,
+	/// Generates unicode table inside lexer
+	#[bpaf(command)]
+	Unicode,
+	/// Creates a new lint rule
+	#[bpaf(command, long("new-lintrule"))]
+	NewRule {
+		/// Path of the rule
+		#[bpaf(long("kind"))]
+		kind: LanguageKind,
 
-        /// Name of the rule
-        #[bpaf(long("name"))]
-        name: String,
+		/// Name of the rule
+		#[bpaf(long("name"))]
+		name: String,
 
-        /// Name of the rule
-        #[bpaf(long("category"))]
-        category: Category,
-    },
-    /// Promotes a nursery rule
-    #[bpaf(command, long("promote-rule"))]
-    PromoteRule {
-        /// Path of the rule
-        #[bpaf(long("name"), argument("STRING"))]
-        name: String,
-        /// Name of the rule
-        #[bpaf(long("group"), argument("STRING"))]
-        group: String,
-    },
-    /// Runs ALL the codegen
-    #[bpaf(command)]
-    All,
-    /// Creates a new crate
-    #[bpaf(command, long("new-crate"))]
-    NewCrate {
-        /// The name of the crate
-        #[bpaf(long("name"), argument("STRING"))]
-        name: String,
-    },
+		/// Name of the rule
+		#[bpaf(long("category"))]
+		category: Category,
+	},
+	/// Promotes a nursery rule
+	#[bpaf(command, long("promote-rule"))]
+	PromoteRule {
+		/// Path of the rule
+		#[bpaf(long("name"), argument("STRING"))]
+		name: String,
+		/// Name of the rule
+		#[bpaf(long("group"), argument("STRING"))]
+		group: String,
+	},
+	/// Runs ALL the codegen
+	#[bpaf(command)]
+	All,
+	/// Creates a new crate
+	#[bpaf(command, long("new-crate"))]
+	NewCrate {
+		/// The name of the crate
+		#[bpaf(long("name"), argument("STRING"))]
+		name: String,
+	},
 }

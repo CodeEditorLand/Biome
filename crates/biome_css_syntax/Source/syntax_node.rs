@@ -12,13 +12,14 @@ use biome_rowan::Language;
 pub struct CssLanguage;
 
 impl Language for CssLanguage {
-    type Kind = CssSyntaxKind;
-    type Root = CssRoot;
+	type Kind = CssSyntaxKind;
+	type Root = CssRoot;
 }
 
 pub type CssSyntaxNode = biome_rowan::SyntaxNode<CssLanguage>;
 pub type CssSyntaxToken = biome_rowan::SyntaxToken<CssLanguage>;
 pub type CssSyntaxElement = biome_rowan::SyntaxElement<CssLanguage>;
 pub type CssSyntaxNodeChildren = biome_rowan::SyntaxNodeChildren<CssLanguage>;
-pub type CssSyntaxElementChildren = biome_rowan::SyntaxElementChildren<CssLanguage>;
+pub type CssSyntaxElementChildren =
+	biome_rowan::SyntaxElementChildren<CssLanguage>;
 pub type CssSyntaxList = biome_rowan::SyntaxList<CssLanguage>;

@@ -15,14 +15,15 @@ use serde::Serialize;
 pub struct JsLanguage;
 
 impl Language for JsLanguage {
-    type Kind = JsSyntaxKind;
-    type Root = AnyJsRoot;
+	type Kind = JsSyntaxKind;
+	type Root = AnyJsRoot;
 }
 
 pub type JsSyntaxNode = biome_rowan::SyntaxNode<JsLanguage>;
 pub type JsSyntaxToken = biome_rowan::SyntaxToken<JsLanguage>;
 pub type JsSyntaxElement = biome_rowan::SyntaxElement<JsLanguage>;
 pub type JsSyntaxNodeChildren = biome_rowan::SyntaxNodeChildren<JsLanguage>;
-pub type JsSyntaxElementChildren = biome_rowan::SyntaxElementChildren<JsLanguage>;
+pub type JsSyntaxElementChildren =
+	biome_rowan::SyntaxElementChildren<JsLanguage>;
 pub type JsSyntaxList = biome_rowan::SyntaxList<JsLanguage>;
 pub type JsSyntaxTrivia = biome_rowan::syntax::SyntaxTrivia<JsLanguage>;

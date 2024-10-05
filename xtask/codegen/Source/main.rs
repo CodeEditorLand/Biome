@@ -25,77 +25,74 @@ use crate::promote_rule::promote_rule;
 
 use xtask::Mode::Overwrite;
 use xtask_codegen::{
-    generate_analyzer, generate_ast, generate_crate, generate_formatters,
-    generate_new_analyzer_rule, generate_parser_tests, generate_tables, task_command, TaskCommand,
+	generate_analyzer, generate_ast, generate_crate, generate_formatters,
+	generate_new_analyzer_rule, generate_parser_tests, generate_tables,
+	task_command, TaskCommand,
 };
 
 fn main() -> Result<()> {
-    let _d = pushd(project_root());
-    let result = task_command().fallback_to_usage().run();
+	let _d = pushd(project_root());
+	let result = task_command().fallback_to_usage().run();
 
-    match result {
-        TaskCommand::Formatter => {
-            generate_formatters();
-        }
-        TaskCommand::Analyzer => {
-            generate_analyzer()?;
-        }
-        TaskCommand::Configuration => {
-            #[cfg(feature = "configuration")]
-            generate_rules_configuration(Overwrite)?;
-        }
-        TaskCommand::MigrateEslint => {
-            #[cfg(feature = "configuration")]
-            generate_migrate_eslint(Overwrite)?;
-        }
-        TaskCommand::Schema => {
-            #[cfg(feature = "schema")]
-            generate_configuration_schema(Overwrite)?;
-        }
-        TaskCommand::Bindings => {
-            #[cfg(feature = "schema")]
-            generate_workspace_bindings(Overwrite)?;
-        }
-        TaskCommand::License => {
-            #[cfg(feature = "license")]
-            generate_license(Overwrite)?;
-        }
-        TaskCommand::Grammar(language_list) => {
-            generate_ast(Overwrite, language_list)?;
-        }
-        TaskCommand::Test => {
-            generate_parser_tests(Overwrite)?;
-        }
-        TaskCommand::Unicode => {
-            generate_tables()?;
-        }
-        TaskCommand::NewRule {
-            category,
-            name,
-            kind,
-        } => {
-            generate_new_analyzer_rule(kind, category, &name);
-        }
-        TaskCommand::PromoteRule { name, group } => {
-            promote_rule(&name, &group);
-        }
-        TaskCommand::All => {
-            generate_tables()?;
-            generate_ast(Overwrite, vec![])?;
-            generate_parser_tests(Overwrite)?;
-            generate_formatters();
-            generate_analyzer()?;
-            #[cfg(feature = "configuration")]
-            generate_rules_configuration(Overwrite)?;
-            #[cfg(feature = "schema")]
-            generate_configuration_schema(Overwrite)?;
-            #[cfg(feature = "schema")]
-            generate_workspace_bindings(Overwrite)?;
-        }
-        TaskCommand::NewCrate { name } => {
-            generate_crate(name)?;
-        }
-    }
+	match result {
+		TaskCommand::Formatter => {
+			generate_formatters();
+		},
+		TaskCommand::Analyzer => {
+			generate_analyzer()?;
+		},
+		TaskCommand::Configuration => {
+			#[cfg(feature = "configuration")]
+			generate_rules_configuration(Overwrite)?;
+		},
+		TaskCommand::MigrateEslint => {
+			#[cfg(feature = "configuration")]
+			generate_migrate_eslint(Overwrite)?;
+		},
+		TaskCommand::Schema => {
+			#[cfg(feature = "schema")]
+			generate_configuration_schema(Overwrite)?;
+		},
+		TaskCommand::Bindings => {
+			#[cfg(feature = "schema")]
+			generate_workspace_bindings(Overwrite)?;
+		},
+		TaskCommand::License => {
+			#[cfg(feature = "license")]
+			generate_license(Overwrite)?;
+		},
+		TaskCommand::Grammar(language_list) => {
+			generate_ast(Overwrite, language_list)?;
+		},
+		TaskCommand::Test => {
+			generate_parser_tests(Overwrite)?;
+		},
+		TaskCommand::Unicode => {
+			generate_tables()?;
+		},
+		TaskCommand::NewRule { category, name, kind } => {
+			generate_new_analyzer_rule(kind, category, &name);
+		},
+		TaskCommand::PromoteRule { name, group } => {
+			promote_rule(&name, &group);
+		},
+		TaskCommand::All => {
+			generate_tables()?;
+			generate_ast(Overwrite, vec![])?;
+			generate_parser_tests(Overwrite)?;
+			generate_formatters();
+			generate_analyzer()?;
+			#[cfg(feature = "configuration")]
+			generate_rules_configuration(Overwrite)?;
+			#[cfg(feature = "schema")]
+			generate_configuration_schema(Overwrite)?;
+			#[cfg(feature = "schema")]
+			generate_workspace_bindings(Overwrite)?;
+		},
+		TaskCommand::NewCrate { name } => {
+			generate_crate(name)?;
+		},
+	}
 
-    Ok(())
+	Ok(())
 }

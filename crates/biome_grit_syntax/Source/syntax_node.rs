@@ -9,19 +9,22 @@ use crate::{GritRoot, GritSyntaxKind};
 use biome_rowan::Language;
 use serde::Serialize;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize)]
+#[derive(
+	Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize,
+)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 pub struct GritLanguage;
 
 impl Language for GritLanguage {
-    type Kind = GritSyntaxKind;
-    type Root = GritRoot;
+	type Kind = GritSyntaxKind;
+	type Root = GritRoot;
 }
 
 pub type GritSyntaxNode = biome_rowan::SyntaxNode<GritLanguage>;
 pub type GritSyntaxToken = biome_rowan::SyntaxToken<GritLanguage>;
 pub type GritSyntaxElement = biome_rowan::SyntaxElement<GritLanguage>;
 pub type GritSyntaxNodeChildren = biome_rowan::SyntaxNodeChildren<GritLanguage>;
-pub type GritSyntaxElementChildren = biome_rowan::SyntaxElementChildren<GritLanguage>;
+pub type GritSyntaxElementChildren =
+	biome_rowan::SyntaxElementChildren<GritLanguage>;
 pub type GritSyntaxList = biome_rowan::SyntaxList<GritLanguage>;
 pub type GritSyntaxTrivia = biome_rowan::syntax::SyntaxTrivia<GritLanguage>;

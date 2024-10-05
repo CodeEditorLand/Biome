@@ -9,17 +9,20 @@ use crate::{GraphqlRoot, GraphqlSyntaxKind};
 use biome_rowan::Language;
 use serde::Serialize;
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize)]
+#[derive(
+	Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize,
+)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 pub struct GraphqlLanguage;
 
 impl Language for GraphqlLanguage {
-    type Kind = GraphqlSyntaxKind;
-    type Root = GraphqlRoot;
+	type Kind = GraphqlSyntaxKind;
+	type Root = GraphqlRoot;
 }
 
 pub type GraphqlSyntaxNode = biome_rowan::SyntaxNode<GraphqlLanguage>;
 pub type GraphqlSyntaxToken = biome_rowan::SyntaxToken<GraphqlLanguage>;
 pub type GraphqlSyntaxElement = biome_rowan::SyntaxElement<GraphqlLanguage>;
-pub type GraphqlSyntaxElementChildren = biome_rowan::SyntaxElementChildren<GraphqlLanguage>;
+pub type GraphqlSyntaxElementChildren =
+	biome_rowan::SyntaxElementChildren<GraphqlLanguage>;
 pub type GraphqlSyntaxList = biome_rowan::SyntaxList<GraphqlLanguage>;
