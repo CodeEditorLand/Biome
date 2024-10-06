@@ -1,10 +1,14 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::CssDeclarationOrRuleList;
 use biome_rowan::{TextRange, TokenText};
-
 use rustc_hash::FxHashSet;
 
 declare_lint_rule! {
@@ -60,7 +64,7 @@ declare_lint_rule! {
 type GridAreasProp = (String, TextRange);
 type GridAreasProps = Vec<(TokenText, TextRange)>;
 
-const GRID_AREA_PROPERTIES: [&str; 3] = ["grid", "grid-template", "grid-template-areas"];
+const GRID_AREA_PROPERTIES:[&str; 3] = ["grid", "grid-template", "grid-template-areas"];
 
 #[derive(Debug)]
 enum GridAreaValidationError {
@@ -70,18 +74,18 @@ enum GridAreaValidationError {
 }
 
 pub struct UseConsistentGridAreasState {
-	text: Option<String>,
-	span: TextRange,
-	reason: GridAreaValidationError,
+	text:Option<String>,
+	span:TextRange,
+	reason:GridAreaValidationError,
 }
 
 impl Rule for NoInvalidGridAreas {
-	type Query = Ast<CssDeclarationOrRuleList>;
-	type State = UseConsistentGridAreasState;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<CssDeclarationOrRuleList>;
+	type Signals = Option<Self::State>;
+	type State = UseConsistentGridAreasState;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 		// Extracting the property values of grid-template-areas
 		let plain_grid_areas_props = node
@@ -124,7 +128,7 @@ impl Rule for NoInvalidGridAreas {
 		}
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		match state.reason {
             GridAreaValidationError::EmptyGridArea => Some(
                 RuleDiagnostic::new(
@@ -167,7 +171,7 @@ impl Rule for NoInvalidGridAreas {
 }
 
 // Check if the grid areas are consistent
-fn is_consistent_grids(grid_areas_props: GridAreasProps) -> Option<UseConsistentGridAreasState> {
+fn is_consistent_grids(grid_areas_props:GridAreasProps) -> Option<UseConsistentGridAreasState> {
 	let first_prop = clean_text(&grid_areas_props[0].0);
 	let first_len = first_prop.len();
 	let mut shortest = &grid_areas_props[0];
@@ -177,9 +181,9 @@ fn is_consistent_grids(grid_areas_props: GridAreasProps) -> Option<UseConsistent
 		// Check if the grid areas are empty
 		if cleaned_text.is_empty() {
 			return Some(UseConsistentGridAreasState {
-				text: None,
-				span: grid_areas_prop.1,
-				reason: GridAreaValidationError::EmptyGridArea,
+				text:None,
+				span:grid_areas_prop.1,
+				reason:GridAreaValidationError::EmptyGridArea,
 			});
 		}
 		// Check if all elements have the same length
@@ -188,18 +192,19 @@ fn is_consistent_grids(grid_areas_props: GridAreasProps) -> Option<UseConsistent
 				shortest = grid_areas_prop;
 			}
 			return Some(UseConsistentGridAreasState {
-				text: None,
-				span: shortest.1,
-				reason: GridAreaValidationError::InconsistentCellCount,
+				text:None,
+				span:shortest.1,
+				reason:GridAreaValidationError::InconsistentCellCount,
 			});
 		}
 	}
 
 	// Check if there are no duplicate grid tokens
-	// It should be partial match because for example, in the following grid areas:
-	// {"a a a"
+	// It should be partial match because for example, in the following grid
+	// areas: {"a a a"
 	//  "b b b"; }
-	//  are the consistent grid properties because it forms a single filled-in rectangle.
+	//  are the consistent grid properties because it forms a single filled-in
+	// rectangle.
 	if grid_areas_props.iter().all(|prop| is_all_same(prop.0.clone())) {
 		return None;
 	}
@@ -209,9 +214,9 @@ fn is_consistent_grids(grid_areas_props: GridAreasProps) -> Option<UseConsistent
 	//   are not consistent because `a` breaks a single filled-in rectangle.
 	if let Some(result) = has_partial_match(&grid_areas_props) {
 		return Some(UseConsistentGridAreasState {
-			text: Some(result.0),
-			span: result.1,
-			reason: GridAreaValidationError::DuplicateGridToken,
+			text:Some(result.0),
+			span:result.1,
+			reason:GridAreaValidationError::DuplicateGridToken,
 		});
 	}
 
@@ -219,20 +224,20 @@ fn is_consistent_grids(grid_areas_props: GridAreasProps) -> Option<UseConsistent
 }
 
 // Check if all characters in a string are the same
-fn is_all_same(token_text: TokenText) -> bool {
+fn is_all_same(token_text:TokenText) -> bool {
 	let prop = clean_text(&token_text);
-	let chars: Vec<char> = prop.chars().filter(|c| !c.is_whitespace()).collect();
+	let chars:Vec<char> = prop.chars().filter(|c| !c.is_whitespace()).collect();
 	let head = chars[0];
 	chars.iter().all(|&c| c == head)
 }
 
-fn has_partial_match(grid_areas_props: &GridAreasProps) -> Option<GridAreasProp> {
+fn has_partial_match(grid_areas_props:&GridAreasProps) -> Option<GridAreasProp> {
 	let mut seen_parts = FxHashSet::default();
 
 	for (text, range) in grid_areas_props {
 		let prop = clean_text(text);
 
-		let parts: FxHashSet<String> =
+		let parts:FxHashSet<String> =
 			prop.split_whitespace().map(|part| part.to_string()).collect();
 		for part in parts {
 			if !seen_parts.insert(part.clone()) {
@@ -244,6 +249,4 @@ fn has_partial_match(grid_areas_props: &GridAreasProps) -> Option<GridAreasProp>
 	None
 }
 
-fn clean_text(text: &TokenText) -> String {
-	text.replace('"', "").trim().to_string()
-}
+fn clean_text(text:&TokenText) -> String { text.replace('"', "").trim().to_string() }

@@ -1,12 +1,12 @@
-use {
-	crate::TextLen,
-	std::{
-		convert::TryFrom,
-		fmt, iter,
-		num::TryFromIntError,
-		ops::{Add, AddAssign, Sub, SubAssign},
-	},
+use std::{
+	convert::TryFrom,
+	fmt,
+	iter,
+	num::TryFromIntError,
+	ops::{Add, AddAssign, Sub, SubAssign},
 };
+
+use crate::TextLen;
 
 /// A measure of text length. Also, equivalently, an index into text.
 ///
@@ -22,13 +22,11 @@ use {
 /// converting from UTF-8 size to another coordinate space, such as UTF-16.
 #[derive(Clone, Copy, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct TextSize {
-	pub(crate) raw: u32,
+	pub(crate) raw:u32,
 }
 
 impl fmt::Debug for TextSize {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-		write!(f, "{}", self.raw)
-	}
+	fn fmt(&self, f:&mut fmt::Formatter<'_>) -> fmt::Result { write!(f, "{}", self.raw) }
 }
 
 impl TextSize {
@@ -47,9 +45,7 @@ impl TextSize {
 	/// assert_eq!(str_size, TextSize::from(13));
 	/// ```
 	#[inline]
-	pub fn of<T: TextLen>(text: T) -> TextSize {
-		text.text_len()
-	}
+	pub fn of<T:TextLen>(text:T) -> TextSize { text.text_len() }
 }
 
 /// Methods to act like a primitive integer type, where reasonably applicable.
@@ -57,44 +53,37 @@ impl TextSize {
 impl TextSize {
 	/// Checked addition. Returns `None` if overflow occurred.
 	#[inline]
-	pub fn checked_add(self, rhs: TextSize) -> Option<TextSize> {
+	pub fn checked_add(self, rhs:TextSize) -> Option<TextSize> {
 		self.raw.checked_add(rhs.raw).map(|raw| TextSize { raw })
 	}
 
 	/// Checked subtraction. Returns `None` if overflow occurred.
 	#[inline]
-	pub fn checked_sub(self, rhs: TextSize) -> Option<TextSize> {
+	pub fn checked_sub(self, rhs:TextSize) -> Option<TextSize> {
 		self.raw.checked_sub(rhs.raw).map(|raw| TextSize { raw })
 	}
 }
 
 impl From<u32> for TextSize {
 	#[inline]
-	fn from(raw: u32) -> Self {
-		TextSize { raw }
-	}
+	fn from(raw:u32) -> Self { TextSize { raw } }
 }
 
 impl From<TextSize> for u32 {
 	#[inline]
-	fn from(value: TextSize) -> Self {
-		value.raw
-	}
+	fn from(value:TextSize) -> Self { value.raw }
 }
 
 impl TryFrom<usize> for TextSize {
 	type Error = TryFromIntError;
+
 	#[inline]
-	fn try_from(value: usize) -> Result<Self, TryFromIntError> {
-		Ok(u32::try_from(value)?.into())
-	}
+	fn try_from(value:usize) -> Result<Self, TryFromIntError> { Ok(u32::try_from(value)?.into()) }
 }
 
 impl From<TextSize> for usize {
 	#[inline]
-	fn from(value: TextSize) -> Self {
-		value.raw as usize
-	}
+	fn from(value:TextSize) -> Self { value.raw as usize }
 }
 
 macro_rules! ops {
@@ -134,9 +123,7 @@ where
 	TextSize: Add<A, Output = TextSize>,
 {
 	#[inline]
-	fn add_assign(&mut self, rhs: A) {
-		*self = *self + rhs
-	}
+	fn add_assign(&mut self, rhs:A) { *self = *self + rhs }
 }
 
 impl<S> SubAssign<S> for TextSize
@@ -144,9 +131,7 @@ where
 	TextSize: Sub<S, Output = TextSize>,
 {
 	#[inline]
-	fn sub_assign(&mut self, rhs: S) {
-		*self = *self - rhs
-	}
+	fn sub_assign(&mut self, rhs:S) { *self = *self - rhs }
 }
 
 impl<A> iter::Sum<A> for TextSize
@@ -154,7 +139,5 @@ where
 	TextSize: Add<A, Output = TextSize>,
 {
 	#[inline]
-	fn sum<I: Iterator<Item = A>>(iter: I) -> TextSize {
-		iter.fold(0.into(), Add::add)
-	}
+	fn sum<I:Iterator<Item = A>>(iter:I) -> TextSize { iter.fold(0.into(), Add::add) }
 }

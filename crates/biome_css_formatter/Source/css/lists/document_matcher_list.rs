@@ -1,17 +1,19 @@
-use crate::prelude::*;
 use biome_css_syntax::CssDocumentMatcherList;
+
+use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssDocumentMatcherList;
 impl FormatRule<CssDocumentMatcherList> for FormatCssDocumentMatcherList {
-    type Context = CssFormatContext;
-    fn fmt(&self, node: &CssDocumentMatcherList, f: &mut CssFormatter) -> FormatResult<()> {
-        let separator = space();
-        let mut joiner = f.join_with(&separator);
+	type Context = CssFormatContext;
 
-        for formatted in node.format_separated(",") {
-            joiner.entry(&formatted);
-        }
+	fn fmt(&self, node:&CssDocumentMatcherList, f:&mut CssFormatter) -> FormatResult<()> {
+		let separator = space();
+		let mut joiner = f.join_with(&separator);
 
-        joiner.finish()
-    }
+		for formatted in node.format_separated(",") {
+			joiner.entry(&formatted);
+		}
+
+		joiner.finish()
+	}
 }

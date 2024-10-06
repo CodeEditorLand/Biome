@@ -49,12 +49,12 @@ declare_lint_rule! {
 }
 
 impl Rule for UseErrorMessage {
-	type Query = Semantic<JsNewOrCallExpression>;
-	type State = UseErrorMessageRule;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Semantic<JsNewOrCallExpression>;
+	type Signals = Option<Self::State>;
+	type State = UseErrorMessageRule;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
 		let callee = node.callee().ok()?;
@@ -101,22 +101,22 @@ impl Rule for UseErrorMessage {
 				}
 
 				None
-			}
+			},
 			AnyJsExpression::JsTemplateExpression(template) => {
 				if template.elements().into_iter().count() == 0 {
 					return Some(UseErrorMessageRule::EmptyString);
 				}
 
 				None
-			}
+			},
 			AnyJsExpression::JsArrayExpression(_) | AnyJsExpression::JsObjectExpression(_) => {
 				Some(UseErrorMessageRule::NotString)
-			}
+			},
 			_ => None,
 		}
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query().arguments()?;
 
 		let message = match state {
@@ -135,7 +135,7 @@ impl Rule for UseErrorMessage {
 
 /// Sorted array of builtins errors requiring an error message.
 /// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error
-const BUILTIN_ERRORS: &[&str] = &[
+const BUILTIN_ERRORS:&[&str] = &[
 	"AggregateError",
 	"Error",
 	"EvalError",

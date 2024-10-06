@@ -1,35 +1,29 @@
-use super::js_kinds_src::AstSrc;
-use crate::language_kind::LanguageKind;
-use crate::Result;
 use biome_string_case::Case;
 use quote::{format_ident, quote};
 
-pub fn generate_macros(
-	ast: &AstSrc,
-	language_kind: LanguageKind,
-) -> Result<String> {
+use super::js_kinds_src::AstSrc;
+use crate::{language_kind::LanguageKind, Result};
+
+pub fn generate_macros(ast:&AstSrc, language_kind:LanguageKind) -> Result<String> {
 	let syntax_kind = language_kind.syntax_kind();
 	let syntax_node = language_kind.syntax_node();
 
-	let match_arms: Vec<_> = ast
+	let match_arms:Vec<_> = ast
 		.nodes
 		.iter()
 		.map(|node| {
 			let name = format_ident!("{}", node.name);
-			let node_kind =
-				format_ident!("{}", Case::Constant.convert(&node.name));
+			let node_kind = format_ident!("{}", Case::Constant.convert(&node.name));
 			(name, node_kind)
 		})
 		.chain(ast.bogus.iter().map(|node_name| {
 			let name = format_ident!("{}", node_name);
-			let node_kind =
-				format_ident!("{}", Case::Constant.convert(node_name));
+			let node_kind = format_ident!("{}", Case::Constant.convert(node_name));
 			(name, node_kind)
 		}))
 		.chain(ast.lists().map(|(node_name, _)| {
 			let name = format_ident!("{}", node_name);
-			let node_kind =
-				format_ident!("{}", Case::Constant.convert(node_name));
+			let node_kind = format_ident!("{}", Case::Constant.convert(node_name));
 			(name, node_kind)
 		}))
 		.map(|(name, node_kind)| {

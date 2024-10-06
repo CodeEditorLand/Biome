@@ -1,13 +1,13 @@
 //! Extremely fast, lossless, and error tolerant JSON Parser.
 
-use crate::parser::JsonParser;
-use crate::syntax::parse_root;
 use biome_json_factory::JsonSyntaxFactory;
 use biome_json_syntax::{JsonLanguage, JsonRoot, JsonSyntaxNode};
 pub use biome_parser::prelude::*;
 use biome_parser::{tree_sink::LosslessTreeSink, AnyParse};
 use biome_rowan::{AstNode, NodeCache};
 pub use parser::JsonParserOptions;
+
+use crate::{parser::JsonParser, syntax::parse_root};
 
 mod lexer;
 mod parser;
@@ -18,16 +18,16 @@ mod token_source;
 pub(crate) type JsonLosslessTreeSink<'source> =
 	LosslessTreeSink<'source, JsonLanguage, JsonSyntaxFactory>;
 
-pub fn parse_json(source: &str, options: JsonParserOptions) -> JsonParse {
+pub fn parse_json(source:&str, options:JsonParserOptions) -> JsonParse {
 	let mut cache = NodeCache::default();
 	parse_json_with_cache(source, &mut cache, options)
 }
 
 /// Parses the provided string as JSON program using the provided node cache.
 pub fn parse_json_with_cache(
-	source: &str,
-	cache: &mut NodeCache,
-	config: JsonParserOptions,
+	source:&str,
+	cache:&mut NodeCache,
+	config:JsonParserOptions,
 ) -> JsonParse {
 	tracing::debug_span!("parse").in_scope(move || {
 		let mut parser = JsonParser::new(source, config);
@@ -36,8 +36,7 @@ pub fn parse_json_with_cache(
 
 		let (events, diagnostics, trivia) = parser.finish();
 
-		let mut tree_sink =
-			JsonLosslessTreeSink::with_cache(source, &trivia, cache);
+		let mut tree_sink = JsonLosslessTreeSink::with_cache(source, &trivia, cache);
 		biome_parser::event::process(&mut tree_sink, events, diagnostics);
 		let (green, diagnostics) = tree_sink.finish();
 
@@ -48,15 +47,12 @@ pub fn parse_json_with_cache(
 /// A utility struct for managing the result of a parser job
 #[derive(Debug)]
 pub struct JsonParse {
-	root: JsonSyntaxNode,
-	diagnostics: Vec<ParseDiagnostic>,
+	root:JsonSyntaxNode,
+	diagnostics:Vec<ParseDiagnostic>,
 }
 
 impl JsonParse {
-	pub fn new(
-		root: JsonSyntaxNode,
-		diagnostics: Vec<ParseDiagnostic>,
-	) -> JsonParse {
+	pub fn new(root:JsonSyntaxNode, diagnostics:Vec<ParseDiagnostic>) -> JsonParse {
 		JsonParse { root, diagnostics }
 	}
 
@@ -68,8 +64,8 @@ impl JsonParse {
 	/// # use biome_rowan::{AstNode, AstNodeList, SyntaxError};
 	///
 	/// # fn main() -> Result<(), SyntaxError> {
-	/// use biome_json_syntax::JsonSyntaxKind;
 	/// use biome_json_parser::JsonParserOptions;
+	/// use biome_json_syntax::JsonSyntaxKind;
 	/// let parse = parse_json(r#"["a", 1]"#, JsonParserOptions::default());
 	///
 	/// // Get the root value
@@ -80,19 +76,13 @@ impl JsonParse {
 	/// # Ok(())
 	/// # }
 	/// ```
-	pub fn syntax(&self) -> JsonSyntaxNode {
-		self.root.clone()
-	}
+	pub fn syntax(&self) -> JsonSyntaxNode { self.root.clone() }
 
 	/// Get the diagnostics which occurred when parsing
-	pub fn diagnostics(&self) -> &[ParseDiagnostic] {
-		&self.diagnostics
-	}
+	pub fn diagnostics(&self) -> &[ParseDiagnostic] { &self.diagnostics }
 
 	/// Get the diagnostics which occurred when parsing
-	pub fn into_diagnostics(self) -> Vec<ParseDiagnostic> {
-		self.diagnostics
-	}
+	pub fn into_diagnostics(self) -> Vec<ParseDiagnostic> { self.diagnostics }
 
 	/// Returns [true] if the parser encountered some errors during the parsing.
 	pub fn has_errors(&self) -> bool {
@@ -103,13 +93,11 @@ impl JsonParse {
 	///
 	/// # Panics
 	/// Panics if the node represented by this parse result mismatches.
-	pub fn tree(&self) -> JsonRoot {
-		JsonRoot::unwrap_cast(self.syntax())
-	}
+	pub fn tree(&self) -> JsonRoot { JsonRoot::unwrap_cast(self.syntax()) }
 }
 
 impl From<JsonParse> for AnyParse {
-	fn from(parse: JsonParse) -> Self {
+	fn from(parse:JsonParse) -> Self {
 		let root = parse.syntax();
 		let diagnostics = parse.into_diagnostics();
 		Self::new(

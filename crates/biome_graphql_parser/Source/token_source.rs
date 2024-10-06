@@ -1,24 +1,25 @@
-use crate::lexer::GraphqlLexer;
-use biome_graphql_syntax::GraphqlSyntaxKind::EOF;
-use biome_graphql_syntax::{GraphqlSyntaxKind, TextRange};
-use biome_parser::diagnostic::ParseDiagnostic;
-use biome_parser::lexer::BufferedLexer;
-use biome_parser::prelude::TokenSource;
-use biome_parser::token_source::{TokenSourceWithBufferedLexer, Trivia};
+use biome_graphql_syntax::{GraphqlSyntaxKind, GraphqlSyntaxKind::EOF, TextRange};
+use biome_parser::{
+	diagnostic::ParseDiagnostic,
+	lexer::BufferedLexer,
+	prelude::TokenSource,
+	token_source::{TokenSourceWithBufferedLexer, Trivia},
+};
 use biome_rowan::TriviaPieceKind;
 
+use crate::lexer::GraphqlLexer;
+
 pub(crate) struct GraphqlTokenSource<'source> {
-	lexer: BufferedLexer<GraphqlSyntaxKind, GraphqlLexer<'source>>,
-	trivia_list: Vec<Trivia>,
+	lexer:BufferedLexer<GraphqlSyntaxKind, GraphqlLexer<'source>>,
+	trivia_list:Vec<Trivia>,
 }
 
 impl<'source> GraphqlTokenSource<'source> {
-	pub(crate) fn new(
-		lexer: BufferedLexer<GraphqlSyntaxKind, GraphqlLexer<'source>>,
-	) -> Self {
-		Self { lexer, trivia_list: Vec::new() }
+	pub(crate) fn new(lexer:BufferedLexer<GraphqlSyntaxKind, GraphqlLexer<'source>>) -> Self {
+		Self { lexer, trivia_list:Vec::new() }
 	}
-	pub fn from_str(source: &'source str) -> Self {
+
+	pub fn from_str(source:&'source str) -> Self {
 		let lexer = GraphqlLexer::from_str(source);
 		let lexer = BufferedLexer::new(lexer);
 
@@ -28,7 +29,7 @@ impl<'source> GraphqlTokenSource<'source> {
 		source
 	}
 
-	fn next_non_trivia_token(&mut self, first_token: bool) {
+	fn next_non_trivia_token(&mut self, first_token:bool) {
 		let mut trailing = !first_token;
 
 		loop {
@@ -46,11 +47,7 @@ impl<'source> GraphqlTokenSource<'source> {
 						trailing = false;
 					}
 
-					self.trivia_list.push(Trivia::new(
-						trivia_kind,
-						self.current_range(),
-						trailing,
-					));
+					self.trivia_list.push(Trivia::new(trivia_kind, self.current_range(), trailing));
 				},
 			}
 		}
@@ -60,21 +57,13 @@ impl<'source> GraphqlTokenSource<'source> {
 impl<'source> TokenSource for GraphqlTokenSource<'source> {
 	type Kind = GraphqlSyntaxKind;
 
-	fn current(&self) -> Self::Kind {
-		self.lexer.current()
-	}
+	fn current(&self) -> Self::Kind { self.lexer.current() }
 
-	fn current_range(&self) -> TextRange {
-		self.lexer.current_range()
-	}
+	fn current_range(&self) -> TextRange { self.lexer.current_range() }
 
-	fn text(&self) -> &str {
-		self.lexer.source()
-	}
+	fn text(&self) -> &str { self.lexer.source() }
 
-	fn has_preceding_line_break(&self) -> bool {
-		self.lexer.has_preceding_line_break()
-	}
+	fn has_preceding_line_break(&self) -> bool { self.lexer.has_preceding_line_break() }
 
 	fn bump(&mut self) {
 		if self.current() != EOF {
@@ -99,12 +88,8 @@ impl<'source> TokenSource for GraphqlTokenSource<'source> {
 	}
 }
 
-impl<'source> TokenSourceWithBufferedLexer<GraphqlLexer<'source>>
-	for GraphqlTokenSource<'source>
-{
-	fn lexer(
-		&mut self,
-	) -> &mut BufferedLexer<GraphqlSyntaxKind, GraphqlLexer<'source>> {
+impl<'source> TokenSourceWithBufferedLexer<GraphqlLexer<'source>> for GraphqlTokenSource<'source> {
+	fn lexer(&mut self) -> &mut BufferedLexer<GraphqlSyntaxKind, GraphqlLexer<'source>> {
 		&mut self.lexer
 	}
 }

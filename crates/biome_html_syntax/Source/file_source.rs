@@ -1,35 +1,20 @@
+use std::{ffi::OsStr, path::Path};
+
 use biome_rowan::FileSourceError;
 use biome_string_case::StrLikeExtension;
-use std::{ffi::OsStr, path::Path};
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
-	Debug,
-	Clone,
-	Default,
-	Copy,
-	Eq,
-	PartialEq,
-	Hash,
-	serde::Serialize,
-	serde::Deserialize,
+	Debug, Clone, Default, Copy, Eq, PartialEq, Hash, serde::Serialize, serde::Deserialize,
 )]
 pub struct HtmlFileSource {
 	#[allow(unused)]
-	variant: HtmlVariant,
+	variant:HtmlVariant,
 }
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
-	Debug,
-	Clone,
-	Default,
-	Copy,
-	Eq,
-	PartialEq,
-	Hash,
-	serde::Serialize,
-	serde::Deserialize,
+	Debug, Clone, Default, Copy, Eq, PartialEq, Hash, serde::Serialize, serde::Deserialize,
 )]
 enum HtmlVariant {
 	#[default]
@@ -38,23 +23,19 @@ enum HtmlVariant {
 }
 
 impl HtmlFileSource {
-	pub fn html() -> Self {
-		Self { variant: HtmlVariant::Standard }
-	}
-	pub fn astro() -> Self {
-		Self { variant: HtmlVariant::Astro }
-	}
+	pub fn html() -> Self { Self { variant:HtmlVariant::Standard } }
 
-	/// Try to return the HTML file source corresponding to this file name from well-known files
-	pub fn try_from_well_known(_: &Path) -> Result<Self, FileSourceError> {
+	pub fn astro() -> Self { Self { variant:HtmlVariant::Astro } }
+
+	/// Try to return the HTML file source corresponding to this file name from
+	/// well-known files
+	pub fn try_from_well_known(_:&Path) -> Result<Self, FileSourceError> {
 		// TODO: to be implemented
 		Err(FileSourceError::UnknownFileName)
 	}
 
 	/// Try to return the HTML file source corresponding to this file extension
-	pub fn try_from_extension(
-		extension: &OsStr,
-	) -> Result<Self, FileSourceError> {
+	pub fn try_from_extension(extension:&OsStr) -> Result<Self, FileSourceError> {
 		// We assume the file extension is normalized to lowercase
 		match extension.as_encoded_bytes() {
 			b"html" => Ok(Self::html()),
@@ -72,9 +53,7 @@ impl HtmlFileSource {
 	/// [LSP spec]: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentItem
 	/// [VS Code spec]: https://code.visualstudio.com/docs/languages/identifiers
 	/// [VS Code extension]: https://github.com/withastro/language-tools/blob/0503392b80765c8a1292ddc9c063a1187425c187/packages/vscode/package.json#L140
-	pub fn try_from_language_id(
-		language_id: &str,
-	) -> Result<Self, FileSourceError> {
+	pub fn try_from_language_id(language_id:&str) -> Result<Self, FileSourceError> {
 		match language_id {
 			"html" => Ok(Self::html()),
 			"astro" => Ok(Self::astro()),
@@ -86,7 +65,7 @@ impl HtmlFileSource {
 impl TryFrom<&Path> for HtmlFileSource {
 	type Error = FileSourceError;
 
-	fn try_from(path: &Path) -> Result<Self, Self::Error> {
+	fn try_from(path:&Path) -> Result<Self, Self::Error> {
 		if let Ok(file_source) = Self::try_from_well_known(path) {
 			return Ok(file_source);
 		}

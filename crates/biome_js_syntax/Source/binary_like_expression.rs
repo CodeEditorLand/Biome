@@ -1,22 +1,34 @@
-//! Binary like nodes are nodes with `left` and `right` expressions. They include:
+//! Binary like nodes are nodes with `left` and `right` expressions. They
+//! include:
 //! - [JsBinaryExpression]
 //! - [JsLogicalExpression]
 //! - [JsInExpression]
 //! - [JsInstanceofExpression]
 
-use crate::{
-	AnyJsExpression, AnyJsInProperty, JsArrowFunctionExpression,
-	JsBinaryExpression, JsBinaryOperator, JsDoWhileStatement, JsIfStatement,
-	JsInExpression, JsInstanceofExpression, JsLogicalExpression,
-	JsLogicalOperator, JsPrivateName, JsSwitchStatement, JsSyntaxKind,
-	JsSyntaxNode, JsSyntaxToken, JsWhileStatement, OperatorPrecedence,
-};
+use std::{fmt::Debug, hash::Hash};
 
-use biome_rowan::{
-	declare_node_union, AstNode, AstSeparatedList, SyntaxResult,
+use biome_rowan::{declare_node_union, AstNode, AstSeparatedList, SyntaxResult};
+
+use crate::{
+	AnyJsExpression,
+	AnyJsInProperty,
+	JsArrowFunctionExpression,
+	JsBinaryExpression,
+	JsBinaryOperator,
+	JsDoWhileStatement,
+	JsIfStatement,
+	JsInExpression,
+	JsInstanceofExpression,
+	JsLogicalExpression,
+	JsLogicalOperator,
+	JsPrivateName,
+	JsSwitchStatement,
+	JsSyntaxKind,
+	JsSyntaxNode,
+	JsSyntaxToken,
+	JsWhileStatement,
+	OperatorPrecedence,
 };
-use std::fmt::Debug;
-use std::hash::Hash;
 
 declare_node_union! {
 	pub AnyJsBinaryLikeExpression = JsLogicalExpression | JsBinaryExpression | JsInstanceofExpression | JsInExpression
@@ -25,18 +37,18 @@ declare_node_union! {
 impl AnyJsBinaryLikeExpression {
 	pub fn left(&self) -> SyntaxResult<AnyJsBinaryLikeLeftExpression> {
 		match self {
-			Self::JsLogicalExpression(logical) => logical
-				.left()
-				.map(AnyJsBinaryLikeLeftExpression::AnyJsExpression),
-			Self::JsBinaryExpression(binary) => binary
-				.left()
-				.map(AnyJsBinaryLikeLeftExpression::AnyJsExpression),
-			Self::JsInstanceofExpression(instanceof) => instanceof
-				.left()
-				.map(AnyJsBinaryLikeLeftExpression::AnyJsExpression),
-			Self::JsInExpression(in_expression) => in_expression
-				.property()
-				.map(AnyJsBinaryLikeLeftExpression::from),
+			Self::JsLogicalExpression(logical) => {
+				logical.left().map(AnyJsBinaryLikeLeftExpression::AnyJsExpression)
+			},
+			Self::JsBinaryExpression(binary) => {
+				binary.left().map(AnyJsBinaryLikeLeftExpression::AnyJsExpression)
+			},
+			Self::JsInstanceofExpression(instanceof) => {
+				instanceof.left().map(AnyJsBinaryLikeLeftExpression::AnyJsExpression)
+			},
+			Self::JsInExpression(in_expression) => {
+				in_expression.property().map(AnyJsBinaryLikeLeftExpression::from)
+			},
 		}
 	}
 
@@ -44,9 +56,7 @@ impl AnyJsBinaryLikeExpression {
 		match self {
 			Self::JsLogicalExpression(logical) => logical.operator_token(),
 			Self::JsBinaryExpression(binary) => binary.operator_token(),
-			Self::JsInstanceofExpression(instanceof) => {
-				instanceof.instanceof_token()
-			},
+			Self::JsInstanceofExpression(instanceof) => instanceof.instanceof_token(),
 			Self::JsInExpression(in_expression) => in_expression.in_token(),
 		}
 	}
@@ -56,12 +66,8 @@ impl AnyJsBinaryLikeExpression {
 			Self::JsLogicalExpression(logical) => {
 				logical.operator().map(BinaryLikeOperator::Logical)
 			},
-			Self::JsBinaryExpression(binary) => {
-				binary.operator().map(BinaryLikeOperator::Binary)
-			},
-			Self::JsInstanceofExpression(_) => {
-				Ok(BinaryLikeOperator::Instanceof)
-			},
+			Self::JsBinaryExpression(binary) => binary.operator().map(BinaryLikeOperator::Binary),
+			Self::JsInstanceofExpression(_) => Ok(BinaryLikeOperator::Instanceof),
 			Self::JsInExpression(_) => Ok(BinaryLikeOperator::In),
 		}
 	}
@@ -76,7 +82,8 @@ impl AnyJsBinaryLikeExpression {
 		}
 	}
 
-	/// Returns `true` if the expression is inside of a test condition of `parent`.
+	/// Returns `true` if the expression is inside of a test condition of
+	/// `parent`.
 	///
 	/// # Examples
 	///
@@ -85,12 +92,10 @@ impl AnyJsBinaryLikeExpression {
 	/// if (true) { a + b } // false
 	/// switch (a + b) {} // true
 	/// ```
-	pub fn is_inside_condition(&self, parent: Option<&JsSyntaxNode>) -> bool {
+	pub fn is_inside_condition(&self, parent:Option<&JsSyntaxNode>) -> bool {
 		parent.map_or(false, |parent| {
 			let test = match parent.kind() {
-				JsSyntaxKind::JS_IF_STATEMENT => {
-					JsIfStatement::unwrap_cast(parent.clone()).test()
-				},
+				JsSyntaxKind::JS_IF_STATEMENT => JsIfStatement::unwrap_cast(parent.clone()).test(),
 				JsSyntaxKind::JS_DO_WHILE_STATEMENT => {
 					JsDoWhileStatement::unwrap_cast(parent.clone()).test()
 				},
@@ -98,8 +103,7 @@ impl AnyJsBinaryLikeExpression {
 					JsWhileStatement::unwrap_cast(parent.clone()).test()
 				},
 				JsSyntaxKind::JS_SWITCH_STATEMENT => {
-					JsSwitchStatement::unwrap_cast(parent.clone())
-						.discriminant()
+					JsSwitchStatement::unwrap_cast(parent.clone()).discriminant()
 				},
 				_ => return false,
 			};
@@ -107,14 +111,13 @@ impl AnyJsBinaryLikeExpression {
 		})
 	}
 
-	/// Determines if a binary like expression should be flattened or not. As a rule of thumb, an expression
-	/// can be flattened if its left hand side has the same operator-precedence
+	/// Determines if a binary like expression should be flattened or not. As a
+	/// rule of thumb, an expression can be flattened if its left hand side has
+	/// the same operator-precedence
 	pub fn can_flatten(&self) -> SyntaxResult<bool> {
 		let left = self.left()?.into_expression();
 		let left_expression = left.map(|expression| expression.into_syntax());
-		if let Some(left_binary_like) =
-			left_expression.and_then(AnyJsBinaryLikeExpression::cast)
-		{
+		if let Some(left_binary_like) = left_expression.and_then(AnyJsBinaryLikeExpression::cast) {
 			Ok(should_flatten(self.operator()?, left_binary_like.operator()?))
 		} else {
 			Ok(false)
@@ -124,62 +127,62 @@ impl AnyJsBinaryLikeExpression {
 	pub fn should_inline_logical_expression(&self) -> bool {
 		match self {
 			AnyJsBinaryLikeExpression::JsLogicalExpression(logical) => {
-				logical.right().map_or(false, |right| match right {
-					AnyJsExpression::JsObjectExpression(object) => {
-						!object.members().is_empty()
-					},
-					AnyJsExpression::JsArrayExpression(array) => {
-						!array.elements().is_empty()
-					},
-					AnyJsExpression::JsxTagExpression(_) => true,
-					_ => false,
+				logical.right().map_or(false, |right| {
+					match right {
+						AnyJsExpression::JsObjectExpression(object) => !object.members().is_empty(),
+						AnyJsExpression::JsArrayExpression(array) => !array.elements().is_empty(),
+						AnyJsExpression::JsxTagExpression(_) => true,
+						_ => false,
+					}
 				})
 			},
 			_ => false,
 		}
 	}
 
-	/// This function checks whether the chain of logical/binary expressions **should not** be indented
+	/// This function checks whether the chain of logical/binary expressions
+	/// **should not** be indented
 	///
-	/// There are some cases where the indentation is done by the parent, so if the parent is already doing
-	/// the indentation, then there's no need to do a second indentation.
-	/// [Prettier applies]: <https://github.com/prettier/prettier/blob/b0201e01ef99db799eb3716f15b7dfedb0a2e62b/src/language-js/print/binaryish.js#L122-L125>
+	/// There are some cases where the indentation is done by the parent, so if
+	/// the parent is already doing the indentation, then there's no need to do
+	/// a second indentation. [Prettier applies]: <https://github.com/prettier/prettier/blob/b0201e01ef99db799eb3716f15b7dfedb0a2e62b/src/language-js/print/binaryish.js#L122-L125>
 	pub fn should_not_indent_if_parent_indents(
 		self: &AnyJsBinaryLikeExpression,
-		parent: Option<JsSyntaxNode>,
+		parent:Option<JsSyntaxNode>,
 	) -> bool {
-		parent.is_some_and(|parent| match parent.kind() {
-			JsSyntaxKind::JS_RETURN_STATEMENT
-			| JsSyntaxKind::JS_THROW_STATEMENT => true,
-			JsSyntaxKind::JSX_EXPRESSION_ATTRIBUTE_VALUE => true,
-			JsSyntaxKind::JS_TEMPLATE_ELEMENT => true,
-			JsSyntaxKind::JS_FOR_STATEMENT => true,
-			JsSyntaxKind::JS_ARROW_FUNCTION_EXPRESSION => {
-				JsArrowFunctionExpression::unwrap_cast(parent)
-					.body()
-					.is_ok_and(|body| body.syntax() == self.syntax())
-			},
-			JsSyntaxKind::JS_CONDITIONAL_EXPRESSION => {
-				parent.parent().is_some_and(|grand_parent| {
-					!matches!(
-						grand_parent.kind(),
-						JsSyntaxKind::JS_RETURN_STATEMENT
-							| JsSyntaxKind::JS_THROW_STATEMENT
-							| JsSyntaxKind::JS_CALL_EXPRESSION
-							| JsSyntaxKind::JS_IMPORT_CALL_EXPRESSION
-							| JsSyntaxKind::JS_CALL_ARGUMENT_LIST
-							| JsSyntaxKind::META
-					)
-				})
-			},
-			_ => false,
+		parent.is_some_and(|parent| {
+			match parent.kind() {
+				JsSyntaxKind::JS_RETURN_STATEMENT | JsSyntaxKind::JS_THROW_STATEMENT => true,
+				JsSyntaxKind::JSX_EXPRESSION_ATTRIBUTE_VALUE => true,
+				JsSyntaxKind::JS_TEMPLATE_ELEMENT => true,
+				JsSyntaxKind::JS_FOR_STATEMENT => true,
+				JsSyntaxKind::JS_ARROW_FUNCTION_EXPRESSION => {
+					JsArrowFunctionExpression::unwrap_cast(parent)
+						.body()
+						.is_ok_and(|body| body.syntax() == self.syntax())
+				},
+				JsSyntaxKind::JS_CONDITIONAL_EXPRESSION => {
+					parent.parent().is_some_and(|grand_parent| {
+						!matches!(
+							grand_parent.kind(),
+							JsSyntaxKind::JS_RETURN_STATEMENT
+								| JsSyntaxKind::JS_THROW_STATEMENT
+								| JsSyntaxKind::JS_CALL_EXPRESSION
+								| JsSyntaxKind::JS_IMPORT_CALL_EXPRESSION
+								| JsSyntaxKind::JS_CALL_ARGUMENT_LIST
+								| JsSyntaxKind::META
+						)
+					})
+				},
+				_ => false,
+			}
 		})
 	}
 }
 
 pub(crate) fn should_flatten(
-	parent_operator: BinaryLikeOperator,
-	operator: BinaryLikeOperator,
+	parent_operator:BinaryLikeOperator,
+	operator:BinaryLikeOperator,
 ) -> bool {
 	if operator.precedence() != parent_operator.precedence() {
 		return false;
@@ -191,15 +194,10 @@ pub(crate) fn should_flatten(
 		// `a == b == c` => `(a == b) == c`
 		(OperatorPrecedence::Equality, OperatorPrecedence::Equality) => false,
 
-		(
-			OperatorPrecedence::Multiplicative,
-			OperatorPrecedence::Multiplicative,
-		) => {
+		(OperatorPrecedence::Multiplicative, OperatorPrecedence::Multiplicative) => {
 			// `a * 3 % 5` -> `(a * 3) % 5`
-			if parent_operator
-				== BinaryLikeOperator::Binary(JsBinaryOperator::Remainder)
-				|| operator
-					== BinaryLikeOperator::Binary(JsBinaryOperator::Remainder)
+			if parent_operator == BinaryLikeOperator::Binary(JsBinaryOperator::Remainder)
+				|| operator == BinaryLikeOperator::Binary(JsBinaryOperator::Remainder)
 			{
 				false
 			}
@@ -215,13 +213,11 @@ pub(crate) fn should_flatten(
 }
 
 impl From<AnyJsBinaryLikeExpression> for AnyJsExpression {
-	fn from(binary: AnyJsBinaryLikeExpression) -> Self {
+	fn from(binary:AnyJsBinaryLikeExpression) -> Self {
 		match binary {
 			AnyJsBinaryLikeExpression::JsLogicalExpression(expr) => expr.into(),
 			AnyJsBinaryLikeExpression::JsBinaryExpression(expr) => expr.into(),
-			AnyJsBinaryLikeExpression::JsInstanceofExpression(expr) => {
-				expr.into()
-			},
+			AnyJsBinaryLikeExpression::JsInstanceofExpression(expr) => expr.into(),
 			AnyJsBinaryLikeExpression::JsInExpression(expr) => expr.into(),
 		}
 	}
@@ -242,14 +238,10 @@ impl AnyJsBinaryLikeLeftExpression {
 }
 
 impl From<AnyJsInProperty> for AnyJsBinaryLikeLeftExpression {
-	fn from(property: AnyJsInProperty) -> Self {
+	fn from(property:AnyJsInProperty) -> Self {
 		match property {
-			AnyJsInProperty::AnyJsExpression(expression) => {
-				Self::AnyJsExpression(expression)
-			},
-			AnyJsInProperty::JsPrivateName(private_name) => {
-				Self::JsPrivateName(private_name)
-			},
+			AnyJsInProperty::AnyJsExpression(expression) => Self::AnyJsExpression(expression),
+			AnyJsInProperty::JsPrivateName(private_name) => Self::JsPrivateName(private_name),
 		}
 	}
 }
@@ -278,13 +270,9 @@ impl BinaryLikeOperator {
 }
 
 impl From<JsLogicalOperator> for BinaryLikeOperator {
-	fn from(operator: JsLogicalOperator) -> Self {
-		Self::Logical(operator)
-	}
+	fn from(operator:JsLogicalOperator) -> Self { Self::Logical(operator) }
 }
 
 impl From<JsBinaryOperator> for BinaryLikeOperator {
-	fn from(binary: JsBinaryOperator) -> Self {
-		Self::Binary(binary)
-	}
+	fn from(binary:JsBinaryOperator) -> Self { Self::Binary(binary) }
 }

@@ -1,20 +1,19 @@
-use crate::prelude::*;
 use biome_graphql_syntax::GraphqlDefinitionList;
+
+use crate::prelude::*;
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlDefinitionList;
 impl FormatRule<GraphqlDefinitionList> for FormatGraphqlDefinitionList {
-    type Context = GraphqlFormatContext;
-    fn fmt(&self, node: &GraphqlDefinitionList, f: &mut GraphqlFormatter) -> FormatResult<()> {
-        let mut join = f.join_nodes_with_hardline();
+	type Context = GraphqlFormatContext;
 
-        for definition in node {
-            join.entry(
-                definition.syntax(),
-                &format_or_verbatim(definition.format()),
-            );
-        }
+	fn fmt(&self, node:&GraphqlDefinitionList, f:&mut GraphqlFormatter) -> FormatResult<()> {
+		let mut join = f.join_nodes_with_hardline();
 
-        join.finish()
-    }
+		for definition in node {
+			join.entry(definition.syntax(), &format_or_verbatim(definition.format()));
+		}
+
+		join.finish()
+	}
 }

@@ -6,6 +6,7 @@ pub(crate) enum CowMut<'a, T> {
 
 impl<T> std::ops::Deref for CowMut<'_, T> {
 	type Target = T;
+
 	fn deref(&self) -> &T {
 		match self {
 			CowMut::Owned(it) => it,
@@ -23,8 +24,6 @@ impl<T> std::ops::DerefMut for CowMut<'_, T> {
 	}
 }
 
-impl<T: Default> Default for CowMut<'_, T> {
-	fn default() -> Self {
-		CowMut::Owned(T::default())
-	}
+impl<T:Default> Default for CowMut<'_, T> {
+	fn default() -> Self { CowMut::Owned(T::default()) }
 }

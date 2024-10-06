@@ -1,6 +1,5 @@
 use pico_args::Arguments;
 use xtask::{project_root, pushd, Result};
-
 use xtask_coverage::{compare::coverage_compare, run, SummaryDetailLevel};
 
 fn main() -> Result<()> {
@@ -20,7 +19,8 @@ fn main() -> Result<()> {
 		// cargo coverage js --json > base_results.json
 		// git checkout -
 		// cargo coverage js --json > new_results.json
-		// cargo coverage compare ./base_results.json ./new_results.json --markdown
+		// cargo coverage compare ./base_results.json ./new_results.json
+		// --markdown
 		let markdown = args.contains("--markdown");
 		let free = args.finish();
 		let base_result_path = free.first().and_then(|arg| arg.to_str());
@@ -61,10 +61,10 @@ OPTIONS
 	}
 
 	let json = args.contains("--json");
-	let suites: Option<String> = args.opt_value_from_str("--suites").unwrap();
-	let filter: Option<String> = args.opt_value_from_str("--filter").unwrap();
+	let suites:Option<String> = args.opt_value_from_str("--suites").unwrap();
+	let filter:Option<String> = args.opt_value_from_str("--filter").unwrap();
 
-	let detail_level: Option<SummaryDetailLevel> =
+	let detail_level:Option<SummaryDetailLevel> =
 		args.opt_value_from_str("--detailed").unwrap_or_else(|_| {
 			if args.contains("--detailed") {
 				Some(SummaryDetailLevel::Failing)

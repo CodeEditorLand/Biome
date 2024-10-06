@@ -1,5 +1,5 @@
-//! Codegen tools for generating Syntax and AST definitions. Derived from Rust analyzer's codegen
-//!
+//! Codegen tools for generating Syntax and AST definitions. Derived from Rust
+//! analyzer's codegen
 mod ast;
 mod css_kinds_src;
 mod formatter;
@@ -28,21 +28,21 @@ pub mod promote_rule;
 mod termcolorful;
 mod unicode;
 
-use bpaf::Bpaf;
 use std::path::Path;
 
-use crate::generate_new_analyzer_rule::Category;
+use bpaf::Bpaf;
 use xtask::{glue::fs2, Mode, Result};
 
-pub use self::ast::generate_ast;
-pub use self::formatter::generate_formatters;
-pub use self::generate_analyzer::generate_analyzer;
-pub use self::generate_crate::generate_crate;
-pub use self::generate_new_analyzer_rule::{
-	generate_new_analyzer_rule, LanguageKind,
+pub use self::{
+	ast::generate_ast,
+	formatter::generate_formatters,
+	generate_analyzer::generate_analyzer,
+	generate_crate::generate_crate,
+	generate_new_analyzer_rule::{generate_new_analyzer_rule, LanguageKind},
+	parser_tests::generate_parser_tests,
+	unicode::generate_tables,
 };
-pub use self::parser_tests::generate_parser_tests;
-pub use self::unicode::generate_tables;
+use crate::generate_new_analyzer_rule::Category;
 
 pub enum UpdateResult {
 	NotUpdated,
@@ -51,11 +51,7 @@ pub enum UpdateResult {
 
 /// A helper to update file on disk if it has changed.
 /// With verify = false,
-pub fn update(
-	path: &Path,
-	contents: &str,
-	mode: &Mode,
-) -> Result<UpdateResult> {
+pub fn update(path:&Path, contents:&str, mode:&Mode) -> Result<UpdateResult> {
 	match fs2::read_to_string(path) {
 		Ok(old_contents) if old_contents == contents => {
 			return Ok(UpdateResult::NotUpdated);
@@ -77,7 +73,7 @@ pub fn update(
 	Ok(UpdateResult::Updated)
 }
 
-pub fn to_capitalized(s: &str) -> String {
+pub fn to_capitalized(s:&str) -> String {
 	let mut c = s.chars();
 	match c.next() {
 		None => String::new(),
@@ -91,7 +87,8 @@ pub enum TaskCommand {
 	/// Generates formatters for each language
 	#[bpaf(command)]
 	Formatter,
-	/// Generate factory functions for the analyzer and the configuration of the analyzers
+	/// Generate factory functions for the analyzer and the configuration of the
+	/// analyzers
 	#[bpaf(command)]
 	Analyzer,
 	/// Generate the part of the configuration that depends on some metadata
@@ -102,7 +99,8 @@ pub enum TaskCommand {
 	/// Generate the JSON schema for the Biome configuration file format
 	#[bpaf(command)]
 	Schema,
-	/// Generate TypeScript definitions for the JavaScript bindings to the Workspace API
+	/// Generate TypeScript definitions for the JavaScript bindings to the
+	/// Workspace API
 	#[bpaf(command)]
 	Bindings,
 	/// It updates the file that contains licenses
@@ -122,25 +120,25 @@ pub enum TaskCommand {
 	NewRule {
 		/// Path of the rule
 		#[bpaf(long("kind"))]
-		kind: LanguageKind,
+		kind:LanguageKind,
 
 		/// Name of the rule
 		#[bpaf(long("name"))]
-		name: String,
+		name:String,
 
 		/// Name of the rule
 		#[bpaf(long("category"))]
-		category: Category,
+		category:Category,
 	},
 	/// Promotes a nursery rule
 	#[bpaf(command, long("promote-rule"))]
 	PromoteRule {
 		/// Path of the rule
 		#[bpaf(long("name"), argument("STRING"))]
-		name: String,
+		name:String,
 		/// Name of the rule
 		#[bpaf(long("group"), argument("STRING"))]
-		group: String,
+		group:String,
 	},
 	/// Runs ALL the codegen
 	#[bpaf(command)]
@@ -150,6 +148,6 @@ pub enum TaskCommand {
 	NewCrate {
 		/// The name of the crate
 		#[bpaf(long("name"), argument("STRING"))]
-		name: String,
+		name:String,
 	},
 }

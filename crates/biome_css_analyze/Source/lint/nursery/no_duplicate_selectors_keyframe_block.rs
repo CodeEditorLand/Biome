@@ -1,7 +1,12 @@
 use std::collections::HashSet;
 
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::{AnyCssKeyframesItem, AnyCssKeyframesSelector, CssKeyframesBlock};
@@ -46,12 +51,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoDuplicateSelectorsKeyframeBlock {
-	type Query = Ast<CssKeyframesBlock>;
-	type State = AnyCssKeyframesSelector;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<CssKeyframesBlock>;
+	type Signals = Option<Self::State>;
+	type State = AnyCssKeyframesSelector;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 
 		let mut selector_list = HashSet::new();
@@ -62,14 +67,14 @@ impl Rule for NoDuplicateSelectorsKeyframeBlock {
 					if !selector_list.insert(keyframe_selector.text().to_lowercase()) {
 						return Some(keyframe_selector);
 					}
-				}
+				},
 				_ => return None,
 			}
 		}
 		None
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, node:&Self::State) -> Option<RuleDiagnostic> {
 		Some(
 			RuleDiagnostic::new(
 				rule_category!(),

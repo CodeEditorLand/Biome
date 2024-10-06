@@ -1,10 +1,14 @@
-use similar::{utils::diff_lines, Algorithm, ChangeTag};
-use std::sync::Mutex;
 use std::{
-	env, fmt::Write, fs::write, os::raw::c_int, str::FromStr, sync::Once,
+	env,
+	fmt::Write,
+	fs::write,
+	os::raw::c_int,
+	str::FromStr,
+	sync::{Mutex, Once},
 };
 
 use serde::Serialize;
+use similar::{utils::diff_lines, Algorithm, ChangeTag};
 
 #[derive(Debug, PartialEq, Eq)]
 enum ReportType {
@@ -14,29 +18,27 @@ enum ReportType {
 
 #[derive(Debug, Clone, Default, Serialize)]
 struct SingleFileMetricData {
-	filename: String,
-	single_file_compatibility: f64,
+	filename:String,
+	single_file_compatibility:f64,
 	#[serde(skip)]
-	diff: Option<String>,
+	diff:Option<String>,
 }
 
 impl SingleFileMetricData {
-	fn is_compatible(&self) -> bool {
-		(self.single_file_compatibility * 100_f64) >= 100.00
-	}
+	fn is_compatible(&self) -> bool { (self.single_file_compatibility * 100_f64) >= 100.00 }
 }
 
 #[derive(Clone, Debug, Default, Serialize)]
 struct PrettierCompatibilityMetricData {
-	file_based_average_prettier_similarity: f64,
-	line_based_average_prettier_similarity: f64,
-	files: Vec<SingleFileMetricData>,
+	file_based_average_prettier_similarity:f64,
+	line_based_average_prettier_similarity:f64,
+	files:Vec<SingleFileMetricData>,
 }
 
 impl FromStr for ReportType {
 	type Err = String;
 
-	fn from_str(s: &str) -> Result<Self, Self::Err> {
+	fn from_str(s:&str) -> Result<Self, Self::Err> {
 		match s {
 			"json" => Ok(Self::Json),
 			"markdown" => Ok(Self::Markdown),
@@ -46,35 +48,33 @@ impl FromStr for ReportType {
 }
 
 struct DiffReportItem {
-	file_name: &'static str,
-	biome_formatted_result: String,
-	prettier_formatted_result: String,
+	file_name:&'static str,
+	biome_formatted_result:String,
+	prettier_formatted_result:String,
 }
 pub struct DiffReport {
-	state: Mutex<Vec<DiffReportItem>>,
+	state:Mutex<Vec<DiffReportItem>>,
 }
 
 impl DiffReport {
 	pub fn get() -> &'static Self {
-		static REPORTER: DiffReport =
-			DiffReport { state: Mutex::new(Vec::new()) };
+		static REPORTER:DiffReport = DiffReport { state:Mutex::new(Vec::new()) };
 
 		// Use an atomic Once to register an exit callback the first time any
 		// testing thread requests an instance of the Reporter
-		static ONCE: Once = Once::new();
+		static ONCE:Once = Once::new();
 		ONCE.call_once(|| {
 			// Import the atexit function from libc
 			extern {
-				fn atexit(f: extern fn()) -> c_int;
+				fn atexit(f:extern fn()) -> c_int;
 			}
 
 			// Trampoline function into the reporter printing logic with the
 			// correct extern C ABI
-			extern fn print_report() {
-				REPORTER.print();
-			}
+			extern fn print_report() { REPORTER.print(); }
 
-			// Register the print_report function to be called when the process exits
+			// Register the print_report function to be called when the process
+			// exits
 			unsafe {
 				atexit(print_report);
 			}
@@ -85,19 +85,17 @@ impl DiffReport {
 
 	pub fn report(
 		&self,
-		file_name: &'static str,
-		biome_formatted_result: &str,
-		prettier_formatted_result: &str,
+		file_name:&'static str,
+		biome_formatted_result:&str,
+		prettier_formatted_result:&str,
 	) {
 		match env::var("REPORT_PRETTIER") {
 			Ok(value) if value == "1" => {
 				if !Self::is_ignored(file_name) {
 					self.state.lock().unwrap().push(DiffReportItem {
 						file_name,
-						biome_formatted_result: biome_formatted_result
-							.to_owned(),
-						prettier_formatted_result: prettier_formatted_result
-							.to_owned(),
+						biome_formatted_result:biome_formatted_result.to_owned(),
+						prettier_formatted_result:prettier_formatted_result.to_owned(),
 					});
 				}
 			},
@@ -105,7 +103,7 @@ impl DiffReport {
 		}
 	}
 
-	fn is_ignored(file_name: &str) -> bool {
+	fn is_ignored(file_name:&str) -> bool {
 		// ignore unstable syntaxes and embedded languages in template literals
 		let patterns = [
             // v8-specific syntaxes
@@ -294,32 +292,31 @@ impl DiffReport {
 					Ok(value) => ReportType::from_str(&value).unwrap(),
 					_ => ReportType::Markdown,
 				};
-				let incompatible_only = matches!(env::var("INCOMPATIBLE_ONLY"), Ok(value) if value == "1");
+				let incompatible_only =
+					matches!(env::var("INCOMPATIBLE_ONLY"), Ok(value) if value == "1");
 
 				let report_filename = match env::var("REPORT_FILENAME") {
 					Ok(value) => value,
-					_ => match report_type {
-						ReportType::Json => {
-							if incompatible_only {
-								"report_incompatible.json".to_string()
-							} else {
-								"report.json".to_string()
-							}
-						},
-						ReportType::Markdown => {
-							if incompatible_only {
-								"report_incompatible.md".to_string()
-							} else {
-								"report.md".to_string()
-							}
-						},
+					_ => {
+						match report_type {
+							ReportType::Json => {
+								if incompatible_only {
+									"report_incompatible.json".to_string()
+								} else {
+									"report.json".to_string()
+								}
+							},
+							ReportType::Markdown => {
+								if incompatible_only {
+									"report_incompatible.md".to_string()
+								} else {
+									"report.md".to_string()
+								}
+							},
+						}
 					},
 				};
-				self.report_prettier(
-					report_type,
-					report_filename,
-					incompatible_only,
-				);
+				self.report_prettier(report_type, report_filename, incompatible_only);
 			},
 			_ => {},
 		}
@@ -327,9 +324,9 @@ impl DiffReport {
 
 	fn report_prettier(
 		&self,
-		report_type: ReportType,
-		report_filename: String,
-		incompatible_only: bool,
+		report_type:ReportType,
+		report_filename:String,
+		incompatible_only:bool,
 	) {
 		let mut state = self.state.lock().unwrap();
 		state.sort_by_key(|DiffReportItem { file_name, .. }| *file_name);
@@ -340,11 +337,8 @@ impl DiffReport {
 		let mut total_matched_lines = 0;
 		let mut file_count = 0;
 
-		for DiffReportItem {
-			file_name,
-			biome_formatted_result,
-			prettier_formatted_result,
-		} in state.iter()
+		for DiffReportItem { file_name, biome_formatted_result, prettier_formatted_result } in
+			state.iter()
 		{
 			file_count += 1;
 
@@ -371,8 +365,7 @@ impl DiffReport {
 						writeln!(diff, "{tag}{line}").unwrap();
 					}
 
-					let ratio = matched_lines as f64
-						/ biome_lines.max(prettier_lines) as f64;
+					let ratio = matched_lines as f64 / biome_lines.max(prettier_lines) as f64;
 
 					(matched_lines, ratio, Some(diff))
 				};
@@ -383,8 +376,8 @@ impl DiffReport {
 
 			let single_file_metric_data = SingleFileMetricData {
 				diff,
-				filename: (*file_name).to_string(),
-				single_file_compatibility: ratio,
+				filename:(*file_name).to_string(),
+				single_file_compatibility:ratio,
 			};
 
 			// We'll skip compatible tests and only track incompatible ones
@@ -401,27 +394,20 @@ impl DiffReport {
 			total_matched_lines as f64 / total_lines as f64;
 
 		match report_type {
-			ReportType::Json => {
-				self.report_json(report_filename, report_metric_data)
-			},
-			ReportType::Markdown => {
-				self.report_markdown(report_filename, report_metric_data)
-			},
+			ReportType::Json => self.report_json(report_filename, report_metric_data),
+			ReportType::Markdown => self.report_markdown(report_filename, report_metric_data),
 		}
 	}
 
 	fn report_markdown(
 		&self,
-		report_filename: String,
-		report_metric_data: PrettierCompatibilityMetricData,
+		report_filename:String,
+		report_metric_data:PrettierCompatibilityMetricData,
 	) {
 		let mut report = String::new();
 
-		for SingleFileMetricData {
-			filename,
-			single_file_compatibility,
-			diff,
-		} in report_metric_data.files.iter()
+		for SingleFileMetricData { filename, single_file_compatibility, diff } in
+			report_metric_data.files.iter()
 		{
 			writeln!(report, "### {filename}").unwrap();
 
@@ -488,8 +474,8 @@ impl DiffReport {
 
 	fn report_json(
 		&self,
-		report_filename: String,
-		report_metric_data: PrettierCompatibilityMetricData,
+		report_filename:String,
+		report_metric_data:PrettierCompatibilityMetricData,
 	) {
 		let json_content = serde_json::to_string(&report_metric_data).unwrap();
 		write(report_filename, json_content).unwrap();

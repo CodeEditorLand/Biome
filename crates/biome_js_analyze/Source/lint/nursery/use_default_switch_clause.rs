@@ -1,7 +1,12 @@
 use std::ops::Not;
 
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_js_syntax::JsSwitchStatement;
@@ -49,21 +54,24 @@ declare_lint_rule! {
 }
 
 impl Rule for UseDefaultSwitchClause {
-	type Query = Ast<JsSwitchStatement>;
-	type State = ();
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsSwitchStatement>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
-		let is_missing_default_case =
-			node.cases().into_iter().any(|clause| clause.as_js_default_clause().is_some()).not();
+		let is_missing_default_case = node
+			.cases()
+			.into_iter()
+			.any(|clause| clause.as_js_default_clause().is_some())
+			.not();
 
 		is_missing_default_case.then_some(())
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, _state:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 
 		Some(

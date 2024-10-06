@@ -1,5 +1,6 @@
-use quote::{format_ident, quote};
 use std::{env, fs, io, path::PathBuf};
+
+use quote::{format_ident, quote};
 
 macro_rules! define_categories {
     ( $( $name_link:literal : $link:literal, )* ; $( $name:literal , )* ) => {
@@ -126,10 +127,7 @@ pub fn main() -> io::Result<()> {
 	};
 
 	let out_dir = env::var("OUT_DIR").unwrap();
-	fs::write(
-		PathBuf::from(out_dir).join("categories.rs"),
-		tokens.to_string(),
-	)?;
+	fs::write(PathBuf::from(out_dir).join("categories.rs"), tokens.to_string())?;
 
 	Ok(())
 }

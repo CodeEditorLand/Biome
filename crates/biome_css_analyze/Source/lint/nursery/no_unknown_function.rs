@@ -1,5 +1,10 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::CssFunction;
@@ -41,23 +46,24 @@ declare_lint_rule! {
 }
 
 pub struct NoUnknownFunctionState {
-	function_name: String,
-	span: TextRange,
+	function_name:String,
+	span:TextRange,
 }
 
 impl Rule for NoUnknownFunction {
-	type Query = Ast<CssFunction>;
-	type State = NoUnknownFunctionState;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<CssFunction>;
+	type Signals = Option<Self::State>;
+	type State = NoUnknownFunctionState;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 
 		let function_name = node.name().ok()?.text();
 
-		// We don't have a semantic model yet, so we can't determine if functions are defined elsewhere.
-		// Therefore, we ignore these custom functions to prevent false detections.
+		// We don't have a semantic model yet, so we can't determine if
+		// functions are defined elsewhere. Therefore, we ignore these custom
+		// functions to prevent false detections.
 		if is_custom_function(&function_name) {
 			return None;
 		}
@@ -66,10 +72,10 @@ impl Rule for NoUnknownFunction {
 			return None;
 		}
 
-		Some(NoUnknownFunctionState { function_name, span: node.name().ok()?.range() })
+		Some(NoUnknownFunctionState { function_name, span:node.name().ok()?.range() })
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		Some(
             RuleDiagnostic::new(
                 rule_category!(),

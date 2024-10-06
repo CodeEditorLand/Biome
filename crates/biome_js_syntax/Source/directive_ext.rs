@@ -8,17 +8,19 @@ impl JsDirective {
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_factory::syntax::{JsDirective, JsSyntaxKind::*};
-	/// use biome_js_factory::JsSyntaxTreeBuilder;
+	/// use biome_js_factory::{
+	/// 	syntax::{JsDirective, JsSyntaxKind::*},
+	/// 	JsSyntaxTreeBuilder,
+	/// };
 	/// use biome_rowan::AstNode;
 	/// let mut tree_builder = JsSyntaxTreeBuilder::new();
-	///         tree_builder.start_node(JS_DIRECTIVE);
-	///         tree_builder.token(JS_STRING_LITERAL, "\"use strict\"");
-	///         tree_builder.finish_node();
-	///         let node = tree_builder.finish();
-	///         let js_directive = JsDirective::cast(node).unwrap();
-	///         let text = js_directive.inner_string_text().unwrap();
-	///         assert_eq!(text, "use strict")
+	/// tree_builder.start_node(JS_DIRECTIVE);
+	/// tree_builder.token(JS_STRING_LITERAL, "\"use strict\"");
+	/// tree_builder.finish_node();
+	/// let node = tree_builder.finish();
+	/// let js_directive = JsDirective::cast(node).unwrap();
+	/// let text = js_directive.inner_string_text().unwrap();
+	/// assert_eq!(text, "use strict")
 	/// ```
 	pub fn inner_string_text(&self) -> SyntaxResult<TokenText> {
 		Ok(inner_string_text(&self.value_token()?))
@@ -27,8 +29,10 @@ impl JsDirective {
 
 #[cfg(test)]
 mod tests {
-	use biome_js_factory::syntax::{JsDirective, JsSyntaxKind::*};
-	use biome_js_factory::JsSyntaxTreeBuilder;
+	use biome_js_factory::{
+		syntax::{JsDirective, JsSyntaxKind::*},
+		JsSyntaxTreeBuilder,
+	};
 	use biome_rowan::AstNode;
 
 	#[test]

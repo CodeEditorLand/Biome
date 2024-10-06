@@ -1,7 +1,7 @@
 use crate::kind_src::KindsSrc;
 
-pub const YAML_KINDS_SRC: KindsSrc = KindsSrc {
-	punct: &[
+pub const YAML_KINDS_SRC:KindsSrc = KindsSrc {
+	punct:&[
 		(":", "COLON"),
 		(",", "COMMA"),
 		("{", "L_CURLY"),
@@ -23,8 +23,8 @@ pub const YAML_KINDS_SRC: KindsSrc = KindsSrc {
 		("---", "DOC_START"),
 		("...", "DOC_END"),
 	],
-	keywords: &["null"],
-	literals: &[
+	keywords:&["null"],
+	literals:&[
 		"YAML_STRING_VALUE",
 		"YAML_NUMBER_VALUE",
 		"YAML_BOOLEAN_VALUE",
@@ -32,8 +32,8 @@ pub const YAML_KINDS_SRC: KindsSrc = KindsSrc {
 		"YAML_BLOCK_VALUE",
 		"YAML_IDENTIFIER",
 	],
-	tokens: &["NEWLINE", "WHITESPACE", "IDENT", "COMMENT"],
-	nodes: &[
+	tokens:&["NEWLINE", "WHITESPACE", "IDENT", "COMMENT"],
+	nodes:&[
 		"YAML_ROOT",
 		"YAML_DOCUMENT_LIST",
 		"YAML_DOCUMENT",

@@ -35,12 +35,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoDuplicateObjectKeys {
-	type Query = Ast<JsonObjectValue>;
-	type State = (JsonMemberName, Vec<TextRange>);
-	type Signals = Vec<Self::State>;
 	type Options = ();
+	type Query = Ast<JsonObjectValue>;
+	type Signals = Vec<Self::State>;
+	type State = (JsonMemberName, Vec<TextRange>);
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let query = ctx.query();
 
 		let mut names = FxHashMap::<JsonMemberName, Vec<TextRange>>::default();
@@ -65,12 +65,12 @@ impl Rule for NoDuplicateObjectKeys {
 			}
 		}
 
-		let duplicated_keys: Vec<_> = names.into_iter().collect();
+		let duplicated_keys:Vec<_> = names.into_iter().collect();
 
 		duplicated_keys
 	}
 
-	fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		let (original, ranges) = state;
 
 		let name = original.inner_string_text().ok()?;

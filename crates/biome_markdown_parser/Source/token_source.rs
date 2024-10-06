@@ -1,34 +1,35 @@
-use crate::lexer::{MarkdownLexContext, MarkdownLexer, MarkdownReLexContext};
-use biome_markdown_syntax::MarkdownSyntaxKind;
-use biome_markdown_syntax::MarkdownSyntaxKind::EOF;
-use biome_parser::lexer::BufferedLexer;
-use biome_parser::prelude::{BumpWithContext, TokenSource};
-use biome_parser::token_source::{TokenSourceWithBufferedLexer, Trivia};
+use biome_markdown_syntax::{MarkdownSyntaxKind, MarkdownSyntaxKind::EOF};
 use biome_parser::{
-	diagnostic::ParseDiagnostic, token_source::TokenSourceCheckpoint,
+	diagnostic::ParseDiagnostic,
+	lexer::BufferedLexer,
+	prelude::{BumpWithContext, TokenSource},
+	token_source::{TokenSourceCheckpoint, TokenSourceWithBufferedLexer, Trivia},
 };
 use biome_rowan::{TextRange, TriviaPieceKind};
 
-pub(crate) struct MarkdownTokenSource<'source> {
-	lexer: BufferedLexer<MarkdownSyntaxKind, MarkdownLexer<'source>>,
+use crate::lexer::{MarkdownLexContext, MarkdownLexer, MarkdownReLexContext};
 
-	/// List of the skipped trivia. Needed to construct the CST and compute the non-trivia token offsets.
-	pub(super) trivia_list: Vec<Trivia>,
+pub(crate) struct MarkdownTokenSource<'source> {
+	lexer:BufferedLexer<MarkdownSyntaxKind, MarkdownLexer<'source>>,
+
+	/// List of the skipped trivia. Needed to construct the CST and compute the
+	/// non-trivia token offsets.
+	pub(super) trivia_list:Vec<Trivia>,
 }
 
 #[allow(dead_code)]
-pub(crate) type MarkdownTokenSourceCheckpoint =
-	TokenSourceCheckpoint<MarkdownSyntaxKind>;
+pub(crate) type MarkdownTokenSourceCheckpoint = TokenSourceCheckpoint<MarkdownSyntaxKind>;
 
 impl<'source> MarkdownTokenSource<'source> {
 	/// Creates a new token source.
 	pub(crate) fn new(
-		lexer: BufferedLexer<MarkdownSyntaxKind, MarkdownLexer<'source>>,
+		lexer:BufferedLexer<MarkdownSyntaxKind, MarkdownLexer<'source>>,
 	) -> MarkdownTokenSource<'source> {
-		MarkdownTokenSource { lexer, trivia_list: vec![] }
+		MarkdownTokenSource { lexer, trivia_list:vec![] }
 	}
+
 	/// Creates a new token source for the given string
-	pub fn from_str(source: &'source str) -> Self {
+	pub fn from_str(source:&'source str) -> Self {
 		let lexer = MarkdownLexer::from_str(source);
 
 		let buffered = BufferedLexer::new(lexer);
@@ -38,11 +39,7 @@ impl<'source> MarkdownTokenSource<'source> {
 		source
 	}
 
-	fn next_non_trivia_token(
-		&mut self,
-		context: MarkdownLexContext,
-		first_token: bool,
-	) {
+	fn next_non_trivia_token(&mut self, context:MarkdownLexContext, first_token:bool) {
 		let mut trailing = !first_token;
 
 		loop {
@@ -60,41 +57,36 @@ impl<'source> MarkdownTokenSource<'source> {
 						trailing = false;
 					}
 
-					self.trivia_list.push(Trivia::new(
-						trivia_kind,
-						self.current_range(),
-						trailing,
-					));
+					self.trivia_list.push(Trivia::new(trivia_kind, self.current_range(), trailing));
 				},
 			}
 		}
 	}
 
-	/// Returns the number of whitespace characters before the current token until the first new line.
-	/// tab will be counted as 4 spaces https://spec.commonmark.org/0.31.2/#tabs
+	/// Returns the number of whitespace characters before the current token
+	/// until the first new line. tab will be counted as 4 spaces https://spec.commonmark.org/0.31.2/#tabs
 	/// whitespace will be counted as 1 space
 	pub fn before_whitespace_count(&self) -> usize {
-		let last_trivia: Vec<&Trivia> = self
+		let last_trivia:Vec<&Trivia> = self
 			.trivia_list
 			.iter()
 			.rev()
 			.take_while(|item| {
 				// get before whitespace and tab collect
-				matches!(
-					item.kind(),
-					TriviaPieceKind::Whitespace | TriviaPieceKind::Skipped
-				)
+				matches!(item.kind(), TriviaPieceKind::Whitespace | TriviaPieceKind::Skipped)
 			})
 			.collect();
-		last_trivia.iter().fold(0, |count, b| match b.kind() {
-			TriviaPieceKind::Skipped => count + 4,
-			TriviaPieceKind::Whitespace => count + u32::from(b.len()) as usize,
-			_ => count,
+		last_trivia.iter().fold(0, |count, b| {
+			match b.kind() {
+				TriviaPieceKind::Skipped => count + 4,
+				TriviaPieceKind::Whitespace => count + u32::from(b.len()) as usize,
+				_ => count,
+			}
 		})
 	}
 
 	#[allow(dead_code)]
-	pub fn re_lex(&mut self, mode: MarkdownReLexContext) -> MarkdownSyntaxKind {
+	pub fn re_lex(&mut self, mode:MarkdownReLexContext) -> MarkdownSyntaxKind {
 		self.lexer.re_lex(mode)
 	}
 
@@ -102,14 +94,14 @@ impl<'source> MarkdownTokenSource<'source> {
 	#[allow(dead_code)]
 	pub fn checkpoint(&self) -> MarkdownTokenSourceCheckpoint {
 		MarkdownTokenSourceCheckpoint {
-			trivia_len: self.trivia_list.len() as u32,
-			lexer_checkpoint: self.lexer.checkpoint(),
+			trivia_len:self.trivia_list.len() as u32,
+			lexer_checkpoint:self.lexer.checkpoint(),
 		}
 	}
 
 	/// Restores the token source to a previous state
 	#[allow(dead_code)]
-	pub fn rewind(&mut self, checkpoint: MarkdownTokenSourceCheckpoint) {
+	pub fn rewind(&mut self, checkpoint:MarkdownTokenSourceCheckpoint) {
 		assert!(self.trivia_list.len() >= checkpoint.trivia_len as usize);
 		self.trivia_list.truncate(checkpoint.trivia_len as usize);
 		self.lexer.rewind(checkpoint.lexer_checkpoint);
@@ -119,29 +111,17 @@ impl<'source> MarkdownTokenSource<'source> {
 impl<'source> TokenSource for MarkdownTokenSource<'source> {
 	type Kind = MarkdownSyntaxKind;
 
-	fn current(&self) -> Self::Kind {
-		self.lexer.current()
-	}
+	fn current(&self) -> Self::Kind { self.lexer.current() }
 
-	fn current_range(&self) -> TextRange {
-		self.lexer.current_range()
-	}
+	fn current_range(&self) -> TextRange { self.lexer.current_range() }
 
-	fn text(&self) -> &str {
-		self.lexer.source()
-	}
+	fn text(&self) -> &str { self.lexer.source() }
 
-	fn has_preceding_line_break(&self) -> bool {
-		self.lexer.has_preceding_line_break()
-	}
+	fn has_preceding_line_break(&self) -> bool { self.lexer.has_preceding_line_break() }
 
-	fn bump(&mut self) {
-		self.bump_with_context(MarkdownLexContext::Regular)
-	}
+	fn bump(&mut self) { self.bump_with_context(MarkdownLexContext::Regular) }
 
-	fn skip_as_trivia(&mut self) {
-		self.skip_as_trivia_with_context(MarkdownLexContext::Regular)
-	}
+	fn skip_as_trivia(&mut self) { self.skip_as_trivia_with_context(MarkdownLexContext::Regular) }
 
 	fn finish(self) -> (Vec<Trivia>, Vec<ParseDiagnostic>) {
 		(self.trivia_list, self.lexer.finish())
@@ -151,13 +131,13 @@ impl<'source> TokenSource for MarkdownTokenSource<'source> {
 impl<'source> BumpWithContext for MarkdownTokenSource<'source> {
 	type Context = MarkdownLexContext;
 
-	fn bump_with_context(&mut self, context: Self::Context) {
+	fn bump_with_context(&mut self, context:Self::Context) {
 		if self.current() != EOF {
 			self.next_non_trivia_token(context, false);
 		}
 	}
 
-	fn skip_as_trivia_with_context(&mut self, context: Self::Context) {
+	fn skip_as_trivia_with_context(&mut self, context:Self::Context) {
 		if self.current() != EOF {
 			self.trivia_list.push(Trivia::new(
 				TriviaPieceKind::Skipped,
@@ -173,9 +153,7 @@ impl<'source> BumpWithContext for MarkdownTokenSource<'source> {
 impl<'source> TokenSourceWithBufferedLexer<MarkdownLexer<'source>>
 	for MarkdownTokenSource<'source>
 {
-	fn lexer(
-		&mut self,
-	) -> &mut BufferedLexer<MarkdownSyntaxKind, MarkdownLexer<'source>> {
+	fn lexer(&mut self) -> &mut BufferedLexer<MarkdownSyntaxKind, MarkdownLexer<'source>> {
 		&mut self.lexer
 	}
 }

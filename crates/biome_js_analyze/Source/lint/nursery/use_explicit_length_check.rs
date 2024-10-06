@@ -1,14 +1,34 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, ActionCategory, Ast, FixKind, Rule, RuleDiagnostic,
-	RuleSource, RuleSourceKind,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	RuleSourceKind,
 };
 use biome_console::markup;
 use biome_js_factory::make;
 use biome_js_syntax::{
-	is_in_boolean_context, is_negation, AnyJsExpression, AnyJsLiteralExpression,
-	JsBinaryExpression, JsBinaryOperator, JsCallArgumentList, JsCallArguments, JsCallExpression,
-	JsLogicalExpression, JsLogicalOperator, JsStaticMemberExpression, JsSyntaxKind, JsSyntaxNode,
-	JsUnaryExpression, JsUnaryOperator, T,
+	is_in_boolean_context,
+	is_negation,
+	AnyJsExpression,
+	AnyJsLiteralExpression,
+	JsBinaryExpression,
+	JsBinaryOperator,
+	JsCallArgumentList,
+	JsCallArguments,
+	JsCallExpression,
+	JsLogicalExpression,
+	JsLogicalOperator,
+	JsStaticMemberExpression,
+	JsSyntaxKind,
+	JsSyntaxNode,
+	JsUnaryExpression,
+	JsUnaryOperator,
+	T,
 };
 use biome_rowan::{AstNode, AstSeparatedList, BatchMutationExt, TokenText};
 
@@ -132,12 +152,12 @@ declare_lint_rule! {
 }
 
 impl Rule for UseExplicitLengthCheck {
-	type Query = Ast<JsStaticMemberExpression>;
-	type State = UseExplicitLengthCheckState;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsStaticMemberExpression>;
+	type Signals = Option<Self::State>;
+	type State = UseExplicitLengthCheckState;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let member_expr = ctx.query();
 
 		let member_name = member_expr.member().ok()?;
@@ -165,20 +185,21 @@ impl Rule for UseExplicitLengthCheck {
 					}
 
 					UseExplicitLengthCheckState {
-						check: len_check,
-						node: expr,
-						member_name: member_name.clone(),
+						check:len_check,
+						node:expr,
+						member_name:member_name.clone(),
 					}
 				})
 				.or_else(|| {
-					// Binary expression is valid and was not wrapped in a boolean ancestor
+					// Binary expression is valid and was not wrapped in a
+					// boolean ancestor
 					if is_possibly_valid {
 						return None;
 					}
 
 					Some(UseExplicitLengthCheckState {
-						check: len_check,
-						node: AnyJsExpression::from(binary_expr),
+						check:len_check,
+						node:AnyJsExpression::from(binary_expr),
 						member_name,
 					})
 				});
@@ -186,15 +207,16 @@ impl Rule for UseExplicitLengthCheck {
 
 		if is_in_boolean_context(member_expr_syntax).unwrap_or(false) {
 			return Some(UseExplicitLengthCheckState {
-				check: LengthCheck::NonZero,
-				node: AnyJsExpression::cast_ref(member_expr_syntax)?,
+				check:LengthCheck::NonZero,
+				node:AnyJsExpression::cast_ref(member_expr_syntax)?,
 				member_name,
 			});
 		}
 
 		if let Some(logical_expr) = is_logical_expr(parent_syntax) {
 			// `const x = foo.length || 0` is valid case
-			// TODO. This handles simple cases. To know if right side is a number, we need type inference.
+			// TODO. This handles simple cases. To know if right side is a
+			// number, we need type inference.
 			if logical_expr.operator().ok()? == JsLogicalOperator::LogicalOr
 				&& logical_expr.right().ok()?.syntax().kind()
 					== JsSyntaxKind::JS_NUMBER_LITERAL_EXPRESSION
@@ -203,8 +225,8 @@ impl Rule for UseExplicitLengthCheck {
 			}
 
 			return Some(UseExplicitLengthCheckState {
-				check: LengthCheck::NonZero,
-				node: AnyJsExpression::cast_ref(member_expr_syntax)?,
+				check:LengthCheck::NonZero,
+				node:AnyJsExpression::cast_ref(member_expr_syntax)?,
 				member_name,
 			});
 		}
@@ -212,13 +234,13 @@ impl Rule for UseExplicitLengthCheck {
 		if let Some((boolean_expr, is_negative)) = get_boolean_ancestor(member_expr_syntax) {
 			let check = if is_negative { LengthCheck::Zero } else { LengthCheck::NonZero };
 
-			return Some(UseExplicitLengthCheckState { check, node: boolean_expr, member_name });
+			return Some(UseExplicitLengthCheckState { check, node:boolean_expr, member_name });
 		}
 
 		None
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		let (code, type_text) = match state.check {
 			LengthCheck::Zero => ("=== 0", "zero"),
 			LengthCheck::NonZero => ("> 0", "not zero"),
@@ -234,7 +256,7 @@ impl Rule for UseExplicitLengthCheck {
 		))
 	}
 
-	fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, state:&Self::State) -> Option<JsRuleAction> {
 		let member_expr = ctx.query();
 
 		let mut mutation = ctx.root().begin();
@@ -257,8 +279,9 @@ impl Rule for UseExplicitLengthCheck {
 		let mut new_node = new_binary_expr.into_syntax();
 
 		let parent = state.node.syntax().parent()?;
-		// In cases like `export default!foo.length` -> `export default foo.length === 0`
-		// we need to add a space between keyword and expression
+		// In cases like `export default!foo.length` -> `export default
+		// foo.length === 0` we need to add a space between keyword and
+		// expression
 		if does_node_needs_space_before_child(&parent) {
 			// Make fake token to get leading trivia
 			let leading_trivia = make::token_decorated_with_space(T![=]).leading_trivia().pieces();
@@ -287,12 +310,12 @@ impl Rule for UseExplicitLengthCheck {
 }
 
 /// Sorted by how common they are in the wild
-const LENGTH_MEMBER_NAMES: [&str; 4] = ["length", "size", "byteLength", "byteOffset"];
+const LENGTH_MEMBER_NAMES:[&str; 4] = ["length", "size", "byteLength", "byteOffset"];
 
 pub struct UseExplicitLengthCheckState {
-	check: LengthCheck,
-	node: AnyJsExpression,
-	member_name: TokenText,
+	check:LengthCheck,
+	node:AnyJsExpression,
+	member_name:TokenText,
 }
 
 enum MemberPosition {
@@ -316,7 +339,7 @@ impl LengthCheck {
 }
 
 fn extract_binary_position_and_literal(
-	node: &JsBinaryExpression,
+	node:&JsBinaryExpression,
 ) -> Option<(MemberPosition, AnyJsLiteralExpression)> {
 	match (node.left().ok()?, node.right().ok()?) {
 		(
@@ -332,7 +355,7 @@ fn extract_binary_position_and_literal(
 }
 
 fn is_binary_expr_length_check(
-	node: &JsSyntaxNode,
+	node:&JsSyntaxNode,
 ) -> Option<(JsBinaryExpression, LengthCheck, bool)> {
 	let binary_expr = JsBinaryExpression::cast_ref(node)?;
 
@@ -388,8 +411,8 @@ fn is_binary_expr_length_check(
 /// !(Boolean(!(!x)))
 /// ```
 /// Returns ancestor expression and whether it is negated
-fn get_boolean_ancestor(node: &JsSyntaxNode) -> Option<(AnyJsExpression, bool)> {
-	let mut boolean_node: Option<JsSyntaxNode> = None;
+fn get_boolean_ancestor(node:&JsSyntaxNode) -> Option<(AnyJsExpression, bool)> {
+	let mut boolean_node:Option<JsSyntaxNode> = None;
 	let mut current_node = node.parent()?;
 	let mut is_negative = false;
 
@@ -418,7 +441,7 @@ fn get_boolean_ancestor(node: &JsSyntaxNode) -> Option<(AnyJsExpression, bool)> 
 /// ```js
 /// Boolean(x)
 /// ```
-pub fn is_boolean_call(node: &JsSyntaxNode) -> Option<JsCallExpression> {
+pub fn is_boolean_call(node:&JsSyntaxNode) -> Option<JsCallExpression> {
 	let expr = JsCallArgumentList::cast_ref(node)?
 		.parent::<JsCallArguments>()?
 		.parent::<JsCallExpression>()?;
@@ -426,8 +449,8 @@ pub fn is_boolean_call(node: &JsSyntaxNode) -> Option<JsCallExpression> {
 }
 
 /// Checks if expression is a logical expression with `&&` or `||` operator
-fn is_logical_expr(node: JsSyntaxNode) -> Option<JsLogicalExpression> {
-	let expr: JsLogicalExpression = JsLogicalExpression::cast(node)?;
+fn is_logical_expr(node:JsSyntaxNode) -> Option<JsLogicalExpression> {
+	let expr:JsLogicalExpression = JsLogicalExpression::cast(node)?;
 
 	match expr.operator().ok()? {
 		JsLogicalOperator::LogicalAnd | JsLogicalOperator::LogicalOr => Some(expr),
@@ -435,7 +458,7 @@ fn is_logical_expr(node: JsSyntaxNode) -> Option<JsLogicalExpression> {
 	}
 }
 
-fn does_unary_expr_needs_space(node: &JsSyntaxNode) -> bool {
+fn does_unary_expr_needs_space(node:&JsSyntaxNode) -> bool {
 	JsUnaryExpression::cast_ref(node).is_some_and(|expr| {
 		matches!(
 			expr.operator(),
@@ -454,7 +477,7 @@ fn does_unary_expr_needs_space(node: &JsSyntaxNode) -> bool {
 /// ```js
 /// export default foo.length
 /// ```
-pub(crate) fn does_node_needs_space_before_child(node: &JsSyntaxNode) -> bool {
+pub(crate) fn does_node_needs_space_before_child(node:&JsSyntaxNode) -> bool {
 	matches!(
 		node.kind(),
 		JsSyntaxKind::JS_EXPORT_DEFAULT_EXPRESSION_CLAUSE

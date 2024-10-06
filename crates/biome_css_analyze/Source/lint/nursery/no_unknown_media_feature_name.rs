@@ -1,12 +1,25 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::{
-	AnyCssMediaAndCombinableCondition, AnyCssMediaCondition, AnyCssMediaInParens,
-	AnyCssMediaOrCombinableCondition, AnyCssMediaQuery, AnyCssMediaTypeCondition,
-	AnyCssMediaTypeQuery, AnyCssQueryFeature, CssMediaAndCondition, CssMediaConditionQuery,
-	CssMediaOrCondition, CssMediaQueryList,
+	AnyCssMediaAndCombinableCondition,
+	AnyCssMediaCondition,
+	AnyCssMediaInParens,
+	AnyCssMediaOrCombinableCondition,
+	AnyCssMediaQuery,
+	AnyCssMediaTypeCondition,
+	AnyCssMediaTypeQuery,
+	AnyCssQueryFeature,
+	CssMediaAndCondition,
+	CssMediaConditionQuery,
+	CssMediaOrCondition,
+	CssMediaQueryList,
 };
 use biome_rowan::AstNode;
 
@@ -76,12 +89,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoUnknownMediaFeatureName {
-	type Query = Ast<CssMediaQueryList>;
-	type State = CssMediaQueryList;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<CssMediaQueryList>;
+	type Signals = Option<Self::State>;
+	type State = CssMediaQueryList;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let media_query_list = ctx.query();
 		for any_css_media_query in media_query_list {
 			match any_css_media_query.ok()? {
@@ -91,21 +104,21 @@ impl Rule for NoUnknownMediaFeatureName {
 					)? {
 						return Some(media_query_list.clone());
 					}
-				}
+				},
 				AnyCssMediaQuery::AnyCssMediaTypeQuery(any_css_media_type_query) => {
 					if is_invalid_feature_name_included_in_css_media_type_query(
 						any_css_media_type_query,
 					)? {
 						return Some(media_query_list.clone());
 					}
-				}
-				_ => {}
+				},
+				_ => {},
 			}
 		}
 		None
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, node:&Self::State) -> Option<RuleDiagnostic> {
 		let span = node.range();
 		Some(
 			RuleDiagnostic::new(
@@ -126,26 +139,26 @@ impl Rule for NoUnknownMediaFeatureName {
 }
 
 fn is_invalid_feature_name_included_in_css_media_condition_query(
-	css_media_condition_query: CssMediaConditionQuery,
+	css_media_condition_query:CssMediaConditionQuery,
 ) -> Option<bool> {
 	match css_media_condition_query.condition().ok()? {
 		AnyCssMediaCondition::AnyCssMediaInParens(any_css_media_in_parens) => {
 			has_invalid_media_feature_name(any_css_media_in_parens)
-		}
+		},
 		AnyCssMediaCondition::CssMediaAndCondition(css_media_and_condition) => {
 			is_css_media_and_condition_invalid(css_media_and_condition)
-		}
+		},
 		AnyCssMediaCondition::CssMediaOrCondition(css_media_or_condition) => {
 			is_css_media_or_condition_invalid(css_media_or_condition)
-		}
+		},
 		AnyCssMediaCondition::CssMediaNotCondition(css_media_not_condition) => {
 			has_invalid_media_feature_name(css_media_not_condition.condition().ok()?)
-		}
+		},
 	}
 }
 
 fn is_invalid_feature_name_included_in_css_media_type_query(
-	any_css_media_type_query: AnyCssMediaTypeQuery,
+	any_css_media_type_query:AnyCssMediaTypeQuery,
 ) -> Option<bool> {
 	match any_css_media_type_query {
 		AnyCssMediaTypeQuery::CssMediaTypeQuery(_) => Some(false),
@@ -153,20 +166,20 @@ fn is_invalid_feature_name_included_in_css_media_type_query(
 			match css_media_and_type_query.right().ok()? {
 				AnyCssMediaTypeCondition::AnyCssMediaInParens(any_css_media_in_parens) => {
 					has_invalid_media_feature_name(any_css_media_in_parens)
-				}
+				},
 				AnyCssMediaTypeCondition::CssMediaAndCondition(css_media_and_condition) => {
 					is_css_media_and_condition_invalid(css_media_and_condition)
-				}
+				},
 				AnyCssMediaTypeCondition::CssMediaNotCondition(css_media_not_condition) => {
 					has_invalid_media_feature_name(css_media_not_condition.condition().ok()?)
-				}
+				},
 			}
-		}
+		},
 	}
 }
 
 fn is_css_media_and_condition_invalid(
-	css_media_and_condition: CssMediaAndCondition,
+	css_media_and_condition:CssMediaAndCondition,
 ) -> Option<bool> {
 	if has_invalid_media_feature_name(css_media_and_condition.left().ok()?)? {
 		return Some(true);
@@ -179,19 +192,19 @@ fn is_css_media_and_condition_invalid(
 				if has_invalid_media_feature_name(any_css_media_in_parens)? {
 					return Some(true);
 				}
-			}
+			},
 			AnyCssMediaAndCombinableCondition::CssMediaAndCondition(css_media_and_condition) => {
 				if has_invalid_media_feature_name(css_media_and_condition.left().ok()?)? {
 					return Some(true);
 				}
 				stack.push(css_media_and_condition.right().ok()?);
-			}
+			},
 		}
 	}
 	Some(false)
 }
 
-fn is_css_media_or_condition_invalid(css_media_or_condition: CssMediaOrCondition) -> Option<bool> {
+fn is_css_media_or_condition_invalid(css_media_or_condition:CssMediaOrCondition) -> Option<bool> {
 	if has_invalid_media_feature_name(css_media_or_condition.left().ok()?)? {
 		return Some(true);
 	}
@@ -203,19 +216,19 @@ fn is_css_media_or_condition_invalid(css_media_or_condition: CssMediaOrCondition
 				if has_invalid_media_feature_name(any_css_media_in_parens)? {
 					return Some(true);
 				}
-			}
+			},
 			AnyCssMediaOrCombinableCondition::CssMediaOrCondition(css_media_or_condition) => {
 				if has_invalid_media_feature_name(css_media_or_condition.left().ok()?)? {
 					return Some(true);
 				}
 				stack.push(css_media_or_condition.right().ok()?);
-			}
+			},
 		}
 	}
 	Some(false)
 }
 
-fn has_invalid_media_feature_name(any_css_media_in_parens: AnyCssMediaInParens) -> Option<bool> {
+fn has_invalid_media_feature_name(any_css_media_in_parens:AnyCssMediaInParens) -> Option<bool> {
 	let mut any_css_media_in_parens_stack = vec![any_css_media_in_parens];
 	while !any_css_media_in_parens_stack.is_empty() {
 		let any_css_media_in_parens = any_css_media_in_parens_stack.pop()?;
@@ -226,12 +239,12 @@ fn has_invalid_media_feature_name(any_css_media_in_parens: AnyCssMediaInParens) 
 					continue;
 				}
 				return Some(true);
-			}
+			},
 			AnyCssMediaInParens::CssMediaConditionInParens(css_media_condition_in_parens) => {
 				match css_media_condition_in_parens.condition().ok()? {
 					AnyCssMediaCondition::AnyCssMediaInParens(any_css_media_in_parens) => {
 						any_css_media_in_parens_stack.push(any_css_media_in_parens);
-					}
+					},
 					AnyCssMediaCondition::CssMediaAndCondition(css_media_and_condition) => {
 						any_css_media_in_parens_stack.push(css_media_and_condition.left().ok()?);
 						let mut css_media_and_condition_stack =
@@ -243,7 +256,7 @@ fn has_invalid_media_feature_name(any_css_media_in_parens: AnyCssMediaInParens) 
 									any_css_media_in_parens,
 								) => {
 									any_css_media_in_parens_stack.push(any_css_media_in_parens);
-								}
+								},
 								AnyCssMediaAndCombinableCondition::CssMediaAndCondition(
 									css_media_and_condition,
 								) => {
@@ -251,10 +264,10 @@ fn has_invalid_media_feature_name(any_css_media_in_parens: AnyCssMediaInParens) 
 										.push(css_media_and_condition.left().ok()?);
 									css_media_and_condition_stack
 										.push(css_media_and_condition.right().ok()?);
-								}
+								},
 							}
 						}
-					}
+					},
 					AnyCssMediaCondition::CssMediaOrCondition(css_media_or_condition) => {
 						any_css_media_in_parens_stack.push(css_media_or_condition.left().ok()?);
 						let mut css_media_or_condition_stack =
@@ -266,7 +279,7 @@ fn has_invalid_media_feature_name(any_css_media_in_parens: AnyCssMediaInParens) 
 									any_css_media_in_parens,
 								) => {
 									any_css_media_in_parens_stack.push(any_css_media_in_parens);
-								}
+								},
 								AnyCssMediaOrCombinableCondition::CssMediaOrCondition(
 									css_media_or_condition,
 								) => {
@@ -274,38 +287,38 @@ fn has_invalid_media_feature_name(any_css_media_in_parens: AnyCssMediaInParens) 
 										.push(css_media_or_condition.left().ok()?);
 									css_media_or_condition_stack
 										.push(css_media_or_condition.right().ok()?);
-								}
+								},
 							}
 						}
-					}
+					},
 					AnyCssMediaCondition::CssMediaNotCondition(css_media_not_condition) => {
 						any_css_media_in_parens_stack
 							.push(css_media_not_condition.condition().ok()?);
-					}
+					},
 				}
-			}
+			},
 		}
 	}
 	Some(false)
 }
 
-fn get_feature_name(any_css_query_feature: AnyCssQueryFeature) -> Option<String> {
+fn get_feature_name(any_css_query_feature:AnyCssQueryFeature) -> Option<String> {
 	let value_token = match any_css_query_feature {
 		AnyCssQueryFeature::CssQueryFeaturePlain(css_query_feature_plain) => {
 			css_query_feature_plain.name().ok()?.value_token()
-		}
+		},
 		AnyCssQueryFeature::CssQueryFeatureRange(css_query_feature_range) => {
 			css_query_feature_range.left().ok()?.value_token()
-		}
+		},
 		AnyCssQueryFeature::CssQueryFeatureReverseRange(css_query_feature_reversed_range) => {
 			css_query_feature_reversed_range.right().ok()?.value_token()
-		}
+		},
 		AnyCssQueryFeature::CssQueryFeatureRangeInterval(css_query_feature_range_interval) => {
 			css_query_feature_range_interval.name().ok()?.value_token()
-		}
+		},
 		AnyCssQueryFeature::CssQueryFeatureBoolean(css_query_feature_boolean) => {
 			css_query_feature_boolean.name().ok()?.value_token()
-		}
+		},
 	};
 	Some(value_token.ok()?.text().to_string().trim().to_string())
 }

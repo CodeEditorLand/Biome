@@ -36,7 +36,7 @@ impl<N, T> NodeOrToken<N, T> {
 	}
 }
 
-impl<N: Deref, T: Deref> NodeOrToken<N, T> {
+impl<N:Deref, T:Deref> NodeOrToken<N, T> {
 	pub(crate) fn as_deref(&self) -> NodeOrToken<&N::Target, &T::Target> {
 		match self {
 			NodeOrToken::Node(node) => NodeOrToken::Node(&**node),
@@ -45,8 +45,8 @@ impl<N: Deref, T: Deref> NodeOrToken<N, T> {
 	}
 }
 
-impl<N: fmt::Display, T: fmt::Display> fmt::Display for NodeOrToken<N, T> {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+impl<N:fmt::Display, T:fmt::Display> fmt::Display for NodeOrToken<N, T> {
+	fn fmt(&self, f:&mut fmt::Formatter<'_>) -> fmt::Result {
 		match self {
 			NodeOrToken::Node(node) => fmt::Display::fmt(node, f),
 			NodeOrToken::Token(token) => fmt::Display::fmt(token, f),
@@ -70,7 +70,7 @@ pub enum WalkEvent<T> {
 }
 
 impl<T> WalkEvent<T> {
-	pub fn map<F: FnOnce(T) -> U, U>(self, f: F) -> WalkEvent<U> {
+	pub fn map<F:FnOnce(T) -> U, U>(self, f:F) -> WalkEvent<U> {
 		match self {
 			WalkEvent::Enter(it) => WalkEvent::Enter(f(it)),
 			WalkEvent::Leave(it) => WalkEvent::Leave(f(it)),
@@ -90,7 +90,7 @@ pub enum TokenAtOffset<T> {
 }
 
 impl<T> TokenAtOffset<T> {
-	pub fn map<F: Fn(T) -> U, U>(self, f: F) -> TokenAtOffset<U> {
+	pub fn map<F:Fn(T) -> U, U>(self, f:F) -> TokenAtOffset<U> {
 		match self {
 			TokenAtOffset::None => TokenAtOffset::None,
 			TokenAtOffset::Single(it) => TokenAtOffset::Single(f(it)),
@@ -138,7 +138,7 @@ impl<T> Iterator for TokenAtOffset<T> {
 		match self {
 			TokenAtOffset::None => (0, Some(0)),
 			TokenAtOffset::Single(_) => (1, Some(1)),
-			TokenAtOffset::Between(_, _) => (2, Some(2)),
+			TokenAtOffset::Between(..) => (2, Some(2)),
 		}
 	}
 }
@@ -149,7 +149,7 @@ impl<T> ExactSizeIterator for TokenAtOffset<T> {}
 #[macro_export]
 macro_rules! static_assert {
 	($expr:expr) => {
-		const _: i32 = 0 / $expr as i32;
+		const _:i32 = 0 / $expr as i32;
 	};
 }
 

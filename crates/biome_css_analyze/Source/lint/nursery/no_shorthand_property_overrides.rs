@@ -1,13 +1,24 @@
-use crate::utils::{get_longhand_sub_properties, get_reset_to_initial_properties, vender_prefix};
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, AddVisitor, Phases, QueryMatch, Queryable, Rule,
-	RuleDiagnostic, RuleSource, ServiceBag, Visitor, VisitorContext,
+	context::RuleContext,
+	declare_lint_rule,
+	AddVisitor,
+	Phases,
+	QueryMatch,
+	Queryable,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	ServiceBag,
+	Visitor,
+	VisitorContext,
 };
 use biome_console::markup;
 use biome_css_syntax::{AnyCssDeclarationName, CssGenericProperty, CssLanguage, CssSyntaxKind};
 use biome_rowan::{AstNode, Language, SyntaxNode, TextRange, WalkEvent};
 
-fn remove_vendor_prefix(prop: &str, prefix: &str) -> String {
+use crate::utils::{get_longhand_sub_properties, get_reset_to_initial_properties, vender_prefix};
+
+fn remove_vendor_prefix(prop:&str, prefix:&str) -> String {
 	if let Some(prop) = prop.strip_prefix(prefix) {
 		return prop.to_string();
 	}
@@ -15,7 +26,7 @@ fn remove_vendor_prefix(prop: &str, prefix: &str) -> String {
 	prop.to_string()
 }
 
-fn get_override_props(property: &str) -> Vec<&str> {
+fn get_override_props(property:&str) -> Vec<&str> {
 	let longhand_sub_props = get_longhand_sub_properties(property);
 	let reset_to_initial_props = get_reset_to_initial_properties(property);
 
@@ -78,13 +89,13 @@ declare_lint_rule! {
 
 #[derive(Default)]
 struct PriorProperty {
-	original: String,
-	lowercase: String,
+	original:String,
+	lowercase:String,
 }
 
 #[derive(Default)]
 struct NoDeclarationBlockShorthandPropertyOverridesVisitor {
-	prior_props_in_block: Vec<PriorProperty>,
+	prior_props_in_block:Vec<PriorProperty>,
 }
 
 impl Visitor for NoDeclarationBlockShorthandPropertyOverridesVisitor {
@@ -92,14 +103,14 @@ impl Visitor for NoDeclarationBlockShorthandPropertyOverridesVisitor {
 
 	fn visit(
 		&mut self,
-		event: &WalkEvent<SyntaxNode<Self::Language>>,
-		mut ctx: VisitorContext<Self::Language>,
+		event:&WalkEvent<SyntaxNode<Self::Language>>,
+		mut ctx:VisitorContext<Self::Language>,
 	) {
 		if let WalkEvent::Enter(node) = event {
 			match node.kind() {
 				CssSyntaxKind::CSS_DECLARATION_OR_RULE_BLOCK => {
 					self.prior_props_in_block.clear();
-				}
+				},
 				CssSyntaxKind::CSS_GENERIC_PROPERTY => {
 					if let Some(prop_node) = CssGenericProperty::cast_ref(node)
 						.and_then(|property_node| property_node.name().ok())
@@ -123,18 +134,18 @@ impl Visitor for NoDeclarationBlockShorthandPropertyOverridesVisitor {
 							{
 								ctx.match_query(
 									NoDeclarationBlockShorthandPropertyOverridesQuery {
-										property_node: prop_node.clone(),
-										override_property: prior_prop.original.clone(),
+										property_node:prop_node.clone(),
+										override_property:prior_prop.original.clone(),
 									},
 								);
 							}
 						});
 
 						self.prior_props_in_block
-							.push(PriorProperty { original: prop, lowercase: prop_lowercase });
+							.push(PriorProperty { original:prop, lowercase:prop_lowercase });
 					}
-				}
-				_ => {}
+				},
+				_ => {},
 			}
 		}
 	}
@@ -142,14 +153,12 @@ impl Visitor for NoDeclarationBlockShorthandPropertyOverridesVisitor {
 
 #[derive(Clone)]
 pub struct NoDeclarationBlockShorthandPropertyOverridesQuery {
-	property_node: AnyCssDeclarationName,
-	override_property: String,
+	property_node:AnyCssDeclarationName,
+	override_property:String,
 }
 
 impl QueryMatch for NoDeclarationBlockShorthandPropertyOverridesQuery {
-	fn text_range(&self) -> TextRange {
-		self.property_node.range()
-	}
+	fn text_range(&self) -> TextRange { self.property_node.range() }
 }
 
 impl Queryable for NoDeclarationBlockShorthandPropertyOverridesQuery {
@@ -159,8 +168,8 @@ impl Queryable for NoDeclarationBlockShorthandPropertyOverridesQuery {
 	type Services = ();
 
 	fn build_visitor(
-		analyzer: &mut impl AddVisitor<Self::Language>,
-		_: &<Self::Language as Language>::Root,
+		analyzer:&mut impl AddVisitor<Self::Language>,
+		_:&<Self::Language as Language>::Root,
 	) {
 		analyzer.add_visitor(
 			Phases::Syntax,
@@ -168,34 +177,32 @@ impl Queryable for NoDeclarationBlockShorthandPropertyOverridesQuery {
 		);
 	}
 
-	fn unwrap_match(_: &ServiceBag, query: &Self::Input) -> Self::Output {
-		query.clone()
-	}
+	fn unwrap_match(_:&ServiceBag, query:&Self::Input) -> Self::Output { query.clone() }
 }
 
 pub struct NoDeclarationBlockShorthandPropertyOverridesState {
-	target_property: String,
-	override_property: String,
-	span: TextRange,
+	target_property:String,
+	override_property:String,
+	span:TextRange,
 }
 
 impl Rule for NoShorthandPropertyOverrides {
-	type Query = NoDeclarationBlockShorthandPropertyOverridesQuery;
-	type State = NoDeclarationBlockShorthandPropertyOverridesState;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = NoDeclarationBlockShorthandPropertyOverridesQuery;
+	type Signals = Option<Self::State>;
+	type State = NoDeclarationBlockShorthandPropertyOverridesState;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let query = ctx.query();
 
 		Some(NoDeclarationBlockShorthandPropertyOverridesState {
-			target_property: query.property_node.text(),
-			override_property: query.override_property.clone(),
-			span: query.text_range(),
+			target_property:query.property_node.text(),
+			override_property:query.override_property.clone(),
+			span:query.text_range(),
 		})
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		Some(RuleDiagnostic::new(
 			rule_category!(),
 			state.span,

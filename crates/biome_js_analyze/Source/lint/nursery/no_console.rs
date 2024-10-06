@@ -1,14 +1,23 @@
-use crate::{services::semantic::Semantic, JsRuleAction};
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, ActionCategory, FixKind, Rule, RuleDiagnostic,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
 	RuleSource,
 };
 use biome_console::markup;
 use biome_deserialize_macros::Deserializable;
 use biome_js_syntax::{
-	global_identifier, AnyJsMemberExpression, JsCallExpression, JsExpressionStatement,
+	global_identifier,
+	AnyJsMemberExpression,
+	JsCallExpression,
+	JsExpressionStatement,
 };
 use biome_rowan::{AstNode, BatchMutationExt};
+
+use crate::{services::semantic::Semantic, JsRuleAction};
 
 declare_lint_rule! {
 	/// Disallow the use of `console`.
@@ -36,12 +45,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoConsole {
-	type Query = Semantic<JsCallExpression>;
-	type State = ();
-	type Signals = Option<Self::State>;
 	type Options = Box<NoConsoleOptions>;
+	type Query = Semantic<JsCallExpression>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let call_expression = ctx.query();
 
 		let model = ctx.model();
@@ -65,7 +74,7 @@ impl Rule for NoConsole {
 		model.binding(&reference).is_none().then_some(())
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 
 		let node = JsExpressionStatement::cast(node.syntax().parent()?)?;
@@ -83,17 +92,17 @@ impl Rule for NoConsole {
 		)
 	}
 
-	fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
 		let call_expression = ctx.query();
 
 		let mut mutation = ctx.root().begin();
 		match JsExpressionStatement::cast(call_expression.syntax().parent()?) {
 			Some(stmt) if stmt.semicolon_token().is_some() => {
 				mutation.remove_node(stmt);
-			}
+			},
 			_ => {
 				mutation.remove_node(call_expression.clone());
-			}
+			},
 		}
 		Some(JsRuleAction::new(
 			ActionCategory::QuickFix,
@@ -111,5 +120,5 @@ impl Rule for NoConsole {
 #[serde(deny_unknown_fields)]
 pub struct NoConsoleOptions {
 	/// Allowed calls on the console object.
-	pub allow: Vec<String>,
+	pub allow:Vec<String>,
 }

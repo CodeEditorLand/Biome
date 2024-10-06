@@ -20,21 +20,19 @@ mod source_location_ext;
 mod util;
 mod variables;
 
-pub use errors::*;
-pub use grit_context::GritTargetFile;
-pub use grit_query::{
-	CreateFile, GritQuery, GritQueryResult, Message, OutputFile,
-};
-pub use grit_target_language::{GritTargetLanguage, JsTargetLanguage};
+use std::path::Path;
 
 use biome_grit_parser::parse_grit;
-use std::path::Path;
+pub use errors::*;
+pub use grit_context::GritTargetFile;
+pub use grit_query::{CreateFile, GritQuery, GritQueryResult, Message, OutputFile};
+pub use grit_target_language::{GritTargetLanguage, JsTargetLanguage};
 
 /// Compiles a Grit pattern from the given source string.
 pub fn compile_pattern(
-	source: &str,
-	path: Option<&Path>,
-	language: GritTargetLanguage,
+	source:&str,
+	path:Option<&Path>,
+	language:GritTargetLanguage,
 ) -> Result<GritQuery, CompileError> {
 	let parsed = parse_grit(source);
 	if parsed.has_errors() {

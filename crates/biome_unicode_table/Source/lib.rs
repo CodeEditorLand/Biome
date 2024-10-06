@@ -1,5 +1,7 @@
-use crate::bytes::DISPATCHER;
-use crate::tables::derived_property::{ID_Continue, ID_Start};
+use crate::{
+	bytes::DISPATCHER,
+	tables::derived_property::{ID_Continue, ID_Start},
+};
 
 mod bytes;
 mod tables;
@@ -8,14 +10,12 @@ pub use crate::bytes::Dispatch;
 
 /// Tests if `c` is a valid start of a CSS identifier
 #[inline]
-pub fn is_html_id_start(c: char) -> bool {
-	ID_Start(c)
-}
+pub fn is_html_id_start(c:char) -> bool { ID_Start(c) }
 
 /// Is `c` a CSS non-ascii character.
 /// See https://drafts.csswg.org/css-syntax-3/#ident-token-diagram
 #[inline]
-pub fn is_css_non_ascii(c: char) -> bool {
+pub fn is_css_non_ascii(c:char) -> bool {
 	matches!(
 		c as u32,
 		0xB7
@@ -38,13 +38,11 @@ pub fn is_css_non_ascii(c: char) -> bool {
 
 /// Tests if `c` is a valid start of a js identifier
 #[inline]
-pub fn is_js_id_start(c: char) -> bool {
-	c == '_' || c == '$' || ID_Start(c)
-}
+pub fn is_js_id_start(c:char) -> bool { c == '_' || c == '$' || ID_Start(c) }
 
 /// Tests if `c` is a valid continuation of a js identifier.
 #[inline]
-pub fn is_js_id_continue(c: char) -> bool {
+pub fn is_js_id_continue(c:char) -> bool {
 	c == '$' || c == '\u{200d}' || c == '\u{200c}' || ID_Continue(c)
 }
 
@@ -64,22 +62,21 @@ pub fn is_js_id_continue(c: char) -> bool {
 /// assert!(!is_js_ident("custom-id"));
 /// assert!(!is_js_ident("0"));
 /// ```
-pub fn is_js_ident(s: &str) -> bool {
+pub fn is_js_ident(s:&str) -> bool {
 	if s.is_empty() {
 		return false;
 	}
-	s.chars().enumerate().all(|(index, c)| {
-		if index == 0 {
-			is_js_id_start(c)
-		} else {
-			is_js_id_continue(c)
-		}
-	})
+	s.chars().enumerate().all(
+		|(index, c)| {
+			if index == 0 { is_js_id_start(c) } else { is_js_id_continue(c) }
+		},
+	)
 }
 
 /// Looks up a byte in the lookup table.
 #[inline]
-pub fn lookup_byte(byte: u8) -> Dispatch {
-	// Safety: the lookup table maps all values of u8, so it's impossible for a u8 to be out of bounds
+pub fn lookup_byte(byte:u8) -> Dispatch {
+	// Safety: the lookup table maps all values of u8, so it's impossible for a
+	// u8 to be out of bounds
 	unsafe { *DISPATCHER.get_unchecked(byte as usize) }
 }

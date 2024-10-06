@@ -10,35 +10,27 @@ use serde::{Deserialize, Serialize};
 pub struct OrganizeImports {
 	/// Enables the organization of imports
 	#[partial(bpaf(hide))]
-	pub enabled: bool,
+	pub enabled:bool,
 
-	/// A list of Unix shell style patterns. The formatter will ignore files/folders that will
-	/// match these patterns.
+	/// A list of Unix shell style patterns. The formatter will ignore
+	/// files/folders that will match these patterns.
 	#[partial(bpaf(hide))]
-	pub ignore: StringSet,
+	pub ignore:StringSet,
 
-	/// A list of Unix shell style patterns. The formatter will include files/folders that will
-	/// match these patterns.
+	/// A list of Unix shell style patterns. The formatter will include
+	/// files/folders that will match these patterns.
 	#[partial(bpaf(hide))]
-	pub include: StringSet,
+	pub include:StringSet,
 }
 
 impl Default for OrganizeImports {
 	fn default() -> Self {
-		Self {
-			enabled: true,
-			ignore: Default::default(),
-			include: Default::default(),
-		}
+		Self { enabled:true, ignore:Default::default(), include:Default::default() }
 	}
 }
 
 impl PartialOrganizeImports {
-	pub const fn is_disabled(&self) -> bool {
-		matches!(self.enabled, Some(false))
-	}
+	pub const fn is_disabled(&self) -> bool { matches!(self.enabled, Some(false)) }
 
-	pub const fn is_enabled(&self) -> bool {
-		!self.is_disabled()
-	}
+	pub const fn is_enabled(&self) -> bool { !self.is_disabled() }
 }

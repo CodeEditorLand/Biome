@@ -4,31 +4,35 @@
 //!
 //! [website]: https://biomejs.dev
 
+use std::process::{ExitCode, Termination};
+
 use biome_cli::{
-	biome_command, open_transport, setup_panic_handler, to_color_mode,
-	BiomeCommand, CliDiagnostic, CliSession,
+	biome_command,
+	open_transport,
+	setup_panic_handler,
+	to_color_mode,
+	BiomeCommand,
+	CliDiagnostic,
+	CliSession,
 };
 use biome_console::{markup, ConsoleExt, EnvConsole};
 use biome_diagnostics::{set_bottom_frame, Diagnostic, PrintDiagnostic};
 use biome_service::workspace;
-use std::process::{ExitCode, Termination};
 use tokio::runtime::Runtime;
 
 #[cfg(target_os = "windows")]
 #[global_allocator]
-static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
+static GLOBAL:mimalloc::MiMalloc = mimalloc::MiMalloc;
 
-#[cfg(all(
-	any(target_os = "macos", target_os = "linux"),
-	not(target_env = "musl")
-))]
+#[cfg(all(any(target_os = "macos", target_os = "linux"), not(target_env = "musl")))]
 #[global_allocator]
-static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+static GLOBAL:tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 
-// Jemallocator does not work on aarch64 with musl, so we'll use the system allocator instead
+// Jemallocator does not work on aarch64 with musl, so we'll use the system
+// allocator instead
 #[cfg(all(target_env = "musl", target_os = "linux", target_arch = "aarch64"))]
 #[global_allocator]
-static GLOBAL: std::alloc::System = std::alloc::System;
+static GLOBAL:std::alloc::System = std::alloc::System;
 
 fn main() -> ExitCode {
 	setup_panic_handler();
@@ -44,8 +48,7 @@ fn main() -> ExitCode {
 	match result {
 		Err(termination) => {
 			if termination.tags().is_verbose() && is_verbose {
-				console
-					.error(markup! {{PrintDiagnostic::verbose(&termination)}})
+				console.error(markup! {{PrintDiagnostic::verbose(&termination)}})
 			} else {
 				console.error(markup! {{PrintDiagnostic::simple(&termination)}})
 			}
@@ -55,10 +58,7 @@ fn main() -> ExitCode {
 	}
 }
 
-fn run_workspace(
-	console: &mut EnvConsole,
-	command: BiomeCommand,
-) -> Result<(), CliDiagnostic> {
+fn run_workspace(console:&mut EnvConsole, command:BiomeCommand) -> Result<(), CliDiagnostic> {
 	// If the `--use-server` CLI flag is set, try to open a connection to an
 	// existing Biome server socket
 	let workspace = if command.should_use_server() {

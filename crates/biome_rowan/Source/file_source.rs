@@ -18,7 +18,7 @@ pub enum FileSourceError {
 impl std::error::Error for FileSourceError {}
 
 impl Display for FileSourceError {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
 			FileSourceError::MissingFileName => {
 				write!(f, "The path has no file name")

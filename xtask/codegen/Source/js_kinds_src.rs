@@ -1,13 +1,17 @@
 //! Definitions for the ECMAScript AST used for codegen
 //! Based on the rust analyzer parser and ast definitions
 
-use crate::kind_src::KindsSrc;
-use crate::language_kind::{LanguageKind, LANGUAGE_PREFIXES};
-use quote::format_ident;
 use std::collections::BTreeMap;
 
-pub const JS_KINDS_SRC: KindsSrc = KindsSrc {
-	punct: &[
+use quote::format_ident;
+
+use crate::{
+	kind_src::KindsSrc,
+	language_kind::{LanguageKind, LANGUAGE_PREFIXES},
+};
+
+pub const JS_KINDS_SRC:KindsSrc = KindsSrc {
+	punct:&[
 		(";", "SEMICOLON"),
 		(",", "COMMA"),
 		("(", "L_PAREN"),
@@ -70,7 +74,7 @@ pub const JS_KINDS_SRC: KindsSrc = KindsSrc {
 		("@", "AT"),
 		("`", "BACKTICK"),
 	],
-	keywords: &[
+	keywords:&[
 		"break",
 		"case",
 		"catch",
@@ -156,7 +160,7 @@ pub const JS_KINDS_SRC: KindsSrc = KindsSrc {
 		"out",
 		"using",
 	],
-	literals: &[
+	literals:&[
 		"JS_NUMBER_LITERAL",
 		"JS_BIGINT_LITERAL",
 		"JS_STRING_LITERAL",
@@ -164,7 +168,7 @@ pub const JS_KINDS_SRC: KindsSrc = KindsSrc {
 		"JSX_TEXT_LITERAL",
 		"JSX_STRING_LITERAL",
 	],
-	tokens: &[
+	tokens:&[
 		"TARGET",
 		"META",
 		"HASH", // #
@@ -180,7 +184,7 @@ pub const JS_KINDS_SRC: KindsSrc = KindsSrc {
 		"JS_SHEBANG",
 		"GRIT_METAVARIABLE",
 	],
-	nodes: &[
+	nodes:&[
 		"JS_MODULE",
 		"JS_MODULE_ITEM_LIST",
 		"JS_SCRIPT",
@@ -487,7 +491,7 @@ pub const JS_KINDS_SRC: KindsSrc = KindsSrc {
 		"TS_SETTER_SIGNATURE_CLASS_MEMBER",
 		"TS_INDEX_SIGNATURE_CLASS_MEMBER",
 		"TS_INDEX_SIGNATURE_MODIFIER_LIST",
-		//JSX
+		// JSX
 		"JSX_NAME",
 		"JSX_NAMESPACE_NAME",
 		"JSX_REFERENCE_IDENTIFIER",
@@ -528,26 +532,22 @@ pub const JS_KINDS_SRC: KindsSrc = KindsSrc {
 
 #[derive(Default, Debug)]
 pub struct AstSrc {
-	pub nodes: Vec<AstNodeSrc>,
-	pub unions: Vec<AstEnumSrc>,
-	pub lists: BTreeMap<String, AstListSrc>,
-	pub bogus: Vec<String>,
+	pub nodes:Vec<AstNodeSrc>,
+	pub unions:Vec<AstEnumSrc>,
+	pub lists:BTreeMap<String, AstListSrc>,
+	pub bogus:Vec<String>,
 }
 
 impl AstSrc {
-	pub fn push_list(&mut self, name: &str, src: AstListSrc) {
+	pub fn push_list(&mut self, name:&str, src:AstListSrc) {
 		self.lists.insert(String::from(name), src);
 	}
 
-	pub fn lists(
-		&self,
-	) -> std::collections::btree_map::Iter<String, AstListSrc> {
+	pub fn lists(&self) -> std::collections::btree_map::Iter<String, AstListSrc> {
 		self.lists.iter()
 	}
 
-	pub fn is_list(&self, name: &str) -> bool {
-		self.lists.contains_key(name)
-	}
+	pub fn is_list(&self, name:&str) -> bool { self.lists.contains_key(name) }
 
 	/// Sorts all nodes, enums, etc. for a stable code gen result
 	pub fn sort(&mut self) {
@@ -564,28 +564,28 @@ impl AstSrc {
 
 #[derive(Debug)]
 pub struct AstListSrc {
-	pub element_name: String,
-	pub separator: Option<AstListSeparatorConfiguration>,
+	pub element_name:String,
+	pub separator:Option<AstListSeparatorConfiguration>,
 }
 
 #[derive(Debug)]
 pub struct AstListSeparatorConfiguration {
 	/// Name of the separator token
-	pub separator_token: String,
+	pub separator_token:String,
 	/// Whatever the list allows a trailing comma or not
-	pub allow_trailing: bool,
+	pub allow_trailing:bool,
 }
 
 #[derive(Debug)]
 pub struct AstNodeSrc {
 	#[allow(dead_code)]
-	pub documentation: Vec<String>,
-	pub name: String,
+	pub documentation:Vec<String>,
+	pub name:String,
 	// pub traits: Vec<String>,
-	pub fields: Vec<Field>,
+	pub fields:Vec<Field>,
 	/// Whether the fields of the node should be ordered dynamically using a
 	/// slot map for accesses.
-	pub dynamic: bool,
+	pub dynamic:bool,
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -596,24 +596,21 @@ pub enum TokenKind {
 
 #[derive(Debug, Eq, PartialEq)]
 pub enum Field {
-	Token { name: String, kind: TokenKind, optional: bool, unordered: bool },
-	Node { name: String, ty: String, optional: bool, unordered: bool },
+	Token { name:String, kind:TokenKind, optional:bool, unordered:bool },
+	Node { name:String, ty:String, optional:bool, unordered:bool },
 }
 
 #[derive(Debug, Clone)]
 pub struct AstEnumSrc {
 	#[allow(dead_code)]
-	pub documentation: Vec<String>,
-	pub name: String,
+	pub documentation:Vec<String>,
+	pub name:String,
 	// pub traits: Vec<String>,
-	pub variants: Vec<String>,
+	pub variants:Vec<String>,
 }
 
 impl Field {
-	pub fn method_name(
-		&self,
-		language_kind: LanguageKind,
-	) -> proc_macro2::Ident {
+	pub fn method_name(&self, language_kind:LanguageKind) -> proc_macro2::Ident {
 		match self {
 			Field::Token { name, .. } => {
 				let name = match (name.as_str(), language_kind) {
@@ -691,7 +688,8 @@ impl Field {
 				let kind_source = language_kind.kinds();
 
 				// we need to replace "-" with "_" for the keywords
-				// e.g. we have `color-profile` in css but it's an invalid ident in rust code
+				// e.g. we have `color-profile` in css but it's an invalid ident
+				// in rust code
 				if kind_source.keywords.contains(&name) {
 					format_ident!("{}_token", name.replace('-', "_"))
 				} else {
@@ -700,11 +698,8 @@ impl Field {
 			},
 			Field::Node { name, .. } => {
 				let (prefix, tail) = name.split_once('_').unwrap_or(("", name));
-				let final_name = if LANGUAGE_PREFIXES.contains(&prefix) {
-					tail
-				} else {
-					name.as_str()
-				};
+				let final_name =
+					if LANGUAGE_PREFIXES.contains(&prefix) { tail } else { name.as_str() };
 
 				// this check here is to avoid emitting methods called "type()",
 				// where "type" is a reserved word
@@ -716,6 +711,7 @@ impl Field {
 			},
 		}
 	}
+
 	#[allow(dead_code)]
 	pub fn ty(&self) -> proc_macro2::Ident {
 		match self {

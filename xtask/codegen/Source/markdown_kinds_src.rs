@@ -1,8 +1,8 @@
 use crate::kind_src::KindsSrc;
 
 // 对Token进行分组，生成is_xx 方法
-pub const MARKDOWN_KINDS_SRC: KindsSrc = KindsSrc {
-	punct: &[
+pub const MARKDOWN_KINDS_SRC:KindsSrc = KindsSrc {
+	punct:&[
 		("<", "L_ANGLE"),
 		(">", "R_ANGLE"),
 		("(", "L_PAREN"),
@@ -20,8 +20,8 @@ pub const MARKDOWN_KINDS_SRC: KindsSrc = KindsSrc {
 		("_", "UNDERSCORE"),
 		("#", "HASH"),
 	],
-	keywords: &["null"],
-	literals: &[
+	keywords:&["null"],
+	literals:&[
 		"MD_HARD_LINE_LITERAL",
 		"MD_SOFT_BREAK_LITERAL",
 		"MD_TEXTUAL_LITERAL",
@@ -30,8 +30,8 @@ pub const MARKDOWN_KINDS_SRC: KindsSrc = KindsSrc {
 		"MD_THEMATIC_BREAK_LITERAL",
 		"MD_ERROR_LITERAL",
 	],
-	tokens: &["ERROR_TOKEN", "NEWLINE", "WHITESPACE", "TAB"],
-	nodes: &[
+	tokens:&["ERROR_TOKEN", "NEWLINE", "WHITESPACE", "TAB"],
+	nodes:&[
 		// Bogus nodes
 		"BOGUS",
 		"MD_BOGUS",

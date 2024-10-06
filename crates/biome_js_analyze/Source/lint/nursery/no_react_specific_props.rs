@@ -1,12 +1,19 @@
-use crate::JsRuleAction;
-use biome_analyze::context::RuleContext;
 use biome_analyze::{
-	declare_lint_rule, ActionCategory, Ast, FixKind, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_js_factory::make::{jsx_ident, jsx_name};
 use biome_js_syntax::{AnyJsxAttributeName, JsxAttribute};
 use biome_rowan::{AstNode, BatchMutationExt, TextRange};
+
+use crate::JsRuleAction;
 
 declare_lint_rule! {
 	/// Prevents React-specific JSX properties from being used.
@@ -37,9 +44,9 @@ declare_lint_rule! {
 	}
 }
 
-const REACT_SPECIFIC_JSX_PROPS: &[&str] = &["className", "htmlFor"];
+const REACT_SPECIFIC_JSX_PROPS:&[&str] = &["className", "htmlFor"];
 
-fn get_replacement_for_react_prop(str: &str) -> Option<&'static str> {
+fn get_replacement_for_react_prop(str:&str) -> Option<&'static str> {
 	match str {
 		"className" => Some("class"),
 		"htmlFor" => Some("for"),
@@ -48,12 +55,12 @@ fn get_replacement_for_react_prop(str: &str) -> Option<&'static str> {
 }
 
 impl Rule for NoReactSpecificProps {
-	type Query = Ast<JsxAttribute>;
-	type State = (TextRange, &'static str);
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsxAttribute>;
+	type Signals = Option<Self::State>;
+	type State = (TextRange, &'static str);
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let attribute = ctx.query();
 
 		let name = attribute.name().ok()?;
@@ -70,21 +77,22 @@ impl Rule for NoReactSpecificProps {
 		}
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, (range, _): &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, (range, _):&Self::State) -> Option<RuleDiagnostic> {
 		Some(
-            RuleDiagnostic::new(
-                rule_category!(),
-                range,
-                markup!("This JSX attribute is specific to React."),
-            )
-            .detail(
-                range,
-                "This attribute may not be supported by non-React frameworks, as it is not native to HTML.",
-            ),
-        )
+			RuleDiagnostic::new(
+				rule_category!(),
+				range,
+				markup!("This JSX attribute is specific to React."),
+			)
+			.detail(
+				range,
+				"This attribute may not be supported by non-React frameworks, as it is not native \
+				 to HTML.",
+			),
+		)
 	}
 
-	fn action(ctx: &RuleContext<Self>, (_, replacement): &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, (_, replacement):&Self::State) -> Option<JsRuleAction> {
 		let mut mutation = ctx.root().begin();
 
 		let original_name_node = ctx.query().name().ok()?;

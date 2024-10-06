@@ -1,19 +1,23 @@
-use crate::{
-	grit_context::GritQueryContext, grit_target_language::GritTargetLanguage,
-	grit_target_node::GritTargetNode, source_location_ext::SourceFileExt,
-	util::TextRangeGritExt,
-};
+use std::{borrow::Cow, collections::HashMap, path::Path};
+
 use anyhow::bail;
 use biome_diagnostics::{display::SourceFile, SourceCode};
 use biome_rowan::TextRange;
 use grit_pattern_matcher::{
-	binding::Binding, constant::Constant, effects::Effect,
+	binding::Binding,
+	constant::Constant,
+	effects::Effect,
 	pattern::FileRegistry,
 };
-use grit_util::{
-	AnalysisLogBuilder, AnalysisLogs, AstNode, ByteRange, CodeRange, Range,
+use grit_util::{AnalysisLogBuilder, AnalysisLogs, AstNode, ByteRange, CodeRange, Range};
+
+use crate::{
+	grit_context::GritQueryContext,
+	grit_target_language::GritTargetLanguage,
+	grit_target_node::GritTargetNode,
+	source_location_ext::SourceFileExt,
+	util::TextRangeGritExt,
 };
-use std::{borrow::Cow, collections::HashMap, path::Path};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum GritBinding<'a> {
@@ -34,26 +38,14 @@ pub enum GritBinding<'a> {
 }
 
 impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
-	fn from_constant(constant: &'a Constant) -> Self {
-		Self::Constant(constant)
-	}
+	fn from_constant(constant:&'a Constant) -> Self { Self::Constant(constant) }
 
-	fn from_node(node: GritTargetNode<'a>) -> Self {
-		Self::Node(node)
-	}
+	fn from_node(node:GritTargetNode<'a>) -> Self { Self::Node(node) }
 
-	fn from_path(path: &'a Path) -> Self {
-		Self::File(path)
-	}
+	fn from_path(path:&'a Path) -> Self { Self::File(path) }
 
-	fn from_range(range: ByteRange, source: &'a str) -> Self {
-		Self::Range(
-			TextRange::new(
-				(range.start as u32).into(),
-				(range.end as u32).into(),
-			),
-			source,
-		)
+	fn from_range(range:ByteRange, source:&'a str) -> Self {
+		Self::Range(TextRange::new((range.start as u32).into(), (range.end as u32).into()), source)
 	}
 
 	/// Returns the only node bound by this binding.
@@ -73,10 +65,7 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
 					Some(node.clone())
 				}
 			},
-			Self::File(..)
-			| Self::Range(..)
-			| Self::Empty(..)
-			| Self::Constant(..) => None,
+			Self::File(..) | Self::Range(..) | Self::Empty(..) | Self::Constant(..) => None,
 		}
 	}
 
@@ -84,36 +73,29 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
 		Some(match self {
 			Self::File(path) => format!("({})", path.display()),
 			Self::Node(grit_target_node) => format!("({grit_target_node:?})"),
-			Self::Range(text_range, source) => format!(
-				"({})",
-				&source[text_range.start().into()..text_range.end().into()]
-			),
-			Self::Empty(_, _) => "(empty)".to_owned(),
+			Self::Range(text_range, source) => {
+				format!("({})", &source[text_range.start().into()..text_range.end().into()])
+			},
+			Self::Empty(..) => "(empty)".to_owned(),
 			Self::Constant(constant) => format!("({constant})"),
 		})
 	}
 
-	fn position(&self, _language: &GritTargetLanguage) -> Option<Range> {
+	fn position(&self, _language:&GritTargetLanguage) -> Option<Range> {
 		match self {
 			Self::Node(node) => {
-				let source = SourceFile::new(SourceCode {
-					text: node.source(),
-					line_starts: None,
-				});
+				let source = SourceFile::new(SourceCode { text:node.source(), line_starts:None });
 				source.to_grit_range(node.text_trimmed_range())
 			},
 			Self::Range(range, source) => {
-				let source = SourceFile::new(SourceCode {
-					text: source,
-					line_starts: None,
-				});
+				let source = SourceFile::new(SourceCode { text:source, line_starts:None });
 				source.to_grit_range(*range)
 			},
 			Self::File(..) | Self::Empty(..) | Self::Constant(_) => None,
 		}
 	}
 
-	fn range(&self, _language: &GritTargetLanguage) -> Option<ByteRange> {
+	fn range(&self, _language:&GritTargetLanguage) -> Option<ByteRange> {
 		match self {
 			Self::Node(node) => Some(node.byte_range()),
 			Self::Range(range, _) => Some(range.to_byte_range()),
@@ -121,7 +103,7 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
 		}
 	}
 
-	fn code_range(&self, _language: &GritTargetLanguage) -> Option<CodeRange> {
+	fn code_range(&self, _language:&GritTargetLanguage) -> Option<CodeRange> {
 		match self {
 			Self::Node(node) => Some(node.code_range()),
 			Self::Range(range, source) => Some(range.to_code_range(source)),
@@ -129,82 +111,67 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
 		}
 	}
 
-	fn is_equivalent_to(
-		&self,
-		other: &Self,
-		language: &GritTargetLanguage,
-	) -> bool {
+	fn is_equivalent_to(&self, other:&Self, language:&GritTargetLanguage) -> bool {
 		match self {
-			Self::Node(node1) => match other {
-				Self::Node(node2) => are_equivalent(node1, node2),
-				Self::Range(range, source) => {
-					self.text(language).is_ok_and(|t| {
-						t == source[range.start().into()..range.end().into()]
-					})
-				},
-				Self::File(_) | Self::Empty(..) | Self::Constant(_) => false,
+			Self::Node(node1) => {
+				match other {
+					Self::Node(node2) => are_equivalent(node1, node2),
+					Self::Range(range, source) => {
+						self.text(language)
+							.is_ok_and(|t| t == source[range.start().into()..range.end().into()])
+					},
+					Self::File(_) | Self::Empty(..) | Self::Constant(_) => false,
+				}
 			},
-			Self::Empty(node1, sort1) => match other {
-				Self::Empty(node2, sort2) => {
-					node1.kind() == node2.kind() && sort1 == sort2
-				},
-				Self::Range(..)
-				| Self::File(_)
-				| Self::Node(..)
-				| Self::Constant(_) => false,
+			Self::Empty(node1, sort1) => {
+				match other {
+					Self::Empty(node2, sort2) => node1.kind() == node2.kind() && sort1 == sort2,
+					Self::Range(..) | Self::File(_) | Self::Node(..) | Self::Constant(_) => false,
+				}
 			},
-			Self::Constant(c1) => {
-				other.as_constant().map_or(false, |c2| *c1 == c2)
+			Self::Constant(c1) => other.as_constant().map_or(false, |c2| *c1 == c2),
+			Self::Range(range, source) => {
+				other
+					.text(language)
+					.is_ok_and(|t| t == source[range.start().into()..range.end().into()])
 			},
-			Self::Range(range, source) => other.text(language).is_ok_and(|t| {
-				t == source[range.start().into()..range.end().into()]
-			}),
-			Self::File(path1) => {
-				other.as_filename().map_or(false, |path2| *path1 == path2)
-			},
+			Self::File(path1) => other.as_filename().map_or(false, |path2| *path1 == path2),
 		}
 	}
 
-	fn is_suppressed(
-		&self,
-		_language: &GritTargetLanguage,
-		_current_name: Option<&str>,
-	) -> bool {
+	fn is_suppressed(&self, _language:&GritTargetLanguage, _current_name:Option<&str>) -> bool {
 		false // TODO: Implement suppression
 	}
 
 	fn get_insertion_padding(
 		&self,
-		_text: &str,
-		_is_first: bool,
-		_language: &GritTargetLanguage,
+		_text:&str,
+		_is_first:bool,
+		_language:&GritTargetLanguage,
 	) -> Option<String> {
 		None // TODO: Implement insertion padding
 	}
 
 	fn linearized_text(
 		&self,
-		_language: &GritTargetLanguage,
-		_effects: &[Effect<'a, GritQueryContext>],
-		_files: &FileRegistry<'a, GritQueryContext>,
-		_memo: &mut HashMap<grit_util::CodeRange, Option<String>>,
-		_distributed_indent: Option<usize>,
-		_logs: &mut AnalysisLogs,
+		_language:&GritTargetLanguage,
+		_effects:&[Effect<'a, GritQueryContext>],
+		_files:&FileRegistry<'a, GritQueryContext>,
+		_memo:&mut HashMap<grit_util::CodeRange, Option<String>>,
+		_distributed_indent:Option<usize>,
+		_logs:&mut AnalysisLogs,
 	) -> anyhow::Result<Cow<'a, str>> {
 		bail!("Not implemented") // TODO: Implement rewriting
 	}
 
-	fn text(
-		&self,
-		_language: &GritTargetLanguage,
-	) -> anyhow::Result<Cow<'a, str>> {
+	fn text(&self, _language:&GritTargetLanguage) -> anyhow::Result<Cow<'a, str>> {
 		match self {
 			Self::File(path) => Ok(path.to_string_lossy()),
 			Self::Node(node) => Ok(node.text().into()),
 			Self::Range(range, source) => {
 				Ok((&source[range.start().into()..range.end().into()]).into())
 			},
-			Self::Empty(_, _) => Ok("".into()),
+			Self::Empty(..) => Ok("".into()),
 			Self::Constant(constant) => Ok(constant.to_string().into()),
 		}
 	}
@@ -246,9 +213,7 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
 		}
 	}
 
-	fn list_items(
-		&self,
-	) -> Option<impl Iterator<Item = GritTargetNode<'a>> + Clone> {
+	fn list_items(&self) -> Option<impl Iterator<Item = GritTargetNode<'a>> + Clone> {
 		match self {
 			Self::Node(node) if node.is_list() => Some(node.named_children()),
 			_ => None,
@@ -259,9 +224,7 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
 		match self {
 			GritBinding::Node(node) => node.parent(),
 			GritBinding::Empty(node, _) => Some(node.clone()),
-			GritBinding::File(_)
-			| GritBinding::Range(_, _)
-			| GritBinding::Constant(_) => None,
+			GritBinding::File(_) | GritBinding::Range(..) | GritBinding::Constant(_) => None,
 		}
 	}
 
@@ -283,22 +246,22 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
 
 	fn log_empty_field_rewrite_error(
 		&self,
-		_language: &GritTargetLanguage,
-		logs: &mut grit_util::AnalysisLogs,
+		_language:&GritTargetLanguage,
+		logs:&mut grit_util::AnalysisLogs,
 	) -> anyhow::Result<()> {
 		if let Self::Empty(node, slot) = self {
-			let range =
-				Range::from_byte_range(node.source(), node.byte_range());
+			let range = Range::from_byte_range(node.source(), node.byte_range());
 			let log = AnalysisLogBuilder::default()
-                .level(441_u16)
-                .source(node.source())
-                .position(range.start)
-                .range(range)
-                .message(format!(
-                    "Error: failed to rewrite binding, cannot derive range of empty slot {slot} of node with kind {:?}",
-                    node.kind()
-                ))
-                .build()?;
+				.level(441_u16)
+				.source(node.source())
+				.position(range.start)
+				.range(range)
+				.message(format!(
+					"Error: failed to rewrite binding, cannot derive range of empty slot {slot} \
+					 of node with kind {:?}",
+					node.kind()
+				))
+				.build()?;
 			logs.push(log);
 		}
 
@@ -311,18 +274,21 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
 /// We define two nodes to be equivalent if they have the same sort (kind) and
 /// equivalent named fields.
 ///
-/// TODO: Improve performance. Equivalence checks happen often so we want them to
-/// be fast. The current implementation requires a traversal of the tree on all
-/// named fields, which can be slow for large nodes. It also creates a cursor
-/// at each traversal step.
+/// TODO: Improve performance. Equivalence checks happen often so we want them
+/// to be fast. The current implementation requires a traversal of the tree on
+/// all named fields, which can be slow for large nodes. It also creates a
+/// cursor at each traversal step.
 ///
 /// Potential improvements:
-/// 1. Use cursors that are passed as arguments -- not clear if this would be faster.
-/// 2. Precompute hashes on all nodes, which define the equivalence relation. The check then becomes O(1).
-fn are_equivalent(node1: &GritTargetNode, node2: &GritTargetNode) -> bool {
+/// 1. Use cursors that are passed as arguments -- not clear if this would be
+///    faster.
+/// 2. Precompute hashes on all nodes, which define the equivalence relation.
+///    The check then becomes O(1).
+fn are_equivalent(node1:&GritTargetNode, node2:&GritTargetNode) -> bool {
 	// If the source is identical, we consider the nodes equivalent.
 	// This covers most cases of constant nodes.
-	// We may want a more precise check here eventually, but this is a good start.
+	// We may want a more precise check here eventually, but this is a good
+	// start.
 	if node1.text() == node2.text() {
 		return true;
 	}
@@ -331,8 +297,8 @@ fn are_equivalent(node1: &GritTargetNode, node2: &GritTargetNode) -> bool {
 	// except in the presence of lists:
 	// - If both are a list, we don't care about the kind of the list, we just
 	//   compare the nodes individually.
-	// - If one of them is a list with a single node, we may still find a
-	//   match against that node.
+	// - If one of them is a list with a single node, we may still find a match
+	//   against that node.
 	if node1.kind() != node2.kind() {
 		return if node1.is_list() {
 			if node2.is_list() {
@@ -352,9 +318,7 @@ fn are_equivalent(node1: &GritTargetNode, node2: &GritTargetNode) -> bool {
 			} else {
 				let mut children1 = node1.named_children();
 				match (children1.next(), children1.next()) {
-					(Some(only_child), None) => {
-						are_equivalent(&only_child, node2)
-					},
+					(Some(only_child), None) => are_equivalent(&only_child, node2),
 					_ => false,
 				}
 			}

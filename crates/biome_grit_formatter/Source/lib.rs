@@ -8,20 +8,21 @@ mod prelude;
 use biome_formatter::{
 	comments::Comments,
 	prelude::*,
-	trivia::{
-		format_dangling_comments, format_leading_comments,
-		format_trailing_comments,
-	},
-	write, CstFormatContext, Format, FormatLanguage, FormatResult, Formatted,
+	trivia::{format_dangling_comments, format_leading_comments, format_trailing_comments},
+	write,
+	CstFormatContext,
+	Format,
+	FormatLanguage,
+	FormatResult,
+	Formatted,
 };
 use biome_grit_syntax::{GritLanguage, GritSyntaxNode};
-use comments::GritCommentStyle;
-
-pub(crate) use crate::context::GritFormatContext;
-
 use biome_rowan::AstNode;
+use comments::GritCommentStyle;
 use context::GritFormatOptions;
 use cst::FormatGritSyntaxNode;
+
+pub(crate) use crate::context::GritFormatContext;
 
 pub(crate) type GritFormatter<'buf> = Formatter<'buf, GritFormatContext>;
 
@@ -29,18 +30,17 @@ pub(crate) type GritFormatter<'buf> = Formatter<'buf, GritFormatContext>;
 ///
 /// It returns a [Formatted] result, which the user can use to override a file.
 pub fn format_node(
-	options: GritFormatOptions,
-	root: &GritSyntaxNode,
+	options:GritFormatOptions,
+	root:&GritSyntaxNode,
 ) -> FormatResult<Formatted<GritFormatContext>> {
 	biome_formatter::format_node(root, GritFormatLanguage::new(options))
 }
 
 pub(crate) trait FormatNodeRule<N>
 where
-	N: AstNode<Language = GritLanguage>,
-{
+	N: AstNode<Language = GritLanguage>, {
 	// this is the method that actually start the formatting
-	fn fmt(&self, node: &N, f: &mut GritFormatter) -> FormatResult<()> {
+	fn fmt(&self, node:&N, f:&mut GritFormatter) -> FormatResult<()> {
 		if self.is_suppressed(node, f) {
 			return write!(f, [format_suppressed_node(node.syntax())]);
 		}
@@ -51,49 +51,45 @@ where
 		self.fmt_trailing_comments(node, f)
 	}
 
-	fn fmt_fields(&self, node: &N, f: &mut GritFormatter) -> FormatResult<()>;
+	fn fmt_fields(&self, node:&N, f:&mut GritFormatter) -> FormatResult<()>;
 
-	/// Returns `true` if the node has a suppression comment and should use the same formatting as in the source document.
-	fn is_suppressed(&self, node: &N, f: &GritFormatter) -> bool {
+	/// Returns `true` if the node has a suppression comment and should use the
+	/// same formatting as in the source document.
+	fn is_suppressed(&self, node:&N, f:&GritFormatter) -> bool {
 		f.context().comments().is_suppressed(node.syntax())
 	}
 
-	/// Formats the [leading comments](biome_formatter::comments#leading-comments) of the node.
+	/// Formats the [leading
+	/// comments](biome_formatter::comments#leading-comments) of the node.
 	///
-	/// You may want to override this method if you want to manually handle the formatting of comments
-	/// inside of the `fmt_fields` method or customize the formatting of the leading comments.
-	fn fmt_leading_comments(
-		&self,
-		node: &N,
-		f: &mut GritFormatter,
-	) -> FormatResult<()> {
+	/// You may want to override this method if you want to manually handle the
+	/// formatting of comments inside of the `fmt_fields` method or customize
+	/// the formatting of the leading comments.
+	fn fmt_leading_comments(&self, node:&N, f:&mut GritFormatter) -> FormatResult<()> {
 		format_leading_comments(node.syntax()).fmt(f)
 	}
 
-	/// Formats the [dangling comments](biome_formatter::comments#dangling-comments) of the node.
+	/// Formats the [dangling
+	/// comments](biome_formatter::comments#dangling-comments) of the node.
 	///
-	/// You should override this method if the node handled by this rule can have dangling comments because the
-	/// default implementation formats the dangling comments at the end of the node, which isn't ideal but ensures that
-	/// no comments are dropped.
+	/// You should override this method if the node handled by this rule can
+	/// have dangling comments because the default implementation formats the
+	/// dangling comments at the end of the node, which isn't ideal but ensures
+	/// that no comments are dropped.
 	///
-	/// A node can have dangling comments if all its children are tokens or if all node childrens are optional.
-	fn fmt_dangling_comments(
-		&self,
-		node: &N,
-		f: &mut GritFormatter,
-	) -> FormatResult<()> {
+	/// A node can have dangling comments if all its children are tokens or if
+	/// all node childrens are optional.
+	fn fmt_dangling_comments(&self, node:&N, f:&mut GritFormatter) -> FormatResult<()> {
 		format_dangling_comments(node.syntax()).with_soft_block_indent().fmt(f)
 	}
 
-	/// Formats the [trailing comments](biome_formatter::comments#trailing-comments) of the node.
+	/// Formats the [trailing
+	/// comments](biome_formatter::comments#trailing-comments) of the node.
 	///
-	/// You may want to override this method if you want to manually handle the formatting of comments
-	/// inside of the `fmt_fields` method or customize the formatting of the trailing comments.
-	fn fmt_trailing_comments(
-		&self,
-		node: &N,
-		f: &mut GritFormatter,
-	) -> FormatResult<()> {
+	/// You may want to override this method if you want to manually handle the
+	/// formatting of comments inside of the `fmt_fields` method or customize
+	/// the formatting of the trailing comments.
+	fn fmt_trailing_comments(&self, node:&N, f:&mut GritFormatter) -> FormatResult<()> {
 		format_trailing_comments(node.syntax()).fmt(f)
 	}
 }
@@ -101,25 +97,21 @@ where
 #[allow(dead_code)]
 #[derive(Debug, Clone, Default)]
 pub struct GritFormatLanguage {
-	options: GritFormatOptions,
+	options:GritFormatOptions,
 }
 
 impl GritFormatLanguage {
-	pub fn new(options: GritFormatOptions) -> Self {
-		Self { options }
-	}
+	pub fn new(options:GritFormatOptions) -> Self { Self { options } }
 }
 
 impl FormatLanguage for GritFormatLanguage {
-	type SyntaxLanguage = GritLanguage;
-
 	type Context = GritFormatContext;
-
 	type FormatRule = FormatGritSyntaxNode;
+	type SyntaxLanguage = GritLanguage;
 
 	fn transform(
 		&self,
-		_root: &biome_rowan::SyntaxNode<Self::SyntaxLanguage>,
+		_root:&biome_rowan::SyntaxNode<Self::SyntaxLanguage>,
 	) -> Option<(
 		biome_rowan::SyntaxNode<Self::SyntaxLanguage>,
 		biome_formatter::TransformSourceMap,
@@ -129,27 +121,24 @@ impl FormatLanguage for GritFormatLanguage {
 
 	fn is_range_formatting_node(
 		&self,
-		_node: &biome_rowan::SyntaxNode<Self::SyntaxLanguage>,
+		_node:&biome_rowan::SyntaxNode<Self::SyntaxLanguage>,
 	) -> bool {
 		true
 	}
 
-	fn options(
-		&self,
-	) -> &<Self::Context as biome_formatter::FormatContext>::Options {
+	fn options(&self) -> &<Self::Context as biome_formatter::FormatContext>::Options {
 		&self.options
 	}
 
 	fn create_context(
 		self,
-		root: &biome_rowan::SyntaxNode<Self::SyntaxLanguage>,
-		source_map: Option<biome_formatter::TransformSourceMap>,
+		root:&biome_rowan::SyntaxNode<Self::SyntaxLanguage>,
+		source_map:Option<biome_formatter::TransformSourceMap>,
 	) -> Self::Context {
-		let comments: Comments<GritLanguage> =
+		let comments:Comments<GritLanguage> =
 			Comments::from_node(root, &GritCommentStyle, source_map.as_ref());
 
-		GritFormatContext::new(self.options, comments)
-			.with_source_map(source_map)
+		GritFormatContext::new(self.options, comments).with_source_map(source_map)
 	}
 }
 
@@ -170,14 +159,13 @@ where
 {
 	type Format<'a> = T::Format<'a> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		AsFormat::format(&**self)
-	}
+	fn format(&self) -> Self::Format<'_> { AsFormat::format(&**self) }
 }
 
 /// Implement [AsFormat] for [SyntaxResult] where `T` implements [AsFormat].
 ///
-/// Useful to format mandatory AST fields without having to unwrap the value first.
+/// Useful to format mandatory AST fields without having to unwrap the value
+/// first.
 impl<T, C> AsFormat<C> for biome_rowan::SyntaxResult<T>
 where
 	T: AsFormat<C>,
@@ -194,16 +182,15 @@ where
 
 /// Implement [AsFormat] for [Option] when `T` implements [AsFormat]
 ///
-/// Allows to call format on optional AST fields without having to unwrap the field first.
+/// Allows to call format on optional AST fields without having to unwrap the
+/// field first.
 impl<T, C> AsFormat<C> for Option<T>
 where
 	T: AsFormat<C>,
 {
 	type Format<'a> = Option<T::Format<'a>> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		self.as_ref().map(|value| value.format())
-	}
+	fn format(&self) -> Self::Format<'_> { self.as_ref().map(|value| value.format()) }
 }
 
 /// Used to convert this object into an object that can be formatted.
@@ -222,23 +209,20 @@ where
 {
 	type Format = biome_rowan::SyntaxResult<T::Format>;
 
-	fn into_format(self) -> Self::Format {
-		self.map(IntoFormat::into_format)
-	}
+	fn into_format(self) -> Self::Format { self.map(IntoFormat::into_format) }
 }
 
 /// Implement [IntoFormat] for [Option] when `T` implements [IntoFormat]
 ///
-/// Allows to call format on optional AST fields without having to unwrap the field first.
+/// Allows to call format on optional AST fields without having to unwrap the
+/// field first.
 impl<T, Context> IntoFormat<Context> for Option<T>
 where
 	T: IntoFormat<Context>,
 {
 	type Format = Option<T::Format>;
 
-	fn into_format(self) -> Self::Format {
-		self.map(IntoFormat::into_format)
-	}
+	fn into_format(self) -> Self::Format { self.map(IntoFormat::into_format) }
 }
 
 /// Formatting specific [Iterator] extensions
@@ -248,9 +232,8 @@ pub(crate) trait FormattedIterExt {
 	fn formatted<Context>(self) -> FormattedIter<Self, Self::Item, Context>
 	where
 		Self: Iterator + Sized,
-		Self::Item: IntoFormat<Context>,
-	{
-		FormattedIter { inner: self, options: std::marker::PhantomData }
+		Self::Item: IntoFormat<Context>, {
+		FormattedIter { inner:self, options:std::marker::PhantomData }
 	}
 }
 
@@ -259,35 +242,29 @@ impl<I> FormattedIterExt for I where I: std::iter::Iterator {}
 #[allow(dead_code)]
 pub(crate) struct FormattedIter<Iter, Item, Context>
 where
-	Iter: Iterator<Item = Item>,
-{
-	inner: Iter,
-	options: std::marker::PhantomData<Context>,
+	Iter: Iterator<Item = Item>, {
+	inner:Iter,
+	options:std::marker::PhantomData<Context>,
 }
 
-impl<Iter, Item, Context> std::iter::Iterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::Iterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: Iterator<Item = Item>,
 	Item: IntoFormat<Context>,
 {
 	type Item = Item::Format;
 
-	fn next(&mut self) -> Option<Self::Item> {
-		Some(self.inner.next()?.into_format())
-	}
+	fn next(&mut self) -> Option<Self::Item> { Some(self.inner.next()?.into_format()) }
 }
 
-impl<Iter, Item, Context> std::iter::FusedIterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::FusedIterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: std::iter::FusedIterator<Item = Item>,
 	Item: IntoFormat<Context>,
 {
 }
 
-impl<Iter, Item, Context> std::iter::ExactSizeIterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::ExactSizeIterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: Iterator<Item = Item> + std::iter::ExactSizeIterator,
 	Item: IntoFormat<Context>,
@@ -297,9 +274,8 @@ where
 /// Rule for formatting an bogus nodes.
 pub(crate) trait FormatBogusNodeRule<N>
 where
-	N: AstNode<Language = GritLanguage>,
-{
-	fn fmt(&self, node: &N, f: &mut GritFormatter) -> FormatResult<()> {
+	N: AstNode<Language = GritLanguage>, {
+	fn fmt(&self, node:&N, f:&mut GritFormatter) -> FormatResult<()> {
 		format_bogus_node(node.syntax()).fmt(f)
 	}
 }

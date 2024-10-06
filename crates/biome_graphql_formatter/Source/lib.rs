@@ -6,21 +6,29 @@ mod graphql;
 mod prelude;
 mod utils;
 
-use crate::comments::GraphqlCommentStyle;
-pub(crate) use crate::context::GraphqlFormatContext;
-use crate::context::GraphqlFormatOptions;
-use crate::cst::FormatGraphqlSyntaxNode;
-use biome_formatter::comments::Comments;
-use biome_formatter::prelude::*;
 use biome_formatter::{
-	write, CstFormatContext, FormatContext, FormatLanguage,
-	FormatOwnedWithRule, FormatRefWithRule, FormatToken, TransformSourceMap,
+	comments::Comments,
+	prelude::*,
+	write,
+	CstFormatContext,
+	FormatContext,
+	FormatLanguage,
+	FormatOwnedWithRule,
+	FormatRefWithRule,
+	FormatToken,
+	Formatted,
+	Printed,
+	TransformSourceMap,
 };
-use biome_formatter::{Formatted, Printed};
-use biome_graphql_syntax::{
-	GraphqlLanguage, GraphqlSyntaxNode, GraphqlSyntaxToken,
-};
+use biome_graphql_syntax::{GraphqlLanguage, GraphqlSyntaxNode, GraphqlSyntaxToken};
 use biome_rowan::{AstNode, SyntaxNode, TextRange};
+
+pub(crate) use crate::context::GraphqlFormatContext;
+use crate::{
+	comments::GraphqlCommentStyle,
+	context::GraphqlFormatOptions,
+	cst::FormatGraphqlSyntaxNode,
+};
 
 /// Used to get an object that knows how to format this object.
 pub(crate) trait AsFormat<Context> {
@@ -39,14 +47,13 @@ where
 {
 	type Format<'a> = T::Format<'a> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		AsFormat::format(&**self)
-	}
+	fn format(&self) -> Self::Format<'_> { AsFormat::format(&**self) }
 }
 
 /// Implement [AsFormat] for [SyntaxResult] where `T` implements [AsFormat].
 ///
-/// Useful to format mandatory AST fields without having to unwrap the value first.
+/// Useful to format mandatory AST fields without having to unwrap the value
+/// first.
 impl<T, C> AsFormat<C> for biome_rowan::SyntaxResult<T>
 where
 	T: AsFormat<C>,
@@ -63,16 +70,15 @@ where
 
 /// Implement [AsFormat] for [Option] when `T` implements [AsFormat]
 ///
-/// Allows to call format on optional AST fields without having to unwrap the field first.
+/// Allows to call format on optional AST fields without having to unwrap the
+/// field first.
 impl<T, C> AsFormat<C> for Option<T>
 where
 	T: AsFormat<C>,
 {
 	type Format<'a> = Option<T::Format<'a>> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		self.as_ref().map(|value| value.format())
-	}
+	fn format(&self) -> Self::Format<'_> { self.as_ref().map(|value| value.format()) }
 }
 
 /// Used to convert this object into an object that can be formatted.
@@ -90,23 +96,20 @@ where
 {
 	type Format = biome_rowan::SyntaxResult<T::Format>;
 
-	fn into_format(self) -> Self::Format {
-		self.map(IntoFormat::into_format)
-	}
+	fn into_format(self) -> Self::Format { self.map(IntoFormat::into_format) }
 }
 
 /// Implement [IntoFormat] for [Option] when `T` implements [IntoFormat]
 ///
-/// Allows to call format on optional AST fields without having to unwrap the field first.
+/// Allows to call format on optional AST fields without having to unwrap the
+/// field first.
 impl<T, Context> IntoFormat<Context> for Option<T>
 where
 	T: IntoFormat<Context>,
 {
 	type Format = Option<T::Format>;
 
-	fn into_format(self) -> Self::Format {
-		self.map(IntoFormat::into_format)
-	}
+	fn into_format(self) -> Self::Format { self.map(IntoFormat::into_format) }
 }
 
 /// Formatting specific [Iterator] extensions
@@ -115,9 +118,8 @@ pub(crate) trait FormattedIterExt {
 	fn formatted<Context>(self) -> FormattedIter<Self, Self::Item, Context>
 	where
 		Self: Iterator + Sized,
-		Self::Item: IntoFormat<Context>,
-	{
-		FormattedIter { inner: self, options: std::marker::PhantomData }
+		Self::Item: IntoFormat<Context>, {
+		FormattedIter { inner:self, options:std::marker::PhantomData }
 	}
 }
 
@@ -125,35 +127,29 @@ impl<I> FormattedIterExt for I where I: std::iter::Iterator {}
 
 pub(crate) struct FormattedIter<Iter, Item, Context>
 where
-	Iter: Iterator<Item = Item>,
-{
-	inner: Iter,
-	options: std::marker::PhantomData<Context>,
+	Iter: Iterator<Item = Item>, {
+	inner:Iter,
+	options:std::marker::PhantomData<Context>,
 }
 
-impl<Iter, Item, Context> std::iter::Iterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::Iterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: Iterator<Item = Item>,
 	Item: IntoFormat<Context>,
 {
 	type Item = Item::Format;
 
-	fn next(&mut self) -> Option<Self::Item> {
-		Some(self.inner.next()?.into_format())
-	}
+	fn next(&mut self) -> Option<Self::Item> { Some(self.inner.next()?.into_format()) }
 }
 
-impl<Iter, Item, Context> std::iter::FusedIterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::FusedIterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: std::iter::FusedIterator<Item = Item>,
 	Item: IntoFormat<Context>,
 {
 }
 
-impl<Iter, Item, Context> std::iter::ExactSizeIterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::ExactSizeIterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: Iterator<Item = Item> + std::iter::ExactSizeIterator,
 	Item: IntoFormat<Context>,
@@ -165,9 +161,8 @@ pub(crate) type GraphqlFormatter<'buf> = Formatter<'buf, GraphqlFormatContext>;
 /// Format a [GraphqlSyntaxNode]
 pub(crate) trait FormatNodeRule<N>
 where
-	N: AstNode<Language = GraphqlLanguage>,
-{
-	fn fmt(&self, node: &N, f: &mut GraphqlFormatter) -> FormatResult<()> {
+	N: AstNode<Language = GraphqlLanguage>, {
+	fn fmt(&self, node:&N, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		if self.is_suppressed(node, f) {
 			return write!(f, [format_suppressed_node(node.syntax())]);
 		}
@@ -178,53 +173,45 @@ where
 		self.fmt_trailing_comments(node, f)
 	}
 
-	fn fmt_fields(
-		&self,
-		node: &N,
-		f: &mut GraphqlFormatter,
-	) -> FormatResult<()>;
+	fn fmt_fields(&self, node:&N, f:&mut GraphqlFormatter) -> FormatResult<()>;
 
-	/// Returns `true` if the node has a suppression comment and should use the same formatting as in the source document.
-	fn is_suppressed(&self, node: &N, f: &GraphqlFormatter) -> bool {
+	/// Returns `true` if the node has a suppression comment and should use the
+	/// same formatting as in the source document.
+	fn is_suppressed(&self, node:&N, f:&GraphqlFormatter) -> bool {
 		f.context().comments().is_suppressed(node.syntax())
 	}
 
-	/// Formats the [leading comments](biome_formatter::comments#leading-comments) of the node.
+	/// Formats the [leading
+	/// comments](biome_formatter::comments#leading-comments) of the node.
 	///
-	/// You may want to override this method if you want to manually handle the formatting of comments
-	/// inside of the `fmt_fields` method or customize the formatting of the leading comments.
-	fn fmt_leading_comments(
-		&self,
-		node: &N,
-		f: &mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	/// You may want to override this method if you want to manually handle the
+	/// formatting of comments inside of the `fmt_fields` method or customize
+	/// the formatting of the leading comments.
+	fn fmt_leading_comments(&self, node:&N, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		format_leading_comments(node.syntax()).fmt(f)
 	}
 
-	/// Formats the [dangling comments](biome_formatter::comments#dangling-comments) of the node.
+	/// Formats the [dangling
+	/// comments](biome_formatter::comments#dangling-comments) of the node.
 	///
-	/// You should override this method if the node handled by this rule can have dangling comments because the
-	/// default implementation formats the dangling comments at the end of the node, which isn't ideal but ensures that
-	/// no comments are dropped.
+	/// You should override this method if the node handled by this rule can
+	/// have dangling comments because the default implementation formats the
+	/// dangling comments at the end of the node, which isn't ideal but ensures
+	/// that no comments are dropped.
 	///
-	/// A node can have dangling comments if all its children are tokens or if all node childrens are optional.
-	fn fmt_dangling_comments(
-		&self,
-		node: &N,
-		f: &mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	/// A node can have dangling comments if all its children are tokens or if
+	/// all node childrens are optional.
+	fn fmt_dangling_comments(&self, node:&N, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		format_dangling_comments(node.syntax()).with_soft_block_indent().fmt(f)
 	}
 
-	/// Formats the [trailing comments](biome_formatter::comments#trailing-comments) of the node.
+	/// Formats the [trailing
+	/// comments](biome_formatter::comments#trailing-comments) of the node.
 	///
-	/// You may want to override this method if you want to manually handle the formatting of comments
-	/// inside of the `fmt_fields` method or customize the formatting of the trailing comments.
-	fn fmt_trailing_comments(
-		&self,
-		node: &N,
-		f: &mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	/// You may want to override this method if you want to manually handle the
+	/// formatting of comments inside of the `fmt_fields` method or customize
+	/// the formatting of the trailing comments.
+	fn fmt_trailing_comments(&self, node:&N, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		format_trailing_comments(node.syntax()).fmt(f)
 	}
 }
@@ -232,9 +219,8 @@ where
 /// Rule for formatting an bogus nodes.
 pub(crate) trait FormatBogusNodeRule<N>
 where
-	N: AstNode<Language = GraphqlLanguage>,
-{
-	fn fmt(&self, node: &N, f: &mut GraphqlFormatter) -> FormatResult<()> {
+	N: AstNode<Language = GraphqlLanguage>, {
+	fn fmt(&self, node:&N, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		format_bogus_node(node.syntax()).fmt(f)
 	}
 }
@@ -243,8 +229,7 @@ where
 pub(crate) type FormatGraphqlSyntaxToken = FormatToken<GraphqlFormatContext>;
 
 impl AsFormat<GraphqlFormatContext> for GraphqlSyntaxToken {
-	type Format<'a> =
-		FormatRefWithRule<'a, GraphqlSyntaxToken, FormatGraphqlSyntaxToken>;
+	type Format<'a> = FormatRefWithRule<'a, GraphqlSyntaxToken, FormatGraphqlSyntaxToken>;
 
 	fn format(&self) -> Self::Format<'_> {
 		FormatRefWithRule::new(self, FormatGraphqlSyntaxToken::default())
@@ -252,8 +237,7 @@ impl AsFormat<GraphqlFormatContext> for GraphqlSyntaxToken {
 }
 
 impl IntoFormat<GraphqlFormatContext> for GraphqlSyntaxToken {
-	type Format =
-		FormatOwnedWithRule<GraphqlSyntaxToken, FormatGraphqlSyntaxToken>;
+	type Format = FormatOwnedWithRule<GraphqlSyntaxToken, FormatGraphqlSyntaxToken>;
 
 	fn into_format(self) -> Self::Format {
 		FormatOwnedWithRule::new(self, FormatGraphqlSyntaxToken::default())
@@ -262,44 +246,32 @@ impl IntoFormat<GraphqlFormatContext> for GraphqlSyntaxToken {
 
 #[derive(Debug, Default, Clone)]
 pub struct GraphqlFormatLanguage {
-	options: GraphqlFormatOptions,
+	options:GraphqlFormatOptions,
 }
 
 impl GraphqlFormatLanguage {
-	pub fn new(options: GraphqlFormatOptions) -> Self {
-		Self { options }
-	}
+	pub fn new(options:GraphqlFormatOptions) -> Self { Self { options } }
 }
 
 impl FormatLanguage for GraphqlFormatLanguage {
-	type SyntaxLanguage = GraphqlLanguage;
 	type Context = GraphqlFormatContext;
 	type FormatRule = FormatGraphqlSyntaxNode;
+	type SyntaxLanguage = GraphqlLanguage;
 
-	fn is_range_formatting_node(
-		&self,
-		_node: &SyntaxNode<Self::SyntaxLanguage>,
-	) -> bool {
+	fn is_range_formatting_node(&self, _node:&SyntaxNode<Self::SyntaxLanguage>) -> bool {
 		// TODO implement range formatting
 		true
 	}
 
-	fn options(&self) -> &<Self::Context as FormatContext>::Options {
-		&self.options
-	}
+	fn options(&self) -> &<Self::Context as FormatContext>::Options { &self.options }
 
 	fn create_context(
 		self,
-		root: &GraphqlSyntaxNode,
-		source_map: Option<TransformSourceMap>,
+		root:&GraphqlSyntaxNode,
+		source_map:Option<TransformSourceMap>,
 	) -> Self::Context {
-		let comments = Comments::from_node(
-			root,
-			&GraphqlCommentStyle,
-			source_map.as_ref(),
-		);
-		GraphqlFormatContext::new(self.options, comments)
-			.with_source_map(source_map)
+		let comments = Comments::from_node(root, &GraphqlCommentStyle, source_map.as_ref());
+		GraphqlFormatContext::new(self.options, comments).with_source_map(source_map)
 	}
 }
 
@@ -315,23 +287,19 @@ impl FormatLanguage for GraphqlFormatLanguage {
 /// It returns a [Printed] result with a range corresponding to the
 /// range of the input that was effectively overwritten by the formatter
 pub fn format_range(
-	options: GraphqlFormatOptions,
-	root: &GraphqlSyntaxNode,
-	range: TextRange,
+	options:GraphqlFormatOptions,
+	root:&GraphqlSyntaxNode,
+	range:TextRange,
 ) -> FormatResult<Printed> {
-	biome_formatter::format_range(
-		root,
-		range,
-		GraphqlFormatLanguage::new(options),
-	)
+	biome_formatter::format_range(root, range, GraphqlFormatLanguage::new(options))
 }
 
 /// Formats a Graphql syntax tree.
 ///
 /// It returns the [Formatted] document that can be printed to a string.
 pub fn format_node(
-	options: GraphqlFormatOptions,
-	root: &GraphqlSyntaxNode,
+	options:GraphqlFormatOptions,
+	root:&GraphqlSyntaxNode,
 ) -> FormatResult<Formatted<GraphqlFormatContext>> {
 	biome_formatter::format_node(root, GraphqlFormatLanguage::new(options))
 }
@@ -347,17 +315,17 @@ pub fn format_node(
 ///
 /// Returns the [Printed] code.
 pub fn format_sub_tree(
-	options: GraphqlFormatOptions,
-	root: &GraphqlSyntaxNode,
+	options:GraphqlFormatOptions,
+	root:&GraphqlSyntaxNode,
 ) -> FormatResult<Printed> {
 	biome_formatter::format_sub_tree(root, GraphqlFormatLanguage::new(options))
 }
 
 #[cfg(test)]
 mod tests {
-	use crate::context::GraphqlFormatOptions;
-	use crate::format_node;
 	use biome_graphql_parser::parse_graphql;
+
+	use crate::{context::GraphqlFormatOptions, format_node};
 
 	#[test]
 	fn smoke_test() {

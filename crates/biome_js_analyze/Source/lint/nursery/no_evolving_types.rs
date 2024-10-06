@@ -55,12 +55,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoEvolvingTypes {
-	type Query = Ast<JsVariableDeclaration>;
-	type State = JsVariableDeclarator;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsVariableDeclaration>;
+	type Signals = Option<Self::State>;
+	type State = JsVariableDeclarator;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let source_type = ctx.source_type::<JsFileSource>().language();
 
 		let is_ts_source = source_type.is_typescript();
@@ -93,13 +93,13 @@ impl Rule for NoEvolvingTypes {
 						{
 							return Some(variable);
 						}
-					}
+					},
 					AnyJsExpression::JsArrayExpression(array_expr) => {
 						if array_expr.elements().into_iter().next().is_none() && !is_type_annotated
 						{
 							return Some(variable);
 						}
-					}
+					},
 					_ => continue,
 				};
 			}
@@ -108,9 +108,14 @@ impl Rule for NoEvolvingTypes {
 		None
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
-		let variable =
-			node.id().ok()?.as_any_js_binding()?.as_js_identifier_binding()?.name_token().ok()?;
+	fn diagnostic(_:&RuleContext<Self>, node:&Self::State) -> Option<RuleDiagnostic> {
+		let variable = node
+			.id()
+			.ok()?
+			.as_any_js_binding()?
+			.as_js_identifier_binding()?
+			.name_token()
+			.ok()?;
 		Some(
             RuleDiagnostic::new(
                 rule_category!(),

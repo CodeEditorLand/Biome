@@ -2,13 +2,16 @@ use proc_macro2::{Ident, TokenStream};
 use proc_macro_error::*;
 use quote::{quote, ToTokens};
 use syn::{
-	parse::{
-		discouraged::Speculative, Error, Parse, ParseStream, Parser, Result,
-	},
+	parse::{discouraged::Speculative, Error, Parse, ParseStream, Parser, Result},
 	punctuated::Punctuated,
 	spanned::Spanned,
 	token::Paren,
-	Attribute, DataEnum, DataStruct, Generics, Token, Variant,
+	Attribute,
+	DataEnum,
+	DataStruct,
+	Generics,
+	Token,
+	Variant,
 };
 
 pub(crate) enum DeriveInput {
@@ -17,29 +20,29 @@ pub(crate) enum DeriveInput {
 }
 
 pub(crate) struct DeriveStructInput {
-	pub(crate) ident: Ident,
-	pub(crate) generics: Generics,
+	pub(crate) ident:Ident,
+	pub(crate) generics:Generics,
 
-	pub(crate) severity: Option<StaticOrDynamic<Ident>>,
-	pub(crate) category: Option<StaticOrDynamic<syn::LitStr>>,
-	pub(crate) description: Option<StaticOrDynamic<StringOrMarkup>>,
-	pub(crate) message: Option<StaticOrDynamic<StringOrMarkup>>,
-	pub(crate) advices: Vec<TokenStream>,
-	pub(crate) verbose_advices: Vec<TokenStream>,
-	pub(crate) location: Vec<(TokenStream, LocationField)>,
-	pub(crate) tags: Option<StaticOrDynamic<Punctuated<Ident, Token![|]>>>,
-	pub(crate) source: Option<TokenStream>,
+	pub(crate) severity:Option<StaticOrDynamic<Ident>>,
+	pub(crate) category:Option<StaticOrDynamic<syn::LitStr>>,
+	pub(crate) description:Option<StaticOrDynamic<StringOrMarkup>>,
+	pub(crate) message:Option<StaticOrDynamic<StringOrMarkup>>,
+	pub(crate) advices:Vec<TokenStream>,
+	pub(crate) verbose_advices:Vec<TokenStream>,
+	pub(crate) location:Vec<(TokenStream, LocationField)>,
+	pub(crate) tags:Option<StaticOrDynamic<Punctuated<Ident, Token![|]>>>,
+	pub(crate) source:Option<TokenStream>,
 }
 
 pub(crate) struct DeriveEnumInput {
-	pub(crate) ident: Ident,
-	pub(crate) generics: Generics,
+	pub(crate) ident:Ident,
+	pub(crate) generics:Generics,
 
-	pub(crate) variants: Vec<Variant>,
+	pub(crate) variants:Vec<Variant>,
 }
 
 impl DeriveInput {
-	pub(crate) fn parse(input: syn::DeriveInput) -> Self {
+	pub(crate) fn parse(input:syn::DeriveInput) -> Self {
 		match input.data {
 			syn::Data::Struct(data) => {
 				Self::DeriveStructInput(DeriveStructInput::parse(
@@ -57,34 +60,36 @@ impl DeriveInput {
 					data,
 				))
 			},
-			syn::Data::Union(data) => abort!(
-				data.union_token.span(),
-				"unions are not supported by the Diagnostic derive macro"
-			),
+			syn::Data::Union(data) => {
+				abort!(
+					data.union_token.span(),
+					"unions are not supported by the Diagnostic derive macro"
+				)
+			},
 		}
 	}
 }
 
 impl DeriveStructInput {
 	pub(crate) fn parse(
-		ident: Ident,
-		generics: Generics,
-		attrs: Vec<Attribute>,
-		data: DataStruct,
+		ident:Ident,
+		generics:Generics,
+		attrs:Vec<Attribute>,
+		data:DataStruct,
 	) -> Self {
 		let mut result = Self {
 			ident,
 			generics,
 
-			severity: None,
-			category: None,
-			description: None,
-			message: None,
-			advices: Vec::new(),
-			verbose_advices: Vec::new(),
-			location: Vec::new(),
-			tags: None,
-			source: None,
+			severity:None,
+			category:None,
+			description:None,
+			message:None,
+			advices:Vec::new(),
+			verbose_advices:Vec::new(),
+			location:Vec::new(),
+			tags:None,
+			source:None,
 		};
 
 		for attr in attrs {
@@ -92,68 +97,45 @@ impl DeriveStructInput {
 				let tokens = attr.tokens.into();
 				let attrs = match DiagnosticAttrs::parse.parse(tokens) {
 					Ok(attrs) => attrs,
-					Err(err) => abort!(
-						err.span(),
-						"failed to parse \"diagnostic\" attribute: {}",
-						err
-					),
+					Err(err) => {
+						abort!(err.span(), "failed to parse \"diagnostic\" attribute: {}", err)
+					},
 				};
 
 				for item in attrs.attrs {
 					match item {
 						DiagnosticAttr::Severity(attr) => {
-							result.severity =
-								Some(StaticOrDynamic::Static(attr.value));
+							result.severity = Some(StaticOrDynamic::Static(attr.value));
 						},
 						DiagnosticAttr::Category(attr) => {
-							result.category =
-								Some(StaticOrDynamic::Static(attr.value));
+							result.category = Some(StaticOrDynamic::Static(attr.value));
 						},
-						DiagnosticAttr::Message(
-							MessageAttr::SingleString { value, .. },
-						) => {
+						DiagnosticAttr::Message(MessageAttr::SingleString { value, .. }) => {
 							let value = StringOrMarkup::from(value);
-							result.description =
-								Some(StaticOrDynamic::Static(value.clone()));
-							result.message =
-								Some(StaticOrDynamic::Static(value));
+							result.description = Some(StaticOrDynamic::Static(value.clone()));
+							result.message = Some(StaticOrDynamic::Static(value));
 						},
-						DiagnosticAttr::Message(
-							MessageAttr::SingleMarkup { markup, .. },
-						) => {
+						DiagnosticAttr::Message(MessageAttr::SingleMarkup { markup, .. }) => {
 							let value = StringOrMarkup::from(markup);
-							result.description =
-								Some(StaticOrDynamic::Static(value.clone()));
-							result.message =
-								Some(StaticOrDynamic::Static(value));
+							result.description = Some(StaticOrDynamic::Static(value.clone()));
+							result.message = Some(StaticOrDynamic::Static(value));
 						},
 						DiagnosticAttr::Message(MessageAttr::Split(attr)) => {
 							for item in attr.attrs {
 								match item {
-									SplitMessageAttr::Description {
-										value,
-										..
-									} => {
+									SplitMessageAttr::Description { value, .. } => {
 										result.description =
-											Some(StaticOrDynamic::Static(
-												value.into(),
-											));
+											Some(StaticOrDynamic::Static(value.into()));
 									},
-									SplitMessageAttr::Message {
-										markup,
-										..
-									} => {
+									SplitMessageAttr::Message { markup, .. } => {
 										result.message =
-											Some(StaticOrDynamic::Static(
-												markup.into(),
-											));
+											Some(StaticOrDynamic::Static(markup.into()));
 									},
 								}
 							}
 						},
 						DiagnosticAttr::Tags(attr) => {
-							result.tags =
-								Some(StaticOrDynamic::Static(attr.tags));
+							result.tags = Some(StaticOrDynamic::Static(attr.tags));
 						},
 					}
 				}
@@ -170,26 +152,22 @@ impl DeriveStructInput {
 
 			for attr in field.attrs {
 				if attr.path.is_ident("category") {
-					result.category =
-						Some(StaticOrDynamic::Dynamic(ident.clone()));
+					result.category = Some(StaticOrDynamic::Dynamic(ident.clone()));
 					continue;
 				}
 
 				if attr.path.is_ident("severity") {
-					result.severity =
-						Some(StaticOrDynamic::Dynamic(ident.clone()));
+					result.severity = Some(StaticOrDynamic::Dynamic(ident.clone()));
 					continue;
 				}
 
 				if attr.path.is_ident("description") {
-					result.description =
-						Some(StaticOrDynamic::Dynamic(ident.clone()));
+					result.description = Some(StaticOrDynamic::Dynamic(ident.clone()));
 					continue;
 				}
 
 				if attr.path.is_ident("message") {
-					result.message =
-						Some(StaticOrDynamic::Dynamic(ident.clone()));
+					result.message = Some(StaticOrDynamic::Dynamic(ident.clone()));
 					continue;
 				}
 
@@ -207,11 +185,9 @@ impl DeriveStructInput {
 					let tokens = attr.tokens.into();
 					let attr = match LocationAttr::parse.parse(tokens) {
 						Ok(attr) => attr,
-						Err(err) => abort!(
-							err.span(),
-							"failed to parse \"location\" attribute: {}",
-							err
-						),
+						Err(err) => {
+							abort!(err.span(), "failed to parse \"location\" attribute: {}", err)
+						},
 					};
 
 					result.location.push((ident.clone(), attr.field));
@@ -236,21 +212,18 @@ impl DeriveStructInput {
 
 impl DeriveEnumInput {
 	pub(crate) fn parse(
-		ident: Ident,
-		generics: Generics,
-		attrs: Vec<Attribute>,
-		data: DataEnum,
+		ident:Ident,
+		generics:Generics,
+		attrs:Vec<Attribute>,
+		data:DataEnum,
 	) -> Self {
 		for attr in attrs {
 			if attr.path.is_ident("diagnostic") {
-				abort!(
-					attr.span(),
-					"\"diagnostic\" attributes are not supported on enums"
-				);
+				abort!(attr.span(), "\"diagnostic\" attributes are not supported on enums");
 			}
 		}
 
-		Self { ident, generics, variants: data.variants.into_iter().collect() }
+		Self { ident, generics, variants:data.variants.into_iter().collect() }
 	}
 }
 
@@ -266,28 +239,24 @@ pub(crate) enum StringOrMarkup {
 }
 
 impl From<syn::LitStr> for StringOrMarkup {
-	fn from(value: syn::LitStr) -> Self {
-		Self::String(value)
-	}
+	fn from(value:syn::LitStr) -> Self { Self::String(value) }
 }
 
 impl From<TokenStream> for StringOrMarkup {
-	fn from(value: TokenStream) -> Self {
-		Self::Markup(value)
-	}
+	fn from(value:TokenStream) -> Self { Self::Markup(value) }
 }
 
 struct DiagnosticAttrs {
-	_paren_token: Paren,
-	attrs: Punctuated<DiagnosticAttr, Token![,]>,
+	_paren_token:Paren,
+	attrs:Punctuated<DiagnosticAttr, Token![,]>,
 }
 
 impl Parse for DiagnosticAttrs {
-	fn parse(input: ParseStream) -> Result<Self> {
+	fn parse(input:ParseStream) -> Result<Self> {
 		let content;
 		Ok(Self {
-			_paren_token: syn::parenthesized!(content in input),
-			attrs: content.parse_terminated(DiagnosticAttr::parse)?,
+			_paren_token:syn::parenthesized!(content in input),
+			attrs:content.parse_terminated(DiagnosticAttr::parse)?,
 		})
 	}
 }
@@ -300,8 +269,8 @@ enum DiagnosticAttr {
 }
 
 impl Parse for DiagnosticAttr {
-	fn parse(input: ParseStream) -> Result<Self> {
-		let name: Ident = input.parse()?;
+	fn parse(input:ParseStream) -> Result<Self> {
+		let name:Ident = input.parse()?;
 
 		if name == "severity" {
 			return Ok(Self::Severity(input.parse()?));
@@ -324,42 +293,39 @@ impl Parse for DiagnosticAttr {
 }
 
 struct SeverityAttr {
-	_eq_token: Token![=],
-	value: Ident,
+	_eq_token:Token![=],
+	value:Ident,
 }
 
 impl Parse for SeverityAttr {
-	fn parse(input: ParseStream) -> Result<Self> {
-		Ok(Self { _eq_token: input.parse()?, value: input.parse()? })
+	fn parse(input:ParseStream) -> Result<Self> {
+		Ok(Self { _eq_token:input.parse()?, value:input.parse()? })
 	}
 }
 
 struct CategoryAttr {
-	_eq_token: Token![=],
-	value: syn::LitStr,
+	_eq_token:Token![=],
+	value:syn::LitStr,
 }
 
 impl Parse for CategoryAttr {
-	fn parse(input: ParseStream) -> Result<Self> {
-		Ok(Self { _eq_token: input.parse()?, value: input.parse()? })
+	fn parse(input:ParseStream) -> Result<Self> {
+		Ok(Self { _eq_token:input.parse()?, value:input.parse()? })
 	}
 }
 
 enum MessageAttr {
-	SingleString { _eq_token: Token![=], value: syn::LitStr },
-	SingleMarkup { _paren_token: Paren, markup: TokenStream },
+	SingleString { _eq_token:Token![=], value:syn::LitStr },
+	SingleMarkup { _paren_token:Paren, markup:TokenStream },
 	Split(SplitMessageAttrs),
 }
 
 impl Parse for MessageAttr {
-	fn parse(input: ParseStream) -> Result<Self> {
+	fn parse(input:ParseStream) -> Result<Self> {
 		let lookahead = input.lookahead1();
 
 		if lookahead.peek(Token![=]) {
-			return Ok(Self::SingleString {
-				_eq_token: input.parse()?,
-				value: input.parse()?,
-			});
+			return Ok(Self::SingleString { _eq_token:input.parse()?, value:input.parse()? });
 		}
 
 		let fork = input.fork();
@@ -370,48 +336,45 @@ impl Parse for MessageAttr {
 
 		let content;
 		Ok(Self::SingleMarkup {
-			_paren_token: syn::parenthesized!(content in input),
-			markup: content.parse()?,
+			_paren_token:syn::parenthesized!(content in input),
+			markup:content.parse()?,
 		})
 	}
 }
 
 struct SplitMessageAttrs {
-	_paren_token: Paren,
-	attrs: Punctuated<SplitMessageAttr, Token![,]>,
+	_paren_token:Paren,
+	attrs:Punctuated<SplitMessageAttr, Token![,]>,
 }
 
 impl Parse for SplitMessageAttrs {
-	fn parse(input: ParseStream) -> Result<Self> {
+	fn parse(input:ParseStream) -> Result<Self> {
 		let content;
 		Ok(Self {
-			_paren_token: syn::parenthesized!(content in input),
-			attrs: content.parse_terminated(SplitMessageAttr::parse)?,
+			_paren_token:syn::parenthesized!(content in input),
+			attrs:content.parse_terminated(SplitMessageAttr::parse)?,
 		})
 	}
 }
 
 enum SplitMessageAttr {
-	Description { _eq_token: Token![=], value: syn::LitStr },
-	Message { _paren_token: Paren, markup: TokenStream },
+	Description { _eq_token:Token![=], value:syn::LitStr },
+	Message { _paren_token:Paren, markup:TokenStream },
 }
 
 impl Parse for SplitMessageAttr {
-	fn parse(input: ParseStream) -> Result<Self> {
-		let name: Ident = input.parse()?;
+	fn parse(input:ParseStream) -> Result<Self> {
+		let name:Ident = input.parse()?;
 
 		if name == "description" {
-			return Ok(Self::Description {
-				_eq_token: input.parse()?,
-				value: input.parse()?,
-			});
+			return Ok(Self::Description { _eq_token:input.parse()?, value:input.parse()? });
 		}
 
 		if name == "message" {
 			let content;
 			return Ok(Self::Message {
-				_paren_token: syn::parenthesized!(content in input),
-				markup: content.parse()?,
+				_paren_token:syn::parenthesized!(content in input),
+				markup:content.parse()?,
 			});
 		}
 
@@ -420,23 +383,23 @@ impl Parse for SplitMessageAttr {
 }
 
 struct TagsAttr {
-	_paren_token: Paren,
-	tags: Punctuated<Ident, Token![|]>,
+	_paren_token:Paren,
+	tags:Punctuated<Ident, Token![|]>,
 }
 
 impl Parse for TagsAttr {
-	fn parse(input: ParseStream) -> Result<Self> {
+	fn parse(input:ParseStream) -> Result<Self> {
 		let content;
 		Ok(Self {
-			_paren_token: syn::parenthesized!(content in input),
-			tags: content.parse_terminated(Ident::parse)?,
+			_paren_token:syn::parenthesized!(content in input),
+			tags:content.parse_terminated(Ident::parse)?,
 		})
 	}
 }
 
 struct LocationAttr {
-	_paren_token: Paren,
-	field: LocationField,
+	_paren_token:Paren,
+	field:LocationField,
 }
 
 pub(crate) enum LocationField {
@@ -446,10 +409,10 @@ pub(crate) enum LocationField {
 }
 
 impl Parse for LocationAttr {
-	fn parse(input: ParseStream) -> Result<Self> {
+	fn parse(input:ParseStream) -> Result<Self> {
 		let content;
 		let _paren_token = syn::parenthesized!(content in input);
-		let ident: Ident = content.parse()?;
+		let ident:Ident = content.parse()?;
 
 		let field = if ident == "resource" {
 			LocationField::Resource(ident)
@@ -466,7 +429,7 @@ impl Parse for LocationAttr {
 }
 
 impl ToTokens for LocationField {
-	fn to_tokens(&self, tokens: &mut TokenStream) {
+	fn to_tokens(&self, tokens:&mut TokenStream) {
 		match self {
 			LocationField::Resource(ident) => ident.to_tokens(tokens),
 			LocationField::Span(ident) => ident.to_tokens(tokens),

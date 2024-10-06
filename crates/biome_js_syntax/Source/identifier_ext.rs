@@ -1,11 +1,22 @@
-use crate::{
-	inner_string_text, AnyJsExportNamedSpecifier, AnyJsName,
-	JsIdentifierAssignment, JsLiteralExportName, JsReferenceIdentifier,
-	JsSyntaxKind, JsSyntaxToken, JsxReferenceIdentifier,
-};
 use biome_rowan::{
-	declare_node_union, AstNode, SyntaxError, SyntaxNodeOptionExt,
-	SyntaxResult, TokenText,
+	declare_node_union,
+	AstNode,
+	SyntaxError,
+	SyntaxNodeOptionExt,
+	SyntaxResult,
+	TokenText,
+};
+
+use crate::{
+	inner_string_text,
+	AnyJsExportNamedSpecifier,
+	AnyJsName,
+	JsIdentifierAssignment,
+	JsLiteralExportName,
+	JsReferenceIdentifier,
+	JsSyntaxKind,
+	JsSyntaxToken,
+	JsxReferenceIdentifier,
 };
 
 declare_node_union! {
@@ -15,15 +26,9 @@ declare_node_union! {
 impl AnyJsIdentifierUsage {
 	pub fn value_token(&self) -> SyntaxResult<JsSyntaxToken> {
 		match self {
-			AnyJsIdentifierUsage::JsReferenceIdentifier(node) => {
-				node.value_token()
-			},
-			AnyJsIdentifierUsage::JsIdentifierAssignment(node) => {
-				node.name_token()
-			},
-			AnyJsIdentifierUsage::JsxReferenceIdentifier(node) => {
-				node.value_token()
-			},
+			AnyJsIdentifierUsage::JsReferenceIdentifier(node) => node.value_token(),
+			AnyJsIdentifierUsage::JsIdentifierAssignment(node) => node.name_token(),
+			AnyJsIdentifierUsage::JsxReferenceIdentifier(node) => node.value_token(),
 		}
 	}
 
@@ -37,14 +42,9 @@ impl AnyJsIdentifierUsage {
 						self.syntax()
 							.ancestors()
 							.skip(1)
-							.find(
-								|x| x.kind() != JsSyntaxKind::TS_QUALIFIED_NAME
-							)
+							.find(|x| { x.kind() != JsSyntaxKind::TS_QUALIFIED_NAME })
 							.kind(),
-						Some(
-							JsSyntaxKind::TS_REFERENCE_TYPE
-								| JsSyntaxKind::TS_TYPEOF_TYPE
-						)
+						Some(JsSyntaxKind::TS_REFERENCE_TYPE | JsSyntaxKind::TS_TYPEOF_TYPE)
 					)
 			},
 			AnyJsIdentifierUsage::JsxReferenceIdentifier(_)
@@ -66,8 +66,10 @@ impl JsLiteralExportName {
 	/// use biome_js_factory::make;
 	/// use biome_rowan::TriviaPieceKind;
 	///
-	/// let export_name = make::js_literal_export_name(make::js_string_literal("foo")
-	///     .with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]));
+	/// let export_name = make::js_literal_export_name(
+	/// 	make::js_string_literal("foo")
+	/// 		.with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]),
+	/// );
 	/// assert_eq!(export_name.inner_string_text().unwrap().text(), "foo");
 	/// ```
 	pub fn inner_string_text(&self) -> SyntaxResult<TokenText> {
@@ -95,8 +97,8 @@ impl AnyJsName {
 	/// Retrieves the value_token for a given `AnyJsName`.
 	/// JsName or JsPrivateName
 	/// ```
-	/// use biome_js_syntax::{AnyJsName, JsName, JsPrivateName};
 	/// use biome_js_factory::make;
+	/// use biome_js_syntax::{AnyJsName, JsName, JsPrivateName};
 	///
 	/// let js_name = AnyJsName::JsName(make::js_name(make::ident("request")));
 	/// assert!(js_name.value_token().is_ok());
@@ -106,9 +108,7 @@ impl AnyJsName {
 		match self {
 			AnyJsName::JsName(name) => name.value_token(),
 			AnyJsName::JsPrivateName(name) => name.value_token(),
-			AnyJsName::JsMetavariable(_) => {
-				Err(SyntaxError::UnexpectedMetavariable)
-			},
+			AnyJsName::JsMetavariable(_) => Err(SyntaxError::UnexpectedMetavariable),
 		}
 	}
 }

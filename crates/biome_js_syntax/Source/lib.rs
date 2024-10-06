@@ -28,10 +28,16 @@ mod syntax_node;
 pub mod type_ext;
 mod union_ext;
 
-pub use self::generated::*;
+use biome_rowan::{AstNode, RawSyntaxKind, SyntaxKind, SyntaxResult};
 pub use biome_rowan::{
-	SyntaxNodeText, TextLen, TextRange, TextSize, TokenAtOffset, TokenText,
-	TriviaPieceKind, WalkEvent,
+	SyntaxNodeText,
+	TextLen,
+	TextRange,
+	TextSize,
+	TokenAtOffset,
+	TokenText,
+	TriviaPieceKind,
+	WalkEvent,
 };
 pub use expr_ext::*;
 pub use file_source::*;
@@ -42,20 +48,18 @@ pub use modifier_ext::*;
 pub use stmt_ext::*;
 pub use syntax_node::*;
 
+pub use self::generated::*;
 use crate::JsSyntaxKind::*;
-use biome_rowan::{AstNode, RawSyntaxKind, SyntaxKind, SyntaxResult};
 
 impl From<u16> for JsSyntaxKind {
-	fn from(d: u16) -> JsSyntaxKind {
+	fn from(d:u16) -> JsSyntaxKind {
 		assert!(d <= (JsSyntaxKind::__LAST as u16));
 		unsafe { std::mem::transmute::<u16, JsSyntaxKind>(d) }
 	}
 }
 
 impl From<JsSyntaxKind> for u16 {
-	fn from(k: JsSyntaxKind) -> u16 {
-		k as u16
-	}
+	fn from(k:JsSyntaxKind) -> u16 { k as u16 }
 }
 
 impl JsSyntaxKind {
@@ -69,20 +73,19 @@ impl JsSyntaxKind {
 	/// Returns `true` for any kind representing a Grit metavariable.
 	#[inline]
 	pub fn is_metavariable(&self) -> bool {
-		matches!(
-			self,
-			JsSyntaxKind::GRIT_METAVARIABLE | JsSyntaxKind::JS_METAVARIABLE
-		)
+		matches!(self, JsSyntaxKind::GRIT_METAVARIABLE | JsSyntaxKind::JS_METAVARIABLE)
 	}
 
-	/// Returns `true` for contextual keywords (excluding strict mode contextual keywords)
+	/// Returns `true` for contextual keywords (excluding strict mode contextual
+	/// keywords)
 	#[inline]
 	pub const fn is_contextual_keyword(self) -> bool {
 		(self as u16) >= (JsSyntaxKind::ABSTRACT_KW as u16)
 			&& (self as u16) <= (JsSyntaxKind::USING_KW as u16)
 	}
 
-	/// Returns true for all non-contextual keywords (includes future reserved keywords)
+	/// Returns true for all non-contextual keywords (includes future reserved
+	/// keywords)
 	#[inline]
 	pub const fn is_non_contextual_keyword(self) -> bool {
 		self.is_keyword() && !self.is_contextual_keyword()
@@ -96,8 +99,8 @@ impl JsSyntaxKind {
 }
 
 impl biome_rowan::SyntaxKind for JsSyntaxKind {
-	const TOMBSTONE: Self = TOMBSTONE;
-	const EOF: Self = EOF;
+	const EOF:Self = EOF;
+	const TOMBSTONE:Self = TOMBSTONE;
 
 	fn is_bogus(&self) -> bool {
 		matches!(
@@ -120,18 +123,12 @@ impl biome_rowan::SyntaxKind for JsSyntaxKind {
 			kind if AnyJsModuleItem::can_cast(*kind) => JS_BOGUS_STATEMENT,
 			kind if AnyJsExpression::can_cast(*kind) => JS_BOGUS_EXPRESSION,
 			kind if AnyJsBinding::can_cast(*kind) => JS_BOGUS_BINDING,
-			kind if AnyJsClassMember::can_cast(*kind)
-				|| AnyJsObjectMember::can_cast(*kind) =>
-			{
+			kind if AnyJsClassMember::can_cast(*kind) || AnyJsObjectMember::can_cast(*kind) => {
 				JS_BOGUS_MEMBER
 			},
 			kind if AnyJsAssignment::can_cast(*kind) => JS_BOGUS_ASSIGNMENT,
-			kind if AnyJsNamedImportSpecifier::can_cast(*kind) => {
-				JS_BOGUS_NAMED_IMPORT_SPECIFIER
-			},
-			kind if AnyJsImportAssertionEntry::can_cast(*kind) => {
-				JS_BOGUS_IMPORT_ASSERTION_ENTRY
-			},
+			kind if AnyJsNamedImportSpecifier::can_cast(*kind) => JS_BOGUS_NAMED_IMPORT_SPECIFIER,
+			kind if AnyJsImportAssertionEntry::can_cast(*kind) => JS_BOGUS_IMPORT_ASSERTION_ENTRY,
 			kind if AnyJsParameter::can_cast(*kind) => JS_BOGUS_PARAMETER,
 			kind if AnyTsType::can_cast(*kind) => TS_BOGUS_TYPE,
 
@@ -140,22 +137,14 @@ impl biome_rowan::SyntaxKind for JsSyntaxKind {
 	}
 
 	#[inline]
-	fn to_raw(&self) -> RawSyntaxKind {
-		RawSyntaxKind(*self as u16)
-	}
+	fn to_raw(&self) -> RawSyntaxKind { RawSyntaxKind(*self as u16) }
 
 	#[inline]
-	fn from_raw(raw: RawSyntaxKind) -> Self {
-		Self::from(raw.0)
-	}
+	fn from_raw(raw:RawSyntaxKind) -> Self { Self::from(raw.0) }
 
-	fn is_root(&self) -> bool {
-		AnyJsRoot::can_cast(*self)
-	}
+	fn is_root(&self) -> bool { AnyJsRoot::can_cast(*self) }
 
-	fn is_list(&self) -> bool {
-		JsSyntaxKind::is_list(*self)
-	}
+	fn is_list(&self) -> bool { JsSyntaxKind::is_list(*self) }
 
 	fn is_trivia(self) -> bool {
 		matches!(
@@ -167,23 +156,19 @@ impl biome_rowan::SyntaxKind for JsSyntaxKind {
 		)
 	}
 
-	fn to_string(&self) -> Option<&'static str> {
-		JsSyntaxKind::to_string(self)
-	}
+	fn to_string(&self) -> Option<&'static str> { JsSyntaxKind::to_string(self) }
 }
 
 impl TryFrom<JsSyntaxKind> for TriviaPieceKind {
 	type Error = ();
 
-	fn try_from(value: JsSyntaxKind) -> Result<Self, Self::Error> {
+	fn try_from(value:JsSyntaxKind) -> Result<Self, Self::Error> {
 		if value.is_trivia() {
 			match value {
 				JsSyntaxKind::NEWLINE => Ok(TriviaPieceKind::Newline),
 				JsSyntaxKind::WHITESPACE => Ok(TriviaPieceKind::Whitespace),
 				JsSyntaxKind::COMMENT => Ok(TriviaPieceKind::SingleLineComment),
-				JsSyntaxKind::MULTILINE_COMMENT => {
-					Ok(TriviaPieceKind::MultiLineComment)
-				},
+				JsSyntaxKind::MULTILINE_COMMENT => Ok(TriviaPieceKind::MultiLineComment),
 				_ => unreachable!("Not Trivia"),
 			}
 		} else {
@@ -224,15 +209,11 @@ pub enum OperatorPrecedence {
 
 impl OperatorPrecedence {
 	/// Returns the operator with the lowest precedence
-	pub fn lowest() -> Self {
-		OperatorPrecedence::Comma
-	}
+	pub fn lowest() -> Self { OperatorPrecedence::Comma }
 
 	/// Returns the operator with the highest precedence
 	#[allow(dead_code)]
-	pub fn highest() -> Self {
-		OperatorPrecedence::Primary
-	}
+	pub fn highest() -> Self { OperatorPrecedence::Primary }
 
 	/// Returns `true` if this operator has right to left associativity
 	pub fn is_right_to_left(&self) -> bool {
@@ -246,10 +227,9 @@ impl OperatorPrecedence {
 		)
 	}
 
-	/// Returns the precedence for a binary operator token or [None] if the token isn't a binary operator
-	pub fn try_from_binary_operator(
-		kind: JsSyntaxKind,
-	) -> Option<OperatorPrecedence> {
+	/// Returns the precedence for a binary operator token or [None] if the
+	/// token isn't a binary operator
+	pub fn try_from_binary_operator(kind:JsSyntaxKind) -> Option<OperatorPrecedence> {
 		Some(match kind {
 			T![??] => OperatorPrecedence::Coalesce,
 			T![||] => OperatorPrecedence::LogicalOr,
@@ -258,14 +238,9 @@ impl OperatorPrecedence {
 			T![^] => OperatorPrecedence::BitwiseXor,
 			T![&] => OperatorPrecedence::BitwiseAnd,
 			T![==] | T![!=] | T![===] | T![!==] => OperatorPrecedence::Equality,
-			T![<]
-			| T![>]
-			| T![<=]
-			| T![>=]
-			| T![instanceof]
-			| T![in]
-			| T![as]
-			| T![satisfies] => OperatorPrecedence::Relational,
+			T![<] | T![>] | T![<=] | T![>=] | T![instanceof] | T![in] | T![as] | T![satisfies] => {
+				OperatorPrecedence::Relational
+			},
 			T![<<] | T![>>] | T![>>>] => OperatorPrecedence::Shift,
 			T![+] | T![-] => OperatorPrecedence::Additive,
 			T![*] | T![/] | T![%] => OperatorPrecedence::Multiplicative,
@@ -283,36 +258,35 @@ impl OperatorPrecedence {
 		)
 	}
 
-	pub const fn is_shift(&self) -> bool {
-		matches!(self, OperatorPrecedence::Shift)
-	}
+	pub const fn is_shift(&self) -> bool { matches!(self, OperatorPrecedence::Shift) }
 
-	pub const fn is_additive(&self) -> bool {
-		matches!(self, OperatorPrecedence::Additive)
-	}
+	pub const fn is_additive(&self) -> bool { matches!(self, OperatorPrecedence::Additive) }
 
-	pub const fn is_equality(&self) -> bool {
-		matches!(self, OperatorPrecedence::Equality)
-	}
+	pub const fn is_equality(&self) -> bool { matches!(self, OperatorPrecedence::Equality) }
 
 	pub const fn is_multiplicative(&self) -> bool {
 		matches!(self, OperatorPrecedence::Multiplicative)
 	}
 
-	pub const fn is_exponential(&self) -> bool {
-		matches!(self, OperatorPrecedence::Exponential)
-	}
+	pub const fn is_exponential(&self) -> bool { matches!(self, OperatorPrecedence::Exponential) }
 }
 
-/// Similar to [JsSyntaxToken::text_trimmed()], but removes the quotes of string literals.
+/// Similar to [JsSyntaxToken::text_trimmed()], but removes the quotes of string
+/// literals.
 ///
 /// ## Examples
 ///
 /// ```
-/// use biome_js_syntax::{JsSyntaxKind, JsSyntaxToken, inner_string_text};
+/// use biome_js_syntax::{inner_string_text, JsSyntaxKind, JsSyntaxToken};
 ///
-/// let a = JsSyntaxToken::new_detached(JsSyntaxKind::JS_STRING_LITERAL, "'inner_string_text'", [], []);
-/// let b = JsSyntaxToken::new_detached(JsSyntaxKind::JS_STRING_LITERAL, "\"inner_string_text\"", [], []);
+/// let a =
+/// 	JsSyntaxToken::new_detached(JsSyntaxKind::JS_STRING_LITERAL, "'inner_string_text'", [], []);
+/// let b = JsSyntaxToken::new_detached(
+/// 	JsSyntaxKind::JS_STRING_LITERAL,
+/// 	"\"inner_string_text\"",
+/// 	[],
+/// 	[],
+/// );
 /// assert_eq!(inner_string_text(&a), inner_string_text(&b));
 ///
 /// let a = JsSyntaxToken::new_detached(JsSyntaxKind::LET_KW, "let", [], []);
@@ -323,24 +297,21 @@ impl OperatorPrecedence {
 /// let b = JsSyntaxToken::new_detached(JsSyntaxKind::CONST_KW, "const", [], []);
 /// assert!(inner_string_text(&a) != inner_string_text(&b));
 /// ```
-pub fn inner_string_text(token: &JsSyntaxToken) -> TokenText {
+pub fn inner_string_text(token:&JsSyntaxToken) -> TokenText {
 	let mut text = token.token_text_trimmed();
-	if matches!(
-		token.kind(),
-		JsSyntaxKind::JS_STRING_LITERAL | JsSyntaxKind::JSX_STRING_LITERAL
-	) {
+	if matches!(token.kind(), JsSyntaxKind::JS_STRING_LITERAL | JsSyntaxKind::JSX_STRING_LITERAL) {
 		// remove string delimiters
-		// SAFETY: string literal token have a delimiters at the start and the end of the string
+		// SAFETY: string literal token have a delimiters at the start and the
+		// end of the string
 		let range = TextRange::new(1.into(), text.len() - TextSize::from(1));
 		text = text.slice(range);
 	}
 	text
 }
 
-/// Returns `Ok(true)` if `maybe_argument` is an argument of a [test call expression](JsCallExpression::is_test_call_expression).
-pub fn is_test_call_argument(
-	maybe_argument: &JsSyntaxNode,
-) -> SyntaxResult<bool> {
+/// Returns `Ok(true)` if `maybe_argument` is an argument of a [test call
+/// expression](JsCallExpression::is_test_call_expression).
+pub fn is_test_call_argument(maybe_argument:&JsSyntaxNode) -> SyntaxResult<bool> {
 	let call_expression = maybe_argument
 		.parent()
 		.and_then(JsCallArgumentList::cast)

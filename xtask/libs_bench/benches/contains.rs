@@ -10,8 +10,7 @@ pub fn keywords() -> Vec<String> {
 		.unwrap_or_else(|_| "1".to_string())
 		.parse()
 		.unwrap();
-	let v =
-		&["undefined", "NaN", "Infinity", "arguments", "eval"].repeat(repeat);
+	let v = &["undefined", "NaN", "Infinity", "arguments", "eval"].repeat(repeat);
 	v.iter().enumerate().map(|(i, x)| format!("{x}{i}")).collect()
 }
 
@@ -28,9 +27,7 @@ pub fn search_for() -> &'static [&'static str] {
 	][..]
 }
 
-pub fn contains_slice_setup() -> Vec<String> {
-	keywords()
-}
+pub fn contains_slice_setup() -> Vec<String> { keywords() }
 
 pub fn contains_slice() -> usize {
 	let set = contains_slice_setup();
@@ -151,9 +148,7 @@ pub fn contains_fst() -> i32 {
 	count
 }
 
-pub fn contains_memchr_setup() -> Vec<String> {
-	contains_binary_search_setup()
-}
+pub fn contains_memchr_setup() -> Vec<String> { contains_binary_search_setup() }
 
 pub fn contains_memchr() -> i32 {
 	let set = contains_memchr_setup();
@@ -161,10 +156,8 @@ pub fn contains_memchr() -> i32 {
 	let mut count = 0;
 	for k in search_for() {
 		for item in set.iter() {
-			count += i32::from(
-				memchr::memmem::find(k.as_bytes(), item.as_str().as_bytes())
-					.is_some(),
-			);
+			count +=
+				i32::from(memchr::memmem::find(k.as_bytes(), item.as_str().as_bytes()).is_some());
 		}
 	}
 	count

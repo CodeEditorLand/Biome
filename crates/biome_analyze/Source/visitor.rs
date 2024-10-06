@@ -1,59 +1,65 @@
+use std::collections::BinaryHeap;
+
+use biome_rowan::{AstNode, Language, SyntaxNode, TextRange, WalkEvent};
+
 use crate::{
 	matcher::{MatchQueryParams, Query},
 	registry::{NodeLanguage, Phases},
-	AnalyzerOptions, LanguageRoot, QueryMatch, QueryMatcher, ServiceBag,
-	SignalEntry, SuppressionAction,
+	AnalyzerOptions,
+	LanguageRoot,
+	QueryMatch,
+	QueryMatcher,
+	ServiceBag,
+	SignalEntry,
+	SuppressionAction,
 };
-use biome_rowan::{AstNode, Language, SyntaxNode, TextRange, WalkEvent};
-use std::collections::BinaryHeap;
 
 /// Mutable context objects shared by all visitors
-pub struct VisitorContext<'phase, 'query, L: Language> {
-	pub phase: Phases,
-	pub root: &'phase LanguageRoot<L>,
-	pub services: &'phase ServiceBag,
-	pub suppression_action: &'phase dyn SuppressionAction<Language = L>,
-	pub range: Option<TextRange>,
-	pub(crate) query_matcher: &'query mut dyn QueryMatcher<L>,
-	pub(crate) signal_queue: &'query mut BinaryHeap<SignalEntry<'phase, L>>,
-	pub options: &'phase AnalyzerOptions,
+pub struct VisitorContext<'phase, 'query, L:Language> {
+	pub phase:Phases,
+	pub root:&'phase LanguageRoot<L>,
+	pub services:&'phase ServiceBag,
+	pub suppression_action:&'phase dyn SuppressionAction<Language = L>,
+	pub range:Option<TextRange>,
+	pub(crate) query_matcher:&'query mut dyn QueryMatcher<L>,
+	pub(crate) signal_queue:&'query mut BinaryHeap<SignalEntry<'phase, L>>,
+	pub options:&'phase AnalyzerOptions,
 }
 
-impl<'phase, 'query, L: Language> VisitorContext<'phase, 'query, L> {
-	pub fn match_query<T: QueryMatch>(&mut self, query: T) {
+impl<'phase, 'query, L:Language> VisitorContext<'phase, 'query, L> {
+	pub fn match_query<T:QueryMatch>(&mut self, query:T) {
 		self.query_matcher.match_query(MatchQueryParams {
-			phase: self.phase,
-			root: self.root,
-			query: Query::new(query),
-			services: self.services,
-			signal_queue: self.signal_queue,
-			suppression_action: self.suppression_action,
-			options: self.options,
+			phase:self.phase,
+			root:self.root,
+			query:Query::new(query),
+			services:self.services,
+			signal_queue:self.signal_queue,
+			suppression_action:self.suppression_action,
+			options:self.options,
 		})
 	}
 }
 
 /// Mutable context objects provided to the finish hook of visitors
-pub struct VisitorFinishContext<'a, L: Language> {
-	pub root: &'a LanguageRoot<L>,
-	pub services: &'a mut ServiceBag,
+pub struct VisitorFinishContext<'a, L:Language> {
+	pub root:&'a LanguageRoot<L>,
+	pub services:&'a mut ServiceBag,
 }
 
 /// Visitors are the main building blocks of the analyzer: they receive syntax
 /// [WalkEvent]s, process these events to build secondary data structures from
-/// the syntax tree, and emit rule query matches through the [crate::RuleRegistry]
+/// the syntax tree, and emit rule query matches through the
+/// [crate::RuleRegistry]
 pub trait Visitor {
 	type Language: Language;
 
 	fn visit(
 		&mut self,
-		event: &WalkEvent<SyntaxNode<Self::Language>>,
-		ctx: VisitorContext<Self::Language>,
+		event:&WalkEvent<SyntaxNode<Self::Language>>,
+		ctx:VisitorContext<Self::Language>,
 	);
 
-	fn finish(self: Box<Self>, ctx: VisitorFinishContext<Self::Language>) {
-		let _ = ctx;
-	}
+	fn finish(self: Box<Self>, ctx:VisitorFinishContext<Self::Language>) { let _ = ctx; }
 }
 
 /// A node visitor is a special kind of visitor that does not have a persistent
@@ -68,17 +74,12 @@ pub trait NodeVisitor<V>: Sized {
 	type Node: AstNode;
 
 	fn enter(
-		node: Self::Node,
-		ctx: &mut VisitorContext<NodeLanguage<Self::Node>>,
-		stack: &mut V,
+		node:Self::Node,
+		ctx:&mut VisitorContext<NodeLanguage<Self::Node>>,
+		stack:&mut V,
 	) -> Self;
 
-	fn exit(
-		self,
-		node: Self::Node,
-		ctx: &mut VisitorContext<NodeLanguage<Self::Node>>,
-		stack: &mut V,
-	);
+	fn exit(self, node:Self::Node, ctx:&mut VisitorContext<NodeLanguage<Self::Node>>, stack:&mut V);
 }
 
 /// Creates a single struct implementing [Visitor] over a collection of type

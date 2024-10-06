@@ -1,5 +1,10 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::{AnyCssPseudoElement, CssPseudoElementSelector};
@@ -58,13 +63,13 @@ declare_lint_rule! {
 }
 
 impl Rule for NoUnknownPseudoElement {
-	type Query = Ast<CssPseudoElementSelector>;
-	type State = AnyCssPseudoElement;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<CssPseudoElementSelector>;
+	type Signals = Option<Self::State>;
+	type State = AnyCssPseudoElement;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
-		let node: &CssPseudoElementSelector = ctx.query();
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
+		let node:&CssPseudoElementSelector = ctx.query();
 
 		let pseudo_element = node.element().ok()?;
 
@@ -72,11 +77,11 @@ impl Rule for NoUnknownPseudoElement {
 			AnyCssPseudoElement::CssBogusPseudoElement(element) => element.text(),
 			AnyCssPseudoElement::CssPseudoElementFunctionIdentifier(ident) => {
 				ident.name().ok()?.text().to_string()
-			}
+			},
 			AnyCssPseudoElement::CssPseudoElementFunctionSelector(selector) => selector.text(),
 			AnyCssPseudoElement::CssPseudoElementIdentifier(ident) => {
 				ident.name().ok()?.text().to_string()
-			}
+			},
 		};
 
 		if !vender_prefix(pseudo_element_name.as_str()).is_empty()
@@ -88,7 +93,7 @@ impl Rule for NoUnknownPseudoElement {
 		Some(pseudo_element)
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, element: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, element:&Self::State) -> Option<RuleDiagnostic> {
 		let span = element.range();
 		Some(
             RuleDiagnostic::new(

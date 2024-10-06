@@ -1,37 +1,39 @@
 use std::collections::BTreeMap;
 
+use biome_grit_syntax::{AnyGritDefinition, GritDefinitionList, GritVariableList};
+use biome_rowan::AstNode;
+use grit_pattern_matcher::pattern::{
+	GritFunctionDefinition,
+	PatternDefinition,
+	PredicateDefinition,
+};
+use grit_util::ByteRange;
+
 use crate::{
 	grit_context::GritQueryContext,
 	pattern_compiler::{
 		compilation_context::{DefinitionInfo, NodeCompilationContext},
-		FunctionDefinitionCompiler, PatternDefinitionCompiler,
+		FunctionDefinitionCompiler,
+		PatternDefinitionCompiler,
 		PredicateDefinitionCompiler,
 	},
 	util::TextRangeGritExt,
 	CompileError,
 };
-use biome_grit_syntax::{
-	AnyGritDefinition, GritDefinitionList, GritVariableList,
-};
-use biome_rowan::AstNode;
-use grit_pattern_matcher::pattern::{
-	GritFunctionDefinition, PatternDefinition, PredicateDefinition,
-};
-use grit_util::ByteRange;
 
 #[derive(Clone, Debug)]
 pub struct Definitions {
-	pub patterns: Vec<PatternDefinition<GritQueryContext>>,
-	pub predicates: Vec<PredicateDefinition<GritQueryContext>>,
-	pub functions: Vec<GritFunctionDefinition<GritQueryContext>>,
+	pub patterns:Vec<PatternDefinition<GritQueryContext>>,
+	pub predicates:Vec<PredicateDefinition<GritQueryContext>>,
+	pub functions:Vec<GritFunctionDefinition<GritQueryContext>>,
 }
 
 /// Compiles all definitions.
 ///
 /// Must be called after [scan_definitions()].
 pub fn compile_definitions(
-	definitions: GritDefinitionList,
-	context: &mut NodeCompilationContext,
+	definitions:GritDefinitionList,
+	context:&mut NodeCompilationContext,
 ) -> Result<Definitions, CompileError> {
 	let mut patterns = Vec::new();
 	let mut predicates = Vec::new();
@@ -40,18 +42,13 @@ pub fn compile_definitions(
 		match definition? {
 			AnyGritDefinition::AnyGritPattern(_) => continue, // Handled separately.
 			AnyGritDefinition::GritPatternDefinition(node) => {
-				patterns
-					.push(PatternDefinitionCompiler::from_node(node, context)?);
+				patterns.push(PatternDefinitionCompiler::from_node(node, context)?);
 			},
 			AnyGritDefinition::GritPredicateDefinition(node) => {
-				predicates.push(PredicateDefinitionCompiler::from_node(
-					node, context,
-				)?);
+				predicates.push(PredicateDefinitionCompiler::from_node(node, context)?);
 			},
 			AnyGritDefinition::GritFunctionDefinition(node) => {
-				functions.push(FunctionDefinitionCompiler::from_node(
-					node, context,
-				)?);
+				functions.push(FunctionDefinitionCompiler::from_node(node, context)?);
 			},
 			AnyGritDefinition::GritBogusDefinition(_) => {
 				unreachable!(); // Should be handled in `scan_definitions()`.
@@ -63,15 +60,15 @@ pub fn compile_definitions(
 }
 
 pub struct ScannedDefinitionInfo {
-	pub pattern_definition_info: BTreeMap<String, DefinitionInfo>,
-	pub predicate_definition_info: BTreeMap<String, DefinitionInfo>,
-	pub function_definition_info: BTreeMap<String, DefinitionInfo>,
+	pub pattern_definition_info:BTreeMap<String, DefinitionInfo>,
+	pub predicate_definition_info:BTreeMap<String, DefinitionInfo>,
+	pub function_definition_info:BTreeMap<String, DefinitionInfo>,
 }
 
 /// Finds all definitions so that we can allocate their scopes in preparation
 /// for the compilation phase.
 pub fn scan_definitions(
-	definitions: GritDefinitionList,
+	definitions:GritDefinitionList,
 ) -> Result<ScannedDefinitionInfo, CompileError> {
 	let mut pattern_definition_info = BTreeMap::new();
 	let mut pattern_index = 0;
@@ -89,18 +86,14 @@ pub fn scan_definitions(
 				let name = node.name()?.text();
 				let name = name.trim();
 				if pattern_definition_info.contains_key(name) {
-					return Err(CompileError::DuplicatePatternDefinition(
-						name.to_owned(),
-					));
+					return Err(CompileError::DuplicatePatternDefinition(name.to_owned()));
 				}
 
 				pattern_definition_info.insert(
 					name.to_owned(),
 					DefinitionInfo {
-						index: pattern_index,
-						parameters: collect_variables(
-							node.args()?.grit_variable_list(),
-						)?,
+						index:pattern_index,
+						parameters:collect_variables(node.args()?.grit_variable_list())?,
 					},
 				);
 
@@ -110,18 +103,14 @@ pub fn scan_definitions(
 				let name = node.name()?.text();
 				let name = name.trim();
 				if predicate_definition_info.contains_key(name) {
-					return Err(CompileError::DuplicatePredicateDefinition(
-						name.to_owned(),
-					));
+					return Err(CompileError::DuplicatePredicateDefinition(name.to_owned()));
 				}
 
 				predicate_definition_info.insert(
 					name.to_owned(),
 					DefinitionInfo {
-						index: predicate_index,
-						parameters: collect_variables(
-							node.args()?.grit_variable_list(),
-						)?,
+						index:predicate_index,
+						parameters:collect_variables(node.args()?.grit_variable_list())?,
 					},
 				);
 
@@ -131,16 +120,14 @@ pub fn scan_definitions(
 				let name = node.name()?.text();
 				let name = name.trim();
 				if function_definition_info.contains_key(name) {
-					return Err(CompileError::DuplicateFunctionDefinition(
-						name.to_owned(),
-					));
+					return Err(CompileError::DuplicateFunctionDefinition(name.to_owned()));
 				}
 
 				function_definition_info.insert(
 					name.to_owned(),
 					DefinitionInfo {
-						index: function_index,
-						parameters: collect_variables(node.args())?,
+						index:function_index,
+						parameters:collect_variables(node.args())?,
 					},
 				);
 
@@ -148,11 +135,7 @@ pub fn scan_definitions(
 			},
 			AnyGritDefinition::GritBogusDefinition(bogus) => {
 				return Err(CompileError::UnexpectedKind(
-					bogus
-						.items()
-						.next()
-						.map(|item| item.kind().into())
-						.unwrap_or_default(),
+					bogus.items().next().map(|item| item.kind().into()).unwrap_or_default(),
 				));
 			},
 		}
@@ -165,17 +148,12 @@ pub fn scan_definitions(
 	})
 }
 
-fn collect_variables(
-	variables: GritVariableList,
-) -> Result<Vec<(String, ByteRange)>, CompileError> {
+fn collect_variables(variables:GritVariableList) -> Result<Vec<(String, ByteRange)>, CompileError> {
 	variables
 		.into_iter()
 		.map(|var| {
 			let token = var?.value_token()?;
-			Ok((
-				token.text_trimmed().to_string(),
-				token.text_trimmed_range().to_byte_range(),
-			))
+			Ok((token.text_trimmed().to_string(), token.text_trimmed_range().to_byte_range()))
 		})
 		.collect()
 }

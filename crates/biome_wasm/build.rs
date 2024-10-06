@@ -1,15 +1,13 @@
 use std::{env, fs, io, path::PathBuf};
 
-use quote::{format_ident, quote};
-
-use biome_js_factory::syntax::JsFileSource;
 use biome_js_factory::{
 	make,
-	syntax::{AnyJsDeclaration, AnyJsModuleItem, AnyJsStatement},
+	syntax::{AnyJsDeclaration, AnyJsModuleItem, AnyJsStatement, JsFileSource},
 };
 use biome_js_formatter::{context::JsFormatOptions, format_node};
 use biome_rowan::AstNode;
 use biome_service::workspace_types::{generate_type, methods, ModuleQueue};
+use quote::{format_ident, quote};
 
 fn main() -> io::Result<()> {
 	let methods = methods();
@@ -33,9 +31,7 @@ fn main() -> io::Result<()> {
 					AnyJsStatement::JsFunctionDeclaration(decl)
 				},
 				AnyJsDeclaration::JsVariableDeclaration(decl) => {
-					AnyJsStatement::JsVariableStatement(
-						make::js_variable_statement(decl).build(),
-					)
+					AnyJsStatement::JsVariableStatement(make::js_variable_statement(decl).build())
 				},
 				AnyJsDeclaration::TsDeclareFunctionDeclaration(decl) => {
 					AnyJsStatement::TsDeclareFunctionDeclaration(decl)
@@ -67,15 +63,14 @@ fn main() -> io::Result<()> {
 	)
 	.build();
 
-	// Wasm-bindgen will paste the generated TS code as-is into the final .d.ts file,
-	// ensure it looks good by running it through the formatter
-	let formatted =
-		format_node(JsFormatOptions::new(JsFileSource::ts()), module.syntax())
-			.unwrap();
+	// Wasm-bindgen will paste the generated TS code as-is into the final .d.ts
+	// file, ensure it looks good by running it through the formatter
+	let formatted = format_node(JsFormatOptions::new(JsFileSource::ts()), module.syntax()).unwrap();
 	let printed = formatted.print().unwrap();
 	let definitions = printed.into_code();
 
-	// Generate wasm-bindgen extern type imports for all the types defined in the TS code
+	// Generate wasm-bindgen extern type imports for all the types defined in
+	// the TS code
 	let types = queue.visited().iter().map(|name| {
 		let ident = format_ident!("I{name}");
 		quote! {

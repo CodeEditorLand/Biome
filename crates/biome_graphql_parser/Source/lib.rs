@@ -14,16 +14,13 @@ mod token_source;
 pub(crate) type GraphqlLosslessTreeSink<'source> =
 	LosslessTreeSink<'source, GraphqlLanguage, GraphqlSyntaxFactory>;
 
-pub fn parse_graphql(source: &str) -> GraphqlParse {
+pub fn parse_graphql(source:&str) -> GraphqlParse {
 	let mut cache = NodeCache::default();
 	parse_graphql_with_cache(source, &mut cache)
 }
 
 /// Parses the provided string as Graphql program using the provided node cache.
-pub fn parse_graphql_with_cache(
-	source: &str,
-	cache: &mut NodeCache,
-) -> GraphqlParse {
+pub fn parse_graphql_with_cache(source:&str, cache:&mut NodeCache) -> GraphqlParse {
 	tracing::debug_span!("Parsing phase").in_scope(move || {
 		let mut parser = GraphqlParser::new(source);
 
@@ -31,8 +28,7 @@ pub fn parse_graphql_with_cache(
 
 		let (events, diagnostics, trivia) = parser.finish();
 
-		let mut tree_sink =
-			GraphqlLosslessTreeSink::with_cache(source, &trivia, cache);
+		let mut tree_sink = GraphqlLosslessTreeSink::with_cache(source, &trivia, cache);
 		biome_parser::event::process(&mut tree_sink, events, diagnostics);
 		let (green, diagnostics) = tree_sink.finish();
 
@@ -43,15 +39,12 @@ pub fn parse_graphql_with_cache(
 /// A utility struct for managing the result of a parser job
 #[derive(Debug)]
 pub struct GraphqlParse {
-	root: GraphqlSyntaxNode,
-	diagnostics: Vec<ParseDiagnostic>,
+	root:GraphqlSyntaxNode,
+	diagnostics:Vec<ParseDiagnostic>,
 }
 
 impl GraphqlParse {
-	pub fn new(
-		root: GraphqlSyntaxNode,
-		diagnostics: Vec<ParseDiagnostic>,
-	) -> GraphqlParse {
+	pub fn new(root:GraphqlSyntaxNode, diagnostics:Vec<ParseDiagnostic>) -> GraphqlParse {
 		GraphqlParse { root, diagnostics }
 	}
 
@@ -73,19 +66,13 @@ impl GraphqlParse {
 	/// # Ok(())
 	/// # }
 	/// ```
-	pub fn syntax(&self) -> GraphqlSyntaxNode {
-		self.root.clone()
-	}
+	pub fn syntax(&self) -> GraphqlSyntaxNode { self.root.clone() }
 
 	/// Get the diagnostics which occurred when parsing
-	pub fn diagnostics(&self) -> &[ParseDiagnostic] {
-		&self.diagnostics
-	}
+	pub fn diagnostics(&self) -> &[ParseDiagnostic] { &self.diagnostics }
 
 	/// Get the diagnostics which occurred when parsing
-	pub fn into_diagnostics(self) -> Vec<ParseDiagnostic> {
-		self.diagnostics
-	}
+	pub fn into_diagnostics(self) -> Vec<ParseDiagnostic> { self.diagnostics }
 
 	/// Returns [true] if the parser encountered some errors during the parsing.
 	pub fn has_errors(&self) -> bool {
@@ -96,13 +83,11 @@ impl GraphqlParse {
 	///
 	/// # Panics
 	/// Panics if the node represented by this parse result mismatches.
-	pub fn tree(&self) -> GraphqlRoot {
-		GraphqlRoot::unwrap_cast(self.syntax())
-	}
+	pub fn tree(&self) -> GraphqlRoot { GraphqlRoot::unwrap_cast(self.syntax()) }
 }
 
 impl From<GraphqlParse> for AnyParse {
-	fn from(parse: GraphqlParse) -> Self {
+	fn from(parse:GraphqlParse) -> Self {
 		let root = parse.syntax();
 		let diagnostics = parse.into_diagnostics();
 		Self::new(

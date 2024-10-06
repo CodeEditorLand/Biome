@@ -1,34 +1,43 @@
+use std::{
+	borrow::Cow,
+	fmt::{Debug, Display, Formatter},
+};
+
 use biome_console::MarkupBuf;
 use biome_diagnostics::{
-	advice::CodeSuggestionAdvice, category, Advices, Category, Diagnostic,
-	DiagnosticExt, DiagnosticTags, Error, Location, Severity, Visit,
+	advice::CodeSuggestionAdvice,
+	category,
+	Advices,
+	Category,
+	Diagnostic,
+	DiagnosticExt,
+	DiagnosticTags,
+	Error,
+	Location,
+	Severity,
+	Visit,
 };
 use biome_rowan::TextRange;
-use std::borrow::Cow;
-use std::fmt::{Debug, Display, Formatter};
 
 use crate::rule::RuleDiagnostic;
 
 /// Small wrapper for diagnostics during the analysis phase.
 ///
-/// During these phases, analyzers can create various type diagnostics and some of them
-/// don't have all the info to actually create a real [Diagnostic].
+/// During these phases, analyzers can create various type diagnostics and some
+/// of them don't have all the info to actually create a real [Diagnostic].
 ///
-/// This wrapper serves as glue, which eventually is able to spit out full fledged diagnostics.
-///
+/// This wrapper serves as glue, which eventually is able to spit out full
+/// fledged diagnostics.
 #[derive(Debug)]
 pub struct AnalyzerDiagnostic {
-	kind: DiagnosticKind,
+	kind:DiagnosticKind,
 	/// Series of code suggestions offered by rule code actions
-	code_suggestion_list: Vec<CodeSuggestionAdvice<MarkupBuf>>,
+	code_suggestion_list:Vec<CodeSuggestionAdvice<MarkupBuf>>,
 }
 
 impl From<RuleDiagnostic> for AnalyzerDiagnostic {
-	fn from(rule_diagnostic: RuleDiagnostic) -> Self {
-		Self {
-			kind: DiagnosticKind::Rule(rule_diagnostic),
-			code_suggestion_list: vec![],
-		}
+	fn from(rule_diagnostic:RuleDiagnostic) -> Self {
+		Self { kind:DiagnosticKind::Rule(rule_diagnostic), code_suggestion_list:vec![] }
 	}
 }
 
@@ -43,25 +52,19 @@ enum DiagnosticKind {
 impl Diagnostic for AnalyzerDiagnostic {
 	fn category(&self) -> Option<&'static Category> {
 		match &self.kind {
-			DiagnosticKind::Rule(rule_diagnostic) => {
-				Some(rule_diagnostic.category)
-			},
+			DiagnosticKind::Rule(rule_diagnostic) => Some(rule_diagnostic.category),
 			DiagnosticKind::Raw(error) => error.category(),
 		}
 	}
-	fn description(&self, fmt: &mut Formatter<'_>) -> std::fmt::Result {
+
+	fn description(&self, fmt:&mut Formatter<'_>) -> std::fmt::Result {
 		match &self.kind {
-			DiagnosticKind::Rule(rule_diagnostic) => {
-				Debug::fmt(&rule_diagnostic.message, fmt)
-			},
+			DiagnosticKind::Rule(rule_diagnostic) => Debug::fmt(&rule_diagnostic.message, fmt),
 			DiagnosticKind::Raw(error) => error.description(fmt),
 		}
 	}
 
-	fn message(
-		&self,
-		fmt: &mut biome_console::fmt::Formatter<'_>,
-	) -> std::io::Result<()> {
+	fn message(&self, fmt:&mut biome_console::fmt::Formatter<'_>) -> std::io::Result<()> {
 		match &self.kind {
 			DiagnosticKind::Rule(rule_diagnostic) => {
 				biome_console::fmt::Display::fmt(&rule_diagnostic.message, fmt)
@@ -93,11 +96,9 @@ impl Diagnostic for AnalyzerDiagnostic {
 		}
 	}
 
-	fn advices(&self, visitor: &mut dyn Visit) -> std::io::Result<()> {
+	fn advices(&self, visitor:&mut dyn Visit) -> std::io::Result<()> {
 		match &self.kind {
-			DiagnosticKind::Rule(rule_diagnostic) => {
-				rule_diagnostic.advices().record(visitor)?
-			},
+			DiagnosticKind::Rule(rule_diagnostic) => rule_diagnostic.advices().record(visitor)?,
 			DiagnosticKind::Raw(error) => error.advices(visitor)?,
 		}
 
@@ -112,8 +113,8 @@ impl Diagnostic for AnalyzerDiagnostic {
 
 impl AnalyzerDiagnostic {
 	/// Creates a diagnostic from a generic [Error]
-	pub fn from_error(error: Error) -> Self {
-		Self { kind: DiagnosticKind::Raw(error), code_suggestion_list: vec![] }
+	pub fn from_error(error:Error) -> Self {
+		Self { kind:DiagnosticKind::Raw(error), code_suggestion_list:vec![] }
 	}
 
 	pub fn get_span(&self) -> Option<TextRange> {
@@ -123,12 +124,9 @@ impl AnalyzerDiagnostic {
 		}
 	}
 
-	/// It adds a code suggestion, use this API to tell the user that a rule can benefit from
-	/// a automatic code fix.
-	pub fn add_code_suggestion(
-		mut self,
-		suggestion: CodeSuggestionAdvice<MarkupBuf>,
-	) -> Self {
+	/// It adds a code suggestion, use this API to tell the user that a rule can
+	/// benefit from a automatic code fix.
+	pub fn add_code_suggestion(mut self, suggestion:CodeSuggestionAdvice<MarkupBuf>) -> Self {
 		self.kind = match self.kind {
 			DiagnosticKind::Rule(mut rule_diagnostic) => {
 				rule_diagnostic.tags = DiagnosticTags::FIXABLE;
@@ -143,40 +141,29 @@ impl AnalyzerDiagnostic {
 		self
 	}
 
-	pub const fn is_raw(&self) -> bool {
-		matches!(self.kind, DiagnosticKind::Raw(_))
-	}
+	pub const fn is_raw(&self) -> bool { matches!(self.kind, DiagnosticKind::Raw(_)) }
 }
 
 #[derive(Debug, Diagnostic, Clone)]
 #[diagnostic(severity = Warning)]
 pub struct SuppressionDiagnostic {
 	#[category]
-	category: &'static Category,
+	category:&'static Category,
 	#[location(span)]
-	range: TextRange,
+	range:TextRange,
 	#[message]
 	#[description]
-	message: String,
+	message:String,
 	#[tags]
-	tags: DiagnosticTags,
+	tags:DiagnosticTags,
 }
 
 impl SuppressionDiagnostic {
-	pub(crate) fn new(
-		category: &'static Category,
-		range: TextRange,
-		message: impl Display,
-	) -> Self {
-		Self {
-			category,
-			range,
-			message: message.to_string(),
-			tags: DiagnosticTags::empty(),
-		}
+	pub(crate) fn new(category:&'static Category, range:TextRange, message:impl Display) -> Self {
+		Self { category, range, message:message.to_string(), tags:DiagnosticTags::empty() }
 	}
 
-	pub(crate) fn with_tags(mut self, tags: DiagnosticTags) -> Self {
+	pub(crate) fn with_tags(mut self, tags:DiagnosticTags) -> Self {
 		self.tags |= tags;
 		self
 	}
@@ -187,54 +174,46 @@ impl SuppressionDiagnostic {
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 #[cfg_attr(feature = "serde", serde(rename_all = "camelCase"))]
 pub enum RuleError {
-	/// The rule with the specified name replaced the root of the file with a node that is not a valid root for that language.
-	ReplacedRootWithNonRootError {
-		rule_name: Option<(Cow<'static, str>, Cow<'static, str>)>,
-	},
+	/// The rule with the specified name replaced the root of the file with a
+	/// node that is not a valid root for that language.
+	ReplacedRootWithNonRootError { rule_name:Option<(Cow<'static, str>, Cow<'static, str>)> },
 }
 
 impl Diagnostic for RuleError {}
 
 impl std::fmt::Display for RuleError {
-	fn fmt(&self, fmt: &mut std::fmt::Formatter) -> std::fmt::Result {
+	fn fmt(&self, fmt:&mut std::fmt::Formatter) -> std::fmt::Result {
 		match self {
-			RuleError::ReplacedRootWithNonRootError {
-				rule_name: Some((group, rule)),
-			} => {
+			RuleError::ReplacedRootWithNonRootError { rule_name: Some((group, rule)) } => {
 				std::write!(
-                    fmt,
-                    "the rule '{group}/{rule}' replaced the root of the file with a non-root node."
-                )
+					fmt,
+					"the rule '{group}/{rule}' replaced the root of the file with a non-root node."
+				)
 			},
 			RuleError::ReplacedRootWithNonRootError { rule_name: None } => {
 				std::write!(
-                    fmt,
-                    "a code action replaced the root of the file with a non-root node."
-                )
+					fmt,
+					"a code action replaced the root of the file with a non-root node."
+				)
 			},
 		}
 	}
 }
 
 impl biome_console::fmt::Display for RuleError {
-	fn fmt(
-		&self,
-		fmt: &mut biome_console::fmt::Formatter,
-	) -> std::io::Result<()> {
+	fn fmt(&self, fmt:&mut biome_console::fmt::Formatter) -> std::io::Result<()> {
 		match self {
-			RuleError::ReplacedRootWithNonRootError {
-				rule_name: Some((group, rule)),
-			} => {
+			RuleError::ReplacedRootWithNonRootError { rule_name: Some((group, rule)) } => {
 				std::write!(
-                    fmt,
-                    "the rule '{group}/{rule}' replaced the root of the file with a non-root node."
-                )
+					fmt,
+					"the rule '{group}/{rule}' replaced the root of the file with a non-root node."
+				)
 			},
 			RuleError::ReplacedRootWithNonRootError { rule_name: None } => {
 				std::write!(
-                    fmt,
-                    "a code action replaced the root of the file with a non-root node."
-                )
+					fmt,
+					"a code action replaced the root of the file with a non-root node."
+				)
 			},
 		}
 	}

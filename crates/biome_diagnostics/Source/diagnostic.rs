@@ -6,10 +6,9 @@ use std::{
 	str::FromStr,
 };
 
+use biome_console::fmt;
 use enumflags2::{bitflags, make_bitflags, BitFlags};
 use serde::{Deserialize, Serialize};
-
-use biome_console::fmt;
 
 use crate::{Category, Location, Visit};
 
@@ -26,24 +25,20 @@ use crate::{Category, Location, Visit};
 /// #[derive(Debug, Diagnostic)]
 /// #[diagnostic(category = "lint/style/noShoutyConstants", tags(FIXABLE))]
 /// struct ExampleDiagnostic {
-///     #[message]
-///     #[description]
-///     message: String,
+/// 	#[message]
+/// 	#[description]
+/// 	message:String,
 /// }
 /// ```
 pub trait Diagnostic: Debug {
 	/// The category of a diagnostic uniquely identifying this
 	/// diagnostic type, such as `lint/correctness/noArguments`, `args/invalid`
 	/// or `format/disabled`.
-	fn category(&self) -> Option<&'static Category> {
-		None
-	}
+	fn category(&self) -> Option<&'static Category> { None }
 
 	/// The severity defines whether this diagnostic reports an error, a
 	/// warning, an information or a hint to the user.
-	fn severity(&self) -> Severity {
-		Severity::Error
-	}
+	fn severity(&self) -> Severity { Severity::Error }
 
 	/// The description is a text-only explanation of the issue this diagnostic
 	/// is reporting, intended for display contexts that do not support rich
@@ -52,10 +47,7 @@ pub trait Diagnostic: Debug {
 	/// The description should generally be as exhaustive as possible, since
 	/// the clients that do not support rendering markup will not render the
 	/// advices for the diagnostic either.
-	fn description(
-		&self,
-		fmt: &mut std::fmt::Formatter<'_>,
-	) -> std::fmt::Result {
+	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		let _ = fmt;
 		Ok(())
 	}
@@ -65,7 +57,7 @@ pub trait Diagnostic: Debug {
 	/// In general it's better to keep this message as short as possible, and
 	/// instead rely on advices to better convey contextual explanations to the
 	/// user.
-	fn message(&self, fmt: &mut fmt::Formatter<'_>) -> io::Result<()> {
+	fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
 		let _ = fmt;
 		Ok(())
 	}
@@ -74,14 +66,14 @@ pub trait Diagnostic: Debug {
 	/// implemented using a visitor pattern, where consumers of a diagnostic
 	/// can visit the object and collect the advices that make it up for the
 	/// purpose of display or introspection.
-	fn advices(&self, visitor: &mut dyn Visit) -> io::Result<()> {
+	fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 		let _ = visitor;
 		Ok(())
 	}
 
 	/// Diagnostics can defines additional advices to be printed if the user
 	/// requires more detail about the diagnostic.
-	fn verbose_advices(&self, visitor: &mut dyn Visit) -> io::Result<()> {
+	fn verbose_advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 		let _ = visitor;
 		Ok(())
 	}
@@ -91,20 +83,19 @@ pub trait Diagnostic: Debug {
 	/// specific text range within the content of that location. Finally, it
 	/// may also provide the source string for that location (this is required
 	/// in order to display a code frame advice for the diagnostic).
-	fn location(&self) -> Location<'_> {
-		Location::builder().build()
-	}
+	fn location(&self) -> Location<'_> { Location::builder().build() }
 
-	/// Tags convey additional boolean metadata about the nature of a diagnostic:
+	/// Tags convey additional boolean metadata about the nature of a
+	/// diagnostic:
 	/// - If the diagnostic can be automatically fixed
 	/// - If the diagnostic resulted from and internal error
 	/// - If the diagnostic is being emitted as part of a crash / fatal error
-	/// - If the diagnostic is a warning about a piece of unused or unnecessary code
-	/// - If the diagnostic is a warning about a piece of deprecated or obsolete code.
+	/// - If the diagnostic is a warning about a piece of unused or unnecessary
+	///   code
+	/// - If the diagnostic is a warning about a piece of deprecated or obsolete
+	///   code.
 	/// - If the diagnostic is meant to provide more information
-	fn tags(&self) -> DiagnosticTags {
-		DiagnosticTags::empty()
-	}
+	fn tags(&self) -> DiagnosticTags { DiagnosticTags::empty() }
 
 	/// Similarly to the `source` method of the [std::error::Error] trait, this
 	/// returns another diagnostic that's the logical "cause" for this issue.
@@ -112,23 +103,11 @@ pub trait Diagnostic: Debug {
 	/// "deserialization error". This allows low-level error to be wrapped in
 	/// higher level concepts, while retaining enough information to display
 	/// and fix the underlying issue.
-	fn source(&self) -> Option<&dyn Diagnostic> {
-		None
-	}
+	fn source(&self) -> Option<&dyn Diagnostic> { None }
 }
 
 #[derive(
-	Debug,
-	Clone,
-	Copy,
-	PartialEq,
-	Eq,
-	PartialOrd,
-	Ord,
-	Hash,
-	Serialize,
-	Deserialize,
-	Default,
+	Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default,
 )]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase")]
@@ -150,21 +129,19 @@ pub enum Severity {
 impl FromStr for Severity {
 	type Err = String;
 
-	fn from_str(s: &str) -> Result<Self, Self::Err> {
+	fn from_str(s:&str) -> Result<Self, Self::Err> {
 		match s {
-            "hint" => Ok(Self::Information),
-            "info" => Ok(Self::Information),
-            "warn" => Ok(Self::Warning),
-            "error" => Ok(Self::Error),
-            v => Err(format!(
-                "Found unexpected value ({v}), valid values are: info, warn, error."
-            )),
-        }
+			"hint" => Ok(Self::Information),
+			"info" => Ok(Self::Information),
+			"warn" => Ok(Self::Warning),
+			"error" => Ok(Self::Error),
+			v => Err(format!("Found unexpected value ({v}), valid values are: info, warn, error.")),
+		}
 	}
 }
 
 impl Display for Severity {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
 			Self::Hint => write!(f, "info"),
 			Self::Information => write!(f, "info"),
@@ -175,8 +152,9 @@ impl Display for Severity {
 	}
 }
 
-/// Internal enum used to automatically generate bit offsets for [DiagnosticTags]
-/// and help with the implementation of `serde` and `schemars` for tags.
+/// Internal enum used to automatically generate bit offsets for
+/// [DiagnosticTags] and help with the implementation of `serde` and `schemars`
+/// for tags.
 #[derive(Debug, Copy, Clone, Serialize, Deserialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase")]
@@ -193,55 +171,45 @@ pub(super) enum DiagnosticTag {
 #[derive(Debug, Copy, Clone, PartialEq, Eq)]
 pub struct DiagnosticTags(BitFlags<DiagnosticTag>);
 impl DiagnosticTags {
-	/// This diagnostic has a fix suggestion.
-	pub const FIXABLE: Self = Self(make_bitflags!(DiagnosticTag::{Fixable}));
-	/// This diagnostic results from an internal error.
-	pub const INTERNAL: Self = Self(make_bitflags!(DiagnosticTag::{Internal}));
-	/// This diagnostic tags unused or unnecessary code, this may change
-	/// how the diagnostic is render in editors.
-	pub const UNNECESSARY_CODE: Self =
-		Self(make_bitflags!(DiagnosticTag::{UnnecessaryCode}));
 	/// This diagnostic tags deprecated or obsolete code, this may change
 	/// how the diagnostic is render in editors.
-	pub const DEPRECATED_CODE: Self =
-		Self(make_bitflags!(DiagnosticTag::{DeprecatedCode}));
-	/// This diagnostic is verbose and should be printed only if the `--verbose` option is provided
-	pub const VERBOSE: Self = Self(make_bitflags!(DiagnosticTag::{Verbose}));
-	pub const fn all() -> Self {
-		Self(BitFlags::ALL)
-	}
-	pub const fn empty() -> Self {
-		Self(BitFlags::EMPTY)
-	}
-	pub fn insert(&mut self, other: DiagnosticTags) {
-		self.0 |= other.0;
-	}
-	pub fn contains(self, other: impl Into<DiagnosticTags>) -> bool {
+	pub const DEPRECATED_CODE:Self = Self(make_bitflags!(DiagnosticTag::{DeprecatedCode}));
+	/// This diagnostic has a fix suggestion.
+	pub const FIXABLE:Self = Self(make_bitflags!(DiagnosticTag::{Fixable}));
+	/// This diagnostic results from an internal error.
+	pub const INTERNAL:Self = Self(make_bitflags!(DiagnosticTag::{Internal}));
+	/// This diagnostic tags unused or unnecessary code, this may change
+	/// how the diagnostic is render in editors.
+	pub const UNNECESSARY_CODE:Self = Self(make_bitflags!(DiagnosticTag::{UnnecessaryCode}));
+	/// This diagnostic is verbose and should be printed only if the `--verbose`
+	/// option is provided
+	pub const VERBOSE:Self = Self(make_bitflags!(DiagnosticTag::{Verbose}));
+
+	pub const fn all() -> Self { Self(BitFlags::ALL) }
+
+	pub const fn empty() -> Self { Self(BitFlags::EMPTY) }
+
+	pub fn insert(&mut self, other:DiagnosticTags) { self.0 |= other.0; }
+
+	pub fn contains(self, other:impl Into<DiagnosticTags>) -> bool {
 		self.0.contains(other.into().0)
 	}
-	pub const fn union(self, other: Self) -> Self {
-		Self(self.0.union_c(other.0))
-	}
-	pub fn is_empty(self) -> bool {
-		self.0.is_empty()
-	}
-	pub fn is_verbose(&self) -> bool {
-		self.contains(DiagnosticTag::Verbose)
-	}
+
+	pub const fn union(self, other:Self) -> Self { Self(self.0.union_c(other.0)) }
+
+	pub fn is_empty(self) -> bool { self.0.is_empty() }
+
+	pub fn is_verbose(&self) -> bool { self.contains(DiagnosticTag::Verbose) }
 }
 
 impl BitOr for DiagnosticTags {
 	type Output = Self;
 
-	fn bitor(self, rhs: Self) -> Self::Output {
-		DiagnosticTags(self.0 | rhs.0)
-	}
+	fn bitor(self, rhs:Self) -> Self::Output { DiagnosticTags(self.0 | rhs.0) }
 }
 
 impl BitOrAssign for DiagnosticTags {
-	fn bitor_assign(&mut self, rhs: Self) {
-		self.0 |= rhs.0;
-	}
+	fn bitor_assign(&mut self, rhs:Self) { self.0 |= rhs.0; }
 }
 
 // Implement the `Diagnostic` on the `Infallible` error type from the standard
@@ -272,15 +240,11 @@ pub(crate) mod internal {
 		fn as_dyn(&self) -> &dyn Diagnostic;
 	}
 
-	impl<D: Diagnostic> AsDiagnostic for D {
+	impl<D:Diagnostic> AsDiagnostic for D {
 		type Diagnostic = D;
 
-		fn as_diagnostic(&self) -> &Self::Diagnostic {
-			self
-		}
+		fn as_diagnostic(&self) -> &Self::Diagnostic { self }
 
-		fn as_dyn(&self) -> &dyn Diagnostic {
-			self
-		}
+		fn as_dyn(&self) -> &dyn Diagnostic { self }
 	}
 }

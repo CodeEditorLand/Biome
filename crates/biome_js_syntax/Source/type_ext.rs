@@ -1,10 +1,8 @@
-use biome_rowan::{declare_node_union, AstNode, SyntaxResult};
 use std::iter;
 
-use crate::{
-	AnyTsReturnType, AnyTsType, TsConditionalType, TsConstructorType,
-	TsFunctionType,
-};
+use biome_rowan::{declare_node_union, AstNode, SyntaxResult};
+
+use crate::{AnyTsReturnType, AnyTsType, TsConditionalType, TsConstructorType, TsFunctionType};
 
 impl AnyTsType {
 	/// Try to extract non `TsParenthesizedType` from `AnyTsType`
@@ -24,8 +22,7 @@ impl AnyTsType {
 	///
 	/// ```
 	/// use biome_js_factory::make;
-	/// use biome_js_syntax::T;
-	/// use biome_js_syntax::AnyTsType;
+	/// use biome_js_syntax::{AnyTsType, T};
 	///
 	/// let boolean_literal = make::ts_boolean_literal_type(make::token(T![true]));
 	/// let bigint_literal = make::ts_bigint_literal_type(make::js_number_literal("1n")).build();
@@ -59,8 +56,7 @@ impl AnyTsType {
 	///
 	/// ```
 	/// use biome_js_factory::make;
-	/// use biome_js_syntax::T;
-	/// use biome_js_syntax::AnyTsType;
+	/// use biome_js_syntax::{AnyTsType, T};
 	///
 	/// let boolean = make::ts_boolean_type(make::token(T![boolean]));
 	/// let bigint = make::ts_bigint_type(make::token(T![bigint]));
@@ -82,7 +78,8 @@ impl AnyTsType {
 		)
 	}
 
-	/// Checks if `self` stands as the `true_type` of a conditional type in Typescript.
+	/// Checks if `self` stands as the `true_type` of a conditional type in
+	/// Typescript.
 	///
 	/// # Examples
 	///

@@ -11,21 +11,22 @@ use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 use xtask::project_root;
 
-use crate::ast::load_ast;
-use crate::language_kind::{LanguageKind, ALL_LANGUAGE_KIND};
+use crate::{
+	ast::load_ast,
+	language_kind::{LanguageKind, ALL_LANGUAGE_KIND},
+};
 
 struct GitRepo {
-	repo: Repository,
-	allow_staged: bool,
-	staged: HashSet<PathBuf>,
-	dirty: HashSet<PathBuf>,
+	repo:Repository,
+	allow_staged:bool,
+	staged:HashSet<PathBuf>,
+	dirty:HashSet<PathBuf>,
 }
 
 impl GitRepo {
 	fn open() -> Self {
 		let root = project_root();
-		let repo =
-			Repository::discover(&root).expect("failed to open git repo");
+		let repo = Repository::discover(&root).expect("failed to open git repo");
 
 		let mut allow_staged = false;
 		let mut allow_dirty = false;
@@ -44,9 +45,8 @@ impl GitRepo {
 		let mut repo_opts = StatusOptions::new();
 		repo_opts.include_ignored(false);
 
-		let statuses = repo
-			.statuses(Some(&mut repo_opts))
-			.expect("failed to read repository status");
+		let statuses =
+			repo.statuses(Some(&mut repo_opts)).expect("failed to read repository status");
 
 		let mut staged = HashSet::new();
 		let mut dirty = HashSet::new();
@@ -78,16 +78,24 @@ impl GitRepo {
 		Self { repo, allow_staged, staged, dirty }
 	}
 
-	fn check_path(&self, path: &Path) {
+	fn check_path(&self, path:&Path) {
 		if self.dirty.contains(path) {
-			panic!("Codegen would overwrite '{}' but it has uncommitted changes. Commit the file to git, or pass --allow-dirty to the command to proceed anyway", path.display());
+			panic!(
+				"Codegen would overwrite '{}' but it has uncommitted changes. Commit the file to \
+				 git, or pass --allow-dirty to the command to proceed anyway",
+				path.display()
+			);
 		}
 		if self.staged.contains(path) {
-			panic!("Codegen would overwrite '{}' but it has uncommitted changes. Commit the file to git, or pass --allow-staged to the command to proceed anyway", path.display());
+			panic!(
+				"Codegen would overwrite '{}' but it has uncommitted changes. Commit the file to \
+				 git, or pass --allow-staged to the command to proceed anyway",
+				path.display()
+			);
 		}
 	}
 
-	fn stage_paths(&self, paths: &[PathBuf]) {
+	fn stage_paths(&self, paths:&[PathBuf]) {
 		// Do not overwrite a version of the file
 		// that's potentially already staged
 		if self.allow_staged {
@@ -116,38 +124,31 @@ impl GitRepo {
 }
 
 struct ModuleIndex {
-	root: PathBuf,
-	modules: BTreeMap<PathBuf, BTreeSet<String>>,
-	unused_files: HashSet<PathBuf>,
+	root:PathBuf,
+	modules:BTreeMap<PathBuf, BTreeSet<String>>,
+	unused_files:HashSet<PathBuf>,
 }
 
 impl ModuleIndex {
-	fn new(root: PathBuf) -> Self {
+	fn new(root:PathBuf) -> Self {
 		let mut unused_files = HashSet::new();
-		let mut queue: VecDeque<_> = NodeDialect::all()
-			.iter()
-			.map(|dialect| root.join(dialect.as_str()))
-			.collect();
+		let mut queue:VecDeque<_> =
+			NodeDialect::all().iter().map(|dialect| root.join(dialect.as_str())).collect();
 
 		while let Some(dir) = queue.pop_front() {
 			if !dir.exists() {
 				continue;
 			}
 
-			let iter = read_dir(&dir).unwrap_or_else(|err| {
-				panic!("failed to read '{}': {}", dir.display(), err)
-			});
+			let iter = read_dir(&dir)
+				.unwrap_or_else(|err| panic!("failed to read '{}': {}", dir.display(), err));
 
 			for entry in iter {
 				let entry = entry.expect("failed to read DirEntry");
 
 				let path = entry.path();
 				let file_type = entry.file_type().unwrap_or_else(|err| {
-					panic!(
-						"failed to read file type of '{}': {}",
-						path.display(),
-						err
-					)
+					panic!("failed to read file type of '{}': {}", path.display(), err)
 				});
 
 				if file_type.is_dir() {
@@ -159,11 +160,11 @@ impl ModuleIndex {
 			}
 		}
 
-		Self { root, modules: BTreeMap::default(), unused_files }
+		Self { root, modules:BTreeMap::default(), unused_files }
 	}
 
 	/// Add a new module to the index
-	fn insert(&mut self, repo: &GitRepo, path: &Path) {
+	fn insert(&mut self, repo:&GitRepo, path:&Path) {
 		self.unused_files.remove(path);
 
 		// Walk up from the module file towards the root
@@ -189,7 +190,7 @@ impl ModuleIndex {
 
 	/// Create all the mod.rs files needed to import
 	/// all the modules in the index up to the root
-	fn print(mut self, stage: &mut Vec<PathBuf>) {
+	fn print(mut self, stage:&mut Vec<PathBuf>) {
 		for (path, imports) in self.modules {
 			let mut content = String::new();
 
@@ -206,11 +207,7 @@ impl ModuleIndex {
 				content.push_str(";\n");
 			}
 
-			let content = xtask::reformat_with_command(
-				content,
-				"cargo codegen formatter",
-			)
-			.unwrap();
+			let content = xtask::reformat_with_command(content, "cargo codegen formatter").unwrap();
 
 			let path = path.join("mod.rs");
 			let mut file = File::create(&path).unwrap();
@@ -222,9 +219,8 @@ impl ModuleIndex {
 		}
 
 		for file in self.unused_files {
-			remove_file(&file).unwrap_or_else(|err| {
-				panic!("failed to delete '{}': {}", file.display(), err)
-			});
+			remove_file(&file)
+				.unwrap_or_else(|err| panic!("failed to delete '{}': {}", file.display(), err));
 			stage.push(file);
 		}
 	}
@@ -232,9 +228,9 @@ impl ModuleIndex {
 
 enum NodeKind {
 	Node,
-	List { separated: bool },
+	List { separated:bool },
 	Bogus,
-	Union { variants: Vec<String> },
+	Union { variants:Vec<String> },
 }
 
 pub fn generate_formatters() {
@@ -245,37 +241,38 @@ pub fn generate_formatters() {
 	}
 }
 
-fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
+fn generate_formatter(repo:&GitRepo, language_kind:LanguageKind) {
 	let ast = load_ast(language_kind);
 
 	// Store references to all the files created by the codegen
 	// script to build the module import files
-	let formatter_crate_path = project_root()
-		.join("crates")
-		.join(language_kind.formatter_crate_name());
+	let formatter_crate_path =
+		project_root().join("crates").join(language_kind.formatter_crate_name());
 
 	if !formatter_crate_path.exists() {
 		return;
 	}
 
 	let mut modules = ModuleIndex::new(formatter_crate_path.join("src"));
-	let mut format_impls = BoilerplateImpls::new(
-		formatter_crate_path.join("src/generated.rs"),
-		language_kind,
-	);
+	let mut format_impls =
+		BoilerplateImpls::new(formatter_crate_path.join("src/generated.rs"), language_kind);
 
 	// Build an unified iterator over all the AstNode types
 	let names = ast
 		.nodes
 		.into_iter()
 		.map(|node| (NodeKind::Node, node.name))
-		.chain(ast.lists.into_iter().map(|(name, node)| {
-			(NodeKind::List { separated: node.separator.is_some() }, name)
-		}))
+		.chain(
+			ast.lists
+				.into_iter()
+				.map(|(name, node)| (NodeKind::List { separated:node.separator.is_some() }, name)),
+		)
 		.chain(ast.bogus.into_iter().map(|name| (NodeKind::Bogus, name)))
-		.chain(ast.unions.into_iter().map(|node| {
-			(NodeKind::Union { variants: node.variants }, node.name)
-		}));
+		.chain(
+			ast.unions
+				.into_iter()
+				.map(|node| (NodeKind::Union { variants:node.variants }, node.name)),
+		);
 
 	let mut stage = Vec::new();
 
@@ -287,15 +284,12 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
 		modules.insert(repo, &path);
 
 		let node_id = Ident::new(&name, Span::call_site());
-		let node_fields_id =
-			Ident::new(&format!("{name}Fields"), Span::call_site());
+		let node_fields_id = Ident::new(&format!("{name}Fields"), Span::call_site());
 		let format_id = Ident::new(&format!("Format{name}"), Span::call_site());
 
 		let qualified_format_id = {
-			let dialect =
-				Ident::new(module.dialect.as_str(), Span::call_site());
-			let concept =
-				Ident::new(module.concept.as_str(), Span::call_site());
+			let dialect = Ident::new(module.dialect.as_str(), Span::call_site());
+			let concept = Ident::new(module.concept.as_str(), Span::call_site());
 			let module = Ident::new(&module.name, Span::call_site());
 			quote! { crate::#dialect::#concept::#module::#format_id }
 		};
@@ -319,37 +313,41 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
 		let formatter_ident = language_kind.formatter_ident();
 		let formatter_context_ident = language_kind.format_context_ident();
 
-		// Generate a default implementation of Format/FormatNode using format_list on
-		// non-separated lists, format on the wrapped node for unions and
-		// format_verbatim for all the other nodes
+		// Generate a default implementation of Format/FormatNode using
+		// format_list on non-separated lists, format on the wrapped node for
+		// unions and format_verbatim for all the other nodes
 		let tokens = match kind {
-			NodeKind::List { separated: false } => quote! {
-				use crate::prelude::*;
-				use #syntax_crate_ident::#node_id;
+			NodeKind::List { separated: false } => {
+				quote! {
+					use crate::prelude::*;
+					use #syntax_crate_ident::#node_id;
 
-				#[derive(Debug, Clone, Default)]
-				pub(crate) struct #format_id;
+					#[derive(Debug, Clone, Default)]
+					pub(crate) struct #format_id;
 
-				impl FormatRule<#node_id> for #format_id {
-					type Context = #formatter_context_ident;
+					impl FormatRule<#node_id> for #format_id {
+						type Context = #formatter_context_ident;
 
-					fn fmt(&self, node: &#node_id, f: &mut #formatter_ident) -> FormatResult<()> {
-						f.join().entries(node.iter().formatted()).finish()
+						fn fmt(&self, node: &#node_id, f: &mut #formatter_ident) -> FormatResult<()> {
+							f.join().entries(node.iter().formatted()).finish()
+						}
 					}
 				}
 			},
-			NodeKind::List { .. } => quote! {
-				use crate::prelude::*;
-				use #syntax_crate_ident::#node_id;
+			NodeKind::List { .. } => {
+				quote! {
+					use crate::prelude::*;
+					use #syntax_crate_ident::#node_id;
 
-				#[derive(Debug, Clone, Default)]
-				pub(crate) struct #format_id;
+					#[derive(Debug, Clone, Default)]
+					pub(crate) struct #format_id;
 
-				impl FormatRule<#node_id> for #format_id {
-					type Context = #formatter_context_ident;
+					impl FormatRule<#node_id> for #format_id {
+						type Context = #formatter_context_ident;
 
-					fn fmt(&self, node: &#node_id, f: &mut #formatter_ident) -> FormatResult<()> {
-						format_verbatim_node(node.syntax()).fmt(f)
+						fn fmt(&self, node: &#node_id, f: &mut #formatter_ident) -> FormatResult<()> {
+							format_verbatim_node(node.syntax()).fmt(f)
+						}
 					}
 				}
 			},
@@ -358,12 +356,7 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
 				// per-language generator somehow.
 				if language_kind == LanguageKind::Css
 					&& matches!(
-						get_node_concept(
-							&kind,
-							&module.dialect,
-							&language_kind,
-							&name
-						),
+						get_node_concept(&kind, &module.dialect, &language_kind, &name),
 						NodeConcept::Property
 					) {
 					quote! {
@@ -418,8 +411,9 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
 				}
 			},
 			NodeKind::Union { variants } => {
-				// For each variant of the union call to_format_element on the wrapped node
-				let match_arms: Vec<_> = variants
+				// For each variant of the union call to_format_element on the
+				// wrapped node
+				let match_arms:Vec<_> = variants
 					.into_iter()
 					.map(|variant| {
 						let variant = Ident::new(&variant, Span::call_site());
@@ -448,8 +442,7 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
 		};
 
 		let tokens = if allow_overwrite {
-			xtask::reformat_with_command(tokens, "cargo codegen formatter")
-				.unwrap()
+			xtask::reformat_with_command(tokens, "cargo codegen formatter").unwrap()
 		} else {
 			xtask::reformat_without_preamble(tokens).unwrap()
 		};
@@ -468,22 +461,17 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
 }
 
 struct BoilerplateImpls {
-	language: LanguageKind,
-	path: PathBuf,
-	impls: Vec<TokenStream>,
+	language:LanguageKind,
+	path:PathBuf,
+	impls:Vec<TokenStream>,
 }
 
 impl BoilerplateImpls {
-	fn new(file_name: PathBuf, language: LanguageKind) -> Self {
-		Self { path: file_name, impls: vec![], language }
+	fn new(file_name:PathBuf, language:LanguageKind) -> Self {
+		Self { path:file_name, impls:vec![], language }
 	}
 
-	fn push(
-		&mut self,
-		kind: &NodeKind,
-		node_id: &Ident,
-		format_id: &TokenStream,
-	) {
+	fn push(&mut self, kind:&NodeKind, node_id:&Ident, format_id:&TokenStream) {
 		let syntax_crate_ident = self.language.syntax_crate_ident();
 		let formatter_ident = self.language.formatter_ident();
 		let formatter_context_ident = self.language.format_context_ident();
@@ -510,29 +498,29 @@ impl BoilerplateImpls {
 		};
 
 		self.impls.push(quote! {
-            #format_rule_impl
+			#format_rule_impl
 
-            impl AsFormat<#formatter_context_ident> for #syntax_crate_ident::#node_id {
-                type Format<'a> = FormatRefWithRule<'a, #syntax_crate_ident::#node_id, #format_id>;
+			impl AsFormat<#formatter_context_ident> for #syntax_crate_ident::#node_id {
+				type Format<'a> = FormatRefWithRule<'a, #syntax_crate_ident::#node_id, #format_id>;
 
-                fn format(&self) -> Self::Format<'_> {
-                    #![allow(clippy::default_constructed_unit_structs)]
-                    FormatRefWithRule::new(self, #format_id::default())
-                }
-            }
+				fn format(&self) -> Self::Format<'_> {
+					#![allow(clippy::default_constructed_unit_structs)]
+					FormatRefWithRule::new(self, #format_id::default())
+				}
+			}
 
-            impl IntoFormat<#formatter_context_ident> for #syntax_crate_ident::#node_id {
-                type Format = FormatOwnedWithRule<#syntax_crate_ident::#node_id, #format_id>;
+			impl IntoFormat<#formatter_context_ident> for #syntax_crate_ident::#node_id {
+				type Format = FormatOwnedWithRule<#syntax_crate_ident::#node_id, #format_id>;
 
-                fn into_format(self) -> Self::Format {
-                    #![allow(clippy::default_constructed_unit_structs)]
-                    FormatOwnedWithRule::new(self, #format_id::default())
-                }
-            }
-        });
+				fn into_format(self) -> Self::Format {
+					#![allow(clippy::default_constructed_unit_structs)]
+					FormatOwnedWithRule::new(self, #format_id::default())
+				}
+			}
+		});
 	}
 
-	fn print(self, stage: &mut Vec<PathBuf>) {
+	fn print(self, stage:&mut Vec<PathBuf>) {
 		let impls = self.impls;
 
 		let formatter_ident = self.language.formatter_ident();
@@ -545,9 +533,7 @@ impl BoilerplateImpls {
 			#( #impls )*
 		};
 
-		let content =
-			xtask::reformat_with_command(tokens, "cargo codegen formatter")
-				.unwrap();
+		let content = xtask::reformat_with_command(tokens, "cargo codegen formatter").unwrap();
 		let mut file = File::create(&self.path).unwrap();
 		file.write_all(content.as_bytes()).unwrap();
 
@@ -580,9 +566,7 @@ impl NodeDialect {
 		]
 	}
 
-	fn is_jsx(&self) -> bool {
-		matches!(self, NodeDialect::Jsx)
-	}
+	fn is_jsx(&self) -> bool { matches!(self, NodeDialect::Jsx) }
 
 	fn as_str(&self) -> &'static str {
 		match self {
@@ -597,7 +581,7 @@ impl NodeDialect {
 		}
 	}
 
-	fn from_str(name: &str) -> NodeDialect {
+	fn from_str(name:&str) -> NodeDialect {
 		match name {
 			"Jsx" => NodeDialect::Jsx,
 			"Js" => NodeDialect::Js,
@@ -683,10 +667,10 @@ impl NodeConcept {
 }
 
 struct NodeModuleInformation {
-	language: LanguageKind,
-	dialect: NodeDialect,
-	concept: NodeConcept,
-	name: String,
+	language:LanguageKind,
+	dialect:NodeDialect,
+	concept:NodeConcept,
+	name:String,
 }
 
 impl NodeModuleInformation {
@@ -702,10 +686,10 @@ impl NodeModuleInformation {
 }
 
 fn get_node_concept(
-	kind: &NodeKind,
-	dialect: &NodeDialect,
-	language: &LanguageKind,
-	name: &str,
+	kind:&NodeKind,
+	dialect:&NodeDialect,
+	language:&LanguageKind,
+	name:&str,
 ) -> NodeConcept {
 	if matches!(kind, NodeKind::Bogus) {
 		NodeConcept::Bogus
@@ -715,124 +699,130 @@ fn get_node_concept(
 		NodeConcept::Union
 	} else {
 		match language {
-			LanguageKind::Js => match name {
-				_ if name.ends_with("Statement") => NodeConcept::Statement,
-				_ if name.ends_with("Declaration") => NodeConcept::Declaration,
+			LanguageKind::Js => {
+				match name {
+					_ if name.ends_with("Statement") => NodeConcept::Statement,
+					_ if name.ends_with("Declaration") => NodeConcept::Declaration,
 
-				_ if name.ends_with("Expression")
-					|| name.ends_with("Argument")
-					|| name.ends_with("Arguments") =>
-				{
-					NodeConcept::Expression
-				},
+					_ if name.ends_with("Expression")
+						|| name.ends_with("Argument")
+						|| name.ends_with("Arguments") =>
+					{
+						NodeConcept::Expression
+					},
 
-				_ if name.ends_with("Binding")
-					|| name.starts_with("BindingPattern")
-					|| name.starts_with("ArrayBindingPattern")
-					|| name.starts_with("ObjectBindingPattern")
-					|| name.ends_with("Parameter")
-					|| name.ends_with("Parameters") =>
-				{
-					NodeConcept::Binding
-				},
+					_ if name.ends_with("Binding")
+						|| name.starts_with("BindingPattern")
+						|| name.starts_with("ArrayBindingPattern")
+						|| name.starts_with("ObjectBindingPattern")
+						|| name.ends_with("Parameter")
+						|| name.ends_with("Parameters") =>
+					{
+						NodeConcept::Binding
+					},
 
-				_ if name.ends_with("Assignment")
-					|| name.starts_with("ArrayAssignmentPattern")
-					|| name.starts_with("ObjectAssignmentPattern") =>
-				{
-					NodeConcept::Assignment
-				},
-				"AssignmentWithDefault" => NodeConcept::Assignment,
+					_ if name.ends_with("Assignment")
+						|| name.starts_with("ArrayAssignmentPattern")
+						|| name.starts_with("ObjectAssignmentPattern") =>
+					{
+						NodeConcept::Assignment
+					},
+					"AssignmentWithDefault" => NodeConcept::Assignment,
 
-				_ if name.ends_with("ImportSpecifier")
-					|| name.ends_with("ImportSpecifiers")
-					|| name.starts_with("Export")
-					|| name.starts_with("Import") =>
-				{
-					NodeConcept::Module
-				},
-				"Export" | "Import" | "ModuleSource" | "LiteralExportName" => {
-					NodeConcept::Module
-				},
+					_ if name.ends_with("ImportSpecifier")
+						|| name.ends_with("ImportSpecifiers")
+						|| name.starts_with("Export")
+						|| name.starts_with("Import") =>
+					{
+						NodeConcept::Module
+					},
+					"Export" | "Import" | "ModuleSource" | "LiteralExportName" => {
+						NodeConcept::Module
+					},
 
-				_ if name.ends_with("ClassMember") => NodeConcept::Class,
-				"ExtendsClause" => NodeConcept::Class,
+					_ if name.ends_with("ClassMember") => NodeConcept::Class,
+					"ExtendsClause" => NodeConcept::Class,
 
-				_ if name.ends_with("ObjectMember")
-					| name.ends_with("MemberName") =>
-				{
-					NodeConcept::Object
-				},
+					_ if name.ends_with("ObjectMember") | name.ends_with("MemberName") => {
+						NodeConcept::Object
+					},
 
-				// TypeScript
-				"Assertion" | "ConstAssertion" | "NonNull" | "TypeArgs"
-				| "ExprWithTypeArgs" => NodeConcept::Expression,
+					// TypeScript
+					"Assertion" | "ConstAssertion" | "NonNull" | "TypeArgs"
+					| "ExprWithTypeArgs" => NodeConcept::Expression,
 
-				"ExternalModuleRef" | "ModuleRef" => NodeConcept::Module,
+					"ExternalModuleRef" | "ModuleRef" => NodeConcept::Module,
 
-				_ if name.ends_with("Type") => NodeConcept::Type,
+					_ if name.ends_with("Type") => NodeConcept::Type,
 
-				_ if dialect.is_jsx()
-					&& (name.ends_with("Element")
-						|| name.ends_with("Tag")
-						|| name.ends_with("Fragment")) =>
-				{
-					NodeConcept::Tag
-				},
-				_ if dialect.is_jsx() && name.contains("Attribute") => {
-					NodeConcept::Attribute
-				},
+					_ if dialect.is_jsx()
+						&& (name.ends_with("Element")
+							|| name.ends_with("Tag")
+							|| name.ends_with("Fragment")) =>
+					{
+						NodeConcept::Tag
+					},
+					_ if dialect.is_jsx() && name.contains("Attribute") => NodeConcept::Attribute,
 
-				// Default to auxiliary
-				_ => NodeConcept::Auxiliary,
+					// Default to auxiliary
+					_ => NodeConcept::Auxiliary,
+				}
 			},
 
-			LanguageKind::Json => match name {
-				_ if name.ends_with("Value") => NodeConcept::Value,
-				_ => NodeConcept::Auxiliary,
+			LanguageKind::Json => {
+				match name {
+					_ if name.ends_with("Value") => NodeConcept::Value,
+					_ => NodeConcept::Auxiliary,
+				}
 			},
 			LanguageKind::Markdown => NodeConcept::Auxiliary,
-			LanguageKind::Css => match name {
-				_ if name.ends_with("AtRule") => NodeConcept::Statement,
-				_ if name.ends_with("Selector") => NodeConcept::Selector,
-				_ if name.contains("Pseudo") => NodeConcept::Pseudo,
-				_ if name.ends_with("Property") => NodeConcept::Property,
-				_ if matches!(
-					name,
-					"Number"
-						| "Percentage" | "Ratio"
-						| "String" | "Color"
-						| "Length" | "UrlValueRaw"
-				) || name.ends_with("Dimension")
-					|| name.ends_with("Identifier") =>
-				{
-					NodeConcept::Value
-				},
-				_ => NodeConcept::Auxiliary,
+			LanguageKind::Css => {
+				match name {
+					_ if name.ends_with("AtRule") => NodeConcept::Statement,
+					_ if name.ends_with("Selector") => NodeConcept::Selector,
+					_ if name.contains("Pseudo") => NodeConcept::Pseudo,
+					_ if name.ends_with("Property") => NodeConcept::Property,
+					_ if matches!(
+						name,
+						"Number"
+							| "Percentage" | "Ratio"
+							| "String" | "Color" | "Length"
+							| "UrlValueRaw"
+					) || name.ends_with("Dimension")
+						|| name.ends_with("Identifier") =>
+					{
+						NodeConcept::Value
+					},
+					_ => NodeConcept::Auxiliary,
+				}
 			},
 
-			LanguageKind::Graphql => match name {
-				_ if name.contains("Extension") => NodeConcept::Extension,
-				_ if name.ends_with("Definition") => NodeConcept::Definition,
-				_ if name.ends_with("Value") => NodeConcept::Value,
-				_ => NodeConcept::Auxiliary,
+			LanguageKind::Graphql => {
+				match name {
+					_ if name.contains("Extension") => NodeConcept::Extension,
+					_ if name.ends_with("Definition") => NodeConcept::Definition,
+					_ if name.ends_with("Value") => NodeConcept::Value,
+					_ => NodeConcept::Auxiliary,
+				}
 			},
 
-			LanguageKind::Grit => match name {
-				_ if name.contains("Operation") || name.contains("Pattern") => {
-					NodeConcept::Pattern
-				},
-				_ if name.contains("Predicate") => NodeConcept::Predicate,
-				_ if name.ends_with("Definition") => NodeConcept::Declaration,
-				_ if name == "CodeSnippet" || name.ends_with("Literal") => {
-					NodeConcept::Value
-				},
-				_ => NodeConcept::Auxiliary,
+			LanguageKind::Grit => {
+				match name {
+					_ if name.contains("Operation") || name.contains("Pattern") => {
+						NodeConcept::Pattern
+					},
+					_ if name.contains("Predicate") => NodeConcept::Predicate,
+					_ if name.ends_with("Definition") => NodeConcept::Declaration,
+					_ if name == "CodeSnippet" || name.ends_with("Literal") => NodeConcept::Value,
+					_ => NodeConcept::Auxiliary,
+				}
 			},
 
-			LanguageKind::Html => match name {
-				_ if name.ends_with("Value") => NodeConcept::Value,
-				_ => NodeConcept::Auxiliary,
+			LanguageKind::Html => {
+				match name {
+					_ if name.ends_with("Value") => NodeConcept::Value,
+					_ => NodeConcept::Auxiliary,
+				}
 			},
 
 			// TODO: implement formatter
@@ -842,26 +832,18 @@ fn get_node_concept(
 }
 
 /// Convert an AstNode name to a path / Rust module name
-fn name_to_module(
-	kind: &NodeKind,
-	in_name: &str,
-	language: LanguageKind,
-) -> NodeModuleInformation {
-	let mut upper_case_indices =
-		in_name.match_indices(|c: char| c.is_uppercase());
+fn name_to_module(kind:&NodeKind, in_name:&str, language:LanguageKind) -> NodeModuleInformation {
+	let mut upper_case_indices = in_name.match_indices(|c:char| c.is_uppercase());
 
 	assert!(matches!(upper_case_indices.next(), Some((0, _))));
 
-	let (second_upper_start, _) =
-		upper_case_indices.next().expect("Node name malformed");
+	let (second_upper_start, _) = upper_case_indices.next().expect("Node name malformed");
 	let (mut dialect_prefix, mut name) = in_name.split_at(second_upper_start);
 
 	// AnyJsX
 	if dialect_prefix == "Any" {
-		let (third_upper_start, _) =
-			upper_case_indices.next().expect("Node name malformed");
-		(dialect_prefix, name) =
-			name.split_at(third_upper_start - dialect_prefix.len());
+		let (third_upper_start, _) = upper_case_indices.next().expect("Node name malformed");
+		(dialect_prefix, name) = name.split_at(third_upper_start - dialect_prefix.len());
 	}
 
 	let dialect = NodeDialect::from_str(dialect_prefix);
@@ -892,7 +874,7 @@ fn name_to_module(
 		_ => stem,
 	};
 
-	NodeModuleInformation { name: stem, language, dialect, concept }
+	NodeModuleInformation { name:stem, language, dialect, concept }
 }
 
 impl LanguageKind {

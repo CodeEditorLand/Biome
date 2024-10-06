@@ -1,51 +1,49 @@
-use crate::lexer::GritLexer;
-use biome_grit_syntax::GritSyntaxKind::{EOF, TOMBSTONE};
-use biome_grit_syntax::{GritSyntaxKind, TextRange};
-use biome_parser::diagnostic::ParseDiagnostic;
-use biome_parser::lexer::Lexer;
-use biome_parser::prelude::TokenSource;
-use biome_parser::token_source::Trivia;
+use biome_grit_syntax::{
+	GritSyntaxKind,
+	GritSyntaxKind::{EOF, TOMBSTONE},
+	TextRange,
+};
+use biome_parser::{
+	diagnostic::ParseDiagnostic,
+	lexer::Lexer,
+	prelude::TokenSource,
+	token_source::Trivia,
+};
 use biome_rowan::TriviaPieceKind;
 
+use crate::lexer::GritLexer;
+
 pub(crate) struct GritTokenSource<'source> {
-	lexer: GritLexer<'source>,
-	trivia: Vec<Trivia>,
-	current: NonTriviaToken,
-	next: Option<NonTriviaToken>,
+	lexer:GritLexer<'source>,
+	trivia:Vec<Trivia>,
+	current:NonTriviaToken,
+	next:Option<NonTriviaToken>,
 }
 
 struct NonTriviaToken {
-	kind: GritSyntaxKind,
-	range: TextRange,
-	preceding_line_break: bool,
+	kind:GritSyntaxKind,
+	range:TextRange,
+	preceding_line_break:bool,
 }
 
 impl Default for NonTriviaToken {
 	fn default() -> Self {
-		Self {
-			kind: TOMBSTONE,
-			range: TextRange::default(),
-			preceding_line_break: false,
-		}
+		Self { kind:TOMBSTONE, range:TextRange::default(), preceding_line_break:false }
 	}
 }
 
 impl<'source> GritTokenSource<'source> {
-	pub fn from_str(source: &'source str) -> Self {
+	pub fn from_str(source:&'source str) -> Self {
 		let lexer = GritLexer::from_str(source);
 
-		let mut source = Self {
-			lexer,
-			trivia: Vec::new(),
-			current: NonTriviaToken::default(),
-			next: None,
-		};
+		let mut source =
+			Self { lexer, trivia:Vec::new(), current:NonTriviaToken::default(), next:None };
 
 		source.advance_to_next_non_trivia_token(true);
 		source
 	}
 
-	fn advance_to_next_non_trivia_token(&mut self, first_token: bool) {
+	fn advance_to_next_non_trivia_token(&mut self, first_token:bool) {
 		self.current = match self.next.take() {
 			Some(next) => next,
 			None => self.next_non_trivia_token(first_token),
@@ -66,7 +64,7 @@ impl<'source> GritTokenSource<'source> {
 	}
 
 	#[must_use]
-	fn next_non_trivia_token(&mut self, first_token: bool) -> NonTriviaToken {
+	fn next_non_trivia_token(&mut self, first_token:bool) -> NonTriviaToken {
 		let mut non_trivia_token = NonTriviaToken::default();
 
 		let mut trailing = !first_token;
@@ -104,21 +102,13 @@ impl<'source> GritTokenSource<'source> {
 impl<'source> TokenSource for GritTokenSource<'source> {
 	type Kind = GritSyntaxKind;
 
-	fn current(&self) -> Self::Kind {
-		self.current.kind
-	}
+	fn current(&self) -> Self::Kind { self.current.kind }
 
-	fn current_range(&self) -> TextRange {
-		self.current.range
-	}
+	fn current_range(&self) -> TextRange { self.current.range }
 
-	fn text(&self) -> &str {
-		self.lexer.source()
-	}
+	fn text(&self) -> &str { self.lexer.source() }
 
-	fn has_preceding_line_break(&self) -> bool {
-		self.current.preceding_line_break
-	}
+	fn has_preceding_line_break(&self) -> bool { self.current.preceding_line_break }
 
 	fn bump(&mut self) {
 		if self.current.kind != EOF {
@@ -128,17 +118,12 @@ impl<'source> TokenSource for GritTokenSource<'source> {
 
 	fn skip_as_trivia(&mut self) {
 		if self.current() != EOF {
-			self.trivia.push(Trivia::new(
-				TriviaPieceKind::Skipped,
-				self.current_range(),
-				false,
-			));
+			self.trivia
+				.push(Trivia::new(TriviaPieceKind::Skipped, self.current_range(), false));
 
 			self.advance_to_next_non_trivia_token(false)
 		}
 	}
 
-	fn finish(self) -> (Vec<Trivia>, Vec<ParseDiagnostic>) {
-		(self.trivia, self.lexer.finish())
-	}
+	fn finish(self) -> (Vec<Trivia>, Vec<ParseDiagnostic>) { (self.trivia, self.lexer.finish()) }
 }

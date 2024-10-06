@@ -1,85 +1,87 @@
-use biome_analyze::context::RuleContext;
-use biome_analyze::{declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource};
+use biome_analyze::{
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+};
 use biome_console::markup;
-use biome_js_syntax::jsx_ext::AnyJsxElement;
-use biome_js_syntax::{AnyJsxAttribute, JsxAttribute};
+use biome_js_syntax::{jsx_ext::AnyJsxElement, AnyJsxAttribute, JsxAttribute};
 use biome_rowan::AstNode;
 use rustc_hash::FxHashMap;
 
 declare_lint_rule! {
-    /// Prevents JSX properties to be assigned multiple times.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <Hello name="John" name="John" />
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <label xml:lang="en-US" xml:lang="en-US"></label>
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```jsx
-    /// <Hello firstname="John" lastname="Doe" />
-    /// ```
-    ///
-    /// ```jsx
-    /// <label xml:lang="en-US" lang="en-US"></label>
-    /// ```
+	/// Prevents JSX properties to be assigned multiple times.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```jsx,expect_diagnostic
+	/// <Hello name="John" name="John" />
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <label xml:lang="en-US" xml:lang="en-US"></label>
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```jsx
+	/// <Hello firstname="John" lastname="Doe" />
+	/// ```
+	///
+	/// ```jsx
+	/// <label xml:lang="en-US" lang="en-US"></label>
+	/// ```
  pub NoDuplicateJsxProps {
-        version: "1.0.0",
-        name: "noDuplicateJsxProps",
-        language: "jsx",
-        sources: &[RuleSource::EslintReact("jsx-no-duplicate-props")],
-        recommended: true,
-    }
+		version: "1.0.0",
+		name: "noDuplicateJsxProps",
+		language: "jsx",
+		sources: &[RuleSource::EslintReact("jsx-no-duplicate-props")],
+		recommended: true,
+	}
 }
 
 impl Rule for NoDuplicateJsxProps {
-    type Query = Ast<AnyJsxElement>;
-    type State = (String, Vec<JsxAttribute>);
-    type Signals = FxHashMap<String, Vec<JsxAttribute>>;
-    type Options = ();
+	type Options = ();
+	type Query = Ast<AnyJsxElement>;
+	type Signals = FxHashMap<String, Vec<JsxAttribute>>;
+	type State = (String, Vec<JsxAttribute>);
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let node = ctx.query();
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let node = ctx.query();
 
-        let mut defined_attributes: FxHashMap<String, Vec<JsxAttribute>> = FxHashMap::default();
-        for attribute in node.attributes() {
-            if let AnyJsxAttribute::JsxAttribute(attr) = attribute {
-                if let Ok(name) = attr.name() {
-                    defined_attributes
-                        .entry(name.text())
-                        .or_default()
-                        .push(attr);
-                }
-            }
-        }
+		let mut defined_attributes:FxHashMap<String, Vec<JsxAttribute>> = FxHashMap::default();
+		for attribute in node.attributes() {
+			if let AnyJsxAttribute::JsxAttribute(attr) = attribute {
+				if let Ok(name) = attr.name() {
+					defined_attributes.entry(name.text()).or_default().push(attr);
+				}
+			}
+		}
 
-        defined_attributes.retain(|_, val| val.len() > 1);
-        defined_attributes
-    }
+		defined_attributes.retain(|_, val| val.len() > 1);
+		defined_attributes
+	}
 
-    fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-        let mut attributes = state.1.iter();
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+		let mut attributes = state.1.iter();
 
-        let mut diagnostic = RuleDiagnostic::new(
-            rule_category!(),
-            attributes.next()?.syntax().text_trimmed_range(),
-            markup!("This JSX property is assigned multiple times."),
-        );
+		let mut diagnostic = RuleDiagnostic::new(
+			rule_category!(),
+			attributes.next()?.syntax().text_trimmed_range(),
+			markup!("This JSX property is assigned multiple times."),
+		);
 
-        for attr in attributes {
-            diagnostic = diagnostic.detail(
-                attr.syntax().text_trimmed_range(),
-                "This attribute is assigned again here.",
-            )
-        }
+		for attr in attributes {
+			diagnostic = diagnostic.detail(
+				attr.syntax().text_trimmed_range(),
+				"This attribute is assigned again here.",
+			)
+		}
 
-        Some(diagnostic)
-    }
+		Some(diagnostic)
+	}
 }

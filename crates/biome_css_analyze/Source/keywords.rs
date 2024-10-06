@@ -1,11 +1,10 @@
-pub const BASIC_KEYWORDS: [&str; 5] =
-	["initial", "inherit", "revert", "revert-layer", "unset"];
+pub const BASIC_KEYWORDS:[&str; 5] = ["initial", "inherit", "revert", "revert-layer", "unset"];
 
 // https://drafts.csswg.org/css-fonts/#system-family-name-value
-pub const SYSTEM_FAMILY_NAME_KEYWORDS: [&str; 6] =
+pub const SYSTEM_FAMILY_NAME_KEYWORDS:[&str; 6] =
 	["caption", "icon", "menu", "message-box", "small-caption", "status-bar"];
 
-pub const FONT_FAMILY_KEYWORDS: [&str; 10] = [
+pub const FONT_FAMILY_KEYWORDS:[&str; 10] = [
 	"serif",
 	"sans-serif",
 	"cursive",
@@ -18,11 +17,11 @@ pub const FONT_FAMILY_KEYWORDS: [&str; 10] = [
 	"ui-rounded",
 ];
 
-pub const FONT_WEIGHT_ABSOLUTE_KEYWORDS: [&str; 2] = ["normal", "bold"];
-pub const FONT_WEIGHT_NUMERIC_KEYWORDS: [&str; 9] =
+pub const FONT_WEIGHT_ABSOLUTE_KEYWORDS:[&str; 2] = ["normal", "bold"];
+pub const FONT_WEIGHT_NUMERIC_KEYWORDS:[&str; 9] =
 	["100", "200", "300", "400", "500", "600", "700", "800", "900"];
-pub const FONT_STYLE_KEYWORDS: [&str; 3] = ["normal", "italic", "oblique"];
-pub const FONT_VARIANTS_KEYWORDS: [&str; 35] = [
+pub const FONT_STYLE_KEYWORDS:[&str; 3] = ["normal", "italic", "oblique"];
+pub const FONT_VARIANTS_KEYWORDS:[&str; 35] = [
 	"normal",
 	"none",
 	"historical-forms",
@@ -60,7 +59,7 @@ pub const FONT_VARIANTS_KEYWORDS: [&str; 35] = [
 	"ruby",
 ];
 
-pub const FONT_STRETCH_KEYWORDS: [&str; 8] = [
+pub const FONT_STRETCH_KEYWORDS:[&str; 8] = [
 	"semi-condensed",
 	"condensed",
 	"extra-condensed",
@@ -71,16 +70,15 @@ pub const FONT_STRETCH_KEYWORDS: [&str; 8] = [
 	"ultra-expanded",
 ];
 
-pub const FONT_SIZE_KEYWORDS: [&str; 9] = [
-	"xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large",
-	"larger", "smaller",
+pub const FONT_SIZE_KEYWORDS:[&str; 9] = [
+	"xx-small", "x-small", "small", "medium", "large", "x-large", "xx-large", "larger", "smaller",
 ];
 
-pub const LINE_HEIGHT_KEYWORDS: [&str; 1] = ["normal"];
+pub const LINE_HEIGHT_KEYWORDS:[&str; 1] = ["normal"];
 
 /// List of known CSS value functions sourced from [`css-functions-list`](https://www.npmjs.com/package/css-functions-list).
 /// See the original list [here](https://github.com/niksy/css-functions-list/blob/master/index.json).
-pub const FUNCTION_KEYWORDS: [&str; 671] = [
+pub const FUNCTION_KEYWORDS:[&str; 671] = [
 	"-moz-abs",
 	"-moz-acos",
 	"-moz-anchor",
@@ -755,10 +753,10 @@ pub const FUNCTION_KEYWORDS: [&str; 671] = [
 ];
 
 // These are the ones that can have single-colon notation
-pub const LEVEL_ONE_AND_TWO_PSEUDO_ELEMENTS: [&str; 4] =
+pub const LEVEL_ONE_AND_TWO_PSEUDO_ELEMENTS:[&str; 4] =
 	["before", "after", "first-line", "first-letter"];
 
-pub const VENDOR_SPECIFIC_PSEUDO_ELEMENTS: [&str; 66] = [
+pub const VENDOR_SPECIFIC_PSEUDO_ELEMENTS:[&str; 66] = [
 	"-moz-focus-inner",
 	"-moz-focus-outer",
 	"-moz-list-bullet",
@@ -827,9 +825,9 @@ pub const VENDOR_SPECIFIC_PSEUDO_ELEMENTS: [&str; 66] = [
 	"-webkit-validation-bubble-text-block",
 ];
 
-pub const SHADOW_TREE_PSEUDO_ELEMENTS: [&str; 1] = ["part"];
+pub const SHADOW_TREE_PSEUDO_ELEMENTS:[&str; 1] = ["part"];
 
-pub const OTHER_PSEUDO_ELEMENTS: [&str; 18] = [
+pub const OTHER_PSEUDO_ELEMENTS:[&str; 18] = [
 	"backdrop",
 	"content",
 	"cue",
@@ -850,12 +848,11 @@ pub const OTHER_PSEUDO_ELEMENTS: [&str; 18] = [
 	"view-transition-old",
 ];
 
-pub const VENDOR_PREFIXES: [&str; 4] = ["-webkit-", "-moz-", "-ms-", "-o-"];
+pub const VENDOR_PREFIXES:[&str; 4] = ["-webkit-", "-moz-", "-ms-", "-o-"];
 
-pub const AT_RULE_PAGE_PSEUDO_CLASSES: [&str; 4] =
-	["first", "right", "left", "blank"];
+pub const AT_RULE_PAGE_PSEUDO_CLASSES:[&str; 4] = ["first", "right", "left", "blank"];
 
-pub const WEBKIT_SCROLLBAR_PSEUDO_ELEMENTS: [&str; 7] = [
+pub const WEBKIT_SCROLLBAR_PSEUDO_ELEMENTS:[&str; 7] = [
 	"-webkit-resizer",
 	"-webkit-scrollbar",
 	"-webkit-scrollbar-button",
@@ -865,7 +862,7 @@ pub const WEBKIT_SCROLLBAR_PSEUDO_ELEMENTS: [&str; 7] = [
 	"-webkit-scrollbar-track-piece",
 ];
 
-pub const WEBKIT_SCROLLBAR_PSEUDO_CLASSES: [&str; 11] = [
+pub const WEBKIT_SCROLLBAR_PSEUDO_CLASSES:[&str; 11] = [
 	"horizontal",
 	"vertical",
 	"decrement",
@@ -879,29 +876,20 @@ pub const WEBKIT_SCROLLBAR_PSEUDO_CLASSES: [&str; 11] = [
 	"window-inactive",
 ];
 
-pub const A_NPLUS_BNOTATION_PSEUDO_CLASSES: [&str; 4] =
+pub const A_NPLUS_BNOTATION_PSEUDO_CLASSES:[&str; 4] =
 	["nth-column", "nth-last-column", "nth-last-of-type", "nth-of-type"];
 
-pub const A_NPLUS_BOF_SNOTATION_PSEUDO_CLASSES: [&str; 2] =
-	["nth-child", "nth-last-child"];
+pub const A_NPLUS_BOF_SNOTATION_PSEUDO_CLASSES:[&str; 2] = ["nth-child", "nth-last-child"];
 
-pub const LINGUISTIC_PSEUDO_CLASSES: [&str; 2] = ["dir", "lang"];
+pub const LINGUISTIC_PSEUDO_CLASSES:[&str; 2] = ["dir", "lang"];
 
-pub const LOGICAL_COMBINATIONS_PSEUDO_CLASSES: [&str; 5] =
-	["has", "is", "matches", "not", "where"];
+pub const LOGICAL_COMBINATIONS_PSEUDO_CLASSES:[&str; 5] = ["has", "is", "matches", "not", "where"];
 
 /// See https://drafts.csswg.org/selectors/#resource-pseudos
-pub const RESOURCE_STATE_PSEUDO_CLASSES: [&str; 7] = [
-	"playing",
-	"paused",
-	"seeking",
-	"buffering",
-	"stalled",
-	"muted",
-	"volume-locked",
-];
+pub const RESOURCE_STATE_PSEUDO_CLASSES:[&str; 7] =
+	["playing", "paused", "seeking", "buffering", "stalled", "muted", "volume-locked"];
 
-pub const OTHER_PSEUDO_CLASSES: [&str; 50] = [
+pub const OTHER_PSEUDO_CLASSES:[&str; 50] = [
 	"active",
 	"any-link",
 	"autofill",
@@ -955,7 +943,7 @@ pub const OTHER_PSEUDO_CLASSES: [&str; 50] = [
 ];
 
 // https://github.com/known-css/known-css-properties/blob/master/source/w3c.json
-pub const KNOWN_PROPERTIES: [&str; 588] = [
+pub const KNOWN_PROPERTIES:[&str; 588] = [
 	"-webkit-line-clamp",
 	"accent-color",
 	"align-content",
@@ -1546,7 +1534,7 @@ pub const KNOWN_PROPERTIES: [&str; 588] = [
 	"zoom",
 ];
 // https://github.com/known-css/known-css-properties/blob/master/source/browsers/chrome-122.0.json
-pub const KNOWN_CHROME_PROPERTIES: [&str; 619] = [
+pub const KNOWN_CHROME_PROPERTIES:[&str; 619] = [
 	"accent-color",
 	"additive-symbols",
 	"align-content",
@@ -2169,7 +2157,7 @@ pub const KNOWN_CHROME_PROPERTIES: [&str; 619] = [
 ];
 
 // https://github.com/known-css/known-css-properties/blob/master/source/browsers/edge-18.0.json
-pub const KNOWN_EDGE_PROPERTIES: [&str; 386] = [
+pub const KNOWN_EDGE_PROPERTIES:[&str; 386] = [
 	"-ms-content-zoom-chaining",
 	"-ms-content-zoom-limit",
 	"-ms-content-zoom-limit-max",
@@ -2559,7 +2547,7 @@ pub const KNOWN_EDGE_PROPERTIES: [&str; 386] = [
 ];
 
 // https://github.com/known-css/known-css-properties/blob/master/source/browsers/explorer-11.0.json
-pub const KNOWN_EXPLORER_PROPERTIES: [&str; 182] = [
+pub const KNOWN_EXPLORER_PROPERTIES:[&str; 182] = [
 	"-ms-block-progression",
 	"-ms-interpolation-mode",
 	"-ms-transform",
@@ -2745,7 +2733,7 @@ pub const KNOWN_EXPLORER_PROPERTIES: [&str; 182] = [
 ];
 
 // https://github.com/known-css/known-css-properties/blob/master/source/browsers/firefox-122.0.json
-pub const KNOWN_FIREFOX_PROPERTIES: [&str; 526] = [
+pub const KNOWN_FIREFOX_PROPERTIES:[&str; 526] = [
 	"-moz-animation",
 	"-moz-animation-delay",
 	"-moz-animation-direction",
@@ -3275,7 +3263,7 @@ pub const KNOWN_FIREFOX_PROPERTIES: [&str; 526] = [
 ];
 
 // https://github.com/known-css/known-css-properties/blob/master/source/browsers/safari-17.1.json
-pub const KNOWN_SAFARI_PROPERTIES: [&str; 644] = [
+pub const KNOWN_SAFARI_PROPERTIES:[&str; 644] = [
 	"-apple-pay-button-style",
 	"-apple-pay-button-type",
 	"-epub-caption-side",
@@ -3923,7 +3911,7 @@ pub const KNOWN_SAFARI_PROPERTIES: [&str; 644] = [
 ];
 
 // https://github.com/known-css/known-css-properties/blob/master/source/browsers/samsung_internet-23.0.json
-pub const KNOWN_SAMSUNG_INTERNET_PROPERTIES: [&str; 608] = [
+pub const KNOWN_SAMSUNG_INTERNET_PROPERTIES:[&str; 608] = [
 	"-webkit-align-content",
 	"-webkit-align-items",
 	"-webkit-align-self",
@@ -4535,7 +4523,7 @@ pub const KNOWN_SAMSUNG_INTERNET_PROPERTIES: [&str; 608] = [
 ];
 
 // https://github.com/known-css/known-css-properties/blob/master/source/browsers/uc_browser-13.4.json
-pub const KNOWN_US_BROWSER_PROPERTIES: [&str; 517] = [
+pub const KNOWN_US_BROWSER_PROPERTIES:[&str; 517] = [
 	"-webkit-align-content",
 	"-webkit-align-items",
 	"-webkit-align-self",
@@ -5055,7 +5043,7 @@ pub const KNOWN_US_BROWSER_PROPERTIES: [&str; 517] = [
 	"zoom",
 ];
 
-pub const MEDIA_FEATURE_NAMES: [&str; 60] = [
+pub const MEDIA_FEATURE_NAMES:[&str; 60] = [
 	"any-hover",
 	"any-pointer",
 	"aspect-ratio",
@@ -5118,7 +5106,7 @@ pub const MEDIA_FEATURE_NAMES: [&str; 60] = [
 	"width",
 ];
 
-pub const SHORTHAND_PROPERTIES: [&str; 57] = [
+pub const SHORTHAND_PROPERTIES:[&str; 57] = [
 	"animation",
 	"background",
 	"border",
@@ -5178,7 +5166,7 @@ pub const SHORTHAND_PROPERTIES: [&str; 57] = [
 	"transition",
 ];
 
-pub const LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES: [&[&str]; 57] = [
+pub const LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES:[&[&str]; 57] = [
 	&[
 		"animation-delay",
 		"animation-direction",
@@ -5217,11 +5205,7 @@ pub const LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES: [&[&str]; 57] = [
 		"border-width",
 	],
 	&["border-block-color", "border-block-style", "border-block-width"],
-	&[
-		"border-block-end-color",
-		"border-block-end-style",
-		"border-block-end-width",
-	],
+	&["border-block-end-color", "border-block-end-style", "border-block-end-width"],
 	&[
 		"border-block-start-color",
 		"border-block-start-style",
@@ -5242,11 +5226,7 @@ pub const LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES: [&[&str]; 57] = [
 		"border-image-width",
 	],
 	&["border-inline-color", "border-inline-style", "border-inline-width"],
-	&[
-		"border-inline-end-color",
-		"border-inline-end-style",
-		"border-inline-end-width",
-	],
+	&["border-inline-end-color", "border-inline-end-style", "border-inline-end-width"],
 	&[
 		"border-inline-start-color",
 		"border-inline-start-style",
@@ -5286,11 +5266,7 @@ pub const LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES: [&[&str]; 57] = [
 		"font-weight",
 		"line-height",
 	],
-	&[
-		"font-synthesis-small-caps",
-		"font-synthesis-style",
-		"font-synthesis-weight",
-	],
+	&["font-synthesis-small-caps", "font-synthesis-style", "font-synthesis-weight"],
 	&["column-gap", "row-gap"],
 	&[
 		"grid-auto-columns",
@@ -5364,7 +5340,7 @@ pub const LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES: [&[&str]; 57] = [
 	],
 ];
 
-pub const RESET_TO_INITIAL_PROPERTIES_BY_BORDER: [&str; 6] = [
+pub const RESET_TO_INITIAL_PROPERTIES_BY_BORDER:[&str; 6] = [
 	"border-image",
 	"border-image-outset",
 	"border-image-repeat",
@@ -5373,7 +5349,7 @@ pub const RESET_TO_INITIAL_PROPERTIES_BY_BORDER: [&str; 6] = [
 	"border-image-width",
 ];
 
-pub const RESET_TO_INITIAL_PROPERTIES_BY_FONT: [&str; 13] = [
+pub const RESET_TO_INITIAL_PROPERTIES_BY_FONT:[&str; 13] = [
 	"font-feature-settings",
 	"font-kerning",
 	"font-language-override",
@@ -5394,12 +5370,19 @@ mod tests {
 	use std::collections::HashSet;
 
 	use super::{
-		FUNCTION_KEYWORDS, KNOWN_EDGE_PROPERTIES, KNOWN_EXPLORER_PROPERTIES,
-		KNOWN_FIREFOX_PROPERTIES, KNOWN_PROPERTIES, KNOWN_SAFARI_PROPERTIES,
-		KNOWN_SAMSUNG_INTERNET_PROPERTIES, KNOWN_US_BROWSER_PROPERTIES,
-		LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES, MEDIA_FEATURE_NAMES,
+		FUNCTION_KEYWORDS,
+		KNOWN_EDGE_PROPERTIES,
+		KNOWN_EXPLORER_PROPERTIES,
+		KNOWN_FIREFOX_PROPERTIES,
+		KNOWN_PROPERTIES,
+		KNOWN_SAFARI_PROPERTIES,
+		KNOWN_SAMSUNG_INTERNET_PROPERTIES,
+		KNOWN_US_BROWSER_PROPERTIES,
+		LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES,
+		MEDIA_FEATURE_NAMES,
 		RESET_TO_INITIAL_PROPERTIES_BY_BORDER,
-		RESET_TO_INITIAL_PROPERTIES_BY_FONT, SHORTHAND_PROPERTIES,
+		RESET_TO_INITIAL_PROPERTIES_BY_FONT,
+		SHORTHAND_PROPERTIES,
 	};
 
 	#[test]
@@ -5482,16 +5465,13 @@ mod tests {
 	#[test]
 	fn test_shorthand_properties_unique() {
 		let mut set = HashSet::new();
-		let has_duplicates =
-			SHORTHAND_PROPERTIES.iter().any(|&x| !set.insert(x));
+		let has_duplicates = SHORTHAND_PROPERTIES.iter().any(|&x| !set.insert(x));
 		assert!(!has_duplicates);
 	}
 
 	#[test]
 	fn test_longhand_sub_properties_of_shorthand_properties_sorted() {
-		for longhand_sub_properties in
-			LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES.iter()
-		{
+		for longhand_sub_properties in LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES.iter() {
 			let mut sorted = longhand_sub_properties.to_vec();
 			sorted.sort_unstable();
 			assert_eq!(*longhand_sub_properties, sorted.as_slice());
@@ -5500,32 +5480,22 @@ mod tests {
 
 	#[test]
 	fn test_longhand_sub_properties_of_shorthand_properties_unique() {
-		for longhand_sub_properties in
-			LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES.iter()
-		{
+		for longhand_sub_properties in LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES.iter() {
 			let mut set = HashSet::new();
-			let has_duplicates =
-				longhand_sub_properties.iter().any(|&x| !set.insert(x));
+			let has_duplicates = longhand_sub_properties.iter().any(|&x| !set.insert(x));
 			assert!(!has_duplicates);
 		}
 	}
 
 	#[test]
-	fn test_shorthand_properties_and_longhand_sub_properties_correspond_correctly(
-	) {
-		for (shorthand_property, longhand_sub_properties) in
-			SHORTHAND_PROPERTIES
-				.iter()
-				.zip(LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES.iter())
+	fn test_shorthand_properties_and_longhand_sub_properties_correspond_correctly() {
+		for (shorthand_property, longhand_sub_properties) in SHORTHAND_PROPERTIES
+			.iter()
+			.zip(LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES.iter())
 		{
 			for longhand_sub_property in longhand_sub_properties.iter() {
-				if [
-					"border-color",
-					"border-radius",
-					"border-style",
-					"border-width",
-				]
-				.contains(shorthand_property)
+				if ["border-color", "border-radius", "border-style", "border-width"]
+					.contains(shorthand_property)
 				{
 					let (start, end) = shorthand_property.split_at(6);
 					assert!(longhand_sub_property.starts_with(start));
@@ -5533,12 +5503,10 @@ mod tests {
 				} else if *shorthand_property == "columns" {
 					assert!(longhand_sub_property.starts_with("column"));
 				} else if *shorthand_property == "flex-flow" {
-					assert!(["flex-direction", "flex-wrap",]
-						.contains(longhand_sub_property));
+					assert!(["flex-direction", "flex-wrap",].contains(longhand_sub_property));
 				} else if *shorthand_property == "font" {
 					if *longhand_sub_property != "line-height" {
-						assert!(longhand_sub_property
-							.starts_with(shorthand_property));
+						assert!(longhand_sub_property.starts_with(shorthand_property));
 					}
 				} else if *shorthand_property == "gap" {
 					assert!(longhand_sub_property.ends_with(shorthand_property));
@@ -5552,8 +5520,7 @@ mod tests {
 					assert!(longhand_sub_property.starts_with(start));
 					assert!(longhand_sub_property.ends_with(end));
 				} else if *shorthand_property == "inset" {
-					assert!(["bottom", "left", "right", "top"]
-						.contains(longhand_sub_property));
+					assert!(["bottom", "left", "right", "top"].contains(longhand_sub_property));
 				} else if ["place-content", "place-items", "place-self"]
 					.contains(shorthand_property)
 				{
@@ -5565,9 +5532,7 @@ mod tests {
 					let (_, end) = shorthand_property.split_at(5);
 					assert!(longhand_sub_property.ends_with(end));
 				} else {
-					assert!(
-						longhand_sub_property.starts_with(shorthand_property)
-					);
+					assert!(longhand_sub_property.starts_with(shorthand_property));
 				}
 			}
 		}
@@ -5583,9 +5548,7 @@ mod tests {
 	#[test]
 	fn test_reset_to_initial_properties_by_border_unique() {
 		let mut set = HashSet::new();
-		let has_duplicates = RESET_TO_INITIAL_PROPERTIES_BY_BORDER
-			.iter()
-			.any(|&x| !set.insert(x));
+		let has_duplicates = RESET_TO_INITIAL_PROPERTIES_BY_BORDER.iter().any(|&x| !set.insert(x));
 		assert!(!has_duplicates);
 	}
 
@@ -5599,8 +5562,7 @@ mod tests {
 	#[test]
 	fn test_reset_to_initial_properties_by_font_unique() {
 		let mut set = HashSet::new();
-		let has_duplicates =
-			RESET_TO_INITIAL_PROPERTIES_BY_FONT.iter().any(|&x| !set.insert(x));
+		let has_duplicates = RESET_TO_INITIAL_PROPERTIES_BY_FONT.iter().any(|&x| !set.insert(x));
 		assert!(!has_duplicates);
 	}
 }

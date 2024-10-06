@@ -1,14 +1,29 @@
-//! Extended AST node definitions for statements which are unique and special enough to generate code for manually
+//! Extended AST node definitions for statements which are unique and special
+//! enough to generate code for manually
+
+use biome_rowan::{declare_node_union, AstNode, SyntaxResult};
 
 use crate::{
-	AnyJsArrayAssignmentPatternElement, AnyJsAssignmentPattern,
-	AnyJsSwitchClause, JsBlockStatement, JsBreakStatement, JsCatchClause,
-	JsContinueStatement, JsFinallyClause, JsForVariableDeclaration,
-	JsLabeledStatement, JsStatementList, JsSyntaxKind,
-	JsSyntaxToken as SyntaxToken, JsTryFinallyStatement, JsTryStatement,
-	JsVariableDeclaration, JsVariableDeclarator, TsModuleDeclaration, T,
+	AnyJsArrayAssignmentPatternElement,
+	AnyJsAssignmentPattern,
+	AnyJsSwitchClause,
+	JsBlockStatement,
+	JsBreakStatement,
+	JsCatchClause,
+	JsContinueStatement,
+	JsFinallyClause,
+	JsForVariableDeclaration,
+	JsLabeledStatement,
+	JsStatementList,
+	JsSyntaxKind,
+	JsSyntaxToken as SyntaxToken,
+	JsTryFinallyStatement,
+	JsTryStatement,
+	JsVariableDeclaration,
+	JsVariableDeclarator,
+	TsModuleDeclaration,
+	T,
 };
-use biome_rowan::{declare_node_union, AstNode, SyntaxResult};
 
 impl AnyJsSwitchClause {
 	pub fn clause_token(&self) -> SyntaxResult<SyntaxToken> {
@@ -77,19 +92,13 @@ pub enum JsVariableKind {
 
 impl JsVariableDeclaration {
 	/// Whether the declaration is a const declaration
-	pub fn is_const(&self) -> bool {
-		self.variable_kind() == Ok(JsVariableKind::Const)
-	}
+	pub fn is_const(&self) -> bool { self.variable_kind() == Ok(JsVariableKind::Const) }
 
 	/// Whether the declaration is a let declaration
-	pub fn is_let(&self) -> bool {
-		self.variable_kind() == Ok(JsVariableKind::Let)
-	}
+	pub fn is_let(&self) -> bool { self.variable_kind() == Ok(JsVariableKind::Let) }
 
 	/// Whether the declaration is a var declaration
-	pub fn is_var(&self) -> bool {
-		self.variable_kind() == Ok(JsVariableKind::Var)
-	}
+	pub fn is_var(&self) -> bool { self.variable_kind() == Ok(JsVariableKind::Var) }
 
 	pub fn variable_kind(&self) -> SyntaxResult<JsVariableKind> {
 		let kind_token = self.kind()?;
@@ -105,19 +114,13 @@ impl JsVariableDeclaration {
 
 impl JsForVariableDeclaration {
 	/// Whether the declaration is a const declaration
-	pub fn is_const(&self) -> bool {
-		self.variable_kind() == Ok(JsVariableKind::Const)
-	}
+	pub fn is_const(&self) -> bool { self.variable_kind() == Ok(JsVariableKind::Const) }
 
 	/// Whether the declaration is a let declaration
-	pub fn is_let(&self) -> bool {
-		self.variable_kind() == Ok(JsVariableKind::Let)
-	}
+	pub fn is_let(&self) -> bool { self.variable_kind() == Ok(JsVariableKind::Let) }
 
 	/// Whether the declaration is a var declaration
-	pub fn is_var(&self) -> bool {
-		self.variable_kind() == Ok(JsVariableKind::Var)
-	}
+	pub fn is_var(&self) -> bool { self.variable_kind() == Ok(JsVariableKind::Var) }
 
 	pub fn variable_kind(&self) -> SyntaxResult<JsVariableKind> {
 		let kind_token = self.kind_token()?;
@@ -137,37 +140,25 @@ declare_node_union! {
 
 impl AnyJsVariableDeclaration {
 	/// Whether the declaration is a const declaration
-	pub fn is_const(&self) -> bool {
-		self.variable_kind() == Ok(JsVariableKind::Const)
-	}
+	pub fn is_const(&self) -> bool { self.variable_kind() == Ok(JsVariableKind::Const) }
 
 	/// Whether the declaration is a let declaration
-	pub fn is_let(&self) -> bool {
-		self.variable_kind() == Ok(JsVariableKind::Let)
-	}
+	pub fn is_let(&self) -> bool { self.variable_kind() == Ok(JsVariableKind::Let) }
 
 	/// Whether the declaration is a var declaration
-	pub fn is_var(&self) -> bool {
-		self.variable_kind() == Ok(JsVariableKind::Var)
-	}
+	pub fn is_var(&self) -> bool { self.variable_kind() == Ok(JsVariableKind::Var) }
 
 	pub fn variable_kind(&self) -> SyntaxResult<JsVariableKind> {
 		match self {
-			AnyJsVariableDeclaration::JsForVariableDeclaration(decl) => {
-				decl.variable_kind()
-			},
-			AnyJsVariableDeclaration::JsVariableDeclaration(decl) => {
-				decl.variable_kind()
-			},
+			AnyJsVariableDeclaration::JsForVariableDeclaration(decl) => decl.variable_kind(),
+			AnyJsVariableDeclaration::JsVariableDeclaration(decl) => decl.variable_kind(),
 		}
 	}
 
 	pub fn kind_token(&self) -> SyntaxResult<SyntaxToken> {
 		match self {
 			AnyJsVariableDeclaration::JsVariableDeclaration(x) => x.kind(),
-			AnyJsVariableDeclaration::JsForVariableDeclaration(x) => {
-				x.kind_token()
-			},
+			AnyJsVariableDeclaration::JsForVariableDeclaration(x) => x.kind_token(),
 		}
 	}
 }
@@ -204,27 +195,23 @@ impl TsModuleDeclaration {
 }
 
 impl JsLabeledStatement {
-	pub fn label_token(&self) -> SyntaxResult<SyntaxToken> {
-		self.label()?.value_token()
-	}
+	pub fn label_token(&self) -> SyntaxResult<SyntaxToken> { self.label()?.value_token() }
 }
 
 impl JsBreakStatement {
-	pub fn label_token(&self) -> Option<SyntaxToken> {
-		self.label()?.value_token().ok()
-	}
+	pub fn label_token(&self) -> Option<SyntaxToken> { self.label()?.value_token().ok() }
 }
 
 impl JsContinueStatement {
-	pub fn label_token(&self) -> Option<SyntaxToken> {
-		self.label()?.value_token().ok()
-	}
+	pub fn label_token(&self) -> Option<SyntaxToken> { self.label()?.value_token().ok() }
 }
 
 #[cfg(test)]
 mod tests {
-	use biome_js_factory::syntax::{JsSyntaxKind::*, JsVariableDeclaration};
-	use biome_js_factory::JsSyntaxTreeBuilder;
+	use biome_js_factory::{
+		syntax::{JsSyntaxKind::*, JsVariableDeclaration},
+		JsSyntaxTreeBuilder,
+	};
 	use biome_rowan::AstNode;
 
 	#[test]

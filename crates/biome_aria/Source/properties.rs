@@ -1,8 +1,8 @@
-use crate::define_property;
+use std::{fmt::Debug, slice::Iter, str::FromStr};
+
 use biome_aria_metadata::AriaPropertyTypeEnum;
-use std::fmt::Debug;
-use std::slice::Iter;
-use std::str::FromStr;
+
+use crate::define_property;
 
 define_property! {
 	AriaActivedescendant {
@@ -338,22 +338,16 @@ define_property! {
 	}
 }
 
-/// A collection of ARIA properties with their metadata, necessary to perform various operations.
+/// A collection of ARIA properties with their metadata, necessary to perform
+/// various operations.
 #[derive(Debug, Default)]
 pub struct AriaProperties;
 
 impl AriaProperties {
-	pub fn get_property<'a>(
-		&self,
-		property_name: &str,
-	) -> Option<&'a dyn AriaPropertyDefinition> {
+	pub fn get_property<'a>(&self, property_name:&str) -> Option<&'a dyn AriaPropertyDefinition> {
 		Some(match property_name {
-			"aria-activedescendant" => {
-				&AriaActivedescendant as &dyn AriaPropertyDefinition
-			},
-			"aria-autocomplete" => {
-				&AriaAutocomplete as &dyn AriaPropertyDefinition
-			},
+			"aria-activedescendant" => &AriaActivedescendant as &dyn AriaPropertyDefinition,
+			"aria-autocomplete" => &AriaAutocomplete as &dyn AriaPropertyDefinition,
 			"aria-busy" => &AriaBusy as &dyn AriaPropertyDefinition,
 			"aria-checked" => &AriaChecked as &dyn AriaPropertyDefinition,
 			"aria-colcount" => &AriaColcount as &dyn AriaPropertyDefinition,
@@ -361,48 +355,34 @@ impl AriaProperties {
 			"aria-colspan" => &AriaColspan as &dyn AriaPropertyDefinition,
 			"aria-controls" => &AriaControls as &dyn AriaPropertyDefinition,
 			"aria-current" => &AriaCurrent as &dyn AriaPropertyDefinition,
-			"aria-describedby" => {
-				&AriaDescribedby as &dyn AriaPropertyDefinition
-			},
+			"aria-describedby" => &AriaDescribedby as &dyn AriaPropertyDefinition,
 			"aria-details" => &AriaDetails as &dyn AriaPropertyDefinition,
 			"aria-disabled" => &AriaDisabled as &dyn AriaPropertyDefinition,
 			"aria-dropeffect" => &AriaDropeffect as &dyn AriaPropertyDefinition,
-			"aria-errormessage" => {
-				&AriaErrormessage as &dyn AriaPropertyDefinition
-			},
+			"aria-errormessage" => &AriaErrormessage as &dyn AriaPropertyDefinition,
 			"aria-expanded" => &AriaExpanded as &dyn AriaPropertyDefinition,
 			"aria-flowto" => &AriaFlowto as &dyn AriaPropertyDefinition,
 			"aria-grabbed" => &AriaGrabbed as &dyn AriaPropertyDefinition,
 			"aria-haspopup" => &AriaHaspopup as &dyn AriaPropertyDefinition,
 			"aria-hidden" => &AriaHidden as &dyn AriaPropertyDefinition,
 			"aria-invalid" => &AriaInvalid as &dyn AriaPropertyDefinition,
-			"aria-keyshortcuts" => {
-				&AriaKeyshortcuts as &dyn AriaPropertyDefinition
-			},
+			"aria-keyshortcuts" => &AriaKeyshortcuts as &dyn AriaPropertyDefinition,
 			"aria-label" => &AriaLabel as &dyn AriaPropertyDefinition,
 			"aria-labelledby" => &AriaLabelledby as &dyn AriaPropertyDefinition,
 			"aria-level" => &AriaLevel as &dyn AriaPropertyDefinition,
 			"aria-live" => &AriaLive as &dyn AriaPropertyDefinition,
 			"aria-modal" => &AriaModal as &dyn AriaPropertyDefinition,
 			"aria-multiline" => &AriaMultiline as &dyn AriaPropertyDefinition,
-			"aria-multiselectable" => {
-				&AriaMultiselectable as &dyn AriaPropertyDefinition
-			},
-			"aria-orientation" => {
-				&AriaOrientation as &dyn AriaPropertyDefinition
-			},
+			"aria-multiselectable" => &AriaMultiselectable as &dyn AriaPropertyDefinition,
+			"aria-orientation" => &AriaOrientation as &dyn AriaPropertyDefinition,
 			"aria-owns" => &AriaOwns as &dyn AriaPropertyDefinition,
-			"aria-placeholder" => {
-				&AriaPlaceholder as &dyn AriaPropertyDefinition
-			},
+			"aria-placeholder" => &AriaPlaceholder as &dyn AriaPropertyDefinition,
 			"aria-posinset" => &AriaPosinset as &dyn AriaPropertyDefinition,
 			"aria-pressed" => &AriaPressed as &dyn AriaPropertyDefinition,
 			"aria-readonly" => &AriaReadonly as &dyn AriaPropertyDefinition,
 			"aria-relevant" => &AriaRelevant as &dyn AriaPropertyDefinition,
 			"aria-required" => &AriaRequired as &dyn AriaPropertyDefinition,
-			"aria-roledescription" => {
-				&AriaRoledescription as &dyn AriaPropertyDefinition
-			},
+			"aria-roledescription" => &AriaRoledescription as &dyn AriaPropertyDefinition,
 			"aria-rowcount" => &AriaRowcount as &dyn AriaPropertyDefinition,
 			"aria-rowindex" => &AriaRowindex as &dyn AriaPropertyDefinition,
 			"aria-rowspan" => &AriaRowspan as &dyn AriaPropertyDefinition,
@@ -444,7 +424,7 @@ pub trait AriaPropertyDefinition: Debug {
 	/// assert!(aria_current.contains_correct_value("step"));
 	/// assert!(!aria_current.contains_correct_value("something_not_allowed"));
 	/// ```
-	fn contains_correct_value(&self, input_value: &str) -> bool {
+	fn contains_correct_value(&self, input_value:&str) -> bool {
 		if input_value.is_empty() {
 			return false;
 		}
@@ -465,9 +445,7 @@ pub trait AriaPropertyDefinition: Debug {
 			},
 			AriaPropertyTypeEnum::Tokenlist => {
 				input_value.split_ascii_whitespace().all(|input_token| {
-					self.values().any(|allowed_token| {
-						allowed_token.trim() == input_token
-					})
+					self.values().any(|allowed_token| allowed_token.trim() == input_token)
 				})
 			},
 			AriaPropertyTypeEnum::Tristate => {
@@ -485,6 +463,6 @@ pub trait AriaPropertyDefinition: Debug {
 /// Whitespaces are usedd to separate two identifier in a list of identifiers.
 ///
 /// See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id#syntax
-fn is_valid_html_id(id: &str) -> bool {
+fn is_valid_html_id(id:&str) -> bool {
 	!id.is_empty() && !id.bytes().any(|b| b.is_ascii_whitespace())
 }

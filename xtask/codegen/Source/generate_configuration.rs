@@ -1,6 +1,14 @@
+use std::{collections::BTreeMap, path::Path};
+
 use biome_analyze::{
-	FixKind, GroupCategory, Queryable, RegistryVisitor, Rule, RuleCategory,
-	RuleGroup, RuleMetadata,
+	FixKind,
+	GroupCategory,
+	Queryable,
+	RegistryVisitor,
+	Rule,
+	RuleCategory,
+	RuleGroup,
+	RuleMetadata,
 };
 use biome_css_syntax::CssLanguage;
 use biome_graphql_syntax::GraphqlLanguage;
@@ -10,19 +18,17 @@ use biome_string_case::Case;
 use proc_macro2::{Ident, Literal, Span, TokenStream};
 use pulldown_cmark::{Event, Parser, Tag, TagEnd};
 use quote::quote;
-use std::collections::BTreeMap;
-use std::path::Path;
 use xtask::*;
 use xtask_codegen::{to_capitalized, update};
 
 // ======= LINT ======
 #[derive(Default)]
 struct LintRulesVisitor {
-	groups: BTreeMap<&'static str, BTreeMap<&'static str, RuleMetadata>>,
+	groups:BTreeMap<&'static str, BTreeMap<&'static str, RuleMetadata>>,
 }
 
 impl RegistryVisitor<JsLanguage> for LintRulesVisitor {
-	fn record_category<C: GroupCategory<Language = JsLanguage>>(&mut self) {
+	fn record_category<C:GroupCategory<Language = JsLanguage>>(&mut self) {
 		if matches!(C::CATEGORY, RuleCategory::Lint) {
 			C::record_groups(self);
 		}
@@ -30,11 +36,7 @@ impl RegistryVisitor<JsLanguage> for LintRulesVisitor {
 
 	fn record_rule<R>(&mut self)
 	where
-		R: Rule<
-				Options: Default,
-				Query: Queryable<Language = JsLanguage, Output: Clone>,
-			> + 'static,
-	{
+		R: Rule<Options: Default, Query: Queryable<Language = JsLanguage, Output: Clone>> + 'static, {
 		self.groups
 			.entry(<R::Group as RuleGroup>::NAME)
 			.or_default()
@@ -43,7 +45,7 @@ impl RegistryVisitor<JsLanguage> for LintRulesVisitor {
 }
 
 impl RegistryVisitor<JsonLanguage> for LintRulesVisitor {
-	fn record_category<C: GroupCategory<Language = JsonLanguage>>(&mut self) {
+	fn record_category<C:GroupCategory<Language = JsonLanguage>>(&mut self) {
 		if matches!(C::CATEGORY, RuleCategory::Lint) {
 			C::record_groups(self);
 		}
@@ -51,11 +53,8 @@ impl RegistryVisitor<JsonLanguage> for LintRulesVisitor {
 
 	fn record_rule<R>(&mut self)
 	where
-		R: Rule<
-				Options: Default,
-				Query: Queryable<Language = JsonLanguage, Output: Clone>,
-			> + 'static,
-	{
+		R: Rule<Options: Default, Query: Queryable<Language = JsonLanguage, Output: Clone>>
+			+ 'static, {
 		self.groups
 			.entry(<R::Group as RuleGroup>::NAME)
 			.or_default()
@@ -64,7 +63,7 @@ impl RegistryVisitor<JsonLanguage> for LintRulesVisitor {
 }
 
 impl RegistryVisitor<CssLanguage> for LintRulesVisitor {
-	fn record_category<C: GroupCategory<Language = CssLanguage>>(&mut self) {
+	fn record_category<C:GroupCategory<Language = CssLanguage>>(&mut self) {
 		if matches!(C::CATEGORY, RuleCategory::Lint) {
 			C::record_groups(self);
 		}
@@ -72,11 +71,8 @@ impl RegistryVisitor<CssLanguage> for LintRulesVisitor {
 
 	fn record_rule<R>(&mut self)
 	where
-		R: Rule<
-				Options: Default,
-				Query: Queryable<Language = CssLanguage, Output: Clone>,
-			> + 'static,
-	{
+		R: Rule<Options: Default, Query: Queryable<Language = CssLanguage, Output: Clone>>
+			+ 'static, {
 		self.groups
 			.entry(<R::Group as RuleGroup>::NAME)
 			.or_default()
@@ -85,9 +81,7 @@ impl RegistryVisitor<CssLanguage> for LintRulesVisitor {
 }
 
 impl RegistryVisitor<GraphqlLanguage> for LintRulesVisitor {
-	fn record_category<C: GroupCategory<Language = GraphqlLanguage>>(
-		&mut self,
-	) {
+	fn record_category<C:GroupCategory<Language = GraphqlLanguage>>(&mut self) {
 		if matches!(C::CATEGORY, RuleCategory::Lint) {
 			C::record_groups(self);
 		}
@@ -95,11 +89,8 @@ impl RegistryVisitor<GraphqlLanguage> for LintRulesVisitor {
 
 	fn record_rule<R>(&mut self)
 	where
-		R: Rule<
-				Options: Default,
-				Query: Queryable<Language = GraphqlLanguage, Output: Clone>,
-			> + 'static,
-	{
+		R: Rule<Options: Default, Query: Queryable<Language = GraphqlLanguage, Output: Clone>>
+			+ 'static, {
 		self.groups
 			.entry(<R::Group as RuleGroup>::NAME)
 			.or_default()
@@ -110,11 +101,11 @@ impl RegistryVisitor<GraphqlLanguage> for LintRulesVisitor {
 // ======= ASSISTS ======
 #[derive(Default)]
 struct AssistsRulesVisitor {
-	groups: BTreeMap<&'static str, BTreeMap<&'static str, RuleMetadata>>,
+	groups:BTreeMap<&'static str, BTreeMap<&'static str, RuleMetadata>>,
 }
 
 impl RegistryVisitor<JsLanguage> for AssistsRulesVisitor {
-	fn record_category<C: GroupCategory<Language = JsLanguage>>(&mut self) {
+	fn record_category<C:GroupCategory<Language = JsLanguage>>(&mut self) {
 		if matches!(C::CATEGORY, RuleCategory::Action) {
 			C::record_groups(self);
 		}
@@ -122,11 +113,7 @@ impl RegistryVisitor<JsLanguage> for AssistsRulesVisitor {
 
 	fn record_rule<R>(&mut self)
 	where
-		R: Rule<
-				Options: Default,
-				Query: Queryable<Language = JsLanguage, Output: Clone>,
-			> + 'static,
-	{
+		R: Rule<Options: Default, Query: Queryable<Language = JsLanguage, Output: Clone>> + 'static, {
 		self.groups
 			.entry(<R::Group as RuleGroup>::NAME)
 			.or_default()
@@ -135,7 +122,7 @@ impl RegistryVisitor<JsLanguage> for AssistsRulesVisitor {
 }
 
 impl RegistryVisitor<JsonLanguage> for AssistsRulesVisitor {
-	fn record_category<C: GroupCategory<Language = JsonLanguage>>(&mut self) {
+	fn record_category<C:GroupCategory<Language = JsonLanguage>>(&mut self) {
 		if matches!(C::CATEGORY, RuleCategory::Action) {
 			C::record_groups(self);
 		}
@@ -143,11 +130,8 @@ impl RegistryVisitor<JsonLanguage> for AssistsRulesVisitor {
 
 	fn record_rule<R>(&mut self)
 	where
-		R: Rule<
-				Options: Default,
-				Query: Queryable<Language = JsonLanguage, Output: Clone>,
-			> + 'static,
-	{
+		R: Rule<Options: Default, Query: Queryable<Language = JsonLanguage, Output: Clone>>
+			+ 'static, {
 		self.groups
 			.entry(<R::Group as RuleGroup>::NAME)
 			.or_default()
@@ -156,7 +140,7 @@ impl RegistryVisitor<JsonLanguage> for AssistsRulesVisitor {
 }
 
 impl RegistryVisitor<CssLanguage> for AssistsRulesVisitor {
-	fn record_category<C: GroupCategory<Language = CssLanguage>>(&mut self) {
+	fn record_category<C:GroupCategory<Language = CssLanguage>>(&mut self) {
 		if matches!(C::CATEGORY, RuleCategory::Action) {
 			C::record_groups(self);
 		}
@@ -164,11 +148,8 @@ impl RegistryVisitor<CssLanguage> for AssistsRulesVisitor {
 
 	fn record_rule<R>(&mut self)
 	where
-		R: Rule<
-				Options: Default,
-				Query: Queryable<Language = CssLanguage, Output: Clone>,
-			> + 'static,
-	{
+		R: Rule<Options: Default, Query: Queryable<Language = CssLanguage, Output: Clone>>
+			+ 'static, {
 		self.groups
 			.entry(<R::Group as RuleGroup>::NAME)
 			.or_default()
@@ -177,9 +158,7 @@ impl RegistryVisitor<CssLanguage> for AssistsRulesVisitor {
 }
 
 impl RegistryVisitor<GraphqlLanguage> for AssistsRulesVisitor {
-	fn record_category<C: GroupCategory<Language = GraphqlLanguage>>(
-		&mut self,
-	) {
+	fn record_category<C:GroupCategory<Language = GraphqlLanguage>>(&mut self) {
 		if matches!(C::CATEGORY, RuleCategory::Action) {
 			C::record_groups(self);
 		}
@@ -187,11 +166,8 @@ impl RegistryVisitor<GraphqlLanguage> for AssistsRulesVisitor {
 
 	fn record_rule<R>(&mut self)
 	where
-		R: Rule<
-				Options: Default,
-				Query: Queryable<Language = GraphqlLanguage, Output: Clone>,
-			> + 'static,
-	{
+		R: Rule<Options: Default, Query: Queryable<Language = GraphqlLanguage, Output: Clone>>
+			+ 'static, {
 		self.groups
 			.entry(<R::Group as RuleGroup>::NAME)
 			.or_default()
@@ -199,13 +175,11 @@ impl RegistryVisitor<GraphqlLanguage> for AssistsRulesVisitor {
 	}
 }
 
-pub(crate) fn generate_rules_configuration(mode: Mode) -> Result<()> {
-	let linter_config_root =
-		project_root().join("crates/biome_configuration/src/analyzer/linter");
+pub(crate) fn generate_rules_configuration(mode:Mode) -> Result<()> {
+	let linter_config_root = project_root().join("crates/biome_configuration/src/analyzer/linter");
 	let assists_config_root =
 		project_root().join("crates/biome_configuration/src/analyzer/assists");
-	let push_rules_directory =
-		project_root().join("crates/biome_configuration/src/generated");
+	let push_rules_directory = project_root().join("crates/biome_configuration/src/generated");
 
 	let mut lint_visitor = LintRulesVisitor::default();
 	let mut assists_visitor = AssistsRulesVisitor::default();
@@ -239,11 +213,11 @@ pub(crate) fn generate_rules_configuration(mode: Mode) -> Result<()> {
 }
 
 fn generate_for_groups(
-	groups: BTreeMap<&'static str, BTreeMap<&'static str, RuleMetadata>>,
-	root: &Path,
-	push_directory: &Path,
-	mode: &Mode,
-	kind: RuleCategory,
+	groups:BTreeMap<&'static str, BTreeMap<&'static str, RuleMetadata>>,
+	root:&Path,
+	push_directory:&Path,
+	mode:&Mode,
+	kind:RuleCategory,
 ) -> Result<()> {
 	let mut struct_groups = Vec::with_capacity(groups.len());
 	let mut group_pascal_idents = Vec::with_capacity(groups.len());
@@ -251,8 +225,7 @@ fn generate_for_groups(
 	let mut group_strings = Vec::with_capacity(groups.len());
 	let mut group_as_default_rules = Vec::with_capacity(groups.len());
 	for (group, rules) in groups {
-		let group_pascal_ident =
-			quote::format_ident!("{}", &Case::Pascal.convert(group));
+		let group_pascal_ident = quote::format_ident!("{}", &Case::Pascal.convert(group));
 		let group_ident = quote::format_ident!("{}", group);
 
 		let (global_all, global_recommended) = if group == "nursery" {
@@ -261,10 +234,7 @@ fn generate_for_groups(
 				quote! { !self.is_recommended_false() && biome_flags::is_unstable() },
 			)
 		} else {
-			(
-				quote! { self.is_all_true() },
-				quote! { !self.is_recommended_false() },
-			)
+			(quote! { self.is_all_true() }, quote! { !self.is_recommended_false() })
 		};
 		group_as_default_rules.push(if kind == RuleCategory::Lint {
 			quote! {
@@ -663,9 +633,9 @@ fn generate_for_groups(
 }
 
 fn generate_group_struct(
-	group: &str,
-	rules: &BTreeMap<&'static str, RuleMetadata>,
-	kind: RuleCategory,
+	group:&str,
+	rules:&BTreeMap<&'static str, RuleMetadata>,
+	kind:RuleCategory,
 ) -> TokenStream {
 	let mut lines_recommended_rule = Vec::new();
 	let mut lines_recommended_rule_as_filter = Vec::new();
@@ -689,11 +659,7 @@ fn generate_group_struct(
 					},
 					Event::Code(text) => {
 						// Escape `[` and `<` to obtain valid Markdown
-						docs.push_str(
-							text.replace('[', "\\[")
-								.replace('<', "\\<")
-								.as_ref(),
-						);
+						docs.push_str(text.replace('[', "\\[").replace('<', "\\<").as_ref());
 					},
 					Event::SoftBreak => {
 						docs.push(' ');
@@ -704,19 +670,23 @@ fn generate_group_struct(
 						break;
 					},
 
-					Event::Start(tag) => match tag {
-						Tag::Strong | Tag::Paragraph => {
-							continue;
-						},
+					Event::Start(tag) => {
+						match tag {
+							Tag::Strong | Tag::Paragraph => {
+								continue;
+							},
 
-						_ => panic!("Unimplemented tag {:?}", { tag }),
+							_ => panic!("Unimplemented tag {:?}", { tag }),
+						}
 					},
 
-					Event::End(tag) => match tag {
-						TagEnd::Strong | TagEnd::Paragraph => {
-							continue;
-						},
-						_ => panic!("Unimplemented tag {:?}", { tag }),
+					Event::End(tag) => {
+						match tag {
+							TagEnd::Strong | TagEnd::Paragraph => {
+								continue;
+							},
+							_ => panic!("Unimplemented tag {:?}", { tag }),
+						}
 					},
 
 					_ => {
@@ -728,8 +698,7 @@ fn generate_group_struct(
 		};
 
 		let rule_position = Literal::u8_unsuffixed(index as u8);
-		let rule_identifier =
-			quote::format_ident!("{}", Case::Snake.convert(rule));
+		let rule_identifier = quote::format_ident!("{}", Case::Snake.convert(rule));
 		let rule_config_type = quote::format_ident!(
 			"{}",
 			if metadata.fix_kind != FixKind::None {
@@ -757,17 +726,25 @@ fn generate_group_struct(
 			 #rule
 		});
 		let rule_option_type = match metadata.language {
-			"css" => quote! {
-				biome_css_analyze::options::#rule_name
+			"css" => {
+				quote! {
+					biome_css_analyze::options::#rule_name
+				}
 			},
-			"graphql" => quote! {
-				biome_graphql_analyze::options::#rule_name
+			"graphql" => {
+				quote! {
+					biome_graphql_analyze::options::#rule_name
+				}
 			},
-			"json" => quote! {
-				biome_json_analyze::options::#rule_name
+			"json" => {
+				quote! {
+					biome_json_analyze::options::#rule_name
+				}
 			},
-			"ts" | "js" | "jsx" | "tsx" => quote! {
-				biome_js_analyze::options::#rule_name
+			"ts" | "js" | "jsx" | "tsx" => {
+				quote! {
+					biome_js_analyze::options::#rule_name
+				}
 			},
 			_ => panic!("Language not supported"),
 		};
@@ -811,13 +788,12 @@ fn generate_group_struct(
 			});
 		} else {
 			get_rule_configuration_line.push(quote! {
-                #rule => self.#rule_identifier.as_ref().map(|conf| (conf.level(), conf.get_options()))
-            });
+				#rule => self.#rule_identifier.as_ref().map(|conf| (conf.level(), conf.get_options()))
+			});
 		}
 	}
 
-	let group_pascal_ident =
-		Ident::new(&to_capitalized(group), Span::call_site());
+	let group_pascal_ident = Ident::new(&to_capitalized(group), Span::call_site());
 
 	let get_configuration_function = if kind == RuleCategory::Action {
 		quote! {

@@ -1,14 +1,22 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::{
-	AnyCssDimension, CssFunction, CssGenericProperty, CssQueryFeaturePlain, CssSyntaxKind,
+	AnyCssDimension,
+	CssFunction,
+	CssGenericProperty,
+	CssQueryFeaturePlain,
+	CssSyntaxKind,
 };
 use biome_rowan::{SyntaxNodeCast, TextRange};
 
-const RESOLUTION_MEDIA_FEATURE_NAMES: [&str; 3] =
-	["resolution", "min-resolution", "max-resolution"];
+const RESOLUTION_MEDIA_FEATURE_NAMES:[&str; 3] = ["resolution", "min-resolution", "max-resolution"];
 
 declare_lint_rule! {
 	/// Disallow unknown CSS units.
@@ -68,17 +76,17 @@ declare_lint_rule! {
 }
 
 pub struct NoUnknownUnitState {
-	unit: String,
-	span: TextRange,
+	unit:String,
+	span:TextRange,
 }
 
 impl Rule for NoUnknownUnit {
-	type Query = Ast<AnyCssDimension>;
-	type State = NoUnknownUnitState;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<AnyCssDimension>;
+	type Signals = Option<Self::State>;
+	type State = NoUnknownUnitState;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 
 		match node {
@@ -86,14 +94,16 @@ impl Rule for NoUnknownUnit {
 				let unit_token = dimension.unit_token().ok()?;
 				let unit = unit_token.text_trimmed().to_string();
 
-				Some(NoUnknownUnitState { unit, span: unit_token.text_trimmed_range() })
-			}
+				Some(NoUnknownUnitState { unit, span:unit_token.text_trimmed_range() })
+			},
 			AnyCssDimension::CssRegularDimension(dimension) => {
 				let unit_token = dimension.unit_token().ok()?;
 				let unit = unit_token.text_trimmed().to_string();
 
-				// The `x` unit is parsed as `CssRegularDimension`, but it is used for describing resolutions.
-				// This check is to disallow the use of the `x` unit outside this specific context.
+				// The `x` unit is parsed as `CssRegularDimension`, but it is
+				// used for describing resolutions. This check is to
+				// disallow the use of the `x` unit outside this specific
+				// context.
 				if unit == "x" {
 					let mut allow_x = false;
 
@@ -113,7 +123,7 @@ impl Rule for NoUnknownUnit {
 									allow_x = true;
 									break;
 								}
-							}
+							},
 							CssSyntaxKind::CSS_GENERIC_PROPERTY => {
 								let property_name = ancestor
 									.cast::<CssGenericProperty>()?
@@ -129,7 +139,7 @@ impl Rule for NoUnknownUnit {
 									allow_x = true;
 									break;
 								}
-							}
+							},
 							CssSyntaxKind::CSS_QUERY_FEATURE_PLAIN => {
 								let feature_name = ancestor
 									.cast::<CssQueryFeaturePlain>()?
@@ -144,26 +154,26 @@ impl Rule for NoUnknownUnit {
 									allow_x = true;
 									break;
 								}
-							}
-							_ => {}
+							},
+							_ => {},
 						}
 					}
 
 					if !allow_x {
 						return Some(NoUnknownUnitState {
 							unit,
-							span: unit_token.text_trimmed_range(),
+							span:unit_token.text_trimmed_range(),
 						});
 					}
 				}
 
 				None
-			}
+			},
 			_ => None,
 		}
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		Some(
             RuleDiagnostic::new(
                 rule_category!(),

@@ -50,23 +50,23 @@ declare_lint_rule! {
 }
 
 impl Rule for UseTopLevelRegex {
-	type Query = Ast<JsRegexLiteralExpression>;
-	type State = ();
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsRegexLiteralExpression>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let regex = ctx.query();
-		// Ignore regular expressions with the g and/or y flags, as calling test/exec has side effects.
-		// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex#avoiding_side_effects
+		// Ignore regular expressions with the g and/or y flags, as calling
+		// test/exec has side effects. https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex#avoiding_side_effects
 		let (_, flags) = regex.decompose().ok()?;
 
 		let flags = flags.text();
 		if flags.contains('g') || flags.contains('y') {
 			return None;
 		}
-		let found_all_allowed =
-			regex.syntax().ancestors().all(|node| match AnyJsControlFlowRoot::try_cast(node) {
+		let found_all_allowed = regex.syntax().ancestors().all(|node| {
+			match AnyJsControlFlowRoot::try_cast(node) {
 				Ok(node) => {
 					matches!(
 						node,
@@ -75,7 +75,7 @@ impl Rule for UseTopLevelRegex {
 							| AnyJsControlFlowRoot::JsModule(_)
 							| AnyJsControlFlowRoot::JsScript(_)
 					)
-				}
+				},
 
 				Err(node) => {
 					if let Some(node) = JsPropertyClassMember::cast(node) {
@@ -85,16 +85,13 @@ impl Rule for UseTopLevelRegex {
 					} else {
 						true
 					}
-				}
-			});
-		if found_all_allowed {
-			None
-		} else {
-			Some(())
-		}
+				},
+			}
+		});
+		if found_all_allowed { None } else { Some(()) }
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, _state:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 		Some(
             RuleDiagnostic::new(

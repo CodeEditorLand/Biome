@@ -27,7 +27,7 @@ pub(crate) enum CombinatorKind {
 }
 
 impl CombinatorKind {
-	pub fn new(value: &TokenKind) -> Self {
+	pub fn new(value:&TokenKind) -> Self {
 		match value {
 			TokenKind::Pipe => CombinatorKind::Pipe,
 			TokenKind::DoublePipe => CombinatorKind::DoublePipe,
@@ -39,18 +39,18 @@ impl CombinatorKind {
 
 #[derive(Debug)]
 pub(crate) struct Token {
-	pub(crate) kind: TokenKind,
-	pub(crate) loc: Location,
+	pub(crate) kind:TokenKind,
+	pub(crate) loc:Location,
 }
 
 #[derive(Copy, Clone, Default, Debug)]
 pub(crate) struct Location {
-	pub(crate) line: usize,
-	pub(crate) column: usize,
+	pub(crate) line:usize,
+	pub(crate) column:usize,
 }
 
 impl Location {
-	fn advance(&mut self, text: &str) {
+	fn advance(&mut self, text:&str) {
 		match text.rfind('\n') {
 			Some(idx) => {
 				self.line += text.bytes().filter(|byte| *byte == b'\n').count();
@@ -61,7 +61,7 @@ impl Location {
 	}
 }
 
-pub(crate) fn tokenize(mut input: &str) -> Result<Vec<Token>> {
+pub(crate) fn tokenize(mut input:&str) -> Result<Vec<Token>> {
 	let mut res = Vec::new();
 	let mut loc = Location::default();
 	while !input.is_empty() {
@@ -83,17 +83,15 @@ pub(crate) fn tokenize(mut input: &str) -> Result<Vec<Token>> {
 	Ok(res)
 }
 
-fn skip_ws(input: &mut &str) {
-	*input = input.trim_start_matches(is_whitespace)
-}
-fn skip_comment(input: &mut &str) {
+fn skip_ws(input:&mut &str) { *input = input.trim_start_matches(is_whitespace) }
+fn skip_comment(input:&mut &str) {
 	if input.starts_with("//") {
 		let idx = input.find('\n').map_or(input.len(), |it| it + 1);
 		*input = &input[idx..]
 	}
 }
 
-fn advance(input: &mut &str) -> Result<TokenKind> {
+fn advance(input:&mut &str) -> Result<TokenKind> {
 	let mut chars = input.chars();
 	let c = chars.next().unwrap();
 	let res = match c {
@@ -102,19 +100,23 @@ fn advance(input: &mut &str) -> Result<TokenKind> {
 		'?' => TokenKind::QMark,
 		'(' => TokenKind::LParen,
 		')' => TokenKind::RParen,
-		'|' => match chars.clone().next() {
-			Some('|') => {
-				chars.next();
-				TokenKind::DoublePipe
-			},
-			_ => TokenKind::Pipe,
+		'|' => {
+			match chars.clone().next() {
+				Some('|') => {
+					chars.next();
+					TokenKind::DoublePipe
+				},
+				_ => TokenKind::Pipe,
+			}
 		},
-		'&' => match chars.clone().next() {
-			Some('&') => {
-				chars.next();
-				TokenKind::DoubleAmpersand
-			},
-			_ => bail!("unexpected `&`, did you mean to write `&&`?"),
+		'&' => {
+			match chars.clone().next() {
+				Some('&') => {
+					chars.next();
+					TokenKind::DoubleAmpersand
+				},
+				_ => bail!("unexpected `&`, did you mean to write `&&`?"),
+			}
 		},
 		':' => TokenKind::Colon,
 		'\'' => {
@@ -122,9 +124,11 @@ fn advance(input: &mut &str) -> Result<TokenKind> {
 			loop {
 				match chars.next() {
 					None => bail!("unclosed token literal"),
-					Some('\\') => match chars.next() {
-						Some(c) if is_escapable(c) => buf.push(c),
-						_ => bail!("invalid escape in token literal"),
+					Some('\\') => {
+						match chars.next() {
+							Some(c) if is_escapable(c) => buf.push(c),
+							_ => bail!("invalid escape in token literal"),
+						}
 					},
 					Some('\'') => break,
 					Some(c) => buf.push(c),
@@ -154,12 +158,6 @@ fn advance(input: &mut &str) -> Result<TokenKind> {
 	Ok(res)
 }
 
-fn is_escapable(c: char) -> bool {
-	matches!(c, '\\' | '\'')
-}
-fn is_whitespace(c: char) -> bool {
-	matches!(c, ' ' | '\t' | '\n')
-}
-fn is_ident_char(c: char) -> bool {
-	matches!(c, 'a'..='z' | 'A'..='Z' | '_' | '0'..='9')
-}
+fn is_escapable(c:char) -> bool { matches!(c, '\\' | '\'') }
+fn is_whitespace(c:char) -> bool { matches!(c, ' ' | '\t' | '\n') }
+fn is_ident_char(c:char) -> bool { matches!(c, 'a'..='z' | 'A'..='Z' | '_' | '0'..='9') }

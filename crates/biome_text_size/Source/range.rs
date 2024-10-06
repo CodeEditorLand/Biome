@@ -1,17 +1,13 @@
+use std::{
+	cmp,
+	convert::TryFrom,
+	fmt,
+	ops::{Add, AddAssign, Bound, Index, IndexMut, Range, RangeBounds, Sub, SubAssign},
+};
+
 use cmp::Ordering;
 
-use {
-	crate::TextSize,
-	std::{
-		cmp,
-		convert::TryFrom,
-		fmt,
-		ops::{
-			Add, AddAssign, Bound, Index, IndexMut, Range, RangeBounds, Sub,
-			SubAssign,
-		},
-	},
-};
+use crate::TextSize;
 
 /// A range in text, represented as a pair of [`TextSize`][struct@TextSize].
 ///
@@ -19,24 +15,22 @@ use {
 #[derive(Default, Copy, Clone, Eq, PartialEq, Hash)]
 pub struct TextRange {
 	// Invariant: start <= end
-	start: TextSize,
-	end: TextSize,
+	start:TextSize,
+	end:TextSize,
 }
 
 impl fmt::Debug for TextRange {
-	fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
+	fn fmt(&self, f:&mut fmt::Formatter<'_>) -> fmt::Result {
 		write!(f, "{}..{}", self.start().raw, self.end().raw)
 	}
 }
 
 impl PartialOrd for TextRange {
-	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-		Some(self.cmp(other))
-	}
+	fn partial_cmp(&self, other:&Self) -> Option<Ordering> { Some(self.cmp(other)) }
 }
 
 impl Ord for TextRange {
-	fn cmp(&self, other: &Self) -> Ordering {
+	fn cmp(&self, other:&Self) -> Ordering {
 		match self.start.cmp(&other.start) {
 			Ordering::Less => Ordering::Less,
 			Ordering::Greater => Ordering::Greater,
@@ -46,7 +40,8 @@ impl Ord for TextRange {
 }
 
 impl TextRange {
-	/// Creates a new `TextRange` with the given `start` and `end` (`start..end`).
+	/// Creates a new `TextRange` with the given `start` and `end`
+	/// (`start..end`).
 	///
 	/// # Panics
 	///
@@ -65,12 +60,13 @@ impl TextRange {
 	/// assert_eq!(range.len(), end - start);
 	/// ```
 	#[inline]
-	pub const fn new(start: TextSize, end: TextSize) -> TextRange {
+	pub const fn new(start:TextSize, end:TextSize) -> TextRange {
 		assert!(start.raw <= end.raw);
 		TextRange { start, end }
 	}
 
-	/// Create a new `TextRange` with the given `offset` and `len` (`offset..offset + len`).
+	/// Create a new `TextRange` with the given `offset` and `len`
+	/// (`offset..offset + len`).
 	///
 	/// # Examples
 	///
@@ -86,8 +82,8 @@ impl TextRange {
 	/// assert_eq!(&text[range], "23456")
 	/// ```
 	#[inline]
-	pub const fn at(offset: TextSize, len: TextSize) -> TextRange {
-		TextRange { start: offset, end: TextSize { raw: offset.raw + len.raw } }
+	pub const fn at(offset:TextSize, len:TextSize) -> TextRange {
+		TextRange { start:offset, end:TextSize { raw:offset.raw + len.raw } }
 	}
 
 	/// Create a zero-length range at the specified offset (`offset..offset`).
@@ -96,16 +92,14 @@ impl TextRange {
 	///
 	/// ```rust
 	/// # use biome_text_size::*;
-	/// let point: TextSize;
+	/// let point:TextSize;
 	/// # point = TextSize::from(3);
 	/// let range = TextRange::empty(point);
 	/// assert!(range.is_empty());
 	/// assert_eq!(range, TextRange::new(point, point));
 	/// ```
 	#[inline]
-	pub const fn empty(offset: TextSize) -> TextRange {
-		TextRange { start: offset, end: offset }
-	}
+	pub const fn empty(offset:TextSize) -> TextRange { TextRange { start:offset, end:offset } }
 
 	/// Create a range up to the given end (`..end`).
 	///
@@ -113,7 +107,7 @@ impl TextRange {
 	///
 	/// ```rust
 	/// # use biome_text_size::*;
-	/// let point: TextSize;
+	/// let point:TextSize;
 	/// # point = TextSize::from(12);
 	/// let range = TextRange::up_to(point);
 	///
@@ -122,30 +116,24 @@ impl TextRange {
 	/// assert_eq!(range, TextRange::at(0.into(), point));
 	/// ```
 	#[inline]
-	pub const fn up_to(end: TextSize) -> TextRange {
-		TextRange { start: TextSize { raw: 0 }, end }
-	}
+	pub const fn up_to(end:TextSize) -> TextRange { TextRange { start:TextSize { raw:0 }, end } }
 }
 
 /// Identity methods.
 impl TextRange {
 	/// The start point of this range.
 	#[inline]
-	pub const fn start(self) -> TextSize {
-		self.start
-	}
+	pub const fn start(self) -> TextSize { self.start }
 
 	/// The end point of this range.
 	#[inline]
-	pub const fn end(self) -> TextSize {
-		self.end
-	}
+	pub const fn end(self) -> TextSize { self.end }
 
 	/// The size of this range.
 	#[inline]
 	pub const fn len(self) -> TextSize {
 		// HACK for const fn: math on primitives only
-		TextSize { raw: self.end().raw - self.start().raw }
+		TextSize { raw:self.end().raw - self.start().raw }
 	}
 
 	/// Check if this range is empty.
@@ -166,16 +154,14 @@ impl TextRange {
 	///
 	/// ```rust
 	/// # use biome_text_size::*;
-	/// let (start, end): (TextSize, TextSize);
+	/// let (start, end):(TextSize, TextSize);
 	/// # start = 10.into(); end = 20.into();
 	/// let range = TextRange::new(start, end);
 	/// assert!(range.contains(start));
 	/// assert!(!range.contains(end));
 	/// ```
 	#[inline]
-	pub fn contains(self, offset: TextSize) -> bool {
-		self.start() <= offset && offset < self.end()
-	}
+	pub fn contains(self, offset:TextSize) -> bool { self.start() <= offset && offset < self.end() }
 
 	/// Check if this range contains an offset.
 	///
@@ -185,14 +171,14 @@ impl TextRange {
 	///
 	/// ```rust
 	/// # use biome_text_size::*;
-	/// let (start, end): (TextSize, TextSize);
+	/// let (start, end):(TextSize, TextSize);
 	/// # start = 10.into(); end = 20.into();
 	/// let range = TextRange::new(start, end);
 	/// assert!(range.contains_inclusive(start));
 	/// assert!(range.contains_inclusive(end));
 	/// ```
 	#[inline]
-	pub fn contains_inclusive(self, offset: TextSize) -> bool {
+	pub fn contains_inclusive(self, offset:TextSize) -> bool {
 		self.start() <= offset && offset <= self.end()
 	}
 
@@ -212,7 +198,7 @@ impl TextRange {
 	/// assert!(smaller.contains_range(smaller));
 	/// ```
 	#[inline]
-	pub fn contains_range(self, other: TextRange) -> bool {
+	pub fn contains_range(self, other:TextRange) -> bool {
 		self.start() <= other.start() && other.end() <= self.end()
 	}
 
@@ -224,15 +210,15 @@ impl TextRange {
 	/// ```rust
 	/// # use biome_text_size::*;
 	/// assert_eq!(
-	///     TextRange::intersect(
-	///         TextRange::new(0.into(), 10.into()),
-	///         TextRange::new(5.into(), 15.into()),
-	///     ),
-	///     Some(TextRange::new(5.into(), 10.into())),
+	/// 	TextRange::intersect(
+	/// 		TextRange::new(0.into(), 10.into()),
+	/// 		TextRange::new(5.into(), 15.into()),
+	/// 	),
+	/// 	Some(TextRange::new(5.into(), 10.into())),
 	/// );
 	/// ```
 	#[inline]
-	pub fn intersect(self, other: TextRange) -> Option<TextRange> {
+	pub fn intersect(self, other:TextRange) -> Option<TextRange> {
 		let start = cmp::max(self.start(), other.start());
 		let end = cmp::min(self.end(), other.end());
 		if end < start {
@@ -248,15 +234,12 @@ impl TextRange {
 	/// ```rust
 	/// # use biome_text_size::*;
 	/// assert_eq!(
-	///     TextRange::cover(
-	///         TextRange::new(0.into(), 5.into()),
-	///         TextRange::new(15.into(), 20.into()),
-	///     ),
-	///     TextRange::new(0.into(), 20.into()),
+	/// 	TextRange::cover(TextRange::new(0.into(), 5.into()), TextRange::new(15.into(), 20.into()),),
+	/// 	TextRange::new(0.into(), 20.into()),
 	/// );
 	/// ```
 	#[inline]
-	pub fn cover(self, other: TextRange) -> TextRange {
+	pub fn cover(self, other:TextRange) -> TextRange {
 		let start = cmp::min(self.start(), other.start());
 		let end = cmp::max(self.end(), other.end());
 		TextRange::new(start, end)
@@ -269,14 +252,12 @@ impl TextRange {
 	/// ```rust
 	/// # use biome_text_size::*;
 	/// assert_eq!(
-	///     TextRange::empty(0.into()).cover_offset(20.into()),
-	///     TextRange::new(0.into(), 20.into()),
+	/// 	TextRange::empty(0.into()).cover_offset(20.into()),
+	/// 	TextRange::new(0.into(), 20.into()),
 	/// )
 	/// ```
 	#[inline]
-	pub fn cover_offset(self, offset: TextSize) -> TextRange {
-		self.cover(TextRange::empty(offset))
-	}
+	pub fn cover_offset(self, offset:TextSize) -> TextRange { self.cover(TextRange::empty(offset)) }
 
 	/// Add an offset to this range.
 	///
@@ -287,11 +268,8 @@ impl TextRange {
 	/// The unchecked version (`Add::add`) will _always_ panic on overflow,
 	/// in contrast to primitive integers, which check in debug mode only.
 	#[inline]
-	pub fn checked_add(self, offset: TextSize) -> Option<TextRange> {
-		Some(TextRange {
-			start: self.start.checked_add(offset)?,
-			end: self.end.checked_add(offset)?,
-		})
+	pub fn checked_add(self, offset:TextSize) -> Option<TextRange> {
+		Some(TextRange { start:self.start.checked_add(offset)?, end:self.end.checked_add(offset)? })
 	}
 
 	/// Subtract an offset from this range.
@@ -303,11 +281,8 @@ impl TextRange {
 	/// The unchecked version (`Sub::sub`) will _always_ panic on overflow,
 	/// in contrast to primitive integers, which check in debug mode only.
 	#[inline]
-	pub fn checked_sub(self, offset: TextSize) -> Option<TextRange> {
-		Some(TextRange {
-			start: self.start.checked_sub(offset)?,
-			end: self.end.checked_sub(offset)?,
-		})
+	pub fn checked_sub(self, offset:TextSize) -> Option<TextRange> {
+		Some(TextRange { start:self.start.checked_sub(offset)?, end:self.end.checked_sub(offset)? })
 	}
 
 	/// Relative order of the two ranges (overlapping ranges are considered
@@ -344,7 +319,7 @@ impl TextRange {
 	/// assert_eq!(a.ordering(b), Ordering::Greater);
 	/// ```
 	#[inline]
-	pub fn ordering(self, other: TextRange) -> Ordering {
+	pub fn ordering(self, other:TextRange) -> Ordering {
 		if self.end() <= other.start() {
 			Ordering::Less
 		} else if other.end() <= self.start() {
@@ -366,10 +341,13 @@ impl TextRange {
 	/// use biome_text_size::{TextRange, TextSize};
 	///
 	/// let range = TextRange::new(TextSize::from(5), TextSize::from(10));
-	/// assert_eq!(range.sub_start(TextSize::from(2)), TextRange::new(TextSize::from(3), TextSize::from(10)));
+	/// assert_eq!(
+	/// 	range.sub_start(TextSize::from(2)),
+	/// 	TextRange::new(TextSize::from(3), TextSize::from(10))
+	/// );
 	/// ```
 	#[inline]
-	pub fn sub_start(&self, amount: TextSize) -> TextRange {
+	pub fn sub_start(&self, amount:TextSize) -> TextRange {
 		TextRange::new(self.start() - amount, self.end())
 	}
 
@@ -384,10 +362,13 @@ impl TextRange {
 	/// use biome_text_size::{TextRange, TextSize};
 	///
 	/// let range = TextRange::new(TextSize::from(5), TextSize::from(10));
-	/// assert_eq!(range.add_start(TextSize::from(3)), TextRange::new(TextSize::from(8), TextSize::from(10)));
+	/// assert_eq!(
+	/// 	range.add_start(TextSize::from(3)),
+	/// 	TextRange::new(TextSize::from(8), TextSize::from(10))
+	/// );
 	/// ```
 	#[inline]
-	pub fn add_start(&self, amount: TextSize) -> TextRange {
+	pub fn add_start(&self, amount:TextSize) -> TextRange {
 		TextRange::new(self.start() + amount, self.end())
 	}
 
@@ -403,10 +384,13 @@ impl TextRange {
 	/// use biome_text_size::{TextRange, TextSize};
 	///
 	/// let range = TextRange::new(TextSize::from(5), TextSize::from(10));
-	/// assert_eq!(range.sub_end(TextSize::from(2)), TextRange::new(TextSize::from(5), TextSize::from(8)));
+	/// assert_eq!(
+	/// 	range.sub_end(TextSize::from(2)),
+	/// 	TextRange::new(TextSize::from(5), TextSize::from(8))
+	/// );
 	/// ```
 	#[inline]
-	pub fn sub_end(&self, amount: TextSize) -> TextRange {
+	pub fn sub_end(&self, amount:TextSize) -> TextRange {
 		TextRange::new(self.start(), self.end() - amount)
 	}
 
@@ -422,52 +406,45 @@ impl TextRange {
 	/// use biome_text_size::{TextRange, TextSize};
 	///
 	/// let range = TextRange::new(TextSize::from(5), TextSize::from(10));
-	/// assert_eq!(range.add_end(TextSize::from(2)), TextRange::new(TextSize::from(5), TextSize::from(12)));
+	/// assert_eq!(
+	/// 	range.add_end(TextSize::from(2)),
+	/// 	TextRange::new(TextSize::from(5), TextSize::from(12))
+	/// );
 	/// ```
 	#[inline]
-	pub fn add_end(&self, amount: TextSize) -> TextRange {
+	pub fn add_end(&self, amount:TextSize) -> TextRange {
 		TextRange::new(self.start(), self.end() + amount)
 	}
 }
 
 impl Index<TextRange> for str {
 	type Output = str;
+
 	#[inline]
-	fn index(&self, index: TextRange) -> &str {
-		&self[Range::<usize>::from(index)]
-	}
+	fn index(&self, index:TextRange) -> &str { &self[Range::<usize>::from(index)] }
 }
 
 impl Index<TextRange> for String {
 	type Output = str;
+
 	#[inline]
-	fn index(&self, index: TextRange) -> &str {
-		&self[Range::<usize>::from(index)]
-	}
+	fn index(&self, index:TextRange) -> &str { &self[Range::<usize>::from(index)] }
 }
 
 impl IndexMut<TextRange> for str {
 	#[inline]
-	fn index_mut(&mut self, index: TextRange) -> &mut str {
-		&mut self[Range::<usize>::from(index)]
-	}
+	fn index_mut(&mut self, index:TextRange) -> &mut str { &mut self[Range::<usize>::from(index)] }
 }
 
 impl IndexMut<TextRange> for String {
 	#[inline]
-	fn index_mut(&mut self, index: TextRange) -> &mut str {
-		&mut self[Range::<usize>::from(index)]
-	}
+	fn index_mut(&mut self, index:TextRange) -> &mut str { &mut self[Range::<usize>::from(index)] }
 }
 
 impl RangeBounds<TextSize> for TextRange {
-	fn start_bound(&self) -> Bound<&TextSize> {
-		Bound::Included(&self.start)
-	}
+	fn start_bound(&self) -> Bound<&TextSize> { Bound::Included(&self.start) }
 
-	fn end_bound(&self) -> Bound<&TextSize> {
-		Bound::Excluded(&self.end)
-	}
+	fn end_bound(&self) -> Bound<&TextSize> { Bound::Excluded(&self.end) }
 }
 
 impl<T> From<TextRange> for Range<T>
@@ -475,9 +452,7 @@ where
 	T: From<TextSize>,
 {
 	#[inline]
-	fn from(r: TextRange) -> Self {
-		r.start().into()..r.end().into()
-	}
+	fn from(r:TextRange) -> Self { r.start().into()..r.end().into() }
 }
 
 macro_rules! ops {
@@ -504,16 +479,18 @@ macro_rules! ops {
 
 impl Add<TextSize> for TextRange {
 	type Output = TextRange;
+
 	#[inline]
-	fn add(self, offset: TextSize) -> TextRange {
+	fn add(self, offset:TextSize) -> TextRange {
 		self.checked_add(offset).expect("TextRange +offset overflowed")
 	}
 }
 
 impl Sub<TextSize> for TextRange {
 	type Output = TextRange;
+
 	#[inline]
-	fn sub(self, offset: TextSize) -> TextRange {
+	fn sub(self, offset:TextSize) -> TextRange {
 		self.checked_sub(offset).expect("TextRange -offset overflowed")
 	}
 }
@@ -526,9 +503,7 @@ where
 	TextRange: Add<A, Output = TextRange>,
 {
 	#[inline]
-	fn add_assign(&mut self, rhs: A) {
-		*self = *self + rhs
-	}
+	fn add_assign(&mut self, rhs:A) { *self = *self + rhs }
 }
 
 impl<S> SubAssign<S> for TextRange
@@ -536,15 +511,14 @@ where
 	TextRange: Sub<S, Output = TextRange>,
 {
 	#[inline]
-	fn sub_assign(&mut self, rhs: S) {
-		*self = *self - rhs
-	}
+	fn sub_assign(&mut self, rhs:S) { *self = *self - rhs }
 }
 
 impl TryFrom<(usize, usize)> for TextRange {
 	type Error = std::num::TryFromIntError;
+
 	#[inline]
-	fn try_from((start, end): (usize, usize)) -> Result<Self, Self::Error> {
+	fn try_from((start, end):(usize, usize)) -> Result<Self, Self::Error> {
 		Ok(TextRange::new(TextSize::try_from(start)?, TextSize::try_from(end)?))
 	}
 }

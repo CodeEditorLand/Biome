@@ -3,60 +3,67 @@ pub mod options;
 mod registry;
 mod suppression_action;
 
-pub use crate::registry::visit_registry;
-use crate::suppression_action::GraphqlSuppressionAction;
+use std::{ops::Deref, sync::LazyLock};
+
 use biome_analyze::{
-	AnalysisFilter, AnalyzerOptions, AnalyzerSignal, ControlFlow, LanguageRoot,
-	MatchQueryParams, MetadataRegistry, RuleRegistry, SuppressionKind,
+	AnalysisFilter,
+	AnalyzerOptions,
+	AnalyzerSignal,
+	ControlFlow,
+	LanguageRoot,
+	MatchQueryParams,
+	MetadataRegistry,
+	RuleRegistry,
+	SuppressionKind,
 };
 use biome_diagnostics::{category, Error};
 use biome_graphql_syntax::GraphqlLanguage;
 use biome_suppression::{parse_suppression_comment, SuppressionDiagnostic};
-use std::ops::Deref;
-use std::sync::LazyLock;
 
-pub static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
+pub use crate::registry::visit_registry;
+use crate::suppression_action::GraphqlSuppressionAction;
+
+pub static METADATA:LazyLock<MetadataRegistry> = LazyLock::new(|| {
 	let mut metadata = MetadataRegistry::default();
 	visit_registry(&mut metadata);
 	metadata
 });
 
-/// Run the analyzer on the provided `root`: this process will use the given `filter`
-/// to selectively restrict analysis to specific rules / a specific source range,
-/// then call `emit_signal` when an analysis rule emits a diagnostic or action
+/// Run the analyzer on the provided `root`: this process will use the given
+/// `filter` to selectively restrict analysis to specific rules / a specific
+/// source range, then call `emit_signal` when an analysis rule emits a
+/// diagnostic or action
 pub fn analyze<'a, F, B>(
-	root: &LanguageRoot<GraphqlLanguage>,
-	filter: AnalysisFilter,
-	options: &'a AnalyzerOptions,
-	emit_signal: F,
+	root:&LanguageRoot<GraphqlLanguage>,
+	filter:AnalysisFilter,
+	options:&'a AnalyzerOptions,
+	emit_signal:F,
 ) -> (Option<B>, Vec<Error>)
 where
 	F: FnMut(&dyn AnalyzerSignal<GraphqlLanguage>) -> ControlFlow<B> + 'a,
-	B: 'a,
-{
+	B: 'a, {
 	analyze_with_inspect_matcher(root, filter, |_| {}, options, emit_signal)
 }
 
-/// Run the analyzer on the provided `root`: this process will use the given `filter`
-/// to selectively restrict analysis to specific rules / a specific source range,
-/// then call `emit_signal` when an analysis rule emits a diagnostic or action.
-/// Additionally, this function takes a `inspect_matcher` function that can be
-/// used to inspect the "query matches" emitted by the analyzer before they are
-/// processed by the lint rules registry
+/// Run the analyzer on the provided `root`: this process will use the given
+/// `filter` to selectively restrict analysis to specific rules / a specific
+/// source range, then call `emit_signal` when an analysis rule emits a
+/// diagnostic or action. Additionally, this function takes a `inspect_matcher`
+/// function that can be used to inspect the "query matches" emitted by the
+/// analyzer before they are processed by the lint rules registry
 pub fn analyze_with_inspect_matcher<'a, V, F, B>(
-	root: &LanguageRoot<GraphqlLanguage>,
-	filter: AnalysisFilter,
-	inspect_matcher: V,
-	options: &'a AnalyzerOptions,
-	mut emit_signal: F,
+	root:&LanguageRoot<GraphqlLanguage>,
+	filter:AnalysisFilter,
+	inspect_matcher:V,
+	options:&'a AnalyzerOptions,
+	mut emit_signal:F,
 ) -> (Option<B>, Vec<Error>)
 where
 	V: FnMut(&MatchQueryParams<GraphqlLanguage>) + 'a,
 	F: FnMut(&dyn AnalyzerSignal<GraphqlLanguage>) -> ControlFlow<B> + 'a,
-	B: 'a,
-{
+	B: 'a, {
 	fn parse_linter_suppression_comment(
-		text: &str,
+		text:&str,
 	) -> Vec<Result<SuppressionKind, SuppressionDiagnostic>> {
 		let mut result = Vec::new();
 
@@ -117,8 +124,8 @@ where
 
 	(
 		analyzer.run(biome_analyze::AnalyzerContext {
-			root: root.clone(),
-			range: filter.range,
+			root:root.clone(),
+			range:filter.range,
 			services,
 			options,
 		}),
@@ -128,24 +135,30 @@ where
 
 #[cfg(test)]
 mod tests {
-	use crate::analyze;
-	use biome_analyze::{
-		AnalysisFilter, AnalyzerOptions, ControlFlow, Never, RuleFilter,
+	use std::slice;
+
+	use biome_analyze::{AnalysisFilter, AnalyzerOptions, ControlFlow, Never, RuleFilter};
+	use biome_console::{
+		fmt::{Formatter, Termcolor},
+		markup,
+		Markup,
 	};
-	use biome_console::fmt::{Formatter, Termcolor};
-	use biome_console::{markup, Markup};
-	use biome_diagnostics::termcolor::NoColor;
 	use biome_diagnostics::{
-		Diagnostic, DiagnosticExt, PrintDiagnostic, Severity,
+		termcolor::NoColor,
+		Diagnostic,
+		DiagnosticExt,
+		PrintDiagnostic,
+		Severity,
 	};
 	use biome_graphql_parser::parse_graphql;
 	use biome_rowan::TextRange;
-	use std::slice;
+
+	use crate::analyze;
 
 	#[ignore]
 	#[test]
 	fn quick_test() {
-		fn markup_to_string(markup: Markup) -> String {
+		fn markup_to_string(markup:Markup) -> String {
 			let mut buffer = Vec::new();
 			let mut write = Termcolor(NoColor::new(&mut buffer));
 			let mut fmt = Formatter::new(&mut write);
@@ -154,17 +167,17 @@ mod tests {
 			String::from_utf8(buffer).unwrap()
 		}
 
-		const SOURCE: &str = r#" "#;
+		const SOURCE:&str = r#" "#;
 
 		let parsed = parse_graphql(SOURCE);
 
-		let mut error_ranges: Vec<TextRange> = Vec::new();
+		let mut error_ranges:Vec<TextRange> = Vec::new();
 		let rule_filter = RuleFilter::Rule("nursery", "noUnknownPseudoClass");
 		let options = AnalyzerOptions::default();
 		analyze(
 			&parsed.tree(),
 			AnalysisFilter {
-				enabled_rules: Some(slice::from_ref(&rule_filter)),
+				enabled_rules:Some(slice::from_ref(&rule_filter)),
 				..AnalysisFilter::default()
 			},
 			&options,

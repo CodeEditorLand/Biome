@@ -1,12 +1,18 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, ActionCategory, Ast, FixKind, Rule, RuleDiagnostic,
-	RuleSource, RuleSourceKind,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	RuleSourceKind,
 };
 use biome_console::markup;
 use biome_js_factory::make::js_variable_declarator_list;
 use biome_js_syntax::{JsLanguage, JsSyntaxToken, JsVariableDeclarator, JsVariableStatement};
-use biome_rowan::{chain_trivia_pieces, SyntaxTriviaPiece};
-use biome_rowan::{AstNode, BatchMutationExt, TextRange};
+use biome_rowan::{chain_trivia_pieces, AstNode, BatchMutationExt, SyntaxTriviaPiece, TextRange};
 
 use crate::JsRuleAction;
 
@@ -59,12 +65,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoUselessUndefinedInitialization {
-	type Query = Ast<JsVariableStatement>;
-	type State = (String, TextRange);
-	type Signals = Vec<Self::State>;
 	type Options = ();
+	type Query = Ast<JsVariableStatement>;
+	type Signals = Vec<Self::State>;
+	type State = (String, TextRange);
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let statement = ctx.query();
 
 		let mut signals = vec![];
@@ -106,17 +112,23 @@ impl Rule for NoUselessUndefinedInitialization {
 		signals
 	}
 
-	fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-		Some(RuleDiagnostic::new(
-            rule_category!(),
-            state.1,
-            markup! {
-                "It's not necessary to initialize "<Emphasis>{state.0}</Emphasis>" to undefined."
-            }).note("A variable that is declared and not initialized to any value automatically gets the value of undefined.")
-        )
+	fn diagnostic(_ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+		Some(
+			RuleDiagnostic::new(
+				rule_category!(),
+				state.1,
+				markup! {
+					"It's not necessary to initialize "<Emphasis>{state.0}</Emphasis>" to undefined."
+				},
+			)
+			.note(
+				"A variable that is declared and not initialized to any value automatically gets \
+				 the value of undefined.",
+			),
+		)
 	}
 
-	fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, state:&Self::State) -> Option<JsRuleAction> {
 		let node = ctx.query();
 
 		let assignment_statement = node.clone();
@@ -133,8 +145,11 @@ impl Rule for NoUselessUndefinedInitialization {
 
 		let current_initializer = current_declaration.initializer()?;
 
-		let eq_token_trivia =
-			current_initializer.eq_token().map(|token| token.trailing_trivia()).ok()?.pieces();
+		let eq_token_trivia = current_initializer
+			.eq_token()
+			.map(|token| token.trailing_trivia())
+			.ok()?
+			.pieces();
 
 		let expression_trivia = current_initializer
 			.expression()
@@ -148,11 +163,11 @@ impl Rule for NoUselessUndefinedInitialization {
 		// Save the separators too
 		let separators_syntax = declarators.clone().into_syntax();
 
-		let separators: Vec<JsSyntaxToken> = separators_syntax.tokens().collect();
+		let separators:Vec<JsSyntaxToken> = separators_syntax.tokens().collect();
 
 		let new_declaration = current_declaration.clone().with_initializer(None);
 
-		let new_declarators: Vec<JsVariableDeclarator> = declarators
+		let new_declarators:Vec<JsVariableDeclarator> = declarators
 			.clone()
 			.into_iter()
 			.filter_map(|decl| decl.ok())
@@ -163,12 +178,13 @@ impl Rule for NoUselessUndefinedInitialization {
 		let new_declaration_statement = current_declaration_statement
 			.with_declarators(js_variable_declarator_list(new_declarators, separators));
 
-		let chained_comments: Vec<SyntaxTriviaPiece<JsLanguage>> =
+		let chained_comments:Vec<SyntaxTriviaPiece<JsLanguage>> =
 			chain_trivia_pieces(eq_token_trivia, expression_trivia)
 				.filter(|trivia| trivia.is_comments())
 				.collect();
 
-		// Create the whole statement using updated subtree and append comments to the statement
+		// Create the whole statement using updated subtree and append comments
+		// to the statement
 		let new_node = assignment_statement
 			.clone()
 			.with_declaration(new_declaration_statement)

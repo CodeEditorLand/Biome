@@ -1,210 +1,222 @@
+use std::{env, io, ops::Deref, path::PathBuf};
+
 use biome_configuration::{ConfigurationPathHint, Rules};
-use biome_console::fmt::{Display, Formatter};
 use biome_console::{
-    fmt, markup, ConsoleExt, DebugDisplay, DebugDisplayOption, HorizontalLine, KeyValuePair,
-    Padding, SOFT_LINE,
+	fmt,
+	fmt::{Display, Formatter},
+	markup,
+	ConsoleExt,
+	DebugDisplay,
+	DebugDisplayOption,
+	HorizontalLine,
+	KeyValuePair,
+	Padding,
+	SOFT_LINE,
 };
-use biome_diagnostics::termcolor::{ColorChoice, WriteColor};
-use biome_diagnostics::{termcolor, PrintDescription};
+use biome_diagnostics::{
+	termcolor,
+	termcolor::{ColorChoice, WriteColor},
+	PrintDescription,
+};
 use biome_flags::biome_env;
 use biome_fs::FileSystem;
-use biome_service::configuration::{load_configuration, LoadedConfiguration};
-use biome_service::workspace::{client, RageEntry, RageParams};
-use biome_service::{DynRef, Workspace};
-use std::path::PathBuf;
-use std::{env, io, ops::Deref};
+use biome_service::{
+	configuration::{load_configuration, LoadedConfiguration},
+	workspace::{client, RageEntry, RageParams},
+	DynRef,
+	Workspace,
+};
 use tokio::runtime::Runtime;
 
-use crate::commands::daemon::read_most_recent_log_file;
-use crate::service::enumerate_pipes;
-use crate::{service, CliDiagnostic, CliSession, VERSION};
+use crate::{
+	commands::daemon::read_most_recent_log_file,
+	service,
+	service::enumerate_pipes,
+	CliDiagnostic,
+	CliSession,
+	VERSION,
+};
 
 /// Handler for the `rage` command
 pub(crate) fn rage(
-    session: CliSession,
-    daemon_logs: bool,
-    formatter: bool,
-    linter: bool,
+	session:CliSession,
+	daemon_logs:bool,
+	formatter:bool,
+	linter:bool,
 ) -> Result<(), CliDiagnostic> {
-    let terminal_supports_colors = termcolor::BufferWriter::stdout(ColorChoice::Auto)
-        .buffer()
-        .supports_color();
+	let terminal_supports_colors =
+		termcolor::BufferWriter::stdout(ColorChoice::Auto).buffer().supports_color();
 
-    let biome_env = biome_env();
+	let biome_env = biome_env();
 
-    session.app.console.log(markup!("CLI:\n"
-    {KeyValuePair("Version", markup!({VERSION}))}
-    {KeyValuePair("Color support", markup!({DebugDisplay(terminal_supports_colors)}))}
+	session.app.console.log(markup!("CLI:\n"
+	{KeyValuePair("Version", markup!({VERSION}))}
+	{KeyValuePair("Color support", markup!({DebugDisplay(terminal_supports_colors)}))}
 
-    {Section("Platform")}
-    {KeyValuePair("CPU Architecture", markup!({std::env::consts::ARCH}))}
-    {KeyValuePair("OS", markup!({std::env::consts::OS}))}
-    {Section("Environment")}
-    {biome_env}
-    {EnvVarOs("NO_COLOR")}
-    {EnvVarOs("TERM")}
-    {EnvVarOs("JS_RUNTIME_VERSION")}
-    {EnvVarOs("JS_RUNTIME_NAME")}
-    {EnvVarOs("NODE_PACKAGE_MANAGER")}
+	{Section("Platform")}
+	{KeyValuePair("CPU Architecture", markup!({std::env::consts::ARCH}))}
+	{KeyValuePair("OS", markup!({std::env::consts::OS}))}
+	{Section("Environment")}
+	{biome_env}
+	{EnvVarOs("NO_COLOR")}
+	{EnvVarOs("TERM")}
+	{EnvVarOs("JS_RUNTIME_VERSION")}
+	{EnvVarOs("JS_RUNTIME_NAME")}
+	{EnvVarOs("NODE_PACKAGE_MANAGER")}
 
-    {RageConfiguration { fs: &session.app.fs, formatter, linter }}
-    {WorkspaceRage(session.app.workspace.deref())}
-    ));
+	{RageConfiguration { fs: &session.app.fs, formatter, linter }}
+	{WorkspaceRage(session.app.workspace.deref())}
+	));
 
-    if daemon_logs {
-        match session.app.workspace.server_info() {
-            Some(_) => {
-                session.app.console.log(markup!({
-                    ConnectedClientServerLog(session.app.workspace.deref())
-                }));
-            }
-            None => {
-                session
-                    .app
-                    .console
-                    .log(markup!("Discovering running Biome servers..."));
-                session.app.console.log(markup!({ RunningRomeServer }));
-            }
-        }
-    }
-    Ok(())
+	if daemon_logs {
+		match session.app.workspace.server_info() {
+			Some(_) => {
+				session
+					.app
+					.console
+					.log(markup!({ ConnectedClientServerLog(session.app.workspace.deref()) }));
+			},
+			None => {
+				session.app.console.log(markup!("Discovering running Biome servers..."));
+				session.app.console.log(markup!({ RunningRomeServer }));
+			},
+		}
+	}
+	Ok(())
 }
 
 struct WorkspaceRage<'a>(&'a dyn Workspace);
 
 impl Display for WorkspaceRage<'_> {
-    fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-        let workspace = self.0;
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> {
+		let workspace = self.0;
 
-        let rage_result = workspace.rage(RageParams {});
+		let rage_result = workspace.rage(RageParams {});
 
-        match rage_result {
-            Ok(result) => {
-                for entry in result.entries {
-                    match entry {
-                        RageEntry::Section(title) => {
-                            Section(&title).fmt(fmt)?;
-                        }
-                        RageEntry::Pair { name, value } => {
-                            KeyValuePair(&name, markup!({ value })).fmt(fmt)?;
-                        }
-                        RageEntry::Markup(markup) => markup.fmt(fmt)?,
-                    }
-                }
+		match rage_result {
+			Ok(result) => {
+				for entry in result.entries {
+					match entry {
+						RageEntry::Section(title) => {
+							Section(&title).fmt(fmt)?;
+						},
+						RageEntry::Pair { name, value } => {
+							KeyValuePair(&name, markup!({ value })).fmt(fmt)?;
+						},
+						RageEntry::Markup(markup) => markup.fmt(fmt)?,
+					}
+				}
 
-                Ok(())
-            }
-            Err(err) => {
-                writeln!(fmt)?;
-                (markup! {<Error>"\u{2716} Workspace rage failed:"</Error>}).fmt(fmt)?;
+				Ok(())
+			},
+			Err(err) => {
+				writeln!(fmt)?;
+				(markup! {<Error>"\u{2716} Workspace rage failed:"</Error>}).fmt(fmt)?;
 
-                writeln!(fmt, " {err}")
-            }
-        }
-    }
+				writeln!(fmt, " {err}")
+			},
+		}
+	}
 }
 
 /// Prints information about other running biome server instances.
 struct RunningRomeServer;
 
 impl Display for RunningRomeServer {
-    fn fmt(&self, f: &mut Formatter) -> io::Result<()> {
-        let versions = match enumerate_pipes() {
-            Ok(iter) => iter,
-            Err(err) => {
-                (markup! {<Error>"\u{2716} Enumerating Biome instances failed:"</Error>}).fmt(f)?;
-                return writeln!(f, " {err}");
-            }
-        };
+	fn fmt(&self, f:&mut Formatter) -> io::Result<()> {
+		let versions = match enumerate_pipes() {
+			Ok(iter) => iter,
+			Err(err) => {
+				(markup! {<Error>"\u{2716} Enumerating Biome instances failed:"</Error>}).fmt(f)?;
+				return writeln!(f, " {err}");
+			},
+		};
 
-        for version in versions {
-            if version == biome_configuration::VERSION {
-                let runtime = Runtime::new()?;
-                match service::open_transport(runtime) {
-                    Ok(None) => {
-                        markup!(
-                            {Section("Server")}
-                            {KeyValuePair("Status", markup!(<Dim>"stopped"</Dim>))}
-                        )
-                        .fmt(f)?;
-                        continue;
-                    }
-                    Ok(Some(transport)) => {
-                        markup!("\n"<Emphasis>"Running Biome Server:"</Emphasis>" "{HorizontalLine::new(78)}"
+		for version in versions {
+			if version == biome_configuration::VERSION {
+				let runtime = Runtime::new()?;
+				match service::open_transport(runtime) {
+					Ok(None) => {
+						markup!(
+							{Section("Server")}
+							{KeyValuePair("Status", markup!(<Dim>"stopped"</Dim>))}
+						)
+						.fmt(f)?;
+						continue;
+					},
+					Ok(Some(transport)) => {
+						markup!("\n"<Emphasis>"Running Biome Server:"</Emphasis>" "{HorizontalLine::new(78)}"
 
 "<Info>"\u{2139} The client isn't connected to any server but rage discovered this running Biome server."</Info>"
 ")
                 .fmt(f)?;
 
-                        match client(transport) {
-                            Ok(client) => WorkspaceRage(client.deref()).fmt(f)?,
-                            Err(err) => {
-                                markup!(<Error>"\u{2716} Failed to connect: "</Error>).fmt(f)?;
-                                writeln!(f, "{err}")?;
-                            }
-                        }
-                    }
-                    Err(err) => {
-                        markup!("\n"<Error>"\u{2716} Failed to connect: "</Error>).fmt(f)?;
-                        writeln!(f, "{err}")?;
-                    }
-                }
+						match client(transport) {
+							Ok(client) => WorkspaceRage(client.deref()).fmt(f)?,
+							Err(err) => {
+								markup!(<Error>"\u{2716} Failed to connect: "</Error>).fmt(f)?;
+								writeln!(f, "{err}")?;
+							},
+						}
+					},
+					Err(err) => {
+						markup!("\n"<Error>"\u{2716} Failed to connect: "</Error>).fmt(f)?;
+						writeln!(f, "{err}")?;
+					},
+				}
 
-                BiomeServerLog.fmt(f)?;
-            } else {
-                markup!("\n"<Emphasis>"Incompatible Biome Server:"</Emphasis>" "{HorizontalLine::new(78)}"
+				BiomeServerLog.fmt(f)?;
+			} else {
+				markup!("\n"<Emphasis>"Incompatible Biome Server:"</Emphasis>" "{HorizontalLine::new(78)}"
 
 "<Info>"\u{2139} Rage discovered this running server using an incompatible version of Biome."</Info>"
 ")
         .fmt(f)?;
 
-                markup!(
-                    {Section("Server")}
-                    {KeyValuePair("Version", markup!({version.as_str()}))}
-                )
-                .fmt(f)?;
-            }
-        }
+				markup!(
+					{Section("Server")}
+					{KeyValuePair("Version", markup!({version.as_str()}))}
+				)
+				.fmt(f)?;
+			}
+		}
 
-        Ok(())
-    }
+		Ok(())
+	}
 }
 
 struct RageConfiguration<'a, 'app> {
-    fs: &'a DynRef<'app, dyn FileSystem>,
-    formatter: bool,
-    linter: bool,
+	fs:&'a DynRef<'app, dyn FileSystem>,
+	formatter:bool,
+	linter:bool,
 }
 
 impl Display for RageConfiguration<'_, '_> {
-    fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-        Section("Biome Configuration").fmt(fmt)?;
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> {
+		Section("Biome Configuration").fmt(fmt)?;
 
-        match load_configuration(self.fs, ConfigurationPathHint::default()) {
-            Ok(loaded_configuration) => {
-                if loaded_configuration.directory_path.is_none() {
-                    KeyValuePair("Status", markup!(<Dim>"unset"</Dim>)).fmt(fmt)?;
-                } else {
-                    let LoadedConfiguration {
-                        configuration,
-                        diagnostics,
-                        ..
-                    } = loaded_configuration;
-                    let status = if !diagnostics.is_empty() {
-                        for diagnostic in diagnostics {
-                            (markup! {
-                                 {KeyValuePair("Error", markup!{
-                                     {format!{"{}", PrintDescription(&diagnostic)}}
-                                 })}
-                            })
-                            .fmt(fmt)?;
-                        }
-                        markup!(<Dim>"Loaded with errors"</Dim>)
-                    } else {
-                        markup!(<Dim>"Loaded successfully"</Dim>)
-                    };
+		match load_configuration(self.fs, ConfigurationPathHint::default()) {
+			Ok(loaded_configuration) => {
+				if loaded_configuration.directory_path.is_none() {
+					KeyValuePair("Status", markup!(<Dim>"unset"</Dim>)).fmt(fmt)?;
+				} else {
+					let LoadedConfiguration { configuration, diagnostics, .. } =
+						loaded_configuration;
+					let status = if !diagnostics.is_empty() {
+						for diagnostic in diagnostics {
+							(markup! {
+								 {KeyValuePair("Error", markup!{
+									 {format!{"{}", PrintDescription(&diagnostic)}}
+								 })}
+							})
+							.fmt(fmt)?;
+						}
+						markup!(<Dim>"Loaded with errors"</Dim>)
+					} else {
+						markup!(<Dim>"Loaded successfully"</Dim>)
+					};
 
-                    markup! (
+					markup! (
                         {KeyValuePair("Status", status)}
                         {KeyValuePair("Formatter disabled", markup!({DebugDisplay(configuration.is_formatter_disabled())}))}
                         {KeyValuePair("Linter disabled", markup!({DebugDisplay(configuration.is_linter_disabled())}))}
@@ -212,10 +224,11 @@ impl Display for RageConfiguration<'_, '_> {
                         {KeyValuePair("VCS disabled", markup!({DebugDisplay(configuration.is_vcs_disabled())}))}
                     ).fmt(fmt)?;
 
-                    // Print formatter configuration if --formatter option is true
-                    if self.formatter {
-                        let formatter_configuration = configuration.get_formatter_configuration();
-                        markup! (
+					// Print formatter configuration if --formatter option is
+					// true
+					if self.formatter {
+						let formatter_configuration = configuration.get_formatter_configuration();
+						markup! (
                             {Section("Formatter")}
                             {KeyValuePair("Format with errors", markup!({DebugDisplay(configuration.get_formatter_configuration().format_with_errors)}))}
                             {KeyValuePair("Indent style", markup!({DebugDisplay(formatter_configuration.indent_style)}))}
@@ -228,9 +241,9 @@ impl Display for RageConfiguration<'_, '_> {
                             {KeyValuePair("Include", markup!({DebugDisplay(formatter_configuration.include.iter().collect::<Vec<_>>())}))}
                         ).fmt(fmt)?;
 
-                        let javascript_formatter_configuration =
-                            configuration.get_javascript_formatter_configuration();
-                        markup! (
+						let javascript_formatter_configuration =
+							configuration.get_javascript_formatter_configuration();
+						markup! (
                             {Section("JavaScript Formatter")}
                             {KeyValuePair("Enabled", markup!({DebugDisplay(javascript_formatter_configuration.enabled)}))}
                             {KeyValuePair("JSX quote style", markup!({DebugDisplay(javascript_formatter_configuration.jsx_quote_style)}))}
@@ -249,9 +262,9 @@ impl Display for RageConfiguration<'_, '_> {
                         )
                         .fmt(fmt)?;
 
-                        let json_formatter_configuration =
-                            configuration.get_json_formatter_configuration();
-                        markup! (
+						let json_formatter_configuration =
+							configuration.get_json_formatter_configuration();
+						markup! (
                             {Section("JSON Formatter")}
                             {KeyValuePair("Enabled", markup!({DebugDisplay(json_formatter_configuration.enabled)}))}
                             {KeyValuePair("Indent style", markup!({DebugDisplayOption(json_formatter_configuration.indent_style)}))}
@@ -261,9 +274,9 @@ impl Display for RageConfiguration<'_, '_> {
                             {KeyValuePair("Trailing Commas", markup!({DebugDisplayOption(json_formatter_configuration.trailing_commas)}))}
                         ).fmt(fmt)?;
 
-                        let css_formatter_configuration =
-                            configuration.get_css_formatter_configuration();
-                        markup! (
+						let css_formatter_configuration =
+							configuration.get_css_formatter_configuration();
+						markup! (
                             {Section("CSS Formatter")}
                             {KeyValuePair("Enabled", markup!({DebugDisplay(css_formatter_configuration.enabled)}))}
                             {KeyValuePair("Indent style", markup!({DebugDisplayOption(css_formatter_configuration.indent_style)}))}
@@ -273,9 +286,9 @@ impl Display for RageConfiguration<'_, '_> {
                             {KeyValuePair("Quote style", markup!({DebugDisplay(css_formatter_configuration.quote_style)}))}
                         ).fmt(fmt)?;
 
-                        let graphql_formatter_configuration =
-                            configuration.get_graphql_formatter_configuration();
-                        markup! (
+						let graphql_formatter_configuration =
+							configuration.get_graphql_formatter_configuration();
+						markup! (
                             {Section("GraphQL Formatter")}
                             {KeyValuePair("Enabled", markup!({DebugDisplayOption(graphql_formatter_configuration.enabled)}))}
                             {KeyValuePair("Indent style", markup!({DebugDisplayOption(graphql_formatter_configuration.indent_style)}))}
@@ -285,17 +298,17 @@ impl Display for RageConfiguration<'_, '_> {
                             {KeyValuePair("Bracket spacing", markup!({DebugDisplayOption(graphql_formatter_configuration.bracket_spacing)}))}
                             {KeyValuePair("Quote style", markup!({DebugDisplayOption(graphql_formatter_configuration.quote_style)}))}
                         ).fmt(fmt)?;
-                    }
+					}
 
-                    // Print linter configuration if --linter option is true
-                    if self.linter {
-                        let linter_configuration = configuration.get_linter_rules();
+					// Print linter configuration if --linter option is true
+					if self.linter {
+						let linter_configuration = configuration.get_linter_rules();
 
-                        let javascript_linter = configuration.get_javascript_linter_configuration();
-                        let json_linter = configuration.get_json_linter_configuration();
-                        let css_linter = configuration.get_css_linter_configuration();
-                        let graphq_linter = configuration.get_graphql_linter_configuration();
-                        markup! (
+						let javascript_linter = configuration.get_javascript_linter_configuration();
+						let json_linter = configuration.get_json_linter_configuration();
+						let css_linter = configuration.get_css_linter_configuration();
+						let graphq_linter = configuration.get_graphql_linter_configuration();
+						markup! (
                             {Section("Linter")}
                             {KeyValuePair("JavaScript enabled", markup!({DebugDisplay(javascript_linter.enabled)}))}
                             {KeyValuePair("JSON enabled", markup!({DebugDisplay(json_linter.enabled)}))}
@@ -305,70 +318,67 @@ impl Display for RageConfiguration<'_, '_> {
                             {KeyValuePair("All", markup!({DebugDisplay(linter_configuration.all.unwrap_or_default())}))}
                             {RageConfigurationLintRules("Enabled rules",linter_configuration)}
                         ).fmt(fmt)?;
-                    }
-                }
-            }
-            Err(err) => markup! (
-                {KeyValuePair("Status", markup!(<Error>"Failed to load"</Error>))}
-                {KeyValuePair("Error", markup!({format!("{err}")}))}
-            )
-            .fmt(fmt)?,
-        }
+					}
+				}
+			},
+			Err(err) => {
+				markup! (
+					{KeyValuePair("Status", markup!(<Error>"Failed to load"</Error>))}
+					{KeyValuePair("Error", markup!({format!("{err}")}))}
+				)
+				.fmt(fmt)?
+			},
+		}
 
-        Ok(())
-    }
+		Ok(())
+	}
 }
 
 struct RageConfigurationLintRules<'a>(&'a str, Rules);
 
 impl Display for RageConfigurationLintRules<'_> {
-    fn fmt(&self, fmt: &mut Formatter<'_>) -> io::Result<()> {
-        let rules_str = self.0;
-        let padding = Padding::new(2);
-        fmt.write_markup(markup! {{padding}{rules_str}":"})?;
-        fmt.write_markup(markup! {{SOFT_LINE}})?;
-        let rules = self.1.as_enabled_rules();
-        for rule in rules {
-            fmt.write_markup(markup! {{padding}{rule}})?;
-            fmt.write_markup(markup! {{SOFT_LINE}})?;
-        }
+	fn fmt(&self, fmt:&mut Formatter<'_>) -> io::Result<()> {
+		let rules_str = self.0;
+		let padding = Padding::new(2);
+		fmt.write_markup(markup! {{padding}{rules_str}":"})?;
+		fmt.write_markup(markup! {{SOFT_LINE}})?;
+		let rules = self.1.as_enabled_rules();
+		for rule in rules {
+			fmt.write_markup(markup! {{padding}{rule}})?;
+			fmt.write_markup(markup! {{SOFT_LINE}})?;
+		}
 
-        Ok(())
-    }
+		Ok(())
+	}
 }
 
 struct EnvVarOs(&'static str);
 
 impl fmt::Display for EnvVarOs {
-    fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-        let name = self.0;
-        match env::var_os(name) {
-            None => KeyValuePair(name, markup! { <Dim>"unset"</Dim> }).fmt(fmt),
-            Some(value) => KeyValuePair(name, markup! {{DebugDisplay(value)}}).fmt(fmt),
-        }
-    }
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> {
+		let name = self.0;
+		match env::var_os(name) {
+			None => KeyValuePair(name, markup! { <Dim>"unset"</Dim> }).fmt(fmt),
+			Some(value) => KeyValuePair(name, markup! {{DebugDisplay(value)}}).fmt(fmt),
+		}
+	}
 }
 
 struct Section<'a>(&'a str);
 
 impl Display for Section<'_> {
-    fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-        writeln!(fmt, "\n{}:", self.0)
-    }
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> { writeln!(fmt, "\n{}:", self.0) }
 }
 
 struct BiomeServerLog;
 
 impl Display for BiomeServerLog {
-    fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-        if let Ok(Some(log)) = read_most_recent_log_file(
-            biome_env().biome_log_path.value().map(PathBuf::from),
-            biome_env()
-                .biome_log_prefix
-                .value()
-                .unwrap_or("server.log".to_string()),
-        ) {
-            markup!("\n"<Emphasis><Underline>"Biome Server Log:"</Underline></Emphasis>"
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> {
+		if let Ok(Some(log)) = read_most_recent_log_file(
+			biome_env().biome_log_path.value().map(PathBuf::from),
+			biome_env().biome_log_prefix.value().unwrap_or("server.log".to_string()),
+		) {
+			markup!("\n"<Emphasis><Underline>"Biome Server Log:"</Underline></Emphasis>"
 
 "<Warn>"\u{26a0} Please review the content of the log file before sharing it publicly as it may contain sensitive information:
   * Path names that may reveal your name, a project name, or the name of your employer.
@@ -376,22 +386,19 @@ impl Display for BiomeServerLog {
 "</Warn>)
             .fmt(fmt)?;
 
-            write!(fmt, "\n{log}")?;
-        }
+			write!(fmt, "\n{log}")?;
+		}
 
-        Ok(())
-    }
+		Ok(())
+	}
 }
 
-/// Prints the server logs but only if the client is connected to a biome server.
+/// Prints the server logs but only if the client is connected to a biome
+/// server.
 struct ConnectedClientServerLog<'a>(&'a dyn Workspace);
 
 impl Display for ConnectedClientServerLog<'_> {
-    fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-        if self.0.server_info().is_some() {
-            BiomeServerLog.fmt(fmt)
-        } else {
-            Ok(())
-        }
-    }
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> {
+		if self.0.server_info().is_some() { BiomeServerLog.fmt(fmt) } else { Ok(()) }
+	}
 }

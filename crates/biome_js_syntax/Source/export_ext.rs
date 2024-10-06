@@ -1,11 +1,21 @@
 use biome_rowan::{declare_node_union, AstNode, SyntaxResult};
 
 use crate::{
-	AnyJsBindingPattern, AnyJsDeclarationClause, AnyJsExportClause,
-	AnyJsExportDefaultDeclaration, AnyJsExportNamedSpecifier, AnyJsExpression,
-	AnyTsIdentifierBinding, AnyTsType, JsExport, JsExportNamedClause,
-	JsIdentifierExpression, JsLiteralExportName, JsReferenceIdentifier,
-	JsSyntaxToken, TsEnumDeclaration,
+	AnyJsBindingPattern,
+	AnyJsDeclarationClause,
+	AnyJsExportClause,
+	AnyJsExportDefaultDeclaration,
+	AnyJsExportNamedSpecifier,
+	AnyJsExpression,
+	AnyTsIdentifierBinding,
+	AnyTsType,
+	JsExport,
+	JsExportNamedClause,
+	JsIdentifierExpression,
+	JsLiteralExportName,
+	JsReferenceIdentifier,
+	JsSyntaxToken,
+	TsEnumDeclaration,
 };
 
 declare_node_union! {
@@ -19,11 +29,11 @@ declare_node_union! {
 #[derive(Clone, Debug)]
 pub struct ExportedItem {
 	// The identifier of the exported object
-	pub identifier: Option<AnyIdentifier>,
+	pub identifier:Option<AnyIdentifier>,
 	// The exported object
-	pub exported: Option<AnyJsExported>,
+	pub exported:Option<AnyJsExported>,
 	// Whether it is default exported or not
-	pub is_default: bool,
+	pub is_default:bool,
 }
 
 impl JsExport {
@@ -42,7 +52,8 @@ impl JsExport {
 	/// ```
 	///
 	///
-	/// When multiple variables are exported, it returns the list of those variables.
+	/// When multiple variables are exported, it returns the list of those
+	/// variables.
 	///
 	/// ```js
 	/// export const x = 100, y = 200;
@@ -54,100 +65,113 @@ impl JsExport {
 	///     ExportedItem { identifier: Some(AnyIdentifier::AnyJsBindingPattern("y")), exported: Some(AnyJsExported::AnyJsExpression(200)), is_default: false },
 	/// ]
 	/// ```
-	/// When a function is exported, it returns the function name. It also checks whether it is a default export.
-	/// ```js
+	/// When a function is exported, it returns the function name. It also
+	/// checks whether it is a default export. ```js
 	/// export default function foo() {};
 	/// ```
 	/// will return
 	/// ```js
 	/// [
-	///     ExportedItem { identifier: Some(AnyIdentifier::AnyJsBindingPattern("foo")), exported: None, is_default: true },
-	/// ]
+	///     ExportedItem { identifier:
+	/// Some(AnyIdentifier::AnyJsBindingPattern("foo")), exported: None,
+	/// is_default: true }, ]
 	/// ```
 	pub fn get_exported_items(&self) -> Vec<ExportedItem> {
 		self.export_clause()
-            .ok()
-            .and_then(|export_clause| match export_clause {
-                // export const x = 100;
-                AnyJsExportClause::AnyJsDeclarationClause(declaration_clause) => {
-                    match declaration_clause {
-                        // export function foo() {}
-                        AnyJsDeclarationClause::JsFunctionDeclaration(
-                            function_declaration_clause,
-                        ) => function_declaration_clause.id().ok().map(|function_id| {
-                            vec![ExportedItem {
-                                identifier: Some(AnyIdentifier::AnyJsBindingPattern(
-                                    AnyJsBindingPattern::AnyJsBinding(function_id),
-                                )),
-                                exported: None,
-                                is_default: false,
-                            }]
-                        }),
-                        // export const x = 100;
-                        AnyJsDeclarationClause::JsVariableDeclarationClause(
-                            variable_declaration_clause,
-                        ) => variable_declaration_clause.declaration().ok().map(
-                            |variable_declaration| {
-                                variable_declaration
-                                    .declarators()
-                                    .into_iter()
-                                    .filter_map(|declarator| {
-                                        let declarator = declarator.ok()?;
-                                        let identifier = declarator.id().ok()?;
-                                        let initializer = declarator
-                                            .initializer()
-                                            .and_then(|init| init.expression().ok());
-                                        Some(ExportedItem {
-                                            identifier: Some(AnyIdentifier::AnyJsBindingPattern(
-                                                identifier,
-                                            )),
-                                            exported: initializer
-                                                .map(AnyJsExported::AnyJsExpression),
-                                            is_default: false,
-                                        })
-                                    })
-                                    .collect()
-                            },
-                        ),
-                        // export enum X {}
-                        AnyJsDeclarationClause::TsEnumDeclaration(ts_enum_declaration) => {
-                            ts_enum_declaration.id().ok().map(|enum_id| {
-                                vec![ExportedItem {
-                                    identifier: Some(AnyIdentifier::AnyJsBindingPattern(
-                                        AnyJsBindingPattern::AnyJsBinding(enum_id),
-                                    )),
-                                    exported: Some(AnyJsExported::TsEnumDeclaration(
-                                        ts_enum_declaration,
-                                    )),
-                                    is_default: false,
-                                }]
-                            })
-                        }
-                        // export type X = number;
-                        AnyJsDeclarationClause::TsTypeAliasDeclaration(
-                            ts_type_alias_declaration,
-                        ) => ts_type_alias_declaration.binding_identifier().ok().map(
-                            |type_alias_id| {
-                                vec![ExportedItem {
-                                    identifier: Some(AnyIdentifier::AnyTsIdentifierBinding(
-                                        type_alias_id,
-                                    )),
-                                    exported: ts_type_alias_declaration
-                                        .ty()
-                                        .ok()
-                                        .map(AnyJsExported::AnyTsType),
-                                    is_default: false,
-                                }]
-                            },
-                        ),
-                        _ => None,
-                    }
-                }
-                AnyJsExportClause::JsExportDefaultDeclarationClause(default_declaration_clause) => {
-                    default_declaration_clause
-                        .declaration()
-                        .ok()
-                        .and_then(|default_declation| match default_declation {
+			.ok()
+			.and_then(|export_clause| {
+				match export_clause {
+					// export const x = 100;
+					AnyJsExportClause::AnyJsDeclarationClause(declaration_clause) => {
+						match declaration_clause {
+							// export function foo() {}
+							AnyJsDeclarationClause::JsFunctionDeclaration(
+								function_declaration_clause,
+							) => {
+								function_declaration_clause.id().ok().map(|function_id| {
+									vec![ExportedItem {
+										identifier:Some(AnyIdentifier::AnyJsBindingPattern(
+											AnyJsBindingPattern::AnyJsBinding(function_id),
+										)),
+										exported:None,
+										is_default:false,
+									}]
+								})
+							},
+							// export const x = 100;
+							AnyJsDeclarationClause::JsVariableDeclarationClause(
+								variable_declaration_clause,
+							) => {
+								variable_declaration_clause.declaration().ok().map(
+									|variable_declaration| {
+										variable_declaration
+											.declarators()
+											.into_iter()
+											.filter_map(|declarator| {
+												let declarator = declarator.ok()?;
+												let identifier = declarator.id().ok()?;
+												let initializer = declarator
+													.initializer()
+													.and_then(|init| init.expression().ok());
+												Some(ExportedItem {
+													identifier:Some(
+														AnyIdentifier::AnyJsBindingPattern(
+															identifier,
+														),
+													),
+													exported:initializer
+														.map(AnyJsExported::AnyJsExpression),
+													is_default:false,
+												})
+											})
+											.collect()
+									},
+								)
+							},
+							// export enum X {}
+							AnyJsDeclarationClause::TsEnumDeclaration(ts_enum_declaration) => {
+								ts_enum_declaration.id().ok().map(|enum_id| {
+									vec![ExportedItem {
+										identifier:Some(AnyIdentifier::AnyJsBindingPattern(
+											AnyJsBindingPattern::AnyJsBinding(enum_id),
+										)),
+										exported:Some(AnyJsExported::TsEnumDeclaration(
+											ts_enum_declaration,
+										)),
+										is_default:false,
+									}]
+								})
+							},
+							// export type X = number;
+							AnyJsDeclarationClause::TsTypeAliasDeclaration(
+								ts_type_alias_declaration,
+							) => {
+								ts_type_alias_declaration.binding_identifier().ok().map(
+									|type_alias_id| {
+										vec![ExportedItem {
+											identifier:Some(AnyIdentifier::AnyTsIdentifierBinding(
+												type_alias_id,
+											)),
+											exported:ts_type_alias_declaration
+												.ty()
+												.ok()
+												.map(AnyJsExported::AnyTsType),
+											is_default:false,
+										}]
+									},
+								)
+							},
+							_ => None,
+						}
+					},
+					AnyJsExportClause::JsExportDefaultDeclarationClause(
+						default_declaration_clause,
+					) => {
+						default_declaration_clause
+							.declaration()
+							.ok()
+							.and_then(|default_declation| {
+								match default_declation {
                             // export default function x() {}
                             AnyJsExportDefaultDeclaration::JsFunctionExportDefaultDeclaration(
                                 function_declaration,
@@ -157,41 +181,50 @@ impl JsExport {
                                 class_declaration,
                             ) => class_declaration.id(),
                             _ => None,
-                        })
-                        .map(|any_js_binding| {
-                            vec![ExportedItem {
-                                identifier: Some(AnyIdentifier::AnyJsBindingPattern(
-                                    AnyJsBindingPattern::AnyJsBinding(any_js_binding),
-                                )),
-                                exported: None,
-                                is_default: true,
-                            }]
-                        })
-                }
-                // export default x;
-                AnyJsExportClause::JsExportDefaultExpressionClause(clause) => {
-                    clause.expression().ok().map(|expression| match expression {
-                        AnyJsExpression::JsIdentifierExpression(identifier) => {
-                            vec![ExportedItem {
-                                identifier: Some(AnyIdentifier::JsIdentifierExpression(identifier)),
-                                exported: None,
-                                is_default: true,
-                            }]
                         }
-                        _ => vec![ExportedItem {
-                            identifier: None,
-                            exported: Some(AnyJsExported::AnyJsExpression(expression)),
-                            is_default: true,
-                        }],
-                    })
-                }
-                // export { x, y, z };
-                AnyJsExportClause::JsExportNamedClause(named_clause) => Some(
-                    named_clause
-                        .specifiers()
-                        .into_iter()
-                        .filter_map(|r| r.ok())
-                        .filter_map(|export_specifier| match export_specifier {
+							})
+							.map(|any_js_binding| {
+								vec![ExportedItem {
+									identifier:Some(AnyIdentifier::AnyJsBindingPattern(
+										AnyJsBindingPattern::AnyJsBinding(any_js_binding),
+									)),
+									exported:None,
+									is_default:true,
+								}]
+							})
+					},
+					// export default x;
+					AnyJsExportClause::JsExportDefaultExpressionClause(clause) => {
+						clause.expression().ok().map(|expression| {
+							match expression {
+								AnyJsExpression::JsIdentifierExpression(identifier) => {
+									vec![ExportedItem {
+										identifier:Some(AnyIdentifier::JsIdentifierExpression(
+											identifier,
+										)),
+										exported:None,
+										is_default:true,
+									}]
+								},
+								_ => {
+									vec![ExportedItem {
+										identifier:None,
+										exported:Some(AnyJsExported::AnyJsExpression(expression)),
+										is_default:true,
+									}]
+								},
+							}
+						})
+					},
+					// export { x, y, z };
+					AnyJsExportClause::JsExportNamedClause(named_clause) => {
+						Some(
+							named_clause
+								.specifiers()
+								.into_iter()
+								.filter_map(|r| r.ok())
+								.filter_map(|export_specifier| {
+									match export_specifier {
                             AnyJsExportNamedSpecifier::JsExportNamedShorthandSpecifier(
                                 shorthand,
                             ) => shorthand.name().ok().map(|name| ExportedItem {
@@ -221,12 +254,15 @@ impl JsExport {
                                     }
                                 })
                             }
-                        })
-                        .collect(),
-                ),
-                _ => None,
-            })
-            .unwrap_or_default()
+                        }
+								})
+								.collect(),
+						)
+					},
+					_ => None,
+				}
+			})
+			.unwrap_or_default()
 	}
 }
 
@@ -239,9 +275,7 @@ impl AnyJsExportNamedSpecifier {
 	/// ```
 	pub fn type_token(&self) -> Option<JsSyntaxToken> {
 		match self {
-			Self::JsExportNamedShorthandSpecifier(specifier) => {
-				specifier.type_token()
-			},
+			Self::JsExportNamedShorthandSpecifier(specifier) => specifier.type_token(),
 			Self::JsExportNamedSpecifier(specifier) => specifier.type_token(),
 		}
 	}
@@ -251,7 +285,8 @@ impl AnyJsExportNamedSpecifier {
 		JsExportNamedClause::cast(self.syntax().grand_parent()?)
 	}
 
-	/// Returns `true` if this specifier or its export clause has **only** a type modifier.
+	/// Returns `true` if this specifier or its export clause has **only** a
+	/// type modifier.
 	pub fn exports_only_types(&self) -> bool {
 		self.type_token().is_some()
 			|| self.export_named_clause().and_then(|x| x.type_token()).is_some()
@@ -262,56 +297,56 @@ impl AnyJsExportNamedSpecifier {
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_syntax::{AnyJsExportNamedSpecifier, T};
 	/// use biome_js_factory::make;
+	/// use biome_js_syntax::{AnyJsExportNamedSpecifier, T};
 	///
-	/// let specifier = make::js_export_named_shorthand_specifier(
-	///     make::js_reference_identifier(make::ident("a"))
-	/// ).with_type_token(make::token(T![type])).build();
+	/// let specifier =
+	/// 	make::js_export_named_shorthand_specifier(make::js_reference_identifier(make::ident("a")))
+	/// 		.with_type_token(make::token(T![type]))
+	/// 		.build();
 	/// let export = AnyJsExportNamedSpecifier::from(specifier.clone());
 	///
 	/// assert_eq!(export.local_name(), specifier.name());
 	///
 	/// let specifier = make::js_export_named_specifier(
-	///     make::js_reference_identifier(make::ident("a")),
-	///     make::token(T![as]),
-	///     make::js_literal_export_name(make::ident("b")),
-	/// ).build();
+	/// 	make::js_reference_identifier(make::ident("a")),
+	/// 	make::token(T![as]),
+	/// 	make::js_literal_export_name(make::ident("b")),
+	/// )
+	/// .build();
 	/// let export = AnyJsExportNamedSpecifier::from(specifier.clone());
 	///
 	/// assert_eq!(export.local_name(), specifier.local_name());
 	/// ```
 	pub fn local_name(&self) -> SyntaxResult<JsReferenceIdentifier> {
 		match self {
-			Self::JsExportNamedShorthandSpecifier(specifier) => {
-				specifier.name()
-			},
+			Self::JsExportNamedShorthandSpecifier(specifier) => specifier.name(),
 			Self::JsExportNamedSpecifier(specifier) => specifier.local_name(),
 		}
 	}
 
-	pub fn with_type_token(self, type_token: Option<JsSyntaxToken>) -> Self {
+	pub fn with_type_token(self, type_token:Option<JsSyntaxToken>) -> Self {
 		match self {
 			Self::JsExportNamedShorthandSpecifier(specifier) => {
 				specifier.with_type_token(type_token).into()
 			},
-			Self::JsExportNamedSpecifier(specifier) => {
-				specifier.with_type_token(type_token).into()
-			},
+			Self::JsExportNamedSpecifier(specifier) => specifier.with_type_token(type_token).into(),
 		}
 	}
 }
 
 #[cfg(test)]
 mod tests {
-	use biome_js_factory::syntax::{JsExport, JsSyntaxKind::*};
-	use biome_js_factory::JsSyntaxTreeBuilder;
+	use biome_js_factory::{
+		syntax::{JsExport, JsSyntaxKind::*},
+		JsSyntaxTreeBuilder,
+	};
 	use biome_rowan::AstNode;
 
 	#[test]
 	fn test_get_exported_items() {
 		let mut tree_builder = JsSyntaxTreeBuilder::new();
-		//export {foo, bar as baz}
+		// export {foo, bar as baz}
 		tree_builder.start_node(JS_EXPORT);
 		tree_builder.token(EXPORT_KW, "export");
 		tree_builder.start_node(JS_EXPORT_NAMED_CLAUSE);
@@ -345,14 +380,8 @@ mod tests {
 		let export = JsExport::cast(node).unwrap();
 		let exported_items = export.get_exported_items();
 		assert_eq!(exported_items.len(), 2);
-		assert_eq!(
-			exported_items[0].identifier.as_ref().unwrap().to_string(),
-			"foo"
-		);
-		assert_eq!(
-			exported_items[1].identifier.as_ref().unwrap().to_string(),
-			"baz"
-		);
+		assert_eq!(exported_items[0].identifier.as_ref().unwrap().to_string(), "foo");
+		assert_eq!(exported_items[1].identifier.as_ref().unwrap().to_string(), "baz");
 		assert!(exported_items[0].exported.is_none());
 		assert!(exported_items[1].exported.is_none());
 		assert!(!exported_items[0].is_default);
@@ -380,10 +409,7 @@ mod tests {
 		let exported_items = export.get_exported_items();
 
 		assert_eq!(exported_items.len(), 1);
-		assert_eq!(
-			exported_items[0].identifier.as_ref().unwrap().to_string(),
-			"foo"
-		);
+		assert_eq!(exported_items[0].identifier.as_ref().unwrap().to_string(), "foo");
 		assert!(exported_items[0].exported.is_none());
 		assert!(exported_items[0].is_default);
 	}
@@ -431,22 +457,10 @@ mod tests {
 		let exported_items = export.get_exported_items();
 
 		assert_eq!(exported_items.len(), 2);
-		assert_eq!(
-			exported_items[0].identifier.as_ref().unwrap().to_string(),
-			"x"
-		);
-		assert_eq!(
-			exported_items[1].identifier.as_ref().unwrap().to_string(),
-			"y"
-		);
-		assert_eq!(
-			exported_items[0].exported.clone().unwrap().to_string(),
-			"100"
-		);
-		assert_eq!(
-			exported_items[1].exported.clone().unwrap().to_string(),
-			"200"
-		);
+		assert_eq!(exported_items[0].identifier.as_ref().unwrap().to_string(), "x");
+		assert_eq!(exported_items[1].identifier.as_ref().unwrap().to_string(), "y");
+		assert_eq!(exported_items[0].exported.clone().unwrap().to_string(), "100");
+		assert_eq!(exported_items[1].exported.clone().unwrap().to_string(), "200");
 		assert!(!exported_items[0].is_default);
 		assert!(!exported_items[1].is_default);
 	}
@@ -479,10 +493,7 @@ mod tests {
 		let exported_items = export.get_exported_items();
 
 		assert_eq!(exported_items.len(), 1);
-		assert_eq!(
-			exported_items[0].identifier.as_ref().unwrap().to_string(),
-			"foo"
-		);
+		assert_eq!(exported_items[0].identifier.as_ref().unwrap().to_string(), "foo");
 		assert!(exported_items[0].exported.is_none());
 		assert!(!exported_items[0].is_default);
 	}

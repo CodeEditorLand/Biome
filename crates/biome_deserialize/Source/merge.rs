@@ -7,17 +7,15 @@ pub trait Merge {
 	/// Values that are non-`None` in `other` will take precedence over values
 	/// in `self`. Complex types may get recursively merged instead of
 	/// overwritten.
-	fn merge_with(&mut self, other: Self);
+	fn merge_with(&mut self, other:Self);
 }
 
-impl<T: Merge> Merge for Box<T> {
-	fn merge_with(&mut self, other: Self) {
-		self.as_mut().merge_with(*other);
-	}
+impl<T:Merge> Merge for Box<T> {
+	fn merge_with(&mut self, other:Self) { self.as_mut().merge_with(*other); }
 }
 
-impl<T: Merge> Merge for Option<T> {
-	fn merge_with(&mut self, other: Self) {
+impl<T:Merge> Merge for Option<T> {
+	fn merge_with(&mut self, other:Self) {
 		if let Some(other) = other {
 			match self.as_mut() {
 				Some(this) => this.merge_with(other),
@@ -28,23 +26,15 @@ impl<T: Merge> Merge for Option<T> {
 }
 
 impl<T> Merge for Vec<T> {
-	fn merge_with(&mut self, other: Self) {
-		self.extend(other);
-	}
+	fn merge_with(&mut self, other:Self) { self.extend(other); }
 }
 
-impl<T: Eq + Hash, S: BuildHasher + Default> Merge
-	for std::collections::HashSet<T, S>
-{
-	fn merge_with(&mut self, other: Self) {
-		self.extend(other);
-	}
+impl<T:Eq + Hash, S:BuildHasher + Default> Merge for std::collections::HashSet<T, S> {
+	fn merge_with(&mut self, other:Self) { self.extend(other); }
 }
 
-impl<K: Hash + Eq, V: Merge, S: Default + BuildHasher> Merge
-	for std::collections::HashMap<K, V, S>
-{
-	fn merge_with(&mut self, other: Self) {
+impl<K:Hash + Eq, V:Merge, S:Default + BuildHasher> Merge for std::collections::HashMap<K, V, S> {
+	fn merge_with(&mut self, other:Self) {
 		for (k, v) in other {
 			if let Some(self_value) = self.get_mut(&k) {
 				self_value.merge_with(v);
@@ -55,8 +45,8 @@ impl<K: Hash + Eq, V: Merge, S: Default + BuildHasher> Merge
 	}
 }
 
-impl<K: Ord, V: Merge> Merge for std::collections::BTreeMap<K, V> {
-	fn merge_with(&mut self, other: Self) {
+impl<K:Ord, V:Merge> Merge for std::collections::BTreeMap<K, V> {
+	fn merge_with(&mut self, other:Self) {
 		for (k, v) in other {
 			if let Some(self_value) = self.get_mut(&k) {
 				self_value.merge_with(v);
@@ -67,16 +57,12 @@ impl<K: Ord, V: Merge> Merge for std::collections::BTreeMap<K, V> {
 	}
 }
 
-impl<T: Hash + Eq> Merge for indexmap::IndexSet<T> {
-	fn merge_with(&mut self, other: Self) {
-		self.extend(other);
-	}
+impl<T:Hash + Eq> Merge for indexmap::IndexSet<T> {
+	fn merge_with(&mut self, other:Self) { self.extend(other); }
 }
 
-impl<K: Hash + Eq, V: Merge, S: Default + BuildHasher> Merge
-	for indexmap::IndexMap<K, V, S>
-{
-	fn merge_with(&mut self, other: Self) {
+impl<K:Hash + Eq, V:Merge, S:Default + BuildHasher> Merge for indexmap::IndexMap<K, V, S> {
+	fn merge_with(&mut self, other:Self) {
 		for (k, v) in other {
 			if let Some(self_value) = self.get_mut(&k) {
 				self_value.merge_with(v);
@@ -90,11 +76,9 @@ impl<K: Hash + Eq, V: Merge, S: Default + BuildHasher> Merge
 /// This macro is used to implement [Merge] for all (primitive) types where
 /// merging can simply be implemented through overwriting the value.
 macro_rules! overwrite_on_merge {
-	( $ty:path ) => {
+	($ty:path) => {
 		impl Merge for $ty {
-			fn merge_with(&mut self, other: Self) {
-				*self = other;
-			}
+			fn merge_with(&mut self, other:Self) { *self = other; }
 		}
 	};
 }

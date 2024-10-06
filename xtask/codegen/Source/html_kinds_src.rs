@@ -1,7 +1,7 @@
 use crate::kind_src::KindsSrc;
 
-pub const HTML_KINDS_SRC: KindsSrc = KindsSrc {
-	punct: &[
+pub const HTML_KINDS_SRC:KindsSrc = KindsSrc {
+	punct:&[
 		("<", "L_ANGLE"),
 		(">", "R_ANGLE"),
 		("/", "SLASH"),
@@ -11,10 +11,10 @@ pub const HTML_KINDS_SRC: KindsSrc = KindsSrc {
 		("<!--", "COMMENT_START"),
 		("-->", "COMMENT_END"),
 	],
-	keywords: &["null", "true", "false", "doctype", "html"],
-	literals: &["HTML_STRING_LITERAL", "HTML_LITERAL"],
-	tokens: &["ERROR_TOKEN", "NEWLINE", "WHITESPACE", "IDENT", "HTML_IDENT"],
-	nodes: &[
+	keywords:&["null", "true", "false", "doctype", "html"],
+	literals:&["HTML_STRING_LITERAL", "HTML_LITERAL"],
+	tokens:&["ERROR_TOKEN", "NEWLINE", "WHITESPACE", "IDENT", "HTML_IDENT"],
+	nodes:&[
 		"HTML_ROOT",
 		"HTML_DIRECTIVE",
 		"HTML_SELF_CLOSING_TAG",

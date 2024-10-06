@@ -1,9 +1,19 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource, RuleSourceKind,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	RuleSourceKind,
 };
 use biome_console::markup;
 use biome_js_syntax::{
-	AnyJsArrowFunctionParameters, AnyJsBinding, AnyJsExpression, JsCallExpression, JsParameters,
+	AnyJsArrowFunctionParameters,
+	AnyJsBinding,
+	AnyJsExpression,
+	JsCallExpression,
+	JsParameters,
 	JsTemplateExpression,
 };
 use biome_rowan::{AstNode, TextRange};
@@ -54,12 +64,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoDoneCallback {
-	type Query = Ast<JsCallExpression>;
-	type State = TextRange;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsCallExpression>;
+	type Signals = Option<Self::State>;
+	type State = TextRange;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
 		let callee = node.callee().ok()?;
@@ -77,7 +87,8 @@ impl Rule for NoDoneCallback {
 
 		let argument_index = match callee_name.text_trimmed() {
 			"after" | "afterAll" | "afterEach" | "before" | "beforeAll" | "beforeEach" => 0,
-			"it" | "test" => 1, // for test.each() and test() we want the second argument
+			"it" | "test" => 1, // for test.each() and test() we want the
+			// second argument
 			_ => return None,
 		};
 
@@ -96,23 +107,23 @@ impl Rule for NoDoneCallback {
 						let text_range = param.name_token().ok()?;
 						let text_range = text_range.text_trimmed_range();
 						return Some(text_range);
-					}
+					},
 					AnyJsArrowFunctionParameters::JsParameters(js_parameters) => {
-						return analyze_js_parameters(&js_parameters, is_test_each)
-					}
+						return analyze_js_parameters(&js_parameters, is_test_each);
+					},
 				}
-			}
+			},
 			AnyJsExpression::JsFunctionExpression(js_function) => {
 				let js_parameters = js_function.parameters().ok()?;
 				return analyze_js_parameters(&js_parameters, is_test_each);
-			}
-			_ => {}
+			},
+			_ => {},
 		}
 
 		None
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, range: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, range:&Self::State) -> Option<RuleDiagnostic> {
 		Some(
 			RuleDiagnostic::new(
 				rule_category!(),
@@ -128,7 +139,7 @@ impl Rule for NoDoneCallback {
 	}
 }
 
-fn analyze_js_parameters(js_parameters: &JsParameters, is_test_each: bool) -> Option<TextRange> {
+fn analyze_js_parameters(js_parameters:&JsParameters, is_test_each:bool) -> Option<TextRange> {
 	let items = js_parameters.items();
 
 	let param = match is_test_each {
@@ -147,7 +158,7 @@ fn analyze_js_parameters(js_parameters: &JsParameters, is_test_each: bool) -> Op
 	Some(text_range)
 }
 
-fn get_js_binding_range(binding: &AnyJsBinding) -> Option<TextRange> {
+fn get_js_binding_range(binding:&AnyJsBinding) -> Option<TextRange> {
 	let param = binding.as_js_identifier_binding()?;
 	let text_range = param.name_token().ok()?;
 	let text_range = text_range.text_trimmed_range();

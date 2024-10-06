@@ -36,17 +36,33 @@ mod tree_builder;
 
 pub use biome_text_size::{TextLen, TextRange, TextSize};
 
+pub(crate) use crate::green::{GreenNode, GreenNodeData, GreenToken, GreenTokenData};
 pub use crate::{
 	ast::*,
 	file_source::FileSourceError,
 	green::{NodeCache, RawSyntaxKind},
 	syntax::{
-		chain_trivia_pieces, trim_leading_trivia_pieces,
-		trim_trailing_trivia_pieces, ChainTriviaPiecesIterator, Language,
-		SendNode, SyntaxElement, SyntaxElementChildren, SyntaxKind, SyntaxList,
-		SyntaxNode, SyntaxNodeChildren, SyntaxNodeOptionExt, SyntaxRewriter,
-		SyntaxSlot, SyntaxSlots, SyntaxToken, SyntaxTriviaPiece,
-		SyntaxTriviaPieceComments, TriviaPiece, TriviaPieceKind,
+		chain_trivia_pieces,
+		trim_leading_trivia_pieces,
+		trim_trailing_trivia_pieces,
+		ChainTriviaPiecesIterator,
+		Language,
+		SendNode,
+		SyntaxElement,
+		SyntaxElementChildren,
+		SyntaxKind,
+		SyntaxList,
+		SyntaxNode,
+		SyntaxNodeChildren,
+		SyntaxNodeOptionExt,
+		SyntaxRewriter,
+		SyntaxSlot,
+		SyntaxSlots,
+		SyntaxToken,
+		SyntaxTriviaPiece,
+		SyntaxTriviaPieceComments,
+		TriviaPiece,
+		TriviaPieceKind,
 		VisitNodeSignal,
 	},
 	syntax_factory::*,
@@ -54,10 +70,6 @@ pub use crate::{
 	token_text::TokenText,
 	tree_builder::{Checkpoint, TreeBuilder},
 	utility_types::{Direction, NodeOrToken, TokenAtOffset, WalkEvent},
-};
-
-pub(crate) use crate::green::{
-	GreenNode, GreenNodeData, GreenToken, GreenTokenData,
 };
 
 pub fn check_live() -> Option<String> {

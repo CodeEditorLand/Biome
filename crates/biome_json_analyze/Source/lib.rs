@@ -6,71 +6,72 @@ mod registry;
 mod suppression_action;
 pub mod utils;
 
-pub use crate::registry::visit_registry;
-use crate::suppression_action::JsonSuppressionAction;
+use std::{ops::Deref, sync::LazyLock};
+
 use biome_analyze::{
-	AnalysisFilter, AnalyzerOptions, AnalyzerSignal, ControlFlow, LanguageRoot,
-	MatchQueryParams, MetadataRegistry, RuleAction, RuleRegistry,
-	SuppressionDiagnostic, SuppressionKind,
+	AnalysisFilter,
+	AnalyzerOptions,
+	AnalyzerSignal,
+	ControlFlow,
+	LanguageRoot,
+	MatchQueryParams,
+	MetadataRegistry,
+	RuleAction,
+	RuleRegistry,
+	SuppressionDiagnostic,
+	SuppressionKind,
 };
 use biome_diagnostics::Error;
 use biome_json_syntax::{JsonFileSource, JsonLanguage};
-use std::ops::Deref;
-use std::sync::LazyLock;
+
+pub use crate::registry::visit_registry;
+use crate::suppression_action::JsonSuppressionAction;
 
 pub(crate) type JsonRuleAction = RuleAction<JsonLanguage>;
 
-pub static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
+pub static METADATA:LazyLock<MetadataRegistry> = LazyLock::new(|| {
 	let mut metadata = MetadataRegistry::default();
 	visit_registry(&mut metadata);
 	metadata
 });
 
-/// Run the analyzer on the provided `root`: this process will use the given `filter`
-/// to selectively restrict analysis to specific rules / a specific source range,
-/// then call `emit_signal` when an analysis rule emits a diagnostic or action
+/// Run the analyzer on the provided `root`: this process will use the given
+/// `filter` to selectively restrict analysis to specific rules / a specific
+/// source range, then call `emit_signal` when an analysis rule emits a
+/// diagnostic or action
 pub fn analyze<'a, F, B>(
-	root: &LanguageRoot<JsonLanguage>,
-	filter: AnalysisFilter,
-	options: &'a AnalyzerOptions,
-	file_source: JsonFileSource,
-	emit_signal: F,
+	root:&LanguageRoot<JsonLanguage>,
+	filter:AnalysisFilter,
+	options:&'a AnalyzerOptions,
+	file_source:JsonFileSource,
+	emit_signal:F,
 ) -> (Option<B>, Vec<Error>)
 where
 	F: FnMut(&dyn AnalyzerSignal<JsonLanguage>) -> ControlFlow<B> + 'a,
-	B: 'a,
-{
-	analyze_with_inspect_matcher(
-		root,
-		filter,
-		|_| {},
-		options,
-		file_source,
-		emit_signal,
-	)
+	B: 'a, {
+	analyze_with_inspect_matcher(root, filter, |_| {}, options, file_source, emit_signal)
 }
 
-/// Run the analyzer on the provided `root`: this process will use the given `filter`
-/// to selectively restrict analysis to specific rules / a specific source range,
-/// then call `emit_signal` when an analysis rule emits a diagnostic or action.
-/// Additionally, this function takes a `inspect_matcher` function that can be
-/// used to inspect the "query matches" emitted by the analyzer before they are
-/// processed by the lint rules registry
+/// Run the analyzer on the provided `root`: this process will use the given
+/// `filter` to selectively restrict analysis to specific rules / a specific
+/// source range, then call `emit_signal` when an analysis rule emits a
+/// diagnostic or action. Additionally, this function takes a `inspect_matcher`
+/// function that can be used to inspect the "query matches" emitted by the
+/// analyzer before they are processed by the lint rules registry
 pub fn analyze_with_inspect_matcher<'a, V, F, B>(
-	root: &LanguageRoot<JsonLanguage>,
-	filter: AnalysisFilter,
-	inspect_matcher: V,
-	options: &'a AnalyzerOptions,
-	file_source: JsonFileSource,
-	mut emit_signal: F,
+	root:&LanguageRoot<JsonLanguage>,
+	filter:AnalysisFilter,
+	inspect_matcher:V,
+	options:&'a AnalyzerOptions,
+	file_source:JsonFileSource,
+	mut emit_signal:F,
 ) -> (Option<B>, Vec<Error>)
 where
 	V: FnMut(&MatchQueryParams<JsonLanguage>) + 'a,
 	F: FnMut(&dyn AnalyzerSignal<JsonLanguage>) -> ControlFlow<B> + 'a,
-	B: 'a,
-{
+	B: 'a, {
 	fn parse_linter_suppression_comment(
-		_text: &str,
+		_text:&str,
 	) -> Vec<Result<SuppressionKind, SuppressionDiagnostic>> {
 		vec![]
 	}
@@ -100,8 +101,8 @@ where
 
 	(
 		analyzer.run(biome_analyze::AnalyzerContext {
-			root: root.clone(),
-			range: filter.range,
+			root:root.clone(),
+			range:filter.range,
 			services,
 			options,
 		}),
@@ -111,23 +112,30 @@ where
 
 #[cfg(test)]
 mod tests {
+	use std::slice;
+
 	use biome_analyze::{AnalyzerOptions, Never, RuleFilter};
-	use biome_console::fmt::{Formatter, Termcolor};
-	use biome_console::{markup, Markup};
-	use biome_diagnostics::termcolor::NoColor;
+	use biome_console::{
+		fmt::{Formatter, Termcolor},
+		markup,
+		Markup,
+	};
 	use biome_diagnostics::{
-		Diagnostic, DiagnosticExt, PrintDiagnostic, Severity,
+		termcolor::NoColor,
+		Diagnostic,
+		DiagnosticExt,
+		PrintDiagnostic,
+		Severity,
 	};
 	use biome_json_parser::{parse_json, JsonParserOptions};
 	use biome_json_syntax::{JsonFileSource, TextRange};
-	use std::slice;
 
 	use crate::{analyze, AnalysisFilter, ControlFlow};
 
 	#[ignore]
 	#[test]
 	fn quick_test() {
-		fn markup_to_string(markup: Markup) -> String {
+		fn markup_to_string(markup:Markup) -> String {
 			let mut buffer = Vec::new();
 			let mut write = Termcolor(NoColor::new(&mut buffer));
 			let mut fmt = Formatter::new(&mut write);
@@ -136,7 +144,7 @@ mod tests {
 			String::from_utf8(buffer).unwrap()
 		}
 
-		const SOURCE: &str = r#"	{
+		const SOURCE:&str = r#"	{
 		"loreum": "",
 		"loreum": "",
 		"loreum": ""
@@ -145,13 +153,13 @@ mod tests {
 
 		let parsed = parse_json(SOURCE, JsonParserOptions::default());
 
-		let mut error_ranges: Vec<TextRange> = Vec::new();
+		let mut error_ranges:Vec<TextRange> = Vec::new();
 		let rule_filter = RuleFilter::Rule("nursery", "noDuplicateJsonKeys");
 		let options = AnalyzerOptions::default();
 		analyze(
 			&parsed.tree(),
 			AnalysisFilter {
-				enabled_rules: Some(slice::from_ref(&rule_filter)),
+				enabled_rules:Some(slice::from_ref(&rule_filter)),
 				..AnalysisFilter::default()
 			},
 			&options,

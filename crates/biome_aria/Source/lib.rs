@@ -20,7 +20,7 @@ pub use roles::AriaRoles;
 /// assert!(!is_aria_property_valid("aria-blabla"));
 /// assert!(is_aria_property_valid("aria-checked"));
 /// ```
-pub fn is_aria_property_valid(property: &str) -> bool {
+pub fn is_aria_property_valid(property:&str) -> bool {
 	AriaPropertiesEnum::from_str(property).is_ok()
 }
 

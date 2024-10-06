@@ -1,5 +1,10 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, ActionCategory, FixKind, Rule, RuleDiagnostic,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
 };
 use biome_console::markup;
 use biome_js_semantic::ReferencesExtensions;
@@ -65,7 +70,7 @@ pub enum SuggestedFix {
 }
 
 fn is_function_that_is_ok_parameter_not_be_used(
-	parent_function: &Option<AnyJsParameterParentFunction>,
+	parent_function:&Option<AnyJsParameterParentFunction>,
 ) -> bool {
 	matches!(
 		parent_function,
@@ -90,12 +95,12 @@ fn is_function_that_is_ok_parameter_not_be_used(
 }
 
 impl Rule for NoUnusedFunctionParameters {
-	type Query = Semantic<JsIdentifierBinding>;
-	type State = SuggestedFix;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Semantic<JsIdentifierBinding>;
+	type Signals = Option<Self::State>;
+	type State = SuggestedFix;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let binding = ctx.query();
 
 		let declaration = binding.declaration()?;
@@ -115,8 +120,8 @@ impl Rule for NoUnusedFunctionParameters {
 			AnyJsBindingDeclaration::JsFormalParameter(parameter) => parameter.parent_function(),
 			AnyJsBindingDeclaration::JsRestParameter(parameter) => parameter.parent_function(),
 			AnyJsBindingDeclaration::JsBogusParameter(_) => {
-				return Some(SuggestedFix::NoSuggestion)
-			}
+				return Some(SuggestedFix::NoSuggestion);
+			},
 			_ => return None,
 		};
 		if is_function_that_is_ok_parameter_not_be_used(&parent_function) {
@@ -133,7 +138,7 @@ impl Rule for NoUnusedFunctionParameters {
 		})
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, _state:&Self::State) -> Option<RuleDiagnostic> {
 		let binding = ctx.query();
 		Some(
 			RuleDiagnostic::new(
@@ -149,7 +154,7 @@ impl Rule for NoUnusedFunctionParameters {
 		)
 	}
 
-	fn action(ctx: &RuleContext<Self>, suggestion: &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, suggestion:&Self::State) -> Option<JsRuleAction> {
 		match suggestion {
 			SuggestedFix::NoSuggestion => None,
 			SuggestedFix::PrefixUnderscore => {
@@ -170,7 +175,7 @@ impl Rule for NoUnusedFunctionParameters {
                     .to_owned(),
                     mutation,
                 ))
-			}
+			},
 		}
 	}
 }

@@ -1,14 +1,17 @@
 use std::path::Path;
 
-use crate::grit_context::GritQueryContext;
-use crate::grit_resolved_pattern::GritResolvedPattern;
-use crate::grit_target_language::GritTargetLanguage;
 use grit_pattern_matcher::{
 	constant::Constant,
 	pattern::{File, FilePtr, FileRegistry, ResolvedFile, ResolvedPattern},
 };
 use grit_util::Ast;
 use path_absolutize::Absolutize;
+
+use crate::{
+	grit_context::GritQueryContext,
+	grit_resolved_pattern::GritResolvedPattern,
+	grit_target_language::GritTargetLanguage,
+};
 
 #[derive(Clone, Debug, PartialEq)]
 pub enum GritFile<'a> {
@@ -17,22 +20,17 @@ pub enum GritFile<'a> {
 }
 
 impl<'a> File<'a, GritQueryContext> for GritFile<'a> {
-	fn name(
-		&self,
-		files: &FileRegistry<'a, GritQueryContext>,
-	) -> GritResolvedPattern<'a> {
+	fn name(&self, files:&FileRegistry<'a, GritQueryContext>) -> GritResolvedPattern<'a> {
 		match self {
 			Self::Resolved(resolved) => resolved.name.clone(),
-			Self::Ptr(ptr) => GritResolvedPattern::from_path_binding(
-				files.get_file_name(*ptr),
-			),
+			Self::Ptr(ptr) => GritResolvedPattern::from_path_binding(files.get_file_name(*ptr)),
 		}
 	}
 
 	fn absolute_path(
 		&self,
-		files: &FileRegistry<'a, GritQueryContext>,
-		language: &GritTargetLanguage,
+		files:&FileRegistry<'a, GritQueryContext>,
+		language:&GritTargetLanguage,
 	) -> anyhow::Result<GritResolvedPattern<'a>> {
 		match self {
 			Self::Resolved(resolved) => {
@@ -42,16 +40,13 @@ impl<'a> File<'a, GritQueryContext> for GritFile<'a> {
 					absolute_path.to_string_lossy().to_string(),
 				)))
 			},
-			Self::Ptr(ptr) => Ok(ResolvedPattern::from_path_binding(
-				files.get_absolute_path(*ptr)?,
-			)),
+			Self::Ptr(ptr) => {
+				Ok(ResolvedPattern::from_path_binding(files.get_absolute_path(*ptr)?))
+			},
 		}
 	}
 
-	fn body(
-		&self,
-		files: &FileRegistry<'a, GritQueryContext>,
-	) -> GritResolvedPattern<'a> {
+	fn body(&self, files:&FileRegistry<'a, GritQueryContext>) -> GritResolvedPattern<'a> {
 		match self {
 			Self::Resolved(resolved) => resolved.body.clone(),
 			Self::Ptr(ptr) => {
@@ -61,10 +56,7 @@ impl<'a> File<'a, GritQueryContext> for GritFile<'a> {
 		}
 	}
 
-	fn binding(
-		&self,
-		files: &FileRegistry<'a, GritQueryContext>,
-	) -> GritResolvedPattern<'a> {
+	fn binding(&self, files:&FileRegistry<'a, GritQueryContext>) -> GritResolvedPattern<'a> {
 		match self {
 			Self::Resolved(resolved) => resolved.body.clone(),
 			Self::Ptr(ptr) => {

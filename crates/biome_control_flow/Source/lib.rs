@@ -13,34 +13,34 @@ use crate::builder::BlockId;
 /// representing the execution order of statements and expressions in a given
 /// function as a graph of [BasicBlock]
 #[derive(Debug, Clone)]
-pub struct ControlFlowGraph<L: Language> {
+pub struct ControlFlowGraph<L:Language> {
 	/// List of blocks that make up this function
-	pub blocks: Vec<BasicBlock<L>>,
+	pub blocks:Vec<BasicBlock<L>>,
 	/// The function node this CFG was built for in the syntax tree
-	pub node: SyntaxNode<L>,
+	pub node:SyntaxNode<L>,
 }
 
-impl<L: Language> ControlFlowGraph<L> {
-	fn new(node: SyntaxNode<L>) -> Self {
-		ControlFlowGraph { blocks: vec![BasicBlock::new(None, None)], node }
+impl<L:Language> ControlFlowGraph<L> {
+	fn new(node:SyntaxNode<L>) -> Self {
+		ControlFlowGraph { blocks:vec![BasicBlock::new(None, None)], node }
 	}
 
 	/// Returns the block identified by `id`.
-	pub fn get(&self, id: BlockId) -> &BasicBlock<L> {
-		// SAFETY: safe conversion because a block id corresponds to its index in `self.blocks`.
+	pub fn get(&self, id:BlockId) -> &BasicBlock<L> {
+		// SAFETY: safe conversion because a block id corresponds to its index
+		// in `self.blocks`.
 		let block_index = id.index() as usize;
 		&self.blocks[block_index]
 	}
 
 	/// Returns pairs that contain a block identifier and the associated block
-	pub fn block_id_iter(
-		&self,
-	) -> impl Iterator<Item = (BlockId, &BasicBlock<L>)> {
-		// SAFETY: safe conversion because a block id corresponds to its index in `self.blocks`.
+	pub fn block_id_iter(&self) -> impl Iterator<Item = (BlockId, &BasicBlock<L>)> {
+		// SAFETY: safe conversion because a block id corresponds to its index
+		// in `self.blocks`.
 		self.blocks
 			.iter()
 			.enumerate()
-			.map(|(index, block)| (BlockId { index: index as u32 }, block))
+			.map(|(index, block)| (BlockId { index:index as u32 }, block))
 	}
 }
 
@@ -52,29 +52,30 @@ impl<L: Language> ControlFlowGraph<L> {
 /// block may not be executed entirely if a jump or return instruction is
 /// encountered.
 #[derive(Debug, Clone)]
-pub struct BasicBlock<L: Language> {
-	pub instructions: Vec<Instruction<L>>,
+pub struct BasicBlock<L:Language> {
+	pub instructions:Vec<Instruction<L>>,
 	/// List of handlers to execute when an exception is thrown from this block
-	pub exception_handlers: Vec<ExceptionHandler>,
+	pub exception_handlers:Vec<ExceptionHandler>,
 	/// List of handlers to execute when the function returns from this block
-	pub cleanup_handlers: Vec<ExceptionHandler>,
+	pub cleanup_handlers:Vec<ExceptionHandler>,
 }
 
-impl<L: Language> BasicBlock<L> {
+impl<L:Language> BasicBlock<L> {
 	fn new(
-		exception_handlers: impl IntoIterator<Item = ExceptionHandler>,
-		cleanup_handlers: impl IntoIterator<Item = ExceptionHandler>,
+		exception_handlers:impl IntoIterator<Item = ExceptionHandler>,
+		cleanup_handlers:impl IntoIterator<Item = ExceptionHandler>,
 	) -> Self {
 		Self {
-			instructions: Vec::new(),
-			exception_handlers: exception_handlers.into_iter().collect(),
-			cleanup_handlers: cleanup_handlers.into_iter().collect(),
+			instructions:Vec::new(),
+			exception_handlers:exception_handlers.into_iter().collect(),
+			cleanup_handlers:cleanup_handlers.into_iter().collect(),
 		}
 	}
 }
 
 /// Instructions are used to represent statements or expressions being executed
-/// as side effects, as well as potential divergence points for the control flow.
+/// as side effects, as well as potential divergence points for the control
+/// flow.
 ///
 /// Each node has an associated kind, as well as an optional syntax node: the
 /// node is useful to emit diagnostics but does not have a semantic value, and
@@ -82,9 +83,9 @@ impl<L: Language> BasicBlock<L> {
 /// instructions that do not correspond to any node in the syntax tree, to model
 /// the control flow of the program accurately.
 #[derive(Debug, Clone)]
-pub struct Instruction<L: Language> {
-	pub kind: InstructionKind,
-	pub node: Option<SyntaxElement<L>>,
+pub struct Instruction<L:Language> {
+	pub kind:InstructionKind,
+	pub node:Option<SyntaxElement<L>>,
 }
 
 /// The different types of supported [Instruction]
@@ -97,12 +98,13 @@ pub enum InstructionKind {
 	/// either unconditionally if `conditional` is set to `false`, or after
 	/// evaluating the associated syntax node otherwise
 	Jump {
-		conditional: bool,
-		block: BlockId,
+		conditional:bool,
+		block:BlockId,
 		/// Set to `true` for the terminating jump instruction out of a
 		/// `finally` clause, the target block can be reinterpreted to the next
-		/// exception handler instead if the control flow is currently unwinding
-		finally_fallthrough: bool,
+		/// exception handler instead if the control flow is currently
+		/// unwinding
+		finally_fallthrough:bool,
 	},
 	/// This instruction causes the control flow to unconditionally abort the
 	/// execution of the function, for example is JavaScript this can be
@@ -112,8 +114,8 @@ pub enum InstructionKind {
 
 #[derive(Debug, Clone, Copy)]
 pub struct ExceptionHandler {
-	pub kind: ExceptionHandlerKind,
-	pub target: BlockId,
+	pub kind:ExceptionHandlerKind,
+	pub target:BlockId,
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -169,8 +171,8 @@ pub enum ExceptionHandlerKind {
 ///     block_1_inst_0 -- "JS_BINARY_EXPRESSION 49..58" --> block_2
 ///     block_1_inst_1 --> block_3
 /// ```
-impl<L: Language> Display for ControlFlowGraph<L> {
-	fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+impl<L:Language> Display for ControlFlowGraph<L> {
+	fn fmt(&self, fmt:&mut Formatter) -> fmt::Result {
 		writeln!(fmt, "flowchart TB")?;
 
 		let mut links = FxHashMap::default();
@@ -199,13 +201,12 @@ impl<L: Language> Display for ControlFlowGraph<L> {
 					write!(fmt, "{inst}")?;
 				}
 
-				if let InstructionKind::Jump { conditional, block, .. } =
-					inst.kind
-				{
-					let condition =
-						inst.node.as_ref().filter(|_| conditional).map(
-							|node| (node.kind(), node.text_trimmed_range()),
-						);
+				if let InstructionKind::Jump { conditional, block, .. } = inst.kind {
+					let condition = inst
+						.node
+						.as_ref()
+						.filter(|_| conditional)
+						.map(|node| (node.kind(), node.text_trimmed_range()));
 					links.insert((id, index, block.index()), condition);
 				}
 			}
@@ -237,25 +238,18 @@ impl<L: Language> Display for ControlFlowGraph<L> {
 	}
 }
 
-impl<L: Language> Display for Instruction<L> {
-	fn fmt(&self, fmt: &mut Formatter) -> fmt::Result {
+impl<L:Language> Display for Instruction<L> {
+	fn fmt(&self, fmt:&mut Formatter) -> fmt::Result {
 		match self.kind {
 			InstructionKind::Statement => {
 				if let Some(node) = &self.node {
-					write!(
-						fmt,
-						"Statement({:?} {:?})",
-						node.kind(),
-						node.text_trimmed_range()
-					)
+					write!(fmt, "Statement({:?} {:?})", node.kind(), node.text_trimmed_range())
 				} else {
 					write!(fmt, "Statement")
 				}
 			},
 
-			InstructionKind::Jump { conditional: true, block, .. }
-				if self.node.is_some() =>
-			{
+			InstructionKind::Jump { conditional: true, block, .. } if self.node.is_some() => {
 				// SAFETY: Checked by the above call to `is_some`
 				let node = self.node.as_ref().unwrap();
 				write!(
@@ -273,12 +267,7 @@ impl<L: Language> Display for Instruction<L> {
 
 			InstructionKind::Return => {
 				if let Some(node) = &self.node {
-					write!(
-						fmt,
-						"Return({:?} {:?})",
-						node.kind(),
-						node.text_trimmed_range()
-					)
+					write!(fmt, "Return({:?} {:?})", node.kind(), node.text_trimmed_range())
 				} else {
 					write!(fmt, "Return")
 				}

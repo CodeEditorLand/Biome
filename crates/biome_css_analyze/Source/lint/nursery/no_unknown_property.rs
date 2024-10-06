@@ -1,5 +1,10 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::CssGenericProperty;
@@ -65,12 +70,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoUnknownProperty {
-	type Query = Ast<CssGenericProperty>;
-	type State = TextRange;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<CssGenericProperty>;
+	type Signals = Option<Self::State>;
+	type State = TextRange;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 
 		let property_name = node.name().ok()?.text().to_lowercase();
@@ -86,7 +91,7 @@ impl Rule for NoUnknownProperty {
 		None
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, range: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, range:&Self::State) -> Option<RuleDiagnostic> {
 		Some(
             RuleDiagnostic::new(
                 rule_category!(),

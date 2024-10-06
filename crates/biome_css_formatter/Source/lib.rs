@@ -9,24 +9,35 @@ mod utils;
 
 use std::borrow::Cow;
 
-use crate::comments::CssCommentStyle;
-pub(crate) use crate::context::CssFormatContext;
-use crate::context::CssFormatOptions;
-use crate::cst::FormatCssSyntaxNode;
 use biome_css_syntax::{
-	AnyCssDeclarationBlock, AnyCssRule, AnyCssRuleBlock, AnyCssValue,
-	CssLanguage, CssSyntaxKind, CssSyntaxNode, CssSyntaxToken,
+	AnyCssDeclarationBlock,
+	AnyCssRule,
+	AnyCssRuleBlock,
+	AnyCssValue,
+	CssLanguage,
+	CssSyntaxKind,
+	CssSyntaxNode,
+	CssSyntaxToken,
 };
-use biome_formatter::comments::Comments;
-use biome_formatter::prelude::*;
-use biome_formatter::trivia::format_skipped_token_trivia;
 use biome_formatter::{
-	write, CstFormatContext, FormatContext, FormatLanguage,
-	FormatOwnedWithRule, FormatRefWithRule, TransformSourceMap,
+	comments::Comments,
+	prelude::*,
+	trivia::format_skipped_token_trivia,
+	write,
+	CstFormatContext,
+	FormatContext,
+	FormatLanguage,
+	FormatOwnedWithRule,
+	FormatRefWithRule,
+	Formatted,
+	Printed,
+	TransformSourceMap,
 };
-use biome_formatter::{Formatted, Printed};
 use biome_rowan::{AstNode, SyntaxNode, TextRange};
 use biome_string_case::StrOnlyExtension;
+
+pub(crate) use crate::context::CssFormatContext;
+use crate::{comments::CssCommentStyle, context::CssFormatOptions, cst::FormatCssSyntaxNode};
 
 /// Used to get an object that knows how to format this object.
 pub(crate) trait AsFormat<Context> {
@@ -45,14 +56,13 @@ where
 {
 	type Format<'a> = T::Format<'a> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		AsFormat::format(&**self)
-	}
+	fn format(&self) -> Self::Format<'_> { AsFormat::format(&**self) }
 }
 
 /// Implement [AsFormat] for [SyntaxResult] where `T` implements [AsFormat].
 ///
-/// Useful to format mandatory AST fields without having to unwrap the value first.
+/// Useful to format mandatory AST fields without having to unwrap the value
+/// first.
 impl<T, C> AsFormat<C> for biome_rowan::SyntaxResult<T>
 where
 	T: AsFormat<C>,
@@ -69,16 +79,15 @@ where
 
 /// Implement [AsFormat] for [Option] when `T` implements [AsFormat]
 ///
-/// Allows to call format on optional AST fields without having to unwrap the field first.
+/// Allows to call format on optional AST fields without having to unwrap the
+/// field first.
 impl<T, C> AsFormat<C> for Option<T>
 where
 	T: AsFormat<C>,
 {
 	type Format<'a> = Option<T::Format<'a>> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		self.as_ref().map(|value| value.format())
-	}
+	fn format(&self) -> Self::Format<'_> { self.as_ref().map(|value| value.format()) }
 }
 
 /// Used to convert this object into an object that can be formatted.
@@ -96,23 +105,20 @@ where
 {
 	type Format = biome_rowan::SyntaxResult<T::Format>;
 
-	fn into_format(self) -> Self::Format {
-		self.map(IntoFormat::into_format)
-	}
+	fn into_format(self) -> Self::Format { self.map(IntoFormat::into_format) }
 }
 
 /// Implement [IntoFormat] for [Option] when `T` implements [IntoFormat]
 ///
-/// Allows to call format on optional AST fields without having to unwrap the field first.
+/// Allows to call format on optional AST fields without having to unwrap the
+/// field first.
 impl<T, Context> IntoFormat<Context> for Option<T>
 where
 	T: IntoFormat<Context>,
 {
 	type Format = Option<T::Format>;
 
-	fn into_format(self) -> Self::Format {
-		self.map(IntoFormat::into_format)
-	}
+	fn into_format(self) -> Self::Format { self.map(IntoFormat::into_format) }
 }
 
 /// Formatting specific [Iterator] extensions
@@ -121,9 +127,8 @@ pub(crate) trait FormattedIterExt {
 	fn formatted<Context>(self) -> FormattedIter<Self, Self::Item, Context>
 	where
 		Self: Iterator + Sized,
-		Self::Item: IntoFormat<Context>,
-	{
-		FormattedIter { inner: self, options: std::marker::PhantomData }
+		Self::Item: IntoFormat<Context>, {
+		FormattedIter { inner:self, options:std::marker::PhantomData }
 	}
 }
 
@@ -131,35 +136,29 @@ impl<I> FormattedIterExt for I where I: std::iter::Iterator {}
 
 pub(crate) struct FormattedIter<Iter, Item, Context>
 where
-	Iter: Iterator<Item = Item>,
-{
-	inner: Iter,
-	options: std::marker::PhantomData<Context>,
+	Iter: Iterator<Item = Item>, {
+	inner:Iter,
+	options:std::marker::PhantomData<Context>,
 }
 
-impl<Iter, Item, Context> std::iter::Iterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::Iterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: Iterator<Item = Item>,
 	Item: IntoFormat<Context>,
 {
 	type Item = Item::Format;
 
-	fn next(&mut self) -> Option<Self::Item> {
-		Some(self.inner.next()?.into_format())
-	}
+	fn next(&mut self) -> Option<Self::Item> { Some(self.inner.next()?.into_format()) }
 }
 
-impl<Iter, Item, Context> std::iter::FusedIterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::FusedIterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: std::iter::FusedIterator<Item = Item>,
 	Item: IntoFormat<Context>,
 {
 }
 
-impl<Iter, Item, Context> std::iter::ExactSizeIterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::ExactSizeIterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: Iterator<Item = Item> + std::iter::ExactSizeIterator,
 	Item: IntoFormat<Context>,
@@ -171,9 +170,8 @@ pub(crate) type CssFormatter<'buf> = Formatter<'buf, CssFormatContext>;
 /// Format a [CssSyntaxNode]
 pub(crate) trait FormatNodeRule<N>
 where
-	N: AstNode<Language = CssLanguage>,
-{
-	fn fmt(&self, node: &N, f: &mut CssFormatter) -> FormatResult<()> {
+	N: AstNode<Language = CssLanguage>, {
+	fn fmt(&self, node:&N, f:&mut CssFormatter) -> FormatResult<()> {
 		if self.is_suppressed(node, f) {
 			return write!(f, [format_suppressed_node(node.syntax())]);
 		}
@@ -184,49 +182,45 @@ where
 		self.fmt_trailing_comments(node, f)
 	}
 
-	fn fmt_fields(&self, node: &N, f: &mut CssFormatter) -> FormatResult<()>;
+	fn fmt_fields(&self, node:&N, f:&mut CssFormatter) -> FormatResult<()>;
 
-	/// Returns `true` if the node has a suppression comment and should use the same formatting as in the source document.
-	fn is_suppressed(&self, node: &N, f: &CssFormatter) -> bool {
+	/// Returns `true` if the node has a suppression comment and should use the
+	/// same formatting as in the source document.
+	fn is_suppressed(&self, node:&N, f:&CssFormatter) -> bool {
 		f.context().comments().is_suppressed(node.syntax())
 	}
 
-	/// Formats the [leading comments](biome_formatter::comments#leading-comments) of the node.
+	/// Formats the [leading
+	/// comments](biome_formatter::comments#leading-comments) of the node.
 	///
-	/// You may want to override this method if you want to manually handle the formatting of comments
-	/// inside of the `fmt_fields` method or customize the formatting of the leading comments.
-	fn fmt_leading_comments(
-		&self,
-		node: &N,
-		f: &mut CssFormatter,
-	) -> FormatResult<()> {
+	/// You may want to override this method if you want to manually handle the
+	/// formatting of comments inside of the `fmt_fields` method or customize
+	/// the formatting of the leading comments.
+	fn fmt_leading_comments(&self, node:&N, f:&mut CssFormatter) -> FormatResult<()> {
 		format_leading_comments(node.syntax()).fmt(f)
 	}
 
-	/// Formats the [dangling comments](biome_formatter::comments#dangling-comments) of the node.
+	/// Formats the [dangling
+	/// comments](biome_formatter::comments#dangling-comments) of the node.
 	///
-	/// You should override this method if the node handled by this rule can have dangling comments because the
-	/// default implementation formats the dangling comments at the end of the node, which isn't ideal but ensures that
-	/// no comments are dropped.
+	/// You should override this method if the node handled by this rule can
+	/// have dangling comments because the default implementation formats the
+	/// dangling comments at the end of the node, which isn't ideal but ensures
+	/// that no comments are dropped.
 	///
-	/// A node can have dangling comments if all its children are tokens or if all node childrens are optional.
-	fn fmt_dangling_comments(
-		&self,
-		node: &N,
-		f: &mut CssFormatter,
-	) -> FormatResult<()> {
+	/// A node can have dangling comments if all its children are tokens or if
+	/// all node childrens are optional.
+	fn fmt_dangling_comments(&self, node:&N, f:&mut CssFormatter) -> FormatResult<()> {
 		format_dangling_comments(node.syntax()).with_soft_block_indent().fmt(f)
 	}
 
-	/// Formats the [trailing comments](biome_formatter::comments#trailing-comments) of the node.
+	/// Formats the [trailing
+	/// comments](biome_formatter::comments#trailing-comments) of the node.
 	///
-	/// You may want to override this method if you want to manually handle the formatting of comments
-	/// inside of the `fmt_fields` method or customize the formatting of the trailing comments.
-	fn fmt_trailing_comments(
-		&self,
-		node: &N,
-		f: &mut CssFormatter,
-	) -> FormatResult<()> {
+	/// You may want to override this method if you want to manually handle the
+	/// formatting of comments inside of the `fmt_fields` method or customize
+	/// the formatting of the trailing comments.
+	fn fmt_trailing_comments(&self, node:&N, f:&mut CssFormatter) -> FormatResult<()> {
 		format_trailing_comments(node.syntax()).fmt(f)
 	}
 }
@@ -234,38 +228,32 @@ where
 /// Rule for formatting an bogus nodes.
 pub(crate) trait FormatBogusNodeRule<N>
 where
-	N: AstNode<Language = CssLanguage>,
-{
-	fn fmt(&self, node: &N, f: &mut CssFormatter) -> FormatResult<()> {
+	N: AstNode<Language = CssLanguage>, {
+	fn fmt(&self, node:&N, f:&mut CssFormatter) -> FormatResult<()> {
 		format_bogus_node(node.syntax()).fmt(f)
 	}
 }
 
 #[derive(Debug, Default, Clone)]
 pub struct CssFormatLanguage {
-	options: CssFormatOptions,
+	options:CssFormatOptions,
 }
 
 impl CssFormatLanguage {
-	pub fn new(options: CssFormatOptions) -> Self {
-		Self { options }
-	}
+	pub fn new(options:CssFormatOptions) -> Self { Self { options } }
 }
 
 impl FormatLanguage for CssFormatLanguage {
-	type SyntaxLanguage = CssLanguage;
 	type Context = CssFormatContext;
 	type FormatRule = FormatCssSyntaxNode;
+	type SyntaxLanguage = CssLanguage;
 
 	// For CSS, range formatting allows:
 	// - any block of rules or declarations
 	// - any individual rule or declaration
 	// - any individual value
 	// - a complete value definition for a declaration
-	fn is_range_formatting_node(
-		&self,
-		node: &SyntaxNode<Self::SyntaxLanguage>,
-	) -> bool {
+	fn is_range_formatting_node(&self, node:&SyntaxNode<Self::SyntaxLanguage>) -> bool {
 		AnyCssDeclarationBlock::can_cast(node.kind())
 			|| AnyCssRuleBlock::can_cast(node.kind())
 			|| AnyCssValue::can_cast(node.kind())
@@ -278,19 +266,15 @@ impl FormatLanguage for CssFormatLanguage {
 			)
 	}
 
-	fn options(&self) -> &<Self::Context as FormatContext>::Options {
-		&self.options
-	}
+	fn options(&self) -> &<Self::Context as FormatContext>::Options { &self.options }
 
 	fn create_context(
 		self,
-		root: &CssSyntaxNode,
-		source_map: Option<TransformSourceMap>,
+		root:&CssSyntaxNode,
+		source_map:Option<TransformSourceMap>,
 	) -> Self::Context {
-		let comments =
-			Comments::from_node(root, &CssCommentStyle, source_map.as_ref());
-		CssFormatContext::new(self.options, comments)
-			.with_source_map(source_map)
+		let comments = Comments::from_node(root, &CssCommentStyle, source_map.as_ref());
+		CssFormatContext::new(self.options, comments).with_source_map(source_map)
 	}
 }
 
@@ -305,11 +289,7 @@ pub(crate) struct FormatCssSyntaxToken;
 impl FormatRule<CssSyntaxToken> for FormatCssSyntaxToken {
 	type Context = CssFormatContext;
 
-	fn fmt(
-		&self,
-		token: &CssSyntaxToken,
-		f: &mut Formatter<Self::Context>,
-	) -> FormatResult<()> {
+	fn fmt(&self, token:&CssSyntaxToken, f:&mut Formatter<Self::Context>) -> FormatResult<()> {
 		f.state_mut().track_token(token);
 
 		write!(f, [format_skipped_token_trivia(token)])?;
@@ -318,13 +298,9 @@ impl FormatRule<CssSyntaxToken> for FormatCssSyntaxToken {
 			let original = token.text_trimmed();
 			match original.to_ascii_lowercase_cow() {
 				Cow::Borrowed(_) => write!(f, [format_trimmed_token(token)]),
-				Cow::Owned(lowercase) => write!(
-					f,
-					[dynamic_text(
-						&lowercase,
-						token.text_trimmed_range().start()
-					)]
-				),
+				Cow::Owned(lowercase) => {
+					write!(f, [dynamic_text(&lowercase, token.text_trimmed_range().start())])
+				},
 			}
 		} else {
 			write!(f, [format_trimmed_token(token)])
@@ -333,20 +309,15 @@ impl FormatRule<CssSyntaxToken> for FormatCssSyntaxToken {
 }
 
 impl AsFormat<CssFormatContext> for CssSyntaxToken {
-	type Format<'a> =
-		FormatRefWithRule<'a, CssSyntaxToken, FormatCssSyntaxToken>;
+	type Format<'a> = FormatRefWithRule<'a, CssSyntaxToken, FormatCssSyntaxToken>;
 
-	fn format(&self) -> Self::Format<'_> {
-		FormatRefWithRule::new(self, FormatCssSyntaxToken)
-	}
+	fn format(&self) -> Self::Format<'_> { FormatRefWithRule::new(self, FormatCssSyntaxToken) }
 }
 
 impl IntoFormat<CssFormatContext> for CssSyntaxToken {
 	type Format = FormatOwnedWithRule<CssSyntaxToken, FormatCssSyntaxToken>;
 
-	fn into_format(self) -> Self::Format {
-		FormatOwnedWithRule::new(self, FormatCssSyntaxToken)
-	}
+	fn into_format(self) -> Self::Format { FormatOwnedWithRule::new(self, FormatCssSyntaxToken) }
 }
 
 /// Formats a range within a file, supported by Biome
@@ -361,9 +332,9 @@ impl IntoFormat<CssFormatContext> for CssSyntaxToken {
 /// It returns a [Printed] result with a range corresponding to the
 /// range of the input that was effectively overwritten by the formatter
 pub fn format_range(
-	options: CssFormatOptions,
-	root: &CssSyntaxNode,
-	range: TextRange,
+	options:CssFormatOptions,
+	root:&CssSyntaxNode,
+	range:TextRange,
 ) -> FormatResult<Printed> {
 	biome_formatter::format_range(root, range, CssFormatLanguage::new(options))
 }
@@ -372,8 +343,8 @@ pub fn format_range(
 ///
 /// It returns the [Formatted] document that can be printed to a string.
 pub fn format_node(
-	options: CssFormatOptions,
-	root: &CssSyntaxNode,
+	options:CssFormatOptions,
+	root:&CssSyntaxNode,
 ) -> FormatResult<Formatted<CssFormatContext>> {
 	biome_formatter::format_node(root, CssFormatLanguage::new(options))
 }
@@ -388,18 +359,15 @@ pub fn format_node(
 /// even if it's a mismatch from the rest of the block the selection is in
 ///
 /// Returns the [Printed] code.
-pub fn format_sub_tree(
-	options: CssFormatOptions,
-	root: &CssSyntaxNode,
-) -> FormatResult<Printed> {
+pub fn format_sub_tree(options:CssFormatOptions, root:&CssSyntaxNode) -> FormatResult<Printed> {
 	biome_formatter::format_sub_tree(root, CssFormatLanguage::new(options))
 }
 
 #[cfg(test)]
 mod tests {
-	use crate::context::CssFormatOptions;
-	use crate::format_node;
 	use biome_css_parser::{parse_css, CssParserOptions};
+
+	use crate::{context::CssFormatOptions, format_node};
 
 	#[test]
 	fn smoke_test() {

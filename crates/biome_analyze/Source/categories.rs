@@ -1,5 +1,6 @@
-use enumflags2::{bitflags, BitFlags};
 use std::borrow::Cow;
+
+use enumflags2::{bitflags, BitFlags};
 
 #[derive(Copy, Clone, Debug, Eq, PartialEq)]
 #[cfg_attr(
@@ -22,7 +23,7 @@ pub enum RuleCategory {
 }
 
 /// Actions that suppress rules should start with this string
-pub const SUPPRESSION_ACTION_CATEGORY: &str = "quickfix.suppressRule";
+pub const SUPPRESSION_ACTION_CATEGORY:&str = "quickfix.suppressRule";
 
 /// The category of a code action, this type maps directly to the
 /// [CodeActionKind] type in the Language Server Protocol specification
@@ -68,18 +69,15 @@ impl ActionCategory {
 	/// assert!(ActionCategory::Refactor(RefactorKind::Extract).matches("refactor"));
 	/// assert!(ActionCategory::Refactor(RefactorKind::Extract).matches("refactor.extract"));
 	/// ```
-	pub fn matches(&self, filter: &str) -> bool {
-		self.to_str().starts_with(filter)
-	}
+	pub fn matches(&self, filter:&str) -> bool { self.to_str().starts_with(filter) }
 
-	/// Returns the representation of this [ActionCategory] as a `CodeActionKind` string
+	/// Returns the representation of this [ActionCategory] as a
+	/// `CodeActionKind` string
 	pub fn to_str(&self) -> Cow<'static, str> {
 		match self {
 			ActionCategory::QuickFix => Cow::Borrowed("quickfix.biome"),
 
-			ActionCategory::Refactor(RefactorKind::None) => {
-				Cow::Borrowed("refactor.biome")
-			},
+			ActionCategory::Refactor(RefactorKind::None) => Cow::Borrowed("refactor.biome"),
 			ActionCategory::Refactor(RefactorKind::Extract) => {
 				Cow::Borrowed("refactor.extract.biome")
 			},
@@ -93,9 +91,7 @@ impl ActionCategory {
 				Cow::Owned(format!("refactor.{tag}.biome"))
 			},
 
-			ActionCategory::Source(SourceActionKind::None) => {
-				Cow::Borrowed("source.biome")
-			},
+			ActionCategory::Source(SourceActionKind::None) => Cow::Borrowed("source.biome"),
 			ActionCategory::Source(SourceActionKind::FixAll) => {
 				Cow::Borrowed("source.fixAll.biome")
 			},
@@ -168,7 +164,8 @@ pub enum SourceActionKind {
 	// do not require user input. They should not suppress errors or perform
 	// unsafe fixes such as generating new types or classes.
 	FixAll,
-	/// Base kind for an organize imports source action: `source.organizeImports`.
+	/// Base kind for an organize imports source action:
+	/// `source.organizeImports`.
 	OrganizeImports,
 	/// This action is using a source action kind not covered by any of the
 	/// previous variants
@@ -188,52 +185,44 @@ pub(crate) enum Categories {
 #[derive(Debug, Copy, Clone)]
 /// The categories supported by the analyzer.
 ///
-/// The default implementation of this type returns an instance with all the categories.
+/// The default implementation of this type returns an instance with all the
+/// categories.
 ///
 /// Use [RuleCategoriesBuilder] to generate the categories you want to query.
 pub struct RuleCategories(BitFlags<Categories>);
 
 impl RuleCategories {
 	pub fn empty() -> Self {
-		let empty: BitFlags<Categories> = BitFlags::empty();
+		let empty:BitFlags<Categories> = BitFlags::empty();
 		Self(empty)
 	}
 
 	pub fn all() -> Self {
-		let empty: BitFlags<Categories> = BitFlags::all();
+		let empty:BitFlags<Categories> = BitFlags::all();
 		Self(empty)
 	}
 
-	/// Checks whether the current categories contain a specific [RuleCategories]
-	pub fn contains(&self, other: impl Into<RuleCategories>) -> bool {
+	/// Checks whether the current categories contain a specific
+	/// [RuleCategories]
+	pub fn contains(&self, other:impl Into<RuleCategories>) -> bool {
 		self.0.contains(other.into().0)
 	}
 }
 
 impl Default for RuleCategories {
-	fn default() -> Self {
-		Self::all()
-	}
+	fn default() -> Self { Self::all() }
 }
 
 impl RuleCategories {
-	pub fn is_syntax(&self) -> bool {
-		self.0.contains(Categories::Syntax)
-	}
+	pub fn is_syntax(&self) -> bool { self.0.contains(Categories::Syntax) }
 }
 
 impl From<RuleCategory> for RuleCategories {
-	fn from(input: RuleCategory) -> Self {
+	fn from(input:RuleCategory) -> Self {
 		match input {
-			RuleCategory::Syntax => {
-				RuleCategories(BitFlags::from_flag(Categories::Syntax))
-			},
-			RuleCategory::Lint => {
-				RuleCategories(BitFlags::from_flag(Categories::Lint))
-			},
-			RuleCategory::Action => {
-				RuleCategories(BitFlags::from_flag(Categories::Action))
-			},
+			RuleCategory::Syntax => RuleCategories(BitFlags::from_flag(Categories::Syntax)),
+			RuleCategory::Lint => RuleCategories(BitFlags::from_flag(Categories::Lint)),
+			RuleCategory::Action => RuleCategories(BitFlags::from_flag(Categories::Action)),
 			RuleCategory::Transformation => {
 				RuleCategories(BitFlags::from_flag(Categories::Transformation))
 			},
@@ -243,10 +232,9 @@ impl From<RuleCategory> for RuleCategories {
 
 #[cfg(feature = "serde")]
 impl serde::Serialize for RuleCategories {
-	fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+	fn serialize<S>(&self, serializer:S) -> Result<S::Ok, S::Error>
 	where
-		S: serde::Serializer,
-	{
+		S: serde::Serializer, {
 		let mut flags = Vec::new();
 
 		if self.0.contains(Categories::Syntax) {
@@ -271,26 +259,25 @@ impl serde::Serialize for RuleCategories {
 
 #[cfg(feature = "serde")]
 impl<'de> serde::Deserialize<'de> for RuleCategories {
-	fn deserialize<D>(deserializer: D) -> Result<Self, D::Error>
+	fn deserialize<D>(deserializer:D) -> Result<Self, D::Error>
 	where
-		D: serde::Deserializer<'de>,
-	{
-		use serde::de::{self, SeqAccess};
+		D: serde::Deserializer<'de>, {
 		use std::fmt::{self, Formatter};
+
+		use serde::de::{self, SeqAccess};
 
 		struct Visitor;
 
 		impl<'de> de::Visitor<'de> for Visitor {
 			type Value = RuleCategories;
 
-			fn expecting(&self, formatter: &mut Formatter) -> fmt::Result {
+			fn expecting(&self, formatter:&mut Formatter) -> fmt::Result {
 				write!(formatter, "RuleCategories")
 			}
 
-			fn visit_seq<A>(self, mut seq: A) -> Result<Self::Value, A::Error>
+			fn visit_seq<A>(self, mut seq:A) -> Result<Self::Value, A::Error>
 			where
-				A: SeqAccess<'de>,
-			{
+				A: SeqAccess<'de>, {
 				let mut result = RuleCategories::empty();
 
 				while let Some(item) = seq.next_element::<RuleCategory>()? {
@@ -307,13 +294,9 @@ impl<'de> serde::Deserialize<'de> for RuleCategories {
 
 #[cfg(feature = "serde")]
 impl schemars::JsonSchema for RuleCategories {
-	fn schema_name() -> String {
-		String::from("RuleCategories")
-	}
+	fn schema_name() -> String { String::from("RuleCategories") }
 
-	fn json_schema(
-		gen: &mut schemars::gen::SchemaGenerator,
-	) -> schemars::schema::Schema {
+	fn json_schema(gen:&mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
 		<Vec<RuleCategory>>::json_schema(gen)
 	}
 }
@@ -331,7 +314,7 @@ impl schemars::JsonSchema for RuleCategories {
 /// assert!(!categories.contains(RuleCategory::Transformation));
 /// ```
 pub struct RuleCategoriesBuilder {
-	flags: BitFlags<Categories>,
+	flags:BitFlags<Categories>,
 }
 
 impl RuleCategoriesBuilder {
@@ -355,7 +338,5 @@ impl RuleCategoriesBuilder {
 		self
 	}
 
-	pub fn build(self) -> RuleCategories {
-		RuleCategories(self.flags)
-	}
+	pub fn build(self) -> RuleCategories { RuleCategories(self.flags) }
 }

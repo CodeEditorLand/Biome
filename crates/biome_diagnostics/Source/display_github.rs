@@ -1,17 +1,22 @@
-use crate::display::frame::SourceFile;
-use crate::{
-	diagnostic::internal::AsDiagnostic, Diagnostic, Resource, Severity,
-};
+use std::io;
+
 use biome_console::{fmt, markup, MarkupBuf};
 use biome_text_size::{TextRange, TextSize};
-use std::io;
+
+use crate::{
+	diagnostic::internal::AsDiagnostic,
+	display::frame::SourceFile,
+	Diagnostic,
+	Resource,
+	Severity,
+};
 
 /// Helper struct for printing a diagnostic as markup into any formatter
 /// implementing [biome_console::fmt::Write].
-pub struct PrintGitHubDiagnostic<'fmt, D: ?Sized>(pub &'fmt D);
+pub struct PrintGitHubDiagnostic<'fmt, D:?Sized>(pub &'fmt D);
 
-impl<D: AsDiagnostic + ?Sized> fmt::Display for PrintGitHubDiagnostic<'_, D> {
-	fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> io::Result<()> {
+impl<D:AsDiagnostic + ?Sized> fmt::Display for PrintGitHubDiagnostic<'_, D> {
+	fn fmt(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
 		let diagnostic = self.0.as_diagnostic();
 		let location = diagnostic.location();
 
@@ -48,12 +53,7 @@ impl<D: AsDiagnostic + ?Sized> fmt::Display for PrintGitHubDiagnostic<'_, D> {
 			markup_to_string(&message)
 		};
 
-		let title = {
-			diagnostic
-				.category()
-				.map(|category| category.name())
-				.unwrap_or_default()
-		};
+		let title = { diagnostic.category().map(|category| category.name()).unwrap_or_default() };
 
 		fmt.write_str(
 			format! {
@@ -74,17 +74,17 @@ impl<D: AsDiagnostic + ?Sized> fmt::Display for PrintGitHubDiagnostic<'_, D> {
 	}
 }
 
-struct PrintDiagnosticMessage<'fmt, D: ?Sized>(&'fmt D);
+struct PrintDiagnosticMessage<'fmt, D:?Sized>(&'fmt D);
 
-impl<D: Diagnostic + ?Sized> fmt::Display for PrintDiagnosticMessage<'_, D> {
-	fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> io::Result<()> {
+impl<D:Diagnostic + ?Sized> fmt::Display for PrintDiagnosticMessage<'_, D> {
+	fn fmt(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
 		let Self(diagnostic) = *self;
 		diagnostic.message(fmt)?;
 		Ok(())
 	}
 }
 
-fn escape_data<S: AsRef<str>>(value: S) -> String {
+fn escape_data<S:AsRef<str>>(value:S) -> String {
 	let value = value.as_ref();
 
 	// Refs:
@@ -102,7 +102,7 @@ fn escape_data<S: AsRef<str>>(value: S) -> String {
 	result
 }
 
-fn escape_property<S: AsRef<str>>(value: S) -> String {
+fn escape_property<S:AsRef<str>>(value:S) -> String {
 	let value = value.as_ref();
 
 	// Refs:
@@ -122,7 +122,7 @@ fn escape_property<S: AsRef<str>>(value: S) -> String {
 	result
 }
 
-fn markup_to_string(markup: &MarkupBuf) -> Option<String> {
+fn markup_to_string(markup:&MarkupBuf) -> Option<String> {
 	let mut buffer = Vec::new();
 	let mut write = fmt::Termcolor(termcolor::NoColor::new(&mut buffer));
 	let mut fmt = fmt::Formatter::new(&mut write);

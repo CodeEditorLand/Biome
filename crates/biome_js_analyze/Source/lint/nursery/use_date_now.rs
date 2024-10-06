@@ -1,18 +1,31 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, ActionCategory, Ast, FixKind, Rule, RuleDiagnostic,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
 	RuleSource,
 };
 use biome_console::markup;
 use biome_js_factory::make;
 use biome_js_syntax::{
-	AnyJsExpression, JsAssignmentOperator, JsBinaryOperator, JsCallExpression, JsNewExpression,
-	JsNewOrCallExpression, JsSyntaxKind, JsSyntaxNode, JsUnaryOperator, T,
+	AnyJsExpression,
+	JsAssignmentOperator,
+	JsBinaryOperator,
+	JsCallExpression,
+	JsNewExpression,
+	JsNewOrCallExpression,
+	JsSyntaxKind,
+	JsSyntaxNode,
+	JsUnaryOperator,
+	T,
 };
 use biome_rowan::{AstNode, AstSeparatedList, BatchMutationExt};
 
-use crate::JsRuleAction;
-
 use super::use_explicit_length_check::does_node_needs_space_before_child;
+use crate::JsRuleAction;
 
 declare_lint_rule! {
 	/// Use `Date.now()` to get the number of milliseconds since the Unix Epoch.
@@ -64,12 +77,12 @@ declare_lint_rule! {
 }
 
 impl Rule for UseDateNow {
-	type Query = Ast<JsNewOrCallExpression>;
-	type State = (AnyJsExpression, UseDateNowIssueKind);
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsNewOrCallExpression>;
+	type Signals = Option<Self::State>;
+	type State = (AnyJsExpression, UseDateNowIssueKind);
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let expr = ctx.query();
 
 		match expr {
@@ -78,9 +91,11 @@ impl Rule for UseDateNow {
 		}
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, (node, kind): &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, (node, kind):&Self::State) -> Option<RuleDiagnostic> {
 		let message = match kind {
-			UseDateNowIssueKind::ReplaceMethod(method) => format!("new Date().{method}"),
+			UseDateNowIssueKind::ReplaceMethod(method) => {
+				format!("new Date().{method}")
+			},
 			UseDateNowIssueKind::ReplaceConstructor => "new Date()".to_string(),
 			UseDateNowIssueKind::ReplaceNumberConstructor => "Number(new Date())".to_string(),
 		};
@@ -99,7 +114,7 @@ impl Rule for UseDateNow {
         ))
 	}
 
-	fn action(ctx: &RuleContext<Self>, (node, _): &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, (node, _):&Self::State) -> Option<JsRuleAction> {
 		let mut mutation = ctx.root().begin();
 
 		let args = make::js_call_arguments(
@@ -148,7 +163,7 @@ pub enum UseDateNowIssueKind {
 }
 
 fn get_date_method_issue(
-	call_expr: &JsCallExpression,
+	call_expr:&JsCallExpression,
 ) -> Option<(AnyJsExpression, UseDateNowIssueKind)> {
 	let callee = call_expr.callee().ok()?.omit_parentheses();
 
@@ -175,7 +190,7 @@ fn get_date_method_issue(
 	))
 }
 
-fn get_new_date_issue(expr: &JsNewExpression) -> Option<(AnyJsExpression, UseDateNowIssueKind)> {
+fn get_new_date_issue(expr:&JsNewExpression) -> Option<(AnyJsExpression, UseDateNowIssueKind)> {
 	let callee = expr.callee().ok()?.omit_parentheses();
 
 	if callee.get_callee_member_name()?.token_text_trimmed() != "Date"
@@ -189,18 +204,19 @@ fn get_new_date_issue(expr: &JsNewExpression) -> Option<(AnyJsExpression, UseDat
 		AnyJsExpression::JsBinaryExpression(binary_expr) => {
 			let operator = binary_expr.operator().ok()?;
 
-			if matches!(operator, |JsBinaryOperator::Minus| JsBinaryOperator::Times
-				| JsBinaryOperator::Divide
-				| JsBinaryOperator::Remainder
-				| JsBinaryOperator::Exponent)
-			{
+			if matches!(operator, |JsBinaryOperator::Minus| {
+				JsBinaryOperator::Times
+					| JsBinaryOperator::Divide
+					| JsBinaryOperator::Remainder
+					| JsBinaryOperator::Exponent
+			}) {
 				let any_expr = AnyJsExpression::cast_ref(expr.syntax())?;
 
 				return Some((any_expr, UseDateNowIssueKind::ReplaceConstructor));
 			}
 
 			None
-		}
+		},
 		AnyJsExpression::JsAssignmentExpression(expr) => {
 			let token = expr.operator().ok()?;
 
@@ -218,7 +234,7 @@ fn get_new_date_issue(expr: &JsNewExpression) -> Option<(AnyJsExpression, UseDat
 			}
 
 			None
-		}
+		},
 		AnyJsExpression::JsUnaryExpression(unary_expr) => {
 			let operator = unary_expr.operator().ok()?;
 
@@ -229,7 +245,7 @@ fn get_new_date_issue(expr: &JsNewExpression) -> Option<(AnyJsExpression, UseDat
 			};
 
 			Some((AnyJsExpression::cast(syntax)?, UseDateNowIssueKind::ReplaceConstructor))
-		}
+		},
 		AnyJsExpression::JsCallExpression(call_expr) => {
 			if call_expr.is_optional() || call_expr.arguments().ok()?.args().len() != 1 {
 				return None;
@@ -250,12 +266,12 @@ fn get_new_date_issue(expr: &JsNewExpression) -> Option<(AnyJsExpression, UseDat
 			}
 
 			None
-		}
+		},
 		_ => None,
 	}
 }
 
-fn get_parent_without_parenthesis(node: &JsSyntaxNode) -> Option<AnyJsExpression> {
+fn get_parent_without_parenthesis(node:&JsSyntaxNode) -> Option<AnyJsExpression> {
 	node.ancestors()
 		.skip(1)
 		.find(|ancestor| {

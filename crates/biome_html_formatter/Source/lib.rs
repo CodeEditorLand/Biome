@@ -1,9 +1,14 @@
-use biome_formatter::comments::Comments;
 use biome_formatter::{
-	prelude::*, CstFormatContext, FormatOwnedWithRule, FormatRefWithRule,
-};
-use biome_formatter::{
-	write, FormatLanguage, FormatResult, FormatToken, Formatted,
+	comments::Comments,
+	prelude::*,
+	write,
+	CstFormatContext,
+	FormatLanguage,
+	FormatOwnedWithRule,
+	FormatRefWithRule,
+	FormatResult,
+	FormatToken,
+	Formatted,
 };
 use biome_html_syntax::{HtmlLanguage, HtmlSyntaxNode, HtmlSyntaxToken};
 use biome_rowan::AstNode;
@@ -24,8 +29,8 @@ pub mod utils;
 ///
 /// It returns a [Formatted] result, which the user can use to override a file.
 pub fn format_node(
-	options: HtmlFormatOptions,
-	root: &HtmlSyntaxNode,
+	options:HtmlFormatOptions,
+	root:&HtmlSyntaxNode,
 ) -> FormatResult<Formatted<HtmlFormatContext>> {
 	biome_formatter::format_node(root, HtmlFormatLanguage::new(options))
 }
@@ -47,14 +52,13 @@ where
 {
 	type Format<'a> = T::Format<'a> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		AsFormat::format(&**self)
-	}
+	fn format(&self) -> Self::Format<'_> { AsFormat::format(&**self) }
 }
 
 /// Implement [AsFormat] for [SyntaxResult] where `T` implements [AsFormat].
 ///
-/// Useful to format mandatory AST fields without having to unwrap the value first.
+/// Useful to format mandatory AST fields without having to unwrap the value
+/// first.
 impl<T, C> AsFormat<C> for biome_rowan::SyntaxResult<T>
 where
 	T: AsFormat<C>,
@@ -71,16 +75,15 @@ where
 
 /// Implement [AsFormat] for [Option] when `T` implements [AsFormat]
 ///
-/// Allows to call format on optional AST fields without having to unwrap the field first.
+/// Allows to call format on optional AST fields without having to unwrap the
+/// field first.
 impl<T, C> AsFormat<C> for Option<T>
 where
 	T: AsFormat<C>,
 {
 	type Format<'a> = Option<T::Format<'a>> where Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> {
-		self.as_ref().map(|value| value.format())
-	}
+	fn format(&self) -> Self::Format<'_> { self.as_ref().map(|value| value.format()) }
 }
 
 /// Used to convert this object into an object that can be formatted.
@@ -98,56 +101,47 @@ where
 {
 	type Format = biome_rowan::SyntaxResult<T::Format>;
 
-	fn into_format(self) -> Self::Format {
-		self.map(IntoFormat::into_format)
-	}
+	fn into_format(self) -> Self::Format { self.map(IntoFormat::into_format) }
 }
 
 /// Implement [IntoFormat] for [Option] when `T` implements [IntoFormat]
 ///
-/// Allows to call format on optional AST fields without having to unwrap the field first.
+/// Allows to call format on optional AST fields without having to unwrap the
+/// field first.
 impl<T, Context> IntoFormat<Context> for Option<T>
 where
 	T: IntoFormat<Context>,
 {
 	type Format = Option<T::Format>;
 
-	fn into_format(self) -> Self::Format {
-		self.map(IntoFormat::into_format)
-	}
+	fn into_format(self) -> Self::Format { self.map(IntoFormat::into_format) }
 }
 
 #[derive(Debug, Clone)]
 pub struct HtmlFormatLanguage {
-	options: HtmlFormatOptions,
+	options:HtmlFormatOptions,
 }
 
 impl HtmlFormatLanguage {
-	pub fn new(options: HtmlFormatOptions) -> Self {
-		Self { options }
-	}
+	pub fn new(options:HtmlFormatOptions) -> Self { Self { options } }
 }
 
 impl FormatLanguage for HtmlFormatLanguage {
-	type SyntaxLanguage = HtmlLanguage;
 	type Context = HtmlFormatContext;
 	type FormatRule = FormatHtmlSyntaxNode;
+	type SyntaxLanguage = HtmlLanguage;
 
-	fn options(
-		&self,
-	) -> &<Self::Context as biome_formatter::FormatContext>::Options {
+	fn options(&self) -> &<Self::Context as biome_formatter::FormatContext>::Options {
 		&self.options
 	}
 
 	fn create_context(
 		self,
-		root: &biome_rowan::SyntaxNode<Self::SyntaxLanguage>,
-		source_map: Option<biome_formatter::TransformSourceMap>,
+		root:&biome_rowan::SyntaxNode<Self::SyntaxLanguage>,
+		source_map:Option<biome_formatter::TransformSourceMap>,
 	) -> Self::Context {
-		let comments =
-			Comments::from_node(root, &HtmlCommentStyle, source_map.as_ref());
-		HtmlFormatContext::new(self.options, comments)
-			.with_source_map(source_map)
+		let comments = Comments::from_node(root, &HtmlCommentStyle, source_map.as_ref());
+		HtmlFormatContext::new(self.options, comments).with_source_map(source_map)
 	}
 }
 
@@ -157,9 +151,8 @@ pub(crate) type FormatHtmlSyntaxToken = FormatToken<HtmlFormatContext>;
 // Rule for formatting a Html [AstNode].
 pub(crate) trait FormatNodeRule<N>
 where
-	N: AstNode<Language = HtmlLanguage>,
-{
-	fn fmt(&self, node: &N, f: &mut HtmlFormatter) -> FormatResult<()> {
+	N: AstNode<Language = HtmlLanguage>, {
+	fn fmt(&self, node:&N, f:&mut HtmlFormatter) -> FormatResult<()> {
 		if self.is_suppressed(node, f) {
 			return write!(f, [format_suppressed_node(node.syntax())]);
 		}
@@ -171,55 +164,51 @@ where
 	}
 
 	/// Formats the node without comments. Ignores any suppression comments.
-	fn fmt_node(&self, node: &N, f: &mut HtmlFormatter) -> FormatResult<()> {
+	fn fmt_node(&self, node:&N, f:&mut HtmlFormatter) -> FormatResult<()> {
 		self.fmt_fields(node, f)?;
 		Ok(())
 	}
 
 	/// Formats the node's fields.
-	fn fmt_fields(&self, item: &N, f: &mut HtmlFormatter) -> FormatResult<()>;
+	fn fmt_fields(&self, item:&N, f:&mut HtmlFormatter) -> FormatResult<()>;
 
-	/// Returns `true` if the node has a suppression comment and should use the same formatting as in the source document.
-	fn is_suppressed(&self, node: &N, f: &HtmlFormatter) -> bool {
+	/// Returns `true` if the node has a suppression comment and should use the
+	/// same formatting as in the source document.
+	fn is_suppressed(&self, node:&N, f:&HtmlFormatter) -> bool {
 		f.context().comments().is_suppressed(node.syntax())
 	}
 
-	/// Formats the [leading comments](biome_formatter::comments#leading-comments) of the node.
+	/// Formats the [leading
+	/// comments](biome_formatter::comments#leading-comments) of the node.
 	///
-	/// You may want to override this method if you want to manually handle the formatting of comments
-	/// inside of the `fmt_fields` method or customize the formatting of the leading comments.
-	fn fmt_leading_comments(
-		&self,
-		node: &N,
-		f: &mut HtmlFormatter,
-	) -> FormatResult<()> {
+	/// You may want to override this method if you want to manually handle the
+	/// formatting of comments inside of the `fmt_fields` method or customize
+	/// the formatting of the leading comments.
+	fn fmt_leading_comments(&self, node:&N, f:&mut HtmlFormatter) -> FormatResult<()> {
 		format_leading_comments(node.syntax()).fmt(f)
 	}
 
-	/// Formats the [dangling comments](biome_formatter::comments#dangling-comments) of the node.
+	/// Formats the [dangling
+	/// comments](biome_formatter::comments#dangling-comments) of the node.
 	///
-	/// You should override this method if the node handled by this rule can have dangling comments because the
-	/// default implementation formats the dangling comments at the end of the node, which isn't ideal but ensures that
-	/// no comments are dropped.
+	/// You should override this method if the node handled by this rule can
+	/// have dangling comments because the default implementation formats the
+	/// dangling comments at the end of the node, which isn't ideal but ensures
+	/// that no comments are dropped.
 	///
-	/// A node can have dangling comments if all its children are tokens or if all node childrens are optional.
-	fn fmt_dangling_comments(
-		&self,
-		node: &N,
-		f: &mut HtmlFormatter,
-	) -> FormatResult<()> {
+	/// A node can have dangling comments if all its children are tokens or if
+	/// all node childrens are optional.
+	fn fmt_dangling_comments(&self, node:&N, f:&mut HtmlFormatter) -> FormatResult<()> {
 		format_dangling_comments(node.syntax()).with_soft_block_indent().fmt(f)
 	}
 
-	/// Formats the [trailing comments](biome_formatter::comments#trailing-comments) of the node.
+	/// Formats the [trailing
+	/// comments](biome_formatter::comments#trailing-comments) of the node.
 	///
-	/// You may want to override this method if you want to manually handle the formatting of comments
-	/// inside of the `fmt_fields` method or customize the formatting of the trailing comments.
-	fn fmt_trailing_comments(
-		&self,
-		node: &N,
-		f: &mut HtmlFormatter,
-	) -> FormatResult<()> {
+	/// You may want to override this method if you want to manually handle the
+	/// formatting of comments inside of the `fmt_fields` method or customize
+	/// the formatting of the trailing comments.
+	fn fmt_trailing_comments(&self, node:&N, f:&mut HtmlFormatter) -> FormatResult<()> {
 		format_trailing_comments(node.syntax()).fmt(f)
 	}
 }
@@ -227,16 +216,14 @@ where
 /// Rule for formatting an bogus node.
 pub(crate) trait FormatBogusNodeRule<N>
 where
-	N: AstNode<Language = HtmlLanguage>,
-{
-	fn fmt(&self, node: &N, f: &mut HtmlFormatter) -> FormatResult<()> {
+	N: AstNode<Language = HtmlLanguage>, {
+	fn fmt(&self, node:&N, f:&mut HtmlFormatter) -> FormatResult<()> {
 		format_bogus_node(node.syntax()).fmt(f)
 	}
 }
 
 impl AsFormat<HtmlFormatContext> for HtmlSyntaxToken {
-	type Format<'a> =
-		FormatRefWithRule<'a, HtmlSyntaxToken, FormatHtmlSyntaxToken>;
+	type Format<'a> = FormatRefWithRule<'a, HtmlSyntaxToken, FormatHtmlSyntaxToken>;
 
 	fn format(&self) -> Self::Format<'_> {
 		FormatRefWithRule::new(self, FormatHtmlSyntaxToken::default())
@@ -257,9 +244,8 @@ pub(crate) trait FormattedIterExt {
 	fn formatted<Context>(self) -> FormattedIter<Self, Self::Item, Context>
 	where
 		Self: Iterator + Sized,
-		Self::Item: IntoFormat<Context>,
-	{
-		FormattedIter { inner: self, options: std::marker::PhantomData }
+		Self::Item: IntoFormat<Context>, {
+		FormattedIter { inner:self, options:std::marker::PhantomData }
 	}
 }
 
@@ -267,35 +253,29 @@ impl<I> FormattedIterExt for I where I: std::iter::Iterator {}
 
 pub(crate) struct FormattedIter<Iter, Item, Context>
 where
-	Iter: Iterator<Item = Item>,
-{
-	inner: Iter,
-	options: std::marker::PhantomData<Context>,
+	Iter: Iterator<Item = Item>, {
+	inner:Iter,
+	options:std::marker::PhantomData<Context>,
 }
 
-impl<Iter, Item, Context> std::iter::Iterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::Iterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: Iterator<Item = Item>,
 	Item: IntoFormat<Context>,
 {
 	type Item = Item::Format;
 
-	fn next(&mut self) -> Option<Self::Item> {
-		Some(self.inner.next()?.into_format())
-	}
+	fn next(&mut self) -> Option<Self::Item> { Some(self.inner.next()?.into_format()) }
 }
 
-impl<Iter, Item, Context> std::iter::FusedIterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::FusedIterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: std::iter::FusedIterator<Item = Item>,
 	Item: IntoFormat<Context>,
 {
 }
 
-impl<Iter, Item, Context> std::iter::ExactSizeIterator
-	for FormattedIter<Iter, Item, Context>
+impl<Iter, Item, Context> std::iter::ExactSizeIterator for FormattedIter<Iter, Item, Context>
 where
 	Iter: Iterator<Item = Item> + std::iter::ExactSizeIterator,
 	Item: IntoFormat<Context>,

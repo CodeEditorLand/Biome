@@ -1,9 +1,12 @@
 #![deny(rustdoc::broken_intra_doc_links)]
 
-use std::cmp::Ordering;
-use std::collections::{BTreeMap, BinaryHeap};
-use std::fmt::{Debug, Display, Formatter};
-use std::ops;
+use std::{
+	cmp::Ordering,
+	collections::{BTreeMap, BinaryHeap},
+	fmt::{Debug, Display, Formatter},
+	ops,
+};
+
 use tracing::trace;
 
 mod categories;
@@ -21,84 +24,108 @@ mod syntax;
 mod visitor;
 
 // Re-exported for use in the `declare_group` macro
-pub use biome_diagnostics::category_concat;
-
-pub use crate::categories::{
-	ActionCategory, RefactorKind, RuleCategories, RuleCategoriesBuilder,
-	RuleCategory, SourceActionKind,
-};
-pub use crate::diagnostics::{
-	AnalyzerDiagnostic, RuleError, SuppressionDiagnostic,
-};
-pub use crate::matcher::{
-	InspectMatcher, MatchQueryParams, QueryMatcher, RuleKey, SignalEntry,
-};
-pub use crate::options::{
-	AnalyzerConfiguration, AnalyzerOptions, AnalyzerRules,
-};
-pub use crate::query::{AddVisitor, QueryKey, QueryMatch, Queryable};
-pub use crate::registry::{
-	LanguageRoot, MetadataRegistry, Phase, Phases, RegistryRuleMetadata,
-	RegistryVisitor, RuleRegistry, RuleRegistryBuilder, RuleSuppressions,
-};
-pub use crate::rule::{
-	CategoryLanguage, FixKind, GroupCategory, GroupLanguage, Rule, RuleAction,
-	RuleDiagnostic, RuleGroup, RuleMeta, RuleMetadata, RuleSource,
-	RuleSourceKind, SuppressAction,
-};
-pub use crate::services::{
-	FromServices, MissingServicesDiagnostic, ServiceBag,
-};
-pub use crate::signals::{
-	AnalyzerAction, AnalyzerSignal, AnalyzerTransformation, DiagnosticSignal,
-};
-pub use crate::syntax::{Ast, SyntaxVisitor};
-pub use crate::visitor::{
-	NodeVisitor, Visitor, VisitorContext, VisitorFinishContext,
-};
-pub use suppression_action::{ApplySuppression, SuppressionAction};
-
 use biome_console::markup;
+pub use biome_diagnostics::category_concat;
 use biome_diagnostics::{
-	category, Applicability, Diagnostic, DiagnosticExt, DiagnosticTags,
+	category,
+	Applicability,
+	Diagnostic,
+	DiagnosticExt,
+	DiagnosticTags,
 	Severity,
 };
 use biome_rowan::{
-	AstNode, BatchMutation, Direction, Language, SyntaxElement, SyntaxToken,
-	TextLen, TextRange, TextSize, TokenAtOffset, TriviaPiece, TriviaPieceKind,
+	AstNode,
+	BatchMutation,
+	Direction,
+	Language,
+	SyntaxElement,
+	SyntaxToken,
+	TextLen,
+	TextRange,
+	TextSize,
+	TokenAtOffset,
+	TriviaPiece,
+	TriviaPieceKind,
 	WalkEvent,
 };
+pub use suppression_action::{ApplySuppression, SuppressionAction};
 
-/// The analyzer is the main entry point into the `biome_analyze` infrastructure.
-/// Its role is to run a collection of [Visitor]s over a syntax tree, with each
-/// visitor implementing various analysis over this syntax tree to generate
-/// auxiliary data structures as well as emit "query match" events to be
-/// processed by lint rules and in turn emit "analyzer signals" in the form of
-/// diagnostics, code actions or both
-pub struct Analyzer<'analyzer, L: Language, Matcher, Break, Diag> {
-	/// List of visitors being run by this instance of the analyzer for each phase
-	phases: BTreeMap<Phases, Vec<Box<dyn Visitor<Language = L> + 'analyzer>>>,
+pub use crate::{
+	categories::{
+		ActionCategory,
+		RefactorKind,
+		RuleCategories,
+		RuleCategoriesBuilder,
+		RuleCategory,
+		SourceActionKind,
+	},
+	diagnostics::{AnalyzerDiagnostic, RuleError, SuppressionDiagnostic},
+	matcher::{InspectMatcher, MatchQueryParams, QueryMatcher, RuleKey, SignalEntry},
+	options::{AnalyzerConfiguration, AnalyzerOptions, AnalyzerRules},
+	query::{AddVisitor, QueryKey, QueryMatch, Queryable},
+	registry::{
+		LanguageRoot,
+		MetadataRegistry,
+		Phase,
+		Phases,
+		RegistryRuleMetadata,
+		RegistryVisitor,
+		RuleRegistry,
+		RuleRegistryBuilder,
+		RuleSuppressions,
+	},
+	rule::{
+		CategoryLanguage,
+		FixKind,
+		GroupCategory,
+		GroupLanguage,
+		Rule,
+		RuleAction,
+		RuleDiagnostic,
+		RuleGroup,
+		RuleMeta,
+		RuleMetadata,
+		RuleSource,
+		RuleSourceKind,
+		SuppressAction,
+	},
+	services::{FromServices, MissingServicesDiagnostic, ServiceBag},
+	signals::{AnalyzerAction, AnalyzerSignal, AnalyzerTransformation, DiagnosticSignal},
+	syntax::{Ast, SyntaxVisitor},
+	visitor::{NodeVisitor, Visitor, VisitorContext, VisitorFinishContext},
+};
+
+/// The analyzer is the main entry point into the `biome_analyze`
+/// infrastructure. Its role is to run a collection of [Visitor]s over a syntax
+/// tree, with each visitor implementing various analysis over this syntax tree
+/// to generate auxiliary data structures as well as emit "query match" events
+/// to be processed by lint rules and in turn emit "analyzer signals" in the
+/// form of diagnostics, code actions or both
+pub struct Analyzer<'analyzer, L:Language, Matcher, Break, Diag> {
+	/// List of visitors being run by this instance of the analyzer for each
+	/// phase
+	phases:BTreeMap<Phases, Vec<Box<dyn Visitor<Language = L> + 'analyzer>>>,
 	/// Holds the metadata for all the rules statically known to the analyzer
-	metadata: &'analyzer MetadataRegistry,
+	metadata:&'analyzer MetadataRegistry,
 	/// Executor for the query matches emitted by the visitors
-	query_matcher: Matcher,
+	query_matcher:Matcher,
 	/// Language-specific suppression comment parsing function
-	parse_suppression_comment: SuppressionParser<Diag>,
+	parse_suppression_comment:SuppressionParser<Diag>,
 	/// Language-specific suppression comment emitter
-	suppression_action: Box<dyn SuppressionAction<Language = L>>,
+	suppression_action:Box<dyn SuppressionAction<Language = L>>,
 	/// Handles analyzer signals emitted by individual rules
-	emit_signal: SignalHandler<'analyzer, L, Break>,
+	emit_signal:SignalHandler<'analyzer, L, Break>,
 }
 
-pub struct AnalyzerContext<'a, L: Language> {
-	pub root: LanguageRoot<L>,
-	pub services: ServiceBag,
-	pub range: Option<TextRange>,
-	pub options: &'a AnalyzerOptions,
+pub struct AnalyzerContext<'a, L:Language> {
+	pub root:LanguageRoot<L>,
+	pub services:ServiceBag,
+	pub range:Option<TextRange>,
+	pub options:&'a AnalyzerOptions,
 }
 
-impl<'analyzer, L, Matcher, Break, Diag>
-	Analyzer<'analyzer, L, Matcher, Break, Diag>
+impl<'analyzer, L, Matcher, Break, Diag> Analyzer<'analyzer, L, Matcher, Break, Diag>
 where
 	L: Language,
 	Matcher: QueryMatcher<L>,
@@ -107,14 +134,14 @@ where
 	/// Construct a new instance of the analyzer with the given rule registry
 	/// and suppression comment parser
 	pub fn new(
-		metadata: &'analyzer MetadataRegistry,
-		query_matcher: Matcher,
-		parse_suppression_comment: SuppressionParser<Diag>,
-		suppression_action: Box<dyn SuppressionAction<Language = L>>,
-		emit_signal: SignalHandler<'analyzer, L, Break>,
+		metadata:&'analyzer MetadataRegistry,
+		query_matcher:Matcher,
+		parse_suppression_comment:SuppressionParser<Diag>,
+		suppression_action:Box<dyn SuppressionAction<Language = L>>,
+		emit_signal:SignalHandler<'analyzer, L, Break>,
 	) -> Self {
 		Self {
-			phases: BTreeMap::new(),
+			phases:BTreeMap::new(),
 			metadata,
 			query_matcher,
 			parse_suppression_comment,
@@ -123,16 +150,17 @@ where
 		}
 	}
 
-	/// Registers a [Visitor] to be executed as part of a given `phase` of the analyzer run
+	/// Registers a [Visitor] to be executed as part of a given `phase` of the
+	/// analyzer run
 	pub fn add_visitor(
 		&mut self,
-		phase: Phases,
-		visitor: Box<dyn Visitor<Language = L> + 'analyzer>,
+		phase:Phases,
+		visitor:Box<dyn Visitor<Language = L> + 'analyzer>,
 	) {
 		self.phases.entry(phase).or_default().push(visitor);
 	}
 
-	pub fn run(self, mut ctx: AnalyzerContext<L>) -> Option<Break> {
+	pub fn run(self, mut ctx:AnalyzerContext<L>) -> Option<Break> {
 		let Self {
 			phases,
 			metadata,
@@ -148,19 +176,19 @@ where
 		for (index, (phase, mut visitors)) in phases.into_iter().enumerate() {
 			let runner = PhaseRunner {
 				phase,
-				visitors: &mut visitors,
+				visitors:&mut visitors,
 				metadata,
-				query_matcher: &mut query_matcher,
-				signal_queue: BinaryHeap::new(),
+				query_matcher:&mut query_matcher,
+				signal_queue:BinaryHeap::new(),
 				parse_suppression_comment,
-				line_index: &mut line_index,
-				line_suppressions: &mut line_suppressions,
-				emit_signal: &mut emit_signal,
-				root: &ctx.root,
-				services: &ctx.services,
-				range: ctx.range,
-				suppression_action: suppression_action.as_ref(),
-				options: ctx.options,
+				line_index:&mut line_index,
+				line_suppressions:&mut line_suppressions,
+				emit_signal:&mut emit_signal,
+				root:&ctx.root,
+				services:&ctx.services,
+				range:ctx.range,
+				suppression_action:suppression_action.as_ref(),
+				options:ctx.options,
 			};
 
 			// The first phase being run will inspect the tokens and parse the
@@ -180,10 +208,7 @@ where
 			// phase runner as it needs mutable access to the service bag (the
 			// runner borrows the services for the entire phase)
 			for visitor in visitors {
-				visitor.finish(VisitorFinishContext {
-					root: &ctx.root,
-					services: &mut ctx.services,
-				});
+				visitor.finish(VisitorFinishContext { root:&ctx.root, services:&mut ctx.services });
 			}
 		}
 
@@ -210,61 +235,61 @@ where
 }
 
 /// Holds all the state required to run a single analysis phase to completion
-struct PhaseRunner<'analyzer, 'phase, L: Language, Matcher, Break, Diag> {
+struct PhaseRunner<'analyzer, 'phase, L:Language, Matcher, Break, Diag> {
 	/// Identifier of the phase this runner is executing
-	phase: Phases,
-	/// List of visitors being run by this instance of the analyzer for each phase
-	visitors: &'phase mut [Box<dyn Visitor<Language = L> + 'analyzer>],
+	phase:Phases,
+	/// List of visitors being run by this instance of the analyzer for each
+	/// phase
+	visitors:&'phase mut [Box<dyn Visitor<Language = L> + 'analyzer>],
 	/// Holds the metadata for all the rules statically known to the analyzer
-	metadata: &'analyzer MetadataRegistry,
+	metadata:&'analyzer MetadataRegistry,
 	/// Executor for the query matches emitted by the visitors
-	query_matcher: &'phase mut Matcher,
+	query_matcher:&'phase mut Matcher,
 	/// Queue for pending analyzer signals
-	signal_queue: BinaryHeap<SignalEntry<'phase, L>>,
+	signal_queue:BinaryHeap<SignalEntry<'phase, L>>,
 	/// Language-specific suppression comment parsing function
-	parse_suppression_comment: SuppressionParser<Diag>,
+	parse_suppression_comment:SuppressionParser<Diag>,
 	/// Language-specific suppression comment emitter
-	suppression_action: &'phase dyn SuppressionAction<Language = L>,
+	suppression_action:&'phase dyn SuppressionAction<Language = L>,
 	/// Line index at the current position of the traversal
-	line_index: &'phase mut usize,
+	line_index:&'phase mut usize,
 	/// Track active suppression comments per-line, ordered by line index
-	line_suppressions: &'phase mut Vec<LineSuppression>,
+	line_suppressions:&'phase mut Vec<LineSuppression>,
 	/// Handles analyzer signals emitted by individual rules
-	emit_signal: &'phase mut SignalHandler<'analyzer, L, Break>,
+	emit_signal:&'phase mut SignalHandler<'analyzer, L, Break>,
 	/// Root node of the file being analyzed
-	root: &'phase L::Root,
+	root:&'phase L::Root,
 	/// Service bag handle for this phase
-	services: &'phase ServiceBag,
+	services:&'phase ServiceBag,
 	/// Optional text range to restrict the analysis to
-	range: Option<TextRange>,
+	range:Option<TextRange>,
 	/// Analyzer options
-	options: &'phase AnalyzerOptions,
+	options:&'phase AnalyzerOptions,
 }
 
 /// Single entry for a suppression comment in the `line_suppressions` buffer
 #[derive(Debug)]
 struct LineSuppression {
 	/// Line index this comment is suppressing lint rules for
-	line_index: usize,
+	line_index:usize,
 	/// Range of source text covered by the suppression comment
-	comment_span: TextRange,
+	comment_span:TextRange,
 	/// Range of source text this comment is suppressing lint rules for
-	text_range: TextRange,
+	text_range:TextRange,
 	/// Set to true if this comment has set the `suppress_all` flag to true
 	/// (must be restored to false on expiration)
-	suppress_all: bool,
+	suppress_all:bool,
 	/// List of all the rules this comment has started suppressing (must be
 	/// removed from the suppressed set on expiration)
-	suppressed_rules: Vec<RuleFilter<'static>>,
+	suppressed_rules:Vec<RuleFilter<'static>>,
 	/// List of all the rule instances this comment has started suppressing.
-	suppressed_instances: Vec<(RuleFilter<'static>, String)>,
+	suppressed_instances:Vec<(RuleFilter<'static>, String)>,
 	/// Set to `true` when a signal matching this suppression was emitted and
 	/// suppressed
-	did_suppress_signal: bool,
+	did_suppress_signal:bool,
 }
 
-impl<'a, 'phase, L, Matcher, Break, Diag>
-	PhaseRunner<'a, 'phase, L, Matcher, Break, Diag>
+impl<'a, 'phase, L, Matcher, Break, Diag> PhaseRunner<'a, 'phase, L, Matcher, Break, Diag>
 where
 	L: Language,
 	Matcher: QueryMatcher<L>,
@@ -277,12 +302,8 @@ where
 		let iter = self.root.syntax().preorder_with_tokens(Direction::Next);
 		for event in iter {
 			let node_event = match event {
-				WalkEvent::Enter(SyntaxElement::Node(node)) => {
-					WalkEvent::Enter(node)
-				},
-				WalkEvent::Leave(SyntaxElement::Node(node)) => {
-					WalkEvent::Leave(node)
-				},
+				WalkEvent::Enter(SyntaxElement::Node(node)) => WalkEvent::Enter(node),
+				WalkEvent::Leave(SyntaxElement::Node(node)) => WalkEvent::Leave(node),
 
 				// If this is a token enter event, process its text content
 				WalkEvent::Enter(SyntaxElement::Token(token)) => {
@@ -297,14 +318,14 @@ where
 			// If this is a node event pass it to the visitors for this phase
 			for visitor in self.visitors.iter_mut() {
 				let ctx = VisitorContext {
-					phase: self.phase,
-					root: self.root,
-					services: self.services,
-					range: self.range,
-					query_matcher: self.query_matcher,
-					signal_queue: &mut self.signal_queue,
-					suppression_action: self.suppression_action,
-					options: self.options,
+					phase:self.phase,
+					root:self.root,
+					services:self.services,
+					range:self.range,
+					query_matcher:self.query_matcher,
+					signal_queue:&mut self.signal_queue,
+					suppression_action:self.suppression_action,
+					options:self.options,
 				};
 
 				visitor.visit(&node_event, ctx);
@@ -322,14 +343,14 @@ where
 			// Run all the active visitors for the phase on the event
 			for visitor in self.visitors.iter_mut() {
 				let ctx = VisitorContext {
-					phase: self.phase,
-					root: self.root,
-					services: self.services,
-					range: self.range,
-					query_matcher: self.query_matcher,
-					signal_queue: &mut self.signal_queue,
-					suppression_action: self.suppression_action,
-					options: self.options,
+					phase:self.phase,
+					root:self.root,
+					services:self.services,
+					range:self.range,
+					query_matcher:self.query_matcher,
+					signal_queue:&mut self.signal_queue,
+					suppression_action:self.suppression_action,
+					options:self.options,
 				};
 
 				visitor.visit(&event, ctx);
@@ -345,7 +366,7 @@ where
 	/// Process the text for a single token, parsing suppression comments and
 	/// handling line breaks, then flush all pending query signals in the queue
 	/// whose position is less then the end of the token within the file
-	fn handle_token(&mut self, token: SyntaxToken<L>) -> ControlFlow<Break> {
+	fn handle_token(&mut self, token:SyntaxToken<L>) -> ControlFlow<Break> {
 		// Process the content of the token for comments and newline
 		for (index, piece) in token.leading_trivia().pieces().enumerate() {
 			if matches!(
@@ -358,13 +379,7 @@ where
 			}
 
 			if let Some(comment) = piece.as_comments() {
-				self.handle_comment(
-					&token,
-					true,
-					index,
-					comment.text(),
-					piece.text_range(),
-				)?;
+				self.handle_comment(&token, true, index, comment.text(), piece.text_range())?;
 			}
 		}
 
@@ -381,27 +396,19 @@ where
 			}
 
 			if let Some(comment) = piece.as_comments() {
-				self.handle_comment(
-					&token,
-					false,
-					index,
-					comment.text(),
-					piece.text_range(),
-				)?;
+				self.handle_comment(&token, false, index, comment.text(), piece.text_range())?;
 			}
 		}
 
-		// Flush signals from the queue until the end of the current token is reached
+		// Flush signals from the queue until the end of the current token is
+		// reached
 		let cutoff = token.text_range().end();
 		self.flush_matches(Some(cutoff))
 	}
 
 	/// Flush all pending query signals in the queue.  If `cutoff` is specified,
 	/// signals that start after this position in the file will be skipped
-	fn flush_matches(
-		&mut self,
-		cutoff: Option<TextSize>,
-	) -> ControlFlow<Break> {
+	fn flush_matches(&mut self, cutoff:Option<TextSize>) -> ControlFlow<Break> {
 		while let Some(entry) = self.signal_queue.peek() {
 			let start = entry.text_range.start();
 			if let Some(cutoff) = cutoff {
@@ -415,30 +422,23 @@ where
 			// if it matches the current line index, otherwise perform a binary
 			// search over all the previously seen suppressions to find one
 			// with a matching range
-			let suppression =
-				self.line_suppressions.last_mut().filter(|suppression| {
-					suppression.line_index == *self.line_index
-						&& suppression.text_range.start() <= start
-				});
+			let suppression = self.line_suppressions.last_mut().filter(|suppression| {
+				suppression.line_index == *self.line_index
+					&& suppression.text_range.start() <= start
+			});
 
 			let suppression = match suppression {
 				Some(suppression) => Some(suppression),
 				None => {
-					let index = self.line_suppressions.binary_search_by(
-						|suppression| {
-							if suppression.text_range.end()
-								< entry.text_range.start()
-							{
-								Ordering::Less
-							} else if entry.text_range.end()
-								< suppression.text_range.start()
-							{
-								Ordering::Greater
-							} else {
-								Ordering::Equal
-							}
-						},
-					);
+					let index = self.line_suppressions.binary_search_by(|suppression| {
+						if suppression.text_range.end() < entry.text_range.start() {
+							Ordering::Less
+						} else if entry.text_range.end() < suppression.text_range.start() {
+							Ordering::Greater
+						} else {
+							Ordering::Equal
+						}
+					});
 
 					index.ok().map(|index| &mut self.line_suppressions[index])
 				},
@@ -449,11 +449,7 @@ where
 					return true;
 				}
 
-				if suppression
-					.suppressed_rules
-					.iter()
-					.any(|filter| *filter == entry.rule)
-				{
+				if suppression.suppressed_rules.iter().any(|filter| *filter == entry.rule) {
 					return true;
 				}
 
@@ -488,11 +484,11 @@ where
 	/// comments, and create line suppression entries accordingly
 	fn handle_comment(
 		&mut self,
-		token: &SyntaxToken<L>,
-		is_leading: bool,
-		index: usize,
-		text: &str,
-		range: TextRange,
+		token:&SyntaxToken<L>,
+		is_leading:bool,
+		index:usize,
+		text:&str,
+		range:TextRange,
 	) -> ControlFlow<Break> {
 		let mut suppress_all = false;
 		let mut suppressed_rules = Vec::new();
@@ -506,9 +502,7 @@ where
 					// Emit the suppression parser diagnostic
 					let signal = DiagnosticSignal::new(move || {
 						let location = diag.location();
-						let span = location
-							.span
-							.map_or(range, |span| span + range.start());
+						let span = location.span.map_or(range, |span| span + range.start());
 						diag.clone().with_file_span(span)
 					});
 
@@ -519,15 +513,15 @@ where
 
 			if matches!(kind, SuppressionKind::Deprecated) {
 				let signal = DiagnosticSignal::new(move || {
-                    SuppressionDiagnostic::new(
-                        category!("suppressions/deprecatedSuppressionComment"),
-                        range,
-                        "// rome-ignore is deprecated, use // biome-ignore instead",
-                    )
-                    .with_tags(DiagnosticTags::DEPRECATED_CODE)
-                    .with_severity(Severity::Information)
-                })
-                .with_action(move || create_suppression_comment_action(token));
+					SuppressionDiagnostic::new(
+						category!("suppressions/deprecatedSuppressionComment"),
+						range,
+						"// rome-ignore is deprecated, use // biome-ignore instead",
+					)
+					.with_tags(DiagnosticTags::DEPRECATED_CODE)
+					.with_severity(Severity::Information)
+				})
+				.with_action(move || create_suppression_comment_action(token));
 
 				(self.emit_signal)(&signal)?;
 			}
@@ -535,9 +529,7 @@ where
 			let (rule, instance) = match kind {
 				SuppressionKind::Everything => (None, None),
 				SuppressionKind::Rule(rule) => (Some(rule), None),
-				SuppressionKind::RuleInstance(rule, instance) => {
-					(Some(rule), Some(instance))
-				},
+				SuppressionKind::RuleInstance(rule, instance) => (Some(rule), Some(instance)),
 				SuppressionKind::MaybeLegacy(rule) => (Some(rule), None),
 				SuppressionKind::Deprecated => (None, None),
 			};
@@ -546,44 +538,43 @@ where
 				let group_rule = rule.split_once('/');
 
 				let key = match group_rule {
-					None => {
-						self.metadata.find_group(rule).map(RuleFilter::from)
+					None => self.metadata.find_group(rule).map(RuleFilter::from),
+					Some((group, rule)) => {
+						self.metadata.find_rule(group, rule).map(RuleFilter::from)
 					},
-					Some((group, rule)) => self
-						.metadata
-						.find_rule(group, rule)
-						.map(RuleFilter::from),
 				};
 
 				match (key, instance) {
-					(Some(key), Some(value)) => {
-						suppressed_instances.push((key, value.to_owned()))
-					},
+					(Some(key), Some(value)) => suppressed_instances.push((key, value.to_owned())),
 					(Some(key), None) => {
 						suppressed_rules.push(key);
-						has_legacy |=
-							matches!(kind, SuppressionKind::MaybeLegacy(_));
+						has_legacy |= matches!(kind, SuppressionKind::MaybeLegacy(_));
 					},
 					_ if range_match(self.range, range) => {
 						// Emit a warning for the unknown rule
 						let signal = DiagnosticSignal::new(move || {
 							match group_rule {
-                            Some((group, rule)) => SuppressionDiagnostic::new(
-                                category!("suppressions/unknownRule"),
-                                range,
-                                format_args!(
-                                    "Unknown lint rule {group}/{rule} in suppression comment"
-                                ),
-                            ),
+								Some((group, rule)) => {
+									SuppressionDiagnostic::new(
+										category!("suppressions/unknownRule"),
+										range,
+										format_args!(
+											"Unknown lint rule {group}/{rule} in suppression \
+											 comment"
+										),
+									)
+								},
 
-                            None => SuppressionDiagnostic::new(
-                                category!("suppressions/unknownGroup"),
-                                range,
-                                format_args!(
-                                    "Unknown lint rule group {rule} in suppression comment"
-                                ),
-                            ),
-                        }
+								None => {
+									SuppressionDiagnostic::new(
+										category!("suppressions/unknownGroup"),
+										range,
+										format_args!(
+											"Unknown lint rule group {rule} in suppression comment"
+										),
+									)
+								},
+							}
 						});
 
 						(self.emit_signal)(&signal)?;
@@ -610,17 +601,13 @@ where
 				.with_tags(DiagnosticTags::DEPRECATED_CODE)
 			});
 
-			let signal = signal.with_action(|| {
-				update_suppression(self.root, token, is_leading, index, text)
-			});
+			let signal = signal
+				.with_action(|| update_suppression(self.root, token, is_leading, index, text));
 
 			(self.emit_signal)(&signal)?;
 		}
 
-		if !suppress_all
-			&& suppressed_rules.is_empty()
-			&& suppressed_instances.is_empty()
-		{
+		if !suppress_all && suppressed_rules.is_empty() && suppressed_instances.is_empty() {
 			return ControlFlow::Continue(());
 		}
 
@@ -628,20 +615,18 @@ where
 		let line_index = *self.line_index + 1;
 
 		// If the last suppression was on the same or previous line, extend its
-		// range and set of suppressed rules with the content for the new suppression
+		// range and set of suppressed rules with the content for the new
+		// suppression
 		if let Some(last_suppression) = self.line_suppressions.last_mut() {
 			if last_suppression.line_index == line_index
 				|| last_suppression.line_index + 1 == line_index
 			{
 				last_suppression.line_index = line_index;
-				last_suppression.text_range =
-					last_suppression.text_range.cover(range);
+				last_suppression.text_range = last_suppression.text_range.cover(range);
 				last_suppression.suppress_all |= suppress_all;
 				if !last_suppression.suppress_all {
 					last_suppression.suppressed_rules.extend(suppressed_rules);
-					last_suppression
-						.suppressed_instances
-						.extend(suppressed_instances);
+					last_suppression.suppressed_instances.extend(suppressed_instances);
 				} else {
 					last_suppression.suppressed_rules.clear();
 					last_suppression.suppressed_instances.clear();
@@ -652,12 +637,12 @@ where
 
 		let entry = LineSuppression {
 			line_index,
-			comment_span: range,
-			text_range: range,
+			comment_span:range,
+			text_range:range,
 			suppress_all,
 			suppressed_rules,
 			suppressed_instances,
-			did_suppress_signal: false,
+			did_suppress_signal:false,
 		};
 
 		self.line_suppressions.push(entry);
@@ -668,17 +653,16 @@ where
 	/// Check a piece of source text (token or trivia) for line breaks and
 	/// increment the line index accordingly, extending the range of the
 	/// current suppression as required
-	fn bump_line_index(&mut self, text: &str, range: TextRange) {
+	fn bump_line_index(&mut self, text:&str, range:TextRange) {
 		let mut did_match = false;
 		for (index, _) in text.match_indices('\n') {
 			if let Some(last_suppression) = self.line_suppressions.last_mut() {
 				if last_suppression.line_index == *self.line_index {
 					let index = TextSize::try_from(index).expect(
-                        "integer overflow while converting a suppression line to `TextSize`",
-                    );
+						"integer overflow while converting a suppression line to `TextSize`",
+					);
 					let range = TextRange::at(range.start(), index);
-					last_suppression.text_range =
-						last_suppression.text_range.cover(range);
+					last_suppression.text_range = last_suppression.text_range.cover(range);
 					did_match = true;
 				}
 			}
@@ -689,16 +673,15 @@ where
 		if !did_match {
 			if let Some(last_suppression) = self.line_suppressions.last_mut() {
 				if last_suppression.line_index == *self.line_index {
-					last_suppression.text_range =
-						last_suppression.text_range.cover(range);
+					last_suppression.text_range = last_suppression.text_range.cover(range);
 				}
 			}
 		}
 	}
 }
 
-fn create_suppression_comment_action<L: Language>(
-	token: &SyntaxToken<L>,
+fn create_suppression_comment_action<L:Language>(
+	token:&SyntaxToken<L>,
 ) -> Option<AnalyzerAction<L>> {
 	let first_node = token.parent()?;
 	let mut new_leading_trivia = vec![];
@@ -708,15 +691,13 @@ fn create_suppression_comment_action<L: Language>(
 
 	for piece in token.leading_trivia().pieces() {
 		if !piece.is_comments() {
-			new_leading_trivia
-				.push(TriviaPiece::new(piece.kind(), piece.text_len()));
+			new_leading_trivia.push(TriviaPiece::new(piece.kind(), piece.text_len()));
 			token_text.push_str(piece.text());
 		}
 
 		if piece.text().contains("rome-ignore") {
 			let new_text = piece.text().replace("rome-ignore", "biome-ignore");
-			new_leading_trivia
-				.push(TriviaPiece::new(piece.kind(), new_text.text_len()));
+			new_leading_trivia.push(TriviaPiece::new(piece.kind(), new_text.text_len()));
 			token_text.push_str(&new_text);
 		}
 	}
@@ -724,8 +705,7 @@ fn create_suppression_comment_action<L: Language>(
 	token_text.push_str(token.text_trimmed());
 
 	for piece in token.trailing_trivia().pieces() {
-		new_trailing_trivia
-			.push(TriviaPiece::new(piece.kind(), piece.text_len()));
+		new_trailing_trivia.push(TriviaPiece::new(piece.kind(), piece.text_len()));
 		token_text.push_str(piece.text());
 	}
 
@@ -739,17 +719,17 @@ fn create_suppression_comment_action<L: Language>(
 	mutation.replace_token_discard_trivia(token.clone(), new_token);
 	Some(AnalyzerAction {
 		mutation,
-		applicability: Applicability::MaybeIncorrect,
-		category: ActionCategory::QuickFix,
-		message: markup! {
+		applicability:Applicability::MaybeIncorrect,
+		category:ActionCategory::QuickFix,
+		message:markup! {
 			"Use // biome-ignore instead"
 		}
 		.to_owned(),
-		rule_name: None,
+		rule_name:None,
 	})
 }
 
-fn range_match(filter: Option<TextRange>, range: TextRange) -> bool {
+fn range_match(filter:Option<TextRange>, range:TextRange) -> bool {
 	filter.map_or(true, |filter| filter.intersect(range).is_some())
 }
 
@@ -764,32 +744,41 @@ fn range_match(filter: Option<TextRange>, range: TextRange) -> bool {
 /// - `// biome-ignore format` -> `vec![]`
 /// - `// biome-ignore lint` -> `vec![Everything]`
 /// - `// biome-ignore lint/style/useWhile` -> `vec![Rule("style/useWhile")]`
-/// - `// biome-ignore lint/style/useWhile(foo)` -> `vec![RuleWithValue("style/useWhile", "foo")]`
-/// - `// biome-ignore lint/style/useWhile lint/nursery/noUnreachable` -> `vec![Rule("style/useWhile"), Rule("nursery/noUnreachable")]`
-/// - `// biome-ignore lint(style/useWhile)` -> `vec![MaybeLegacy("style/useWhile")]`
-/// - `// biome-ignore lint(style/useWhile) lint(nursery/noUnreachable)` -> `vec![MaybeLegacy("style/useWhile"), MaybeLegacy("nursery/noUnreachable")]`
+/// - `// biome-ignore lint/style/useWhile(foo)` ->
+///   `vec![RuleWithValue("style/useWhile", "foo")]`
+/// - `// biome-ignore lint/style/useWhile lint/nursery/noUnreachable` ->
+///   `vec![Rule("style/useWhile"), Rule("nursery/noUnreachable")]`
+/// - `// biome-ignore lint(style/useWhile)` ->
+///   `vec![MaybeLegacy("style/useWhile")]`
+/// - `// biome-ignore lint(style/useWhile) lint(nursery/noUnreachable)` ->
+///   `vec![MaybeLegacy("style/useWhile"),
+///   MaybeLegacy("nursery/noUnreachable")]`
 type SuppressionParser<D> = fn(&str) -> Vec<Result<SuppressionKind, D>>;
 
-/// This enum is used to categorize what is disabled by a suppression comment and with what syntax
+/// This enum is used to categorize what is disabled by a suppression comment
+/// and with what syntax
 pub enum SuppressionKind<'a> {
 	/// A suppression disabling all lints eg. `// biome-ignore lint`
 	Everything,
-	/// A suppression disabling a specific rule eg. `// biome-ignore lint/style/useWhile`
+	/// A suppression disabling a specific rule eg. `// biome-ignore
+	/// lint/style/useWhile`
 	Rule(&'a str),
-	/// A suppression to be evaluated by a specific rule eg. `// biome-ignore lint/correctness/useExhaustiveDependencies(foo)`
+	/// A suppression to be evaluated by a specific rule eg. `// biome-ignore
+	/// lint/correctness/useExhaustiveDependencies(foo)`
 	RuleInstance(&'a str, &'a str),
-	/// A suppression using the legacy syntax to disable a specific rule eg. `// biome-ignore lint(style/useWhile)`
+	/// A suppression using the legacy syntax to disable a specific rule eg. `//
+	/// biome-ignore lint(style/useWhile)`
 	MaybeLegacy(&'a str),
 	/// `rome-ignore` is legacy
 	Deprecated,
 }
 
-fn update_suppression<L: Language>(
-	root: &L::Root,
-	token: &SyntaxToken<L>,
-	is_leading: bool,
-	index: usize,
-	text: &str,
+fn update_suppression<L:Language>(
+	root:&L::Root,
+	token:&SyntaxToken<L>,
+	is_leading:bool,
+	index:usize,
+	text:&str,
 ) -> Option<AnalyzerAction<L>> {
 	let old_token = token.clone();
 	let new_token = token.clone().detach();
@@ -800,7 +789,7 @@ fn update_suppression<L: Language>(
 		old_token.trailing_trivia()
 	};
 
-	let old_trivia: Vec<_> = old_trivia.pieces().collect();
+	let old_trivia:Vec<_> = old_trivia.pieces().collect();
 
 	let mut text = text.to_string();
 
@@ -810,14 +799,13 @@ fn update_suppression<L: Language>(
 		text.replace_range(range_start + 4..range_start + 5, "/");
 	}
 
-	let new_trivia =
-		old_trivia.iter().enumerate().map(|(piece_index, piece)| {
-			if piece_index == index {
-				(piece.kind(), text.as_str())
-			} else {
-				(piece.kind(), piece.text())
-			}
-		});
+	let new_trivia = old_trivia.iter().enumerate().map(|(piece_index, piece)| {
+		if piece_index == index {
+			(piece.kind(), text.as_str())
+		} else {
+			(piece.kind(), piece.text())
+		}
+	});
 
 	let new_token = if is_leading {
 		new_token.with_leading_trivia(new_trivia)
@@ -829,10 +817,10 @@ fn update_suppression<L: Language>(
 	mutation.replace_token_discard_trivia(old_token, new_token);
 
 	Some(AnalyzerAction {
-		rule_name: None,
-		category: ActionCategory::QuickFix,
-		applicability: Applicability::Always,
-		message: markup! {
+		rule_name:None,
+		category:ActionCategory::QuickFix,
+		applicability:Applicability::Always,
+		message:markup! {
 			"Rewrite suppression to use the newer syntax"
 		}
 		.to_owned(),
@@ -841,19 +829,18 @@ fn update_suppression<L: Language>(
 }
 
 /// Payload received by the function responsible to mark a suppression comment
-pub struct SuppressionCommentEmitterPayload<'a, L: Language> {
+pub struct SuppressionCommentEmitterPayload<'a, L:Language> {
 	/// The possible offset found in the [TextRange] of the emitted diagnostic
-	pub token_offset: TokenAtOffset<SyntaxToken<L>>,
+	pub token_offset:TokenAtOffset<SyntaxToken<L>>,
 	/// A [BatchMutation] where the consumer can apply the suppression comment
-	pub mutation: &'a mut BatchMutation<L>,
+	pub mutation:&'a mut BatchMutation<L>,
 	/// A string equals to "rome-ignore: lint(<RULE_GROUP>/<RULE_NAME>)"
-	pub suppression_text: &'a str,
+	pub suppression_text:&'a str,
 	/// The original range of the diagnostic where the rule was triggered
-	pub diagnostic_text_range: &'a TextRange,
+	pub diagnostic_text_range:&'a TextRange,
 }
 
-type SignalHandler<'a, L, Break> =
-	&'a mut dyn FnMut(&dyn AnalyzerSignal<L>) -> ControlFlow<Break>;
+type SignalHandler<'a, L, Break> = &'a mut dyn FnMut(&dyn AnalyzerSignal<L>) -> ControlFlow<Break>;
 
 /// Allow filtering a single rule or group of rules by their names
 #[derive(Clone, Copy, Eq, PartialEq, Hash)]
@@ -870,8 +857,9 @@ impl<'a> RuleFilter<'a> {
 			RuleFilter::Rule(group, _) => group,
 		}
 	}
+
 	/// Return `true` if the group `G` matches this filter
-	pub fn match_group<G: RuleGroup>(self) -> bool {
+	pub fn match_group<G:RuleGroup>(self) -> bool {
 		match self {
 			RuleFilter::Group(group) => group == G::NAME,
 			RuleFilter::Rule(group, _) => group == G::NAME,
@@ -881,26 +869,22 @@ impl<'a> RuleFilter<'a> {
 	/// Return `true` if the rule `R` matches this filter
 	pub fn match_rule<R>(self) -> bool
 	where
-		R: Rule,
-	{
+		R: Rule, {
 		match self {
 			RuleFilter::Group(group) => group == <R::Group as RuleGroup>::NAME,
 			RuleFilter::Rule(group, rule) => {
-				group == <R::Group as RuleGroup>::NAME
-					&& rule == R::METADATA.name
+				group == <R::Group as RuleGroup>::NAME && rule == R::METADATA.name
 			},
 		}
 	}
 }
 
 impl<'a> Debug for RuleFilter<'a> {
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-		Display::fmt(self, f)
-	}
+	fn fmt(&self, f:&mut Formatter<'_>) -> std::fmt::Result { Display::fmt(self, f) }
 }
 
 impl<'a> Display for RuleFilter<'a> {
-	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+	fn fmt(&self, f:&mut Formatter<'_>) -> std::fmt::Result {
 		match self {
 			RuleFilter::Group(group) => {
 				write!(f, "{group}")
@@ -913,10 +897,7 @@ impl<'a> Display for RuleFilter<'a> {
 }
 
 impl<'a> biome_console::fmt::Display for RuleFilter<'a> {
-	fn fmt(
-		&self,
-		fmt: &mut biome_console::fmt::Formatter,
-	) -> std::io::Result<()> {
+	fn fmt(&self, fmt:&mut biome_console::fmt::Formatter) -> std::io::Result<()> {
 		match self {
 			RuleFilter::Group(group) => {
 				write!(fmt, "{group}")
@@ -928,46 +909,45 @@ impl<'a> biome_console::fmt::Display for RuleFilter<'a> {
 	}
 }
 
-/// Allows filtering the list of rules that will be executed in a run of the analyzer,
-/// and at what source code range signals (diagnostics or actions) may be raised
+/// Allows filtering the list of rules that will be executed in a run of the
+/// analyzer, and at what source code range signals (diagnostics or actions) may
+/// be raised
 #[derive(Debug, Default, Clone, Copy)]
 pub struct AnalysisFilter<'a> {
 	/// Only allow rules with these categories to emit signals
-	pub categories: RuleCategories,
+	pub categories:RuleCategories,
 	/// Only allow rules matching these names to emit signals
 	/// If `enabled_rules` is set to `None`, then all rules are enabled.
-	pub enabled_rules: Option<&'a [RuleFilter<'a>]>,
+	pub enabled_rules:Option<&'a [RuleFilter<'a>]>,
 	/// Do not allow rules matching these names to emit signals
-	pub disabled_rules: &'a [RuleFilter<'a>],
+	pub disabled_rules:&'a [RuleFilter<'a>],
 	/// Only emit signals matching this text range
-	pub range: Option<TextRange>,
+	pub range:Option<TextRange>,
 }
 
 impl<'analysis> AnalysisFilter<'analysis> {
-	/// It creates a new filter with the set of [enabled rules](RuleFilter) passed as argument
-	pub fn from_enabled_rules(
-		enabled_rules: &'analysis [RuleFilter<'analysis>],
-	) -> Self {
-		Self { enabled_rules: Some(enabled_rules), ..AnalysisFilter::default() }
+	/// It creates a new filter with the set of [enabled rules](RuleFilter)
+	/// passed as argument
+	pub fn from_enabled_rules(enabled_rules:&'analysis [RuleFilter<'analysis>]) -> Self {
+		Self { enabled_rules:Some(enabled_rules), ..AnalysisFilter::default() }
 	}
 
 	/// Return `true` if the category `C` matches this filter
-	pub fn match_category<C: GroupCategory>(&self) -> bool {
-		self.categories.contains(C::CATEGORY)
-	}
+	pub fn match_category<C:GroupCategory>(&self) -> bool { self.categories.contains(C::CATEGORY) }
 
 	/// Return `true` if the group `G` matches this filter
-	pub fn match_group<G: RuleGroup>(&self) -> bool {
+	pub fn match_group<G:RuleGroup>(&self) -> bool {
 		self.match_category::<G::Category>()
 			&& self.enabled_rules.map_or(true, |enabled_rules| {
 				enabled_rules.iter().any(|filter| filter.match_group::<G>())
-			}) && !self.disabled_rules.iter().any(|filter| {
-			matches!(filter, RuleFilter::Group(_)) && filter.match_group::<G>()
-		})
+			}) && !self
+			.disabled_rules
+			.iter()
+			.any(|filter| matches!(filter, RuleFilter::Group(_)) && filter.match_group::<G>())
 	}
 
 	/// Return `true` if the rule `R` matches this filter
-	pub fn match_rule<R: Rule>(&self) -> bool {
+	pub fn match_rule<R:Rule>(&self) -> bool {
 		self.match_category::<<R::Group as RuleGroup>::Category>()
 			&& self.enabled_rules.map_or(true, |enabled_rules| {
 				enabled_rules.iter().any(|filter| filter.match_rule::<R>())
@@ -978,10 +958,12 @@ impl<'analysis> AnalysisFilter<'analysis> {
 /// Utility type to be used as a default value for the `B` generic type on
 /// `analyze` when the provided callback never breaks
 ///
-/// This should eventually get replaced with the `!` type when it gets stabilized
+/// This should eventually get replaced with the `!` type when it gets
+/// stabilized
 pub enum Never {}
 
-/// Type alias of [ops::ControlFlow] with the `B` generic type defaulting to [Never]
+/// Type alias of [ops::ControlFlow] with the `B` generic type defaulting to
+/// [Never]
 ///
 /// By default, the analysis loop never breaks, so it behaves mostly like
 /// `let b = loop {};` and has a "break type" of `!` (the `!` type isn't stable

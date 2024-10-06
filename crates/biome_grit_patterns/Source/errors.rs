@@ -1,10 +1,7 @@
 use std::fmt::Debug;
 
 use biome_console::{fmt::Formatter, markup};
-use biome_diagnostics::Location;
-use biome_diagnostics::{
-	category, Category, Diagnostic, LogCategory, Severity,
-};
+use biome_diagnostics::{category, Category, Diagnostic, Location, LogCategory, Severity};
 use biome_parser::diagnostic::ParseDiagnostic;
 use biome_rowan::SyntaxError;
 use grit_util::ByteRange;
@@ -26,7 +23,8 @@ pub enum CompileError {
 	/// If a function with the same name is defined multiple times.
 	DuplicateFunctionDefinition(String),
 
-	/// If a function or bubble pattern has multiple parameters with the same name.
+	/// If a function or bubble pattern has multiple parameters with the same
+	/// name.
 	DuplicateParameters,
 
 	/// If a function with the same name is defined multiple times.
@@ -87,112 +85,102 @@ pub enum CompileError {
 }
 
 impl Diagnostic for CompileError {
-	fn category(&self) -> Option<&'static Category> {
-		Some(category!("parse"))
-	}
+	fn category(&self) -> Option<&'static Category> { Some(category!("parse")) }
 
-	fn message(&self, fmt: &mut Formatter<'_>) -> std::io::Result<()> {
+	fn message(&self, fmt:&mut Formatter<'_>) -> std::io::Result<()> {
 		match self {
-            CompileError::ParsePatternError(diagnostic) => {
-                fmt.write_markup(markup! { "Error parsing pattern: " })?;
-                diagnostic.message(fmt)
-            }
-            CompileError::MissingSyntaxNode => {
-                fmt.write_markup(markup! { "A syntax node was missing" })
-            }
-            CompileError::UnexpectedBuiltinCall(name) => {
-                fmt.write_markup(markup! { "Unexpected call to built-in: "{{name}}"()" })
-            }
-            CompileError::UnexpectedMetavariable => {
-                fmt.write_markup(markup! { "Unexpected metavariable" })
-            }
-            CompileError::DuplicateFunctionDefinition(name) => {
-                fmt.write_markup(markup! { "Duplicate function definition: "{{name}} })
-            }
-            CompileError::DuplicateParameters => {
-                fmt.write_markup(markup! { "Duplicate parameters" })
-            }
-            CompileError::DuplicatePatternDefinition(name) => {
-                fmt.write_markup(markup! { "Duplicate pattern definition: "{{name}} })
-            }
-            CompileError::DuplicatePredicateDefinition(name) => {
-                fmt.write_markup(markup! { "Duplicate predicate definition: "{{name}} })
-            }
-            CompileError::InvalidMetavariableRange(_) => {
-                fmt.write_markup(markup! { "Invalid range for metavariable" })
-            }
-            CompileError::InvalidRawSnippetPosition => {
-                fmt.write_markup(markup! { "Invalid range for metavariable" })
-            }
-            CompileError::InvalidRegexPosition => fmt.write_markup(
-                markup! { "Regular expressions are not allowed on the right-hand side of a rule" },
-            ),
-            CompileError::MetavariableNotFound(var) => {
-                fmt.write_markup(markup! { "Metavariable not found: "{{var}} })
-            }
-            CompileError::ReservedMetavariable(var) => {
-                fmt.write_markup(markup! { "Reserved metavariable: "{{var}} })
-            }
-            CompileError::UnsupportedKind(kind) => {
-                fmt.write_markup(markup! { "Unsupported syntax kind ("{{kind}}")" })
-            }
-            CompileError::UnexpectedKind(kind) => {
-                fmt.write_markup(markup! { "Unexpected syntax kind ("{{kind}}")" })
-            }
-            CompileError::UnknownFunctionOrPattern(name) => {
-                fmt.write_markup(markup! { "Unknown function or pattern: "{{name}} })
-            }
-            CompileError::LiteralOutOfRange(value) => {
-                fmt.write_markup(markup! { "Literal value out of range: "{{value}} })
-            }
-            CompileError::MissingPattern => fmt.write_markup(markup! { "Missing pattern" }),
-            CompileError::NormalizationError => {
-                fmt.write_markup(markup! { "Could not normalize node in code snippet" })
-            }
-            CompileError::InvalidBracketedMetavariable => {
-                fmt.write_markup(markup! { "Invalid bracketed metavariable" })
-            }
-            CompileError::FunctionArgument(_) => {
-                fmt.write_markup(markup! { "Invalid function argument" })
-            }
-            CompileError::UnknownFunctionOrPredicate(name) => {
-                fmt.write_markup(markup! { "Unknown function or predicate: "{{name}} })
-            }
-            CompileError::UnknownTargetLanguage(lang) => {
-                fmt.write_markup(markup! { "Unknown target language: "{{lang}} })
-            }
-            CompileError::UnknownVariable(var) => {
-                fmt.write_markup(markup! { "Unknown variable: "{{var}} })
-            }
-        }
+			CompileError::ParsePatternError(diagnostic) => {
+				fmt.write_markup(markup! { "Error parsing pattern: " })?;
+				diagnostic.message(fmt)
+			},
+			CompileError::MissingSyntaxNode => {
+				fmt.write_markup(markup! { "A syntax node was missing" })
+			},
+			CompileError::UnexpectedBuiltinCall(name) => {
+				fmt.write_markup(markup! { "Unexpected call to built-in: "{{name}}"()" })
+			},
+			CompileError::UnexpectedMetavariable => {
+				fmt.write_markup(markup! { "Unexpected metavariable" })
+			},
+			CompileError::DuplicateFunctionDefinition(name) => {
+				fmt.write_markup(markup! { "Duplicate function definition: "{{name}} })
+			},
+			CompileError::DuplicateParameters => {
+				fmt.write_markup(markup! { "Duplicate parameters" })
+			},
+			CompileError::DuplicatePatternDefinition(name) => {
+				fmt.write_markup(markup! { "Duplicate pattern definition: "{{name}} })
+			},
+			CompileError::DuplicatePredicateDefinition(name) => {
+				fmt.write_markup(markup! { "Duplicate predicate definition: "{{name}} })
+			},
+			CompileError::InvalidMetavariableRange(_) => {
+				fmt.write_markup(markup! { "Invalid range for metavariable" })
+			},
+			CompileError::InvalidRawSnippetPosition => {
+				fmt.write_markup(markup! { "Invalid range for metavariable" })
+			},
+			CompileError::InvalidRegexPosition => {
+				fmt.write_markup(
+					markup! { "Regular expressions are not allowed on the right-hand side of a rule" },
+				)
+			},
+			CompileError::MetavariableNotFound(var) => {
+				fmt.write_markup(markup! { "Metavariable not found: "{{var}} })
+			},
+			CompileError::ReservedMetavariable(var) => {
+				fmt.write_markup(markup! { "Reserved metavariable: "{{var}} })
+			},
+			CompileError::UnsupportedKind(kind) => {
+				fmt.write_markup(markup! { "Unsupported syntax kind ("{{kind}}")" })
+			},
+			CompileError::UnexpectedKind(kind) => {
+				fmt.write_markup(markup! { "Unexpected syntax kind ("{{kind}}")" })
+			},
+			CompileError::UnknownFunctionOrPattern(name) => {
+				fmt.write_markup(markup! { "Unknown function or pattern: "{{name}} })
+			},
+			CompileError::LiteralOutOfRange(value) => {
+				fmt.write_markup(markup! { "Literal value out of range: "{{value}} })
+			},
+			CompileError::MissingPattern => fmt.write_markup(markup! { "Missing pattern" }),
+			CompileError::NormalizationError => {
+				fmt.write_markup(markup! { "Could not normalize node in code snippet" })
+			},
+			CompileError::InvalidBracketedMetavariable => {
+				fmt.write_markup(markup! { "Invalid bracketed metavariable" })
+			},
+			CompileError::FunctionArgument(_) => {
+				fmt.write_markup(markup! { "Invalid function argument" })
+			},
+			CompileError::UnknownFunctionOrPredicate(name) => {
+				fmt.write_markup(markup! { "Unknown function or predicate: "{{name}} })
+			},
+			CompileError::UnknownTargetLanguage(lang) => {
+				fmt.write_markup(markup! { "Unknown target language: "{{lang}} })
+			},
+			CompileError::UnknownVariable(var) => {
+				fmt.write_markup(markup! { "Unknown variable: "{{var}} })
+			},
+		}
 	}
 
 	fn location(&self) -> Location<'_> {
 		match self {
-			CompileError::ParsePatternError(diagnostic) => {
-				diagnostic.location()
-			},
+			CompileError::ParsePatternError(diagnostic) => diagnostic.location(),
 			_ => Location::default(),
 		}
 	}
 
-	fn description(
-		&self,
-		fmt: &mut std::fmt::Formatter<'_>,
-	) -> std::fmt::Result {
+	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			CompileError::ParsePatternError(diagnostic) => {
-				diagnostic.description(fmt)
-			},
+			CompileError::ParsePatternError(diagnostic) => diagnostic.description(fmt),
 			CompileError::FunctionArgument(error) => error.fmt(fmt),
 			_ => Ok(()),
 		}
 	}
 
-	fn advices(
-		&self,
-		visitor: &mut dyn biome_diagnostics::Visit,
-	) -> std::io::Result<()> {
+	fn advices(&self, visitor:&mut dyn biome_diagnostics::Visit) -> std::io::Result<()> {
 		match self {
             CompileError::UnexpectedBuiltinCall(name) => visitor.record_log(
                 LogCategory::Info,
@@ -207,13 +195,11 @@ impl Diagnostic for CompileError {
         }
 	}
 
-	fn severity(&self) -> Severity {
-		Severity::Error
-	}
+	fn severity(&self) -> Severity { Severity::Error }
 }
 
 impl From<SyntaxError> for CompileError {
-	fn from(error: SyntaxError) -> Self {
+	fn from(error:SyntaxError) -> Self {
 		match error {
 			SyntaxError::MissingRequiredChild => Self::MissingSyntaxNode,
 			SyntaxError::UnexpectedMetavariable => Self::UnexpectedMetavariable,
@@ -222,23 +208,21 @@ impl From<SyntaxError> for CompileError {
 }
 
 impl From<NodeLikeArgumentError> for CompileError {
-	fn from(error: NodeLikeArgumentError) -> Self {
-		Self::FunctionArgument(error)
-	}
+	fn from(error:NodeLikeArgumentError) -> Self { Self::FunctionArgument(error) }
 }
 
 #[derive(Debug)]
 pub enum NodeLikeArgumentError {
 	/// Duplicate arguments in invocation.
-	DuplicateArguments { name: String },
+	DuplicateArguments { name:String },
 	/// Only variables are allowed as arguments.
-	ExpectedVariable { name: String },
+	ExpectedVariable { name:String },
 	/// When a named argument is missing its name.
-	MissingArgumentName { name: String, variable: String },
+	MissingArgumentName { name:String, variable:String },
 	/// Used when too many arguments are specified.
-	TooManyArguments { name: String, max_args: usize },
+	TooManyArguments { name:String, max_args:usize },
 	/// Unknown argument given in function
-	UnknownArgument { name: String, argument: String, valid_args: Vec<String> },
+	UnknownArgument { name:String, argument:String, valid_args:Vec<String> },
 	/// Used when an invalid argument is used in a function call.
-	UnknownVariable { name: String, arg_name: String, valid_vars: Vec<String> },
+	UnknownVariable { name:String, arg_name:String, valid_vars:Vec<String> },
 }

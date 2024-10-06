@@ -1,37 +1,21 @@
+use std::{ffi::OsStr, path::Path};
+
 use biome_rowan::FileSourceError;
 use biome_string_case::StrLikeExtension;
-use std::ffi::OsStr;
-use std::path::Path;
 
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
-	Debug,
-	Clone,
-	Default,
-	Copy,
-	Eq,
-	PartialEq,
-	Hash,
-	serde::Serialize,
-	serde::Deserialize,
+	Debug, Clone, Default, Copy, Eq, PartialEq, Hash, serde::Serialize, serde::Deserialize,
 )]
 pub struct GraphqlFileSource {
 	#[allow(unused)]
-	variant: GraphqlVariant,
+	variant:GraphqlVariant,
 }
 
 /// The style of GraphQL contained in the file.
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[derive(
-	Debug,
-	Clone,
-	Default,
-	Copy,
-	Eq,
-	PartialEq,
-	Hash,
-	serde::Serialize,
-	serde::Deserialize,
+	Debug, Clone, Default, Copy, Eq, PartialEq, Hash, serde::Serialize, serde::Deserialize,
 )]
 enum GraphqlVariant {
 	#[default]
@@ -39,20 +23,18 @@ enum GraphqlVariant {
 }
 
 impl GraphqlFileSource {
-	pub fn graphql() -> Self {
-		Self { variant: GraphqlVariant::Standard }
-	}
+	pub fn graphql() -> Self { Self { variant:GraphqlVariant::Standard } }
 
-	/// Try to return the GraphQL file source corresponding to this file name from well-known files
-	pub fn try_from_well_known(_: &Path) -> Result<Self, FileSourceError> {
+	/// Try to return the GraphQL file source corresponding to this file name
+	/// from well-known files
+	pub fn try_from_well_known(_:&Path) -> Result<Self, FileSourceError> {
 		// TODO: to be implemented
 		Err(FileSourceError::UnknownFileName)
 	}
 
-	/// Try to return the GraphQL file source corresponding to this file extension
-	pub fn try_from_extension(
-		extension: &OsStr,
-	) -> Result<Self, FileSourceError> {
+	/// Try to return the GraphQL file source corresponding to this file
+	/// extension
+	pub fn try_from_extension(extension:&OsStr) -> Result<Self, FileSourceError> {
 		// We assume the file extension is normalized to lowercase
 		match extension.as_encoded_bytes() {
 			b"graphql" | b"gql" => Ok(Self::default()),
@@ -66,9 +48,7 @@ impl GraphqlFileSource {
 	///
 	/// [LSP spec]: https://microsoft.github.io/language-server-protocol/specifications/lsp/3.17/specification/#textDocumentItem
 	/// [VS Code spec]: https://code.visualstudio.com/docs/languages/identifiers
-	pub fn try_from_language_id(
-		language_id: &str,
-	) -> Result<Self, FileSourceError> {
+	pub fn try_from_language_id(language_id:&str) -> Result<Self, FileSourceError> {
 		match language_id {
 			"graphql" | "gql" => Ok(Self::default()),
 			_ => Err(FileSourceError::UnknownLanguageId),
@@ -79,7 +59,7 @@ impl GraphqlFileSource {
 impl TryFrom<&Path> for GraphqlFileSource {
 	type Error = FileSourceError;
 
-	fn try_from(path: &Path) -> Result<Self, Self::Error> {
+	fn try_from(path:&Path) -> Result<Self, Self::Error> {
 		if let Ok(file_source) = Self::try_from_well_known(path) {
 			return Ok(file_source);
 		}

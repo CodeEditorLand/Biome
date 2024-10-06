@@ -1,17 +1,34 @@
-use crate::{utils::is_node_equal, JsRuleAction};
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, ActionCategory, Ast, FixKind, Rule, RuleDiagnostic,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
 	RuleSource,
 };
 use biome_console::markup;
 use biome_diagnostics::Applicability;
 use biome_js_factory::make::{self, js_binary_expression, token};
 use biome_js_syntax::{
-	AnyJsExpression, AnyJsLiteralExpression, AnyJsStatement, JsBinaryExpression, JsBinaryOperator,
-	JsLanguage, JsLogicalExpression, JsLogicalOperator, JsSyntaxKind, JsUnaryOperator,
-	JsYieldArgument, JsYieldExpression, T,
+	AnyJsExpression,
+	AnyJsLiteralExpression,
+	AnyJsStatement,
+	JsBinaryExpression,
+	JsBinaryOperator,
+	JsLanguage,
+	JsLogicalExpression,
+	JsLogicalOperator,
+	JsSyntaxKind,
+	JsUnaryOperator,
+	JsYieldArgument,
+	JsYieldExpression,
+	T,
 };
 use biome_rowan::{AstNode, BatchMutationExt, NodeOrToken, SyntaxTriviaPiece, TriviaPieceKind};
+
+use crate::{utils::is_node_equal, JsRuleAction};
 
 declare_lint_rule! {
 	/// Disallow the use of yoda expressions.
@@ -71,12 +88,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoYodaExpression {
-	type Query = Ast<JsBinaryExpression>;
-	type State = ();
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsBinaryExpression>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
 		let left = node.left().ok()?;
@@ -91,7 +108,7 @@ impl Rule for NoYodaExpression {
 		has_yoda_expression.then_some(())
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, _state:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 
 		Some(
@@ -108,7 +125,7 @@ impl Rule for NoYodaExpression {
         )
 	}
 
-	fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, _state:&Self::State) -> Option<JsRuleAction> {
 		let node = ctx.query();
 
 		let parent_statement = node.parent::<AnyJsStatement>();
@@ -155,7 +172,7 @@ impl Rule for NoYodaExpression {
 					});
 
 				trivia.is_empty() && !has_trivia_on_parent_expression
-			}
+			},
 			_ => false,
 		};
 
@@ -167,8 +184,8 @@ impl Rule for NoYodaExpression {
 			(_, Some(AnyJsStatement::JsIfStatement(_)), _) => false,
 			(_, Some(AnyJsStatement::JsWhileStatement(_)), _) => false,
 			(_, _, Some(AnyJsExpression::JsParenthesizedExpression(_))) => false,
-			(Some(trivia), _, _) => trivia.is_empty(),
-			(None, _, _) => true,
+			(Some(trivia), ..) => trivia.is_empty(),
+			(None, ..) => true,
 		};
 
 		let new_left = if has_missing_left_trivia {
@@ -209,39 +226,41 @@ impl Rule for NoYodaExpression {
 	}
 }
 
-fn extract_leading_trivia(node: &AnyJsExpression) -> Option<Vec<SyntaxTriviaPiece<JsLanguage>>> {
+fn extract_leading_trivia(node:&AnyJsExpression) -> Option<Vec<SyntaxTriviaPiece<JsLanguage>>> {
 	node.syntax()
 		.first_leading_trivia()
 		.map(|first_leading_trivia| first_leading_trivia.pieces().collect::<Vec<_>>())
 }
 
-fn extract_trailing_trivia(node: &AnyJsExpression) -> Option<Vec<SyntaxTriviaPiece<JsLanguage>>> {
+fn extract_trailing_trivia(node:&AnyJsExpression) -> Option<Vec<SyntaxTriviaPiece<JsLanguage>>> {
 	node.syntax()
 		.last_trailing_trivia()
 		.map(|last_trailing_trivia| last_trailing_trivia.pieces().collect::<Vec<_>>())
 }
 
 fn clone_with_trivia(
-	node: AnyJsExpression,
-	leading_trivia: Option<Vec<SyntaxTriviaPiece<JsLanguage>>>,
-	trailing_trivia: Option<Vec<SyntaxTriviaPiece<JsLanguage>>>,
+	node:AnyJsExpression,
+	leading_trivia:Option<Vec<SyntaxTriviaPiece<JsLanguage>>>,
+	trailing_trivia:Option<Vec<SyntaxTriviaPiece<JsLanguage>>>,
 ) -> Option<AnyJsExpression> {
 	node.with_leading_trivia_pieces(leading_trivia?.clone())?
 		.with_trailing_trivia_pieces(trailing_trivia?.clone())
 }
 
-fn is_literal_expression(expression: &AnyJsExpression) -> Option<bool> {
+fn is_literal_expression(expression:&AnyJsExpression) -> Option<bool> {
 	match expression {
 		// Any literal: 1, true, null, etc
 		AnyJsExpression::AnyJsLiteralExpression(_) => Some(true),
 
 		// Static template literals: `foo`
-		AnyJsExpression::JsTemplateExpression(template_expression) => Some(
-			template_expression
-				.elements()
-				.into_iter()
-				.all(|element| element.as_js_template_chunk_element().is_some()),
-		),
+		AnyJsExpression::JsTemplateExpression(template_expression) => {
+			Some(
+				template_expression
+					.elements()
+					.into_iter()
+					.all(|element| element.as_js_template_chunk_element().is_some()),
+			)
+		},
 
 		// Negative numeric literal: -1
 		AnyJsExpression::JsUnaryExpression(unary_expression) => {
@@ -255,78 +274,85 @@ fn is_literal_expression(expression: &AnyJsExpression) -> Option<bool> {
 			);
 
 			Some(is_minus_operator && is_number_expression)
-		}
+		},
 
 		// Parenthesized expression: (1)
 		AnyJsExpression::JsParenthesizedExpression(parenthesized_expression) => {
 			is_literal_expression(&parenthesized_expression.expression().ok()?)
-		}
+		},
 
 		_ => Some(false),
 	}
 }
 
-/// Determines whether the passed node is inside a range expression, based on the following conditions:
+/// Determines whether the passed node is inside a range expression, based on
+/// the following conditions:
 /// - The node has a `JsLogicalExpression` parent wrapped in parenthesis
-/// - Both the `left` and `right` part of this `JsLogicalExpression` are instances of `JsBinaryExpression`
+/// - Both the `left` and `right` part of this `JsLogicalExpression` are
+///   instances of `JsBinaryExpression`
 /// - The operators of the two binary expressions are `<` or `<=`
-/// - Both binary expressions are in the format `0 <= x && x < 1` or `x < 0 || 1 <= x`
-fn is_range_assertion(node: &JsBinaryExpression) -> bool {
+/// - Both binary expressions are in the format `0 <= x && x < 1` or `x < 0 || 1
+///   <= x`
+fn is_range_assertion(node:&JsBinaryExpression) -> bool {
 	let parent_logical_expression = node.parent::<JsLogicalExpression>();
 
 	match parent_logical_expression {
-		Some(logical_expression) => match (
-			logical_expression.left().ok(),
-			logical_expression.right().ok(),
-			logical_expression.operator().ok(),
-		) {
-			(
-				Some(AnyJsExpression::JsBinaryExpression(left)),
-				Some(AnyJsExpression::JsBinaryExpression(right)),
-				Some(operator),
-			) => {
-				is_range_assertion_operator(left.operator().ok())
-					&& is_range_assertion_operator(right.operator().ok())
-					&& (is_inside_range_assertion(operator, &left, &right)
-						|| is_outside_range_assertion(operator, &left, &right))
-					&& is_wrapped_in_parenthesis(&logical_expression)
+		Some(logical_expression) => {
+			match (
+				logical_expression.left().ok(),
+				logical_expression.right().ok(),
+				logical_expression.operator().ok(),
+			) {
+				(
+					Some(AnyJsExpression::JsBinaryExpression(left)),
+					Some(AnyJsExpression::JsBinaryExpression(right)),
+					Some(operator),
+				) => {
+					is_range_assertion_operator(left.operator().ok())
+						&& is_range_assertion_operator(right.operator().ok())
+						&& (is_inside_range_assertion(operator, &left, &right)
+							|| is_outside_range_assertion(operator, &left, &right))
+						&& is_wrapped_in_parenthesis(&logical_expression)
+				},
+				_ => false,
 			}
-			_ => false,
 		},
 		_ => false,
 	}
 }
 
-/// Determines whether the operator is one of those used in range assertions (< or <=)
-fn is_range_assertion_operator(operator: Option<JsBinaryOperator>) -> bool {
+/// Determines whether the operator is one of those used in range assertions (<
+/// or <=)
+fn is_range_assertion_operator(operator:Option<JsBinaryOperator>) -> bool {
 	matches!(operator, Some(JsBinaryOperator::LessThan | JsBinaryOperator::LessThanOrEqual))
 }
 
 struct JsLogicalExpressionOperands {
-	first_binary_expression_left: AnyJsExpression,
-	first_binary_expression_right: AnyJsExpression,
-	second_binary_expression_left: AnyJsExpression,
-	second_binary_expression_right: AnyJsExpression,
+	first_binary_expression_left:AnyJsExpression,
+	first_binary_expression_right:AnyJsExpression,
+	second_binary_expression_left:AnyJsExpression,
+	second_binary_expression_right:AnyJsExpression,
 }
 
 /// Returns the `left` and `right` operands of the passed binary expressions
 fn get_logical_expression_operands(
-	left_binary_expression: &JsBinaryExpression,
-	right_binary_expression: &JsBinaryExpression,
+	left_binary_expression:&JsBinaryExpression,
+	right_binary_expression:&JsBinaryExpression,
 ) -> Option<JsLogicalExpressionOperands> {
 	Some(JsLogicalExpressionOperands {
-		first_binary_expression_left: left_binary_expression.left().ok()?,
-		first_binary_expression_right: left_binary_expression.right().ok()?,
-		second_binary_expression_left: right_binary_expression.left().ok()?,
-		second_binary_expression_right: right_binary_expression.right().ok()?,
+		first_binary_expression_left:left_binary_expression.left().ok()?,
+		first_binary_expression_right:left_binary_expression.right().ok()?,
+		second_binary_expression_left:right_binary_expression.left().ok()?,
+		second_binary_expression_right:right_binary_expression.right().ok()?,
 	})
 }
 
-/// Determines whether the nodes compose an inside range assertion, like `0 <= x && x < 1`
+/// Determines whether the nodes compose an inside range assertion, like `0 <= x
+/// && x < 1`
 fn is_inside_range_assertion(
-	operator: JsLogicalOperator,
-	left_binary_expression: &JsBinaryExpression,
-	right_binary_expression: &JsBinaryExpression,
+	operator:JsLogicalOperator,
+	left_binary_expression:&JsBinaryExpression,
+	right_binary_expression:&JsBinaryExpression,
 ) -> bool {
 	match get_logical_expression_operands(left_binary_expression, right_binary_expression) {
 		Some(operands) => {
@@ -346,26 +372,27 @@ fn is_inside_range_assertion(
 				(Some(_), None) | (None, Some(_)) => true,
 				(Some(left_value), Some(right_value)) => {
 					compare_string_literals(left_value.as_str(), right_value.as_str())
-				}
+				},
 			}
-		}
+		},
 		_ => false,
 	}
 }
 
 /// Compare literals as number if possible, compare as string otherwise
-fn compare_string_literals(left_string_value: &str, right_string_value: &str) -> bool {
+fn compare_string_literals(left_string_value:&str, right_string_value:&str) -> bool {
 	match (left_string_value.parse::<f64>(), right_string_value.parse::<f64>()) {
 		(Ok(left_number_value), Ok(right_number_value)) => left_number_value <= right_number_value,
 		_ => left_string_value <= right_string_value,
 	}
 }
 
-/// Determines whether the nodes compose an outside range assertion, like `x < 0 || 1 <= x`
+/// Determines whether the nodes compose an outside range assertion, like `x < 0
+/// || 1 <= x`
 fn is_outside_range_assertion(
-	operator: JsLogicalOperator,
-	left_binary_expression: &JsBinaryExpression,
-	right_binary_expression: &JsBinaryExpression,
+	operator:JsLogicalOperator,
+	left_binary_expression:&JsBinaryExpression,
+	right_binary_expression:&JsBinaryExpression,
 ) -> bool {
 	match get_logical_expression_operands(left_binary_expression, right_binary_expression) {
 		Some(operands) => {
@@ -385,44 +412,46 @@ fn is_outside_range_assertion(
 				(Some(_), None) | (None, Some(_)) => true,
 				(Some(left_value), Some(right_value)) => {
 					compare_string_literals(left_value.as_str(), right_value.as_str())
-				}
+				},
 			}
-		}
+		},
 		_ => false,
 	}
 }
 
 // Determines whether the prev and next token are parenthesis
-fn is_wrapped_in_parenthesis(logical_expression: &JsLogicalExpression) -> bool {
+fn is_wrapped_in_parenthesis(logical_expression:&JsLogicalExpression) -> bool {
 	let syntax = logical_expression.syntax();
 
 	match (syntax.prev_sibling_or_token(), syntax.next_sibling_or_token()) {
 		(Some(NodeOrToken::Token(prev_token)), Some(NodeOrToken::Token(next_token))) => {
 			matches!(prev_token.kind(), T!['(']) && matches!(next_token.kind(), T![')'])
-		}
+		},
 		_ => false,
 	}
 }
 
-fn extract_string_value(expression: AnyJsExpression) -> Option<String> {
+fn extract_string_value(expression:AnyJsExpression) -> Option<String> {
 	match expression {
-		AnyJsExpression::JsUnaryExpression(unary) => match unary.operator() {
-			Ok(JsUnaryOperator::Minus) => {
-				let argument = unary.argument().ok()?.text();
-				let is_numeric_literal = unary.is_signed_numeric_literal().ok()?;
-				is_numeric_literal.then_some(String::from("-") + argument.as_str())
+		AnyJsExpression::JsUnaryExpression(unary) => {
+			match unary.operator() {
+				Ok(JsUnaryOperator::Minus) => {
+					let argument = unary.argument().ok()?.text();
+					let is_numeric_literal = unary.is_signed_numeric_literal().ok()?;
+					is_numeric_literal.then_some(String::from("-") + argument.as_str())
+				},
+				_ => None,
 			}
-			_ => None,
 		},
 		_ => {
 			let static_value = expression.as_static_value()?;
 			let text = static_value.text();
 			Some(text.to_string())
-		}
+		},
 	}
 }
 
-fn flip_operator(operator: JsBinaryOperator) -> Option<JsSyntaxKind> {
+fn flip_operator(operator:JsBinaryOperator) -> Option<JsSyntaxKind> {
 	match operator {
 		// === to ===
 		JsBinaryOperator::StrictEquality => Some(T!(===)),

@@ -1,66 +1,85 @@
-use crate::{
-	AnyJsBindingPattern, AnyJsConstructorParameter, AnyJsFormalParameter,
-	AnyJsParameter, JsConstructorParameterList, JsConstructorParameters,
-	JsDecoratorList, JsLanguage, JsParameterList, JsParameters,
-	TsTypeAnnotation,
-};
 use biome_rowan::{
-	declare_node_union, AstNodeList, AstSeparatedList,
-	AstSeparatedListNodesIterator, SyntaxResult,
+	declare_node_union,
+	AstNodeList,
+	AstSeparatedList,
+	AstSeparatedListNodesIterator,
+	SyntaxResult,
 };
 
-/// An enumeration representing different types of JavaScript/TypeScript parameter lists.
+use crate::{
+	AnyJsBindingPattern,
+	AnyJsConstructorParameter,
+	AnyJsFormalParameter,
+	AnyJsParameter,
+	JsConstructorParameterList,
+	JsConstructorParameters,
+	JsDecoratorList,
+	JsLanguage,
+	JsParameterList,
+	JsParameters,
+	TsTypeAnnotation,
+};
+
+/// An enumeration representing different types of JavaScript/TypeScript
+/// parameter lists.
 ///
-/// This enum can represent a regular JavaScript/TypeScript parameter list (i.e., for functions)
-/// or a JavaScript/TypeScript constructor parameter list (i.e., for class constructors).
+/// This enum can represent a regular JavaScript/TypeScript parameter list
+/// (i.e., for functions) or a JavaScript/TypeScript constructor parameter list
+/// (i.e., for class constructors).
 ///
 /// # Examples
 ///
 /// ```
 /// use biome_js_factory::make;
-/// use biome_js_syntax::{AnyJsBinding, AnyJsBindingPattern, AnyJsConstructorParameter, AnyJsFormalParameter, AnyJsParameter};
-/// use biome_js_syntax::parameter_ext::AnyJsParameterList;
+/// use biome_js_syntax::{
+/// 	parameter_ext::AnyJsParameterList,
+/// 	AnyJsBinding,
+/// 	AnyJsBindingPattern,
+/// 	AnyJsConstructorParameter,
+/// 	AnyJsFormalParameter,
+/// 	AnyJsParameter,
+/// };
 ///
 /// // Create a function parameter list
 /// let parameter_list = make::js_parameter_list(
-///     Some(AnyJsParameter::AnyJsFormalParameter(
-///         AnyJsFormalParameter::JsFormalParameter(
-///             make::js_formal_parameter(
-///                 make::js_decorator_list([]),
-///                 AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
-///                     make::js_identifier_binding(make::ident("params")),
-///                 )),
-///             )
-///             .build(),
-///         ),
-///     )),
-///     None,
+/// 	Some(AnyJsParameter::AnyJsFormalParameter(AnyJsFormalParameter::JsFormalParameter(
+/// 		make::js_formal_parameter(
+/// 			make::js_decorator_list([]),
+/// 			AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
+/// 				make::js_identifier_binding(make::ident("params")),
+/// 			)),
+/// 		)
+/// 		.build(),
+/// 	))),
+/// 	None,
 /// );
 /// let function_params = AnyJsParameterList::JsParameterList(parameter_list);
 ///
 /// // Create a constructor parameter list
 /// let constructor_parameter_list = make::js_constructor_parameter_list(
-///     Some(AnyJsConstructorParameter::AnyJsFormalParameter(
-///         AnyJsFormalParameter::JsFormalParameter(
-///             make::js_formal_parameter(
-///                 make::js_decorator_list([]),
-///                 AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
-///                     make::js_identifier_binding(make::ident("params")),
-///                 )),
-///             )
-///             .build(),
-///         ),
-///     )),
-///     None,
+/// 	Some(AnyJsConstructorParameter::AnyJsFormalParameter(
+/// 		AnyJsFormalParameter::JsFormalParameter(
+/// 			make::js_formal_parameter(
+/// 				make::js_decorator_list([]),
+/// 				AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
+/// 					make::js_identifier_binding(make::ident("params")),
+/// 				)),
+/// 			)
+/// 			.build(),
+/// 		),
+/// 	)),
+/// 	None,
 /// );
 ///
-/// let constructor_params = AnyJsParameterList::JsConstructorParameterList(constructor_parameter_list);
+/// let constructor_params =
+/// 	AnyJsParameterList::JsConstructorParameterList(constructor_parameter_list);
 /// ```
 ///
 /// # Variants
 ///
 /// * `JsParameterList` - A list of parameters for a JavaScript function.
-/// * `JsConstructorParameterList` - A list of parameters for a JavaScript constructor.
+/// * `JsConstructorParameterList` - A list of parameters for a JavaScript
+///   constructor.
 #[derive(Debug)]
 pub enum AnyJsParameterList {
 	JsParameterList(JsParameterList),
@@ -68,63 +87,63 @@ pub enum AnyJsParameterList {
 }
 
 impl From<JsParameterList> for AnyJsParameterList {
-	fn from(list: JsParameterList) -> Self {
-		AnyJsParameterList::JsParameterList(list)
-	}
+	fn from(list:JsParameterList) -> Self { AnyJsParameterList::JsParameterList(list) }
 }
 
 impl From<JsConstructorParameterList> for AnyJsParameterList {
-	fn from(list: JsConstructorParameterList) -> Self {
+	fn from(list:JsConstructorParameterList) -> Self {
 		AnyJsParameterList::JsConstructorParameterList(list)
 	}
 }
 
 impl AnyJsParameterList {
-	///
 	/// This method allows to get the length of a parameter list, regardless
-	/// of whether it's a standard parameter list or a constructor parameter list.
+	/// of whether it's a standard parameter list or a constructor parameter
+	/// list.
 	///
 	/// # Examples
 	///
 	/// ```
 	/// use biome_js_factory::make;
-	/// use biome_js_syntax::parameter_ext::AnyJsParameterList;
 	/// use biome_js_syntax::{
-	///     AnyJsBinding, AnyJsBindingPattern, AnyJsConstructorParameter, AnyJsFormalParameter,
-	///     AnyJsParameter, T,
+	/// 	parameter_ext::AnyJsParameterList,
+	/// 	AnyJsBinding,
+	/// 	AnyJsBindingPattern,
+	/// 	AnyJsConstructorParameter,
+	/// 	AnyJsFormalParameter,
+	/// 	AnyJsParameter,
+	/// 	T,
 	/// };
 	///
 	/// let parameter_list = make::js_parameter_list(
-	///     Some(AnyJsParameter::AnyJsFormalParameter(
-	///         AnyJsFormalParameter::JsFormalParameter(
-	///             make::js_formal_parameter(
-	///                 make::js_decorator_list([]),
-	///                 AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
-	///                     make::js_identifier_binding(make::ident("params")),
-	///                 )),
-	///             )
-	///             .build(),
-	///         ),
-	///     )),
-	///     None,
+	/// 	Some(AnyJsParameter::AnyJsFormalParameter(AnyJsFormalParameter::JsFormalParameter(
+	/// 		make::js_formal_parameter(
+	/// 			make::js_decorator_list([]),
+	/// 			AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
+	/// 				make::js_identifier_binding(make::ident("params")),
+	/// 			)),
+	/// 		)
+	/// 		.build(),
+	/// 	))),
+	/// 	None,
 	/// );
 	///
 	/// let params = AnyJsParameterList::JsParameterList(parameter_list);
 	/// assert_eq!(params.len(), 1);
 	///
 	/// let constructor_parameter_list = make::js_constructor_parameter_list(
-	///     Some(AnyJsConstructorParameter::AnyJsFormalParameter(
-	///         AnyJsFormalParameter::JsFormalParameter(
-	///             make::js_formal_parameter(
-	///                 make::js_decorator_list([]),
-	///                 AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
-	///                     make::js_identifier_binding(make::ident("params")),
-	///                 )),
-	///             )
-	///             .build(),
-	///         ),
-	///     )),
-	///     None,
+	/// 	Some(AnyJsConstructorParameter::AnyJsFormalParameter(
+	/// 		AnyJsFormalParameter::JsFormalParameter(
+	/// 			make::js_formal_parameter(
+	/// 				make::js_decorator_list([]),
+	/// 				AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
+	/// 					make::js_identifier_binding(make::ident("params")),
+	/// 				)),
+	/// 			)
+	/// 			.build(),
+	/// 		),
+	/// 	)),
+	/// 	None,
 	/// );
 	///
 	/// let params = AnyJsParameterList::JsConstructorParameterList(constructor_parameter_list);
@@ -137,47 +156,43 @@ impl AnyJsParameterList {
 	pub fn len(&self) -> usize {
 		match self {
 			AnyJsParameterList::JsParameterList(parameters) => parameters.len(),
-			AnyJsParameterList::JsConstructorParameterList(parameters) => {
-				parameters.len()
-			},
+			AnyJsParameterList::JsConstructorParameterList(parameters) => parameters.len(),
 		}
 	}
 
-	///
 	/// This method checks if a parameter list is empty.
 	///
 	/// # Examples
 	///
 	/// ```
 	/// use biome_js_factory::make;
-	/// use biome_js_syntax::parameter_ext::AnyJsParameterList;
 	/// use biome_js_syntax::{
-	///     AnyJsBinding, AnyJsBindingPattern, AnyJsConstructorParameter, AnyJsFormalParameter,
-	///     AnyJsParameter, T,
+	/// 	parameter_ext::AnyJsParameterList,
+	/// 	AnyJsBinding,
+	/// 	AnyJsBindingPattern,
+	/// 	AnyJsConstructorParameter,
+	/// 	AnyJsFormalParameter,
+	/// 	AnyJsParameter,
+	/// 	T,
 	/// };
 	///
 	/// let parameter_list = make::js_parameter_list(
-	///     Some(AnyJsParameter::AnyJsFormalParameter(
-	///         AnyJsFormalParameter::JsFormalParameter(
-	///             make::js_formal_parameter(
-	///                 make::js_decorator_list([]),
-	///                 AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
-	///                     make::js_identifier_binding(make::ident("params")),
-	///                 )),
-	///             )
-	///             .build(),
-	///         ),
-	///     )),
-	///     None,
+	/// 	Some(AnyJsParameter::AnyJsFormalParameter(AnyJsFormalParameter::JsFormalParameter(
+	/// 		make::js_formal_parameter(
+	/// 			make::js_decorator_list([]),
+	/// 			AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
+	/// 				make::js_identifier_binding(make::ident("params")),
+	/// 			)),
+	/// 		)
+	/// 		.build(),
+	/// 	))),
+	/// 	None,
 	/// );
 	///
 	/// let params = AnyJsParameterList::JsParameterList(parameter_list);
 	/// assert_eq!(params.is_empty(), false);
 	///
-	/// let constructor_parameter_list = make::js_constructor_parameter_list(
-	///     None,
-	///     None,
-	/// );
+	/// let constructor_parameter_list = make::js_constructor_parameter_list(None, None);
 	///
 	/// let params = AnyJsParameterList::JsConstructorParameterList(constructor_parameter_list);
 	/// assert!(params.is_empty());
@@ -185,45 +200,43 @@ impl AnyJsParameterList {
 	///
 	/// # Returns
 	///
-	/// Returns `true` if the parameter list contains no parameters, false otherwise.
+	/// Returns `true` if the parameter list contains no parameters, false
+	/// otherwise.
 	pub fn is_empty(&self) -> bool {
 		match self {
-			AnyJsParameterList::JsParameterList(parameters) => {
-				parameters.is_empty()
-			},
-			AnyJsParameterList::JsConstructorParameterList(parameters) => {
-				parameters.is_empty()
-			},
+			AnyJsParameterList::JsParameterList(parameters) => parameters.is_empty(),
+			AnyJsParameterList::JsConstructorParameterList(parameters) => parameters.is_empty(),
 		}
 	}
 
-	///
 	/// This method allows to get the first parameter in the parameter list.
 	///
 	/// # Examples
 	///
 	/// ```
 	/// use biome_js_factory::make;
-	/// use biome_js_syntax::parameter_ext::{AnyJsParameterList, AnyParameter};
 	/// use biome_js_syntax::{
-	///     AnyJsBinding, AnyJsBindingPattern, AnyJsConstructorParameter, AnyJsFormalParameter,
-	///     AnyJsParameter, T,
+	/// 	parameter_ext::{AnyJsParameterList, AnyParameter},
+	/// 	AnyJsBinding,
+	/// 	AnyJsBindingPattern,
+	/// 	AnyJsConstructorParameter,
+	/// 	AnyJsFormalParameter,
+	/// 	AnyJsParameter,
+	/// 	T,
 	/// };
 	/// use biome_rowan::SyntaxResult;
 	///
 	/// let parameter_list = make::js_parameter_list(
-	///     Some(AnyJsParameter::AnyJsFormalParameter(
-	///         AnyJsFormalParameter::JsFormalParameter(
-	///             make::js_formal_parameter(
-	///                 make::js_decorator_list([]),
-	///                 AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
-	///                     make::js_identifier_binding(make::ident("param1")),
-	///                 )),
-	///             )
-	///             .build(),
-	///         ),
-	///     )),
-	///     None,
+	/// 	Some(AnyJsParameter::AnyJsFormalParameter(AnyJsFormalParameter::JsFormalParameter(
+	/// 		make::js_formal_parameter(
+	/// 			make::js_decorator_list([]),
+	/// 			AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
+	/// 				make::js_identifier_binding(make::ident("param1")),
+	/// 			)),
+	/// 		)
+	/// 		.build(),
+	/// 	))),
+	/// 	None,
 	/// );
 	///
 	/// let params = AnyJsParameterList::JsParameterList(parameter_list);
@@ -249,33 +262,35 @@ impl AnyJsParameterList {
 		})
 	}
 
-	///
-	/// This method allows you to iterate over the parameters in a `JsParameterList` or a `JsConstructorParameterList`,
-	/// depending on the variant of the `AnyJsParameterList` enum.
+	/// This method allows you to iterate over the parameters in a
+	/// `JsParameterList` or a `JsConstructorParameterList`, depending on the
+	/// variant of the `AnyJsParameterList` enum.
 	///
 	/// # Examples
 	///
 	/// ```
 	/// use biome_js_factory::make;
-	/// use biome_js_syntax::parameter_ext::AnyJsParameterList;
 	/// use biome_js_syntax::{
-	///     AnyJsBinding, AnyJsBindingPattern, AnyJsConstructorParameter, AnyJsFormalParameter,
-	///     AnyJsParameter, T,
+	/// 	parameter_ext::AnyJsParameterList,
+	/// 	AnyJsBinding,
+	/// 	AnyJsBindingPattern,
+	/// 	AnyJsConstructorParameter,
+	/// 	AnyJsFormalParameter,
+	/// 	AnyJsParameter,
+	/// 	T,
 	/// };
 	///
 	/// let parameter_list = make::js_parameter_list(
-	///     Some(AnyJsParameter::AnyJsFormalParameter(
-	///         AnyJsFormalParameter::JsFormalParameter(
-	///             make::js_formal_parameter(
-	///                 make::js_decorator_list([]),
-	///                 AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
-	///                     make::js_identifier_binding(make::ident("param1")),
-	///                 )),
-	///             )
-	///             .build(),
-	///         ),
-	///     )),
-	///     None,
+	/// 	Some(AnyJsParameter::AnyJsFormalParameter(AnyJsFormalParameter::JsFormalParameter(
+	/// 		make::js_formal_parameter(
+	/// 			make::js_decorator_list([]),
+	/// 			AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
+	/// 				make::js_identifier_binding(make::ident("param1")),
+	/// 			)),
+	/// 		)
+	/// 		.build(),
+	/// 	))),
+	/// 	None,
 	/// );
 	///
 	/// let params = AnyJsParameterList::JsParameterList(parameter_list);
@@ -288,46 +303,44 @@ impl AnyJsParameterList {
 	/// # Returns
 	///
 	/// Returns an iterator over the parameters in the list.
-	///
 	pub fn iter(&self) -> AnyJsParameterListNodeIter {
 		match self {
 			AnyJsParameterList::JsParameterList(list) => {
 				AnyJsParameterListNodeIter::JsParameterList(list.iter())
 			},
 			AnyJsParameterList::JsConstructorParameterList(list) => {
-				AnyJsParameterListNodeIter::JsConstructorParameterList(
-					list.iter(),
-				)
+				AnyJsParameterListNodeIter::JsConstructorParameterList(list.iter())
 			},
 		}
 	}
 
-	///
 	/// This method allows to get the last parameter in the parameter list.
 	///
 	/// # Examples
 	///
 	/// ```
 	/// use biome_js_factory::make;
-	/// use biome_js_syntax::parameter_ext::AnyJsParameterList;
 	/// use biome_js_syntax::{
-	///     AnyJsBinding, AnyJsBindingPattern, AnyJsConstructorParameter, AnyJsFormalParameter,
-	///     AnyJsParameter, T,
+	/// 	parameter_ext::AnyJsParameterList,
+	/// 	AnyJsBinding,
+	/// 	AnyJsBindingPattern,
+	/// 	AnyJsConstructorParameter,
+	/// 	AnyJsFormalParameter,
+	/// 	AnyJsParameter,
+	/// 	T,
 	/// };
 	///
 	/// let parameter_list = make::js_parameter_list(
-	///     Some(AnyJsParameter::AnyJsFormalParameter(
-	///         AnyJsFormalParameter::JsFormalParameter(
-	///             make::js_formal_parameter(
-	///                 make::js_decorator_list([]),
-	///                 AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
-	///                     make::js_identifier_binding(make::ident("param1")),
-	///                 )),
-	///             )
-	///             .build(),
-	///         ),
-	///     )),
-	///     None,
+	/// 	Some(AnyJsParameter::AnyJsFormalParameter(AnyJsFormalParameter::JsFormalParameter(
+	/// 		make::js_formal_parameter(
+	/// 			make::js_decorator_list([]),
+	/// 			AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(
+	/// 				make::js_identifier_binding(make::ident("param1")),
+	/// 			)),
+	/// 		)
+	/// 		.build(),
+	/// 	))),
+	/// 	None,
 	/// );
 	///
 	/// let params = AnyJsParameterList::JsParameterList(parameter_list);
@@ -342,7 +355,6 @@ impl AnyJsParameterList {
 	/// # Returns
 	///
 	/// Returns the last parameter in the parameter list if it exists.
-	///
 	pub fn last(&self) -> Option<SyntaxResult<AnyParameter>> {
 		Some(match self {
 			AnyJsParameterList::JsParameterList(parameters) => {
@@ -354,7 +366,6 @@ impl AnyJsParameterList {
 		})
 	}
 
-	///
 	/// This method checks if any parameters in the given list are decorated.
 	///
 	/// # Examples
@@ -416,16 +427,15 @@ impl AnyJsParameterList {
 	/// # Returns
 	///
 	/// Returns `true` if the list contains any decorated parameters.
-	///
 	pub fn has_any_decorated_parameter(&self) -> bool {
 		self.iter().any(|parameter| {
-			parameter.map_or(false, |parameter| match parameter {
-				AnyParameter::AnyJsConstructorParameter(parameter) => {
-					parameter.has_any_decorator()
-				},
-				AnyParameter::AnyJsParameter(parameter) => {
-					parameter.has_any_decorator()
-				},
+			parameter.map_or(false, |parameter| {
+				match parameter {
+					AnyParameter::AnyJsConstructorParameter(parameter) => {
+						parameter.has_any_decorator()
+					},
+					AnyParameter::AnyJsParameter(parameter) => parameter.has_any_decorator(),
+				}
 			})
 		})
 	}
@@ -433,9 +443,10 @@ impl AnyJsParameterList {
 
 /// An iterator over the parameters in an `AnyJsParameterList`.
 ///
-/// This iterator can traverse a regular JavaScript/TypeScript parameter list (i.e., for functions)
-/// or a JavaScript/TypeScript constructor parameter list (i.e., for class constructors), depending
-/// on the variant of the `AnyJsParameterListNodeIter` enum.
+/// This iterator can traverse a regular JavaScript/TypeScript parameter list
+/// (i.e., for functions) or a JavaScript/TypeScript constructor parameter list
+/// (i.e., for class constructors), depending on the variant of the
+/// `AnyJsParameterListNodeIter` enum.
 pub enum AnyJsParameterListNodeIter {
 	JsParameterList(AstSeparatedListNodesIterator<JsLanguage, AnyJsParameter>),
 	JsConstructorParameterList(
@@ -470,30 +481,25 @@ impl AnyParameter {
 		match self {
 			AnyParameter::AnyJsConstructorParameter(parameter) => {
 				match parameter {
-					AnyJsConstructorParameter::AnyJsFormalParameter(
-						parameter,
-					) => parameter.as_js_formal_parameter()?.binding().ok(),
+					AnyJsConstructorParameter::AnyJsFormalParameter(parameter) => {
+						parameter.as_js_formal_parameter()?.binding().ok()
+					},
 					AnyJsConstructorParameter::JsRestParameter(parameter) => {
 						parameter.binding().ok()
 					},
-					AnyJsConstructorParameter::TsPropertyParameter(
-						parameter,
-					) => parameter
-						.formal_parameter()
-						.ok()?
-						.as_js_formal_parameter()?
-						.binding()
-						.ok(),
+					AnyJsConstructorParameter::TsPropertyParameter(parameter) => {
+						parameter.formal_parameter().ok()?.as_js_formal_parameter()?.binding().ok()
+					},
 				}
 			},
-			AnyParameter::AnyJsParameter(parameter) => match parameter {
-				AnyJsParameter::AnyJsFormalParameter(parameter) => {
-					parameter.as_js_formal_parameter()?.binding().ok()
-				},
-				AnyJsParameter::JsRestParameter(parameter) => {
-					parameter.binding().ok()
-				},
-				AnyJsParameter::TsThisParameter(_) => None,
+			AnyParameter::AnyJsParameter(parameter) => {
+				match parameter {
+					AnyJsParameter::AnyJsFormalParameter(parameter) => {
+						parameter.as_js_formal_parameter()?.binding().ok()
+					},
+					AnyJsParameter::JsRestParameter(parameter) => parameter.binding().ok(),
+					AnyJsParameter::TsThisParameter(_) => None,
+				}
 			},
 		}
 	}
@@ -507,15 +513,12 @@ declare_node_union! {
 }
 
 impl AnyJsConstructorParameter {
-	/// Returns the list of decorators of the parameter if the parameter is decorated.
+	/// Returns the list of decorators of the parameter if the parameter is
+	/// decorated.
 	pub fn decorators(&self) -> Option<JsDecoratorList> {
 		match self {
-			AnyJsConstructorParameter::AnyJsFormalParameter(parameter) => {
-				parameter.decorators()
-			},
-			AnyJsConstructorParameter::JsRestParameter(parameter) => {
-				Some(parameter.decorators())
-			},
+			AnyJsConstructorParameter::AnyJsFormalParameter(parameter) => parameter.decorators(),
+			AnyJsConstructorParameter::JsRestParameter(parameter) => Some(parameter.decorators()),
 			AnyJsConstructorParameter::TsPropertyParameter(parameter) => {
 				Some(parameter.decorators())
 			},
@@ -533,9 +536,7 @@ impl AnyJsConstructorParameter {
 			AnyJsConstructorParameter::AnyJsFormalParameter(parameter) => {
 				parameter.type_annotation()
 			},
-			AnyJsConstructorParameter::JsRestParameter(parameter) => {
-				parameter.type_annotation()
-			},
+			AnyJsConstructorParameter::JsRestParameter(parameter) => parameter.type_annotation(),
 			AnyJsConstructorParameter::TsPropertyParameter(parameter) => {
 				parameter.formal_parameter().ok()?.type_annotation()
 			},
@@ -544,15 +545,12 @@ impl AnyJsConstructorParameter {
 }
 
 impl AnyJsParameter {
-	/// Returns the list of decorators of the parameter if the parameter is decorated.
+	/// Returns the list of decorators of the parameter if the parameter is
+	/// decorated.
 	pub fn decorators(&self) -> Option<JsDecoratorList> {
 		match self {
-			AnyJsParameter::AnyJsFormalParameter(parameter) => {
-				parameter.decorators()
-			},
-			AnyJsParameter::JsRestParameter(parameter) => {
-				Some(parameter.decorators())
-			},
+			AnyJsParameter::AnyJsFormalParameter(parameter) => parameter.decorators(),
+			AnyJsParameter::JsRestParameter(parameter) => Some(parameter.decorators()),
 			AnyJsParameter::TsThisParameter(_) => None,
 		}
 	}
@@ -564,25 +562,24 @@ impl AnyJsParameter {
 }
 
 impl AnyJsFormalParameter {
-	/// Returns the list of decorators of the parameter if the parameter is decorated.
+	/// Returns the list of decorators of the parameter if the parameter is
+	/// decorated.
 	pub fn decorators(&self) -> Option<JsDecoratorList> {
 		match self {
-			AnyJsFormalParameter::JsBogusParameter(_)
-			| AnyJsFormalParameter::JsMetavariable(_) => None,
-			AnyJsFormalParameter::JsFormalParameter(parameter) => {
-				Some(parameter.decorators())
+			AnyJsFormalParameter::JsBogusParameter(_) | AnyJsFormalParameter::JsMetavariable(_) => {
+				None
 			},
+			AnyJsFormalParameter::JsFormalParameter(parameter) => Some(parameter.decorators()),
 		}
 	}
 
 	/// Returns the type annotation of the parameter if any.
 	pub fn type_annotation(&self) -> Option<TsTypeAnnotation> {
 		match self {
-			AnyJsFormalParameter::JsBogusParameter(_)
-			| AnyJsFormalParameter::JsMetavariable(_) => None,
-			AnyJsFormalParameter::JsFormalParameter(parameter) => {
-				parameter.type_annotation()
+			AnyJsFormalParameter::JsBogusParameter(_) | AnyJsFormalParameter::JsMetavariable(_) => {
+				None
 			},
+			AnyJsFormalParameter::JsFormalParameter(parameter) => parameter.type_annotation(),
 		}
 	}
 }

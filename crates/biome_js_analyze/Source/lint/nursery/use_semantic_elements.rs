@@ -44,12 +44,12 @@ declare_lint_rule! {
 }
 
 impl Rule for UseSemanticElements {
-	type Query = Aria<JsxOpeningElement>;
-	type State = JsxAttribute;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Aria<JsxOpeningElement>;
+	type Signals = Option<Self::State>;
+	type State = JsxAttribute;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
 		let role_attribute = node.find_attribute_by_name("role").ok().flatten();
@@ -73,7 +73,7 @@ impl Rule for UseSemanticElements {
 		None
 	}
 
-	fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		let role_attribute = state;
 
 		let static_value = role_attribute.as_static_value()?;
@@ -82,9 +82,9 @@ impl Rule for UseSemanticElements {
 
 		let candidate = AriaRoles.get_elements_by_role(role_value);
 
-		let mut result_elements: Vec<&str> = vec![];
+		let mut result_elements:Vec<&str> = vec![];
 
-		let mut result_attributes: Vec<(&str, &str)> = vec![];
+		let mut result_attributes:Vec<(&str, &str)> = vec![];
 		if let Some(elements) = candidate {
 			for element in elements {
 				result_elements.push(element.0);
@@ -103,7 +103,10 @@ impl Rule for UseSemanticElements {
 				"The elements with the following roles can be changed to the following elements:\n",
 			)
 		} else {
-			String::from("The element with this role can be changed to a DOM element that already this role.")
+			String::from(
+				"The element with this role can be changed to a DOM element that already this \
+				 role.",
+			)
 		};
 
 		for (element, attribute) in result_elements.iter().zip(result_attributes.iter()) {

@@ -17,17 +17,17 @@ use std::{
 ///
 /// Going above this limit will abort your program (although not
 /// necessarily) at _exactly_ `MAX_REFCOUNT + 1` references.
-const MAX_REFCOUNT: usize = (isize::MAX) as usize;
+const MAX_REFCOUNT:usize = (isize::MAX) as usize;
 
 /// The object allocated by an Arc<T>
 #[repr(C)]
-pub(crate) struct ArcInner<T: ?Sized> {
-	pub(crate) count: atomic::AtomicUsize,
-	pub(crate) data: T,
+pub(crate) struct ArcInner<T:?Sized> {
+	pub(crate) count:atomic::AtomicUsize,
+	pub(crate) data:T,
 }
 
-unsafe impl<T: ?Sized + Sync + Send> Send for ArcInner<T> {}
-unsafe impl<T: ?Sized + Sync + Send> Sync for ArcInner<T> {}
+unsafe impl<T:?Sized + Sync + Send> Send for ArcInner<T> {}
+unsafe impl<T:?Sized + Sync + Send> Sync for ArcInner<T> {}
 
 /// An atomically reference counted shared pointer
 ///
@@ -36,34 +36,31 @@ unsafe impl<T: ?Sized + Sync + Send> Sync for ArcInner<T> {}
 ///
 /// [`Arc`]: https://doc.rust-lang.org/stable/std/sync/struct.Arc.html
 #[repr(transparent)]
-pub(crate) struct Arc<T: ?Sized> {
-	pub(crate) p: ptr::NonNull<ArcInner<T>>,
-	pub(crate) phantom: PhantomData<T>,
+pub(crate) struct Arc<T:?Sized> {
+	pub(crate) p:ptr::NonNull<ArcInner<T>>,
+	pub(crate) phantom:PhantomData<T>,
 }
 
-unsafe impl<T: ?Sized + Sync + Send> Send for Arc<T> {}
-unsafe impl<T: ?Sized + Sync + Send> Sync for Arc<T> {}
+unsafe impl<T:?Sized + Sync + Send> Send for Arc<T> {}
+unsafe impl<T:?Sized + Sync + Send> Sync for Arc<T> {}
 
 impl<T> Arc<T> {
 	/// Reconstruct the Arc<T> from a raw pointer obtained from into_raw()
 	///
-	/// Note: This raw pointer will be offset in the allocation and must be preceded
-	/// by the atomic count.
+	/// Note: This raw pointer will be offset in the allocation and must be
+	/// preceded by the atomic count.
 	///
 	/// It is recommended to use OffsetArc for this
 	#[inline]
-	pub(crate) unsafe fn from_raw(ptr: *const T) -> Self {
+	pub(crate) unsafe fn from_raw(ptr:*const T) -> Self {
 		// To find the corresponding pointer to the `ArcInner` we need
 		// to subtract the offset of the `data` field from the pointer.
 		let ptr = (ptr as *const u8).sub(offset_of!(ArcInner<T>, data));
-		Arc {
-			p: ptr::NonNull::new_unchecked(ptr as *mut ArcInner<T>),
-			phantom: PhantomData,
-		}
+		Arc { p:ptr::NonNull::new_unchecked(ptr as *mut ArcInner<T>), phantom:PhantomData }
 	}
 }
 
-impl<T: ?Sized> Arc<T> {
+impl<T:?Sized> Arc<T> {
 	#[inline]
 	fn inner(&self) -> &ArcInner<T> {
 		// This unsafety is ok because while this arc is alive we're guaranteed
@@ -76,20 +73,16 @@ impl<T: ?Sized> Arc<T> {
 
 	// Non-inlined part of `drop`. Just invokes the destructor.
 	#[inline(never)]
-	unsafe fn drop_slow(&mut self) {
-		let _ = Box::from_raw(self.ptr());
-	}
+	unsafe fn drop_slow(&mut self) { let _ = Box::from_raw(self.ptr()); }
 
 	/// Test pointer equality between the two Arcs, i.e. they must be the _same_
 	/// allocation
 	#[inline]
-	pub(crate) fn ptr_eq(this: &Self, other: &Self) -> bool {
+	pub(crate) fn ptr_eq(this:&Self, other:&Self) -> bool {
 		std::ptr::addr_eq(this.ptr(), other.ptr())
 	}
 
-	pub(crate) fn ptr(&self) -> *mut ArcInner<T> {
-		self.p.as_ptr()
-	}
+	pub(crate) fn ptr(&self) -> *mut ArcInner<T> { self.p.as_ptr() }
 
 	#[inline]
 	pub(crate) fn into_raw(self) -> NonNull<T> {
@@ -99,7 +92,7 @@ impl<T: ?Sized> Arc<T> {
 	}
 }
 
-impl<T: ?Sized> Clone for Arc<T> {
+impl<T:?Sized> Clone for Arc<T> {
 	#[inline]
 	fn clone(&self) -> Self {
 		// Using a relaxed ordering is alright here, as knowledge of the
@@ -128,28 +121,22 @@ impl<T: ?Sized> Clone for Arc<T> {
 			std::process::abort();
 		}
 
-		unsafe {
-			Arc {
-				p: ptr::NonNull::new_unchecked(self.ptr()),
-				phantom: PhantomData,
-			}
-		}
+		unsafe { Arc { p:ptr::NonNull::new_unchecked(self.ptr()), phantom:PhantomData } }
 	}
 }
 
-impl<T: ?Sized> Deref for Arc<T> {
+impl<T:?Sized> Deref for Arc<T> {
 	type Target = T;
 
 	#[inline]
-	fn deref(&self) -> &T {
-		&self.inner().data
-	}
+	fn deref(&self) -> &T { &self.inner().data }
 }
 
-impl<T: ?Sized> Arc<T> {
-	/// Provides mutable access to the contents _if_ the `Arc` is uniquely owned.
+impl<T:?Sized> Arc<T> {
+	/// Provides mutable access to the contents _if_ the `Arc` is uniquely
+	/// owned.
 	#[inline]
-	pub(crate) fn get_mut(this: &mut Self) -> Option<&mut T> {
+	pub(crate) fn get_mut(this:&mut Self) -> Option<&mut T> {
 		if this.is_unique() {
 			unsafe {
 				// See make_mut() for documentation of the threadsafety here.
@@ -169,7 +156,7 @@ impl<T: ?Sized> Arc<T> {
 	}
 }
 
-impl<T: ?Sized> Drop for Arc<T> {
+impl<T:?Sized> Drop for Arc<T> {
 	#[inline]
 	fn drop(&mut self) {
 		// Because `fetch_sub` is already atomic, we do not need to synchronize
@@ -206,65 +193,45 @@ impl<T: ?Sized> Drop for Arc<T> {
 	}
 }
 
-impl<T: ?Sized + PartialEq> PartialEq for Arc<T> {
-	fn eq(&self, other: &Arc<T>) -> bool {
-		Self::ptr_eq(self, other) || *(*self) == *(*other)
-	}
+impl<T:?Sized + PartialEq> PartialEq for Arc<T> {
+	fn eq(&self, other:&Arc<T>) -> bool { Self::ptr_eq(self, other) || *(*self) == *(*other) }
 }
 
-impl<T: ?Sized + PartialOrd> PartialOrd for Arc<T> {
-	fn partial_cmp(&self, other: &Arc<T>) -> Option<Ordering> {
-		(**self).partial_cmp(&**other)
-	}
+impl<T:?Sized + PartialOrd> PartialOrd for Arc<T> {
+	fn partial_cmp(&self, other:&Arc<T>) -> Option<Ordering> { (**self).partial_cmp(&**other) }
 
-	fn lt(&self, other: &Arc<T>) -> bool {
-		*(*self) < *(*other)
-	}
+	fn lt(&self, other:&Arc<T>) -> bool { *(*self) < *(*other) }
 
-	fn le(&self, other: &Arc<T>) -> bool {
-		*(*self) <= *(*other)
-	}
+	fn le(&self, other:&Arc<T>) -> bool { *(*self) <= *(*other) }
 
-	fn gt(&self, other: &Arc<T>) -> bool {
-		*(*self) > *(*other)
-	}
+	fn gt(&self, other:&Arc<T>) -> bool { *(*self) > *(*other) }
 
-	fn ge(&self, other: &Arc<T>) -> bool {
-		*(*self) >= *(*other)
-	}
+	fn ge(&self, other:&Arc<T>) -> bool { *(*self) >= *(*other) }
 }
 
-impl<T: ?Sized + Ord> Ord for Arc<T> {
-	fn cmp(&self, other: &Arc<T>) -> Ordering {
-		(**self).cmp(&**other)
-	}
+impl<T:?Sized + Ord> Ord for Arc<T> {
+	fn cmp(&self, other:&Arc<T>) -> Ordering { (**self).cmp(&**other) }
 }
 
-impl<T: ?Sized + Eq> Eq for Arc<T> {}
+impl<T:?Sized + Eq> Eq for Arc<T> {}
 
-impl<T: ?Sized + Hash> Hash for Arc<T> {
-	fn hash<H: Hasher>(&self, state: &mut H) {
-		(**self).hash(state)
-	}
+impl<T:?Sized + Hash> Hash for Arc<T> {
+	fn hash<H:Hasher>(&self, state:&mut H) { (**self).hash(state) }
 }
 
 #[derive(Debug, Eq, PartialEq, Hash, PartialOrd)]
 #[repr(C)]
-pub(crate) struct HeaderSlice<H, T: ?Sized> {
-	pub(crate) header: H,
-	length: usize,
-	slice: T,
+pub(crate) struct HeaderSlice<H, T:?Sized> {
+	pub(crate) header:H,
+	length:usize,
+	slice:T,
 }
 
 impl<H, T> HeaderSlice<H, [T]> {
-	pub(crate) fn slice(&self) -> &[T] {
-		&self.slice
-	}
+	pub(crate) fn slice(&self) -> &[T] { &self.slice }
 
 	/// Returns the number of items
-	pub(crate) fn len(&self) -> usize {
-		self.length
-	}
+	pub(crate) fn len(&self) -> usize { self.length }
 }
 
 impl<H, T> Deref for HeaderSlice<H, [T; 0]> {
@@ -273,7 +240,7 @@ impl<H, T> Deref for HeaderSlice<H, [T; 0]> {
 	fn deref(&self) -> &Self::Target {
 		unsafe {
 			let len = self.length;
-			let fake_slice: *const [T] =
+			let fake_slice:*const [T] =
 				ptr::slice_from_raw_parts(self as *const _ as *const T, len);
 			&*(fake_slice as *const HeaderSlice<H, [T]>)
 		}
@@ -297,20 +264,19 @@ impl<H, T> Deref for HeaderSlice<H, [T; 0]> {
 /// via `HeaderSlice`.
 #[repr(transparent)]
 pub(crate) struct ThinArc<H, T> {
-	ptr: ptr::NonNull<ArcInner<HeaderSlice<H, [T; 0]>>>,
-	phantom: PhantomData<(H, T)>,
+	ptr:ptr::NonNull<ArcInner<HeaderSlice<H, [T; 0]>>>,
+	phantom:PhantomData<(H, T)>,
 }
 
-unsafe impl<H: Sync + Send, T: Sync + Send> Send for ThinArc<H, T> {}
-unsafe impl<H: Sync + Send, T: Sync + Send> Sync for ThinArc<H, T> {}
+unsafe impl<H:Sync + Send, T:Sync + Send> Send for ThinArc<H, T> {}
+unsafe impl<H:Sync + Send, T:Sync + Send> Sync for ThinArc<H, T> {}
 
 // Synthesize a fat pointer from a thin pointer.
 fn thin_to_thick<H, T>(
-	thin: *mut ArcInner<HeaderSlice<H, [T; 0]>>,
+	thin:*mut ArcInner<HeaderSlice<H, [T; 0]>>,
 ) -> *mut ArcInner<HeaderSlice<H, [T]>> {
 	let len = unsafe { (*thin).data.length };
-	let fake_slice: *mut [T] =
-		ptr::slice_from_raw_parts_mut(thin as *mut T, len);
+	let fake_slice:*mut [T] = ptr::slice_from_raw_parts_mut(thin as *mut T, len);
 	// Transplants metadata.
 	fake_slice as *mut ArcInner<HeaderSlice<H, [T]>>
 }
@@ -319,55 +285,48 @@ impl<H, T> ThinArc<H, T> {
 	/// Temporarily converts |self| into a bonafide Arc and exposes it to the
 	/// provided callback. The refcount is not modified.
 	#[inline]
-	pub(crate) fn with_arc<F, U>(&self, f: F) -> U
+	pub(crate) fn with_arc<F, U>(&self, f:F) -> U
 	where
-		F: FnOnce(&Arc<HeaderSlice<H, [T]>>) -> U,
-	{
-		// Synthesize transient Arc, which never touches the refcount of the ArcInner.
+		F: FnOnce(&Arc<HeaderSlice<H, [T]>>) -> U, {
+		// Synthesize transient Arc, which never touches the refcount of the
+		// ArcInner.
 		let transient = unsafe {
 			ManuallyDrop::new(Arc {
-				p: ptr::NonNull::new_unchecked(thin_to_thick(
-					self.ptr.as_ptr(),
-				)),
-				phantom: PhantomData,
+				p:ptr::NonNull::new_unchecked(thin_to_thick(self.ptr.as_ptr())),
+				phantom:PhantomData,
 			})
 		};
 
-		// Expose the transient Arc to the callback, which may clone it if it wants.
-		// Forward the result.
+		// Expose the transient Arc to the callback, which may clone it if it
+		// wants. Forward the result.
 		f(&transient)
 	}
 
 	/// Creates a `ThinArc` for a HeaderSlice using the given header struct and
 	/// iterator to generate the slice.
-	pub(crate) fn from_header_and_iter<I>(header: H, mut items: I) -> Self
+	pub(crate) fn from_header_and_iter<I>(header:H, mut items:I) -> Self
 	where
-		I: Iterator<Item = T> + ExactSizeIterator,
-	{
+		I: Iterator<Item = T> + ExactSizeIterator, {
 		assert_ne!(mem::size_of::<T>(), 0, "Need to think about ZST");
 
 		let num_items = items.len();
 
 		// Offset of the start of the slice in the allocation.
-		let inner_to_data_offset =
-			offset_of!(ArcInner<HeaderSlice<H, [T; 0]>>, data);
+		let inner_to_data_offset = offset_of!(ArcInner<HeaderSlice<H, [T; 0]>>, data);
 		let data_to_slice_offset = offset_of!(HeaderSlice<H, [T; 0]>, slice);
 		let slice_offset = inner_to_data_offset + data_to_slice_offset;
 
 		// Compute the size of the real payload.
-		let slice_size =
-			mem::size_of::<T>().checked_mul(num_items).expect("size overflows");
-		let usable_size =
-			slice_offset.checked_add(slice_size).expect("size overflows");
+		let slice_size = mem::size_of::<T>().checked_mul(num_items).expect("size overflows");
+		let usable_size = slice_offset.checked_add(slice_size).expect("size overflows");
 
 		// Round up size to alignment.
 		let align = mem::align_of::<ArcInner<HeaderSlice<H, [T; 0]>>>();
 		let size = usable_size.wrapping_add(align - 1) & !(align - 1);
 		assert!(size >= usable_size, "size overflows");
-		let layout =
-			Layout::from_size_align(size, align).expect("invalid layout");
+		let layout = Layout::from_size_align(size, align).expect("invalid layout");
 
-		let ptr: *mut ArcInner<HeaderSlice<H, [T; 0]>>;
+		let ptr:*mut ArcInner<HeaderSlice<H, [T; 0]>>;
 		unsafe {
 			let buffer = alloc::alloc(layout);
 
@@ -375,59 +334,46 @@ impl<H, T> ThinArc<H, T> {
 				alloc::handle_alloc_error(layout);
 			}
 
-			// // Synthesize the fat pointer. We do this by claiming we have a direct
-			// // pointer to a [T], and then changing the type of the borrow. The key
-			// // point here is that the length portion of the fat pointer applies
-			// // only to the number of elements in the dynamically-sized portion of
-			// // the type, so the value will be the same whether it points to a [T]
-			// // or something else with a [T] as its last member.
-			// let fake_slice: &mut [T] = slice::from_raw_parts_mut(buffer as *mut T, num_items);
-			// ptr = fake_slice as *mut [T] as *mut ArcInner<HeaderSlice<H, [T]>>;
+			// // Synthesize the fat pointer. We do this by claiming we have a
+			// direct // pointer to a [T], and then changing the type of the
+			// borrow. The key // point here is that the length portion of
+			// the fat pointer applies // only to the number of elements in
+			// the dynamically-sized portion of // the type, so the value
+			// will be the same whether it points to a [T] // or something
+			// else with a [T] as its last member. let fake_slice: &mut [T] =
+			// slice::from_raw_parts_mut(buffer as *mut T, num_items);
+			// ptr = fake_slice as *mut [T] as *mut ArcInner<HeaderSlice<H,
+			// [T]>>;
 			ptr = buffer as *mut _;
 
 			let count = atomic::AtomicUsize::new(1);
 
 			// Write the data.
 			//
-			// Note that any panics here (i.e. from the iterator) are safe, since
-			// we'll just leak the uninitialized memory.
+			// Note that any panics here (i.e. from the iterator) are safe,
+			// since we'll just leak the uninitialized memory.
 			ptr::write(ptr::addr_of_mut!((*ptr).count), count);
 			ptr::write(ptr::addr_of_mut!((*ptr).data.header), header);
 			ptr::write(ptr::addr_of_mut!((*ptr).data.length), num_items);
 			if num_items != 0 {
-				let mut current =
-					ptr::addr_of_mut!((*ptr).data.slice) as *mut T;
-				debug_assert_eq!(
-					current as usize - buffer as usize,
-					slice_offset
-				);
+				let mut current = ptr::addr_of_mut!((*ptr).data.slice) as *mut T;
+				debug_assert_eq!(current as usize - buffer as usize, slice_offset);
 				for _ in 0..num_items {
 					ptr::write(
 						current,
-						items
-							.next()
-							.expect("ExactSizeIterator over-reported length"),
+						items.next().expect("ExactSizeIterator over-reported length"),
 					);
 					current = current.offset(1);
 				}
-				assert!(
-					items.next().is_none(),
-					"ExactSizeIterator under-reported length"
-				);
+				assert!(items.next().is_none(), "ExactSizeIterator under-reported length");
 
 				// We should have consumed the buffer exactly.
 				debug_assert_eq!(current as *mut u8, buffer.add(usable_size));
 			}
-			assert!(
-				items.next().is_none(),
-				"ExactSizeIterator under-reported length"
-			);
+			assert!(items.next().is_none(), "ExactSizeIterator under-reported length");
 		}
 
-		ThinArc {
-			ptr: unsafe { ptr::NonNull::new_unchecked(ptr) },
-			phantom: PhantomData,
-		}
+		ThinArc { ptr:unsafe { ptr::NonNull::new_unchecked(ptr) }, phantom:PhantomData }
 	}
 }
 
@@ -435,71 +381,53 @@ impl<H, T> Deref for ThinArc<H, T> {
 	type Target = HeaderSlice<H, [T]>;
 
 	#[inline]
-	fn deref(&self) -> &Self::Target {
-		unsafe { &(*thin_to_thick(self.ptr.as_ptr())).data }
-	}
+	fn deref(&self) -> &Self::Target { unsafe { &(*thin_to_thick(self.ptr.as_ptr())).data } }
 }
 
 impl<H, T> Clone for ThinArc<H, T> {
 	#[inline]
-	fn clone(&self) -> Self {
-		ThinArc::with_arc(self, |a| Arc::into_thin(a.clone()))
-	}
+	fn clone(&self) -> Self { ThinArc::with_arc(self, |a| Arc::into_thin(a.clone())) }
 }
 
 impl<H, T> Drop for ThinArc<H, T> {
 	#[inline]
-	fn drop(&mut self) {
-		let _ = Arc::from_thin(ThinArc { ptr: self.ptr, phantom: PhantomData });
-	}
+	fn drop(&mut self) { let _ = Arc::from_thin(ThinArc { ptr:self.ptr, phantom:PhantomData }); }
 }
 
 impl<H, T> Arc<HeaderSlice<H, [T]>> {
-	/// Converts an `Arc` into a `ThinArc`. This consumes the `Arc`, so the refcount
-	/// is not modified.
+	/// Converts an `Arc` into a `ThinArc`. This consumes the `Arc`, so the
+	/// refcount is not modified.
 	#[inline]
-	pub(crate) fn into_thin(a: Self) -> ThinArc<H, T> {
-		assert_eq!(
-			a.length,
-			a.slice.len(),
-			"Length needs to be correct for ThinArc to work"
-		);
-		let fat_ptr: *mut ArcInner<HeaderSlice<H, [T]>> = a.ptr();
+	pub(crate) fn into_thin(a:Self) -> ThinArc<H, T> {
+		assert_eq!(a.length, a.slice.len(), "Length needs to be correct for ThinArc to work");
+		let fat_ptr:*mut ArcInner<HeaderSlice<H, [T]>> = a.ptr();
 		mem::forget(a);
 		let thin_ptr = fat_ptr as *mut [usize] as *mut usize;
 		ThinArc {
-			ptr: unsafe {
-				ptr::NonNull::new_unchecked(
-					thin_ptr as *mut ArcInner<HeaderSlice<H, [T; 0]>>,
-				)
+			ptr:unsafe {
+				ptr::NonNull::new_unchecked(thin_ptr as *mut ArcInner<HeaderSlice<H, [T; 0]>>)
 			},
-			phantom: PhantomData,
+			phantom:PhantomData,
 		}
 	}
 
-	/// Converts a `ThinArc` into an `Arc`. This consumes the `ThinArc`, so the refcount
-	/// is not modified.
+	/// Converts a `ThinArc` into an `Arc`. This consumes the `ThinArc`, so the
+	/// refcount is not modified.
 	#[inline]
-	pub(crate) fn from_thin(a: ThinArc<H, T>) -> Self {
+	pub(crate) fn from_thin(a:ThinArc<H, T>) -> Self {
 		let ptr = thin_to_thick(a.ptr.as_ptr());
 		mem::forget(a);
-		unsafe {
-			Arc { p: ptr::NonNull::new_unchecked(ptr), phantom: PhantomData }
-		}
+		unsafe { Arc { p:ptr::NonNull::new_unchecked(ptr), phantom:PhantomData } }
 	}
 }
 
-impl<H: PartialEq, T: PartialEq> PartialEq for ThinArc<H, T> {
+impl<H:PartialEq, T:PartialEq> PartialEq for ThinArc<H, T> {
 	#[inline]
-	fn eq(&self, other: &ThinArc<H, T>) -> bool {
-		**self == **other
-	}
+	fn eq(&self, other:&ThinArc<H, T>) -> bool { **self == **other }
 }
 
-impl<H: Eq, T: Eq> Eq for ThinArc<H, T> {}
+impl<H:Eq, T:Eq> Eq for ThinArc<H, T> {}
 
-impl<H: Hash, T: Hash> Hash for ThinArc<H, T> {
-	fn hash<HSR: Hasher>(&self, state: &mut HSR) {
-		(**self).hash(state)
-	}
+impl<H:Hash, T:Hash> Hash for ThinArc<H, T> {
+	fn hash<HSR:Hasher>(&self, state:&mut HSR) { (**self).hash(state) }
 }

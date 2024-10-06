@@ -1,20 +1,25 @@
-use rustc_hash::FxHashMap;
-use serde::{Deserialize, Serialize};
 use std::path::{Component, Path};
 
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, ActionCategory, Ast, FixKind, Rule, RuleDiagnostic,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
 };
 use biome_console::markup;
 use biome_deserialize_macros::Deserializable;
 use biome_js_factory::make;
 use biome_js_syntax::{inner_string_text, AnyJsImportLike, JsSyntaxToken};
 use biome_rowan::BatchMutationExt;
-
-use crate::JsRuleAction;
-
+use rustc_hash::FxHashMap;
 #[cfg(feature = "schemars")]
 use schemars::JsonSchema;
+use serde::{Deserialize, Serialize};
+
+use crate::JsRuleAction;
 
 declare_lint_rule! {
 	/// Enforce file extensions for relative imports.
@@ -128,9 +133,10 @@ declare_lint_rule! {
 #[cfg_attr(feature = "schemars", derive(JsonSchema))]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct UseImportExtensionsOptions {
-	/// A map of custom import extension mappings, where the key is the inspected file extension,
-	/// and the value is a pair of `module` extension and `component` import extension
-	pub suggested_extensions: FxHashMap<String, SuggestedExtensionMapping>,
+	/// A map of custom import extension mappings, where the key is the
+	/// inspected file extension, and the value is a pair of `module`
+	/// extension and `component` import extension
+	pub suggested_extensions:FxHashMap<String, SuggestedExtensionMapping>,
 }
 
 #[derive(Debug, Clone, Default, Deserializable, Deserialize, Serialize, Eq, PartialEq)]
@@ -138,18 +144,18 @@ pub struct UseImportExtensionsOptions {
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct SuggestedExtensionMapping {
 	/// Extension that should be used for module imports
-	pub module: String,
+	pub module:String,
 	/// Extension that should be used for component file imports
-	pub component: String,
+	pub component:String,
 }
 
 impl Rule for UseImportExtensions {
-	type Query = Ast<AnyJsImportLike>;
-	type State = UseImportExtensionsState;
-	type Signals = Option<Self::State>;
 	type Options = Box<UseImportExtensionsOptions>;
+	type Query = Ast<AnyJsImportLike>;
+	type Signals = Option<Self::State>;
+	type State = UseImportExtensionsState;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
 		let file_ext = ctx.file_path().extension().and_then(|ext| ext.to_str())?;
@@ -159,7 +165,7 @@ impl Rule for UseImportExtensions {
 		get_extensionless_import(file_ext, node, custom_suggested_imports)
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -174,7 +180,7 @@ impl Rule for UseImportExtensions {
         )
 	}
 
-	fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, state:&Self::State) -> Option<JsRuleAction> {
 		let mut mutation = ctx.root().begin();
 
 		let (suggested_path, extension) = state.suggestion.clone()?;
@@ -200,14 +206,14 @@ impl Rule for UseImportExtensions {
 }
 
 pub struct UseImportExtensionsState {
-	suggestion: Option<(String, String)>,
-	module_name_token: JsSyntaxToken,
+	suggestion:Option<(String, String)>,
+	module_name_token:JsSyntaxToken,
 }
 
 fn get_extensionless_import(
-	file_ext: &str,
-	node: &AnyJsImportLike,
-	custom_suggested_imports: &FxHashMap<String, SuggestedExtensionMapping>,
+	file_ext:&str,
+	node:&AnyJsImportLike,
+	custom_suggested_imports:&FxHashMap<String, SuggestedExtensionMapping>,
 ) -> Option<UseImportExtensionsState> {
 	let module_name_token = node.module_name_token()?;
 	let module_path = inner_string_text(&module_name_token);
@@ -228,7 +234,7 @@ fn get_extensionless_import(
 		.map_or(false, |last| last.contains('?') || last.contains('#'));
 
 	if has_query_or_hash {
-		return Some(UseImportExtensionsState { module_name_token, suggestion: None });
+		return Some(UseImportExtensionsState { module_name_token, suggestion:None });
 	}
 
 	let import_ext = resolve_import_extension(file_ext, path, custom_suggested_imports);
@@ -246,17 +252,18 @@ fn get_extensionless_import(
 	match last_component {
 		Component::ParentDir | Component::CurDir => {
 			is_index_file = true;
-		}
+		},
 		// `import ".././"` is the same as `import "../"`
-		// Rust Path does not expose `./` path segment at very end, likely because it does not do anything.
-		// To provide proper fix, we need to remove it as well.
+		// Rust Path does not expose `./` path segment at very end, likely
+		// because it does not do anything. To provide proper fix, we need to
+		// remove it as well.
 		Component::Normal(_) if module_path.ends_with("./") => {
 			// Remove useless path segment.
 			path_parts.next_back();
 
 			is_index_file = true;
-		}
-		_ => {}
+		},
+		_ => {},
 	};
 
 	// TODO. Once `intersperse` is stabilized, use it instead.
@@ -280,21 +287,22 @@ fn get_extensionless_import(
 	new_path.push_str(&part);
 
 	Some(UseImportExtensionsState {
-		module_name_token: module_name_token.clone(),
-		suggestion: Some((new_path, import_ext.to_string())),
+		module_name_token:module_name_token.clone(),
+		suggestion:Some((new_path, import_ext.to_string())),
 	})
 }
 
 fn resolve_import_extension<'a>(
-	file_ext: &str,
-	path: &Path,
-	custom_suggested_imports: &'a FxHashMap<String, SuggestedExtensionMapping>,
+	file_ext:&str,
+	path:&Path,
+	custom_suggested_imports:&'a FxHashMap<String, SuggestedExtensionMapping>,
 ) -> &'a str {
-	let (potential_ext, potential_component_ext): (&str, &str) =
+	let (potential_ext, potential_component_ext):(&str, &str) =
 		if let Some(custom_mapping) = custom_suggested_imports.get(file_ext) {
 			(&custom_mapping.module, &custom_mapping.component)
 		} else {
-			// TODO. This is not very accurate. We should use file system access to determine the file type.
+			// TODO. This is not very accurate. We should use file system access
+			// to determine the file type.
 			match file_ext {
 				"ts" | "tsx" | "astro" => ("ts", "tsx"),
 				"mts" => ("mts", "tsx"),

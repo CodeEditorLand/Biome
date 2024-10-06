@@ -1,7 +1,8 @@
 use std::fs;
+
 use xtask::*;
 
-fn cargo_template(name: &str) -> String {
+fn cargo_template(name:&str) -> String {
 	format!(
 		r#"
 [package]
@@ -22,7 +23,7 @@ workspace = true
 	)
 }
 
-fn knope_template(name: &str) -> String {
+fn knope_template(name:&str) -> String {
 	format!(
 		r#"
 [packages.{name}]
@@ -32,7 +33,7 @@ changelog = "crates/{name}/CHANGELOG.md"
 	)
 }
 
-pub fn generate_crate(crate_name: String) -> Result<()> {
+pub fn generate_crate(crate_name:String) -> Result<()> {
 	let crate_root = project_root().join("crates").join(crate_name.as_str());
 	let cargo_file = crate_root.join("Cargo.toml");
 	let knope_config = project_root().join("knope.toml");
@@ -50,17 +51,14 @@ pub fn generate_crate(crate_name: String) -> Result<()> {
 		"The file knope.toml must contains `{end_content}`"
 	);
 
-	let file_start_index =
-		knope_contents.find(start_content).unwrap() + start_content.len();
+	let file_start_index = knope_contents.find(start_content).unwrap() + start_content.len();
 	let file_end_index = knope_contents.find(end_content).unwrap();
 	let crates_text = &knope_contents[file_start_index..file_end_index];
 	let template = knope_template(crate_name.as_str());
-	let new_crates_text: Vec<_> =
-		crates_text.lines().chain(Some(&template[..])).collect();
+	let new_crates_text:Vec<_> = crates_text.lines().chain(Some(&template[..])).collect();
 	let new_crates_text = new_crates_text.join("\n");
 
-	knope_contents
-		.replace_range(file_start_index..file_end_index, &new_crates_text);
+	knope_contents.replace_range(file_start_index..file_end_index, &new_crates_text);
 	fs::write(knope_config, knope_contents)?;
 	Ok(())
 }

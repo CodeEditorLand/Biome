@@ -1,59 +1,61 @@
-use biome_analyze::options::{JsxRuntime, PreferredQuote};
+use std::{
+	ffi::{c_int, OsStr},
+	fmt::Write,
+	path::Path,
+	sync::Once,
+};
+
 use biome_analyze::{
-	AnalyzerAction, AnalyzerConfiguration, AnalyzerOptions, AnalyzerRules,
+	options::{JsxRuntime, PreferredQuote},
+	AnalyzerAction,
+	AnalyzerConfiguration,
+	AnalyzerOptions,
+	AnalyzerRules,
 };
 use biome_configuration::PartialConfiguration;
-use biome_console::fmt::{Formatter, Termcolor};
-use biome_console::markup;
-use biome_diagnostics::termcolor::Buffer;
-use biome_diagnostics::{DiagnosticExt, Error, PrintDiagnostic};
+use biome_console::{
+	fmt::{Formatter, Termcolor},
+	markup,
+};
+use biome_diagnostics::{termcolor::Buffer, DiagnosticExt, Error, PrintDiagnostic};
 use biome_json_parser::{JsonParserOptions, ParseDiagnostic};
 use biome_project::PackageJson;
 use biome_rowan::{SyntaxKind, SyntaxNode, SyntaxSlot};
-use biome_service::configuration::to_analyzer_rules;
-use biome_service::settings::{ServiceLanguage, Settings};
+use biome_service::{
+	configuration::to_analyzer_rules,
+	settings::{ServiceLanguage, Settings},
+};
 use json_comments::StripComments;
 use similar::TextDiff;
-use std::ffi::{c_int, OsStr};
-use std::fmt::Write;
-use std::path::Path;
-use std::sync::Once;
 
-pub fn scripts_from_json(
-	extension: &OsStr,
-	input_code: &str,
-) -> Option<Vec<String>> {
+pub fn scripts_from_json(extension:&OsStr, input_code:&str) -> Option<Vec<String>> {
 	if extension == "json" || extension == "jsonc" {
 		let input_code = StripComments::new(input_code.as_bytes());
-		let scripts: Vec<String> = serde_json::from_reader(input_code).ok()?;
+		let scripts:Vec<String> = serde_json::from_reader(input_code).ok()?;
 		Some(scripts)
 	} else {
 		None
 	}
 }
 
-pub fn create_analyzer_options(
-	input_file: &Path,
-	diagnostics: &mut Vec<String>,
-) -> AnalyzerOptions {
-	let options = AnalyzerOptions {
-		file_path: input_file.to_path_buf(),
-		..Default::default()
-	};
+pub fn create_analyzer_options(input_file:&Path, diagnostics:&mut Vec<String>) -> AnalyzerOptions {
+	let options = AnalyzerOptions { file_path:input_file.to_path_buf(), ..Default::default() };
 	// We allow a test file to configure its rule using a special
 	// file with the same name as the test but with extension ".options.json"
 	// that configures that specific rule.
 	let mut analyzer_configuration = AnalyzerConfiguration {
-		rules: AnalyzerRules::default(),
-		globals: vec![],
-		preferred_quote: PreferredQuote::Double,
-		jsx_runtime: Some(JsxRuntime::Transparent),
+		rules:AnalyzerRules::default(),
+		globals:vec![],
+		preferred_quote:PreferredQuote::Double,
+		jsx_runtime:Some(JsxRuntime::Transparent),
 	};
 	let options_file = input_file.with_extension("options.json");
 	if let Ok(json) = std::fs::read_to_string(options_file.clone()) {
-		let deserialized = biome_deserialize::json::deserialize_from_json_str::<
-			PartialConfiguration,
-		>(json.as_str(), JsonParserOptions::default(), "");
+		let deserialized = biome_deserialize::json::deserialize_from_json_str::<PartialConfiguration>(
+			json.as_str(),
+			JsonParserOptions::default(),
+			"",
+		);
 		if deserialized.has_errors() {
 			diagnostics.extend(
 				deserialized
@@ -69,8 +71,7 @@ pub fn create_analyzer_options(
 					.collect::<Vec<_>>(),
 			);
 		} else {
-			let configuration =
-				deserialized.into_deserialized().unwrap_or_default();
+			let configuration = deserialized.into_deserialized().unwrap_or_default();
 			let mut settings = Settings::default();
 			analyzer_configuration.preferred_quote = configuration
 				.javascript
@@ -100,33 +101,25 @@ pub fn create_analyzer_options(
 			analyzer_configuration.globals = configuration
 				.javascript
 				.as_ref()
-				.and_then(|js| {
-					js.globals
-						.as_ref()
-						.map(|globals| globals.iter().cloned().collect())
-				})
+				.and_then(|js| js.globals.as_ref().map(|globals| globals.iter().cloned().collect()))
 				.unwrap_or_default();
 
-			settings
-				.merge_with_configuration(configuration, None, None, &[])
-				.unwrap();
-			analyzer_configuration.rules =
-				to_analyzer_rules(&settings, input_file);
+			settings.merge_with_configuration(configuration, None, None, &[]).unwrap();
+			analyzer_configuration.rules = to_analyzer_rules(&settings, input_file);
 		}
 	}
 
-	AnalyzerOptions { configuration: analyzer_configuration, ..options }
+	AnalyzerOptions { configuration:analyzer_configuration, ..options }
 }
 
-pub fn load_manifest(
-	input_file: &Path,
-	diagnostics: &mut Vec<String>,
-) -> Option<PackageJson> {
+pub fn load_manifest(input_file:&Path, diagnostics:&mut Vec<String>) -> Option<PackageJson> {
 	let options_file = input_file.with_extension("package.json");
 	if let Ok(json) = std::fs::read_to_string(options_file.clone()) {
-		let deserialized = biome_deserialize::json::deserialize_from_json_str::<
-			PackageJson,
-		>(json.as_str(), JsonParserOptions::default(), "");
+		let deserialized = biome_deserialize::json::deserialize_from_json_str::<PackageJson>(
+			json.as_str(),
+			JsonParserOptions::default(),
+			"",
+		);
 		if deserialized.has_errors() {
 			diagnostics.extend(
 				deserialized
@@ -148,7 +141,7 @@ pub fn load_manifest(
 	None
 }
 
-pub fn diagnostic_to_string(name: &str, source: &str, diag: Error) -> String {
+pub fn diagnostic_to_string(name:&str, source:&str, diag:Error) -> String {
 	let error = diag.with_file_path(name).with_file_source_code(source);
 	let text = markup_to_string(biome_console::markup! {
 		{PrintDiagnostic::verbose(&error)}
@@ -157,11 +150,10 @@ pub fn diagnostic_to_string(name: &str, source: &str, diag: Error) -> String {
 	text
 }
 
-fn markup_to_string(markup: biome_console::Markup) -> String {
+fn markup_to_string(markup:biome_console::Markup) -> String {
 	let mut buffer = Vec::new();
-	let mut write = biome_console::fmt::Termcolor(
-		biome_diagnostics::termcolor::NoColor::new(&mut buffer),
-	);
+	let mut write =
+		biome_console::fmt::Termcolor(biome_diagnostics::termcolor::NoColor::new(&mut buffer));
 	let mut fmt = Formatter::new(&mut write);
 	fmt.write_markup(markup).unwrap();
 
@@ -177,24 +169,20 @@ extern fn check_leaks() {
 pub fn register_leak_checker() {
 	// Import the atexit function from libc
 	extern {
-		fn atexit(f: extern fn()) -> c_int;
+		fn atexit(f:extern fn()) -> c_int;
 	}
 
 	// Use an atomic Once to register the check_leaks function to be called
 	// when the process exits
-	static ONCE: Once = Once::new();
+	static ONCE:Once = Once::new();
 	ONCE.call_once(|| unsafe {
 		countme::enable(true);
 		atexit(check_leaks);
 	});
 }
 
-pub fn code_fix_to_string<L: ServiceLanguage>(
-	source: &str,
-	action: AnalyzerAction<L>,
-) -> String {
-	let (_, text_edit) =
-		action.mutation.as_text_range_and_edit().unwrap_or_default();
+pub fn code_fix_to_string<L:ServiceLanguage>(source:&str, action:AnalyzerAction<L>) -> String {
+	let (_, text_edit) = action.mutation.as_text_range_and_edit().unwrap_or_default();
 
 	let output = text_edit.new_string(source);
 
@@ -211,7 +199,7 @@ pub fn code_fix_to_string<L: ServiceLanguage>(
 /// So each testing file will be run through the analyzer with only the rule
 /// corresponding to the directory name. E.g., `style/useWhile/test.js`
 /// will be analyzed with just the `style/useWhile` rule.
-pub fn parse_test_path(file: &Path) -> (&str, &str) {
+pub fn parse_test_path(file:&Path) -> (&str, &str) {
 	let rule_folder = file.parent().unwrap();
 	let rule_name = rule_folder.file_name().unwrap();
 
@@ -224,9 +212,7 @@ pub fn parse_test_path(file: &Path) -> (&str, &str) {
 /// This check is used in the parser test to ensure it doesn't emit
 /// bogus nodes without diagnostics, and in the analyzer tests to
 /// check the syntax trees resulting from code actions are correct
-pub fn has_bogus_nodes_or_empty_slots<L: biome_rowan::Language>(
-	node: &SyntaxNode<L>,
-) -> bool {
+pub fn has_bogus_nodes_or_empty_slots<L:biome_rowan::Language>(node:&SyntaxNode<L>) -> bool {
 	node.descendants().any(|descendant| {
 		let kind = descendant.kind();
 		if kind.is_bogus() {
@@ -234,9 +220,7 @@ pub fn has_bogus_nodes_or_empty_slots<L: biome_rowan::Language>(
 		}
 
 		if kind.is_list() {
-			return descendant
-				.slots()
-				.any(|slot| matches!(slot, SyntaxSlot::Empty { .. }));
+			return descendant.slots().any(|slot| matches!(slot, SyntaxSlot::Empty { .. }));
 		}
 
 		false
@@ -246,18 +230,15 @@ pub fn has_bogus_nodes_or_empty_slots<L: biome_rowan::Language>(
 /// This function analyzes the parsing result of a file and panic with a
 /// detailed message if it contains any error-level diagnostic, bogus nodes,
 /// empty list slots or missing required children
-pub fn assert_errors_are_absent<L: ServiceLanguage>(
-	program: &SyntaxNode<L>,
-	diagnostics: &[ParseDiagnostic],
-	path: &Path,
+pub fn assert_errors_are_absent<L:ServiceLanguage>(
+	program:&SyntaxNode<L>,
+	diagnostics:&[ParseDiagnostic],
+	path:&Path,
 ) {
 	let debug_tree = format!("{program:?}");
 	let has_missing_children = debug_tree.contains("missing (required)");
 
-	if diagnostics.is_empty()
-		&& !has_bogus_nodes_or_empty_slots(program)
-		&& !has_missing_children
-	{
+	if diagnostics.is_empty() && !has_bogus_nodes_or_empty_slots(program) && !has_missing_children {
 		return;
 	}
 
@@ -274,20 +255,22 @@ pub fn assert_errors_are_absent<L: ServiceLanguage>(
 			.unwrap();
 	}
 
-	panic!("There should be no errors in the file {:?} but the following errors where present:\n{}\n\nParsed tree:\n{:#?}\nPrinted tree:\n{}",
-           path.display(),
-           std::str::from_utf8(buffer.as_slice()).unwrap(),
-           &program,
-           &program.to_string()
-    );
+	panic!(
+		"There should be no errors in the file {:?} but the following errors where \
+		 present:\n{}\n\nParsed tree:\n{:#?}\nPrinted tree:\n{}",
+		path.display(),
+		std::str::from_utf8(buffer.as_slice()).unwrap(),
+		&program,
+		&program.to_string()
+	);
 }
 
 pub fn write_analyzer_snapshot(
-	snapshot: &mut String,
-	input_code: &str,
-	diagnostics: &[String],
-	code_fixes: &[String],
-	markdown_language: &str,
+	snapshot:&mut String,
+	input_code:&str,
+	diagnostics:&[String],
+	code_fixes:&[String],
+	markdown_language:&str,
 ) {
 	writeln!(snapshot, "# Input").unwrap();
 	writeln!(snapshot, "```{markdown_language}").unwrap();
@@ -317,10 +300,10 @@ pub fn write_analyzer_snapshot(
 }
 
 pub fn write_transformation_snapshot(
-	snapshot: &mut String,
-	input_code: &str,
-	transformations: &[String],
-	extension: &str,
+	snapshot:&mut String,
+	input_code:&str,
+	transformations:&[String],
+	extension:&str,
 ) {
 	writeln!(snapshot, "# Input").unwrap();
 	writeln!(snapshot, "```{extension}").unwrap();
@@ -345,7 +328,5 @@ pub enum CheckActionType {
 }
 
 impl CheckActionType {
-	pub const fn is_suppression(&self) -> bool {
-		matches!(self, Self::Suppression)
-	}
+	pub const fn is_suppression(&self) -> bool { matches!(self, Self::Suppression) }
 }

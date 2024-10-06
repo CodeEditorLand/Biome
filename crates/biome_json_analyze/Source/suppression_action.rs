@@ -9,17 +9,18 @@ impl SuppressionAction for JsonSuppressionAction {
 
 	fn find_token_to_apply_suppression(
 		&self,
-		_original_token: SyntaxToken<Self::Language>,
+		_original_token:SyntaxToken<Self::Language>,
 	) -> Option<ApplySuppression<Self::Language>> {
-		// TODO: property implement. Look for the JsSuppressionAction for an example
+		// TODO: property implement. Look for the JsSuppressionAction for an
+		// example
 		None
 	}
 
 	fn apply_suppression(
 		&self,
-		_mutation: &mut BatchMutation<Self::Language>,
-		_apply_suppression: ApplySuppression<Self::Language>,
-		_suppression_text: &str,
+		_mutation:&mut BatchMutation<Self::Language>,
+		_apply_suppression:ApplySuppression<Self::Language>,
+		_suppression_text:&str,
 	) {
 		unreachable!("find_token_to_apply_suppression return None")
 	}

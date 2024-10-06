@@ -1,18 +1,32 @@
 #![warn(clippy::needless_pass_by_value)]
 
-use crate::suppression_action::JsSuppressionAction;
+use std::{
+	ops::Deref,
+	sync::{Arc, LazyLock},
+};
+
 use biome_analyze::{
-	AnalysisFilter, Analyzer, AnalyzerContext, AnalyzerOptions, AnalyzerSignal,
-	ControlFlow, InspectMatcher, LanguageRoot, MatchQueryParams,
-	MetadataRegistry, RuleAction, RuleRegistry, SuppressionKind,
+	AnalysisFilter,
+	Analyzer,
+	AnalyzerContext,
+	AnalyzerOptions,
+	AnalyzerSignal,
+	ControlFlow,
+	InspectMatcher,
+	LanguageRoot,
+	MatchQueryParams,
+	MetadataRegistry,
+	RuleAction,
+	RuleRegistry,
+	SuppressionKind,
 };
 use biome_aria::{AriaProperties, AriaRoles};
 use biome_diagnostics::{category, Error as DiagnosticError};
 use biome_js_syntax::{JsFileSource, JsLanguage};
 use biome_project::PackageJson;
 use biome_suppression::{parse_suppression_comment, SuppressionDiagnostic};
-use std::ops::Deref;
-use std::sync::{Arc, LazyLock};
+
+use crate::suppression_action::JsSuppressionAction;
 
 mod assists;
 mod ast_utils;
@@ -26,39 +40,37 @@ mod suppression_action;
 mod syntax;
 pub mod utils;
 
-pub use crate::registry::visit_registry;
-pub use crate::services::control_flow::ControlFlowGraph;
+pub use crate::{registry::visit_registry, services::control_flow::ControlFlowGraph};
 
 pub(crate) type JsRuleAction = RuleAction<JsLanguage>;
 
-pub static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
+pub static METADATA:LazyLock<MetadataRegistry> = LazyLock::new(|| {
 	let mut metadata = MetadataRegistry::default();
 	visit_registry(&mut metadata);
 	metadata
 });
 
-/// Run the analyzer on the provided `root`: this process will use the given `filter`
-/// to selectively restrict analysis to specific rules / a specific source range,
-/// then call `emit_signal` when an analysis rule emits a diagnostic or action.
-/// Additionally, this function takes a `inspect_matcher` function that can be
-/// used to inspect the "query matches" emitted by the analyzer before they are
-/// processed by the lint rules registry
+/// Run the analyzer on the provided `root`: this process will use the given
+/// `filter` to selectively restrict analysis to specific rules / a specific
+/// source range, then call `emit_signal` when an analysis rule emits a
+/// diagnostic or action. Additionally, this function takes a `inspect_matcher`
+/// function that can be used to inspect the "query matches" emitted by the
+/// analyzer before they are processed by the lint rules registry
 pub fn analyze_with_inspect_matcher<'a, V, F, B>(
-	root: &LanguageRoot<JsLanguage>,
-	filter: AnalysisFilter,
-	inspect_matcher: V,
-	options: &'a AnalyzerOptions,
-	source_type: JsFileSource,
-	manifest: Option<PackageJson>,
-	mut emit_signal: F,
+	root:&LanguageRoot<JsLanguage>,
+	filter:AnalysisFilter,
+	inspect_matcher:V,
+	options:&'a AnalyzerOptions,
+	source_type:JsFileSource,
+	manifest:Option<PackageJson>,
+	mut emit_signal:F,
 ) -> (Option<B>, Vec<DiagnosticError>)
 where
 	V: FnMut(&MatchQueryParams<JsLanguage>) + 'a,
 	F: FnMut(&dyn AnalyzerSignal<JsLanguage>) -> ControlFlow<B> + 'a,
-	B: 'a,
-{
+	B: 'a, {
 	fn parse_linter_suppression_comment(
-		text: &str,
+		text:&str,
 	) -> Vec<Result<SuppressionKind, SuppressionDiagnostic>> {
 		let mut result = Vec::new();
 
@@ -87,9 +99,7 @@ where
 					let category = key.name();
 					if let Some(rule) = category.strip_prefix("lint/") {
 						if let Some(instance) = value {
-							result.push(Ok(SuppressionKind::RuleInstance(
-								rule, instance,
-							)));
+							result.push(Ok(SuppressionKind::RuleInstance(rule, instance)));
 						} else {
 							result.push(Ok(SuppressionKind::Rule(rule)));
 						}
@@ -128,65 +138,57 @@ where
 	services.insert_service(Arc::new(manifest));
 	services.insert_service(source_type);
 	(
-		analyzer.run(AnalyzerContext {
-			root: root.clone(),
-			range: filter.range,
-			services,
-			options,
-		}),
+		analyzer.run(AnalyzerContext { root:root.clone(), range:filter.range, services, options }),
 		diagnostics,
 	)
 }
 
-/// Run the analyzer on the provided `root`: this process will use the given `filter`
-/// to selectively restrict analysis to specific rules / a specific source range,
-/// then call `emit_signal` when an analysis rule emits a diagnostic or action
+/// Run the analyzer on the provided `root`: this process will use the given
+/// `filter` to selectively restrict analysis to specific rules / a specific
+/// source range, then call `emit_signal` when an analysis rule emits a
+/// diagnostic or action
 pub fn analyze<'a, F, B>(
-	root: &LanguageRoot<JsLanguage>,
-	filter: AnalysisFilter,
-	options: &'a AnalyzerOptions,
-	source_type: JsFileSource,
-	manifest: Option<PackageJson>,
-	emit_signal: F,
+	root:&LanguageRoot<JsLanguage>,
+	filter:AnalysisFilter,
+	options:&'a AnalyzerOptions,
+	source_type:JsFileSource,
+	manifest:Option<PackageJson>,
+	emit_signal:F,
 ) -> (Option<B>, Vec<DiagnosticError>)
 where
 	F: FnMut(&dyn AnalyzerSignal<JsLanguage>) -> ControlFlow<B> + 'a,
-	B: 'a,
-{
-	analyze_with_inspect_matcher(
-		root,
-		filter,
-		|_| {},
-		options,
-		source_type,
-		manifest,
-		emit_signal,
-	)
+	B: 'a, {
+	analyze_with_inspect_matcher(root, filter, |_| {}, options, source_type, manifest, emit_signal)
 }
 
 #[cfg(test)]
 mod tests {
-	use biome_analyze::{
-		AnalyzerOptions, Never, RuleCategoriesBuilder, RuleFilter,
+	use std::slice;
+
+	use biome_analyze::{AnalyzerOptions, Never, RuleCategoriesBuilder, RuleFilter};
+	use biome_console::{
+		fmt::{Formatter, Termcolor},
+		markup,
+		Markup,
 	};
-	use biome_console::fmt::{Formatter, Termcolor};
-	use biome_console::{markup, Markup};
-	use biome_diagnostics::category;
-	use biome_diagnostics::termcolor::NoColor;
 	use biome_diagnostics::{
-		Diagnostic, DiagnosticExt, PrintDiagnostic, Severity,
+		category,
+		termcolor::NoColor,
+		Diagnostic,
+		DiagnosticExt,
+		PrintDiagnostic,
+		Severity,
 	};
 	use biome_js_parser::{parse, JsParserOptions};
 	use biome_js_syntax::{JsFileSource, TextRange, TextSize};
 	use biome_project::{Dependencies, PackageJson};
-	use std::slice;
 
 	use crate::{analyze, AnalysisFilter, ControlFlow};
 
 	#[ignore]
 	#[test]
 	fn quick_test() {
-		fn markup_to_string(markup: Markup) -> String {
+		fn markup_to_string(markup:Markup) -> String {
 			let mut buffer = Vec::new();
 			let mut write = Termcolor(NoColor::new(&mut buffer));
 			let mut fmt = Formatter::new(&mut write);
@@ -195,12 +197,11 @@ mod tests {
 			String::from_utf8(buffer).unwrap()
 		}
 
-		const SOURCE: &str = r#"import buffer from "buffer"; "#;
+		const SOURCE:&str = r#"import buffer from "buffer"; "#;
 
-		let parsed =
-			parse(SOURCE, JsFileSource::tsx(), JsParserOptions::default());
+		let parsed = parse(SOURCE, JsFileSource::tsx(), JsParserOptions::default());
 
-		let mut error_ranges: Vec<TextRange> = Vec::new();
+		let mut error_ranges:Vec<TextRange> = Vec::new();
 		let options = AnalyzerOptions::default();
 		let rule_filter = RuleFilter::Rule("style", "useNodejsImportProtocol");
 
@@ -209,7 +210,7 @@ mod tests {
 		analyze(
 			&parsed.tree(),
 			AnalysisFilter {
-				enabled_rules: Some(slice::from_ref(&rule_filter)),
+				enabled_rules:Some(slice::from_ref(&rule_filter)),
 				..AnalysisFilter::default()
 			},
 			&options,
@@ -243,14 +244,15 @@ mod tests {
 
 	#[test]
 	fn suppression() {
-		const SOURCE: &str = "
+		const SOURCE:&str = "
             function checkSuppressions1(a, b) {
                 a == b;
                 // biome-ignore lint/suspicious:whole group
                 a == b;
                 // biome-ignore lint/suspicious/noDoubleEquals: single rule
                 a == b;
-                /* biome-ignore lint/style/useWhile: multiple block comments */ /* biome-ignore lint/suspicious/noDoubleEquals: multiple block comments */
+                /* biome-ignore lint/style/useWhile: multiple block comments */ /* biome-ignore \
+		                     lint/suspicious/noDoubleEquals: multiple block comments */
                 a == b;
                 // biome-ignore lint/style/useWhile: multiple line comments
                 // biome-ignore lint/suspicious/noDoubleEquals: multiple line comments
@@ -258,7 +260,8 @@ mod tests {
                 a == b;
             }
 
-            // biome-ignore lint/suspicious/noDoubleEquals: do not suppress warning for the whole function
+            // biome-ignore lint/suspicious/noDoubleEquals: do not suppress warning for the whole \
+		                     function
             function checkSuppressions2(a, b) {
                 a == b;
             }
@@ -269,7 +272,8 @@ mod tests {
                 a == b;
                 // rome-ignore lint/suspicious/noDoubleEquals: single rule
                 a == b;
-                /* rome-ignore lint/style/useWhile: multiple block comments */ /* rome-ignore lint(suspicious/noDoubleEquals): multiple block comments */
+                /* rome-ignore lint/style/useWhile: multiple block comments */ /* rome-ignore \
+		                     lint(suspicious/noDoubleEquals): multiple block comments */
                 a == b;
                 // rome-ignore lint/style/useWhile: multiple line comments
                 // rome-ignore lint/suspicious/noDoubleEquals: multiple line comments
@@ -277,7 +281,8 @@ mod tests {
                 a == b;
             }
 
-            // biome-ignore lint(suspicious/noDoubleEquals): do not suppress warning for the whole function
+            // biome-ignore lint(suspicious/noDoubleEquals): do not suppress warning for the whole \
+		                     function
             function checkSuppressions4(a, b) {
                 a == b;
             }
@@ -290,15 +295,11 @@ mod tests {
             }
         ";
 
-		let parsed = parse(
-			SOURCE,
-			JsFileSource::js_module(),
-			JsParserOptions::default(),
-		);
+		let parsed = parse(SOURCE, JsFileSource::js_module(), JsParserOptions::default());
 
-		let mut lint_ranges: Vec<TextRange> = Vec::new();
-		let mut parse_ranges: Vec<TextRange> = Vec::new();
-		let mut warn_ranges: Vec<TextRange> = Vec::new();
+		let mut lint_ranges:Vec<TextRange> = Vec::new();
+		let mut parse_ranges:Vec<TextRange> = Vec::new();
+		let mut warn_ranges:Vec<TextRange> = Vec::new();
 
 		let options = AnalyzerOptions::default();
 		analyze(
@@ -324,10 +325,7 @@ mod tests {
 						parse_ranges.push(span.unwrap());
 					}
 
-					if code
-						== category!(
-							"suppressions/deprecatedSuppressionComment"
-						) {
+					if code == category!("suppressions/deprecatedSuppressionComment") {
 						warn_ranges.push(span.unwrap());
 					}
 				}
@@ -373,39 +371,28 @@ mod tests {
 
 	#[test]
 	fn suppression_syntax() {
-		const SOURCE: &str = "
+		const SOURCE:&str = "
             // biome-ignore lint/suspicious/noDoubleEquals: single rule
             a == b;
         ";
 
-		let parsed = parse(
-			SOURCE,
-			JsFileSource::js_module(),
-			JsParserOptions::default(),
-		);
+		let parsed = parse(SOURCE, JsFileSource::js_module(), JsParserOptions::default());
 
 		let filter = AnalysisFilter {
-			categories: RuleCategoriesBuilder::default().with_syntax().build(),
+			categories:RuleCategoriesBuilder::default().with_syntax().build(),
 			..AnalysisFilter::default()
 		};
 
 		let options = AnalyzerOptions::default();
-		analyze(
-			&parsed.tree(),
-			filter,
-			&options,
-			JsFileSource::js_module(),
-			None,
-			|signal| {
-				if let Some(diag) = signal.diagnostic() {
-					let code = diag.category().unwrap();
-					if code != category!("suppressions/unused") {
-						panic!("unexpected diagnostic {code:?}");
-					}
+		analyze(&parsed.tree(), filter, &options, JsFileSource::js_module(), None, |signal| {
+			if let Some(diag) = signal.diagnostic() {
+				let code = diag.category().unwrap();
+				if code != category!("suppressions/unused") {
+					panic!("unexpected diagnostic {code:?}");
 				}
+			}
 
-				ControlFlow::<Never>::Continue(())
-			},
-		);
+			ControlFlow::<Never>::Continue(())
+		});
 	}
 }

@@ -1,11 +1,11 @@
-use crate::grit_tree::GritTargetTree;
-use crate::util::TextRangeGritExt;
+use std::{borrow::Cow, fmt::Debug, ops::Deref, str::Utf8Error};
+
 use biome_js_syntax::{JsSyntaxKind, JsSyntaxNode, JsSyntaxToken};
 use biome_rowan::{NodeOrToken, SyntaxKind, SyntaxSlot, TextRange};
 use grit_util::{AstCursor, AstNode as GritAstNode, ByteRange, CodeRange};
-use std::{borrow::Cow, fmt::Debug, ops::Deref, str::Utf8Error};
-
 use NodeOrToken::*;
+
+use crate::{grit_tree::GritTargetTree, util::TextRangeGritExt};
 
 /// Generates the `GritTargetNode` and `GritTargetSyntaxKind` enums.
 ///
@@ -189,28 +189,26 @@ generate_target_node! {
 
 #[derive(Clone, PartialEq)]
 pub struct GritTargetNode<'a> {
-	node: GritTargetLanguageNode,
-	tree: &'a GritTargetTree,
+	node:GritTargetLanguageNode,
+	tree:&'a GritTargetTree,
 }
 
 impl<'a> GritTargetNode<'a> {
-	pub fn new(node: GritTargetLanguageNode, tree: &'a GritTargetTree) -> Self {
-		Self { node, tree }
-	}
+	pub fn new(node:GritTargetLanguageNode, tree:&'a GritTargetTree) -> Self { Self { node, tree } }
 
-	pub fn child_by_slot_index(&self, index: u32) -> Option<Self> {
-		self.slots().and_then(|mut slots| slots.nth(index as usize)).and_then(
-			|slot| match slot {
+	pub fn child_by_slot_index(&self, index:u32) -> Option<Self> {
+		self.slots().and_then(|mut slots| slots.nth(index as usize)).and_then(|slot| {
+			match slot {
 				GritSyntaxSlot::Node(node) => Some(node),
 				GritSyntaxSlot::Empty { .. } => None,
-			},
-		)
+			}
+		})
 	}
 
 	pub fn descendants(&'a self) -> Option<impl Iterator<Item = Self>> {
-		self.node.descendants().map(|descendants| {
-			descendants.map(|node| Self { node, tree: self.tree })
-		})
+		self.node
+			.descendants()
+			.map(|descendants| descendants.map(|node| Self { node, tree:self.tree }))
 	}
 
 	pub fn named_children(&self) -> impl Iterator<Item = Self> + Clone {
@@ -218,23 +216,17 @@ impl<'a> GritTargetNode<'a> {
 	}
 
 	#[inline]
-	pub fn end_byte(&self) -> u32 {
-		self.text_trimmed_range().end().into()
-	}
+	pub fn end_byte(&self) -> u32 { self.text_trimmed_range().end().into() }
 
 	pub fn first_child(&self) -> Option<Self> {
-		self.node.first_child().map(|node| Self { node, tree: self.tree })
+		self.node.first_child().map(|node| Self { node, tree:self.tree })
 	}
 
 	#[inline]
-	pub fn is_bogus(&self) -> bool {
-		self.kind().is_bogus()
-	}
+	pub fn is_bogus(&self) -> bool { self.kind().is_bogus() }
 
 	#[inline]
-	pub fn is_list(&self) -> bool {
-		self.kind().is_list()
-	}
+	pub fn is_list(&self) -> bool { self.kind().is_list() }
 
 	#[inline]
 	pub fn slots(&self) -> Option<impl Iterator<Item = GritSyntaxSlot<'a>>> {
@@ -242,14 +234,10 @@ impl<'a> GritTargetNode<'a> {
 	}
 
 	#[inline]
-	pub fn source(&self) -> &'a str {
-		self.tree.text()
-	}
+	pub fn source(&self) -> &'a str { self.tree.text() }
 
 	#[inline]
-	pub fn start_byte(&self) -> u32 {
-		self.text_trimmed_range().start().into()
-	}
+	pub fn start_byte(&self) -> u32 { self.text_trimmed_range().start().into() }
 
 	pub fn text(&self) -> &'a str {
 		let trimmed_range = self.text_trimmed_range();
@@ -258,7 +246,7 @@ impl<'a> GritTargetNode<'a> {
 }
 
 impl<'a> Debug for GritTargetNode<'a> {
-	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		f.debug_struct("GritTargetNode").field("node", &self.node).finish()
 	}
 }
@@ -266,39 +254,29 @@ impl<'a> Debug for GritTargetNode<'a> {
 impl<'a> Deref for GritTargetNode<'a> {
 	type Target = GritTargetLanguageNode;
 
-	fn deref(&self) -> &Self::Target {
-		&self.node
-	}
+	fn deref(&self) -> &Self::Target { &self.node }
 }
 
 impl<'a> GritAstNode for GritTargetNode<'a> {
-	fn ancestors(&self) -> impl Iterator<Item = Self> {
-		AncestorIterator::new(self.clone())
-	}
+	fn ancestors(&self) -> impl Iterator<Item = Self> { AncestorIterator::new(self.clone()) }
 
-	fn byte_range(&self) -> ByteRange {
-		self.text_trimmed_range().to_byte_range()
-	}
+	fn byte_range(&self) -> ByteRange { self.text_trimmed_range().to_byte_range() }
 
-	fn code_range(&self) -> CodeRange {
-		self.text_trimmed_range().to_code_range(self.text())
-	}
+	fn code_range(&self) -> CodeRange { self.text_trimmed_range().to_code_range(self.text()) }
 
 	#[allow(refining_impl_trait)]
-	fn children(&self) -> impl Iterator<Item = Self> + Clone {
-		ChildrenIterator::new(self)
-	}
+	fn children(&self) -> impl Iterator<Item = Self> + Clone { ChildrenIterator::new(self) }
 
 	fn parent(&self) -> Option<Self> {
-		self.node.parent().map(|node| Self { node, tree: self.tree })
+		self.node.parent().map(|node| Self { node, tree:self.tree })
 	}
 
 	fn next_sibling(&self) -> Option<Self> {
-		self.node.next_sibling().map(|node| Self { node, tree: self.tree })
+		self.node.next_sibling().map(|node| Self { node, tree:self.tree })
 	}
 
 	fn previous_sibling(&self) -> Option<Self> {
-		self.node.previous_sibling().map(|node| Self { node, tree: self.tree })
+		self.node.previous_sibling().map(|node| Self { node, tree:self.tree })
 	}
 
 	fn next_named_node(&self) -> Option<Self> {
@@ -321,13 +299,9 @@ impl<'a> GritAstNode for GritTargetNode<'a> {
 		}
 	}
 
-	fn text(&self) -> Result<Cow<str>, Utf8Error> {
-		Ok(Cow::Borrowed(self.text()))
-	}
+	fn text(&self) -> Result<Cow<str>, Utf8Error> { Ok(Cow::Borrowed(self.text())) }
 
-	fn walk(&self) -> impl AstCursor<Node = Self> {
-		GritTargetNodeCursor::new(self)
-	}
+	fn walk(&self) -> impl AstCursor<Node = Self> { GritTargetNodeCursor::new(self) }
 }
 
 impl GritTargetSyntaxKind {
@@ -342,8 +316,9 @@ impl GritTargetSyntaxKind {
 pub enum GritSyntaxSlot<'a> {
 	/// Slot that stores a node child
 	Node(GritTargetNode<'a>),
-	/// Slot that marks that the child in this position isn't present in the source code.
-	Empty { index: u32 },
+	/// Slot that marks that the child in this position isn't present in the
+	/// source code.
+	Empty { index:u32 },
 }
 
 impl<'a> GritSyntaxSlot<'a> {
@@ -364,13 +339,11 @@ impl<'a> GritSyntaxSlot<'a> {
 
 #[derive(Clone)]
 pub struct AncestorIterator<'a> {
-	node: Option<GritTargetNode<'a>>,
+	node:Option<GritTargetNode<'a>>,
 }
 
 impl<'a> AncestorIterator<'a> {
-	fn new(node: GritTargetNode<'a>) -> Self {
-		Self { node: Some(node) }
-	}
+	fn new(node:GritTargetNode<'a>) -> Self { Self { node:Some(node) } }
 }
 
 impl<'a> Iterator for AncestorIterator<'a> {
@@ -385,13 +358,13 @@ impl<'a> Iterator for AncestorIterator<'a> {
 
 #[derive(Clone, Debug)]
 pub struct ChildrenIterator<'a> {
-	cursor: Option<GritTargetNodeCursor<'a>>,
+	cursor:Option<GritTargetNodeCursor<'a>>,
 }
 
 impl<'a> ChildrenIterator<'a> {
-	fn new(node: &GritTargetNode<'a>) -> Self {
+	fn new(node:&GritTargetNode<'a>) -> Self {
 		let mut cursor = GritTargetNodeCursor::new(node);
-		Self { cursor: cursor.goto_first_child().then_some(cursor) }
+		Self { cursor:cursor.goto_first_child().then_some(cursor) }
 	}
 }
 
@@ -410,11 +383,11 @@ impl<'a> Iterator for ChildrenIterator<'a> {
 
 #[derive(Clone, Debug)]
 pub struct NamedChildrenIterator<'a> {
-	cursor: Option<GritTargetNodeCursor<'a>>,
+	cursor:Option<GritTargetNodeCursor<'a>>,
 }
 
 impl<'a> NamedChildrenIterator<'a> {
-	fn new(node: &GritTargetNode<'a>) -> Self {
+	fn new(node:&GritTargetNode<'a>) -> Self {
 		let mut cursor = GritTargetNodeCursor::new(node);
 		let mut cursor = cursor.goto_first_child().then_some(cursor);
 		if let Some(c) = cursor.as_mut() {
@@ -451,18 +424,14 @@ impl<'a> Iterator for NamedChildrenIterator<'a> {
 
 #[derive(Clone, Debug)]
 struct GritTargetNodeCursor<'a> {
-	node: GritTargetNode<'a>,
-	root: GritTargetNode<'a>,
+	node:GritTargetNode<'a>,
+	root:GritTargetNode<'a>,
 }
 
 impl<'a> GritTargetNodeCursor<'a> {
-	fn new(node: &GritTargetNode<'a>) -> Self {
-		Self { node: node.clone(), root: node.clone() }
-	}
+	fn new(node:&GritTargetNode<'a>) -> Self { Self { node:node.clone(), root:node.clone() } }
 
-	fn is_at_token(&self) -> bool {
-		self.node.is_token()
-	}
+	fn is_at_token(&self) -> bool { self.node.is_token() }
 }
 
 impl<'a> AstCursor for GritTargetNodeCursor<'a> {
@@ -504,7 +473,5 @@ impl<'a> AstCursor for GritTargetNodeCursor<'a> {
 		}
 	}
 
-	fn node(&self) -> Self::Node {
-		self.node.clone()
-	}
+	fn node(&self) -> Self::Node { self.node.clone() }
 }

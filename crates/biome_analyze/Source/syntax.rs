@@ -1,8 +1,15 @@
 use biome_rowan::{AstNode, Language, SyntaxNode, WalkEvent};
 
 use crate::{
-	registry::NodeLanguage, AddVisitor, Phases, QueryKey, QueryMatch,
-	Queryable, ServiceBag, Visitor, VisitorContext,
+	registry::NodeLanguage,
+	AddVisitor,
+	Phases,
+	QueryKey,
+	QueryMatch,
+	Queryable,
+	ServiceBag,
+	Visitor,
+	VisitorContext,
 };
 
 /// Query type usable by lint rules to match on specific [AstNode] types
@@ -14,58 +21,47 @@ where
 	N: AstNode + 'static,
 {
 	type Input = SyntaxNode<NodeLanguage<N>>;
-	type Output = N;
-
 	type Language = NodeLanguage<N>;
+	type Output = N;
 	type Services = ();
 
 	fn build_visitor(
-		analyzer: &mut impl AddVisitor<Self::Language>,
-		_: &<Self::Language as Language>::Root,
+		analyzer:&mut impl AddVisitor<Self::Language>,
+		_:&<Self::Language as Language>::Root,
 	) {
 		analyzer.add_visitor(Phases::Syntax, SyntaxVisitor::default);
 	}
 
-	fn key() -> QueryKey<Self::Language> {
-		QueryKey::Syntax(N::KIND_SET)
-	}
+	fn key() -> QueryKey<Self::Language> { QueryKey::Syntax(N::KIND_SET) }
 
-	fn unwrap_match(_: &ServiceBag, node: &Self::Input) -> Self::Output {
+	fn unwrap_match(_:&ServiceBag, node:&Self::Input) -> Self::Output {
 		N::unwrap_cast(node.clone())
 	}
 }
 
-impl<L: Language + 'static> QueryMatch for SyntaxNode<L> {
-	fn text_range(&self) -> biome_rowan::TextRange {
-		self.text_trimmed_range()
-	}
+impl<L:Language + 'static> QueryMatch for SyntaxNode<L> {
+	fn text_range(&self) -> biome_rowan::TextRange { self.text_trimmed_range() }
 }
 
 /// The [SyntaxVisitor] is the simplest form of visitor implemented for the
 /// analyzer, it simply broadcast each [WalkEvent::Enter] as a query match
 /// event for the [SyntaxNode] being entered
-pub struct SyntaxVisitor<L: Language> {
+pub struct SyntaxVisitor<L:Language> {
 	/// If a subtree is currently being skipped by the visitor, for instance
 	/// because it has a suppression comment, this stores the root [SyntaxNode]
 	/// of that subtree. The visitor will then ignore all events until it
 	/// receives a [WalkEvent::Leave] for the `skip_subtree` node
-	skip_subtree: Option<SyntaxNode<L>>,
+	skip_subtree:Option<SyntaxNode<L>>,
 }
 
-impl<L: Language> Default for SyntaxVisitor<L> {
-	fn default() -> Self {
-		Self { skip_subtree: None }
-	}
+impl<L:Language> Default for SyntaxVisitor<L> {
+	fn default() -> Self { Self { skip_subtree:None } }
 }
 
-impl<L: Language + 'static> Visitor for SyntaxVisitor<L> {
+impl<L:Language + 'static> Visitor for SyntaxVisitor<L> {
 	type Language = L;
 
-	fn visit(
-		&mut self,
-		event: &WalkEvent<SyntaxNode<Self::Language>>,
-		mut ctx: VisitorContext<L>,
-	) {
+	fn visit(&mut self, event:&WalkEvent<SyntaxNode<Self::Language>>, mut ctx:VisitorContext<L>) {
 		let node = match event {
 			WalkEvent::Enter(node) => node,
 			WalkEvent::Leave(node) => {
@@ -96,39 +92,47 @@ impl<L: Language + 'static> Visitor for SyntaxVisitor<L> {
 
 #[cfg(test)]
 mod tests {
-	use biome_rowan::{
-		raw_language::{
-			RawLanguage, RawLanguageKind, RawLanguageRoot, RawSyntaxTreeBuilder,
-		},
-		AstNode, BatchMutation, SyntaxNode, SyntaxToken,
-	};
 	use std::convert::Infallible;
 
+	use biome_rowan::{
+		raw_language::{RawLanguage, RawLanguageKind, RawLanguageRoot, RawSyntaxTreeBuilder},
+		AstNode,
+		BatchMutation,
+		SyntaxNode,
+		SyntaxToken,
+	};
+
 	use crate::{
-		matcher::MatchQueryParams, registry::Phases, Analyzer, AnalyzerContext,
-		AnalyzerOptions, AnalyzerSignal, ApplySuppression, ControlFlow,
-		MetadataRegistry, Never, QueryMatcher, ServiceBag, SuppressionAction,
+		matcher::MatchQueryParams,
+		registry::Phases,
+		Analyzer,
+		AnalyzerContext,
+		AnalyzerOptions,
+		AnalyzerSignal,
+		ApplySuppression,
+		ControlFlow,
+		MetadataRegistry,
+		Never,
+		QueryMatcher,
+		ServiceBag,
+		SuppressionAction,
 		SyntaxVisitor,
 	};
 
 	#[derive(Default)]
 	struct BufferMatcher {
-		nodes: Vec<RawLanguageKind>,
+		nodes:Vec<RawLanguageKind>,
 	}
 
 	impl<'a> QueryMatcher<RawLanguage> for &'a mut BufferMatcher {
-		fn match_query(&mut self, params: MatchQueryParams<RawLanguage>) {
-			self.nodes.push(
-				params
-					.query
-					.downcast::<SyntaxNode<RawLanguage>>()
-					.unwrap()
-					.kind(),
-			);
+		fn match_query(&mut self, params:MatchQueryParams<RawLanguage>) {
+			self.nodes
+				.push(params.query.downcast::<SyntaxNode<RawLanguage>>().unwrap().kind());
 		}
 	}
 
-	/// Checks the syntax visitor emits a [QueryMatch] for each node in the syntax tree
+	/// Checks the syntax visitor emits a [QueryMatch] for each node in the
+	/// syntax tree
 	#[test]
 	fn syntax_visitor() {
 		let root = {
@@ -153,9 +157,7 @@ mod tests {
 
 		let mut matcher = BufferMatcher::default();
 		let mut emit_signal =
-			|_: &dyn AnalyzerSignal<RawLanguage>| -> ControlFlow<Never> {
-				unreachable!()
-			};
+			|_:&dyn AnalyzerSignal<RawLanguage>| -> ControlFlow<Never> { unreachable!() };
 
 		let metadata = MetadataRegistry::default();
 
@@ -165,16 +167,16 @@ mod tests {
 
 			fn find_token_to_apply_suppression(
 				&self,
-				_: SyntaxToken<Self::Language>,
+				_:SyntaxToken<Self::Language>,
 			) -> Option<ApplySuppression<Self::Language>> {
 				None
 			}
 
 			fn apply_suppression(
 				&self,
-				_: &mut BatchMutation<Self::Language>,
-				_: ApplySuppression<Self::Language>,
-				_: &str,
+				_:&mut BatchMutation<Self::Language>,
+				_:ApplySuppression<Self::Language>,
+				_:&str,
 			) {
 				unreachable!("")
 			}
@@ -188,19 +190,16 @@ mod tests {
 			&mut emit_signal,
 		);
 
-		analyzer.add_visitor(
-			Phases::Syntax,
-			Box::<SyntaxVisitor<RawLanguage>>::default(),
-		);
+		analyzer.add_visitor(Phases::Syntax, Box::<SyntaxVisitor<RawLanguage>>::default());
 
-		let ctx: AnalyzerContext<RawLanguage> = AnalyzerContext {
+		let ctx:AnalyzerContext<RawLanguage> = AnalyzerContext {
 			root,
-			range: None,
-			services: ServiceBag::default(),
-			options: &AnalyzerOptions::default(),
+			range:None,
+			services:ServiceBag::default(),
+			options:&AnalyzerOptions::default(),
 		};
 
-		let result: Option<Never> = analyzer.run(ctx);
+		let result:Option<Never> = analyzer.run(ctx);
 		assert!(result.is_none());
 
 		assert_eq!(

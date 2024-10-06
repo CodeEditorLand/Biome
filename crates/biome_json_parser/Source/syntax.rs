@@ -1,14 +1,16 @@
-use crate::prelude::*;
-use biome_json_syntax::JsonSyntaxKind;
-use biome_json_syntax::JsonSyntaxKind::*;
-use biome_parser::diagnostic::{expected_any, expected_node};
-use biome_parser::parse_recovery::ParseRecoveryTokenSet;
-use biome_parser::parsed_syntax::ParsedSyntax::Absent;
-use biome_parser::prelude::ParsedSyntax::Present;
-use biome_parser::ParserProgress;
+use biome_json_syntax::{JsonSyntaxKind, JsonSyntaxKind::*};
+use biome_parser::{
+	diagnostic::{expected_any, expected_node},
+	parse_recovery::ParseRecoveryTokenSet,
+	parsed_syntax::ParsedSyntax::Absent,
+	prelude::ParsedSyntax::Present,
+	ParserProgress,
+};
 use biome_rowan::TextRange;
 
-const VALUE_START: TokenSet<JsonSyntaxKind> = token_set![
+use crate::prelude::*;
+
+const VALUE_START:TokenSet<JsonSyntaxKind> = token_set![
 	T![null],
 	T![true],
 	T![false],
@@ -18,10 +20,10 @@ const VALUE_START: TokenSet<JsonSyntaxKind> = token_set![
 	T!['{'],
 ];
 
-const VALUE_RECOVERY_SET: TokenSet<JsonSyntaxKind> =
+const VALUE_RECOVERY_SET:TokenSet<JsonSyntaxKind> =
 	VALUE_START.union(token_set![T![']'], T!['}'], T![,]]);
 
-pub(crate) fn parse_root(p: &mut JsonParser) {
+pub(crate) fn parse_root(p:&mut JsonParser) {
 	let m = p.start();
 	p.eat(UNICODE_BOM);
 
@@ -29,16 +31,15 @@ pub(crate) fn parse_root(p: &mut JsonParser) {
 		Present(value) => Present(value),
 		Absent => {
 			p.error(expected_value(p, p.cur_range()));
-			match ParseRecoveryTokenSet::new(JSON_BOGUS_VALUE, VALUE_START)
-				.recover(p)
-			{
+			match ParseRecoveryTokenSet::new(JSON_BOGUS_VALUE, VALUE_START).recover(p) {
 				Ok(value) => Present(value),
 				Err(_) => Absent,
 			}
 		},
 	};
 
-	// Process the file to the end, e.g. in cases where there have been multiple values
+	// Process the file to the end, e.g. in cases where there have been multiple
+	// values
 	if !(p.at(EOF)) {
 		parse_rest(p, value);
 	}
@@ -46,7 +47,7 @@ pub(crate) fn parse_root(p: &mut JsonParser) {
 	m.complete(p, JSON_ROOT);
 }
 
-fn parse_value(p: &mut JsonParser) -> ParsedSyntax {
+fn parse_value(p:&mut JsonParser) -> ParsedSyntax {
 	match p.cur() {
 		T![null] => {
 			let m = p.start();
@@ -77,10 +78,7 @@ fn parse_value(p: &mut JsonParser) -> ParsedSyntax {
 
 		IDENT => {
 			let m = p.start();
-			p.error(p.err_builder(
-				"String values must be double quoted.",
-				p.cur_range(),
-			));
+			p.error(p.err_builder("String values must be double quoted.", p.cur_range()));
 			p.bump(IDENT);
 			Present(m.complete(p, JSON_BOGUS_VALUE))
 		},
@@ -133,10 +131,10 @@ impl SequenceKind {
 }
 
 struct Sequence {
-	kind: SequenceKind,
-	node: Marker,
-	list: Marker,
-	state: SequenceState,
+	kind:SequenceKind,
+	node:Marker,
+	list:Marker,
+	state:SequenceState,
 }
 
 enum SequenceState {
@@ -146,7 +144,7 @@ enum SequenceState {
 }
 
 impl Sequence {
-	fn parse_item(&self, p: &mut JsonParser) -> SequenceItem {
+	fn parse_item(&self, p:&mut JsonParser) -> SequenceItem {
 		match self.kind {
 			SequenceKind::Array => parse_array_element(p),
 			SequenceKind::Object => parse_object_member(p),
@@ -161,7 +159,7 @@ impl Sequence {
 	}
 }
 
-fn parse_sequence(p: &mut JsonParser, root_kind: SequenceKind) -> ParsedSyntax {
+fn parse_sequence(p:&mut JsonParser, root_kind:SequenceKind) -> ParsedSyntax {
 	let mut stack = Vec::new();
 	let mut current = start_sequence(p, root_kind);
 
@@ -194,27 +192,23 @@ fn parse_sequence(p: &mut JsonParser, root_kind: SequenceKind) -> ParsedSyntax {
 
 			match current.parse_item(p) {
 				SequenceItem::Parsed(Absent) => {
-					if p.options().allow_trailing_commas
-						&& p.last() == Some(T![,])
-					{
+					if p.options().allow_trailing_commas && p.last() == Some(T![,]) {
 						break;
 					}
 
 					let range = if p.at(T![,]) {
 						p.cur_range()
 					} else {
-						match ParseRecoveryTokenSet::new(
-							JSON_BOGUS_VALUE,
-							current.recovery_set(),
-						)
-						.enable_recovery_on_line_break()
-						.recover(p)
+						match ParseRecoveryTokenSet::new(JSON_BOGUS_VALUE, current.recovery_set())
+							.enable_recovery_on_line_break()
+							.recover(p)
 						{
 							Ok(marker) => marker.range(p),
 							Err(_) => {
 								p.error(expected_value(p, p.cur_range()));
-								// We're done for this sequence, unclear how to proceed.
-								// Continue with parent sequence.
+								// We're done for this sequence, unclear how to
+								// proceed. Continue with parent
+								// sequence.
 								break;
 							},
 						}
@@ -247,13 +241,13 @@ fn parse_sequence(p: &mut JsonParser, root_kind: SequenceKind) -> ParsedSyntax {
 	}
 }
 
-fn start_sequence(p: &mut JsonParser, kind: SequenceKind) -> Sequence {
+fn start_sequence(p:&mut JsonParser, kind:SequenceKind) -> Sequence {
 	let node = p.start();
 
 	p.expect(kind.open_paren());
 
 	let list = p.start();
-	Sequence { kind, node, list, state: SequenceState::Start }
+	Sequence { kind, node, list, state:SequenceState::Start }
 }
 
 #[derive(Debug)]
@@ -262,7 +256,7 @@ enum SequenceItem {
 	Recurse(SequenceKind, Option<Marker>),
 }
 
-fn parse_object_member(p: &mut JsonParser) -> SequenceItem {
+fn parse_object_member(p:&mut JsonParser) -> SequenceItem {
 	let m = p.start();
 
 	if parse_member_name(p).is_absent() {
@@ -287,7 +281,7 @@ fn parse_object_member(p: &mut JsonParser) -> SequenceItem {
 	}
 }
 
-fn parse_member_name(p: &mut JsonParser) -> ParsedSyntax {
+fn parse_member_name(p:&mut JsonParser) -> ParsedSyntax {
 	match p.cur() {
 		JSON_STRING_LITERAL => {
 			let m = p.start();
@@ -296,10 +290,7 @@ fn parse_member_name(p: &mut JsonParser) -> ParsedSyntax {
 		},
 		IDENT | T![null] | T![true] | T![false] => {
 			let m = p.start();
-			p.error(p.err_builder(
-				"Property key must be double quoted",
-				p.cur_range(),
-			));
+			p.error(p.err_builder("Property key must be double quoted", p.cur_range()));
 			p.bump_remap(IDENT);
 			Present(m.complete(p, JSON_MEMBER_NAME))
 		},
@@ -307,19 +298,17 @@ fn parse_member_name(p: &mut JsonParser) -> ParsedSyntax {
 	}
 }
 
-fn parse_array_element(p: &mut JsonParser) -> SequenceItem {
+fn parse_array_element(p:&mut JsonParser) -> SequenceItem {
 	match parse_sequence_value(p) {
 		Ok(parsed) => SequenceItem::Parsed(parsed),
 		Err(kind) => SequenceItem::Recurse(kind, None),
 	}
 }
 
-fn parse_sequence_value(
-	p: &mut JsonParser,
-) -> Result<ParsedSyntax, SequenceKind> {
+fn parse_sequence_value(p:&mut JsonParser) -> Result<ParsedSyntax, SequenceKind> {
 	match p.cur() {
-		// Special handling for arrays and objects, suspend the current sequence and start parsing
-		// the nested array or object.
+		// Special handling for arrays and objects, suspend the current sequence
+		// and start parsing the nested array or object.
 		T!['['] => Err(SequenceKind::Array),
 		T!['{'] => Err(SequenceKind::Object),
 		_ => Ok(parse_value(p)),
@@ -327,18 +316,22 @@ fn parse_sequence_value(
 }
 
 #[cold]
-fn parse_rest(p: &mut JsonParser, value: ParsedSyntax) {
+fn parse_rest(p:&mut JsonParser, value:ParsedSyntax) {
 	// Wrap the values in an array if there are more than one.
 	let list = value.precede(p);
 
 	while !p.at(EOF) {
 		let range = match parse_value(p) {
-            Present(value) => value.range(p),
-            Absent => ParseRecoveryTokenSet::new(JSON_BOGUS_VALUE, VALUE_START)
-                .recover(p)
-                .expect("Expect recovery to succeed because parser isn't at EOF nor at a value.")
-                .range(p),
-        };
+			Present(value) => value.range(p),
+			Absent => {
+				ParseRecoveryTokenSet::new(JSON_BOGUS_VALUE, VALUE_START)
+					.recover(p)
+					.expect(
+						"Expect recovery to succeed because parser isn't at EOF nor at a value.",
+					)
+					.range(p)
+			},
+		};
 
 		p.error(
 			p.err_builder("End of file expected", range)
@@ -351,10 +344,10 @@ fn parse_rest(p: &mut JsonParser, value: ParsedSyntax) {
 		.complete(p, JSON_ARRAY_VALUE);
 }
 
-fn expected_value(p: &JsonParser, range: TextRange) -> ParseDiagnostic {
+fn expected_value(p:&JsonParser, range:TextRange) -> ParseDiagnostic {
 	expected_any(&["array", "object", "literal"], range, p)
 }
 
-fn expected_property(p: &JsonParser, range: TextRange) -> ParseDiagnostic {
+fn expected_property(p:&JsonParser, range:TextRange) -> ParseDiagnostic {
 	expected_node("property", range, p)
 }

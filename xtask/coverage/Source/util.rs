@@ -1,9 +1,9 @@
-use std::borrow::Cow;
-use std::char::{decode_utf16, DecodeUtf16Error};
+use std::{
+	borrow::Cow,
+	char::{decode_utf16, DecodeUtf16Error},
+};
 
-pub(crate) fn decode_maybe_utf16_string(
-	mut content: &[u8],
-) -> Result<Cow<str>, DecodeUtf16Error> {
+pub(crate) fn decode_maybe_utf16_string(mut content:&[u8]) -> Result<Cow<str>, DecodeUtf16Error> {
 	enum FileEncoding {
 		Unknown,
 		Utf8,
@@ -15,13 +15,13 @@ pub(crate) fn decode_maybe_utf16_string(
 
 	// Read the BOM if present and skip it
 	let bom = content.get(0..3);
-	if let Some(&[0xef, 0xbb, 0xbf]) = bom {
+	if let Some(&[0xEF, 0xBB, 0xBF]) = bom {
 		content = &content[3..];
 		encoding = FileEncoding::Utf8;
-	} else if let Some(&[0xfe, 0xff, _]) = bom {
+	} else if let Some(&[0xFE, 0xFF, _]) = bom {
 		content = &content[2..];
 		encoding = FileEncoding::Utf16Be;
-	} else if let Some(&[0xff, 0xfe, _]) = bom {
+	} else if let Some(&[0xFF, 0xFE, _]) = bom {
 		content = &content[2..];
 		encoding = FileEncoding::Utf16Le;
 	}
@@ -39,16 +39,18 @@ pub(crate) fn decode_maybe_utf16_string(
 		}
 	}
 
-	// If a UTF-16 BOM was found or an error was encountered, attempt to parse as UTF-16
-	let content_str =
-		decode_utf16(content.chunks(2).map(|bytes| match encoding {
+	// If a UTF-16 BOM was found or an error was encountered, attempt to parse
+	// as UTF-16
+	let content_str = decode_utf16(content.chunks(2).map(|bytes| {
+		match encoding {
 			FileEncoding::Utf16Be => u16::from_be_bytes([bytes[0], bytes[1]]),
 			FileEncoding::Utf16Le => u16::from_le_bytes([bytes[0], bytes[1]]),
 			// If the encoding is unknown attempt to decode in native endianness
 			FileEncoding::Unknown => u16::from_ne_bytes([bytes[0], bytes[1]]),
 			FileEncoding::Utf8 => unreachable!(),
-		}))
-		.collect::<Result<String, _>>()?;
+		}
+	}))
+	.collect::<Result<String, _>>()?;
 
 	Ok(Cow::Owned(content_str))
 }

@@ -1,13 +1,23 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, ActionCategory, Ast, FixKind, Rule, RuleDiagnostic,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
 	RuleSource,
 };
 use biome_console::markup;
 use biome_diagnostics::Applicability;
 use biome_js_factory::make;
 use biome_js_syntax::{
-	AnyJsCallArgument, AnyJsExpression, AnyJsLiteralExpression, JsCallArgumentList,
-	JsCallExpression, JsSyntaxKind,
+	AnyJsCallArgument,
+	AnyJsExpression,
+	AnyJsLiteralExpression,
+	JsCallArgumentList,
+	JsCallExpression,
+	JsSyntaxKind,
 };
 use biome_rowan::{AstNode, AstSeparatedList, BatchMutationExt};
 
@@ -52,12 +62,12 @@ declare_lint_rule! {
 }
 
 impl Rule for UseNumberToFixedDigitsArgument {
-	type Query = Ast<JsCallExpression>;
-	type State = ();
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsCallExpression>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
 		if node.is_optional() || node.is_optional_chain() || node.arguments().ok()?.args().len() > 0
@@ -85,7 +95,7 @@ impl Rule for UseNumberToFixedDigitsArgument {
 		Some(())
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, _state:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query().arguments().ok()?;
 
 		Some(RuleDiagnostic::new(
@@ -97,7 +107,7 @@ impl Rule for UseNumberToFixedDigitsArgument {
 		))
 	}
 
-	fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
 		let mut mutation = ctx.root().begin();
 
 		let zero_literal = AnyJsLiteralExpression::JsNumberLiteralExpression(

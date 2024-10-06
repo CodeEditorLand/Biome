@@ -1,5 +1,10 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::{AnyCssRule, CssRuleList};
@@ -36,12 +41,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoInvalidPositionAtImportRule {
-	type Query = Ast<CssRuleList>;
-	type State = TextRange;
-	type Signals = Vec<Self::State>;
 	type Options = ();
+	type Query = Ast<CssRuleList>;
+	type Signals = Vec<Self::State>;
+	type State = TextRange;
 
-	fn run(ctx: &RuleContext<Self>) -> Vec<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Vec<Self::State> {
 		let node = ctx.query();
 
 		let mut is_invalid_position = false;
@@ -78,7 +83,7 @@ impl Rule for NoInvalidPositionAtImportRule {
 		invalid_import_list
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		Some(
             RuleDiagnostic::new(
                 rule_category!(),

@@ -27,11 +27,11 @@ pub enum MarkupElement<'fmt> {
 	Debug,
 	Trace,
 	Inverse,
-	Hyperlink { href: Cow<'fmt, str> },
+	Hyperlink { href:Cow<'fmt, str> },
 }
 
 impl fmt::Display for MarkupElement<'_> {
-	fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+	fn fmt(&self, fmt:&mut fmt::Formatter<'_>) -> fmt::Result {
 		if let Self::Hyperlink { href } = self {
 			if fmt.alternate() {
 				write!(fmt, "Hyperlink href={:?}", href.as_ref())
@@ -47,7 +47,7 @@ impl fmt::Display for MarkupElement<'_> {
 impl MarkupElement<'_> {
 	/// Mutate a [ColorSpec] object in place to apply this element's associated
 	/// style to it
-	pub(crate) fn update_color(&self, color: &mut ColorSpec) {
+	pub(crate) fn update_color(&self, color:&mut ColorSpec) {
 		match self {
 			// Text Styles
 			MarkupElement::Emphasis => {
@@ -77,11 +77,12 @@ impl MarkupElement<'_> {
 				color.set_fg(Some(Color::Magenta));
 			},
 			MarkupElement::Info | MarkupElement::Debug => {
-				// Blue is really difficult to see on the standard windows command line
+				// Blue is really difficult to see on the standard windows
+				// command line
 				#[cfg(windows)]
-				const BLUE: Color = Color::Cyan;
+				const BLUE:Color = Color::Cyan;
 				#[cfg(not(windows))]
-				const BLUE: Color = Color::Blue;
+				const BLUE:Color = Color::Blue;
 
 				color.set_fg(Some(BLUE));
 			},
@@ -103,11 +104,13 @@ impl MarkupElement<'_> {
 			MarkupElement::Debug => MarkupElement::Debug,
 			MarkupElement::Trace => MarkupElement::Trace,
 			MarkupElement::Inverse => MarkupElement::Inverse,
-			MarkupElement::Hyperlink { href } => MarkupElement::Hyperlink {
-				href: Cow::Owned(match href {
-					Cow::Borrowed(href) => (*href).to_string(),
-					Cow::Owned(href) => href.clone(),
-				}),
+			MarkupElement::Hyperlink { href } => {
+				MarkupElement::Hyperlink {
+					href:Cow::Owned(match href {
+						Cow::Borrowed(href) => (*href).to_string(),
+						Cow::Owned(href) => href.clone(),
+					}),
+				}
 			},
 		}
 	}
@@ -117,8 +120,8 @@ impl MarkupElement<'_> {
 /// associated styles applied to it
 #[derive(Copy, Clone)]
 pub struct MarkupNode<'fmt> {
-	pub elements: &'fmt [MarkupElement<'fmt>],
-	pub content: &'fmt dyn Display,
+	pub elements:&'fmt [MarkupElement<'fmt>],
+	pub content:&'fmt dyn Display,
 }
 
 #[derive(Clone, PartialEq, Eq, Hash)]
@@ -127,12 +130,12 @@ pub struct MarkupNode<'fmt> {
 	derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)
 )]
 pub struct MarkupNodeBuf {
-	pub elements: Vec<MarkupElement<'static>>,
-	pub content: String,
+	pub elements:Vec<MarkupElement<'static>>,
+	pub content:String,
 }
 
 impl Debug for MarkupNodeBuf {
-	fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+	fn fmt(&self, fmt:&mut fmt::Formatter) -> fmt::Result {
 		for element in &self.elements {
 			write!(fmt, "<{element:#}>")?;
 		}
@@ -174,7 +177,8 @@ pub struct Markup<'fmt>(pub &'fmt [MarkupNode<'fmt>]);
 impl Markup<'_> {
 	pub fn to_owned(&self) -> MarkupBuf {
 		let mut result = MarkupBuf(Vec::new());
-		// SAFETY: The implementation of Write for MarkupBuf below always returns Ok
+		// SAFETY: The implementation of Write for MarkupBuf below always
+		// returns Ok
 		Formatter::new(&mut result).write_markup(*self).unwrap();
 		result
 	}
@@ -188,21 +192,13 @@ impl Markup<'_> {
 pub struct MarkupBuf(pub Vec<MarkupNodeBuf>);
 
 impl MarkupBuf {
-	pub fn is_empty(&self) -> bool {
-		self.0.iter().all(|node| node.content.is_empty())
-	}
+	pub fn is_empty(&self) -> bool { self.0.iter().all(|node| node.content.is_empty()) }
 
-	pub fn len(&self) -> TextSize {
-		self.0.iter().map(|node| TextSize::of(&node.content)).sum()
-	}
+	pub fn len(&self) -> TextSize { self.0.iter().map(|node| TextSize::of(&node.content)).sum() }
 }
 
 impl Write for MarkupBuf {
-	fn write_str(
-		&mut self,
-		elements: &MarkupElements,
-		content: &str,
-	) -> io::Result<()> {
+	fn write_str(&mut self, elements:&MarkupElements, content:&str) -> io::Result<()> {
 		let mut styles = Vec::new();
 		elements.for_each(&mut |elements| {
 			styles.extend(elements.iter().map(MarkupElement::to_owned));
@@ -216,17 +212,12 @@ impl Write for MarkupBuf {
 			}
 		}
 
-		self.0
-			.push(MarkupNodeBuf { elements: styles, content: content.into() });
+		self.0.push(MarkupNodeBuf { elements:styles, content:content.into() });
 
 		Ok(())
 	}
 
-	fn write_fmt(
-		&mut self,
-		elements: &MarkupElements,
-		content: fmt::Arguments,
-	) -> io::Result<()> {
+	fn write_fmt(&mut self, elements:&MarkupElements, content:fmt::Arguments) -> io::Result<()> {
 		let mut styles = Vec::new();
 		elements.for_each(&mut |elements| {
 			styles.extend(elements.iter().map(MarkupElement::to_owned));
@@ -240,23 +231,17 @@ impl Write for MarkupBuf {
 			}
 		}
 
-		self.0.push(MarkupNodeBuf {
-			elements: styles,
-			content: content.to_string(),
-		});
+		self.0.push(MarkupNodeBuf { elements:styles, content:content.to_string() });
 		Ok(())
 	}
 }
 
 impl Display for MarkupBuf {
-	fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-		let nodes: Vec<_> = self
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> {
+		let nodes:Vec<_> = self
 			.0
 			.iter()
-			.map(|node| MarkupNode {
-				elements: &node.elements,
-				content: &node.content,
-			})
+			.map(|node| MarkupNode { elements:&node.elements, content:&node.content })
 			.collect();
 
 		fmt.write_markup(Markup(&nodes))
@@ -264,7 +249,7 @@ impl Display for MarkupBuf {
 }
 
 impl Debug for MarkupBuf {
-	fn fmt(&self, fmt: &mut fmt::Formatter) -> fmt::Result {
+	fn fmt(&self, fmt:&mut fmt::Formatter) -> fmt::Result {
 		for node in &self.0 {
 			Debug::fmt(node, fmt)?;
 		}

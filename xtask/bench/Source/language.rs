@@ -1,15 +1,16 @@
-use crate::test_case::TestCase;
-use biome_analyze::options::JsxRuntime;
 use biome_analyze::{
-	AnalysisFilter, AnalyzerOptions, ControlFlow, Never, RuleCategoriesBuilder,
+	options::JsxRuntime,
+	AnalysisFilter,
+	AnalyzerOptions,
+	ControlFlow,
+	Never,
+	RuleCategoriesBuilder,
 };
 use biome_css_formatter::context::{CssFormatContext, CssFormatOptions};
 use biome_css_parser::CssParserOptions;
 use biome_css_syntax::{CssRoot, CssSyntaxNode};
 use biome_formatter::{FormatResult, Formatted, PrintResult, Printed};
-use biome_graphql_formatter::context::{
-	GraphqlFormatContext, GraphqlFormatOptions,
-};
+use biome_graphql_formatter::context::{GraphqlFormatContext, GraphqlFormatOptions};
 use biome_graphql_syntax::GraphqlSyntaxNode;
 use biome_js_formatter::context::{JsFormatContext, JsFormatOptions};
 use biome_js_parser::JsParserOptions;
@@ -21,6 +22,8 @@ use biome_parser::prelude::ParseDiagnostic;
 use biome_rowan::NodeCache;
 use criterion::black_box;
 
+use crate::test_case::TestCase;
+
 pub enum Parse<'a> {
 	JavaScript(JsFileSource, &'a str),
 	Json(&'a str),
@@ -29,57 +32,54 @@ pub enum Parse<'a> {
 }
 
 impl<'a> Parse<'a> {
-	pub fn try_from_case(case: &TestCase) -> Option<Parse> {
+	pub fn try_from_case(case:&TestCase) -> Option<Parse> {
 		match JsFileSource::try_from(case.path()) {
-			Ok(source_type) => {
-				Some(Parse::JavaScript(source_type, case.code()))
-			},
-			Err(_) => match case.extension() {
-				"json" => Some(Parse::Json(case.code())),
-				"css" => Some(Parse::Css(case.code())),
-				"graphql" => Some(Parse::Graphql(case.code())),
-				_ => None,
+			Ok(source_type) => Some(Parse::JavaScript(source_type, case.code())),
+			Err(_) => {
+				match case.extension() {
+					"json" => Some(Parse::Json(case.code())),
+					"css" => Some(Parse::Css(case.code())),
+					"graphql" => Some(Parse::Graphql(case.code())),
+					_ => None,
+				}
 			},
 		}
 	}
 
 	pub fn parse(&self) -> Parsed {
 		match self {
-			Parse::JavaScript(source_type, code) => Parsed::JavaScript(
-				biome_js_parser::parse(
-					code,
+			Parse::JavaScript(source_type, code) => {
+				Parsed::JavaScript(
+					biome_js_parser::parse(code, *source_type, JsParserOptions::default()),
 					*source_type,
-					JsParserOptions::default(),
-				),
-				*source_type,
-			),
-			Parse::Json(code) => Parsed::Json(biome_json_parser::parse_json(
-				code,
-				JsonParserOptions::default(),
-			)),
-			Parse::Css(code) => Parsed::Css(biome_css_parser::parse_css(
-				code,
-				CssParserOptions::default()
-					.allow_wrong_line_comments()
-					.allow_css_modules(),
-			)),
-			Parse::Graphql(code) => {
-				Parsed::Graphql(biome_graphql_parser::parse_graphql(code))
+				)
 			},
+			Parse::Json(code) => {
+				Parsed::Json(biome_json_parser::parse_json(code, JsonParserOptions::default()))
+			},
+			Parse::Css(code) => {
+				Parsed::Css(biome_css_parser::parse_css(
+					code,
+					CssParserOptions::default().allow_wrong_line_comments().allow_css_modules(),
+				))
+			},
+			Parse::Graphql(code) => Parsed::Graphql(biome_graphql_parser::parse_graphql(code)),
 		}
 	}
 
-	pub fn parse_with_cache(&self, cache: &mut NodeCache) -> Parsed {
+	pub fn parse_with_cache(&self, cache:&mut NodeCache) -> Parsed {
 		match self {
-			Parse::JavaScript(source_type, code) => Parsed::JavaScript(
-				biome_js_parser::parse_js_with_cache(
-					code,
+			Parse::JavaScript(source_type, code) => {
+				Parsed::JavaScript(
+					biome_js_parser::parse_js_with_cache(
+						code,
+						*source_type,
+						JsParserOptions::default(),
+						cache,
+					),
 					*source_type,
-					JsParserOptions::default(),
-					cache,
-				),
-				*source_type,
-			),
+				)
+			},
 			Parse::Json(code) => {
 				Parsed::Json(biome_json_parser::parse_json_with_cache(
 					code,
@@ -91,14 +91,12 @@ impl<'a> Parse<'a> {
 				Parsed::Css(biome_css_parser::parse_css_with_cache(
 					code,
 					cache,
-					CssParserOptions::default()
-						.allow_wrong_line_comments()
-						.allow_css_modules(),
+					CssParserOptions::default().allow_wrong_line_comments().allow_css_modules(),
 				))
 			},
-			Parse::Graphql(code) => Parsed::Graphql(
-				biome_graphql_parser::parse_graphql_with_cache(code, cache),
-			),
+			Parse::Graphql(code) => {
+				Parsed::Graphql(biome_graphql_parser::parse_graphql_with_cache(code, cache))
+			},
 		}
 	}
 }
@@ -124,9 +122,7 @@ impl Parsed {
 
 	pub fn analyze(&self) -> Option<Analyze> {
 		match self {
-			Parsed::JavaScript(parse, _) => {
-				Some(Analyze::JavaScript(parse.tree()))
-			},
+			Parsed::JavaScript(parse, _) => Some(Analyze::JavaScript(parse.tree())),
 			Parsed::Json(_) => None,
 			Parsed::Graphql(_) => None,
 			Parsed::Css(parse) => Some(Analyze::Css(parse.tree())),
@@ -154,27 +150,21 @@ impl FormatNode {
 	pub fn format_node(&self) -> FormatResult<FormattedNode> {
 		match self {
 			Self::JavaScript(root, source_type) => {
-				biome_js_formatter::format_node(
-					JsFormatOptions::new(*source_type),
-					root,
-				)
-				.map(FormattedNode::JavaScript)
+				biome_js_formatter::format_node(JsFormatOptions::new(*source_type), root)
+					.map(FormattedNode::JavaScript)
 			},
-			Self::Json(root) => biome_json_formatter::format_node(
-				JsonFormatOptions::default(),
-				root,
-			)
-			.map(FormattedNode::Json),
-			Self::Css(root) => biome_css_formatter::format_node(
-				CssFormatOptions::default(),
-				root,
-			)
-			.map(FormattedNode::Css),
-			FormatNode::Graphql(root) => biome_graphql_formatter::format_node(
-				GraphqlFormatOptions::default(),
-				root,
-			)
-			.map(FormattedNode::Graphql),
+			Self::Json(root) => {
+				biome_json_formatter::format_node(JsonFormatOptions::default(), root)
+					.map(FormattedNode::Json)
+			},
+			Self::Css(root) => {
+				biome_css_formatter::format_node(CssFormatOptions::default(), root)
+					.map(FormattedNode::Css)
+			},
+			FormatNode::Graphql(root) => {
+				biome_graphql_formatter::format_node(GraphqlFormatOptions::default(), root)
+					.map(FormattedNode::Graphql)
+			},
 		}
 	}
 }
@@ -207,10 +197,7 @@ impl Analyze {
 		match self {
 			Analyze::JavaScript(root) => {
 				let filter = AnalysisFilter {
-					categories: RuleCategoriesBuilder::default()
-						.with_syntax()
-						.with_lint()
-						.build(),
+					categories:RuleCategoriesBuilder::default().with_syntax().with_lint().build(),
 					..AnalysisFilter::default()
 				};
 				let mut options = AnalyzerOptions::default();
@@ -230,10 +217,7 @@ impl Analyze {
 			},
 			Analyze::Css(root) => {
 				let filter = AnalysisFilter {
-					categories: RuleCategoriesBuilder::default()
-						.with_syntax()
-						.with_lint()
-						.build(),
+					categories:RuleCategoriesBuilder::default().with_syntax().with_lint().build(),
 					..AnalysisFilter::default()
 				};
 				let options = AnalyzerOptions::default();

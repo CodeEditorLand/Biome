@@ -6,17 +6,14 @@ use biome_rowan::TextRange;
 pub struct CompilerDiagnostic {
 	#[message]
 	#[description]
-	message: String,
+	message:String,
 
 	#[location(span)]
-	range: TextRange,
+	range:TextRange,
 }
 
 impl CompilerDiagnostic {
-	pub(crate) fn new_warning(
-		message: impl Into<String>,
-		range: TextRange,
-	) -> Self {
-		Self { message: message.into(), range }
+	pub(crate) fn new_warning(message:impl Into<String>, range:TextRange) -> Self {
+		Self { message:message.into(), range }
 	}
 }

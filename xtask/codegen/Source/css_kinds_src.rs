@@ -1,7 +1,7 @@
 use crate::kind_src::KindsSrc;
 
-pub const CSS_KINDS_SRC: KindsSrc = KindsSrc {
-	punct: &[
+pub const CSS_KINDS_SRC:KindsSrc = KindsSrc {
+	punct:&[
 		(";", "SEMICOLON"),
 		(",", "COMMA"),
 		("(", "L_PAREN"),
@@ -45,7 +45,7 @@ pub const CSS_KINDS_SRC: KindsSrc = KindsSrc {
 		("<!--", "CDO"),
 		("U+", "UNICODE"),
 	],
-	keywords: &[
+	keywords:&[
 		"media",
 		"keyframes",
 		"not",
@@ -116,9 +116,9 @@ pub const CSS_KINDS_SRC: KindsSrc = KindsSrc {
 		"ridge",
 		"inset",
 		"outset",
-		// HERE: Add new regular keywords _above_ here. Be sure to also add them
-		// to `consume_identifier` in `biome_css_parser/src/lexer/mod.rs` as well.
-		// CSS-wide keywords
+		// HERE: Add new regular keywords _above_ here. Be sure to also add
+		// them to `consume_identifier` in
+		// `biome_css_parser/src/lexer/mod.rs` as well. CSS-wide keywords
 		"initial",
 		"inherit",
 		"unset",
@@ -244,9 +244,10 @@ pub const CSS_KINDS_SRC: KindsSrc = KindsSrc {
 		//
 		"font-face",
 		// Don't add to the end of this list, add new keywords above the "HERE"
-		// marker above, because we have a range check in is_contextual_keyword function.
+		// marker above, because we have a range check in is_contextual_keyword
+		// function.
 	],
-	literals: &[
+	literals:&[
 		"CSS_STRING_LITERAL",
 		"CSS_NUMBER_LITERAL",
 		"CSS_DASHED_IDENTIFIER",
@@ -264,7 +265,7 @@ pub const CSS_KINDS_SRC: KindsSrc = KindsSrc {
 		"CSS_UNICODE_CODEPOINT_LITERAL",
 		"CSS_UNICODE_RANGE_WILDCARD_LITERAL",
 	],
-	tokens: &[
+	tokens:&[
 		"ERROR_TOKEN",
 		"IDENT",
 		"NEWLINE",
@@ -273,7 +274,7 @@ pub const CSS_KINDS_SRC: KindsSrc = KindsSrc {
 		"MULTILINE_COMMENT",
 		"GRIT_METAVARIABLE",
 	],
-	nodes: &[
+	nodes:&[
 		"CSS_ROOT",
 		"CSS_RULE_LIST",
 		"CSS_QUALIFIED_RULE",

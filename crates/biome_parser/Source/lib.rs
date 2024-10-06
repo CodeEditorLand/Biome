@@ -1,18 +1,17 @@
 #![deny(rustdoc::broken_intra_doc_links)]
 #![doc = include_str!("../CONTRIBUTING.md")]
 
-use crate::diagnostic::{expected_token, ParseDiagnostic, ToDiagnostic};
-use crate::event::Event;
-use crate::event::Event::Token;
-use crate::token_source::{
-	BumpWithContext, NthToken, TokenSource, TokenSourceWithBufferedLexer,
-};
+use std::any::type_name;
+
 use biome_console::fmt::Display;
 use biome_diagnostics::location::AsSpan;
-use biome_rowan::{
-	AstNode, Language, SendNode, SyntaxKind, SyntaxNode, TextRange, TextSize,
+use biome_rowan::{AstNode, Language, SendNode, SyntaxKind, SyntaxNode, TextRange, TextSize};
+
+use crate::{
+	diagnostic::{expected_token, ParseDiagnostic, ToDiagnostic},
+	event::{Event, Event::Token},
+	token_source::{BumpWithContext, NthToken, TokenSource, TokenSourceWithBufferedLexer},
 };
-use std::any::type_name;
 
 pub mod diagnostic;
 pub mod event;
@@ -26,118 +25,99 @@ pub mod token_set;
 pub mod token_source;
 pub mod tree_sink;
 
-use crate::lexer::LexerWithCheckpoint;
-use crate::parsed_syntax::ParsedSyntax;
-use crate::parsed_syntax::ParsedSyntax::{Absent, Present};
 use biome_diagnostics::serde::Diagnostic;
 pub use marker::{CompletedMarker, Marker};
 pub use token_set::TokenSet;
 
-pub struct ParserContext<K: SyntaxKind> {
-	events: Vec<Event<K>>,
-	skipping: bool,
-	diagnostics: Vec<ParseDiagnostic>,
+use crate::{
+	lexer::LexerWithCheckpoint,
+	parsed_syntax::{
+		ParsedSyntax,
+		ParsedSyntax::{Absent, Present},
+	},
+};
+
+pub struct ParserContext<K:SyntaxKind> {
+	events:Vec<Event<K>>,
+	skipping:bool,
+	diagnostics:Vec<ParseDiagnostic>,
 }
 
-impl<K: SyntaxKind> Default for ParserContext<K> {
-	fn default() -> Self {
-		Self::new()
-	}
+impl<K:SyntaxKind> Default for ParserContext<K> {
+	fn default() -> Self { Self::new() }
 }
 
-impl<K: SyntaxKind> ParserContext<K> {
-	pub fn new() -> Self {
-		Self { skipping: false, events: Vec::new(), diagnostics: Vec::new() }
-	}
+impl<K:SyntaxKind> ParserContext<K> {
+	pub fn new() -> Self { Self { skipping:false, events:Vec::new(), diagnostics:Vec::new() } }
 
 	/// Returns the slice with the parse events
-	pub fn events(&self) -> &[Event<K>] {
-		&self.events
-	}
+	pub fn events(&self) -> &[Event<K>] { &self.events }
 
 	/// Returns a slice with the parse diagnostics
-	pub fn diagnostics(&self) -> &[ParseDiagnostic] {
-		&self.diagnostics
-	}
+	pub fn diagnostics(&self) -> &[ParseDiagnostic] { &self.diagnostics }
 
 	/// Drops all diagnostics after `at`.
-	pub fn truncate_diagnostics(&mut self, at: usize) {
-		self.diagnostics.truncate(at);
-	}
+	pub fn truncate_diagnostics(&mut self, at:usize) { self.diagnostics.truncate(at); }
 
 	/// Pushes a new token event
-	pub fn push_token(&mut self, kind: K, end: TextSize) {
-		self.push_event(Token { kind, end });
-	}
+	pub fn push_token(&mut self, kind:K, end:TextSize) { self.push_event(Token { kind, end }); }
 
 	/// Pushes a parse event
-	pub fn push_event(&mut self, event: Event<K>) {
-		self.events.push(event)
-	}
+	pub fn push_event(&mut self, event:Event<K>) { self.events.push(event) }
 
-	/// Returns `true` if the parser is skipping a token as skipped token trivia.
-	pub fn is_skipping(&self) -> bool {
-		self.skipping
-	}
+	/// Returns `true` if the parser is skipping a token as skipped token
+	/// trivia.
+	pub fn is_skipping(&self) -> bool { self.skipping }
 
-	/// Splits the events into two at the given `position`. Returns a newly allocated vector containing the
-	/// elements from `[position;len]`.
+	/// Splits the events into two at the given `position`. Returns a newly
+	/// allocated vector containing the elements from `[position;len]`.
 	///
 	/// ## Safety
-	/// The method is marked as `unsafe` to discourage its usage. Removing events can lead to
-	/// corrupted events if not done carefully.
-	pub unsafe fn split_off_events(
-		&mut self,
-		position: usize,
-	) -> Vec<Event<K>> {
+	/// The method is marked as `unsafe` to discourage its usage. Removing
+	/// events can lead to corrupted events if not done carefully.
+	pub unsafe fn split_off_events(&mut self, position:usize) -> Vec<Event<K>> {
 		self.events.split_off(position)
 	}
 
 	/// Get the current index of the last event
-	fn cur_event_pos(&self) -> usize {
-		self.events.len().saturating_sub(1)
-	}
+	fn cur_event_pos(&self) -> usize { self.events.len().saturating_sub(1) }
 
 	/// Remove `amount` events from the parser
-	fn drain_events(&mut self, amount: usize) {
-		self.events.truncate(self.events.len() - amount);
-	}
+	fn drain_events(&mut self, amount:usize) { self.events.truncate(self.events.len() - amount); }
 
 	/// Rewind the parser back to a previous position in time
-	pub fn rewind(&mut self, checkpoint: ParserContextCheckpoint) {
+	pub fn rewind(&mut self, checkpoint:ParserContextCheckpoint) {
 		let ParserContextCheckpoint { event_pos, errors_pos } = checkpoint;
 		self.drain_events(self.cur_event_pos() - event_pos);
 		self.diagnostics.truncate(errors_pos as usize);
 	}
 
-	/// Get a checkpoint representing the progress of the parser at this point of time
+	/// Get a checkpoint representing the progress of the parser at this point
+	/// of time
 	#[must_use]
 	pub fn checkpoint(&self) -> ParserContextCheckpoint {
 		ParserContextCheckpoint {
-			event_pos: self.cur_event_pos(),
-			errors_pos: self.diagnostics.len() as u32,
+			event_pos:self.cur_event_pos(),
+			errors_pos:self.diagnostics.len() as u32,
 		}
 	}
 
-	pub fn finish(self) -> (Vec<Event<K>>, Vec<ParseDiagnostic>) {
-		(self.events, self.diagnostics)
-	}
+	pub fn finish(self) -> (Vec<Event<K>>, Vec<ParseDiagnostic>) { (self.events, self.diagnostics) }
 }
 
 /// A structure signifying the Parser progress at one point in time
 #[derive(Debug)]
 pub struct ParserContextCheckpoint {
-	event_pos: usize,
+	event_pos:usize,
 	/// The length of the errors list at the time the checkpoint was created.
-	/// Safety: The parser only supports files <= 4Gb. Storing a `u32` is sufficient to store one error
-	/// for each single character in the file, which should be sufficient for any realistic file.
-	errors_pos: u32,
+	/// Safety: The parser only supports files <= 4Gb. Storing a `u32` is
+	/// sufficient to store one error for each single character in the file,
+	/// which should be sufficient for any realistic file.
+	errors_pos:u32,
 }
 
 impl ParserContextCheckpoint {
-	pub fn event_position(&self) -> usize {
-		self.event_pos
-	}
+	pub fn event_position(&self) -> usize { self.event_pos }
 }
 
 pub trait Parser: Sized {
@@ -156,135 +136,101 @@ pub trait Parser: Sized {
 	/// Returns a mutable reference to the [TokenSource].
 	fn source_mut(&mut self) -> &mut Self::Source;
 
-	/// Returns `true` if the parser is trying to parse some syntax but only if it has no errors.
+	/// Returns `true` if the parser is trying to parse some syntax but only if
+	/// it has no errors.
 	///
 	/// Returning `true` disables more involved error recovery.
-	fn is_speculative_parsing(&self) -> bool {
-		false
-	}
+	fn is_speculative_parsing(&self) -> bool { false }
 
 	/// Gets the source text of a range
 	///
 	/// # Panics
 	///
 	/// If the range is out of bounds
-	fn text(&self, span: TextRange) -> &str {
-		&self.source().text()[span]
-	}
+	fn text(&self, span:TextRange) -> &str { &self.source().text()[span] }
 
 	/// Gets the current token kind of the parser
-	fn cur(&self) -> Self::Kind {
-		self.source().current()
-	}
+	fn cur(&self) -> Self::Kind { self.source().current() }
 
 	/// Gets the range of the current token
-	fn cur_range(&self) -> TextRange {
-		self.source().current_range()
-	}
+	fn cur_range(&self) -> TextRange { self.source().current_range() }
 
-	/// Tests if there's a line break before the current token (between the last and current)
-	fn has_preceding_line_break(&self) -> bool {
-		self.source().has_preceding_line_break()
-	}
+	/// Tests if there's a line break before the current token (between the last
+	/// and current)
+	fn has_preceding_line_break(&self) -> bool { self.source().has_preceding_line_break() }
 
 	/// Get the source code of the parser's current token.
-	fn cur_text(&self) -> &str {
-		&self.source().text()[self.cur_range()]
-	}
+	fn cur_text(&self) -> &str { &self.source().text()[self.cur_range()] }
 
 	/// Checks if the parser is currently at a specific token
-	fn at(&self, kind: Self::Kind) -> bool {
-		self.cur() == kind
-	}
+	fn at(&self, kind:Self::Kind) -> bool { self.cur() == kind }
 
 	/// Check if the parser's current token is contained in a token set
-	fn at_ts(&self, kinds: TokenSet<Self::Kind>) -> bool {
-		kinds.contains(self.cur())
-	}
+	fn at_ts(&self, kinds:TokenSet<Self::Kind>) -> bool { kinds.contains(self.cur()) }
 
 	/// Look ahead at a token and get its kind.
-	fn nth<'l, Lex>(&mut self, n: usize) -> Self::Kind
+	fn nth<'l, Lex>(&mut self, n:usize) -> Self::Kind
 	where
 		Lex: LexerWithCheckpoint<'l, Kind = Self::Kind>,
-		Self::Source: NthToken<Lex> + TokenSourceWithBufferedLexer<Lex>,
-	{
+		Self::Source: NthToken<Lex> + TokenSourceWithBufferedLexer<Lex>, {
 		self.source_mut().nth(n)
 	}
 
 	/// Checks if a token lookahead is something
-	fn nth_at<'l, Lex>(&mut self, n: usize, kind: Self::Kind) -> bool
+	fn nth_at<'l, Lex>(&mut self, n:usize, kind:Self::Kind) -> bool
 	where
 		Lex: LexerWithCheckpoint<'l, Kind = Self::Kind>,
-		Self::Source: NthToken<Lex> + TokenSourceWithBufferedLexer<Lex>,
-	{
+		Self::Source: NthToken<Lex> + TokenSourceWithBufferedLexer<Lex>, {
 		self.nth(n) == kind
 	}
 
 	/// Checks if a token set lookahead is something
-	fn nth_at_ts<'l, Lex>(
-		&mut self,
-		n: usize,
-		kinds: TokenSet<Self::Kind>,
-	) -> bool
+	fn nth_at_ts<'l, Lex>(&mut self, n:usize, kinds:TokenSet<Self::Kind>) -> bool
 	where
 		Lex: LexerWithCheckpoint<'l, Kind = Self::Kind>,
-		Self::Source: NthToken<Lex> + TokenSourceWithBufferedLexer<Lex>,
-	{
+		Self::Source: NthToken<Lex> + TokenSourceWithBufferedLexer<Lex>, {
 		kinds.contains(self.nth(n))
 	}
 
 	/// Tests if there's a line break before the nth token.
 	#[inline]
-	fn has_nth_preceding_line_break<'l, Lex>(&mut self, n: usize) -> bool
+	fn has_nth_preceding_line_break<'l, Lex>(&mut self, n:usize) -> bool
 	where
 		Lex: LexerWithCheckpoint<'l, Kind = Self::Kind>,
-		Self::Source: NthToken<Lex> + TokenSourceWithBufferedLexer<Lex>,
-	{
+		Self::Source: NthToken<Lex> + TokenSourceWithBufferedLexer<Lex>, {
 		self.source_mut().has_nth_preceding_line_break(n)
 	}
 
 	/// Consume the current token if `kind` matches.
-	fn bump(&mut self, kind: Self::Kind) {
-		assert_eq!(
-			kind,
-			self.cur(),
-			"expected {:?} but at {:?}",
-			kind,
-			self.cur()
-		);
+	fn bump(&mut self, kind:Self::Kind) {
+		assert_eq!(kind, self.cur(), "expected {:?} but at {:?}", kind, self.cur());
 
 		self.do_bump(kind)
 	}
 
 	/// Consume the current token if token set matches.
-	fn bump_ts(&mut self, kinds: TokenSet<Self::Kind>) {
-		assert!(
-			kinds.contains(self.cur()),
-			"expected {:?} but at {:?}",
-			kinds,
-			self.cur()
-		);
+	fn bump_ts(&mut self, kinds:TokenSet<Self::Kind>) {
+		assert!(kinds.contains(self.cur()), "expected {:?} but at {:?}", kinds, self.cur());
 
 		self.bump_any()
 	}
 
-	/// Consume any token but cast it as a different kind using the specified `context.
+	/// Consume any token but cast it as a different kind using the specified
+	/// `context.
 	fn bump_remap_with_context(
 		&mut self,
-		kind: Self::Kind,
-		context: <Self::Source as BumpWithContext>::Context,
+		kind:Self::Kind,
+		context:<Self::Source as BumpWithContext>::Context,
 	) where
-		Self::Source: BumpWithContext,
-	{
+		Self::Source: BumpWithContext, {
 		self.do_bump_with_context(kind, context);
 	}
 
 	/// Consume any token but cast it as a different kind
-	fn bump_remap(&mut self, kind: Self::Kind) {
-		self.do_bump(kind);
-	}
+	fn bump_remap(&mut self, kind:Self::Kind) { self.do_bump(kind); }
 
-	/// Bumps the current token regardless of its kind and advances to the next token.
+	/// Bumps the current token regardless of its kind and advances to the next
+	/// token.
 	fn bump_any(&mut self) {
 		let kind = self.cur();
 		assert_ne!(kind, Self::Kind::EOF);
@@ -292,22 +238,15 @@ pub trait Parser: Sized {
 		self.do_bump(kind);
 	}
 
-	/// Consumes the current token if `kind` matches and lexes the next token using the
-	/// specified `context.
+	/// Consumes the current token if `kind` matches and lexes the next token
+	/// using the specified `context.
 	fn bump_with_context(
 		&mut self,
-		kind: Self::Kind,
-		context: <Self::Source as BumpWithContext>::Context,
+		kind:Self::Kind,
+		context:<Self::Source as BumpWithContext>::Context,
 	) where
-		Self::Source: BumpWithContext,
-	{
-		assert_eq!(
-			kind,
-			self.cur(),
-			"expected {:?} but at {:?}",
-			kind,
-			self.cur()
-		);
+		Self::Source: BumpWithContext, {
+		assert_eq!(kind, self.cur(), "expected {:?} but at {:?}", kind, self.cur());
 
 		self.do_bump_with_context(kind, context);
 	}
@@ -315,11 +254,10 @@ pub trait Parser: Sized {
 	#[doc(hidden)]
 	fn do_bump_with_context(
 		&mut self,
-		kind: Self::Kind,
-		context: <Self::Source as BumpWithContext>::Context,
+		kind:Self::Kind,
+		context:<Self::Source as BumpWithContext>::Context,
 	) where
-		Self::Source: BumpWithContext,
-	{
+		Self::Source: BumpWithContext, {
 		let end = self.cur_range().end();
 		self.context_mut().push_token(kind, end);
 
@@ -331,7 +269,7 @@ pub trait Parser: Sized {
 	}
 
 	#[doc(hidden)]
-	fn do_bump(&mut self, kind: Self::Kind) {
+	fn do_bump(&mut self, kind:Self::Kind) {
 		let end = self.cur_range().end();
 		self.context_mut().push_token(kind, end);
 
@@ -345,12 +283,11 @@ pub trait Parser: Sized {
 	/// Consume the next token if `kind` matches using the specified `context.
 	fn eat_with_context(
 		&mut self,
-		kind: Self::Kind,
-		context: <Self::Source as BumpWithContext>::Context,
+		kind:Self::Kind,
+		context:<Self::Source as BumpWithContext>::Context,
 	) -> bool
 	where
-		Self::Source: BumpWithContext,
-	{
+		Self::Source: BumpWithContext, {
 		if !self.at(kind) {
 			return false;
 		}
@@ -361,7 +298,7 @@ pub trait Parser: Sized {
 	}
 
 	/// Consume the next token if `kind` matches.
-	fn eat(&mut self, kind: Self::Kind) -> bool {
+	fn eat(&mut self, kind:Self::Kind) -> bool {
 		if !self.at(kind) {
 			return false;
 		}
@@ -372,7 +309,7 @@ pub trait Parser: Sized {
 	}
 
 	/// Consume the next token if token set matches.
-	fn eat_ts(&mut self, kinds: TokenSet<Self::Kind>) -> bool {
+	fn eat_ts(&mut self, kinds:TokenSet<Self::Kind>) -> bool {
 		if !self.at_ts(kinds) {
 			return false;
 		}
@@ -382,15 +319,15 @@ pub trait Parser: Sized {
 		true
 	}
 
-	/// Consume the next token if token set matches using the specified `context.
+	/// Consume the next token if token set matches using the specified
+	/// `context.
 	fn eat_ts_with_context(
 		&mut self,
-		kinds: TokenSet<Self::Kind>,
-		context: <Self::Source as BumpWithContext>::Context,
+		kinds:TokenSet<Self::Kind>,
+		context:<Self::Source as BumpWithContext>::Context,
 	) -> bool
 	where
-		Self::Source: BumpWithContext,
-	{
+		Self::Source: BumpWithContext, {
 		if !self.at_ts(kinds) {
 			return false;
 		}
@@ -400,16 +337,15 @@ pub trait Parser: Sized {
 		true
 	}
 
-	/// Try to eat a specific token kind, if the kind is not there then adds an error to the events stack
-	/// using the specified `context.
+	/// Try to eat a specific token kind, if the kind is not there then adds an
+	/// error to the events stack using the specified `context.
 	fn expect_with_context(
 		&mut self,
-		kind: Self::Kind,
-		context: <Self::Source as BumpWithContext>::Context,
+		kind:Self::Kind,
+		context:<Self::Source as BumpWithContext>::Context,
 	) -> bool
 	where
-		Self::Source: BumpWithContext,
-	{
+		Self::Source: BumpWithContext, {
 		if self.eat_with_context(kind, context) {
 			true
 		} else {
@@ -418,8 +354,9 @@ pub trait Parser: Sized {
 		}
 	}
 
-	/// Try to eat a specific token kind, if the kind is not there then adds an error to the events stack.
-	fn expect(&mut self, kind: Self::Kind) -> bool {
+	/// Try to eat a specific token kind, if the kind is not there then adds an
+	/// error to the events stack.
+	fn expect(&mut self, kind:Self::Kind) -> bool {
 		if self.eat(kind) {
 			true
 		} else {
@@ -429,10 +366,9 @@ pub trait Parser: Sized {
 	}
 
 	/// Allows parsing an unsupported syntax as skipped trivia tokens.
-	fn parse_as_skipped_trivia_tokens<P>(&mut self, parse: P)
+	fn parse_as_skipped_trivia_tokens<P>(&mut self, parse:P)
 	where
-		P: FnOnce(&mut Self),
-	{
+		P: FnOnce(&mut Self), {
 		let events_pos = self.context().events.len();
 		self.context_mut().skipping = true;
 		parse(self);
@@ -443,10 +379,11 @@ pub trait Parser: Sized {
 	}
 
 	/// Add a diagnostic
-	fn error(&mut self, err: impl ToDiagnostic<Self>) {
+	fn error(&mut self, err:impl ToDiagnostic<Self>) {
 		let err = err.into_diagnostic(self);
 
-		// Don't report another diagnostic if the last diagnostic is at the same position of the current one
+		// Don't report another diagnostic if the last diagnostic is at the same
+		// position of the current one
 		if let Some(previous) = self.context().diagnostics.last() {
 			match (&err.diagnostic_range(), &previous.diagnostic_range()) {
 				(Some(err_range), Some(previous_range))
@@ -460,22 +397,15 @@ pub trait Parser: Sized {
 		self.context_mut().diagnostics.push(err)
 	}
 
-	/// Creates a new diagnostic. Pass the message and the range where the error occurred
+	/// Creates a new diagnostic. Pass the message and the range where the error
+	/// occurred
 	#[must_use]
-	fn err_builder(
-		&self,
-		message: impl Display,
-		span: impl AsSpan,
-	) -> ParseDiagnostic {
+	fn err_builder(&self, message:impl Display, span:impl AsSpan) -> ParseDiagnostic {
 		ParseDiagnostic::new(message, span)
 	}
 
 	/// Bump and add an error event
-	fn err_and_bump(
-		&mut self,
-		err: impl ToDiagnostic<Self>,
-		unknown_syntax_kind: Self::Kind,
-	) {
+	fn err_and_bump(&mut self, err:impl ToDiagnostic<Self>, unknown_syntax_kind:Self::Kind) {
 		let m = self.start();
 		self.bump_any();
 		m.complete(self, unknown_syntax_kind);
@@ -484,17 +414,21 @@ pub trait Parser: Sized {
 
 	/// Returns the kind of the last bumped token.
 	fn last(&self) -> Option<Self::Kind> {
-		self.context().events.iter().rev().find_map(|event| match event {
-			Token { kind, .. } => Some(*kind),
-			_ => None,
+		self.context().events.iter().rev().find_map(|event| {
+			match event {
+				Token { kind, .. } => Some(*kind),
+				_ => None,
+			}
 		})
 	}
 
 	/// Returns the end offset of the last bumped token.
 	fn last_end(&self) -> Option<TextSize> {
-		self.context().events.iter().rev().find_map(|event| match event {
-			Token { end, .. } => Some(*end),
-			_ => None,
+		self.context().events.iter().rev().find_map(|event| {
+			match event {
+				Token { end, .. } => Some(*end),
+				_ => None,
+			}
 		})
 	}
 
@@ -509,17 +443,17 @@ pub trait Parser: Sized {
 	}
 }
 
-/// Captures the progress of the parser and allows to test if the parsing is still making progress
+/// Captures the progress of the parser and allows to test if the parsing is
+/// still making progress
 #[derive(Debug, Eq, Ord, PartialOrd, PartialEq, Hash, Default)]
 pub struct ParserProgress(Option<TextSize>);
 
 impl ParserProgress {
 	/// Returns true if the current parser position is passed this position
 	#[inline]
-	pub fn has_progressed<P>(&self, p: &P) -> bool
+	pub fn has_progressed<P>(&self, p:&P) -> bool
 	where
-		P: Parser,
-	{
+		P: Parser, {
 		match self.0 {
 			None => true,
 			Some(pos) => pos < p.source().position(),
@@ -532,10 +466,9 @@ impl ParserProgress {
 	///
 	/// Panics if the parser is still at this position
 	#[inline]
-	pub fn assert_progressing<P>(&mut self, p: &P)
+	pub fn assert_progressing<P>(&mut self, p:&P)
 	where
-		P: Parser,
-	{
+		P: Parser, {
 		assert!(
 			self.has_progressed(p),
 			"The parser is no longer progressing. Stuck at '{}' {:?}:{:?}",
@@ -548,33 +481,33 @@ impl ParserProgress {
 	}
 }
 
-/// A syntax feature that may or may not be supported depending on the file type and parser configuration
+/// A syntax feature that may or may not be supported depending on the file type
+/// and parser configuration
 pub trait SyntaxFeature: Sized {
 	type Parser<'source>: Parser;
 
-	/// Returns `true` if the current parsing context supports this syntax feature.
-	fn is_supported(&self, p: &Self::Parser<'_>) -> bool;
+	/// Returns `true` if the current parsing context supports this syntax
+	/// feature.
+	fn is_supported(&self, p:&Self::Parser<'_>) -> bool;
 
-	/// Returns `true` if the current parsing context doesn't support this syntax feature.
-	fn is_unsupported(&self, p: &Self::Parser<'_>) -> bool {
-		!self.is_supported(p)
-	}
+	/// Returns `true` if the current parsing context doesn't support this
+	/// syntax feature.
+	fn is_unsupported(&self, p:&Self::Parser<'_>) -> bool { !self.is_supported(p) }
 
-	/// Adds a diagnostic and changes the kind of the node to [SyntaxKind::to_bogus] if this feature isn't
-	/// supported.
+	/// Adds a diagnostic and changes the kind of the node to
+	/// [SyntaxKind::to_bogus] if this feature isn't supported.
 	///
 	/// Returns the parsed syntax.
 	fn exclusive_syntax<'source, S, E, D>(
 		&self,
-		p: &mut Self::Parser<'source>,
-		syntax: S,
-		error_builder: E,
+		p:&mut Self::Parser<'source>,
+		syntax:S,
+		error_builder:E,
 	) -> ParsedSyntax
 	where
 		S: Into<ParsedSyntax>,
 		E: FnOnce(&Self::Parser<'source>, &CompletedMarker) -> D,
-		D: ToDiagnostic<Self::Parser<'source>>,
-	{
+		D: ToDiagnostic<Self::Parser<'source>>, {
 		syntax.into().map(|mut syntax| {
 			if self.is_unsupported(p) {
 				let error = error_builder(p, &syntax);
@@ -587,20 +520,19 @@ pub trait SyntaxFeature: Sized {
 		})
 	}
 
-	/// Parses a syntax and adds a diagnostic and changes the kind of the node to [SyntaxKind::to_bogus] if this feature isn't
-	/// supported.
+	/// Parses a syntax and adds a diagnostic and changes the kind of the node
+	/// to [SyntaxKind::to_bogus] if this feature isn't supported.
 	///
 	/// Returns the parsed syntax.
 	fn parse_exclusive_syntax<'source, P, E>(
 		&self,
-		p: &mut Self::Parser<'source>,
-		parse: P,
-		error_builder: E,
+		p:&mut Self::Parser<'source>,
+		parse:P,
+		error_builder:E,
 	) -> ParsedSyntax
 	where
 		P: FnOnce(&mut Self::Parser<'source>) -> ParsedSyntax,
-		E: FnOnce(&Self::Parser<'source>, &CompletedMarker) -> ParseDiagnostic,
-	{
+		E: FnOnce(&Self::Parser<'source>, &CompletedMarker) -> ParseDiagnostic, {
 		if self.is_supported(p) {
 			parse(p)
 		} else {
@@ -620,20 +552,19 @@ pub trait SyntaxFeature: Sized {
 		}
 	}
 
-	/// Adds a diagnostic and changes the kind of the node to [SyntaxKind::to_bogus] if this feature is
-	/// supported.
+	/// Adds a diagnostic and changes the kind of the node to
+	/// [SyntaxKind::to_bogus] if this feature is supported.
 	///
 	/// Returns the parsed syntax.
 	fn excluding_syntax<'source, S, E>(
 		&self,
-		p: &mut Self::Parser<'source>,
-		syntax: S,
-		error_builder: E,
+		p:&mut Self::Parser<'source>,
+		syntax:S,
+		error_builder:E,
 	) -> ParsedSyntax
 	where
 		S: Into<ParsedSyntax>,
-		E: FnOnce(&Self::Parser<'source>, &CompletedMarker) -> ParseDiagnostic,
-	{
+		E: FnOnce(&Self::Parser<'source>, &CompletedMarker) -> ParseDiagnostic, {
 		syntax.into().map(|mut syntax| {
 			if self.is_unsupported(p) {
 				syntax
@@ -657,46 +588,38 @@ pub trait SyntaxFeature: Sized {
 /// the corresponding language, generally through a language-specific capability
 #[derive(Clone, Debug)]
 pub struct AnyParse {
-	pub(crate) root: SendNode,
-	pub(crate) diagnostics: Vec<ParseDiagnostic>,
+	pub(crate) root:SendNode,
+	pub(crate) diagnostics:Vec<ParseDiagnostic>,
 }
 
 impl AnyParse {
-	pub fn new(root: SendNode, diagnostics: Vec<ParseDiagnostic>) -> AnyParse {
+	pub fn new(root:SendNode, diagnostics:Vec<ParseDiagnostic>) -> AnyParse {
 		AnyParse { root, diagnostics }
 	}
 
 	pub fn syntax<L>(&self) -> SyntaxNode<L>
 	where
-		L: Language + 'static,
-	{
+		L: Language + 'static, {
 		self.root.clone().into_node().unwrap_or_else(|| {
-			panic!(
-				"could not downcast root node to language {}",
-				type_name::<L>()
-			)
+			panic!("could not downcast root node to language {}", type_name::<L>())
 		})
 	}
 
 	pub fn tree<N>(&self) -> N
 	where
 		N: AstNode,
-		N::Language: 'static,
-	{
+		N::Language: 'static, {
 		N::unwrap_cast(self.syntax::<N::Language>())
 	}
 
-	/// This function transforms diagnostics coming from the parser into serializable diagnostics
+	/// This function transforms diagnostics coming from the parser into
+	/// serializable diagnostics
 	pub fn into_diagnostics(self) -> Vec<Diagnostic> {
 		self.diagnostics.into_iter().map(Diagnostic::new).collect()
 	}
 
 	/// Get the diagnostics which occurred when parsing
-	pub fn diagnostics(&self) -> &[ParseDiagnostic] {
-		&self.diagnostics
-	}
+	pub fn diagnostics(&self) -> &[ParseDiagnostic] { &self.diagnostics }
 
-	pub fn has_errors(&self) -> bool {
-		self.diagnostics.iter().any(|diag| diag.is_error())
-	}
+	pub fn has_errors(&self) -> bool { self.diagnostics.iter().any(|diag| diag.is_error()) }
 }

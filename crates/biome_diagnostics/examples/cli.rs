@@ -1,9 +1,7 @@
 use std::io;
 
 use biome_console::{markup, ConsoleExt, EnvConsole};
-use biome_diagnostics::{
-	Advices, Diagnostic, LogCategory, PrintDiagnostic, Resource, Visit,
-};
+use biome_diagnostics::{Advices, Diagnostic, LogCategory, PrintDiagnostic, Resource, Visit};
 use biome_rowan::{TextRange, TextSize};
 
 #[derive(Debug, Diagnostic)]
@@ -16,25 +14,25 @@ use biome_rowan::{TextRange, TextSize};
     tags(FIXABLE),
 )]
 struct CliDiagnostic {
-	command_name: String,
+	command_name:String,
 	#[location(resource)]
-	path: Resource<&'static str>,
+	path:Resource<&'static str>,
 	#[location(span)]
-	span: TextRange,
+	span:TextRange,
 	#[location(source_code)]
-	source_code: String,
+	source_code:String,
 	#[advice]
-	advices: CliAdvices,
+	advices:CliAdvices,
 }
 
 #[derive(Debug)]
 struct CliAdvices {
-	suggested_name: String,
-	suggested_command: String,
+	suggested_name:String,
+	suggested_command:String,
 }
 
 impl Advices for CliAdvices {
-	fn record(&self, visitor: &mut dyn Visit) -> io::Result<()> {
+	fn record(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 		visitor.record_log(
 			LogCategory::Info,
 			&markup! {
@@ -44,23 +42,20 @@ impl Advices for CliAdvices {
 
 		visitor.record_command(&self.suggested_command)?;
 
-		visitor.record_log(
-			LogCategory::Info,
-			&"To see all available commands run",
-		)?;
+		visitor.record_log(LogCategory::Info, &"To see all available commands run")?;
 		visitor.record_command("biome --help")
 	}
 }
 
 pub fn main() {
 	let diag = CliDiagnostic {
-		command_name: String::from("format"),
-		path: Resource::Argv,
-		span: TextRange::new(TextSize::from(5), TextSize::from(11)),
-		source_code: String::from("biome format file.js"),
-		advices: CliAdvices {
-			suggested_name: String::from("format"),
-			suggested_command: String::from("biome format file.js"),
+		command_name:String::from("format"),
+		path:Resource::Argv,
+		span:TextRange::new(TextSize::from(5), TextSize::from(11)),
+		source_code:String::from("biome format file.js"),
+		advices:CliAdvices {
+			suggested_name:String::from("format"),
+			suggested_command:String::from("biome format file.js"),
 		},
 	};
 

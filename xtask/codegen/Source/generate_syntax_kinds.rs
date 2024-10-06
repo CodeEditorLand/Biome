@@ -1,18 +1,14 @@
-use crate::kind_src::KindsSrc;
-use crate::language_kind::LanguageKind;
-use crate::Result;
 use biome_string_case::Case;
 use proc_macro2::{Literal, Punct, Spacing};
 use quote::{format_ident, quote};
 
-pub fn generate_syntax_kinds(
-	grammar: KindsSrc,
-	language_kind: LanguageKind,
-) -> Result<String> {
+use crate::{kind_src::KindsSrc, language_kind::LanguageKind, Result};
+
+pub fn generate_syntax_kinds(grammar:KindsSrc, language_kind:LanguageKind) -> Result<String> {
 	let syntax_kind = language_kind.syntax_kind();
 	let punctuation_values = grammar.punct.iter().map(|(token, _name)| {
-		// These tokens, when parsed to proc_macro2::TokenStream, generates a stream of bytes
-		// that can't be recognized by [quote].
+		// These tokens, when parsed to proc_macro2::TokenStream, generates a
+		// stream of bytes that can't be recognized by [quote].
 		// Hence, they need to be thread differently
 		if "{}[]()`".contains(token) {
 			let c = token.chars().next().unwrap();
@@ -36,13 +32,11 @@ pub fn generate_syntax_kinds(
 	// color-profile
 	let all_keywords = &grammar.keywords;
 	// color-profile => "color-profile"
-	let all_keyword_strings =
-		all_keywords.iter().map(|name| (*name).to_string());
-	let all_keyword_to_strings =
-		all_keywords.iter().map(|name| (*name).to_string()).clone();
+	let all_keyword_strings = all_keywords.iter().map(|name| (*name).to_string());
+	let all_keyword_to_strings = all_keywords.iter().map(|name| (*name).to_string()).clone();
 	// we need to replace "-" with "_" for the keywords
-	// e.g. we have `color-profile` in css but it's an invalid ident in rust code
-	// color-profile => "color_profile"
+	// e.g. we have `color-profile` in css but it's an invalid ident in rust
+	// code color-profile => "color_profile"
 	// also mark uppercase differently from lowercase
 	// e.g. "query" => "QUERY", "QUERY" => "QUERY_UPPERCASE"
 	let all_keywords_values = all_keywords
@@ -63,10 +57,8 @@ pub fn generate_syntax_kinds(
 		.collect::<Vec<_>>();
 
 	// "color_profile" => color_profile
-	let all_keywords_idents = all_keywords_values
-		.iter()
-		.map(|kw| format_ident!("{}", kw))
-		.collect::<Vec<_>>();
+	let all_keywords_idents =
+		all_keywords_values.iter().map(|kw| format_ident!("{}", kw)).collect::<Vec<_>>();
 
 	let literals = grammar
 		.literals
@@ -74,29 +66,18 @@ pub fn generate_syntax_kinds(
 		.map(|name| format_ident!("{}", name))
 		.collect::<Vec<_>>();
 
-	let tokens = grammar
-		.tokens
-		.iter()
-		.map(|name| format_ident!("{}", name))
-		.collect::<Vec<_>>();
+	let tokens = grammar.tokens.iter().map(|name| format_ident!("{}", name)).collect::<Vec<_>>();
 
-	let nodes = grammar
-		.nodes
-		.iter()
-		.map(|name| format_ident!("{}", name))
-		.collect::<Vec<_>>();
+	let nodes = grammar.nodes.iter().map(|name| format_ident!("{}", name)).collect::<Vec<_>>();
 
-	let lists = grammar
-		.nodes
-		.iter()
-		.filter_map(|name| {
-			if name.ends_with("_LIST") {
-				Some(format_ident!("{}", name))
-			} else {
-				None
-			}
-		})
-		.collect::<Vec<_>>();
+	let lists =
+		grammar
+			.nodes
+			.iter()
+			.filter_map(|name| {
+				if name.ends_with("_LIST") { Some(format_ident!("{}", name)) } else { None }
+			})
+			.collect::<Vec<_>>();
 
 	let syntax_kind_impl = match language_kind {
 		LanguageKind::Js => {

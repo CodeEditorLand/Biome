@@ -1,7 +1,7 @@
 use crate::kind_src::KindsSrc;
 
-pub const GRAPHQL_KINDS_SRC: KindsSrc = KindsSrc {
-	punct: &[
+pub const GRAPHQL_KINDS_SRC:KindsSrc = KindsSrc {
+	punct:&[
 		("!", "BANG"),
 		("$", "DOLLAR"),
 		("&", "AMP"),
@@ -17,7 +17,7 @@ pub const GRAPHQL_KINDS_SRC: KindsSrc = KindsSrc {
 		("|", "PIPE"),
 		("}", "R_CURLY"),
 	],
-	keywords: &[
+	keywords:&[
 		"true",
 		"false",
 		"query",
@@ -57,20 +57,9 @@ pub const GRAPHQL_KINDS_SRC: KindsSrc = KindsSrc {
 		"INPUT_OBJECT",
 		"INPUT_FIELD_DEFINITION",
 	],
-	literals: &[
-		"GRAPHQL_STRING_LITERAL",
-		"GRAPHQL_FLOAT_LITERAL",
-		"GRAPHQL_INT_LITERAL",
-	],
-	tokens: &[
-		"ERROR_TOKEN",
-		"NEWLINE",
-		"WHITESPACE",
-		"IDENT",
-		"COMMENT",
-		"COMMA",
-	],
-	nodes: &[
+	literals:&["GRAPHQL_STRING_LITERAL", "GRAPHQL_FLOAT_LITERAL", "GRAPHQL_INT_LITERAL"],
+	tokens:&["ERROR_TOKEN", "NEWLINE", "WHITESPACE", "IDENT", "COMMENT", "COMMA"],
+	nodes:&[
 		"GRAPHQL_ROOT",
 		"GRAPHQL_LITERAL_NAME",
 		"GRAPHQL_NAME_BINDING",

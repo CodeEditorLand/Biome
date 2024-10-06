@@ -1,39 +1,43 @@
-use crate::CliDiagnostic;
+use std::ffi::OsString;
+
 use biome_configuration::PartialConfiguration;
 use biome_fs::FileSystem;
 use biome_service::DynRef;
-use std::ffi::OsString;
+
+use crate::CliDiagnostic;
 
 pub(crate) fn get_changed_files(
-	fs: &DynRef<'_, dyn FileSystem>,
-	configuration: &PartialConfiguration,
-	since: Option<String>,
+	fs:&DynRef<'_, dyn FileSystem>,
+	configuration:&PartialConfiguration,
+	since:Option<String>,
 ) -> Result<Vec<OsString>, CliDiagnostic> {
-	let default_branch =
-		configuration.vcs.as_ref().and_then(|v| v.default_branch.as_ref());
+	let default_branch = configuration.vcs.as_ref().and_then(|v| v.default_branch.as_ref());
 
 	let base = match (since.as_ref(), default_branch) {
-        (Some(since), Some(_)) => since,
-        (Some(since), None) => since,
-        (None, Some(branch)) => branch,
-        (None, None) => return Err(CliDiagnostic::incompatible_end_configuration("The `--changed` flag was set, but Biome couldn't determine the base to compare against. Either set configuration.vcs.defaultBranch or use the --since argument.")),
-    };
+		(Some(since), Some(_)) => since,
+		(Some(since), None) => since,
+		(None, Some(branch)) => branch,
+		(None, None) => {
+			return Err(CliDiagnostic::incompatible_end_configuration(
+				"The `--changed` flag was set, but Biome couldn't determine the base to compare \
+				 against. Either set configuration.vcs.defaultBranch or use the --since argument.",
+			));
+		},
+	};
 
 	let changed_files = fs.get_changed_files(base)?;
 
-	let filtered_changed_files =
-		changed_files.iter().map(OsString::from).collect::<Vec<_>>();
+	let filtered_changed_files = changed_files.iter().map(OsString::from).collect::<Vec<_>>();
 
 	Ok(filtered_changed_files)
 }
 
 pub(crate) fn get_staged_files(
-	fs: &DynRef<'_, dyn FileSystem>,
+	fs:&DynRef<'_, dyn FileSystem>,
 ) -> Result<Vec<OsString>, CliDiagnostic> {
 	let staged_files = fs.get_staged_files()?;
 
-	let filtered_staged_files =
-		staged_files.iter().map(OsString::from).collect::<Vec<_>>();
+	let filtered_staged_files = staged_files.iter().map(OsString::from).collect::<Vec<_>>();
 
 	Ok(filtered_staged_files)
 }

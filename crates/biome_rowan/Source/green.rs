@@ -4,23 +4,20 @@ mod node_cache;
 mod token;
 mod trivia;
 
+pub use self::node_cache::NodeCache;
 pub(crate) use self::{
 	element::{GreenElement, GreenElementRef},
 	node::{Child, Children, GreenNode, GreenNodeData, Slot},
+	node_cache::NodeCacheNodeEntryMut,
 	token::{GreenToken, GreenTokenData},
 	trivia::GreenTrivia,
 };
-
-pub use self::node_cache::NodeCache;
-pub(crate) use self::node_cache::NodeCacheNodeEntryMut;
 
 /// RawSyntaxKind is a type tag for each token or node.
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RawSyntaxKind(pub u16);
 
-pub(crate) fn has_live() -> bool {
-	node::has_live() || token::has_live() || trivia::has_live()
-}
+pub(crate) fn has_live() -> bool { node::has_live() || token::has_live() || trivia::has_live() }
 
 #[cfg(test)]
 mod tests {
@@ -29,7 +26,7 @@ mod tests {
 
 	#[test]
 	fn assert_send_sync() {
-		fn f<T: Send + Sync>() {}
+		fn f<T:Send + Sync>() {}
 		f::<GreenNode>();
 		f::<GreenToken>();
 		f::<GreenElement>();

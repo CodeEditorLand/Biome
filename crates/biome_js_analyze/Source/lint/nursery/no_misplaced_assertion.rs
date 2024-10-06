@@ -1,11 +1,17 @@
-use crate::services::semantic::Semantic;
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Rule, RuleDiagnostic, RuleSource, RuleSourceKind,
+	context::RuleContext,
+	declare_lint_rule,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	RuleSourceKind,
 };
 use biome_console::markup;
 use biome_deserialize::TextRange;
 use biome_js_syntax::{AnyJsExpression, JsCallExpression, JsIdentifierBinding, JsImport};
 use biome_rowan::AstNode;
+
+use crate::services::semantic::Semantic;
 
 declare_lint_rule! {
 	/// Checks that the assertion function, for example `expect`, is placed inside an `it()` function call.
@@ -112,10 +118,16 @@ declare_lint_rule! {
 	}
 }
 
-const ASSERTION_FUNCTION_NAMES: [&str; 3] = ["assert", "assertEquals", "expect"];
-const SPECIFIERS: [&str; 6] =
-	["chai", "node:assert", "node:assert/strict", "bun:test", "vitest", "/assert/mod.ts"];
-const EXCEPTION_MEMBERS_FOR_EXPECT: [&str; 10] = [
+const ASSERTION_FUNCTION_NAMES:[&str; 3] = ["assert", "assertEquals", "expect"];
+const SPECIFIERS:[&str; 6] = [
+	"chai",
+	"node:assert",
+	"node:assert/strict",
+	"bun:test",
+	"vitest",
+	"/assert/mod.ts",
+];
+const EXCEPTION_MEMBERS_FOR_EXPECT:[&str; 10] = [
 	"any",
 	"anything",
 	"closeTo",
@@ -129,12 +141,12 @@ const EXCEPTION_MEMBERS_FOR_EXPECT: [&str; 10] = [
 ];
 
 impl Rule for NoMisplacedAssertion {
-	type Query = Semantic<AnyJsExpression>;
-	type State = TextRange;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Semantic<AnyJsExpression>;
+	type Signals = Option<Self::State>;
+	type State = TextRange;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
 		let model = ctx.model();
@@ -198,7 +210,7 @@ impl Rule for NoMisplacedAssertion {
 		None
 	}
 
-	fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -217,8 +229,9 @@ impl Rule for NoMisplacedAssertion {
 	}
 }
 
-/// Returns the nested expression if the callee is a call expression or a template expression.
-fn may_extract_nested_expr(callee: AnyJsExpression) -> Option<AnyJsExpression> {
+/// Returns the nested expression if the callee is a call expression or a
+/// template expression.
+fn may_extract_nested_expr(callee:AnyJsExpression) -> Option<AnyJsExpression> {
 	match callee {
 		AnyJsExpression::JsCallExpression(call_expr) => call_expr.callee().ok(),
 		AnyJsExpression::JsTemplateExpression(template_expr) => template_expr.tag(),
@@ -226,8 +239,9 @@ fn may_extract_nested_expr(callee: AnyJsExpression) -> Option<AnyJsExpression> {
 	}
 }
 
-/// Returns whether the assertion call is an exception for the `expect` assertion function.
-fn is_exception_for_expect(node: &AnyJsExpression) -> bool {
+/// Returns whether the assertion call is an exception for the `expect`
+/// assertion function.
+fn is_exception_for_expect(node:&AnyJsExpression) -> bool {
 	let assertion_call = node.get_callee_object_identifier().unwrap();
 	let callee_text = assertion_call.syntax().parent().unwrap().text_trimmed();
 

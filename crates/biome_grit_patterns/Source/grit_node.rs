@@ -1,7 +1,9 @@
-use crate::util::TextRangeGritExt;
+use std::{borrow::Cow, ops::Deref, str::Utf8Error};
+
 use biome_grit_syntax::GritSyntaxNode;
 use grit_util::{AstCursor, AstNode as GritAstNode, ByteRange, CodeRange};
-use std::{borrow::Cow, ops::Deref, str::Utf8Error};
+
+use crate::util::TextRangeGritExt;
 
 /// Wrapper around `GritSyntaxNode` as produced by our internal Grit parser.
 ///
@@ -13,35 +15,23 @@ pub struct GritNode(GritSyntaxNode);
 impl Deref for GritNode {
 	type Target = GritSyntaxNode;
 
-	fn deref(&self) -> &Self::Target {
-		&self.0
-	}
+	fn deref(&self) -> &Self::Target { &self.0 }
 }
 
 impl From<GritSyntaxNode> for GritNode {
-	fn from(value: GritSyntaxNode) -> Self {
-		Self(value)
-	}
+	fn from(value:GritSyntaxNode) -> Self { Self(value) }
 }
 
 impl From<&GritSyntaxNode> for GritNode {
-	fn from(value: &GritSyntaxNode) -> Self {
-		Self(value.clone())
-	}
+	fn from(value:&GritSyntaxNode) -> Self { Self(value.clone()) }
 }
 
 impl GritAstNode for GritNode {
-	fn ancestors(&self) -> impl Iterator<Item = Self> {
-		AncestorIterator::new(self)
-	}
+	fn ancestors(&self) -> impl Iterator<Item = Self> { AncestorIterator::new(self) }
 
-	fn children(&self) -> impl Iterator<Item = Self> {
-		ChildrenIterator::new(self)
-	}
+	fn children(&self) -> impl Iterator<Item = Self> { ChildrenIterator::new(self) }
 
-	fn parent(&self) -> Option<Self> {
-		self.0.parent().map(Into::into)
-	}
+	fn parent(&self) -> Option<Self> { self.0.parent().map(Into::into) }
 
 	fn next_named_node(&self) -> Option<Self> {
 		let mut current_node = Cow::Borrowed(&self.0);
@@ -63,30 +53,24 @@ impl GritAstNode for GritNode {
 		}
 	}
 
-	fn next_sibling(&self) -> Option<Self> {
-		self.0.next_sibling().map(Into::into)
-	}
+	fn next_sibling(&self) -> Option<Self> { self.0.next_sibling().map(Into::into) }
 
-	fn previous_sibling(&self) -> Option<Self> {
-		self.0.prev_sibling().map(Into::into)
-	}
+	fn previous_sibling(&self) -> Option<Self> { self.0.prev_sibling().map(Into::into) }
 
 	fn text(&self) -> Result<Cow<str>, Utf8Error> {
 		Ok(Cow::Owned(self.0.text_trimmed().to_string()))
 	}
 
-	fn byte_range(&self) -> ByteRange {
-		self.0.text_trimmed_range().to_byte_range()
-	}
+	fn byte_range(&self) -> ByteRange { self.0.text_trimmed_range().to_byte_range() }
 
 	fn code_range(&self) -> CodeRange {
 		let range = self.0.text_trimmed_range();
 		CodeRange {
-			start: range.start().into(),
-			end: range.end().into(),
+			start:range.start().into(),
+			end:range.end().into(),
 			// Code ranges contain an address so they can quickly check whether
 			// a particular binding belongs to a given range or not.
-			address: self
+			address:self
 				.0
 				.first_token()
 				.map(|token| token.text().as_ptr() as usize)
@@ -94,20 +78,16 @@ impl GritAstNode for GritNode {
 		}
 	}
 
-	fn walk(&self) -> impl AstCursor<Node = Self> {
-		GritNodeCursor::new(self)
-	}
+	fn walk(&self) -> impl AstCursor<Node = Self> { GritNodeCursor::new(self) }
 }
 
 #[derive(Clone)]
 pub struct AncestorIterator {
-	node: Option<GritNode>,
+	node:Option<GritNode>,
 }
 
 impl AncestorIterator {
-	fn new(node: &GritNode) -> Self {
-		Self { node: Some(node.clone()) }
-	}
+	fn new(node:&GritNode) -> Self { Self { node:Some(node.clone()) } }
 }
 
 impl Iterator for AncestorIterator {
@@ -121,13 +101,13 @@ impl Iterator for AncestorIterator {
 }
 
 pub struct ChildrenIterator {
-	cursor: Option<GritNodeCursor>,
+	cursor:Option<GritNodeCursor>,
 }
 
 impl ChildrenIterator {
-	fn new(node: &GritNode) -> Self {
+	fn new(node:&GritNode) -> Self {
 		let mut cursor = GritNodeCursor::new(node);
-		Self { cursor: cursor.goto_first_child().then_some(cursor) }
+		Self { cursor:cursor.goto_first_child().then_some(cursor) }
 	}
 }
 
@@ -146,14 +126,12 @@ impl Iterator for ChildrenIterator {
 
 #[derive(Clone)]
 struct GritNodeCursor {
-	root: GritNode,
-	current: GritNode,
+	root:GritNode,
+	current:GritNode,
 }
 
 impl GritNodeCursor {
-	fn new(node: &GritNode) -> Self {
-		Self { root: node.clone(), current: node.clone() }
-	}
+	fn new(node:&GritNode) -> Self { Self { root:node.clone(), current:node.clone() } }
 }
 
 impl AstCursor for GritNodeCursor {
@@ -197,7 +175,5 @@ impl AstCursor for GritNodeCursor {
 		}
 	}
 
-	fn node(&self) -> Self::Node {
-		self.current.clone()
-	}
+	fn node(&self) -> Self::Node { self.current.clone() }
 }

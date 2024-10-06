@@ -4,7 +4,7 @@ use contains::*;
 use criterion::{criterion_group, criterion_main, Criterion};
 use fastbloom_rs::Membership;
 
-fn criterion_benchmark(c: &mut Criterion) {
+fn criterion_benchmark(c:&mut Criterion) {
 	let set = contains_hashset_setup();
 	c.bench_function("contains_hashset", |b| {
 		b.iter(|| {
@@ -77,8 +77,7 @@ fn criterion_benchmark(c: &mut Criterion) {
 		b.iter(|| {
 			let mut count = 0;
 			for k in search_for() {
-				count +=
-					set.binary_search_by(|v| (*k).cmp(v.as_str())).unwrap_or(1);
+				count += set.binary_search_by(|v| (*k).cmp(v.as_str())).unwrap_or(1);
 			}
 			count
 		})
@@ -92,11 +91,7 @@ fn criterion_benchmark(c: &mut Criterion) {
 				for k in search_for() {
 					for item in set.iter() {
 						count += i32::from(
-							memchr::memmem::find(
-								k.as_bytes(),
-								item.as_str().as_bytes(),
-							)
-							.is_some(),
+							memchr::memmem::find(k.as_bytes(), item.as_str().as_bytes()).is_some(),
 						);
 					}
 				}

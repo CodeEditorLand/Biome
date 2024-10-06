@@ -4,13 +4,9 @@ use biome_rowan::{AstNode, TriviaPiece};
 /// Add any leading and trailing trivia from given source node to the token.
 ///
 /// Adds whitespace trivia if needed for safe replacement of source node.
-pub fn token_with_source_trivia<T>(
-	token: &JsSyntaxToken,
-	source: &T,
-) -> JsSyntaxToken
+pub fn token_with_source_trivia<T>(token:&JsSyntaxToken, source:&T) -> JsSyntaxToken
 where
-	T: AstNode<Language = JsLanguage>,
-{
+	T: AstNode<Language = JsLanguage>, {
 	let mut text = String::new();
 	let node = source.syntax();
 	let mut leading = vec![];
@@ -23,11 +19,7 @@ where
 	JsSyntaxToken::new_detached(token.kind(), &text, leading, trailing)
 }
 
-fn add_leading_trivia(
-	trivia: &mut Vec<TriviaPiece>,
-	text: &mut String,
-	node: &JsSyntaxNode,
-) {
+fn add_leading_trivia(trivia:&mut Vec<TriviaPiece>, text:&mut String, node:&JsSyntaxNode) {
 	let Some(token) = node.first_token() else {
 		return;
 	};
@@ -41,19 +33,13 @@ fn add_leading_trivia(
 	let Some(token) = token.prev_token() else {
 		return;
 	};
-	if !token.kind().is_punct()
-		&& token.trailing_trivia().pieces().next().is_none()
-	{
+	if !token.kind().is_punct() && token.trailing_trivia().pieces().next().is_none() {
 		text.push(' ');
 		trivia.push(TriviaPiece::whitespace(1));
 	}
 }
 
-fn add_trailing_trivia(
-	trivia: &mut Vec<TriviaPiece>,
-	text: &mut String,
-	node: &JsSyntaxNode,
-) {
+fn add_trailing_trivia(trivia:&mut Vec<TriviaPiece>, text:&mut String, node:&JsSyntaxNode) {
 	let Some(token) = node.last_token() else {
 		return;
 	};
@@ -67,9 +53,7 @@ fn add_trailing_trivia(
 	let Some(token) = token.next_token() else {
 		return;
 	};
-	if !token.kind().is_punct()
-		&& token.leading_trivia().pieces().next().is_none()
-	{
+	if !token.kind().is_punct() && token.leading_trivia().pieces().next().is_none() {
 		text.push(' ');
 		trivia.push(TriviaPiece::whitespace(1));
 	}

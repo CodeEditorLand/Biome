@@ -47,12 +47,12 @@ declare_lint_rule! {
 }
 
 impl Rule for UseFocusableInteractive {
-	type Query = Aria<AnyJsxElement>;
-	type State = String;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Aria<AnyJsxElement>;
+	type Signals = Option<Self::State>;
+	type State = String;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 		if !node.is_element() {
 			return None;
@@ -81,7 +81,7 @@ impl Rule for UseFocusableInteractive {
 		None
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 		Some(
             RuleDiagnostic::new(
@@ -100,10 +100,11 @@ impl Rule for UseFocusableInteractive {
 	}
 }
 
-/// Checks if the given role attribute value is interactive or not based on ARIA roles.
+/// Checks if the given role attribute value is interactive or not based on ARIA
+/// roles.
 fn attribute_has_interactive_role(
-	role_attribute_value: &AnyJsxAttributeValue,
-	aria_roles: &AriaRoles,
+	role_attribute_value:&AnyJsxAttributeValue,
+	aria_roles:&AriaRoles,
 ) -> Option<bool> {
 	Some(aria_roles.is_role_interactive(role_attribute_value.as_static_value()?.text()))
 }

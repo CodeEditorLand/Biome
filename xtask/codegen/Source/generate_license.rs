@@ -1,37 +1,37 @@
+use std::io;
+
 use proc_macro2::{Literal, TokenStream};
 use quote::quote;
 use serde::{Deserialize, Serialize};
-use std::io;
 use ureq::get;
-use xtask::*;
-use xtask::{project_root, Mode};
+use xtask::{project_root, Mode, *};
 use xtask_codegen::update;
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct LicenseList {
-	license_list_version: String,
-	licenses: Vec<Licence>,
-	release_date: String,
+	license_list_version:String,
+	licenses:Vec<Licence>,
+	release_date:String,
 }
 
 #[derive(Debug, Deserialize, Serialize)]
 #[serde(rename_all = "camelCase")]
 pub struct Licence {
-	reference: String,
-	is_deprecated_license_id: bool,
-	details_url: String,
-	reference_number: u16,
-	name: String,
-	license_id: String,
-	see_also: Vec<String>,
-	is_osi_approved: Option<bool>,
-	is_fsf_libre: Option<bool>,
+	reference:String,
+	is_deprecated_license_id:bool,
+	details_url:String,
+	reference_number:u16,
+	name:String,
+	license_id:String,
+	see_also:Vec<String>,
+	is_osi_approved:Option<bool>,
+	is_fsf_libre:Option<bool>,
 }
 
-const URL: &str =
-    "https://raw.githubusercontent.com/spdx/license-list-data/master/json/licenses.json";
-pub(crate) fn generate_license(mode: Mode) -> Result<()> {
+const URL:&str =
+	"https://raw.githubusercontent.com/spdx/license-list-data/master/json/licenses.json";
+pub(crate) fn generate_license(mode:Mode) -> Result<()> {
 	let request = get(URL);
 	let result = request.call()?;
 	let license_list = result.into_json::<LicenseList>()?;
@@ -39,16 +39,12 @@ pub(crate) fn generate_license(mode: Mode) -> Result<()> {
 
 	let tokens = create_data(license_list).expect("To write data into file");
 
-	update(
-		&config_root.join("generated.rs"),
-		&xtask::reformat(tokens.to_string())?,
-		&mode,
-	)?;
+	update(&config_root.join("generated.rs"), &xtask::reformat(tokens.to_string())?, &mode)?;
 
 	Ok(())
 }
 
-fn create_data(license_list: LicenseList) -> io::Result<TokenStream> {
+fn create_data(license_list:LicenseList) -> io::Result<TokenStream> {
 	let mut list = vec![];
 
 	let version = Literal::string(&license_list.license_list_version);
@@ -62,7 +58,7 @@ fn create_data(license_list: LicenseList) -> io::Result<TokenStream> {
 		let is_deprecated_license_id = item.is_deprecated_license_id;
 		let is_osi_approved = item.is_osi_approved.unwrap_or_default();
 		let is_fsf_libre = item.is_fsf_libre.unwrap_or_default();
-		let see_also: Vec<_> = item
+		let see_also:Vec<_> = item
 			.see_also
 			.iter()
 			.map(|see_also| {

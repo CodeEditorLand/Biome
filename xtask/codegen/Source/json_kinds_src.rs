@@ -1,7 +1,7 @@
 use crate::kind_src::KindsSrc;
 
-pub const JSON_KINDS_SRC: KindsSrc = KindsSrc {
-	punct: &[
+pub const JSON_KINDS_SRC:KindsSrc = KindsSrc {
+	punct:&[
 		(":", "COLON"),
 		(",", "COMMA"),
 		("(", "L_PAREN"),
@@ -11,18 +11,11 @@ pub const JSON_KINDS_SRC: KindsSrc = KindsSrc {
 		("[", "L_BRACK"),
 		("]", "R_BRACK"),
 	],
-	keywords: &["null", "true", "false"],
-	literals: &["JSON_STRING_LITERAL", "JSON_NUMBER_LITERAL"],
+	keywords:&["null", "true", "false"],
+	literals:&["JSON_STRING_LITERAL", "JSON_NUMBER_LITERAL"],
 	// keep comment token for json 5 extension
-	tokens: &[
-		"ERROR_TOKEN",
-		"NEWLINE",
-		"WHITESPACE",
-		"IDENT",
-		"COMMENT",
-		"MULTILINE_COMMENT",
-	],
-	nodes: &[
+	tokens:&["ERROR_TOKEN", "NEWLINE", "WHITESPACE", "IDENT", "COMMENT", "MULTILINE_COMMENT"],
+	nodes:&[
 		"JSON_ROOT",
 		"JSON_NUMBER_VALUE",
 		"JSON_STRING_VALUE",

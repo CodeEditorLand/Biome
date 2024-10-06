@@ -22,8 +22,8 @@ impl StaticValue {
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_syntax::{T, static_value::StaticValue};
 	/// use biome_js_factory::make;
+	/// use biome_js_syntax::{static_value::StaticValue, T};
 	///
 	/// let bool = make::token(T![false]);
 	/// assert!(StaticValue::Boolean(bool).is_falsy());
@@ -31,9 +31,7 @@ impl StaticValue {
 	pub fn is_falsy(&self) -> bool {
 		match self {
 			StaticValue::Boolean(token) => token.text_trimmed() == "false",
-			StaticValue::Null(_)
-			| StaticValue::Undefined(_)
-			| StaticValue::EmptyString(_) => true,
+			StaticValue::Null(_) | StaticValue::Undefined(_) | StaticValue::EmptyString(_) => true,
 			StaticValue::Number(token) => token.text_trimmed() == "0",
 			StaticValue::BigInt(token) => token.text_trimmed() == "0n",
 			StaticValue::String(_) => self.text().is_empty(),
@@ -45,8 +43,8 @@ impl StaticValue {
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_syntax::{T, static_value::StaticValue};
 	/// use biome_js_factory::make;
+	/// use biome_js_syntax::{static_value::StaticValue, T};
 	///
 	/// let bool = make::token(T![false]);
 	/// assert_eq!(StaticValue::Boolean(bool).text(), "false");
@@ -62,10 +60,10 @@ impl StaticValue {
 				let text = token.text_trimmed();
 				if matches!(
 					token.kind(),
-					JsSyntaxKind::JS_STRING_LITERAL
-						| JsSyntaxKind::JSX_STRING_LITERAL
+					JsSyntaxKind::JS_STRING_LITERAL | JsSyntaxKind::JSX_STRING_LITERAL
 				) {
-					// SAFETY: string literal token have a delimiters at the start and the end of the string
+					// SAFETY: string literal token have a delimiters at the
+					// start and the end of the string
 					return &text[1..text.len() - 1];
 				}
 				text
@@ -79,8 +77,8 @@ impl StaticValue {
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_syntax::{T, static_value::StaticValue};
 	/// use biome_js_factory::make;
+	/// use biome_js_syntax::{static_value::StaticValue, T};
 	///
 	/// let bool = make::token(T![false]);
 	/// assert_eq!(StaticValue::Boolean(bool.clone()).range(), bool.text_trimmed_range());
@@ -97,26 +95,25 @@ impl StaticValue {
 		}
 	}
 
-	/// Return `true` if the static value doesn't match the given string value and it is
+	/// Return `true` if the static value doesn't match the given string value
+	/// and it is
 	/// 1. A string literal
 	/// 2. A template literal with no substitutions
 	///
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_syntax::static_value::StaticValue;
 	/// use biome_js_factory::make;
+	/// use biome_js_syntax::static_value::StaticValue;
 	/// use biome_rowan::TriviaPieceKind;
 	///
 	/// let str_literal = make::js_string_literal("foo")
-	///     .with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]);
+	/// 	.with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]);
 	/// assert!(StaticValue::String(str_literal).is_not_string_constant("bar"));
 	/// ```
-	pub fn is_not_string_constant(&self, text: &str) -> bool {
+	pub fn is_not_string_constant(&self, text:&str) -> bool {
 		match self {
-			StaticValue::String(_) | StaticValue::EmptyString(_) => {
-				self.text() != text
-			},
+			StaticValue::String(_) | StaticValue::EmptyString(_) => self.text() != text,
 			_ => false,
 		}
 	}
@@ -128,19 +125,17 @@ impl StaticValue {
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_syntax::static_value::StaticValue;
 	/// use biome_js_factory::make;
+	/// use biome_js_syntax::static_value::StaticValue;
 	/// use biome_rowan::TriviaPieceKind;
 	///
 	/// let str_literal = make::js_string_literal("foo")
-	///     .with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]);
+	/// 	.with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]);
 	/// assert_eq!(StaticValue::String(str_literal).as_string_constant().unwrap(), "foo");
 	/// ```
 	pub fn as_string_constant(&self) -> Option<&str> {
 		match self {
-			StaticValue::String(_) | StaticValue::EmptyString(_) => {
-				Some(self.text())
-			},
+			StaticValue::String(_) | StaticValue::EmptyString(_) => Some(self.text()),
 			_ => None,
 		}
 	}
@@ -150,8 +145,8 @@ impl StaticValue {
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_syntax::{T, static_value::StaticValue};
 	/// use biome_js_factory::make::{js_null_literal_expression, token};
+	/// use biome_js_syntax::{static_value::StaticValue, T};
 	///
 	/// let null = js_null_literal_expression(token(T![null]));
 	/// assert!(StaticValue::Null(null.value_token().ok().unwrap()).is_null_or_undefined());

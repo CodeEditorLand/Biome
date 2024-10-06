@@ -1,8 +1,9 @@
-use crate::services::manifest::Manifest;
 use biome_analyze::{context::RuleContext, declare_lint_rule, Rule, RuleDiagnostic};
 use biome_console::markup;
 use biome_js_syntax::AnyJsImportLike;
 use biome_rowan::AstNode;
+
+use crate::services::manifest::Manifest;
 
 declare_lint_rule! {
 	/// Disallow the use of dependencies that aren't specified in the `package.json`.
@@ -41,12 +42,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoUndeclaredDependencies {
-	type Query = Manifest<AnyJsImportLike>;
-	type State = ();
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Manifest<AnyJsImportLike>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 		if node.is_in_ts_module_declaration() {
 			return None;
@@ -57,7 +58,8 @@ impl Rule for NoUndeclaredDependencies {
 		let text = token_text.text();
 
 		// Ignore relative path imports
-		// Ignore imports using a protocol such as `node:`, `bun:`, `jsr:`, `https:`, and so on.
+		// Ignore imports using a protocol such as `node:`, `bun:`, `jsr:`,
+		// `https:`, and so on.
 		if text.starts_with('.') || text.contains(':') {
 			return None;
 		}
@@ -90,7 +92,7 @@ impl Rule for NoUndeclaredDependencies {
 		Some(())
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, _state:&Self::State) -> Option<RuleDiagnostic> {
 		Some(
 			RuleDiagnostic::new(
 				rule_category!(),

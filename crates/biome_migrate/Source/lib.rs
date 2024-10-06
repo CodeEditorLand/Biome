@@ -3,57 +3,68 @@ mod macros;
 mod registry;
 mod version_services;
 
-use crate::registry::visit_migration_registry;
-use crate::version_services::TheVersion;
+use std::{
+	convert::Infallible,
+	ops::Deref,
+	path::{Path, PathBuf},
+	sync::{Arc, LazyLock},
+};
+
 pub use biome_analyze::ControlFlow;
 use biome_analyze::{
-	AnalysisFilter, Analyzer, AnalyzerContext, AnalyzerOptions, AnalyzerSignal,
-	ApplySuppression, InspectMatcher, LanguageRoot, MatchQueryParams,
-	MetadataRegistry, RuleAction, RuleRegistry, SuppressionAction,
+	AnalysisFilter,
+	Analyzer,
+	AnalyzerContext,
+	AnalyzerOptions,
+	AnalyzerSignal,
+	ApplySuppression,
+	InspectMatcher,
+	LanguageRoot,
+	MatchQueryParams,
+	MetadataRegistry,
+	RuleAction,
+	RuleRegistry,
+	SuppressionAction,
 };
 use biome_diagnostics::Error;
 use biome_json_syntax::JsonLanguage;
 use biome_rowan::{BatchMutation, SyntaxToken};
-use std::convert::Infallible;
-use std::ops::Deref;
-use std::path::{Path, PathBuf};
-use std::sync::{Arc, LazyLock};
+
+use crate::{registry::visit_migration_registry, version_services::TheVersion};
 
 /// Return the static [MetadataRegistry] for the JS analyzer rules
-static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
+static METADATA:LazyLock<MetadataRegistry> = LazyLock::new(|| {
 	let mut metadata = MetadataRegistry::default();
 	visit_migration_registry(&mut metadata);
 	metadata
 });
 
-/// Run the analyzer on the provided `root`: this process will use the given `filter`
-/// to selectively restrict analysis to specific rules / a specific source range,
-/// then call `emit_signal` when an analysis rule emits a diagnostic or action.
-/// Additionally, this function takes a `inspect_matcher` function that can be
-/// used to inspect the "query matches" emitted by the analyzer before they are
-/// processed by the lint rules registry
+/// Run the analyzer on the provided `root`: this process will use the given
+/// `filter` to selectively restrict analysis to specific rules / a specific
+/// source range, then call `emit_signal` when an analysis rule emits a
+/// diagnostic or action. Additionally, this function takes a `inspect_matcher`
+/// function that can be used to inspect the "query matches" emitted by the
+/// analyzer before they are processed by the lint rules registry
 pub fn analyze_with_inspect_matcher<'a, V, F, B>(
-	root: &LanguageRoot<JsonLanguage>,
-	configuration_file_path: &'a Path,
-	version: String,
-	inspect_matcher: V,
-	mut emit_signal: F,
+	root:&LanguageRoot<JsonLanguage>,
+	configuration_file_path:&'a Path,
+	version:String,
+	inspect_matcher:V,
+	mut emit_signal:F,
 ) -> (Option<B>, Vec<Error>)
 where
 	V: FnMut(&MatchQueryParams<JsonLanguage>) + 'a,
 	F: FnMut(&dyn AnalyzerSignal<JsonLanguage>) -> ControlFlow<B> + 'a,
-	B: 'a,
-{
+	B: 'a, {
 	let filter = AnalysisFilter::default();
 	let options = AnalyzerOptions {
-		file_path: PathBuf::from(configuration_file_path),
+		file_path:PathBuf::from(configuration_file_path),
 		..AnalyzerOptions::default()
 	};
 	let mut registry = RuleRegistry::builder(&filter, root);
 	visit_migration_registry(&mut registry);
 
-	let (migration_registry, mut services, diagnostics, visitors) =
-		registry.build();
+	let (migration_registry, mut services, diagnostics, visitors) = registry.build();
 
 	// Bail if we can't parse a rule option
 	if !diagnostics.is_empty() {
@@ -65,16 +76,16 @@ where
 
 		fn find_token_to_apply_suppression(
 			&self,
-			_: SyntaxToken<Self::Language>,
+			_:SyntaxToken<Self::Language>,
 		) -> Option<ApplySuppression<Self::Language>> {
 			None
 		}
 
 		fn apply_suppression(
 			&self,
-			_: &mut BatchMutation<Self::Language>,
-			_: ApplySuppression<Self::Language>,
-			_: &str,
+			_:&mut BatchMutation<Self::Language>,
+			_:ApplySuppression<Self::Language>,
+			_:&str,
 		) {
 			unreachable!("")
 		}
@@ -95,48 +106,45 @@ where
 
 	(
 		analyzer.run(AnalyzerContext {
-			root: root.clone(),
-			range: filter.range,
+			root:root.clone(),
+			range:filter.range,
 			services,
-			options: &options,
+			options:&options,
 		}),
 		diagnostics,
 	)
 }
 
 pub fn migrate_configuration<'a, F, B>(
-	root: &LanguageRoot<JsonLanguage>,
-	configuration_file_path: &'a Path,
-	version: String,
-	emit_signal: F,
+	root:&LanguageRoot<JsonLanguage>,
+	configuration_file_path:&'a Path,
+	version:String,
+	emit_signal:F,
 ) -> (Option<B>, Vec<Error>)
 where
 	F: FnMut(&dyn AnalyzerSignal<JsonLanguage>) -> ControlFlow<B> + 'a,
-	B: 'a,
-{
-	analyze_with_inspect_matcher(
-		root,
-		configuration_file_path,
-		version,
-		|_| {},
-		emit_signal,
-	)
+	B: 'a, {
+	analyze_with_inspect_matcher(root, configuration_file_path, version, |_| {}, emit_signal)
 }
 
 pub(crate) type MigrationAction = RuleAction<JsonLanguage>;
 
 #[cfg(test)]
 mod test {
-	use crate::migrate_configuration;
-	use biome_analyze::{ControlFlow, Never};
-	use biome_console::fmt::{Formatter, Termcolor};
-	use biome_console::{markup, Markup};
-	use biome_diagnostics::termcolor::NoColor;
-	use biome_diagnostics::{DiagnosticExt, PrintDiagnostic, Severity};
-	use biome_json_parser::{parse_json, JsonParserOptions};
 	use std::path::Path;
 
-	fn markup_to_string(markup: Markup) -> String {
+	use biome_analyze::{ControlFlow, Never};
+	use biome_console::{
+		fmt::{Formatter, Termcolor},
+		markup,
+		Markup,
+	};
+	use biome_diagnostics::{termcolor::NoColor, DiagnosticExt, PrintDiagnostic, Severity};
+	use biome_json_parser::{parse_json, JsonParserOptions};
+
+	use crate::migrate_configuration;
+
+	fn markup_to_string(markup:Markup) -> String {
 		let mut buffer = Vec::new();
 		let mut write = Termcolor(NoColor::new(&mut buffer));
 		let mut fmt = Formatter::new(&mut write);
@@ -172,29 +180,24 @@ mod test {
 
 		let parsed = parse_json(source, JsonParserOptions::default());
 
-		migrate_configuration(
-			&parsed.tree(),
-			Path::new(""),
-			"1.5.0".to_string(),
-			|signal| {
-				if let Some(diag) = signal.diagnostic() {
-					let error = diag
-						.with_severity(Severity::Warning)
-						.with_file_path("dummyFile")
-						.with_file_source_code(source);
-					let text = markup_to_string(markup! {
-						{PrintDiagnostic::verbose(&error)}
-					});
-					eprintln!("{text}");
-				}
+		migrate_configuration(&parsed.tree(), Path::new(""), "1.5.0".to_string(), |signal| {
+			if let Some(diag) = signal.diagnostic() {
+				let error = diag
+					.with_severity(Severity::Warning)
+					.with_file_path("dummyFile")
+					.with_file_source_code(source);
+				let text = markup_to_string(markup! {
+					{PrintDiagnostic::verbose(&error)}
+				});
+				eprintln!("{text}");
+			}
 
-				for action in signal.actions() {
-					let new_code = action.mutation.commit();
-					eprintln!("{new_code}");
-				}
+			for action in signal.actions() {
+				let new_code = action.mutation.commit();
+				eprintln!("{new_code}");
+			}
 
-				ControlFlow::<Never>::Continue(())
-			},
-		);
+			ControlFlow::<Never>::Continue(())
+		});
 	}
 }

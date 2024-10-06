@@ -1,27 +1,28 @@
+use std::{
+	collections::HashMap,
+	ffi::OsStr,
+	path::{Component, Path, PathBuf},
+};
+
 use case::CaseExt;
 use globwalk::{GlobWalker, GlobWalkerBuilder};
 use proc_macro::TokenStream;
 use proc_macro2::Span;
 use proc_macro_error::*;
 use quote::*;
-use std::{
-	collections::HashMap,
-	ffi::OsStr,
-	path::{Component, Path, PathBuf},
-};
 use syn::parse::ParseStream;
 
 struct Arguments {
-	pattern: syn::ExprLit,
-	called_function: syn::Path,
-	file_type: syn::ExprLit,
+	pattern:syn::ExprLit,
+	called_function:syn::Path,
+	file_type:syn::ExprLit,
 }
 
 struct Variables {
-	test_name: String,
-	test_full_path: String,
-	test_expected_fullpath: String,
-	test_directory: String,
+	test_name:String,
+	test_full_path:String,
+	test_expected_fullpath:String,
+	test_directory:String,
 }
 
 struct AllFiles(GlobWalker);
@@ -33,11 +34,7 @@ impl Iterator for AllFiles {
 		loop {
 			match self.0.next() {
 				Some(Ok(entry)) => {
-					let file_name = match entry
-						.file_name()
-						.to_str()
-						.ok_or("File name not UTF8")
-					{
+					let file_name = match entry.file_name().to_str().ok_or("File name not UTF8") {
 						Ok(v) => v,
 						Err(e) => return Some(Err(e)),
 					};
@@ -45,10 +42,7 @@ impl Iterator for AllFiles {
 					if file_name.contains("expected") {
 						continue;
 					}
-					let meta = match entry
-						.metadata()
-						.map_err(|_| "Cannot open file")
-					{
+					let meta = match entry.metadata().map_err(|_| "Cannot open file") {
 						Ok(v) => v,
 						Err(e) => return Some(Err(e)),
 					};
@@ -63,7 +57,7 @@ impl Iterator for AllFiles {
 	}
 }
 
-fn transform_file_name(input: &str) -> String {
+fn transform_file_name(input:&str) -> String {
 	let mut result = biome_string_case::Case::Snake.convert(input);
 
 	let is_keyword = matches!(
@@ -93,15 +87,15 @@ fn transform_file_name(input: &str) -> String {
 
 #[derive(Default)]
 struct Modules {
-	modules: HashMap<String, Modules>,
-	tests: Vec<proc_macro2::TokenStream>,
+	modules:HashMap<String, Modules>,
+	tests:Vec<proc_macro2::TokenStream>,
 }
 
 impl Modules {
 	fn insert<'a>(
 		&mut self,
-		mut path: impl Iterator<Item = &'a str>,
-		test: proc_macro2::TokenStream,
+		mut path:impl Iterator<Item = &'a str>,
+		test:proc_macro2::TokenStream,
 	) {
 		match path.next() {
 			Some(module) => {
@@ -114,7 +108,7 @@ impl Modules {
 		}
 	}
 
-	fn print(self, output: &mut proc_macro2::TokenStream) {
+	fn print(self, output:&mut proc_macro2::TokenStream) {
 		for (name, module) in self.modules {
 			let name = syn::Ident::new(&name, Span::call_site());
 
@@ -131,9 +125,8 @@ impl Modules {
 
 impl Arguments {
 	fn get_all_files(&self) -> Result<AllFiles, &str> {
-		let base = std::env::var("CARGO_MANIFEST_DIR").map_err(|_| {
-			"Cannot find CARGO_MANIFEST_DIR. Are you using cargo?"
-		})?;
+		let base = std::env::var("CARGO_MANIFEST_DIR")
+			.map_err(|_| "Cannot find CARGO_MANIFEST_DIR. Are you using cargo?")?;
 		let glob = match &self.pattern.lit {
 			syn::Lit::Str(v) => v.value(),
 			_ => return Err("Only string literals supported"),
@@ -145,16 +138,14 @@ impl Arguments {
 		Ok(AllFiles(walker))
 	}
 
-	fn get_variables<P: AsRef<Path>>(path: P) -> Option<Variables> {
+	fn get_variables<P:AsRef<Path>>(path:P) -> Option<Variables> {
 		let path = path.as_ref();
 		let file_stem = path.file_stem()?;
 		let file_stem = file_stem.to_str()?;
 		let test_name = format!(
 			"{}{}",
 			file_stem.to_snake(),
-			if let Some(extension) =
-				path.extension().and_then(|ext| ext.to_str())
-			{
+			if let Some(extension) = path.extension().and_then(|ext| ext.to_str()) {
 				format!("_{extension}")
 			} else {
 				String::new()
@@ -173,12 +164,7 @@ impl Arguments {
 		test_expected_file.push(format!("{file_stem}.expected{extension}"));
 		let test_expected_fullpath = test_expected_file.display().to_string();
 
-		Some(Variables {
-			test_name,
-			test_full_path,
-			test_expected_fullpath,
-			test_directory,
-		})
+		Some(Variables { test_name, test_full_path, test_expected_fullpath, test_directory })
 	}
 
 	pub fn gen(&self) -> Result<TokenStream, &str> {
@@ -186,13 +172,8 @@ impl Arguments {
 		let mut modules = Modules::default();
 
 		for file in files.flatten() {
-			let Variables {
-				test_name,
-				test_full_path,
-				test_expected_fullpath,
-				test_directory,
-			} = Arguments::get_variables(file)
-				.ok_or("Cannot generate variables for this file")?;
+			let Variables { test_name, test_full_path, test_expected_fullpath, test_directory } =
+				Arguments::get_variables(file).ok_or("Cannot generate variables for this file")?;
 
 			let test_name = transform_file_name(&test_name);
 
@@ -231,19 +212,19 @@ impl Arguments {
 }
 
 impl syn::parse::Parse for Arguments {
-	fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
-		let path: syn::ExprLit = input.parse()?;
-		let _: syn::Token!(,) = input.parse()?;
-		let call: syn::Path = input.parse()?;
-		let _: syn::Token!(,) = input.parse()?;
-		let file_type: syn::ExprLit = input.parse()?;
-		Ok(Arguments { pattern: path, called_function: call, file_type })
+	fn parse(input:ParseStream<'_>) -> syn::Result<Self> {
+		let path:syn::ExprLit = input.parse()?;
+		let _:syn::Token!(,) = input.parse()?;
+		let call:syn::Path = input.parse()?;
+		let _:syn::Token!(,) = input.parse()?;
+		let file_type:syn::ExprLit = input.parse()?;
+		Ok(Arguments { pattern:path, called_function:call, file_type })
 	}
 }
 
 #[proc_macro]
 #[proc_macro_error]
-pub fn gen_tests(input: TokenStream) -> TokenStream {
+pub fn gen_tests(input:TokenStream) -> TokenStream {
 	let args = syn::parse_macro_input!(input as Arguments);
 
 	match args.gen() {

@@ -1,14 +1,13 @@
 //! Extremely fast, lossless, and error tolerant CSS Parser.
 
-use crate::parser::CssParser;
-
-use crate::syntax::parse_root;
 use biome_css_factory::CssSyntaxFactory;
 use biome_css_syntax::{CssLanguage, CssRoot, CssSyntaxNode};
 pub use biome_parser::prelude::*;
 use biome_parser::{tree_sink::LosslessTreeSink, AnyParse};
 use biome_rowan::{AstNode, NodeCache};
 pub use parser::CssParserOptions;
+
+use crate::{parser::CssParser, syntax::parse_root};
 
 mod lexer;
 mod parser;
@@ -20,16 +19,16 @@ mod token_source;
 pub(crate) type CssLosslessTreeSink<'source> =
 	LosslessTreeSink<'source, CssLanguage, CssSyntaxFactory>;
 
-pub fn parse_css(source: &str, options: CssParserOptions) -> CssParse {
+pub fn parse_css(source:&str, options:CssParserOptions) -> CssParse {
 	let mut cache = NodeCache::default();
 	parse_css_with_cache(source, &mut cache, options)
 }
 
 /// Parses the provided string as CSS program using the provided node cache.
 pub fn parse_css_with_cache(
-	source: &str,
-	cache: &mut NodeCache,
-	options: CssParserOptions,
+	source:&str,
+	cache:&mut NodeCache,
+	options:CssParserOptions,
 ) -> CssParse {
 	tracing::debug_span!("Parsing phase").in_scope(move || {
 		let mut parser = CssParser::new(source, options);
@@ -38,8 +37,7 @@ pub fn parse_css_with_cache(
 
 		let (events, diagnostics, trivia) = parser.finish();
 
-		let mut tree_sink =
-			CssLosslessTreeSink::with_cache(source, &trivia, cache);
+		let mut tree_sink = CssLosslessTreeSink::with_cache(source, &trivia, cache);
 		biome_parser::event::process(&mut tree_sink, events, diagnostics);
 		let (green, diagnostics) = tree_sink.finish();
 
@@ -50,15 +48,12 @@ pub fn parse_css_with_cache(
 /// A utility struct for managing the result of a parser job
 #[derive(Debug)]
 pub struct CssParse {
-	root: CssSyntaxNode,
-	diagnostics: Vec<ParseDiagnostic>,
+	root:CssSyntaxNode,
+	diagnostics:Vec<ParseDiagnostic>,
 }
 
 impl CssParse {
-	pub fn new(
-		root: CssSyntaxNode,
-		diagnostics: Vec<ParseDiagnostic>,
-	) -> CssParse {
+	pub fn new(root:CssSyntaxNode, diagnostics:Vec<ParseDiagnostic>) -> CssParse {
 		CssParse { root, diagnostics }
 	}
 
@@ -70,8 +65,8 @@ impl CssParse {
 	/// # use biome_rowan::{AstNode, AstNodeList, SyntaxError};
 	///
 	/// # fn main() -> Result<(), SyntaxError> {
-	/// use biome_css_syntax::CssSyntaxKind;
 	/// use biome_css_parser::CssParserOptions;
+	/// use biome_css_syntax::CssSyntaxKind;
 	/// let parse = parse_css(r#""#, CssParserOptions::default());
 	///
 	/// let root_value = parse.tree().rules();
@@ -81,19 +76,13 @@ impl CssParse {
 	/// # Ok(())
 	/// # }
 	/// ```
-	pub fn syntax(&self) -> CssSyntaxNode {
-		self.root.clone()
-	}
+	pub fn syntax(&self) -> CssSyntaxNode { self.root.clone() }
 
 	/// Get the diagnostics which occurred when parsing
-	pub fn diagnostics(&self) -> &[ParseDiagnostic] {
-		&self.diagnostics
-	}
+	pub fn diagnostics(&self) -> &[ParseDiagnostic] { &self.diagnostics }
 
 	/// Get the diagnostics which occurred when parsing
-	pub fn into_diagnostics(self) -> Vec<ParseDiagnostic> {
-		self.diagnostics
-	}
+	pub fn into_diagnostics(self) -> Vec<ParseDiagnostic> { self.diagnostics }
 
 	/// Returns [true] if the parser encountered some errors during the parsing.
 	pub fn has_errors(&self) -> bool {
@@ -104,13 +93,11 @@ impl CssParse {
 	///
 	/// # Panics
 	/// Panics if the node represented by this parse result mismatches.
-	pub fn tree(&self) -> CssRoot {
-		CssRoot::unwrap_cast(self.syntax())
-	}
+	pub fn tree(&self) -> CssRoot { CssRoot::unwrap_cast(self.syntax()) }
 }
 
 impl From<CssParse> for AnyParse {
-	fn from(parse: CssParse) -> Self {
+	fn from(parse:CssParse) -> Self {
 		let root = parse.syntax();
 		let diagnostics = parse.into_diagnostics();
 		Self::new(

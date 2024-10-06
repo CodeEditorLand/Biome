@@ -1,9 +1,16 @@
-use biome_diagnostics::adapters::{IoError, StdError};
+use std::io;
+
 use biome_diagnostics::{
-    Advices, Category, Diagnostic, DiagnosticExt, DiagnosticTags, Error, Visit,
+	adapters::{IoError, StdError},
+	Advices,
+	Category,
+	Diagnostic,
+	DiagnosticExt,
+	DiagnosticTags,
+	Error,
+	Visit,
 };
 use biome_text_edit::TextEdit;
-use std::io;
 
 #[derive(Debug, Diagnostic)]
 #[diagnostic(
@@ -12,33 +19,30 @@ use std::io;
     severity = Error
 )]
 pub(crate) struct CIFormatDiffDiagnostic {
-    #[location(resource)]
-    pub(crate) file_name: String,
-    #[advice]
-    pub(crate) diff: ContentDiffAdvice,
+	#[location(resource)]
+	pub(crate) file_name:String,
+	#[advice]
+	pub(crate) diff:ContentDiffAdvice,
 }
 
 #[derive(Debug, Diagnostic)]
 #[diagnostic(
-    category = "organizeImports",
-    message = "Import statements differs from the output"
+	category = "organizeImports",
+	message = "Import statements differs from the output"
 )]
 pub(crate) struct CIOrganizeImportsDiffDiagnostic {
-    #[location(resource)]
-    pub(crate) file_name: String,
-    #[advice]
-    pub(crate) diff: ContentDiffAdvice,
+	#[location(resource)]
+	pub(crate) file_name:String,
+	#[advice]
+	pub(crate) diff:ContentDiffAdvice,
 }
 #[derive(Debug, Diagnostic)]
-#[diagnostic(
-    category = "assists",
-    message = "Applied assists differs from the output"
-)]
+#[diagnostic(category = "assists", message = "Applied assists differs from the output")]
 pub(crate) struct CIAssistsDiffDiagnostic {
-    #[location(resource)]
-    pub(crate) file_name: String,
-    #[advice]
-    pub(crate) diff: ContentDiffAdvice,
+	#[location(resource)]
+	pub(crate) file_name:String,
+	#[advice]
+	pub(crate) diff:ContentDiffAdvice,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -48,10 +52,10 @@ pub(crate) struct CIAssistsDiffDiagnostic {
     message = "Formatter would have printed the following content:"
 )]
 pub(crate) struct FormatDiffDiagnostic {
-    #[location(resource)]
-    pub(crate) file_name: String,
-    #[advice]
-    pub(crate) diff: ContentDiffAdvice,
+	#[location(resource)]
+	pub(crate) file_name:String,
+	#[advice]
+	pub(crate) diff:ContentDiffAdvice,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -61,10 +65,10 @@ pub(crate) struct FormatDiffDiagnostic {
 	message = "Import statements could be sorted:"
 )]
 pub(crate) struct OrganizeImportsDiffDiagnostic {
-    #[location(resource)]
-    pub(crate) file_name: String,
-    #[advice]
-    pub(crate) diff: ContentDiffAdvice,
+	#[location(resource)]
+	pub(crate) file_name:String,
+	#[advice]
+	pub(crate) diff:ContentDiffAdvice,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -74,10 +78,10 @@ pub(crate) struct OrganizeImportsDiffDiagnostic {
     message = "Not all assists were applied:"
 )]
 pub(crate) struct AssistsDiffDiagnostic {
-    #[location(resource)]
-    pub(crate) file_name: String,
-    #[advice]
-    pub(crate) diff: ContentDiffAdvice,
+	#[location(resource)]
+	pub(crate) file_name:String,
+	#[advice]
+	pub(crate) diff:ContentDiffAdvice,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -87,31 +91,31 @@ pub(crate) struct AssistsDiffDiagnostic {
 	message = "Configuration file can be updated."
 )]
 pub(crate) struct MigrateDiffDiagnostic {
-    #[location(resource)]
-    pub(crate) file_name: String,
-    #[advice]
-    pub(crate) diff: ContentDiffAdvice,
+	#[location(resource)]
+	pub(crate) file_name:String,
+	#[advice]
+	pub(crate) diff:ContentDiffAdvice,
 }
 
 #[derive(Debug)]
 pub(crate) struct ContentDiffAdvice {
-    pub(crate) old: String,
-    pub(crate) new: String,
+	pub(crate) old:String,
+	pub(crate) new:String,
 }
 
 impl Advices for ContentDiffAdvice {
-    fn record(&self, visitor: &mut dyn Visit) -> io::Result<()> {
-        let diff = TextEdit::from_unicode_words(&self.old, &self.new);
-        visitor.record_diff(&diff)
-    }
+	fn record(&self, visitor:&mut dyn Visit) -> io::Result<()> {
+		let diff = TextEdit::from_unicode_words(&self.old, &self.new);
+		visitor.record_diff(&diff)
+	}
 }
 
 #[derive(Debug, Diagnostic)]
 #[diagnostic(category = "internalError/panic", tags(INTERNAL))]
 pub(crate) struct PanicDiagnostic {
-    #[description]
-    #[message]
-    pub(crate) message: String,
+	#[description]
+	#[message]
+	pub(crate) message:String,
 }
 
 #[derive(Debug, Diagnostic)]
@@ -133,61 +137,57 @@ pub(crate) struct SearchDiagnostic;
 
 /// Extension trait for turning [Display]-able error types into [TraversalError]
 pub(crate) trait ResultExt {
-    type Result;
-    fn with_file_path_and_code(
-        self,
-        file_path: String,
-        code: &'static Category,
-    ) -> Result<Self::Result, Error>;
+	type Result;
+	fn with_file_path_and_code(
+		self,
+		file_path:String,
+		code:&'static Category,
+	) -> Result<Self::Result, Error>;
 
-    fn with_file_path_and_code_and_tags(
-        self,
-        file_path: String,
-        code: &'static Category,
-        tags: DiagnosticTags,
-    ) -> Result<Self::Result, Error>;
+	fn with_file_path_and_code_and_tags(
+		self,
+		file_path:String,
+		code:&'static Category,
+		tags:DiagnosticTags,
+	) -> Result<Self::Result, Error>;
 }
 
 impl<T, E> ResultExt for Result<T, E>
 where
-    E: std::error::Error + Send + Sync + 'static,
+	E: std::error::Error + Send + Sync + 'static,
 {
-    type Result = T;
+	type Result = T;
 
-    fn with_file_path_and_code_and_tags(
-        self,
-        file_path: String,
-        code: &'static Category,
-        diagnostic_tags: DiagnosticTags,
-    ) -> Result<Self::Result, Error> {
-        self.map_err(move |err| {
-            StdError::from(err)
-                .with_category(code)
-                .with_file_path(file_path)
-                .with_tags(diagnostic_tags)
-        })
-    }
+	fn with_file_path_and_code_and_tags(
+		self,
+		file_path:String,
+		code:&'static Category,
+		diagnostic_tags:DiagnosticTags,
+	) -> Result<Self::Result, Error> {
+		self.map_err(move |err| {
+			StdError::from(err)
+				.with_category(code)
+				.with_file_path(file_path)
+				.with_tags(diagnostic_tags)
+		})
+	}
 
-    fn with_file_path_and_code(
-        self,
-        file_path: String,
-        code: &'static Category,
-    ) -> Result<Self::Result, Error> {
-        self.map_err(move |err| {
-            StdError::from(err)
-                .with_category(code)
-                .with_file_path(file_path)
-        })
-    }
+	fn with_file_path_and_code(
+		self,
+		file_path:String,
+		code:&'static Category,
+	) -> Result<Self::Result, Error> {
+		self.map_err(move |err| StdError::from(err).with_category(code).with_file_path(file_path))
+	}
 }
 
 /// Extension trait for turning [io::Error] into [Error]
 pub(crate) trait ResultIoExt: ResultExt {
-    fn with_file_path(self, file_path: String) -> Result<Self::Result, Error>;
+	fn with_file_path(self, file_path:String) -> Result<Self::Result, Error>;
 }
 
 impl<T> ResultIoExt for io::Result<T> {
-    fn with_file_path(self, file_path: String) -> Result<Self::Result, Error> {
-        self.map_err(|error| IoError::from(error).with_file_path(file_path))
-    }
+	fn with_file_path(self, file_path:String) -> Result<Self::Result, Error> {
+		self.map_err(|error| IoError::from(error).with_file_path(file_path))
+	}
 }

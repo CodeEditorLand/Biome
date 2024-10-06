@@ -1,16 +1,25 @@
-use crate::{services::semantic::Semantic, JsRuleAction};
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, ActionCategory, FixKind, Rule, RuleDiagnostic,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
 	RuleSource,
 };
 use biome_console::markup;
 use biome_js_factory::make;
 use biome_js_syntax::{
-	global_identifier, AnyJsExpression, JsCallExpression, JsNewExpression, JsNewOrCallExpression,
+	global_identifier,
+	AnyJsExpression,
+	JsCallExpression,
+	JsNewExpression,
+	JsNewOrCallExpression,
 };
 use biome_rowan::{chain_trivia_pieces, AstNode, BatchMutationExt};
 
 use super::use_throw_new_error::convert_call_expression_to_new_expression;
+use crate::{services::semantic::Semantic, JsRuleAction};
 
 declare_lint_rule! {
 	/// Enforce the use of `new` for all builtins, except `String`, `Number`, `Boolean`, `Symbol` and `BigInt`.
@@ -115,12 +124,12 @@ declare_lint_rule! {
 }
 
 impl Rule for UseConsistentBuiltinInstantiation {
-	type Query = Semantic<JsNewOrCallExpression>;
-	type State = UseConsistentBuiltinInstantiationState;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Semantic<JsNewOrCallExpression>;
+	type Signals = Option<Self::State>;
+	type State = UseConsistentBuiltinInstantiationState;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
 		let (callee, creation_rule) = extract_callee_and_rule(node)?;
@@ -132,7 +141,7 @@ impl Rule for UseConsistentBuiltinInstantiation {
 		if creation_rule.forbidden_builtins_list().binary_search(&name_text).is_ok() {
 			return ctx.model().binding(&reference).is_none().then_some(
 				UseConsistentBuiltinInstantiationState {
-					name: name_text.to_string(),
+					name:name_text.to_string(),
 					creation_rule,
 				},
 			);
@@ -141,7 +150,7 @@ impl Rule for UseConsistentBuiltinInstantiation {
 		None
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 
 		let name = &state.name;
@@ -160,7 +169,7 @@ impl Rule for UseConsistentBuiltinInstantiation {
 		))
 	}
 
-	fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
 		let node = ctx.query();
 
 		let mut mutation = ctx.root().begin();
@@ -177,7 +186,7 @@ impl Rule for UseConsistentBuiltinInstantiation {
 					markup! { "Remove "<Emphasis>"new"</Emphasis>" keyword." }.to_owned(),
 					mutation,
 				))
-			}
+			},
 			JsNewOrCallExpression::JsCallExpression(node) => {
 				let new_expression = convert_call_expression_to_new_expression(node)?;
 
@@ -189,13 +198,13 @@ impl Rule for UseConsistentBuiltinInstantiation {
 					markup! { "Add "<Emphasis>"new"</Emphasis>" keyword." }.to_owned(),
 					mutation,
 				))
-			}
+			},
 		}
 	}
 }
 
 /// Sorted array of builtins that require new keyword.
-const BUILTINS_REQUIRING_NEW: &[&str] = &[
+const BUILTINS_REQUIRING_NEW:&[&str] = &[
 	"AggregateError",
 	"Array",
 	"ArrayBuffer",
@@ -234,7 +243,7 @@ const BUILTINS_REQUIRING_NEW: &[&str] = &[
 ];
 
 /// Sorted array of builtins that should not use new keyword.
-const BUILTINS_NOT_REQUIRING_NEW: &[&str] = &["BigInt", "Boolean", "Number", "String", "Symbol"];
+const BUILTINS_NOT_REQUIRING_NEW:&[&str] = &["BigInt", "Boolean", "Number", "String", "Symbol"];
 
 enum BuiltinCreationRule {
 	MustUseNew,
@@ -251,12 +260,12 @@ impl BuiltinCreationRule {
 }
 
 pub struct UseConsistentBuiltinInstantiationState {
-	name: String,
-	creation_rule: BuiltinCreationRule,
+	name:String,
+	creation_rule:BuiltinCreationRule,
 }
 
 fn extract_callee_and_rule(
-	node: &JsNewOrCallExpression,
+	node:&JsNewOrCallExpression,
 ) -> Option<(AnyJsExpression, BuiltinCreationRule)> {
 	let rule = match node {
 		JsNewOrCallExpression::JsNewExpression(_) => BuiltinCreationRule::MustNotUseNew,
@@ -267,7 +276,7 @@ fn extract_callee_and_rule(
 	Some((callee, rule))
 }
 
-fn convert_new_expression_to_call_expression(expr: &JsNewExpression) -> Option<JsCallExpression> {
+fn convert_new_expression_to_call_expression(expr:&JsNewExpression) -> Option<JsCallExpression> {
 	let new_token = expr.new_token().ok()?;
 	let mut callee = expr.callee().ok()?;
 	if new_token.has_leading_comments() || new_token.has_trailing_comments() {

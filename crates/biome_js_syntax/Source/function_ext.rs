@@ -1,8 +1,15 @@
-use crate::{
-	AnyJsCallArgument, AnyJsFunction, AnyJsFunctionBody, JsCallArguments,
-	JsMethodClassMember, JsMethodObjectMember, JsStatementList, JsSyntaxToken,
-};
 use biome_rowan::{declare_node_union, AstNode, SyntaxResult, TextRange};
+
+use crate::{
+	AnyJsCallArgument,
+	AnyJsFunction,
+	AnyJsFunctionBody,
+	JsCallArguments,
+	JsMethodClassMember,
+	JsMethodObjectMember,
+	JsStatementList,
+	JsSyntaxToken,
+};
 
 declare_node_union! {
 	pub AnyFunctionLike = AnyJsFunction | JsMethodObjectMember | JsMethodClassMember
@@ -24,16 +31,15 @@ impl AnyFunctionLike {
 	pub fn fat_arrow_token(&self) -> Option<JsSyntaxToken> {
 		match self {
 			AnyFunctionLike::AnyJsFunction(any_js_function) => {
-				if let Some(arrow_expression) =
-					any_js_function.as_js_arrow_function_expression()
-				{
+				if let Some(arrow_expression) = any_js_function.as_js_arrow_function_expression() {
 					arrow_expression.fat_arrow_token().ok()
 				} else {
 					None
 				}
 			},
-			AnyFunctionLike::JsMethodClassMember(_)
-			| AnyFunctionLike::JsMethodObjectMember(_) => None,
+			AnyFunctionLike::JsMethodClassMember(_) | AnyFunctionLike::JsMethodObjectMember(_) => {
+				None
+			},
 		}
 	}
 
@@ -42,16 +48,15 @@ impl AnyFunctionLike {
 			AnyFunctionLike::AnyJsFunction(any_js_function) => {
 				any_js_function.function_token().ok().flatten()
 			},
-			AnyFunctionLike::JsMethodClassMember(_)
-			| AnyFunctionLike::JsMethodObjectMember(_) => None,
+			AnyFunctionLike::JsMethodClassMember(_) | AnyFunctionLike::JsMethodObjectMember(_) => {
+				None
+			},
 		}
 	}
 
 	pub fn is_generator(&self) -> bool {
 		match self {
-			AnyFunctionLike::AnyJsFunction(any_js_function) => {
-				any_js_function.is_generator()
-			},
+			AnyFunctionLike::AnyJsFunction(any_js_function) => any_js_function.is_generator(),
 			AnyFunctionLike::JsMethodClassMember(method_class_member) => {
 				method_class_member.star_token().is_some()
 			},
@@ -63,9 +68,7 @@ impl AnyFunctionLike {
 
 	pub fn is_async(&self) -> bool {
 		match self {
-			AnyFunctionLike::AnyJsFunction(any_js_function) => {
-				any_js_function.is_async()
-			},
+			AnyFunctionLike::AnyJsFunction(any_js_function) => any_js_function.is_async(),
 			AnyFunctionLike::JsMethodClassMember(method_class_member) => {
 				method_class_member.async_token().is_some()
 			},
@@ -105,20 +108,21 @@ impl AnyFunctionLike {
 }
 
 impl JsCallArguments {
-	/// Get [AnyJsCallArgument] by its index inside the [crate::JsCallExpression] argument list.
+	/// Get [AnyJsCallArgument] by its index inside the
+	/// [crate::JsCallExpression] argument list.
 	///
 	/// Each index inside `indices` should be unique qnd in-order.
 	///
 	/// Supports a maximum of 16 indices to avoid stack overflow.
 	pub fn get_arguments_by_index<const N: usize>(
 		&self,
-		indices: [usize; N],
+		indices:[usize; N],
 	) -> [Option<AnyJsCallArgument>; N] {
 		debug_assert!(N <= 16);
 		// assert there are no duplicates and they are in-order
 		debug_assert!(indices.windows(2).all(|vs| vs[0] < vs[1]));
 
-		const INIT: Option<AnyJsCallArgument> = None;
+		const INIT:Option<AnyJsCallArgument> = None;
 		let mut result = [INIT; N];
 		let mut next = 0;
 		for (i, arg) in self.args().into_iter().flatten().enumerate() {

@@ -1,5 +1,7 @@
-use std::path::PathBuf;
-use std::{collections::BTreeMap, path::Path};
+use std::{
+	collections::BTreeMap,
+	path::{Path, PathBuf},
+};
 
 use anyhow::{Context, Ok, Result};
 use biome_string_case::Case;
@@ -59,7 +61,7 @@ fn generate_graphql_analyzer() -> Result<()> {
 	update_graphql_registry_builder(analyzers)
 }
 
-fn generate_options(base_path: &Path) -> Result<()> {
+fn generate_options(base_path:&Path) -> Result<()> {
 	let mut rules_options = BTreeMap::new();
 	let mut crates = vec![];
 	let nl = Punct::new('\n', Spacing::Alone);
@@ -69,14 +71,9 @@ fn generate_options(base_path: &Path) -> Result<()> {
 			continue;
 		}
 		let category_name = format_ident!("{}", filename(&category_path)?);
-		for group_path in
-			list_entry_paths(&category_path)?.filter(|path| path.is_dir())
-		{
-			let group_name =
-				format_ident!("{}", filename(&group_path)?.to_string());
-			for rule_path in
-				list_entry_paths(&group_path)?.filter(|path| !path.is_dir())
-			{
+		for group_path in list_entry_paths(&category_path)?.filter(|path| path.is_dir()) {
+			let group_name = format_ident!("{}", filename(&group_path)?.to_string());
+			for rule_path in list_entry_paths(&group_path)?.filter(|path| !path.is_dir()) {
 				let rule_filename = filename(&rule_path)?;
 				let rule_name = Case::Pascal.convert(rule_filename);
 				let rule_module_name = format_ident!("{}", rule_filename);
@@ -109,9 +106,9 @@ fn generate_options(base_path: &Path) -> Result<()> {
 }
 
 fn generate_category(
-	name: &'static str,
-	entries: &mut BTreeMap<&'static str, TokenStream>,
-	base_path: &Path,
+	name:&'static str,
+	entries:&mut BTreeMap<&'static str, TokenStream>,
+	base_path:&Path,
 ) -> Result<()> {
 	let path = base_path.join(name);
 
@@ -167,7 +164,7 @@ fn generate_category(
 		},
 	);
 
-	let (modules, paths): (Vec<_>, Vec<_>) = groups.into_values().unzip();
+	let (modules, paths):(Vec<_>, Vec<_>) = groups.into_values().unzip();
 	let tokens = xtask::reformat(quote! {
 		#( #modules )*
 		::biome_analyze::declare_category! {
@@ -185,11 +182,7 @@ fn generate_category(
 	Ok(())
 }
 
-fn generate_group(
-	category: &'static str,
-	group: &str,
-	base_path: &Path,
-) -> Result<()> {
+fn generate_group(category:&'static str, group:&str, base_path:&Path) -> Result<()> {
 	let path = base_path.join(category).join(group);
 
 	let mut rules = BTreeMap::new();
@@ -222,31 +215,36 @@ fn generate_group(
 
 	let group_name = format_ident!("{}", Case::Pascal.convert(group));
 
-	let (rule_imports, rule_names): (Vec<_>, Vec<_>) =
-		rules.into_values().unzip();
+	let (rule_imports, rule_names):(Vec<_>, Vec<_>) = rules.into_values().unzip();
 
 	let nl = Punct::new('\n', Spacing::Alone);
 	let sp = Punct::new(' ', Spacing::Joint);
 	let sp4 = quote! { #sp #sp #sp #sp };
 	let (import_macro, use_macro) = match category {
-		"lint" => (
-			quote!(
-				use biome_analyze::declare_lint_group
-			),
-			quote!(declare_lint_group),
-		),
-		"assists" => (
-			quote!(
-				use biome_analyze::declare_assists_group
-			),
-			quote!(declare_assists_group),
-		),
-		"syntax" => (
-			quote!(
-				use biome_analyze::declare_syntax_group
-			),
-			quote!(declare_syntax_group),
-		),
+		"lint" => {
+			(
+				quote!(
+					use biome_analyze::declare_lint_group
+				),
+				quote!(declare_lint_group),
+			)
+		},
+		"assists" => {
+			(
+				quote!(
+					use biome_analyze::declare_assists_group
+				),
+				quote!(declare_assists_group),
+			)
+		},
+		"syntax" => {
+			(
+				quote!(
+					use biome_analyze::declare_syntax_group
+				),
+				quote!(declare_syntax_group),
+			)
+		},
 
 		_ => panic!("Category not supported: {category}"),
 	};
@@ -271,17 +269,13 @@ fn generate_group(
 }
 
 fn update_js_registry_builder(
-	rules: BTreeMap<&'static str, TokenStream>,
-	assists: BTreeMap<&'static str, TokenStream>,
-	syntax: BTreeMap<&'static str, TokenStream>,
+	rules:BTreeMap<&'static str, TokenStream>,
+	assists:BTreeMap<&'static str, TokenStream>,
+	syntax:BTreeMap<&'static str, TokenStream>,
 ) -> Result<()> {
 	let path = project_root().join("crates/biome_js_analyze/src/registry.rs");
 
-	let categories = rules
-		.into_iter()
-		.chain(assists)
-		.chain(syntax)
-		.map(|(_, tokens)| tokens);
+	let categories = rules.into_iter().chain(assists).chain(syntax).map(|(_, tokens)| tokens);
 
 	let tokens = xtask::reformat(quote! {
 		use biome_analyze::RegistryVisitor;
@@ -298,13 +292,12 @@ fn update_js_registry_builder(
 }
 
 fn update_json_registry_builder(
-	analyzers: BTreeMap<&'static str, TokenStream>,
-	assists: BTreeMap<&'static str, TokenStream>,
+	analyzers:BTreeMap<&'static str, TokenStream>,
+	assists:BTreeMap<&'static str, TokenStream>,
 ) -> Result<()> {
 	let path = project_root().join("crates/biome_json_analyze/src/registry.rs");
 
-	let categories =
-		analyzers.into_iter().chain(assists).map(|(_, tokens)| tokens);
+	let categories = analyzers.into_iter().chain(assists).map(|(_, tokens)| tokens);
 
 	let tokens = xtask::reformat(quote! {
 		use biome_analyze::RegistryVisitor;
@@ -320,9 +313,7 @@ fn update_json_registry_builder(
 	Ok(())
 }
 
-fn update_css_registry_builder(
-	analyzers: BTreeMap<&'static str, TokenStream>,
-) -> Result<()> {
+fn update_css_registry_builder(analyzers:BTreeMap<&'static str, TokenStream>) -> Result<()> {
 	let path = project_root().join("crates/biome_css_analyze/src/registry.rs");
 
 	let categories = analyzers.into_values();
@@ -341,11 +332,8 @@ fn update_css_registry_builder(
 	Ok(())
 }
 
-fn update_graphql_registry_builder(
-	analyzers: BTreeMap<&'static str, TokenStream>,
-) -> Result<()> {
-	let path =
-		project_root().join("crates/biome_graphql_analyze/src/registry.rs");
+fn update_graphql_registry_builder(analyzers:BTreeMap<&'static str, TokenStream>) -> Result<()> {
+	let path = project_root().join("crates/biome_graphql_analyze/src/registry.rs");
 
 	let categories = analyzers.into_values();
 
@@ -364,7 +352,7 @@ fn update_graphql_registry_builder(
 }
 
 /// Returns file paths of the given directory.
-fn list_entry_paths(dir: &Path) -> Result<impl Iterator<Item = PathBuf>> {
+fn list_entry_paths(dir:&Path) -> Result<impl Iterator<Item = PathBuf>> {
 	Ok(fs2::read_dir(dir)
 		.context("A directory is expected")?
 		.filter_map(|entry| entry.ok())
@@ -372,7 +360,7 @@ fn list_entry_paths(dir: &Path) -> Result<impl Iterator<Item = PathBuf>> {
 }
 
 /// Returns filename if any.
-fn filename(file: &Path) -> Result<&str> {
+fn filename(file:&Path) -> Result<&str> {
 	file.file_stem()
 		.context("path has no file name")?
 		.to_str()

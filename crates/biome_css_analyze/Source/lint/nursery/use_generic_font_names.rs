@@ -1,15 +1,28 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::{
-	AnyCssAtRule, AnyCssGenericComponentValue, AnyCssValue, CssAtRule,
-	CssGenericComponentValueList, CssGenericProperty, CssSyntaxKind,
+	AnyCssAtRule,
+	AnyCssGenericComponentValue,
+	AnyCssValue,
+	CssAtRule,
+	CssGenericComponentValueList,
+	CssGenericProperty,
+	CssSyntaxKind,
 };
 use biome_rowan::{AstNode, SyntaxNodeCast, TextRange};
 
 use crate::utils::{
-	find_font_family, is_css_variable, is_font_family_keyword, is_system_family_name_keyword,
+	find_font_family,
+	is_css_variable,
+	is_font_family_keyword,
+	is_system_family_name_keyword,
 };
 
 declare_lint_rule! {
@@ -69,12 +82,12 @@ declare_lint_rule! {
 }
 
 impl Rule for UseGenericFontNames {
-	type Query = Ast<CssGenericProperty>;
-	type State = TextRange;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<CssGenericProperty>;
+	type Signals = Option<Self::State>;
+	type State = TextRange;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 
 		let property_name = node.name().ok()?.text().to_lowercase();
@@ -122,7 +135,7 @@ impl Rule for UseGenericFontNames {
 		Some(last_value.range())
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, span: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, span:&Self::State) -> Option<RuleDiagnostic> {
 		Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -144,7 +157,7 @@ impl Rule for UseGenericFontNames {
 	}
 }
 
-fn is_in_font_face_at_rule(node: &CssGenericProperty) -> bool {
+fn is_in_font_face_at_rule(node:&CssGenericProperty) -> bool {
 	node.syntax()
 		.ancestors()
 		.find(|n| n.kind() == CssSyntaxKind::CSS_AT_RULE)
@@ -153,21 +166,23 @@ fn is_in_font_face_at_rule(node: &CssGenericProperty) -> bool {
 		.is_some_and(|n| matches!(n, AnyCssAtRule::CssFontFaceAtRule(_)))
 }
 
-fn is_shorthand_font_property_with_keyword(properties: &CssGenericComponentValueList) -> bool {
+fn is_shorthand_font_property_with_keyword(properties:&CssGenericComponentValueList) -> bool {
 	properties.into_iter().len() == 1
 		&& properties.into_iter().any(|p| is_system_family_name_keyword(&p.text()))
 }
 
-fn has_generic_font_family_property(nodes: &[AnyCssValue]) -> bool {
+fn has_generic_font_family_property(nodes:&[AnyCssValue]) -> bool {
 	nodes.iter().any(|n| is_font_family_keyword(&n.text()))
 }
 
-fn collect_font_family_properties(properties: CssGenericComponentValueList) -> Vec<AnyCssValue> {
+fn collect_font_family_properties(properties:CssGenericComponentValueList) -> Vec<AnyCssValue> {
 	properties
 		.into_iter()
-		.filter_map(|v| match v {
-			AnyCssGenericComponentValue::AnyCssValue(value) => Some(value),
-			_ => None,
+		.filter_map(|v| {
+			match v {
+				AnyCssGenericComponentValue::AnyCssValue(value) => Some(value),
+				_ => None,
+			}
 		})
 		.collect()
 }

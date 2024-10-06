@@ -1,9 +1,16 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::{
-	AnyCssPseudoClassNth, CssPseudoClassFunctionSelectorList, CssPseudoClassNthSelector,
+	AnyCssPseudoClassNth,
+	CssPseudoClassFunctionSelectorList,
+	CssPseudoClassNthSelector,
 };
 use biome_rowan::{AstNode, SyntaxNodeCast};
 
@@ -62,12 +69,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoUnmatchableAnbSelector {
-	type Query = Ast<CssPseudoClassNthSelector>;
-	type State = CssPseudoClassNthSelector;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<CssPseudoClassNthSelector>;
+	type Signals = Option<Self::State>;
+	type State = CssPseudoClassNthSelector;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 
 		let nth = node.nth().ok()?;
@@ -77,7 +84,7 @@ impl Rule for NoUnmatchableAnbSelector {
 		None
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, node:&Self::State) -> Option<RuleDiagnostic> {
 		let span = node.range();
 		Some(
             RuleDiagnostic::new(
@@ -96,7 +103,7 @@ impl Rule for NoUnmatchableAnbSelector {
 	}
 }
 
-fn is_unmatchable(nth: &AnyCssPseudoClassNth) -> bool {
+fn is_unmatchable(nth:&AnyCssPseudoClassNth) -> bool {
 	match nth {
 		AnyCssPseudoClassNth::CssPseudoClassNthIdentifier(_) => false,
 		AnyCssPseudoClassNth::CssPseudoClassNth(nth) => {
@@ -108,7 +115,7 @@ fn is_unmatchable(nth: &AnyCssPseudoClassNth) -> bool {
 				(Some(a), None) => a.text() == "0",
 				_ => false,
 			}
-		}
+		},
 		AnyCssPseudoClassNth::CssPseudoClassNthNumber(nth) => nth.text() == "0",
 	}
 }
@@ -116,7 +123,7 @@ fn is_unmatchable(nth: &AnyCssPseudoClassNth) -> bool {
 // Check if the nth selector is effective within a `not` pseudo class
 // Example: a:not(:nth-child(0)) returns true
 //          a:not(:not(:nth-child(0))) returns false
-fn is_within_not_pseudo_class(node: &AnyCssPseudoClassNth) -> bool {
+fn is_within_not_pseudo_class(node:&AnyCssPseudoClassNth) -> bool {
 	let number_of_not = node
 		.syntax()
 		.ancestors()

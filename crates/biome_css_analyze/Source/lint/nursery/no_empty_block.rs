@@ -1,5 +1,10 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::stmt_ext::CssBlockLike;
@@ -52,12 +57,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoEmptyBlock {
-	type Query = Ast<CssBlockLike>;
-	type State = CssBlockLike;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<CssBlockLike>;
+	type Signals = Option<Self::State>;
+	type State = CssBlockLike;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 		if node.is_empty_without_comments() {
 			return Some(node.clone());
@@ -66,7 +71,7 @@ impl Rule for NoEmptyBlock {
 		None
 	}
 
-	fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_:&RuleContext<Self>, node:&Self::State) -> Option<RuleDiagnostic> {
 		let span = node.range();
 		Some(
 			RuleDiagnostic::new(

@@ -1,9 +1,17 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
 };
 use biome_console::markup;
 use biome_css_syntax::{
-	AnyCssDeclarationBlock, AnyCssKeyframesItem, CssDeclarationImportant, CssKeyframesBlock,
+	AnyCssDeclarationBlock,
+	AnyCssKeyframesItem,
+	CssDeclarationImportant,
+	CssKeyframesBlock,
 };
 use biome_rowan::AstNode;
 
@@ -50,12 +58,12 @@ declare_lint_rule! {
 }
 
 impl Rule for NoImportantInKeyframe {
-	type Query = Ast<CssKeyframesBlock>;
-	type State = CssDeclarationImportant;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<CssKeyframesBlock>;
+	type Signals = Option<Self::State>;
+	type State = CssDeclarationImportant;
 
-	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 		for item in node.items() {
 			let AnyCssKeyframesItem::CssKeyframesItem(keyframe_item) = item else {
@@ -75,7 +83,7 @@ impl Rule for NoImportantInKeyframe {
 		None
 	}
 
-	fn diagnostic(_ctx: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_ctx:&RuleContext<Self>, node:&Self::State) -> Option<RuleDiagnostic> {
 		let span = node.range();
 		Some(
             RuleDiagnostic::new(

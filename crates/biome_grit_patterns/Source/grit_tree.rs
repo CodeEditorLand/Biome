@@ -1,22 +1,22 @@
-use crate::grit_target_node::{GritTargetLanguageNode, GritTargetNode};
-use grit_util::Ast;
 use std::borrow::Cow;
+
+use grit_util::Ast;
+
+use crate::grit_target_node::{GritTargetLanguageNode, GritTargetNode};
 
 #[derive(Clone, Debug, PartialEq)]
 pub struct GritTargetTree {
-	root: GritTargetLanguageNode,
-	source: String,
+	root:GritTargetLanguageNode,
+	source:String,
 }
 
 impl GritTargetTree {
-	pub fn new(root: GritTargetLanguageNode) -> Self {
+	pub fn new(root:GritTargetLanguageNode) -> Self {
 		let source = root.owned_text().into_owned();
 		Self { root, source }
 	}
 
-	pub fn text(&self) -> &str {
-		&self.source
-	}
+	pub fn text(&self) -> &str { &self.source }
 }
 
 impl Ast for GritTargetTree {
@@ -24,11 +24,7 @@ impl Ast for GritTargetTree {
     where
         Self: 'a;
 
-	fn root_node(&self) -> GritTargetNode {
-		GritTargetNode::new(self.root.clone(), self)
-	}
+	fn root_node(&self) -> GritTargetNode { GritTargetNode::new(self.root.clone(), self) }
 
-	fn source(&self) -> Cow<str> {
-		Cow::Borrowed(&self.source)
-	}
+	fn source(&self) -> Cow<str> { Cow::Borrowed(&self.source) }
 }

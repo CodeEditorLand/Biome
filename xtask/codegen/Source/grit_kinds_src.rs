@@ -3,8 +3,8 @@
 
 use crate::kind_src::KindsSrc;
 
-pub const GRIT_KINDS_SRC: KindsSrc = KindsSrc {
-	punct: &[
+pub const GRIT_KINDS_SRC:KindsSrc = KindsSrc {
+	punct:&[
 		("...", "DOT3"),
 		("$_", "DOLLAR_UNDERSCORE"),
 		("<:", "MATCH"),
@@ -35,7 +35,7 @@ pub const GRIT_KINDS_SRC: KindsSrc = KindsSrc {
 		("+=", "PLUSEQ"),
 		("`", "BACKTICK"),
 	],
-	keywords: &[
+	keywords:&[
 		// top-level:
 		"sequential",
 		"multifile",
@@ -88,7 +88,7 @@ pub const GRIT_KINDS_SRC: KindsSrc = KindsSrc {
 		"like",
 		"return",
 	],
-	literals: &[
+	literals:&[
 		"GRIT_INT",
 		"GRIT_NEGATIVE_INT",
 		"GRIT_DOUBLE",
@@ -96,7 +96,7 @@ pub const GRIT_KINDS_SRC: KindsSrc = KindsSrc {
 		"GRIT_REGEX",
 		"GRIT_SNIPPET_REGEX",
 	],
-	tokens: &[
+	tokens:&[
 		"NEWLINE",
 		"WHITESPACE",
 		"COMMENT",
@@ -108,7 +108,7 @@ pub const GRIT_KINDS_SRC: KindsSrc = KindsSrc {
 		"GRIT_NAME",
 		"GRIT_VARIABLE",
 	],
-	nodes: &[
+	nodes:&[
 		"GRIT_BRACKETED_PATTERN",
 		"GRIT_BRACKETED_PREDICATE",
 		"GRIT_CURLY_PATTERN",

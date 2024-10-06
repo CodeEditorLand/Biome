@@ -9,7 +9,18 @@ mod generate_migrate_eslint;
 #[cfg(feature = "schema")]
 mod generate_schema;
 mod promote_rule;
-use xtask::{project_root, pushd, Result};
+use xtask::{project_root, pushd, Mode::Overwrite, Result};
+use xtask_codegen::{
+	generate_analyzer,
+	generate_ast,
+	generate_crate,
+	generate_formatters,
+	generate_new_analyzer_rule,
+	generate_parser_tests,
+	generate_tables,
+	task_command,
+	TaskCommand,
+};
 
 #[cfg(feature = "schema")]
 use crate::generate_bindings::generate_workspace_bindings;
@@ -22,13 +33,6 @@ use crate::generate_migrate_eslint::generate_migrate_eslint;
 #[cfg(feature = "schema")]
 use crate::generate_schema::generate_configuration_schema;
 use crate::promote_rule::promote_rule;
-
-use xtask::Mode::Overwrite;
-use xtask_codegen::{
-	generate_analyzer, generate_ast, generate_crate, generate_formatters,
-	generate_new_analyzer_rule, generate_parser_tests, generate_tables,
-	task_command, TaskCommand,
-};
 
 fn main() -> Result<()> {
 	let _d = pushd(project_root());

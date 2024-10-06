@@ -5,13 +5,13 @@ pub struct JsParserOptions {
 	/// Enables parsing of Grit metavariables.
 	/// Defaults to `false`.
 	#[serde(default)]
-	pub grit_metavariables: bool,
+	pub grit_metavariables:bool,
 
 	/// Whether the parsing of the class parameter decorators should happen.
 	///
 	/// This parameter decorators belong to the old language proposal.
 	#[serde(default)]
-	pub parse_class_parameter_decorators: bool,
+	pub parse_class_parameter_decorators:bool,
 }
 
 impl JsParserOptions {
@@ -26,9 +26,7 @@ impl JsParserOptions {
 		self
 	}
 
-	pub fn should_parse_metavariables(&self) -> bool {
-		self.grit_metavariables
-	}
+	pub fn should_parse_metavariables(&self) -> bool { self.grit_metavariables }
 
 	/// Should parse parameter decorators inside classes, e.g.:
 	///

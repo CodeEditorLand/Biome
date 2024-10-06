@@ -1,36 +1,37 @@
-use super::*;
-use crate::reporters::TestReporter;
-use biome_diagnostics::console::fmt::{Formatter, Termcolor};
-use biome_diagnostics::console::markup;
-use biome_diagnostics::termcolor::Buffer;
-use biome_diagnostics::Error;
-use biome_diagnostics::PrintDiagnostic;
+use std::{fmt::Debug, io, panic::RefUnwindSafe, path::Path};
+
+use biome_diagnostics::{
+	console::{
+		fmt::{Formatter, Termcolor},
+		markup,
+	},
+	termcolor::Buffer,
+	Error,
+	PrintDiagnostic,
+};
 use biome_js_parser::{parse, JsParserOptions, Parse};
 use biome_js_syntax::{AnyJsRoot, JsFileSource, JsSyntaxNode};
 use biome_rowan::SyntaxKind;
-use std::fmt::Debug;
-use std::io;
-use std::panic::RefUnwindSafe;
-use std::path::Path;
 use walkdir::WalkDir;
 use yastl::Pool;
 
+use super::*;
+use crate::reporters::TestReporter;
+
 pub(crate) struct TestRunResult {
-	pub(crate) outcome: TestRunOutcome,
-	pub(crate) test_case: String,
+	pub(crate) outcome:TestRunOutcome,
+	pub(crate) test_case:String,
 }
 
 pub(crate) enum TestRunOutcome {
 	Passed(TestCaseFiles),
 	IncorrectlyPassed(TestCaseFiles),
-	IncorrectlyErrored { files: TestCaseFiles, errors: Vec<ParseDiagnostic> },
+	IncorrectlyErrored { files:TestCaseFiles, errors:Vec<ParseDiagnostic> },
 	Panicked(Box<dyn Any + Send + 'static>),
 }
 
 impl TestRunOutcome {
-	pub fn is_failed(&self) -> bool {
-		!matches!(self, TestRunOutcome::Passed(_))
-	}
+	pub fn is_failed(&self) -> bool { !matches!(self, TestRunOutcome::Passed(_)) }
 
 	pub fn files(&self) -> Option<&TestCaseFiles> {
 		match self {
@@ -43,10 +44,12 @@ impl TestRunOutcome {
 
 	pub fn panic_message(&self) -> Option<&str> {
 		match self {
-			TestRunOutcome::Panicked(panic) => panic
-				.downcast_ref::<String>()
-				.map(|s| s.as_str())
-				.or_else(|| panic.downcast_ref::<&'static str>().copied()),
+			TestRunOutcome::Panicked(panic) => {
+				panic
+					.downcast_ref::<String>()
+					.map(|s| s.as_str())
+					.or_else(|| panic.downcast_ref::<&'static str>().copied())
+			},
 
 			_ => None,
 		}
@@ -54,29 +57,31 @@ impl TestRunOutcome {
 }
 
 impl From<TestRunOutcome> for Outcome {
-	fn from(run_outcome: TestRunOutcome) -> Self {
+	fn from(run_outcome:TestRunOutcome) -> Self {
 		match run_outcome {
 			TestRunOutcome::Passed(_) => Outcome::Passed,
-			TestRunOutcome::IncorrectlyPassed(_)
-			| TestRunOutcome::IncorrectlyErrored { .. } => Outcome::Failed,
+			TestRunOutcome::IncorrectlyPassed(_) | TestRunOutcome::IncorrectlyErrored { .. } => {
+				Outcome::Failed
+			},
 			TestRunOutcome::Panicked(_) => Outcome::Panicked,
 		}
 	}
 }
 
-/// A test case may parse multiple files. Represents a single file of a test case
+/// A test case may parse multiple files. Represents a single file of a test
+/// case
 #[derive(Debug, Clone)]
 pub(crate) struct TestCaseFile {
 	/// The (test case relative) name of the file
-	name: String,
+	name:String,
 
 	/// The code of the file
-	code: String,
+	code:String,
 
 	/// The source type used to parse the file
-	source_type: JsFileSource,
+	source_type:JsFileSource,
 
-	options: JsParserOptions,
+	options:JsParserOptions,
 }
 
 impl TestCaseFile {
@@ -84,65 +89,57 @@ impl TestCaseFile {
 		parse(&self.code, self.source_type, self.options.clone())
 	}
 
-	pub(crate) fn name(&self) -> &str {
-		&self.name
-	}
+	pub(crate) fn name(&self) -> &str { &self.name }
 
-	pub(crate) fn code(&self) -> &str {
-		&self.code
-	}
+	pub(crate) fn code(&self) -> &str { &self.code }
 }
 
-pub(crate) fn create_bogus_node_in_tree_diagnostic(
-	node: JsSyntaxNode,
-) -> ParseDiagnostic {
+pub(crate) fn create_bogus_node_in_tree_diagnostic(node:JsSyntaxNode) -> ParseDiagnostic {
 	assert!(node.kind().is_bogus());
 	ParseDiagnostic::new(
-        "There are no parse errors but the parsed tree contains bogus nodes.",
-        node.text_trimmed_range()
-    )
-    .with_hint( "This bogus node is present in the parsed tree but the parser didn't emit a diagnostic for it. Change the parser to either emit a diagnostic, fix the grammar, or the parsing.")
+		"There are no parse errors but the parsed tree contains bogus nodes.",
+		node.text_trimmed_range(),
+	)
+	.with_hint(
+		"This bogus node is present in the parsed tree but the parser didn't emit a diagnostic \
+		 for it. Change the parser to either emit a diagnostic, fix the grammar, or the parsing.",
+	)
 }
 
 #[derive(Clone, Debug)]
 pub(crate) struct TestCaseFiles {
-	files: Vec<TestCaseFile>,
+	files:Vec<TestCaseFile>,
 }
 
 impl TestCaseFiles {
 	pub(crate) fn single(
-		name: String,
-		code: String,
-		source_type: JsFileSource,
-		options: JsParserOptions,
+		name:String,
+		code:String,
+		source_type:JsFileSource,
+		options:JsParserOptions,
 	) -> Self {
-		Self { files: vec![TestCaseFile { name, code, source_type, options }] }
+		Self { files:vec![TestCaseFile { name, code, source_type, options }] }
 	}
 
-	pub(crate) fn new() -> Self {
-		Self { files: vec![] }
-	}
+	pub(crate) fn new() -> Self { Self { files:vec![] } }
 
 	pub(crate) fn add(
 		&mut self,
-		name: String,
-		code: String,
-		source_type: JsFileSource,
-		options: JsParserOptions,
+		name:String,
+		code:String,
+		source_type:JsFileSource,
+		options:JsParserOptions,
 	) {
 		self.files.push(TestCaseFile { name, code, source_type, options })
 	}
 
-	pub(crate) fn is_empty(&self) -> bool {
-		self.files.is_empty()
-	}
+	pub(crate) fn is_empty(&self) -> bool { self.files.is_empty() }
 
-	pub(crate) fn emit_errors(&self, errors: &[Error], buffer: &mut Buffer) {
+	pub(crate) fn emit_errors(&self, errors:&[Error], buffer:&mut Buffer) {
 		for error in errors {
-			if let Err(err) = Formatter::new(&mut Termcolor(&mut *buffer))
-				.write_markup(markup! {
-					{PrintDiagnostic::verbose(error)}
-				}) {
+			if let Err(err) = Formatter::new(&mut Termcolor(&mut *buffer)).write_markup(markup! {
+				{PrintDiagnostic::verbose(error)}
+			}) {
 				eprintln!("Failed to print diagnostic: {err}");
 			}
 		}
@@ -150,16 +147,15 @@ impl TestCaseFiles {
 }
 
 impl<'a> IntoIterator for &'a TestCaseFiles {
-	type Item = &'a TestCaseFile;
 	type IntoIter = std::slice::Iter<'a, TestCaseFile>;
+	type Item = &'a TestCaseFile;
 
-	fn into_iter(self) -> Self::IntoIter {
-		self.files.iter()
-	}
+	fn into_iter(self) -> Self::IntoIter { self.files.iter() }
 }
 
 pub(crate) trait TestCase: RefUnwindSafe + Send + Sync {
-	/// Returns the (display) name of the test case. Used to uniquely identify the test case
+	/// Returns the (display) name of the test case. Used to uniquely identify
+	/// the test case
 	fn name(&self) -> &str;
 
 	/// Runs the test case
@@ -169,43 +165,37 @@ pub(crate) trait TestCase: RefUnwindSafe + Send + Sync {
 pub(crate) trait TestSuite: Send + Sync {
 	fn name(&self) -> &str;
 	fn base_path(&self) -> &str;
-	fn is_test(&self, path: &Path) -> bool;
-	fn load_test(&self, path: &Path) -> Option<Box<dyn TestCase>>;
+	fn is_test(&self, path:&Path) -> bool;
+	fn load_test(&self, path:&Path) -> Option<Box<dyn TestCase>>;
 	fn checkout(&self) -> io::Result<()>;
 }
 
 pub(crate) struct TestSuiteInstance {
-	name: String,
-	tests: Vec<Box<dyn TestCase>>,
+	name:String,
+	tests:Vec<Box<dyn TestCase>>,
 }
 
 impl TestSuiteInstance {
-	pub fn new(suite: &dyn TestSuite, tests: Vec<Box<dyn TestCase>>) -> Self {
-		Self { tests, name: suite.name().to_string() }
+	pub fn new(suite:&dyn TestSuite, tests:Vec<Box<dyn TestCase>>) -> Self {
+		Self { tests, name:suite.name().to_string() }
 	}
 
-	pub fn name(&self) -> &str {
-		&self.name
-	}
+	pub fn name(&self) -> &str { &self.name }
 
-	pub fn len(&self) -> usize {
-		self.tests.len()
-	}
+	pub fn len(&self) -> usize { self.tests.len() }
 
-	pub fn iter(&self) -> impl Iterator<Item = &Box<dyn TestCase>> {
-		self.tests.iter()
-	}
+	pub fn iter(&self) -> impl Iterator<Item = &Box<dyn TestCase>> { self.tests.iter() }
 }
 
 pub(crate) struct TestRunContext<'a> {
-	pub(crate) filter: Option<String>,
-	pub(crate) reporter: &'a mut dyn TestReporter,
-	pub(crate) pool: &'a Pool,
+	pub(crate) filter:Option<String>,
+	pub(crate) reporter:&'a mut dyn TestReporter,
+	pub(crate) pool:&'a Pool,
 }
 
 pub(crate) fn run_test_suite(
-	test_suite: &dyn TestSuite,
-	context: &mut TestRunContext,
+	test_suite:&dyn TestSuite,
+	context:&mut TestRunContext,
 ) -> TestResults {
 	test_suite.checkout().expect("To checkout the repository");
 	context.reporter.test_suite_started(test_suite);
@@ -224,9 +214,7 @@ pub(crate) fn run_test_suite(
 				if let Some(file) = s.filename() {
 					// We don't care about std or cargo registry libs
 					let file_path = file.as_os_str().to_str().unwrap();
-					if file_path.starts_with("/rustc")
-						|| file_path.contains(".cargo")
-					{
+					if file_path.starts_with("/rustc") || file_path.contains(".cargo") {
 						continue;
 					}
 
@@ -260,11 +248,7 @@ pub(crate) fn run_test_suite(
 		let _ = write!(msg, "{info}");
 		let msg = String::from_utf8(msg).unwrap();
 
-		tracing::error!(
-			panic = msg.as_str(),
-			stacktrace = stacktrace.as_str(),
-			"Test panicked"
-		);
+		tracing::error!(panic = msg.as_str(), stacktrace = stacktrace.as_str(), "Test panicked");
 	}));
 
 	let mut test_results = TestResults::new();
@@ -272,14 +256,11 @@ pub(crate) fn run_test_suite(
 
 	context.pool.scoped(|scope| {
 		scope.execute(|| {
-			let mut results: Vec<TestResult> =
-				Vec::with_capacity(instance.len());
+			let mut results:Vec<TestResult> = Vec::with_capacity(instance.len());
 			for result in rx {
 				context.reporter.test_completed(&result);
-				results.push(TestResult {
-					test_case: result.test_case,
-					outcome: result.outcome.into(),
-				});
+				results
+					.push(TestResult { test_case:result.test_case, outcome:result.outcome.into() });
 			}
 			test_results.store_results(results);
 		});
@@ -290,18 +271,13 @@ pub(crate) fn run_test_suite(
 			scope.execute(move || {
 				let test_ref = test.as_ref();
 
-				let outcome = match std::panic::catch_unwind(|| test_ref.run())
-				{
+				let outcome = match std::panic::catch_unwind(|| test_ref.run()) {
 					Ok(result) => result,
 					Err(panic) => {
 						let error = panic
 							.downcast_ref::<String>()
 							.map(|x| x.to_string())
-							.or_else(|| {
-								panic
-									.downcast_ref::<&str>()
-									.map(|x| (*x).to_string())
-							})
+							.or_else(|| panic.downcast_ref::<&str>().map(|x| (*x).to_string()))
 							.unwrap_or_default();
 						tracing::error!(
 							panic = error.as_str(),
@@ -312,11 +288,7 @@ pub(crate) fn run_test_suite(
 					},
 				};
 
-				tx.send(TestRunResult {
-					test_case: test.name().to_owned(),
-					outcome,
-				})
-				.unwrap();
+				tx.send(TestRunResult { test_case:test.name().to_owned(), outcome }).unwrap();
 			});
 		}
 
@@ -330,10 +302,7 @@ pub(crate) fn run_test_suite(
 	test_results
 }
 
-fn load_tests(
-	suite: &dyn TestSuite,
-	context: &mut TestRunContext,
-) -> TestSuiteInstance {
+fn load_tests(suite:&dyn TestSuite, context:&mut TestRunContext) -> TestSuiteInstance {
 	let paths = WalkDir::new(suite.base_path())
 		.into_iter()
 		.filter_map(Result::ok)
@@ -361,7 +330,7 @@ fn load_tests(
 	context.reporter.tests_discovered(suite, paths.len());
 
 	let (tx, rx) = std::sync::mpsc::channel();
-	let mut tests: Vec<Box<dyn TestCase>> = Vec::with_capacity(paths.len());
+	let mut tests:Vec<Box<dyn TestCase>> = Vec::with_capacity(paths.len());
 
 	context.pool.scoped(|scope| {
 		scope.execute(|| {

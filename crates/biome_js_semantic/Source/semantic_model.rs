@@ -11,16 +11,6 @@ mod scope;
 #[cfg(test)]
 mod tests;
 
-use crate::{SemanticEvent, SemanticEventExtractor};
-use biome_js_syntax::{
-	AnyJsExpression, AnyJsRoot, JsIdentifierAssignment, JsIdentifierBinding,
-	JsLanguage, JsReferenceIdentifier, JsSyntaxKind, JsSyntaxNode,
-	JsxReferenceIdentifier, TextRange, TextSize, TsIdentifierBinding,
-};
-use biome_rowan::AstNode;
-pub use closure::*;
-use rust_lapper::{Interval, Lapper};
-use rustc_hash::{FxHashMap, FxHashSet};
 use std::{
 	collections::{BTreeSet, VecDeque},
 	iter::FusedIterator,
@@ -28,28 +18,45 @@ use std::{
 };
 
 pub use binding::*;
+use biome_js_syntax::{
+	AnyJsExpression,
+	AnyJsRoot,
+	JsIdentifierAssignment,
+	JsIdentifierBinding,
+	JsLanguage,
+	JsReferenceIdentifier,
+	JsSyntaxKind,
+	JsSyntaxNode,
+	JsxReferenceIdentifier,
+	TextRange,
+	TextSize,
+	TsIdentifierBinding,
+};
+use biome_rowan::AstNode;
 pub use builder::*;
-
+pub use closure::*;
 pub use globals::*;
 pub use import::*;
 pub use is_constant::*;
 pub use model::*;
 pub use reference::*;
+use rust_lapper::{Interval, Lapper};
+use rustc_hash::{FxHashMap, FxHashSet};
 pub use scope::*;
+
+use crate::{SemanticEvent, SemanticEventExtractor};
 
 /// Extra options for the [SemanticModel] creation.
 #[derive(Default)]
 pub struct SemanticModelOptions {
 	/// All the allowed globals names
-	pub globals: FxHashSet<String>,
+	pub globals:FxHashSet<String>,
 }
 
 /// Build the complete [SemanticModel] of a parsed file.
-/// For a push based model to build the [SemanticModel], see [SemanticModelBuilder].
-pub fn semantic_model(
-	root: &AnyJsRoot,
-	options: SemanticModelOptions,
-) -> SemanticModel {
+/// For a push based model to build the [SemanticModel], see
+/// [SemanticModelBuilder].
+pub fn semantic_model(root:&AnyJsRoot, options:SemanticModelOptions) -> SemanticModel {
 	let mut extractor = SemanticEventExtractor::default();
 	let mut builder = SemanticModelBuilder::new(root.clone());
 

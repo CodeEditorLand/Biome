@@ -3,20 +3,21 @@ use proc_macro_error::*;
 use quote::quote;
 
 use crate::parse::{
-	DeriveEnumInput, DeriveInput, DeriveStructInput, StaticOrDynamic,
+	DeriveEnumInput,
+	DeriveInput,
+	DeriveStructInput,
+	StaticOrDynamic,
 	StringOrMarkup,
 };
 
-pub(crate) fn generate_diagnostic(input: DeriveInput) -> TokenStream {
+pub(crate) fn generate_diagnostic(input:DeriveInput) -> TokenStream {
 	match input {
-		DeriveInput::DeriveStructInput(input) => {
-			generate_struct_diagnostic(input)
-		},
+		DeriveInput::DeriveStructInput(input) => generate_struct_diagnostic(input),
 		DeriveInput::DeriveEnumInput(input) => generate_enum_diagnostic(input),
 	}
 }
 
-fn generate_struct_diagnostic(input: DeriveStructInput) -> TokenStream {
+fn generate_struct_diagnostic(input:DeriveStructInput) -> TokenStream {
 	let category = generate_category(&input);
 	let severity = generate_severity(&input);
 	let description = generate_description(&input);
@@ -54,13 +55,17 @@ fn generate_struct_diagnostic(input: DeriveStructInput) -> TokenStream {
 	}
 }
 
-fn generate_category(input: &DeriveStructInput) -> TokenStream {
+fn generate_category(input:&DeriveStructInput) -> TokenStream {
 	let category = match &input.category {
-		Some(StaticOrDynamic::Static(value)) => quote! {
-			biome_diagnostics::category!(#value)
+		Some(StaticOrDynamic::Static(value)) => {
+			quote! {
+				biome_diagnostics::category!(#value)
+			}
 		},
-		Some(StaticOrDynamic::Dynamic(value)) => quote! {
-			self.#value
+		Some(StaticOrDynamic::Dynamic(value)) => {
+			quote! {
+				self.#value
+			}
 		},
 		None => return quote!(),
 	};
@@ -72,13 +77,17 @@ fn generate_category(input: &DeriveStructInput) -> TokenStream {
 	}
 }
 
-fn generate_severity(input: &DeriveStructInput) -> TokenStream {
+fn generate_severity(input:&DeriveStructInput) -> TokenStream {
 	let severity = match &input.severity {
-		Some(StaticOrDynamic::Static(value)) => quote! {
-			biome_diagnostics::Severity::#value
+		Some(StaticOrDynamic::Static(value)) => {
+			quote! {
+				biome_diagnostics::Severity::#value
+			}
 		},
-		Some(StaticOrDynamic::Dynamic(value)) => quote! {
-			self.#value
+		Some(StaticOrDynamic::Dynamic(value)) => {
+			quote! {
+				self.#value
+			}
 		},
 		None => return quote!(),
 	};
@@ -90,7 +99,7 @@ fn generate_severity(input: &DeriveStructInput) -> TokenStream {
 	}
 }
 
-fn generate_description(input: &DeriveStructInput) -> TokenStream {
+fn generate_description(input:&DeriveStructInput) -> TokenStream {
 	let description = match &input.description {
 		Some(StaticOrDynamic::Static(StringOrMarkup::String(value))) => {
 			let mut format_string = String::new();
@@ -154,8 +163,10 @@ fn generate_description(input: &DeriveStructInput) -> TokenStream {
 				fmt.write_str(::std::str::from_utf8(&buffer).map_err(|_| ::std::fmt::Error)?)
 			}
 		},
-		Some(StaticOrDynamic::Dynamic(value)) => quote! {
-			fmt.write_fmt(::std::format_args!("{}", self.#value))
+		Some(StaticOrDynamic::Dynamic(value)) => {
+			quote! {
+				fmt.write_fmt(::std::format_args!("{}", self.#value))
+			}
 		},
 		None => return quote!(),
 	};
@@ -167,7 +178,7 @@ fn generate_description(input: &DeriveStructInput) -> TokenStream {
 	}
 }
 
-fn generate_message(input: &DeriveStructInput) -> TokenStream {
+fn generate_message(input:&DeriveStructInput) -> TokenStream {
 	let message = match &input.message {
 		Some(StaticOrDynamic::Static(StringOrMarkup::String(value))) => {
 			quote! {
@@ -180,8 +191,10 @@ fn generate_message(input: &DeriveStructInput) -> TokenStream {
 				fmt.write_markup(biome_diagnostics::console::markup!{ #markup })
 			}
 		},
-		Some(StaticOrDynamic::Dynamic(value)) => quote! {
-			biome_diagnostics::console::fmt::Display::fmt(&self.#value, fmt)
+		Some(StaticOrDynamic::Dynamic(value)) => {
+			quote! {
+				biome_diagnostics::console::fmt::Display::fmt(&self.#value, fmt)
+			}
 		},
 		None => return quote!(),
 	};
@@ -193,7 +206,7 @@ fn generate_message(input: &DeriveStructInput) -> TokenStream {
 	}
 }
 
-fn generate_advices(input: &DeriveStructInput) -> TokenStream {
+fn generate_advices(input:&DeriveStructInput) -> TokenStream {
 	if input.advices.is_empty() {
 		return quote!();
 	}
@@ -208,7 +221,7 @@ fn generate_advices(input: &DeriveStructInput) -> TokenStream {
 	}
 }
 
-fn generate_verbose_advices(input: &DeriveStructInput) -> TokenStream {
+fn generate_verbose_advices(input:&DeriveStructInput) -> TokenStream {
 	if input.verbose_advices.is_empty() {
 		return quote!();
 	}
@@ -223,7 +236,7 @@ fn generate_verbose_advices(input: &DeriveStructInput) -> TokenStream {
 	}
 }
 
-fn generate_location(input: &DeriveStructInput) -> TokenStream {
+fn generate_location(input:&DeriveStructInput) -> TokenStream {
 	if input.location.is_empty() {
 		return quote!();
 	}
@@ -240,7 +253,7 @@ fn generate_location(input: &DeriveStructInput) -> TokenStream {
 	}
 }
 
-fn generate_tags(input: &DeriveStructInput) -> TokenStream {
+fn generate_tags(input:&DeriveStructInput) -> TokenStream {
 	let tags = match &input.tags {
 		Some(StaticOrDynamic::Static(value)) => {
 			let values = value.iter();
@@ -248,8 +261,10 @@ fn generate_tags(input: &DeriveStructInput) -> TokenStream {
 				#( biome_diagnostics::DiagnosticTags::#values )|*
 			}
 		},
-		Some(StaticOrDynamic::Dynamic(value)) => quote! {
-			self.#value
+		Some(StaticOrDynamic::Dynamic(value)) => {
+			quote! {
+				self.#value
+			}
 		},
 		None => return quote!(),
 	};
@@ -261,18 +276,20 @@ fn generate_tags(input: &DeriveStructInput) -> TokenStream {
 	}
 }
 
-fn generate_source(input: &DeriveStructInput) -> TokenStream {
+fn generate_source(input:&DeriveStructInput) -> TokenStream {
 	match &input.source {
-		Some(value) => quote! {
-			fn source(&self) -> Option<&dyn biome_diagnostics::Diagnostic> {
-				self.#value.as_deref()
+		Some(value) => {
+			quote! {
+				fn source(&self) -> Option<&dyn biome_diagnostics::Diagnostic> {
+					self.#value.as_deref()
+				}
 			}
 		},
 		None => quote!(),
 	}
 }
 
-fn generate_enum_diagnostic(input: DeriveEnumInput) -> TokenStream {
+fn generate_enum_diagnostic(input:DeriveEnumInput) -> TokenStream {
 	let generic_params = if !input.generics.params.is_empty() {
 		let lt_token = &input.generics.lt_token;
 		let params = &input.generics.params;
@@ -284,8 +301,7 @@ fn generate_enum_diagnostic(input: DeriveEnumInput) -> TokenStream {
 
 	let ident = input.ident;
 	let generics = input.generics;
-	let variants: Vec<_> =
-		input.variants.iter().map(|variant| &variant.ident).collect();
+	let variants:Vec<_> = input.variants.iter().map(|variant| &variant.ident).collect();
 
 	quote! {
 		impl #generic_params biome_diagnostics::Diagnostic for #ident #generics {

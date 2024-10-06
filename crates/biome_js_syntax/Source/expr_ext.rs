@@ -1,31 +1,72 @@
 //! Extensions for things which are not easily generated in ast expr nodes
-use crate::numbers::parse_js_number;
-use crate::static_value::StaticValue;
-use crate::{
-	inner_string_text, AnyJsArrowFunctionParameters, AnyJsCallArgument,
-	AnyJsClassMemberName, AnyJsExpression, AnyJsFunctionBody,
-	AnyJsLiteralExpression, AnyJsName, AnyJsObjectMemberName,
-	AnyJsTemplateElement, AnyTsEnumMemberName, JsArrayExpression, JsArrayHole,
-	JsAssignmentExpression, JsBinaryExpression, JsCallArgumentList,
-	JsCallArguments, JsCallExpression, JsComputedMemberAssignment,
-	JsComputedMemberExpression, JsConditionalExpression, JsDoWhileStatement,
-	JsForStatement, JsIfStatement, JsLiteralMemberName, JsLogicalExpression,
-	JsNewExpression, JsNumberLiteralExpression, JsObjectExpression,
-	JsPostUpdateExpression, JsPreUpdateExpression, JsReferenceIdentifier,
-	JsRegexLiteralExpression, JsStaticMemberExpression,
-	JsStringLiteralExpression, JsSyntaxKind, JsSyntaxNode, JsSyntaxToken,
-	JsTemplateChunkElement, JsTemplateExpression, JsUnaryExpression,
-	JsWhileStatement, OperatorPrecedence, TsStringLiteralType, T,
-};
-use biome_rowan::{
-	declare_node_union, AstNode, AstNodeList, AstSeparatedList, NodeOrToken,
-	SyntaxNodeCast, SyntaxResult, TextRange, TextSize, TokenText,
-};
 use core::iter;
 
-const GLOBAL_THIS: &str = "globalThis";
-const UNDEFINED: &str = "undefined";
-const WINDOW: &str = "window";
+use biome_rowan::{
+	declare_node_union,
+	AstNode,
+	AstNodeList,
+	AstSeparatedList,
+	NodeOrToken,
+	SyntaxNodeCast,
+	SyntaxResult,
+	TextRange,
+	TextSize,
+	TokenText,
+};
+
+use crate::{
+	inner_string_text,
+	numbers::parse_js_number,
+	static_value::StaticValue,
+	AnyJsArrowFunctionParameters,
+	AnyJsCallArgument,
+	AnyJsClassMemberName,
+	AnyJsExpression,
+	AnyJsFunctionBody,
+	AnyJsLiteralExpression,
+	AnyJsName,
+	AnyJsObjectMemberName,
+	AnyJsTemplateElement,
+	AnyTsEnumMemberName,
+	JsArrayExpression,
+	JsArrayHole,
+	JsAssignmentExpression,
+	JsBinaryExpression,
+	JsCallArgumentList,
+	JsCallArguments,
+	JsCallExpression,
+	JsComputedMemberAssignment,
+	JsComputedMemberExpression,
+	JsConditionalExpression,
+	JsDoWhileStatement,
+	JsForStatement,
+	JsIfStatement,
+	JsLiteralMemberName,
+	JsLogicalExpression,
+	JsNewExpression,
+	JsNumberLiteralExpression,
+	JsObjectExpression,
+	JsPostUpdateExpression,
+	JsPreUpdateExpression,
+	JsReferenceIdentifier,
+	JsRegexLiteralExpression,
+	JsStaticMemberExpression,
+	JsStringLiteralExpression,
+	JsSyntaxKind,
+	JsSyntaxNode,
+	JsSyntaxToken,
+	JsTemplateChunkElement,
+	JsTemplateExpression,
+	JsUnaryExpression,
+	JsWhileStatement,
+	OperatorPrecedence,
+	TsStringLiteralType,
+	T,
+};
+
+const GLOBAL_THIS:&str = "globalThis";
+const UNDEFINED:&str = "undefined";
+const WINDOW:&str = "window";
 
 declare_node_union! {
 	pub JsNewOrCallExpression = JsNewExpression | JsCallExpression
@@ -42,9 +83,7 @@ impl JsNewOrCallExpression {
 	pub fn arguments(&self) -> Option<JsCallArguments> {
 		match self {
 			JsNewOrCallExpression::JsNewExpression(node) => node.arguments(),
-			JsNewOrCallExpression::JsCallExpression(node) => {
-				node.arguments().ok()
-			},
+			JsNewOrCallExpression::JsCallExpression(node) => node.arguments().ok(),
 		}
 	}
 }
@@ -55,46 +94,40 @@ impl JsReferenceIdentifier {
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_factory::make::{js_reference_identifier, ident};
+	/// use biome_js_factory::make::{ident, js_reference_identifier};
 	///
 	/// assert!(js_reference_identifier(ident("undefined")).is_undefined());
 	/// assert!(!js_reference_identifier(ident("x")).is_undefined());
 	/// ```
-	pub fn is_undefined(&self) -> bool {
-		self.has_name(UNDEFINED)
-	}
+	pub fn is_undefined(&self) -> bool { self.has_name(UNDEFINED) }
 
 	/// Returns `true` if this identifier refers to the `globalThis` symbol.
 	///
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_factory::make::{js_reference_identifier, ident};
+	/// use biome_js_factory::make::{ident, js_reference_identifier};
 	///
 	/// assert!(js_reference_identifier(ident("globalThis")).is_global_this());
 	/// assert!(!js_reference_identifier(ident("x")).is_global_this());
 	/// ```
-	pub fn is_global_this(&self) -> bool {
-		self.has_name(GLOBAL_THIS)
-	}
+	pub fn is_global_this(&self) -> bool { self.has_name(GLOBAL_THIS) }
 
 	/// Returns `true` if this identifier has the given name.
 	///
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_factory::make::{js_reference_identifier, ident};
+	/// use biome_js_factory::make::{ident, js_reference_identifier};
 	///
 	/// assert!(js_reference_identifier(ident("foo")).has_name("foo"));
 	/// assert!(!js_reference_identifier(ident("bar")).has_name("foo"));
 	/// ```
-	pub fn has_name(&self, name: &str) -> bool {
+	pub fn has_name(&self, name:&str) -> bool {
 		self.value_token().is_ok_and(|token| token.text_trimmed() == name)
 	}
 
-	pub fn name(&self) -> SyntaxResult<TokenText> {
-		Ok(self.value_token()?.token_text_trimmed())
-	}
+	pub fn name(&self) -> SyntaxResult<TokenText> { Ok(self.value_token()?.token_text_trimmed()) }
 }
 
 impl JsLiteralMemberName {
@@ -105,14 +138,14 @@ impl JsLiteralMemberName {
 	/// Getting the name of a static member containing a string literal
 	///
 	/// ```
-	/// use biome_js_syntax::{JsSyntaxKind, JsLanguage, JsSyntaxNode, JsLiteralMemberName};
 	/// use biome_js_factory::JsSyntaxTreeBuilder;
+	/// use biome_js_syntax::{JsLanguage, JsLiteralMemberName, JsSyntaxKind, JsSyntaxNode};
 	/// use biome_rowan::AstNode;
 	///
-	/// let node: JsSyntaxNode =
-	///     JsSyntaxTreeBuilder::wrap_with_node(JsSyntaxKind::JS_LITERAL_MEMBER_NAME, |builder| {
-	///         builder.token(JsSyntaxKind::JS_STRING_LITERAL, "\"abcd\"");
-	///     });
+	/// let node:JsSyntaxNode =
+	/// 	JsSyntaxTreeBuilder::wrap_with_node(JsSyntaxKind::JS_LITERAL_MEMBER_NAME, |builder| {
+	/// 		builder.token(JsSyntaxKind::JS_STRING_LITERAL, "\"abcd\"");
+	/// 	});
 	///
 	/// let static_member_name = JsLiteralMemberName::unwrap_cast(node);
 	///
@@ -122,14 +155,14 @@ impl JsLiteralMemberName {
 	/// Getting the name of a static member containing a number literal
 	///
 	/// ```
-	/// use biome_js_syntax::{JsSyntaxKind, JsLanguage, JsSyntaxNode, JsLiteralMemberName};
 	/// use biome_js_factory::JsSyntaxTreeBuilder;
+	/// use biome_js_syntax::{JsLanguage, JsLiteralMemberName, JsSyntaxKind, JsSyntaxNode};
 	/// use biome_rowan::AstNode;
 	///
-	/// let node: JsSyntaxNode =
-	///     JsSyntaxTreeBuilder::wrap_with_node(JsSyntaxKind::JS_LITERAL_MEMBER_NAME, |builder| {
-	///         builder.token(JsSyntaxKind::JS_NUMBER_LITERAL, "5");
-	///     });
+	/// let node:JsSyntaxNode =
+	/// 	JsSyntaxTreeBuilder::wrap_with_node(JsSyntaxKind::JS_LITERAL_MEMBER_NAME, |builder| {
+	/// 		builder.token(JsSyntaxKind::JS_NUMBER_LITERAL, "5");
+	/// 	});
 	///
 	/// let static_member_name = JsLiteralMemberName::unwrap_cast(node);
 	///
@@ -139,22 +172,20 @@ impl JsLiteralMemberName {
 	/// Getting the name of a static member containing an identifier
 	///
 	/// ```
-	/// use biome_js_syntax::{JsSyntaxKind, JsLanguage, JsSyntaxNode, JsLiteralMemberName};
 	/// use biome_js_factory::JsSyntaxTreeBuilder;
+	/// use biome_js_syntax::{JsLanguage, JsLiteralMemberName, JsSyntaxKind, JsSyntaxNode};
 	/// use biome_rowan::AstNode;
 	///
-	/// let node: JsSyntaxNode =
-	///     JsSyntaxTreeBuilder::wrap_with_node(JsSyntaxKind::JS_LITERAL_MEMBER_NAME, |builder| {
-	///         builder.token(JsSyntaxKind::IDENT, "abcd");
-	///     });
+	/// let node:JsSyntaxNode =
+	/// 	JsSyntaxTreeBuilder::wrap_with_node(JsSyntaxKind::JS_LITERAL_MEMBER_NAME, |builder| {
+	/// 		builder.token(JsSyntaxKind::IDENT, "abcd");
+	/// 	});
 	///
 	/// let static_member_name = JsLiteralMemberName::unwrap_cast(node);
 	///
 	/// assert_eq!("abcd", static_member_name.name().unwrap().text());
 	/// ```
-	pub fn name(&self) -> SyntaxResult<TokenText> {
-		Ok(inner_string_text(&self.value()?))
-	}
+	pub fn name(&self) -> SyntaxResult<TokenText> { Ok(inner_string_text(&self.value()?)) }
 }
 
 /// A binary operation applied to two expressions
@@ -217,13 +248,11 @@ impl JsBinaryOperator {
 			| JsBinaryOperator::Inequality
 			| JsBinaryOperator::StrictInequality => OperatorPrecedence::Equality,
 
-			JsBinaryOperator::Plus | JsBinaryOperator::Minus => {
-				OperatorPrecedence::Additive
-			},
+			JsBinaryOperator::Plus | JsBinaryOperator::Minus => OperatorPrecedence::Additive,
 
-			JsBinaryOperator::Times
-			| JsBinaryOperator::Divide
-			| JsBinaryOperator::Remainder => OperatorPrecedence::Multiplicative,
+			JsBinaryOperator::Times | JsBinaryOperator::Divide | JsBinaryOperator::Remainder => {
+				OperatorPrecedence::Multiplicative
+			},
 			JsBinaryOperator::Exponent => OperatorPrecedence::Exponential,
 
 			JsBinaryOperator::LeftShift
@@ -236,8 +265,8 @@ impl JsBinaryOperator {
 		}
 	}
 
-	/// Determines whether a binary operator is commutative, meaning that the order of its operands
-	/// does not affect the result.
+	/// Determines whether a binary operator is commutative, meaning that the
+	/// order of its operands does not affect the result.
 	///
 	/// # Examples
 	///
@@ -248,7 +277,7 @@ impl JsBinaryOperator {
 	///
 	/// assert!(times.is_commutative());
 	///
-	///  let plus = JsBinaryOperator::Plus; // Non-commutative operator
+	/// let plus = JsBinaryOperator::Plus; // Non-commutative operator
 	/// assert!(!plus.is_commutative());
 	/// ```
 	pub const fn is_commutative(&self) -> bool {
@@ -299,7 +328,8 @@ impl JsBinaryExpression {
 		)
 	}
 
-	/// Whether this is a binary operation, such as `<<`, `>>`, `>>>`, `&`, `|`, `^`.
+	/// Whether this is a binary operation, such as `<<`, `>>`, `>>>`, `&`, `|`,
+	/// `^`.
 	pub fn is_binary_operation(&self) -> bool {
 		matches!(
 			self.operator_token().map(|t| t.kind()),
@@ -307,15 +337,12 @@ impl JsBinaryExpression {
 		)
 	}
 
-	/// Whether this is a comparison operation, such as `>`, `<`, `==`, `!=`, `===`, etc.
+	/// Whether this is a comparison operation, such as `>`, `<`, `==`, `!=`,
+	/// `===`, etc.
 	pub fn is_comparison_operator(&self) -> bool {
 		matches!(
 			self.operator_token().map(|t| t.kind()),
-			Ok(T![>]
-				| T![<] | T![>=]
-				| T![<=] | T![==]
-				| T![===] | T![!=]
-				| T![!==])
+			Ok(T![>] | T![<] | T![>=] | T![<=] | T![==] | T![===] | T![!=] | T![!==])
 		)
 	}
 
@@ -325,17 +352,13 @@ impl JsBinaryExpression {
 	/// foo != undefined;
 	/// foo !== null;
 	/// foo != null;
-	///```
+	/// ```
 	pub fn is_optional_chain_like(&self) -> SyntaxResult<bool> {
 		if matches!(
 			self.operator(),
-			Ok(JsBinaryOperator::StrictInequality
-				| JsBinaryOperator::Inequality)
+			Ok(JsBinaryOperator::StrictInequality | JsBinaryOperator::Inequality)
 		) {
-			Ok(self
-				.right()?
-				.as_static_value()
-				.map_or(false, |x| x.is_null_or_undefined()))
+			Ok(self.right()?.as_static_value().map_or(false, |x| x.is_null_or_undefined()))
 		} else {
 			Ok(false)
 		}
@@ -355,9 +378,7 @@ pub enum JsLogicalOperator {
 impl JsLogicalOperator {
 	pub const fn precedence(&self) -> OperatorPrecedence {
 		match self {
-			JsLogicalOperator::NullishCoalescing => {
-				OperatorPrecedence::Coalesce
-			},
+			JsLogicalOperator::NullishCoalescing => OperatorPrecedence::Coalesce,
 			JsLogicalOperator::LogicalOr => OperatorPrecedence::LogicalOr,
 			JsLogicalOperator::LogicalAnd => OperatorPrecedence::LogicalAnd,
 		}
@@ -378,9 +399,7 @@ impl JsLogicalExpression {
 }
 
 impl JsArrayHole {
-	pub fn hole_token(&self) -> Option<JsSyntaxToken> {
-		None
-	}
+	pub fn hole_token(&self) -> Option<JsSyntaxToken> { None }
 }
 
 #[derive(Debug, Copy, Clone, PartialEq, Eq, Hash)]
@@ -402,9 +421,7 @@ pub enum JsUnaryOperator {
 }
 
 impl JsUnaryOperator {
-	pub const fn precedence(&self) -> OperatorPrecedence {
-		OperatorPrecedence::Unary
-	}
+	pub const fn precedence(&self) -> OperatorPrecedence { OperatorPrecedence::Unary }
 }
 
 impl JsUnaryExpression {
@@ -429,18 +446,15 @@ impl JsUnaryExpression {
 		Ok(matches!(operator, JsUnaryOperator::Void))
 	}
 
-	/// This function checks that `JsUnaryExpression` is a signed numeric literal:
-	/// ```js
+	/// This function checks that `JsUnaryExpression` is a signed numeric
+	/// literal: ```js
 	///     +123
 	///     -321
 	/// ```
 	pub fn is_signed_numeric_literal(&self) -> SyntaxResult<bool> {
 		let argument = self.argument()?;
 
-		let is_signed = matches!(
-			self.operator()?,
-			JsUnaryOperator::Plus | JsUnaryOperator::Minus
-		);
+		let is_signed = matches!(self.operator()?, JsUnaryOperator::Plus | JsUnaryOperator::Minus);
 
 		let is_numeric_literal = matches!(
 			argument,
@@ -462,9 +476,7 @@ pub enum JsPreUpdateOperator {
 }
 
 impl JsPreUpdateOperator {
-	pub const fn precedence(&self) -> OperatorPrecedence {
-		OperatorPrecedence::Unary
-	}
+	pub const fn precedence(&self) -> OperatorPrecedence { OperatorPrecedence::Unary }
 }
 
 impl JsPreUpdateExpression {
@@ -488,9 +500,7 @@ pub enum JsPostUpdateOperator {
 }
 
 impl JsPostUpdateOperator {
-	pub const fn precedence(&self) -> OperatorPrecedence {
-		OperatorPrecedence::Unary
-	}
+	pub const fn precedence(&self) -> OperatorPrecedence { OperatorPrecedence::Unary }
 }
 
 impl JsPostUpdateExpression {
@@ -552,19 +562,13 @@ impl JsAssignmentExpression {
 }
 
 impl JsArrayExpression {
-	pub fn has_trailing_comma(&self) -> bool {
-		self.elements().trailing_separator().is_some()
-	}
+	pub fn has_trailing_comma(&self) -> bool { self.elements().trailing_separator().is_some() }
 }
 
 impl JsObjectExpression {
-	pub fn has_trailing_comma(&self) -> bool {
-		self.members().trailing_separator().is_some()
-	}
+	pub fn has_trailing_comma(&self) -> bool { self.members().trailing_separator().is_some() }
 
-	pub fn is_empty(&self) -> bool {
-		self.members().is_empty()
-	}
+	pub fn is_empty(&self) -> bool { self.members().is_empty() }
 }
 
 impl JsNumberLiteralExpression {
@@ -574,8 +578,10 @@ impl JsNumberLiteralExpression {
 	/// use biome_js_factory::make;
 	/// use biome_rowan::TriviaPieceKind;
 	///
-	/// let number = make::js_number_literal_expression(make::js_number_literal("1.23")
-	///     .with_trailing_trivia(vec![(TriviaPieceKind::Whitespace, " ")]));
+	/// let number = make::js_number_literal_expression(
+	/// 	make::js_number_literal("1.23")
+	/// 		.with_trailing_trivia(vec![(TriviaPieceKind::Whitespace, " ")]),
+	/// );
 	/// assert_eq!(number.as_number().unwrap(), 1.23);
 	/// ```
 	pub fn as_number(&self) -> Option<f64> {
@@ -592,8 +598,10 @@ impl JsStringLiteralExpression {
 	/// use biome_js_factory::make;
 	/// use biome_rowan::TriviaPieceKind;
 	///
-	///let string = make::js_string_literal_expression(make::js_string_literal("foo")
-	///     .with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]));
+	/// let string = make::js_string_literal_expression(
+	/// 	make::js_string_literal("foo")
+	/// 		.with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]),
+	/// );
 	/// assert_eq!(string.inner_string_text().unwrap().text(), "foo");
 	/// ```
 	pub fn inner_string_text(&self) -> SyntaxResult<TokenText> {
@@ -602,62 +610,61 @@ impl JsStringLiteralExpression {
 }
 
 impl JsTemplateExpression {
-	/// Returns true if `self` is a template expression without a tag and without template elements.
+	/// Returns true if `self` is a template expression without a tag and
+	/// without template elements.
 	///
 	/// # Examples
 	///
 	/// ```
+	/// use std::iter;
+	///
 	/// use biome_js_factory::make;
 	/// use biome_js_syntax::{AnyJsExpression, AnyJsTemplateElement, JsSyntaxKind, JsSyntaxToken};
-	/// use std::iter;
 	///
 	/// let tick = make::token(JsSyntaxKind::BACKTICK);
 	/// let empty_str = make::js_template_expression(
-	///     tick.clone(),
-	///     make::js_template_element_list([]),
-	///     tick.clone(),
-	/// ).build();
+	/// 	tick.clone(),
+	/// 	make::js_template_element_list([]),
+	/// 	tick.clone(),
+	/// )
+	/// .build();
 	///
-	/// let chunk = AnyJsTemplateElement::JsTemplateChunkElement(
-	///     make::js_template_chunk_element(
-	///         JsSyntaxToken::new_detached(JsSyntaxKind::TEMPLATE_CHUNK, "text", [], [])
-	///     )
-	/// );
+	/// let chunk = AnyJsTemplateElement::JsTemplateChunkElement(make::js_template_chunk_element(
+	/// 	JsSyntaxToken::new_detached(JsSyntaxKind::TEMPLATE_CHUNK, "text", [], []),
+	/// ));
 	/// let constant_str = make::js_template_expression(
-	///     tick.clone(),
-	///     make::js_template_element_list([chunk.clone()]),
-	///     tick.clone(),
-	/// ).build();
+	/// 	tick.clone(),
+	/// 	make::js_template_element_list([chunk.clone()]),
+	/// 	tick.clone(),
+	/// )
+	/// .build();
 	///
 	/// let constant_str2 = make::js_template_expression(
-	///     tick.clone(),
-	///     make::js_template_element_list([chunk.clone(), chunk]),
-	///     tick.clone(),
-	/// ).build();
+	/// 	tick.clone(),
+	/// 	make::js_template_element_list([chunk.clone(), chunk]),
+	/// 	tick.clone(),
+	/// )
+	/// .build();
 	///
-	/// let template_elt = AnyJsTemplateElement::JsTemplateElement(
-	///     make::js_template_element(
-	///         JsSyntaxToken::new_detached(JsSyntaxKind::DOLLAR_CURLY, "${", [], []),
-	///         AnyJsExpression::JsIdentifierExpression(
-	///             make::js_identifier_expression(
-	///                 make::js_reference_identifier(make::ident("var")),
-	///             ),
-	///         ),
-	///         make::token(JsSyntaxKind::R_CURLY),
-	///     )
-	/// );
+	/// let template_elt = AnyJsTemplateElement::JsTemplateElement(make::js_template_element(
+	/// 	JsSyntaxToken::new_detached(JsSyntaxKind::DOLLAR_CURLY, "${", [], []),
+	/// 	AnyJsExpression::JsIdentifierExpression(make::js_identifier_expression(
+	/// 		make::js_reference_identifier(make::ident("var")),
+	/// 	)),
+	/// 	make::token(JsSyntaxKind::R_CURLY),
+	/// ));
 	/// let template_str = make::js_template_expression(
-	///     tick.clone(),
-	///     make::js_template_element_list([template_elt]),
-	///     tick,
-	/// ).build();
+	/// 	tick.clone(),
+	/// 	make::js_template_element_list([template_elt]),
+	/// 	tick,
+	/// )
+	/// .build();
 	///
 	/// assert!(empty_str.is_constant());
 	/// assert!(constant_str.is_constant());
 	/// assert!(constant_str2.is_constant());
 	/// assert!(!template_str.is_constant());
 	/// ```
-	///
 	pub fn is_constant(&self) -> bool {
 		self.tag().is_none()
 			&& self
@@ -682,18 +689,15 @@ impl JsTemplateExpression {
 			.children_with_tokens()
 			.filter_map(|x| x.into_token())
 			.find(|tok| tok.kind() == JsSyntaxKind::BACKTICK)?;
-		Some(TextRange::new(
-			start.text_range().start(),
-			self.syntax().text_range().end(),
-		))
+		Some(TextRange::new(start.text_range().start(), self.syntax().text_range().end()))
 	}
 
 	pub fn is_test_each_pattern(&self) -> bool {
-		self.is_test_each_pattern_callee()
-			&& self.is_test_each_pattern_elements()
+		self.is_test_each_pattern_callee() && self.is_test_each_pattern_elements()
 	}
 
-	/// This function checks if a call expressions has one of the following members:
+	/// This function checks if a call expressions has one of the following
+	/// members:
 	/// - `describe.each`
 	/// - `describe.only.each`
 	/// - `describe.skip.each`
@@ -755,13 +759,8 @@ impl JsTemplateExpression {
 		if let Some(tag) = self.tag() {
 			let mut members = CalleeNamesIterator::new(tag);
 
-			let texts: [Option<TokenText>; 5] = [
-				members.next(),
-				members.next(),
-				members.next(),
-				members.next(),
-				members.next(),
-			];
+			let texts:[Option<TokenText>; 5] =
+				[members.next(), members.next(), members.next(), members.next(), members.next()];
 
 			let mut rev = texts.iter().rev().flatten();
 
@@ -772,28 +771,38 @@ impl JsTemplateExpression {
 			let fifth = rev.next().map(|t| t.text());
 
 			match first {
-				Some("describe" | "xdescribe" | "fdescribe") => match second {
-					Some("each") => third.is_none(),
-					Some("skip" | "only") => match third {
-						Some("each") => fourth.is_none(),
+				Some("describe" | "xdescribe" | "fdescribe") => {
+					match second {
+						Some("each") => third.is_none(),
+						Some("skip" | "only") => {
+							match third {
+								Some("each") => fourth.is_none(),
+								_ => false,
+							}
+						},
 						_ => false,
-					},
-					_ => false,
+					}
 				},
 				Some("test" | "xtest" | "ftest" | "it" | "xit" | "fit") => {
 					match second {
 						Some("each") => third.is_none(),
-						Some("skip" | "only" | "failing") => match third {
-							Some("each") => fourth.is_none(),
-							_ => false,
-						},
-						Some("concurrent") => match third {
-							Some("each") => fourth.is_none(),
-							Some("only" | "skip") => match fourth {
-								Some("each") => fifth.is_none(),
+						Some("skip" | "only" | "failing") => {
+							match third {
+								Some("each") => fourth.is_none(),
 								_ => false,
-							},
-							_ => false,
+							}
+						},
+						Some("concurrent") => {
+							match third {
+								Some("each") => fourth.is_none(),
+								Some("only" | "skip") => {
+									match fourth {
+										Some("each") => fifth.is_none(),
+										_ => false,
+									}
+								},
+								_ => false,
+							}
 						},
 						_ => false,
 					}
@@ -810,22 +819,16 @@ impl JsTemplateExpression {
 
 		// the table must have a header as JsTemplateChunkElement
 		// e.g. a | b | expected
-		if !matches!(
-			iter.next(),
-			Some(AnyJsTemplateElement::JsTemplateChunkElement(_))
-		) {
+		if !matches!(iter.next(), Some(AnyJsTemplateElement::JsTemplateChunkElement(_))) {
 			return false;
 		}
 
 		// Guarding against skipped token trivia on elements that we remove.
-		// Because that would result in the skipped token trivia being emitted before the template.
+		// Because that would result in the skipped token trivia being emitted
+		// before the template.
 		for element in self.elements() {
-			if let AnyJsTemplateElement::JsTemplateChunkElement(element) =
-				element
-			{
-				if let Some(leading_trivia) =
-					element.syntax().first_leading_trivia()
-				{
+			if let AnyJsTemplateElement::JsTemplateChunkElement(element) = element {
+				if let Some(leading_trivia) = element.syntax().first_leading_trivia() {
 					if leading_trivia.has_skipped() {
 						return false;
 					}
@@ -844,19 +847,22 @@ impl JsRegexLiteralExpression {
 	/// use biome_js_factory::make;
 	/// use biome_js_syntax::{JsSyntaxKind, JsSyntaxToken};
 	///
-	/// let token = JsSyntaxToken::new_detached(JsSyntaxKind::JS_REGEX_LITERAL, &format!("/a+/igu"), [], []);
+	/// let token =
+	/// 	JsSyntaxToken::new_detached(JsSyntaxKind::JS_REGEX_LITERAL, &format!("/a+/igu"), [], []);
 	/// let regex = make::js_regex_literal_expression(token);
 	/// let (pattern, flags) = regex.decompose().unwrap();
 	/// assert_eq!(pattern.text(), "a+");
 	/// assert_eq!(flags.text(), "igu");
 	///
-	/// let token = JsSyntaxToken::new_detached(JsSyntaxKind::JS_REGEX_LITERAL, &format!("/a+/"), [], []);
+	/// let token =
+	/// 	JsSyntaxToken::new_detached(JsSyntaxKind::JS_REGEX_LITERAL, &format!("/a+/"), [], []);
 	/// let regex = make::js_regex_literal_expression(token);
 	/// let (pattern, flags) = regex.decompose().unwrap();
 	/// assert_eq!(pattern.text(), "a+");
 	/// assert_eq!(flags.text(), "");
 	///
-	/// let token = JsSyntaxToken::new_detached(JsSyntaxKind::JS_REGEX_LITERAL, &format!("/a+"), [], []);
+	/// let token =
+	/// 	JsSyntaxToken::new_detached(JsSyntaxKind::JS_REGEX_LITERAL, &format!("/a+"), [], []);
 	/// let regex = make::js_regex_literal_expression(token);
 	/// let (pattern, flags) = regex.decompose().unwrap();
 	/// assert_eq!(pattern.text(), "a+");
@@ -867,22 +873,17 @@ impl JsRegexLiteralExpression {
 		let text_trimmed = token.text_trimmed();
 		let token_text = token.token_text_trimmed();
 		let len = TextSize::from(text_trimmed.len() as u32);
-		let Some(end_slash_pos) = text_trimmed[1..].rfind('/').map(|x| x + 1)
-		else {
+		let Some(end_slash_pos) = text_trimmed[1..].rfind('/').map(|x| x + 1) else {
 			return Ok((
-				token_text
-					.clone()
-					.slice(TextRange::new(TextSize::from(1), len)),
+				token_text.clone().slice(TextRange::new(TextSize::from(1), len)),
 				token_text.slice(TextRange::empty(len)),
 			));
 		};
 		let end_slash_pos = end_slash_pos as u32;
-		let pattern = token_text.clone().slice(TextRange::new(
-			TextSize::from(1),
-			TextSize::from(end_slash_pos),
-		));
-		let flags = token_text
-			.slice(TextRange::new(TextSize::from(end_slash_pos + 1), len));
+		let pattern = token_text
+			.clone()
+			.slice(TextRange::new(TextSize::from(1), TextSize::from(end_slash_pos)));
+		let flags = token_text.slice(TextRange::new(TextSize::from(end_slash_pos + 1), len));
 		Ok((pattern, flags))
 	}
 }
@@ -904,28 +905,16 @@ impl AnyJsExpression {
 
 	pub fn precedence(&self) -> SyntaxResult<OperatorPrecedence> {
 		let precedence = match self {
-			AnyJsExpression::JsSequenceExpression(_) => {
-				OperatorPrecedence::Comma
-			},
+			AnyJsExpression::JsSequenceExpression(_) => OperatorPrecedence::Comma,
 			AnyJsExpression::JsYieldExpression(_) => OperatorPrecedence::Yield,
-			AnyJsExpression::JsConditionalExpression(_) => {
-				OperatorPrecedence::Conditional
-			},
-			AnyJsExpression::JsAssignmentExpression(_) => {
-				OperatorPrecedence::Assignment
-			},
+			AnyJsExpression::JsConditionalExpression(_) => OperatorPrecedence::Conditional,
+			AnyJsExpression::JsAssignmentExpression(_) => OperatorPrecedence::Assignment,
 			AnyJsExpression::JsInExpression(_)
 			| AnyJsExpression::JsInstanceofExpression(_)
 			| AnyJsExpression::TsAsExpression(_)
-			| AnyJsExpression::TsSatisfiesExpression(_) => {
-				OperatorPrecedence::Relational
-			},
-			AnyJsExpression::JsLogicalExpression(expression) => {
-				expression.operator()?.precedence()
-			},
-			AnyJsExpression::JsBinaryExpression(expression) => {
-				expression.operator()?.precedence()
-			},
+			| AnyJsExpression::TsSatisfiesExpression(_) => OperatorPrecedence::Relational,
+			AnyJsExpression::JsLogicalExpression(expression) => expression.operator()?.precedence(),
+			AnyJsExpression::JsBinaryExpression(expression) => expression.operator()?.precedence(),
 			AnyJsExpression::TsTypeAssertionExpression(_)
 			| AnyJsExpression::TsNonNullAssertionExpression(_)
 			| AnyJsExpression::JsUnaryExpression(_)
@@ -967,11 +956,10 @@ impl AnyJsExpression {
 				}
 			},
 
-			AnyJsExpression::JsBogusExpression(_)
-			| AnyJsExpression::JsMetavariable(_) => OperatorPrecedence::lowest(),
-			AnyJsExpression::JsParenthesizedExpression(_) => {
-				OperatorPrecedence::highest()
+			AnyJsExpression::JsBogusExpression(_) | AnyJsExpression::JsMetavariable(_) => {
+				OperatorPrecedence::lowest()
 			},
+			AnyJsExpression::JsParenthesizedExpression(_) => OperatorPrecedence::highest(),
 		};
 
 		Ok(precedence)
@@ -984,17 +972,12 @@ impl AnyJsExpression {
 
 	pub fn as_static_value(&self) -> Option<StaticValue> {
 		match self {
-			AnyJsExpression::AnyJsLiteralExpression(literal) => {
-				literal.as_static_value()
-			},
+			AnyJsExpression::AnyJsLiteralExpression(literal) => literal.as_static_value(),
 			AnyJsExpression::JsTemplateExpression(template) => {
 				let element_list = template.elements();
 				if element_list.len() == 0 {
-					let range = template
-						.l_tick_token()
-						.ok()?
-						.text_trimmed_range()
-						.add_start(1.into());
+					let range =
+						template.l_tick_token().ok()?.text_trimmed_range().add_start(1.into());
 					return Some(StaticValue::EmptyString(range));
 				}
 				if element_list.len() > 1 {
@@ -1002,16 +985,13 @@ impl AnyJsExpression {
 				}
 				match element_list.first()? {
 					AnyJsTemplateElement::JsTemplateChunkElement(element) => {
-						Some(StaticValue::String(
-							element.template_chunk_token().ok()?,
-						))
+						Some(StaticValue::String(element.template_chunk_token().ok()?))
 					},
 					_ => None,
 				}
 			},
 			AnyJsExpression::JsIdentifierExpression(identifier) => {
-				let identifier_token =
-					identifier.name().ok()?.value_token().ok()?;
+				let identifier_token = identifier.name().ok()?.value_token().ok()?;
 				match identifier_token.text_trimmed() {
 					UNDEFINED => Some(StaticValue::Undefined(identifier_token)),
 					_ => None,
@@ -1026,9 +1006,7 @@ impl AnyJsExpression {
 		identifier.value_token().ok()
 	}
 
-	pub fn get_callee_object_identifier(
-		&self,
-	) -> Option<JsReferenceIdentifier> {
+	pub fn get_callee_object_identifier(&self) -> Option<JsReferenceIdentifier> {
 		match self {
 			AnyJsExpression::JsStaticMemberExpression(node) => {
 				let member = node.object().ok()?;
@@ -1059,14 +1037,13 @@ impl AnyJsExpression {
 				let member = member.as_js_name()?;
 				member.value_token().ok()
 			},
-			AnyJsExpression::JsIdentifierExpression(node) => {
-				node.name().ok()?.value_token().ok()
-			},
+			AnyJsExpression::JsIdentifierExpression(node) => node.name().ok()?.value_token().ok(),
 			_ => None,
 		}
 	}
 
-	/// This function checks if a call expressions has one of the following members:
+	/// This function checks if a call expressions has one of the following
+	/// members:
 	/// - `it`
 	/// - `it.only`
 	/// - `it.skip`
@@ -1098,13 +1075,8 @@ impl AnyJsExpression {
 	pub fn contains_a_test_pattern(&self) -> SyntaxResult<bool> {
 		let mut members = CalleeNamesIterator::new(self.clone());
 
-		let texts: [Option<TokenText>; 5] = [
-			members.next(),
-			members.next(),
-			members.next(),
-			members.next(),
-			members.next(),
-		];
+		let texts:[Option<TokenText>; 5] =
+			[members.next(), members.next(), members.next(), members.next(), members.next()];
 
 		let mut rev = texts.iter().rev().flatten();
 
@@ -1115,30 +1087,35 @@ impl AnyJsExpression {
 		let fifth = rev.next().map(|t| t.text());
 
 		Ok(match first {
-			Some("it" | "describe" | "Deno") => match second {
-				None => true,
-				Some("only" | "skip" | "test") => third.is_none(),
-				_ => false,
-			},
-			Some("test") => match second {
-				None => true,
-				Some("only" | "skip" | "step") => third.is_none(),
-				Some("describe") => match third {
+			Some("it" | "describe" | "Deno") => {
+				match second {
 					None => true,
-					Some("only") => fourth.is_none(),
-					Some("parallel" | "serial") => match fourth {
-						None => true,
-						Some("only") => fifth.is_none(),
-						_ => false,
+					Some("only" | "skip" | "test") => third.is_none(),
+					_ => false,
+				}
+			},
+			Some("test") => {
+				match second {
+					None => true,
+					Some("only" | "skip" | "step") => third.is_none(),
+					Some("describe") => {
+						match third {
+							None => true,
+							Some("only") => fourth.is_none(),
+							Some("parallel" | "serial") => {
+								match fourth {
+									None => true,
+									Some("only") => fifth.is_none(),
+									_ => false,
+								}
+							},
+							_ => false,
+						}
 					},
 					_ => false,
-				},
-				_ => false,
+				}
 			},
-			Some(
-				"skip" | "xit" | "xdescribe" | "xtest" | "fit" | "fdescribe"
-				| "ftest",
-			) => true,
+			Some("skip" | "xit" | "xdescribe" | "xtest" | "fit" | "fdescribe" | "ftest") => true,
 			_ => false,
 		})
 	}
@@ -1162,7 +1139,7 @@ impl AnyJsExpression {
 	pub fn contains_it_call(&self) -> bool {
 		let mut members = CalleeNamesIterator::new(self.clone());
 
-		let texts: [Option<TokenText>; 2] = [members.next(), members.next()];
+		let texts:[Option<TokenText>; 2] = [members.next(), members.next()];
 
 		let mut rev = texts.iter().rev().flatten();
 
@@ -1183,7 +1160,7 @@ impl AnyJsExpression {
 	pub fn to_assertion_call(&self) -> Option<TokenText> {
 		let mut members = CalleeNamesIterator::new(self.clone());
 
-		let texts: [Option<TokenText>; 2] = [members.next(), members.next()];
+		let texts:[Option<TokenText>; 2] = [members.next(), members.next()];
 
 		let mut rev = texts.iter().rev().flatten();
 
@@ -1193,11 +1170,7 @@ impl AnyJsExpression {
 		match first {
 			Some(first) => {
 				if first.text() == "assert" {
-					if second.is_some() {
-						Some(first.clone())
-					} else {
-						None
-					}
+					if second.is_some() { Some(first.clone()) } else { None }
 				} else if matches!(first.text(), "expect" | "assertEquals") {
 					Some(first.clone())
 				} else {
@@ -1264,17 +1237,16 @@ impl AnyJsExpression {
 
 			// Static template literals: `foo`
 			AnyJsExpression::JsTemplateExpression(template_expression) => {
-				template_expression.elements().into_iter().all(|element| {
-					element.as_js_template_chunk_element().is_some()
-				})
+				template_expression
+					.elements()
+					.into_iter()
+					.all(|element| element.as_js_template_chunk_element().is_some())
 			},
 
 			// Negative numeric literal: -1
 			AnyJsExpression::JsUnaryExpression(unary_expression) => {
-				let is_minus_operator = matches!(
-					unary_expression.operator(),
-					Ok(JsUnaryOperator::Minus)
-				);
+				let is_minus_operator =
+					matches!(unary_expression.operator(), Ok(JsUnaryOperator::Minus));
 				let is_number_expression = matches!(
 					unary_expression.argument(),
 					Ok(AnyJsExpression::AnyJsLiteralExpression(
@@ -1286,12 +1258,12 @@ impl AnyJsExpression {
 			},
 
 			// Parenthesized expression: (1)
-			AnyJsExpression::JsParenthesizedExpression(
-				parenthesized_expression,
-			) => parenthesized_expression
-				.expression()
-				.ok()
-				.map_or(false, |expression| expression.is_literal_expression()),
+			AnyJsExpression::JsParenthesizedExpression(parenthesized_expression) => {
+				parenthesized_expression
+					.expression()
+					.ok()
+					.map_or(false, |expression| expression.is_literal_expression())
+			},
 
 			_ => false,
 		}
@@ -1306,13 +1278,11 @@ impl AnyJsExpression {
 /// it.only() -> [`only`, `it`]
 /// ```
 struct CalleeNamesIterator {
-	next: Option<AnyJsExpression>,
+	next:Option<AnyJsExpression>,
 }
 
 impl CalleeNamesIterator {
-	fn new(callee: AnyJsExpression) -> Self {
-		Self { next: Some(callee) }
-	}
+	fn new(callee:AnyJsExpression) -> Self { Self { next:Some(callee) } }
 }
 
 impl Iterator for CalleeNamesIterator {
@@ -1324,18 +1294,18 @@ impl Iterator for CalleeNamesIterator {
 		let current = self.next.take()?;
 
 		match current {
-			JsIdentifierExpression(identifier) => identifier
-				.name()
-				.and_then(|reference| reference.value_token())
-				.ok()
-				.map(|value| value.token_text_trimmed()),
+			JsIdentifierExpression(identifier) => {
+				identifier
+					.name()
+					.and_then(|reference| reference.value_token())
+					.ok()
+					.map(|value| value.token_text_trimmed())
+			},
 			JsStaticMemberExpression(member_expression) => {
 				match member_expression.member() {
 					Ok(AnyJsName::JsName(name)) => {
 						self.next = member_expression.object().ok();
-						name.value_token()
-							.ok()
-							.map(|name| name.token_text_trimmed())
+						name.value_token().ok().map(|name| name.token_text_trimmed())
 					},
 					_ => None,
 				}
@@ -1354,9 +1324,7 @@ impl AnyJsLiteralExpression {
 			AnyJsLiteralExpression::JsBooleanLiteralExpression(expression) => {
 				expression.value_token()
 			},
-			AnyJsLiteralExpression::JsNullLiteralExpression(expression) => {
-				expression.value_token()
-			},
+			AnyJsLiteralExpression::JsNullLiteralExpression(expression) => expression.value_token(),
 			AnyJsLiteralExpression::JsNumberLiteralExpression(expression) => {
 				expression.value_token()
 			},
@@ -1403,7 +1371,8 @@ impl JsStaticMemberExpression {
 		self.operator_token().map(|token| token.kind()) == Ok(T![?.])
 	}
 
-	/// Returns true if this member has an optional token or any member expression on the left side.
+	/// Returns true if this member has an optional token or any member
+	/// expression on the left side.
 	///
 	/// ```javascript
 	/// a.b -> false
@@ -1423,11 +1392,10 @@ impl JsComputedMemberExpression {
 	/// a?.[b] -> true
 	/// a?.b.c.d[e] -> false
 	/// ```
-	pub fn is_optional(&self) -> bool {
-		self.optional_chain_token().is_some()
-	}
+	pub fn is_optional(&self) -> bool { self.optional_chain_token().is_some() }
 
-	/// Returns true if this member has an optional token or any member expression on the left side.
+	/// Returns true if this member has an optional token or any member
+	/// expression on the left side.
 	///
 	/// ```javascript
 	/// a[b] -> false
@@ -1446,12 +1414,8 @@ declare_node_union! {
 impl AnyJsComputedMember {
 	pub fn object(&self) -> SyntaxResult<AnyJsExpression> {
 		match self {
-			AnyJsComputedMember::JsComputedMemberExpression(expression) => {
-				expression.object()
-			},
-			AnyJsComputedMember::JsComputedMemberAssignment(assignment) => {
-				assignment.object()
-			},
+			AnyJsComputedMember::JsComputedMemberExpression(expression) => expression.object(),
+			AnyJsComputedMember::JsComputedMemberAssignment(assignment) => assignment.object(),
 		}
 	}
 
@@ -1477,12 +1441,8 @@ impl AnyJsComputedMember {
 
 	pub fn member(&self) -> SyntaxResult<AnyJsExpression> {
 		match self {
-			AnyJsComputedMember::JsComputedMemberExpression(expression) => {
-				expression.member()
-			},
-			AnyJsComputedMember::JsComputedMemberAssignment(assignment) => {
-				assignment.member()
-			},
+			AnyJsComputedMember::JsComputedMemberExpression(expression) => expression.member(),
+			AnyJsComputedMember::JsComputedMemberAssignment(assignment) => assignment.member(),
 		}
 	}
 
@@ -1505,16 +1465,13 @@ declare_node_union! {
 impl AnyJsMemberExpression {
 	pub fn object(&self) -> SyntaxResult<AnyJsExpression> {
 		match self {
-			AnyJsMemberExpression::JsStaticMemberExpression(expr) => {
-				expr.object()
-			},
-			AnyJsMemberExpression::JsComputedMemberExpression(expr) => {
-				expr.object()
-			},
+			AnyJsMemberExpression::JsStaticMemberExpression(expr) => expr.object(),
+			AnyJsMemberExpression::JsComputedMemberExpression(expr) => expr.object(),
 		}
 	}
 
-	/// Returns the member name of `self` if `self` is a static member or a computed member with a literal string.
+	/// Returns the member name of `self` if `self` is a static member or a
+	/// computed member with a literal string.
 	///
 	/// ## Examples
 	///
@@ -1542,17 +1499,12 @@ impl AnyJsMemberExpression {
 	pub fn member_name(&self) -> Option<StaticValue> {
 		let value = match self {
 			AnyJsMemberExpression::JsStaticMemberExpression(e) => {
-				StaticValue::String(
-					e.member().ok()?.as_js_name()?.value_token().ok()?,
-				)
+				StaticValue::String(e.member().ok()?.as_js_name()?.value_token().ok()?)
 			},
 			AnyJsMemberExpression::JsComputedMemberExpression(e) => {
 				let member = e.member().ok()?.omit_parentheses();
 				let result = member.as_static_value()?;
-				if !matches!(
-					result,
-					StaticValue::String(_) | StaticValue::EmptyString(_)
-				) {
+				if !matches!(result, StaticValue::String(_) | StaticValue::EmptyString(_)) {
 					return None;
 				}
 				result
@@ -1580,19 +1532,16 @@ impl AnyJsOptionalChainExpression {
 			Self::JsStaticMemberExpression(expr) => {
 				expr.operator_token().ok().filter(|x| x.kind() == T![?.])
 			},
-			Self::JsComputedMemberExpression(expr) => {
-				expr.optional_chain_token()
-			},
+			Self::JsComputedMemberExpression(expr) => expr.optional_chain_token(),
 			Self::JsCallExpression(expr) => expr.optional_chain_token(),
 		}
 	}
 
 	/// Returns `true` if this expression has an optional chain token.
-	pub fn is_optional(&self) -> bool {
-		self.optional_chain_token().is_some()
-	}
+	pub fn is_optional(&self) -> bool { self.optional_chain_token().is_some() }
 
-	/// Returns `true` if this expression is a chain of at least one expression with an optional chain token.
+	/// Returns `true` if this expression is a chain of at least one expression
+	/// with an optional chain token.
 	///
 	/// ```
 	/// use biome_js_syntax::{AnyJsExpression, AnyJsLiteralExpression, AnyJsOptionalChainExpression, T};
@@ -1616,9 +1565,8 @@ impl AnyJsOptionalChainExpression {
 			return true;
 		}
 		let mut current_expression = self.object();
-		while let Some(member_expr) = current_expression
-			.ok()
-			.and_then(|expr| Self::cast(expr.into_syntax()))
+		while let Some(member_expr) =
+			current_expression.ok().and_then(|expr| Self::cast(expr.into_syntax()))
 		{
 			if member_expr.optional_chain_token().is_some() {
 				return true;
@@ -1630,30 +1578,27 @@ impl AnyJsOptionalChainExpression {
 }
 
 impl From<AnyJsOptionalChainExpression> for AnyJsExpression {
-	fn from(node: AnyJsOptionalChainExpression) -> AnyJsExpression {
+	fn from(node:AnyJsOptionalChainExpression) -> AnyJsExpression {
 		match node {
-			AnyJsOptionalChainExpression::JsStaticMemberExpression(
-				expression,
-			) => expression.into(),
-			AnyJsOptionalChainExpression::JsComputedMemberExpression(
-				expression,
-			) => expression.into(),
-			AnyJsOptionalChainExpression::JsCallExpression(expression) => {
+			AnyJsOptionalChainExpression::JsStaticMemberExpression(expression) => expression.into(),
+			AnyJsOptionalChainExpression::JsComputedMemberExpression(expression) => {
 				expression.into()
 			},
+			AnyJsOptionalChainExpression::JsCallExpression(expression) => expression.into(),
 		}
 	}
 }
 
 impl AnyJsObjectMemberName {
 	/// Returns the member name of the current node
-	/// if it is a literal member name or a computed member with a literal value.
+	/// if it is a literal member name or a computed member with a literal
+	/// value.
 	///
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_syntax::{AnyJsObjectMemberName, AnyJsExpression, AnyJsLiteralExpression, T};
 	/// use biome_js_factory::make;
+	/// use biome_js_syntax::{AnyJsExpression, AnyJsLiteralExpression, AnyJsObjectMemberName, T};
 	///
 	/// let name = make::js_literal_member_name(make::ident("a"));
 	/// let name = AnyJsObjectMemberName::JsLiteralMemberName(name);
@@ -1668,8 +1613,10 @@ impl AnyJsObjectMemberName {
 	/// assert_eq!(number_name.name().unwrap().text(), "42");
 	///
 	/// let string_literal = make::js_string_literal_expression(make::js_string_literal("a"));
-	/// let string_literal = AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::from(string_literal));
-	/// let computed = make::js_computed_member_name(make::token(T!['[']), string_literal, make::token(T![']']));
+	/// let string_literal =
+	/// 	AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::from(string_literal));
+	/// let computed =
+	/// 	make::js_computed_member_name(make::token(T!['[']), string_literal, make::token(T![']']));
 	/// let computed = AnyJsObjectMemberName::JsComputedMemberName(computed);
 	/// assert_eq!(computed.name().unwrap().text(), "a");
 	/// ```
@@ -1678,9 +1625,7 @@ impl AnyJsObjectMemberName {
 			AnyJsObjectMemberName::JsComputedMemberName(expr) => {
 				let expr = expr.expression().ok()?;
 				match expr.omit_parentheses() {
-					AnyJsExpression::AnyJsLiteralExpression(expr) => {
-						expr.value_token().ok()?
-					},
+					AnyJsExpression::AnyJsLiteralExpression(expr) => expr.value_token().ok()?,
 					AnyJsExpression::JsTemplateExpression(expr) => {
 						if !expr.is_constant() {
 							return None;
@@ -1692,9 +1637,7 @@ impl AnyJsObjectMemberName {
 					_ => return None,
 				}
 			},
-			AnyJsObjectMemberName::JsLiteralMemberName(expr) => {
-				expr.value().ok()?
-			},
+			AnyJsObjectMemberName::JsLiteralMemberName(expr) => expr.value().ok()?,
 			AnyJsObjectMemberName::JsMetavariable(_) => return None,
 		};
 		Some(inner_string_text(&token))
@@ -1703,13 +1646,14 @@ impl AnyJsObjectMemberName {
 
 impl AnyTsEnumMemberName {
 	/// Returns the member name of the current node
-	/// if it is a literal member name or a computed member with a literal value.
+	/// if it is a literal member name or a computed member with a literal
+	/// value.
 	///
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_syntax::{AnyTsEnumMemberName, AnyJsExpression, AnyJsLiteralExpression, T};
 	/// use biome_js_factory::make;
+	/// use biome_js_syntax::{AnyJsExpression, AnyJsLiteralExpression, AnyTsEnumMemberName, T};
 	///
 	/// let name = make::ts_literal_enum_member_name(make::ident("a"));
 	/// let name = AnyTsEnumMemberName::TsLiteralEnumMemberName(name);
@@ -1724,8 +1668,10 @@ impl AnyTsEnumMemberName {
 	/// assert_eq!(number_name.name().unwrap().text(), "42");
 	///
 	/// let string_literal = make::js_string_literal_expression(make::js_string_literal("a"));
-	/// let string_literal = AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::from(string_literal));
-	/// let computed = make::js_computed_member_name(make::token(T!['[']), string_literal, make::token(T![']']));
+	/// let string_literal =
+	/// 	AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::from(string_literal));
+	/// let computed =
+	/// 	make::js_computed_member_name(make::token(T!['[']), string_literal, make::token(T![']']));
 	/// let computed = AnyTsEnumMemberName::JsComputedMemberName(computed);
 	/// assert_eq!(computed.name().unwrap().text(), "a");
 	/// ```
@@ -1734,9 +1680,7 @@ impl AnyTsEnumMemberName {
 			AnyTsEnumMemberName::JsComputedMemberName(expr) => {
 				let expr = expr.expression().ok()?;
 				match expr.omit_parentheses() {
-					AnyJsExpression::AnyJsLiteralExpression(expr) => {
-						expr.value_token().ok()?
-					},
+					AnyJsExpression::AnyJsLiteralExpression(expr) => expr.value_token().ok()?,
 					AnyJsExpression::JsTemplateExpression(expr) => {
 						if !expr.is_constant() {
 							return None;
@@ -1748,9 +1692,7 @@ impl AnyTsEnumMemberName {
 					_ => return None,
 				}
 			},
-			AnyTsEnumMemberName::TsLiteralEnumMemberName(expr) => {
-				expr.value().ok()?
-			},
+			AnyTsEnumMemberName::TsLiteralEnumMemberName(expr) => expr.value().ok()?,
 		};
 		Some(inner_string_text(&token))
 	}
@@ -1774,7 +1716,7 @@ impl ClassMemberName {
 	}
 }
 impl From<ClassMemberName> for TokenText {
-	fn from(value: ClassMemberName) -> Self {
+	fn from(value:ClassMemberName) -> Self {
 		match value {
 			ClassMemberName::Private(name) => name,
 			ClassMemberName::Public(name) => name,
@@ -1784,13 +1726,14 @@ impl From<ClassMemberName> for TokenText {
 
 impl AnyJsClassMemberName {
 	/// Returns the member name of the current node
-	/// if it is a literal, a computed, or a private class member with a literal value.
+	/// if it is a literal, a computed, or a private class member with a literal
+	/// value.
 	///
 	/// ## Examples
 	///
 	/// ```
-	/// use biome_js_syntax::{AnyJsClassMemberName, AnyJsExpression, AnyJsLiteralExpression, T};
 	/// use biome_js_factory::make;
+	/// use biome_js_syntax::{AnyJsClassMemberName, AnyJsExpression, AnyJsLiteralExpression, T};
 	///
 	/// let name = make::js_literal_member_name(make::ident("a"));
 	/// let name = AnyJsClassMemberName::JsLiteralMemberName(name);
@@ -1805,8 +1748,10 @@ impl AnyJsClassMemberName {
 	/// assert_eq!(number_name.name().unwrap().text(), "42");
 	///
 	/// let string_literal = make::js_string_literal_expression(make::js_string_literal("a"));
-	/// let string_literal = AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::from(string_literal));
-	/// let computed = make::js_computed_member_name(make::token(T!['[']), string_literal, make::token(T![']']));
+	/// let string_literal =
+	/// 	AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::from(string_literal));
+	/// let computed =
+	/// 	make::js_computed_member_name(make::token(T!['[']), string_literal, make::token(T![']']));
 	/// let computed = AnyJsClassMemberName::JsComputedMemberName(computed);
 	/// assert_eq!(computed.name().unwrap().text(), "a");
 	/// ```
@@ -1815,9 +1760,7 @@ impl AnyJsClassMemberName {
 			AnyJsClassMemberName::JsComputedMemberName(expr) => {
 				let expr = expr.expression().ok()?;
 				match expr.omit_parentheses() {
-					AnyJsExpression::AnyJsLiteralExpression(expr) => {
-						expr.value_token().ok()?
-					},
+					AnyJsExpression::AnyJsLiteralExpression(expr) => expr.value_token().ok()?,
 					AnyJsExpression::JsTemplateExpression(expr) => {
 						if !expr.is_constant() {
 							return None;
@@ -1829,13 +1772,9 @@ impl AnyJsClassMemberName {
 					_ => return None,
 				}
 			},
-			AnyJsClassMemberName::JsLiteralMemberName(expr) => {
-				expr.value().ok()?
-			},
+			AnyJsClassMemberName::JsLiteralMemberName(expr) => expr.value().ok()?,
 			AnyJsClassMemberName::JsPrivateClassMemberName(expr) => {
-				return Some(ClassMemberName::Private(inner_string_text(
-					&expr.id_token().ok()?,
-				)));
+				return Some(ClassMemberName::Private(inner_string_text(&expr.id_token().ok()?)));
 			},
 			AnyJsClassMemberName::JsMetavariable(_) => return None,
 		};
@@ -1843,8 +1782,8 @@ impl AnyJsClassMemberName {
 	}
 }
 
-/// Check if `expr` refers to a name that is directly referenced or indirectly via `globalThis` or `window`.
-/// Returns the reference and the name.
+/// Check if `expr` refers to a name that is directly referenced or indirectly
+/// via `globalThis` or `window`. Returns the reference and the name.
 ///
 /// ### Examples
 ///
@@ -1871,9 +1810,7 @@ impl AnyJsClassMemberName {
 /// assert_eq!(name.text(), "Math");
 /// assert_eq!(reference, global_this_reference);
 /// ```
-pub fn global_identifier(
-	expr: &AnyJsExpression,
-) -> Option<(JsReferenceIdentifier, StaticValue)> {
+pub fn global_identifier(expr:&AnyJsExpression) -> Option<(JsReferenceIdentifier, StaticValue)> {
 	if let Some(reference) = expr.as_js_reference_identifier() {
 		let name = StaticValue::String(reference.value_token().ok()?);
 		return Some((reference, name));
@@ -1881,8 +1818,7 @@ pub fn global_identifier(
 	let member_expr = AnyJsMemberExpression::cast_ref(expr.syntax())?;
 	let name = member_expr.member_name()?;
 	let mut expr = member_expr.object().ok()?.omit_parentheses();
-	while let Some(member_expr) = AnyJsMemberExpression::cast_ref(expr.syntax())
-	{
+	while let Some(member_expr) = AnyJsMemberExpression::cast_ref(expr.syntax()) {
 		if !matches!(member_expr.member_name()?.text(), GLOBAL_THIS | WINDOW) {
 			return None;
 		}
@@ -1897,14 +1833,10 @@ pub fn global_identifier(
 }
 
 impl From<AnyJsMemberExpression> for AnyJsExpression {
-	fn from(expression: AnyJsMemberExpression) -> Self {
+	fn from(expression:AnyJsMemberExpression) -> Self {
 		match expression {
-			AnyJsMemberExpression::JsComputedMemberExpression(expr) => {
-				expr.into()
-			},
-			AnyJsMemberExpression::JsStaticMemberExpression(expr) => {
-				expr.into()
-			},
+			AnyJsMemberExpression::JsComputedMemberExpression(expr) => expr.into(),
+			AnyJsMemberExpression::JsStaticMemberExpression(expr) => expr.into(),
 		}
 	}
 }
@@ -1917,11 +1849,10 @@ impl JsCallExpression {
 	/// a?.() -> true
 	/// a?.b() -> false
 	/// ```
-	pub fn is_optional(&self) -> bool {
-		self.optional_chain_token().is_some()
-	}
+	pub fn is_optional(&self) -> bool { self.optional_chain_token().is_some() }
 
-	/// Returns true if this member has an optional token or any member expression on the left side.
+	/// Returns true if this member has an optional token or any member
+	/// expression on the left side.
 	///
 	/// ```javascript
 	/// a() -> false
@@ -1932,27 +1863,29 @@ impl JsCallExpression {
 		AnyJsOptionalChainExpression::from(self.clone()).is_optional_chain()
 	}
 
-	pub fn has_callee(&self, name: &str) -> bool {
+	pub fn has_callee(&self, name:&str) -> bool {
 		self.callee().map_or(false, |it| {
-			it.as_js_reference_identifier()
-				.map_or(false, |it| it.has_name(name))
+			it.as_js_reference_identifier().map_or(false, |it| it.has_name(name))
 		})
 	}
 
-	/// This is a specialized function that checks if the current [call expression]
-	/// resembles a call expression usually used by a testing frameworks.
+	/// This is a specialized function that checks if the current [call
+	/// expression] resembles a call expression usually used by a testing
+	/// frameworks.
 	///
-	/// If the [call expression] matches the criteria, a different formatting is applied.
+	/// If the [call expression] matches the criteria, a different formatting is
+	/// applied.
 	///
-	/// To evaluate the eligibility of a  [call expression] to be a test framework like,
-	/// we need to check its [callee] and its [arguments].
+	/// To evaluate the eligibility of a  [call expression] to be a test
+	/// framework like, we need to check its [callee] and its [arguments].
 	///
-	/// 1. The [callee] must contain a name or a chain of names that belongs to the
-	///     test frameworks, for example: `test()`, `test.only()`, etc.
+	/// 1. The [callee] must contain a name or a chain of names that belongs to
+	///    the test frameworks, for example: `test()`, `test.only()`, etc.
 	/// 2. The [arguments] should be at the least 2
 	/// 3. The first argument has to be a string literal
 	/// 4. The third argument, if present, has to be a number literal
-	/// 5. The second argument has to be an [arrow function expression] or [function expression]
+	/// 5. The second argument has to be an [arrow function expression] or
+	///    [function expression]
 	/// 6. Both function must have zero or one parameters
 	///
 	/// [call expression]: crate::JsCallExpression
@@ -1973,20 +1906,14 @@ impl JsCallExpression {
 				if is_angular_test_wrapper(&self.clone().into())
 					&& self
 						.parent::<JsCallArgumentList>()
-						.and_then(|arguments_list| {
-							arguments_list.parent::<JsCallArguments>()
-						})
-						.and_then(|arguments| {
-							arguments.parent::<self::JsCallExpression>()
-						})
-						.map_or(Ok(false), |parent| {
-							parent.is_test_call_expression()
-						})? {
+						.and_then(|arguments_list| arguments_list.parent::<JsCallArguments>())
+						.and_then(|arguments| arguments.parent::<self::JsCallExpression>())
+						.map_or(Ok(false), |parent| parent.is_test_call_expression())?
+				{
 					return Ok(matches!(
 						argument,
 						AnyJsCallArgument::AnyJsExpression(
-							JsArrowFunctionExpression(_)
-								| JsFunctionExpression(_)
+							JsArrowFunctionExpression(_) | JsFunctionExpression(_)
 						)
 					));
 				}
@@ -2002,54 +1929,39 @@ impl JsCallExpression {
 
 			// it("description", ..)
 			// it(Test.name, ..)
-			(
-				Some(Ok(AnyJsCallArgument::AnyJsExpression(_))),
-				Some(Ok(second)),
-				third,
-			) if arguments.args().len() <= 3
-				&& callee.contains_a_test_pattern()? =>
+			(Some(Ok(AnyJsCallArgument::AnyJsExpression(_))), Some(Ok(second)), third)
+				if arguments.args().len() <= 3 && callee.contains_a_test_pattern()? =>
 			{
 				// it('name', callback, duration)
 				if !matches!(
-                    third,
-                    None | Some(Ok(AnyJsCallArgument::AnyJsExpression(
-                        AnyJsLiteralExpression(
-                            self::AnyJsLiteralExpression::JsNumberLiteralExpression(_)
-                        )
-                    )))
-                ) {
-                    return Ok(false);
-                }
+					third,
+					None | Some(Ok(AnyJsCallArgument::AnyJsExpression(AnyJsLiteralExpression(
+						self::AnyJsLiteralExpression::JsNumberLiteralExpression(_)
+					))))
+				) {
+					return Ok(false);
+				}
 
-				if second
-					.as_any_js_expression()
-					.map_or(false, is_angular_test_wrapper)
-				{
+				if second.as_any_js_expression().map_or(false, is_angular_test_wrapper) {
 					return Ok(true);
 				}
 
 				let (parameters, has_block_body) = match second {
-					AnyJsCallArgument::AnyJsExpression(
-						JsFunctionExpression(function),
-					) => (
-						function
-							.parameters()
-							.map(AnyJsArrowFunctionParameters::from),
-						true,
-					),
-					AnyJsCallArgument::AnyJsExpression(
-						JsArrowFunctionExpression(arrow),
-					) => (
-						arrow.parameters(),
-						arrow.body().map_or(false, |body| {
-							matches!(body, AnyJsFunctionBody::JsFunctionBody(_))
-						}),
-					),
+					AnyJsCallArgument::AnyJsExpression(JsFunctionExpression(function)) => {
+						(function.parameters().map(AnyJsArrowFunctionParameters::from), true)
+					},
+					AnyJsCallArgument::AnyJsExpression(JsArrowFunctionExpression(arrow)) => {
+						(
+							arrow.parameters(),
+							arrow.body().map_or(false, |body| {
+								matches!(body, AnyJsFunctionBody::JsFunctionBody(_))
+							}),
+						)
+					},
 					_ => return Ok(false),
 				};
 
-				Ok(arguments.args().len() == 2
-					|| (parameters?.len() <= 1 && has_block_body))
+				Ok(arguments.args().len() == 2 || (parameters?.len() <= 1 && has_block_body))
 			},
 			_ => Ok(false),
 		}
@@ -2064,48 +1976,43 @@ impl JsCallExpression {
 ///
 /// @param {CallExpression} node
 /// @returns {boolean}
-///
-fn is_angular_test_wrapper(expression: &AnyJsExpression) -> bool {
+fn is_angular_test_wrapper(expression:&AnyJsExpression) -> bool {
 	use AnyJsExpression::*;
 	match expression {
-		JsCallExpression(call_expression) => match call_expression.callee() {
-			Ok(JsIdentifierExpression(identifier)) => identifier
-				.name()
-				.and_then(|name| name.value_token())
-				.map_or(false, |name| {
-					matches!(
-						name.text_trimmed(),
-						"async" | "inject" | "fakeAsync" | "waitForAsync"
-					)
-				}),
-			_ => false,
+		JsCallExpression(call_expression) => {
+			match call_expression.callee() {
+				Ok(JsIdentifierExpression(identifier)) => {
+					identifier.name().and_then(|name| name.value_token()).map_or(false, |name| {
+						matches!(
+							name.text_trimmed(),
+							"async" | "inject" | "fakeAsync" | "waitForAsync"
+						)
+					})
+				},
+				_ => false,
+			}
 		},
 		_ => false,
 	}
 }
 
-/// Tests if the callee is a `beforeEach`, `beforeAll`, `afterEach` or `afterAll` identifier
-/// that is commonly used in test frameworks.
-fn is_unit_test_set_up_callee(callee: &AnyJsExpression) -> bool {
+/// Tests if the callee is a `beforeEach`, `beforeAll`, `afterEach` or
+/// `afterAll` identifier that is commonly used in test frameworks.
+fn is_unit_test_set_up_callee(callee:&AnyJsExpression) -> bool {
 	match callee {
-		AnyJsExpression::JsIdentifierExpression(identifier) => identifier
-			.name()
-			.and_then(|name| name.value_token())
-			.map_or(false, |name| {
-				matches!(
-					name.text_trimmed(),
-					"beforeEach" | "beforeAll" | "afterEach" | "afterAll"
-				)
-			}),
+		AnyJsExpression::JsIdentifierExpression(identifier) => {
+			identifier.name().and_then(|name| name.value_token()).map_or(false, |name| {
+				matches!(name.text_trimmed(), "beforeEach" | "beforeAll" | "afterEach" | "afterAll")
+			})
+		},
 		_ => false,
 	}
 }
 
 impl JsNewExpression {
-	pub fn has_callee(&self, name: &str) -> bool {
+	pub fn has_callee(&self, name:&str) -> bool {
 		self.callee().map_or(false, |it| {
-			it.as_js_reference_identifier()
-				.map_or(false, |it| it.has_name(name))
+			it.as_js_reference_identifier().map_or(false, |it| it.has_name(name))
 		})
 	}
 }
@@ -2119,8 +2026,10 @@ impl TsStringLiteralType {
 	/// use biome_js_factory::make;
 	/// use biome_rowan::TriviaPieceKind;
 	///
-	/// let string = make::ts_string_literal_type(make::js_string_literal("foo")
-	///     .with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]));
+	/// let string = make::ts_string_literal_type(
+	/// 	make::js_string_literal("foo")
+	/// 		.with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]),
+	/// );
 	/// assert_eq!(string.inner_string_text().unwrap().text(), "foo");
 	/// ```
 	pub fn inner_string_text(&self) -> SyntaxResult<TokenText> {
@@ -2133,7 +2042,7 @@ impl TsStringLiteralType {
 /// ```js
 /// !x
 /// ```
-pub fn is_negation(node: &JsSyntaxNode) -> Option<JsUnaryExpression> {
+pub fn is_negation(node:&JsSyntaxNode) -> Option<JsUnaryExpression> {
 	let unary_expr = JsUnaryExpression::cast_ref(node)?;
 	if unary_expr.operator().ok()? == JsUnaryOperator::LogicalNot {
 		Some(unary_expr)
@@ -2149,25 +2058,24 @@ pub fn is_negation(node: &JsSyntaxNode) -> Option<JsUnaryExpression> {
 ///     ^^^ this is a boolean context
 /// }
 /// ```
-pub fn is_in_boolean_context(node: &JsSyntaxNode) -> Option<bool> {
+pub fn is_in_boolean_context(node:&JsSyntaxNode) -> Option<bool> {
 	let parent = node.parent()?;
 	match parent.kind() {
 		JsSyntaxKind::JS_IF_STATEMENT => {
 			Some(parent.cast::<JsIfStatement>()?.test().ok()?.syntax() == node)
 		},
-		JsSyntaxKind::JS_DO_WHILE_STATEMENT => Some(
-			parent.cast::<JsDoWhileStatement>()?.test().ok()?.syntax() == node,
-		),
-		JsSyntaxKind::JS_WHILE_STATEMENT => Some(
-			parent.cast::<JsWhileStatement>()?.test().ok()?.syntax() == node,
-		),
+		JsSyntaxKind::JS_DO_WHILE_STATEMENT => {
+			Some(parent.cast::<JsDoWhileStatement>()?.test().ok()?.syntax() == node)
+		},
+		JsSyntaxKind::JS_WHILE_STATEMENT => {
+			Some(parent.cast::<JsWhileStatement>()?.test().ok()?.syntax() == node)
+		},
 		JsSyntaxKind::JS_FOR_STATEMENT => {
 			Some(parent.cast::<JsForStatement>()?.test()?.syntax() == node)
 		},
-		JsSyntaxKind::JS_CONDITIONAL_EXPRESSION => Some(
-			parent.cast::<JsConditionalExpression>()?.test().ok()?.syntax()
-				== node,
-		),
+		JsSyntaxKind::JS_CONDITIONAL_EXPRESSION => {
+			Some(parent.cast::<JsConditionalExpression>()?.test().ok()?.syntax() == node)
+		},
 		_ => None,
 	}
 }
@@ -2175,11 +2083,10 @@ pub fn is_in_boolean_context(node: &JsSyntaxNode) -> Option<bool> {
 #[cfg(test)]
 mod test {
 	use biome_js_factory::syntax::{JsCallExpression, JsTemplateExpression};
-	use biome_js_parser::parse_module;
-	use biome_js_parser::JsParserOptions;
+	use biome_js_parser::{parse_module, JsParserOptions};
 	use biome_rowan::AstNodeList;
 
-	fn extract_call_expression(src: &str) -> JsCallExpression {
+	fn extract_call_expression(src:&str) -> JsCallExpression {
 		let result = parse_module(src, JsParserOptions::default());
 		let module = result.tree().items().first().unwrap();
 
@@ -2195,7 +2102,7 @@ mod test {
 			.clone()
 	}
 
-	fn extract_template(src: &str) -> JsTemplateExpression {
+	fn extract_template(src:&str) -> JsTemplateExpression {
 		let result = parse_module(src, JsParserOptions::default());
 		let module = result.tree().items().first().unwrap();
 
@@ -2214,73 +2121,50 @@ mod test {
 	#[test]
 	fn matches_simple_call() {
 		let call_expression = extract_call_expression("test();");
-		assert_eq!(
-			call_expression.callee().unwrap().contains_a_test_pattern(),
-			Ok(true)
-		);
+		assert_eq!(call_expression.callee().unwrap().contains_a_test_pattern(), Ok(true));
 
 		let call_expression = extract_call_expression("it();");
-		assert_eq!(
-			call_expression.callee().unwrap().contains_a_test_pattern(),
-			Ok(true)
-		);
+		assert_eq!(call_expression.callee().unwrap().contains_a_test_pattern(), Ok(true));
 	}
 
 	#[test]
 	fn matches_static_member_expression() {
 		let call_expression = extract_call_expression("test.only();");
-		assert_eq!(
-			call_expression.callee().unwrap().contains_a_test_pattern(),
-			Ok(true)
-		);
+		assert_eq!(call_expression.callee().unwrap().contains_a_test_pattern(), Ok(true));
 	}
 
 	#[test]
 	fn matches_static_member_expression_deep() {
-		let call_expression =
-			extract_call_expression("test.describe.parallel.only();");
-		assert_eq!(
-			call_expression.callee().unwrap().contains_a_test_pattern(),
-			Ok(true)
-		);
+		let call_expression = extract_call_expression("test.describe.parallel.only();");
+		assert_eq!(call_expression.callee().unwrap().contains_a_test_pattern(), Ok(true));
 	}
 
 	#[test]
 	fn doesnt_static_member_expression_deep() {
-		let call_expression =
-			extract_call_expression("test.describe.parallel.only.AHAHA();");
-		assert_eq!(
-			call_expression.callee().unwrap().contains_a_test_pattern(),
-			Ok(false)
-		);
+		let call_expression = extract_call_expression("test.describe.parallel.only.AHAHA();");
+		assert_eq!(call_expression.callee().unwrap().contains_a_test_pattern(), Ok(false));
 	}
 
 	#[test]
 	fn matches_test_call_expression() {
-		let call_expression =
-			extract_call_expression("test.only(name, () => {});");
+		let call_expression = extract_call_expression("test.only(name, () => {});");
+		assert_eq!(call_expression.is_test_call_expression(), Ok(true));
+
+		let call_expression = extract_call_expression("test.only(Test.name, () => {});");
 		assert_eq!(call_expression.is_test_call_expression(), Ok(true));
 
 		let call_expression =
-			extract_call_expression("test.only(Test.name, () => {});");
+			extract_call_expression("test.only(name = name || 'test', () => {});");
 		assert_eq!(call_expression.is_test_call_expression(), Ok(true));
 
-		let call_expression = extract_call_expression(
-			"test.only(name = name || 'test', () => {});",
-		);
+		let call_expression = extract_call_expression("describe.only(name, () => {});");
 		assert_eq!(call_expression.is_test_call_expression(), Ok(true));
 
-		let call_expression =
-			extract_call_expression("describe.only(name, () => {});");
+		let call_expression = extract_call_expression("describe.only(Test.name, () => {});");
 		assert_eq!(call_expression.is_test_call_expression(), Ok(true));
 
 		let call_expression =
-			extract_call_expression("describe.only(Test.name, () => {});");
-		assert_eq!(call_expression.is_test_call_expression(), Ok(true));
-
-		let call_expression = extract_call_expression(
-			"describe.only(name = name || 'test', () => {});",
-		);
+			extract_call_expression("describe.only(name = name || 'test', () => {});");
 		assert_eq!(call_expression.is_test_call_expression(), Ok(true));
 	}
 
@@ -2477,16 +2361,10 @@ impl AnyNumberLikeExpression {
 	/// returns the value for signed numeric expressions.
 	pub fn value(&self) -> Option<String> {
 		match self {
-			AnyNumberLikeExpression::JsStringLiteralExpression(
-				string_literal,
-			) => {
-				return Some(
-					string_literal.inner_string_text().ok()?.to_string(),
-				);
+			AnyNumberLikeExpression::JsStringLiteralExpression(string_literal) => {
+				return Some(string_literal.inner_string_text().ok()?.to_string());
 			},
-			AnyNumberLikeExpression::JsNumberLiteralExpression(
-				number_literal,
-			) => {
+			AnyNumberLikeExpression::JsNumberLiteralExpression(number_literal) => {
 				return Some(number_literal.value_token().ok()?.to_string());
 			},
 			AnyNumberLikeExpression::JsUnaryExpression(unary_expression) => {

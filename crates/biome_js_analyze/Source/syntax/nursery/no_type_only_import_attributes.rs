@@ -1,7 +1,11 @@
 use biome_analyze::{context::RuleContext, declare_syntax_rule, Ast, Rule, RuleDiagnostic};
 use biome_console::markup;
 use biome_js_syntax::{
-	AnyJsExportClause, AnyJsImportClause, AnyJsModuleItem, JsNamedImportSpecifiers, JsSyntaxToken,
+	AnyJsExportClause,
+	AnyJsImportClause,
+	AnyJsModuleItem,
+	JsNamedImportSpecifiers,
+	JsSyntaxToken,
 };
 use biome_rowan::{AstNode, AstSeparatedList, TextRange};
 
@@ -21,77 +25,87 @@ declare_syntax_rule! {
 }
 
 impl Rule for NoTypeOnlyImportAttributes {
-	type Query = Ast<AnyJsModuleItem>;
-	type State = RuleState;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<AnyJsModuleItem>;
+	type Signals = Option<Self::State>;
+	type State = RuleState;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let module_item = ctx.query();
 		match module_item {
 			AnyJsModuleItem::AnyJsStatement(_) => None,
-			AnyJsModuleItem::JsExport(export) => match export.export_clause().ok()? {
-				AnyJsExportClause::AnyJsDeclarationClause(_)
-				| AnyJsExportClause::JsExportDefaultDeclarationClause(_)
-				| AnyJsExportClause::JsExportDefaultExpressionClause(_)
-				| AnyJsExportClause::JsExportNamedClause(_)
-				| AnyJsExportClause::TsExportAsNamespaceClause(_)
-				| AnyJsExportClause::TsExportAssignmentClause(_)
-				| AnyJsExportClause::TsExportDeclareClause(_) => None,
-				AnyJsExportClause::JsExportFromClause(clause) => Some(RuleState {
-					assertion_range: clause.assertion()?.range(),
-					type_token_range: clause.type_token()?.text_trimmed_range(),
-				}),
-				AnyJsExportClause::JsExportNamedFromClause(clause) => {
-					let assertion_range = clause.assertion()?.range();
-					let type_token = clause.type_token().or_else(|| {
-						clause
-							.specifiers()
-							.iter()
-							.filter_map(|specifier| specifier.ok())
-							.find_map(|specifier| specifier.type_token())
-					})?;
-					Some(RuleState {
-						assertion_range,
-						type_token_range: type_token.text_trimmed_range(),
-					})
+			AnyJsModuleItem::JsExport(export) => {
+				match export.export_clause().ok()? {
+					AnyJsExportClause::AnyJsDeclarationClause(_)
+					| AnyJsExportClause::JsExportDefaultDeclarationClause(_)
+					| AnyJsExportClause::JsExportDefaultExpressionClause(_)
+					| AnyJsExportClause::JsExportNamedClause(_)
+					| AnyJsExportClause::TsExportAsNamespaceClause(_)
+					| AnyJsExportClause::TsExportAssignmentClause(_)
+					| AnyJsExportClause::TsExportDeclareClause(_) => None,
+					AnyJsExportClause::JsExportFromClause(clause) => {
+						Some(RuleState {
+							assertion_range:clause.assertion()?.range(),
+							type_token_range:clause.type_token()?.text_trimmed_range(),
+						})
+					},
+					AnyJsExportClause::JsExportNamedFromClause(clause) => {
+						let assertion_range = clause.assertion()?.range();
+						let type_token = clause.type_token().or_else(|| {
+							clause
+								.specifiers()
+								.iter()
+								.filter_map(|specifier| specifier.ok())
+								.find_map(|specifier| specifier.type_token())
+						})?;
+						Some(RuleState {
+							assertion_range,
+							type_token_range:type_token.text_trimmed_range(),
+						})
+					},
 				}
 			},
-			AnyJsModuleItem::JsImport(import) => match import.import_clause().ok()? {
-				AnyJsImportClause::JsImportBareClause(_) => None,
-				AnyJsImportClause::JsImportCombinedClause(clause) => {
-					let assertion_range = clause.assertion()?.range();
-					let type_token = find_first_type_token(
-						clause.specifier().ok()?.as_js_named_import_specifiers()?,
-					)?;
-					Some(RuleState {
-						assertion_range,
-						type_token_range: type_token.text_trimmed_range(),
-					})
+			AnyJsModuleItem::JsImport(import) => {
+				match import.import_clause().ok()? {
+					AnyJsImportClause::JsImportBareClause(_) => None,
+					AnyJsImportClause::JsImportCombinedClause(clause) => {
+						let assertion_range = clause.assertion()?.range();
+						let type_token = find_first_type_token(
+							clause.specifier().ok()?.as_js_named_import_specifiers()?,
+						)?;
+						Some(RuleState {
+							assertion_range,
+							type_token_range:type_token.text_trimmed_range(),
+						})
+					},
+					AnyJsImportClause::JsImportDefaultClause(clause) => {
+						Some(RuleState {
+							assertion_range:clause.assertion()?.range(),
+							type_token_range:clause.type_token()?.text_trimmed_range(),
+						})
+					},
+					AnyJsImportClause::JsImportNamedClause(clause) => {
+						let assertion_range = clause.assertion()?.range();
+						let type_token = clause
+							.type_token()
+							.or_else(|| find_first_type_token(&clause.named_specifiers().ok()?))?;
+						Some(RuleState {
+							assertion_range,
+							type_token_range:type_token.text_trimmed_range(),
+						})
+					},
+					AnyJsImportClause::JsImportNamespaceClause(clause) => {
+						Some(RuleState {
+							assertion_range:clause.assertion()?.range(),
+							type_token_range:clause.type_token()?.text_trimmed_range(),
+						})
+					},
 				}
-				AnyJsImportClause::JsImportDefaultClause(clause) => Some(RuleState {
-					assertion_range: clause.assertion()?.range(),
-					type_token_range: clause.type_token()?.text_trimmed_range(),
-				}),
-				AnyJsImportClause::JsImportNamedClause(clause) => {
-					let assertion_range = clause.assertion()?.range();
-					let type_token = clause
-						.type_token()
-						.or_else(|| find_first_type_token(&clause.named_specifiers().ok()?))?;
-					Some(RuleState {
-						assertion_range,
-						type_token_range: type_token.text_trimmed_range(),
-					})
-				}
-				AnyJsImportClause::JsImportNamespaceClause(clause) => Some(RuleState {
-					assertion_range: clause.assertion()?.range(),
-					type_token_range: clause.type_token()?.text_trimmed_range(),
-				}),
 			},
 		}
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 
 		let import_or_export =
@@ -115,12 +129,12 @@ impl Rule for NoTypeOnlyImportAttributes {
 #[derive(Debug)]
 pub struct RuleState {
 	/// Range of the first found type token
-	type_token_range: TextRange,
+	type_token_range:TextRange,
 	/// Range of import attributes
-	assertion_range: TextRange,
+	assertion_range:TextRange,
 }
 
-fn find_first_type_token(named_specifiers: &JsNamedImportSpecifiers) -> Option<JsSyntaxToken> {
+fn find_first_type_token(named_specifiers:&JsNamedImportSpecifiers) -> Option<JsSyntaxToken> {
 	named_specifiers
 		.specifiers()
 		.iter()

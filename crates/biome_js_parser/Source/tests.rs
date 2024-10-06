@@ -1,19 +1,32 @@
-use crate::test_utils::has_bogus_nodes_or_empty_slots;
-use crate::{
-	parse, parse_module, test_utils::assert_errors_are_absent, JsParserOptions,
-	Parse,
+use std::{
+	fmt::Write,
+	panic::catch_unwind,
+	path::{Path, PathBuf},
 };
-use biome_console::fmt::{Formatter, Termcolor};
-use biome_console::markup;
-use biome_diagnostics::DiagnosticExt;
-use biome_diagnostics::PrintDiagnostic;
-use biome_js_syntax::{AnyJsRoot, JsFileSource, JsSyntaxKind};
-use biome_js_syntax::{JsCallArguments, JsLogicalExpression, JsSyntaxToken};
+
+use biome_console::{
+	fmt::{Formatter, Termcolor},
+	markup,
+};
+use biome_diagnostics::{DiagnosticExt, PrintDiagnostic};
+use biome_js_syntax::{
+	AnyJsRoot,
+	JsCallArguments,
+	JsFileSource,
+	JsLogicalExpression,
+	JsSyntaxKind,
+	JsSyntaxToken,
+};
 use biome_rowan::{AstNode, Direction, TextSize};
 use expect_test::expect_file;
-use std::fmt::Write;
-use std::panic::catch_unwind;
-use std::path::{Path, PathBuf};
+
+use crate::{
+	parse,
+	parse_module,
+	test_utils::{assert_errors_are_absent, has_bogus_nodes_or_empty_slots},
+	JsParserOptions,
+	Parse,
+};
 
 #[test]
 fn parser_smoke_test() {
@@ -33,30 +46,23 @@ fn parser_missing_smoke_test() {
 
 	let module = parse_module(src, JsParserOptions::default());
 
-	let arg_list =
-		module.syntax().descendants().find_map(JsCallArguments::cast).unwrap();
+	let arg_list = module.syntax().descendants().find_map(JsCallArguments::cast).unwrap();
 
 	let opening = arg_list.syntax().element_in_slot(0);
 	let list = arg_list.syntax().element_in_slot(1);
 	let closing = arg_list.syntax().element_in_slot(2);
 
 	assert_eq!(opening.map(|o| o.to_string()), Some(String::from("(")));
-	assert_eq!(
-		list.map(|l| l.kind()),
-		Some(JsSyntaxKind::JS_CALL_ARGUMENT_LIST)
-	);
+	assert_eq!(list.map(|l| l.kind()), Some(JsSyntaxKind::JS_CALL_ARGUMENT_LIST));
 	assert_eq!(closing, None);
 }
 
-fn try_parse(
-	path: &str,
-	text: &str,
-	options: JsParserOptions,
-) -> Parse<AnyJsRoot> {
+fn try_parse(path:&str, text:&str, options:JsParserOptions) -> Parse<AnyJsRoot> {
 	let res = catch_unwind(|| {
 		let path = Path::new(path);
-		// Files containing a // SCRIPT comment are parsed as script and not as module
-		// This is needed to test features that are restricted in strict mode.
+		// Files containing a // SCRIPT comment are parsed as script and not as
+		// module This is needed to test features that are restricted in
+		// strict mode.
 		let source_type = if text.contains("// SCRIPT") {
 			JsFileSource::js_script()
 		} else {
@@ -79,43 +85,43 @@ fn try_parse(
 }
 
 fn try_parse_with_printed_ast(
-	path: &str,
-	text: &str,
-	options: JsParserOptions,
+	path:&str,
+	text:&str,
+	options:JsParserOptions,
 ) -> (Parse<AnyJsRoot>, String) {
 	catch_unwind(|| {
-        let parse = try_parse(path, text, options.clone());
-        let formatted = format!("{:#?}", &parse.tree());
-        (parse, formatted)
-    })
-    .unwrap_or_else(|err| {
-        // Re-parsing the source here seems silly. But the problem is, that `SyntaxNode`s aren't
-        // unwind safe. That's why the same `ParseResult` can't be reused here.
-        // This should be fine because this code is only executed for local tests. No checked-in
-        // test should ever hit this line.
-        let re_parsed = try_parse(path, text, options);
-        panic!(
-            "Printing the AST for `{}` panicked. That means it is malformed. Err: {:?}\n{:#?}",
-            path,
-            err,
-            re_parsed.syntax()
-        );
-    })
+		let parse = try_parse(path, text, options.clone());
+		let formatted = format!("{:#?}", &parse.tree());
+		(parse, formatted)
+	})
+	.unwrap_or_else(|err| {
+		// Re-parsing the source here seems silly. But the problem is, that
+		// `SyntaxNode`s aren't unwind safe. That's why the same `ParseResult`
+		// can't be reused here. This should be fine because this code is only
+		// executed for local tests. No checked-in test should ever hit this
+		// line.
+		let re_parsed = try_parse(path, text, options);
+		panic!(
+			"Printing the AST for `{}` panicked. That means it is malformed. Err: {:?}\n{:#?}",
+			path,
+			err,
+			re_parsed.syntax()
+		);
+	})
 }
 
 #[cfg(test)]
-fn run_and_expect_no_errors(path: &str, _: &str, _: &str, _: &str) {
+fn run_and_expect_no_errors(path:&str, _:&str, _:&str, _:&str) {
 	let path = PathBuf::from(path);
 	let text = std::fs::read_to_string(&path).unwrap();
 
 	let options_path = path.with_extension("options.json");
-	let options: JsParserOptions = std::fs::read_to_string(options_path)
+	let options:JsParserOptions = std::fs::read_to_string(options_path)
 		.ok()
 		.and_then(|options| serde_json::from_str(&options).ok())
 		.unwrap_or_default();
 
-	let (parse, ast) =
-		try_parse_with_printed_ast(path.to_str().unwrap(), &text, options);
+	let (parse, ast) = try_parse_with_printed_ast(path.to_str().unwrap(), &text, options);
 	assert_errors_are_absent(&parse, &path);
 	let actual = format!("{}\n\n{:#?}", ast, parse.syntax());
 
@@ -124,27 +130,24 @@ fn run_and_expect_no_errors(path: &str, _: &str, _: &str, _: &str) {
 }
 
 #[cfg(test)]
-fn run_and_expect_errors(path: &str, _: &str, _: &str, _: &str) {
+fn run_and_expect_errors(path:&str, _:&str, _:&str, _:&str) {
 	let path = PathBuf::from(path);
 	let text = std::fs::read_to_string(&path).unwrap();
 
 	let options_path = path.with_extension("options.json");
-	let options: JsParserOptions = std::fs::read_to_string(options_path)
+	let options:JsParserOptions = std::fs::read_to_string(options_path)
 		.ok()
 		.and_then(|options| serde_json::from_str(&options).ok())
 		.unwrap_or_default();
 
-	let (parse, ast) =
-		try_parse_with_printed_ast(path.to_str().unwrap(), &text, options);
+	let (parse, ast) = try_parse_with_printed_ast(path.to_str().unwrap(), &text, options);
 	assert_errors_are_present(&parse, &path);
 	let mut actual = format!("{}\n\n{:#?}", ast, parse.syntax());
 	for diag in parse.diagnostics() {
 		let mut write = biome_diagnostics::termcolor::Buffer::no_color();
 		let error = diag
 			.clone()
-			.with_file_path(
-				path.file_name().unwrap().to_string_lossy().to_string(),
-			)
+			.with_file_path(path.file_name().unwrap().to_string_lossy().to_string())
 			.with_file_source_code(text.to_string());
 		Formatter::new(&mut Termcolor(&mut write))
 			.write_markup(markup! {
@@ -154,8 +157,7 @@ fn run_and_expect_errors(path: &str, _: &str, _: &str, _: &str) {
 		write!(
 			actual,
 			"--\n{}",
-			std::str::from_utf8(write.as_slice())
-				.expect("non utf8 in error buffer")
+			std::str::from_utf8(write.as_slice()).expect("non utf8 in error buffer")
 		)
 		.unwrap();
 	}
@@ -174,7 +176,7 @@ mod parser {
 	}
 }
 
-fn assert_errors_are_present(program: &Parse<AnyJsRoot>, path: &Path) {
+fn assert_errors_are_present(program:&Parse<AnyJsRoot>, path:&Path) {
 	assert!(
 		!program.diagnostics().is_empty(),
 		"There should be errors in the file {:?}\nSyntax Tree: {:#?}",
@@ -189,22 +191,22 @@ pub fn test_trivia_attached_to_tokens() {
 	let m = parse_module(text, JsParserOptions::default());
 	let mut tokens = m.syntax().descendants_tokens(Direction::Next);
 
-	let is_let = |x: &JsSyntaxToken| x.text_trimmed() == "let";
+	let is_let = |x:&JsSyntaxToken| x.text_trimmed() == "let";
 	let first_let = tokens.find(is_let).unwrap();
 
 	// first let leading trivia asserts
-	let pieces: Vec<_> = first_let.leading_trivia().pieces().collect();
+	let pieces:Vec<_> = first_let.leading_trivia().pieces().collect();
 	assert!(matches!(pieces.first().map(|x| x.text()), Some("/**/")));
 	assert!(pieces.get(1).is_none());
 
 	// first let trailing trivia asserts
-	let pieces: Vec<_> = first_let.trailing_trivia().pieces().collect();
+	let pieces:Vec<_> = first_let.trailing_trivia().pieces().collect();
 	assert!(matches!(pieces.first().map(|x| x.text()), Some(" ")));
 	assert!(pieces.get(1).is_none());
 
 	// second let leading trivia asserts
 	let second_let = tokens.find(is_let).unwrap();
-	let pieces: Vec<_> = second_let.leading_trivia().pieces().collect();
+	let pieces:Vec<_> = second_let.leading_trivia().pieces().collect();
 	assert_eq!(4, pieces.len());
 	assert!(matches!(pieces.first().map(|x| x.text()), Some("\n")));
 	assert!(matches!(pieces.get(1).map(|x| x.text()), Some(" ")));
@@ -212,7 +214,7 @@ pub fn test_trivia_attached_to_tokens() {
 	assert!(matches!(pieces.get(3).map(|x| x.text()), Some(" ")));
 
 	// second let trailing trivia asserts
-	let pieces: Vec<_> = second_let.trailing_trivia().pieces().collect();
+	let pieces:Vec<_> = second_let.trailing_trivia().pieces().collect();
 	assert_eq!(1, pieces.len());
 	assert!(matches!(pieces.first().map(|x| x.text()), Some(" \t ")));
 }
@@ -323,13 +325,9 @@ pub fn node_contains_comments() {
 
 #[test]
 fn parser_regexp_after_operator() {
-	fn assert_no_errors(src: &str) {
-		let module =
-			parse(src, JsFileSource::js_script(), JsParserOptions::default());
-		assert_errors_are_absent(
-			&module,
-			Path::new("parser_regexp_after_operator"),
-		);
+	fn assert_no_errors(src:&str) {
+		let module = parse(src, JsFileSource::js_script(), JsParserOptions::default());
+		assert_errors_are_absent(&module, Path::new("parser_regexp_after_operator"));
 	}
 	assert_no_errors(r#"a=/a/"#);
 	assert_no_errors(r#"a==/a/"#);
@@ -410,11 +408,7 @@ fn diagnostics_print_correctly() {
 			})
 			.expect("failed to emit diagnostic");
 
-		eprintln!(
-			"{}",
-			std::str::from_utf8(write.as_slice())
-				.expect("non utf8 in error buffer")
-		);
+		eprintln!("{}", std::str::from_utf8(write.as_slice()).expect("non utf8 in error buffer"));
 	}
 }
 

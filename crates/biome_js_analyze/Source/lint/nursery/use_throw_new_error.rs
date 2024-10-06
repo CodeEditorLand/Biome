@@ -1,11 +1,22 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, ActionCategory, Ast, FixKind, Rule, RuleDiagnostic,
+	context::RuleContext,
+	declare_lint_rule,
+	ActionCategory,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
 	RuleSource,
 };
 use biome_console::markup;
 use biome_js_factory::make;
 use biome_js_syntax::{
-	AnyJsExpression, JsCallExpression, JsNewExpression, JsParenthesizedExpression, JsSyntaxKind, T,
+	AnyJsExpression,
+	JsCallExpression,
+	JsNewExpression,
+	JsParenthesizedExpression,
+	JsSyntaxKind,
+	T,
 };
 use biome_rowan::{AstNode, BatchMutationExt, TokenText, TriviaPieceKind};
 
@@ -55,12 +66,12 @@ declare_lint_rule! {
 }
 
 impl Rule for UseThrowNewError {
-	type Query = Ast<JsCallExpression>;
-	type State = TokenText;
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsCallExpression>;
+	type Signals = Option<Self::State>;
+	type State = TokenText;
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
 		if !is_in_throw_statement(node) {
@@ -72,10 +83,10 @@ impl Rule for UseThrowNewError {
 		let name = match callee {
 			AnyJsExpression::JsIdentifierExpression(ident_expr) => {
 				Some(ident_expr.name().ok()?.value_token().ok()?.token_text_trimmed())
-			}
+			},
 			AnyJsExpression::JsStaticMemberExpression(member_expr) => {
 				Some(member_expr.member().ok()?.value_token().ok()?.token_text_trimmed())
-			}
+			},
 			_ => None,
 		}?;
 
@@ -86,7 +97,7 @@ impl Rule for UseThrowNewError {
 		None
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 
 		let name = state.text();
@@ -102,7 +113,7 @@ impl Rule for UseThrowNewError {
         }))
 	}
 
-	fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
+	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
 		let node = ctx.query();
 
 		let mut mutation = ctx.root().begin();
@@ -120,7 +131,7 @@ impl Rule for UseThrowNewError {
 	}
 }
 
-fn does_member_contains_call_expression(expr: &AnyJsExpression) -> Option<bool> {
+fn does_member_contains_call_expression(expr:&AnyJsExpression) -> Option<bool> {
 	let mut current_node = expr.clone();
 
 	loop {
@@ -137,13 +148,14 @@ fn does_member_contains_call_expression(expr: &AnyJsExpression) -> Option<bool> 
 }
 
 pub(crate) fn convert_call_expression_to_new_expression(
-	expr: &JsCallExpression,
+	expr:&JsCallExpression,
 ) -> Option<JsNewExpression> {
 	let mut callee = expr.callee().ok()?;
 	let leading_trivia_pieces = callee.syntax().first_leading_trivia()?.pieces();
 
-	// To use `new` keyword, we need to wrap the callee in parentheses if it contains a call expression.
-	// Example: `foo().bar()` -> `new (foo().bar())`
+	// To use `new` keyword, we need to wrap the callee in parentheses if it
+	// contains a call expression. Example: `foo().bar()` -> `new
+	// (foo().bar())`
 	if !JsParenthesizedExpression::can_cast(callee.syntax().kind())
 		&& does_member_contains_call_expression(&callee).is_some()
 	{
@@ -160,11 +172,15 @@ pub(crate) fn convert_call_expression_to_new_expression(
 
 	callee = callee.with_leading_trivia_pieces([])?;
 
-	Some(make::js_new_expression(new_token, callee).with_arguments(expr.arguments().ok()?).build())
+	Some(
+		make::js_new_expression(new_token, callee)
+			.with_arguments(expr.arguments().ok()?)
+			.build(),
+	)
 }
 
 /// Checks if the given expression is inside a `throw` statement.
-fn is_in_throw_statement(expr: &JsCallExpression) -> bool {
+fn is_in_throw_statement(expr:&JsCallExpression) -> bool {
 	expr.syntax()
 		.ancestors()
 		.skip(1)

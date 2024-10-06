@@ -5,7 +5,7 @@ use std::{borrow::Cow, str::FromStr};
 /// Split given string into radix and number string.
 ///
 /// It also removes any underscores.
-pub fn split_into_radix_and_number(num: &str) -> (u8, Cow<str>) {
+pub fn split_into_radix_and_number(num:&str) -> (u8, Cow<str>) {
 	let (radix, raw) = parse_js_number_prefix(num).unwrap_or((10, num));
 	let raw = if raw.contains('_') {
 		Cow::Owned(raw.replace('_', ""))
@@ -15,7 +15,7 @@ pub fn split_into_radix_and_number(num: &str) -> (u8, Cow<str>) {
 	(radix, raw)
 }
 
-fn parse_js_number_prefix(num: &str) -> Option<(u8, &str)> {
+fn parse_js_number_prefix(num:&str) -> Option<(u8, &str)> {
 	let mut bytes = num.bytes();
 	if bytes.next()? != b'0' {
 		return None;
@@ -25,15 +25,13 @@ fn parse_js_number_prefix(num: &str) -> Option<(u8, &str)> {
 		b'o' | b'O' => (8, &num[2..]),
 		b'b' | b'B' => (2, &num[2..]),
 		// Legacy octal literals
-		b'0'..=b'7' if bytes.all(|b| !matches!(b, b'8' | b'9')) => {
-			(8, &num[1..])
-		},
+		b'0'..=b'7' if bytes.all(|b| !matches!(b, b'8' | b'9')) => (8, &num[1..]),
 		_ => return None,
 	})
 }
 
 /// Parse a js number as a string into a number.
-pub fn parse_js_number(num: &str) -> Option<f64> {
+pub fn parse_js_number(num:&str) -> Option<f64> {
 	let (radix, raw) = split_into_radix_and_number(num);
 
 	if radix == 10 {
@@ -45,14 +43,15 @@ pub fn parse_js_number(num: &str) -> Option<f64> {
 
 #[cfg(test)]
 mod tests {
-	use super::split_into_radix_and_number;
-	use biome_js_factory::syntax::{
-		JsNumberLiteralExpression, JsSyntaxKind::*,
+	use biome_js_factory::{
+		syntax::{JsNumberLiteralExpression, JsSyntaxKind::*},
+		JsSyntaxTreeBuilder,
 	};
-	use biome_js_factory::JsSyntaxTreeBuilder;
 	use biome_rowan::AstNode;
 
-	fn assert_float(literal: &str, value: f64) {
+	use super::split_into_radix_and_number;
+
+	fn assert_float(literal:&str, value:f64) {
 		let mut tree_builder = JsSyntaxTreeBuilder::new();
 		tree_builder.start_node(JS_NUMBER_LITERAL_EXPRESSION);
 		tree_builder.token(JS_NUMBER_LITERAL, literal);
@@ -102,7 +101,7 @@ mod tests {
 		assert_float("058", 58.0);
 	}
 
-	fn assert_split(raw: &str, expected_radix: u8, expected_num: &str) {
+	fn assert_split(raw:&str, expected_radix:u8, expected_num:&str) {
 		let (radix, num) = split_into_radix_and_number(raw);
 		assert_eq!(radix, expected_radix);
 		assert_eq!(num, expected_num);

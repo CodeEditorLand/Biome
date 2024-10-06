@@ -1,9 +1,19 @@
 use biome_analyze::{
-	context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource, RuleSourceKind,
+	context::RuleContext,
+	declare_lint_rule,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	RuleSourceKind,
 };
 use biome_console::markup;
 use biome_js_syntax::{
-	AnyJsExpression, AnyJsLiteralExpression, JsLogicalExpression, JsObjectExpression, JsSyntaxKind,
+	AnyJsExpression,
+	AnyJsLiteralExpression,
+	JsLogicalExpression,
+	JsObjectExpression,
+	JsSyntaxKind,
 	JsThrowStatement,
 };
 use biome_rowan::AstNode;
@@ -60,12 +70,12 @@ declare_lint_rule! {
 }
 
 impl Rule for UseThrowOnlyError {
-	type Query = Ast<JsThrowStatement>;
-	type State = ();
-	type Signals = Option<Self::State>;
 	type Options = ();
+	type Query = Ast<JsThrowStatement>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
 		let node = ctx.query();
 
 		let expr = node.argument().ok()?.omit_parentheses();
@@ -73,7 +83,7 @@ impl Rule for UseThrowOnlyError {
 		is_invalid_throw_value(&expr).and(Some(()))
 	}
 
-	fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 
 		Some(RuleDiagnostic::new(
@@ -88,7 +98,7 @@ impl Rule for UseThrowOnlyError {
 	}
 }
 
-fn is_invalid_throw_value(any_expr: &AnyJsExpression) -> Option<bool> {
+fn is_invalid_throw_value(any_expr:&AnyJsExpression) -> Option<bool> {
 	let kind = any_expr.syntax().kind();
 
 	if AnyJsLiteralExpression::can_cast(kind)
@@ -101,8 +111,8 @@ fn is_invalid_throw_value(any_expr: &AnyJsExpression) -> Option<bool> {
 	if let Some(logical_expr) = JsLogicalExpression::cast_ref(any_expr.syntax()) {
 		let left = &logical_expr.left().ok()?;
 
-		// This will produce some false positives, but having a logical expression
-		// as a throw value is not a good practice anyway.
+		// This will produce some false positives, but having a logical
+		// expression as a throw value is not a good practice anyway.
 		return is_invalid_throw_value(left).or_else(|| {
 			let right = logical_expr.right().ok()?;
 

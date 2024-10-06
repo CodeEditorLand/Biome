@@ -14,7 +14,7 @@ impl<'a> MarkupElements<'a> {
 	/// Iterates on all the element slices depth-first
 	pub fn for_each(
 		&self,
-		func: &mut impl FnMut(&'a [MarkupElement]) -> io::Result<()>,
+		func:&mut impl FnMut(&'a [MarkupElement]) -> io::Result<()>,
 	) -> io::Result<()> {
 		if let Self::Node(parent, elem) = self {
 			parent.for_each(func)?;
@@ -27,7 +27,7 @@ impl<'a> MarkupElements<'a> {
 	/// Iterates on all the element slices breadth-first
 	pub fn for_each_rev(
 		&self,
-		func: &mut impl FnMut(&'a [MarkupElement]) -> io::Result<()>,
+		func:&mut impl FnMut(&'a [MarkupElement]) -> io::Result<()>,
 	) -> io::Result<()> {
 		if let Self::Node(parent, elem) = self {
 			func(elem)?;
@@ -46,37 +46,31 @@ impl<'a> MarkupElements<'a> {
 /// printing session
 pub struct Formatter<'fmt> {
 	/// Stack of markup elements currently applied to the text being printed
-	state: MarkupElements<'fmt>,
+	state:MarkupElements<'fmt>,
 	/// Inner IO writer this [Formatter] will print text into
-	writer: &'fmt mut dyn Write,
+	writer:&'fmt mut dyn Write,
 }
 
 impl<'fmt> Formatter<'fmt> {
-	/// Create a new instance of the [Formatter] using the provided `writer` for printing
-	pub fn new(writer: &'fmt mut dyn Write) -> Self {
-		Self { state: MarkupElements::Root, writer }
-	}
+	/// Create a new instance of the [Formatter] using the provided `writer` for
+	/// printing
+	pub fn new(writer:&'fmt mut dyn Write) -> Self { Self { state:MarkupElements::Root, writer } }
 
-	pub fn wrap_writer<'b: 'c, 'c>(
+	pub fn wrap_writer<'b:'c, 'c>(
 		&'b mut self,
-		wrap: impl FnOnce(&'b mut dyn Write) -> &'c mut dyn Write,
+		wrap:impl FnOnce(&'b mut dyn Write) -> &'c mut dyn Write,
 	) -> Formatter<'c> {
-		Formatter { state: self.state, writer: wrap(self.writer) }
+		Formatter { state:self.state, writer:wrap(self.writer) }
 	}
 
-	/// Return a new instance of the [Formatter] with `elements` appended to its element stack
-	fn with_elements<'b>(
-		&'b mut self,
-		elements: &'b [MarkupElement],
-	) -> Formatter<'b> {
-		Formatter {
-			state: MarkupElements::Node(&self.state, elements),
-			writer: self.writer,
-		}
+	/// Return a new instance of the [Formatter] with `elements` appended to its
+	/// element stack
+	fn with_elements<'b>(&'b mut self, elements:&'b [MarkupElement]) -> Formatter<'b> {
+		Formatter { state:MarkupElements::Node(&self.state, elements), writer:self.writer }
 	}
 
 	/// Write a piece of markup into this formatter
-	pub fn write_markup(&mut self, markup: Markup) -> io::Result<()> {
+	pub fn write_markup(&mut self, markup:Markup) -> io::Result<()> {
 		for node in markup.0 {
 			let mut fmt = self.with_elements(node.elements);
 			node.content.fmt(&mut fmt)?;
@@ -86,12 +80,12 @@ impl<'fmt> Formatter<'fmt> {
 	}
 
 	/// Write a slice of text into this formatter
-	pub fn write_str(&mut self, content: &str) -> io::Result<()> {
+	pub fn write_str(&mut self, content:&str) -> io::Result<()> {
 		self.writer.write_str(&self.state, content)
 	}
 
 	/// Write formatted text into this formatter
-	pub fn write_fmt(&mut self, content: fmt::Arguments) -> io::Result<()> {
+	pub fn write_fmt(&mut self, content:fmt::Arguments) -> io::Result<()> {
 		self.writer.write_fmt(&self.state, content)
 	}
 }
@@ -102,29 +96,30 @@ impl<'fmt> Formatter<'fmt> {
 /// # Example
 /// Implementing `Display` on a custom struct
 /// ```
-/// use biome_console::{
-///     fmt::{Display, Formatter},
-///     markup,
-/// };
 /// use std::io;
+///
+/// use biome_console::{
+/// 	fmt::{Display, Formatter},
+/// 	markup,
+/// };
 ///
 /// struct Warning(String);
 ///
 /// impl Display for Warning {
-///     fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-///         fmt.write_markup(markup! {
-///             <Warn>{self.0}</Warn>
-///         })
-///     }
+/// 	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> {
+/// 		fmt.write_markup(markup! {
+/// 			<Warn>{self.0}</Warn>
+/// 		})
+/// 	}
 /// }
 ///
 /// let warning = Warning(String::from("content"));
 /// markup! {
-///     <Emphasis>{warning}</Emphasis>
+/// 	<Emphasis>{warning}</Emphasis>
 /// };
 /// ```
 pub trait Display {
-	fn fmt(&self, fmt: &mut Formatter) -> io::Result<()>;
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()>;
 }
 
 // Blanket implementations of Display for reference types
@@ -132,45 +127,33 @@ impl<T> Display for &T
 where
 	T: Display + ?Sized,
 {
-	fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-		T::fmt(self, fmt)
-	}
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> { T::fmt(self, fmt) }
 }
 
 impl<T> Display for Cow<'_, T>
 where
 	T: Display + ToOwned + ?Sized,
 {
-	fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-		T::fmt(self, fmt)
-	}
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> { T::fmt(self, fmt) }
 }
 
 // Simple implementations of Display calling through to write_str for types
 // that implement Deref<str>
 impl Display for str {
-	fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-		fmt.write_str(self)
-	}
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> { fmt.write_str(self) }
 }
 
 impl Display for String {
-	fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-		fmt.write_str(self)
-	}
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> { fmt.write_str(self) }
 }
 
 // Implement Display for Markup and Rust format Arguments
 impl Display for Markup<'_> {
-	fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-		fmt.write_markup(*self)
-	}
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> { fmt.write_markup(*self) }
 }
 
 impl Display for std::fmt::Arguments<'_> {
-	fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-		fmt.write_fmt(*self)
-	}
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> { fmt.write_fmt(*self) }
 }
 
 /// Implement [Display] for types that implement [std::fmt::Display] by calling
@@ -178,9 +161,7 @@ impl Display for std::fmt::Arguments<'_> {
 macro_rules! impl_std_display {
 	($ty:ty) => {
 		impl Display for $ty {
-			fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-				write!(fmt, "{self}")
-			}
+			fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> { write!(fmt, "{self}") }
 		}
 	};
 }
@@ -200,7 +181,7 @@ impl_std_display!(u128);
 impl_std_display!(usize);
 
 impl Display for Duration {
-	fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> {
 		use crate as biome_console;
 
 		let secs = self.as_secs();
@@ -236,14 +217,14 @@ impl Display for Duration {
 pub struct Bytes(pub usize);
 
 impl std::fmt::Display for Bytes {
-	fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> fmt::Result {
+	fn fmt(&self, fmt:&mut fmt::Formatter<'_>) -> fmt::Result {
 		let Self(mut value) = *self;
 
 		if value < 1024 {
 			return write!(fmt, "{value} B");
 		}
 
-		const PREFIX: [char; 4] = ['K', 'M', 'G', 'T'];
+		const PREFIX:[char; 4] = ['K', 'M', 'G', 'T'];
 		let prefix = PREFIX
 			.into_iter()
 			.find(|_| {
@@ -262,9 +243,7 @@ impl std::fmt::Display for Bytes {
 }
 
 impl Display for Bytes {
-	fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
-		write!(fmt, "{self}")
-	}
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> { write!(fmt, "{self}") }
 }
 
 #[cfg(test)]

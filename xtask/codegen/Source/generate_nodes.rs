@@ -1,343 +1,343 @@
-use crate::js_kinds_src::{AstNodeSrc, AstSrc, Field, TokenKind};
-use crate::language_kind::LanguageKind;
+use std::collections::HashMap;
+
 use biome_string_case::Case;
 use proc_macro2::{Literal, TokenStream};
 use quote::{format_ident, quote};
-use std::collections::HashMap;
 use xtask::Result;
 
-pub fn generate_nodes(
-	ast: &AstSrc,
-	language_kind: LanguageKind,
-) -> Result<String> {
-	let (node_defs, node_boilerplate_impls): (Vec<_>, Vec<_>) = ast
-        .nodes
-        .iter()
-        .map(|node| {
-            let name = format_ident!("{}", node.name);
-            let node_kind = format_ident!("{}", Case::Constant.convert(node.name.as_str()));
-            let needs_dynamic_slots = node.dynamic;
+use crate::{
+	js_kinds_src::{AstNodeSrc, AstSrc, Field, TokenKind},
+	language_kind::LanguageKind,
+};
 
-            let methods = node
-                .fields
-                .iter()
-                .enumerate()
-                .map(|(slot_index, field)| match field {
-                    Field::Token { name, kind, .. } => {
-                        let many = matches!(kind, TokenKind::Many(_));
+pub fn generate_nodes(ast:&AstSrc, language_kind:LanguageKind) -> Result<String> {
+	let (node_defs, node_boilerplate_impls):(Vec<_>, Vec<_>) = ast
+		.nodes
+		.iter()
+		.map(|node| {
+			let name = format_ident!("{}", node.name);
+			let node_kind = format_ident!("{}", Case::Constant.convert(node.name.as_str()));
+			let needs_dynamic_slots = node.dynamic;
 
-                        let method_name = if many {
-                            format_ident!("{}", name)
-                        } else {
-                            field.method_name(language_kind)
-                        };
+			let methods = node.fields.iter().enumerate().map(|(slot_index, field)| {
+				match field {
+					Field::Token { name, kind, .. } => {
+						let many = matches!(kind, TokenKind::Many(_));
 
-                        let is_optional = field.is_optional();
+						let method_name = if many {
+							format_ident!("{}", name)
+						} else {
+							field.method_name(language_kind)
+						};
 
-                        let slot_index_access = if field.is_unordered() {
-                            quote! { self.slot_map[#slot_index] as usize }
-                        } else {
-                            quote! { #slot_index }
-                        };
+						let is_optional = field.is_optional();
 
-                        if is_optional {
-                            quote! {
-                                pub fn #method_name(&self) -> Option<SyntaxToken> {
-                                    support::token(&self.syntax, #slot_index_access)
-                                }
-                            }
-                        } else {
-                            quote! {
-                                pub fn #method_name(&self) -> SyntaxResult<SyntaxToken> {
-                                    support::required_token(&self.syntax, #slot_index_access)
-                                }
-                            }
-                        }
-                    }
-                    Field::Node { ty, optional, .. } => {
-                        let is_list = ast.is_list(ty);
-                        let ty = format_ident!("{}", &ty);
+						let slot_index_access = if field.is_unordered() {
+							quote! { self.slot_map[#slot_index] as usize }
+						} else {
+							quote! { #slot_index }
+						};
 
-                        let slot_index_access = if field.is_unordered() {
-                            quote! { self.slot_map[#slot_index] as usize }
-                        } else {
-                            quote! { #slot_index }
-                        };
+						if is_optional {
+							quote! {
+								pub fn #method_name(&self) -> Option<SyntaxToken> {
+									support::token(&self.syntax, #slot_index_access)
+								}
+							}
+						} else {
+							quote! {
+								pub fn #method_name(&self) -> SyntaxResult<SyntaxToken> {
+									support::required_token(&self.syntax, #slot_index_access)
+								}
+							}
+						}
+					},
+					Field::Node { ty, optional, .. } => {
+						let is_list = ast.is_list(ty);
+						let ty = format_ident!("{}", &ty);
 
-                        let method_name = field.method_name(language_kind);
-                        if is_list {
-                            if *optional {
-                                panic!("Lists cannot be optional. Instead, the grammar should handle the situation where the list is empty.");
-                            }
+						let slot_index_access = if field.is_unordered() {
+							quote! { self.slot_map[#slot_index] as usize }
+						} else {
+							quote! { #slot_index }
+						};
 
-                            quote! {
-                                pub fn #method_name(&self) -> #ty {
-                                    support::list(&self.syntax, #slot_index_access)
-                                }
-                            }
-                        } else if *optional {
-                            quote! {
-                                pub fn #method_name(&self) -> Option<#ty> {
-                                    support::node(&self.syntax, #slot_index_access)
-                                }
-                            }
-                        } else {
-                            quote! {
-                                pub fn #method_name(&self) -> SyntaxResult<#ty> {
-                                    support::required_node(&self.syntax, #slot_index_access)
-                                }
-                            }
-                        }
-                    }
-                });
+						let method_name = field.method_name(language_kind);
+						if is_list {
+							if *optional {
+								panic!(
+									"Lists cannot be optional. Instead, the grammar should handle \
+									 the situation where the list is empty."
+								);
+							}
 
-            let fields = node.fields.iter().map(|field| {
-                let name = match field {
-                    Field::Token {
-                        name,
-                        kind: TokenKind::Many(_),
-                        ..
-                    } => format_ident!("{}", name),
-                    _ => field.method_name(language_kind),
-                };
+							quote! {
+								pub fn #method_name(&self) -> #ty {
+									support::list(&self.syntax, #slot_index_access)
+								}
+							}
+						} else if *optional {
+							quote! {
+								pub fn #method_name(&self) -> Option<#ty> {
+									support::node(&self.syntax, #slot_index_access)
+								}
+							}
+						} else {
+							quote! {
+								pub fn #method_name(&self) -> SyntaxResult<#ty> {
+									support::required_node(&self.syntax, #slot_index_access)
+								}
+							}
+						}
+					},
+				}
+			});
 
-                let is_list = match field {
-                    Field::Node { ty, .. } => ast.is_list(ty),
-                    _ => false,
-                };
+			let fields = node.fields.iter().map(|field| {
+				let name = match field {
+					Field::Token { name, kind: TokenKind::Many(_), .. } => {
+						format_ident!("{}", name)
+					},
+					_ => field.method_name(language_kind),
+				};
 
-                let string_name = name.to_string();
+				let is_list = match field {
+					Field::Node { ty, .. } => ast.is_list(ty),
+					_ => false,
+				};
 
-                if is_list {
-                    quote! {
-                        .field(#string_name, &self.#name())
-                    }
-                } else if field.is_optional() {
-                    quote! {
-                        .field(#string_name, &support::DebugOptionalElement(self.#name()))
-                    }
-                } else {
-                    quote! {
-                        .field(#string_name, &support::DebugSyntaxResult(self.#name()))
-                    }
-                }
-            });
+				let string_name = name.to_string();
 
-            let string_name = name.to_string();
+				if is_list {
+					quote! {
+						.field(#string_name, &self.#name())
+					}
+				} else if field.is_optional() {
+					quote! {
+						.field(#string_name, &support::DebugOptionalElement(self.#name()))
+					}
+				} else {
+					quote! {
+						.field(#string_name, &support::DebugSyntaxResult(self.#name()))
+					}
+				}
+			});
 
-            let slots_name = format_ident!("{}Fields", node.name);
+			let string_name = name.to_string();
 
-            let (slot_fields, slot_constructors): (Vec<_>, Vec<_>) = node
-                .fields
-                .iter()
-                .map(|field| match field {
-                    Field::Token { name, kind, .. } => {
-                        let many = matches!(kind, TokenKind::Many(_));
+			let slots_name = format_ident!("{}Fields", node.name);
 
-                        let method_name = if many {
-                            format_ident!("{}", name)
-                        } else {
-                            field.method_name(language_kind)
-                        };
+			let (slot_fields, slot_constructors):(Vec<_>, Vec<_>) = node
+				.fields
+				.iter()
+				.map(|field| {
+					match field {
+						Field::Token { name, kind, .. } => {
+							let many = matches!(kind, TokenKind::Many(_));
 
-                        let is_optional = field.is_optional();
+							let method_name = if many {
+								format_ident!("{}", name)
+							} else {
+								field.method_name(language_kind)
+							};
 
-                        let field = if is_optional {
-                            quote! { #method_name: Option<SyntaxToken> }
-                        } else {
-                            quote! { #method_name: SyntaxResult<SyntaxToken> }
-                        };
+							let is_optional = field.is_optional();
 
-                        (field, quote! { #method_name: self.#method_name() })
-                    }
-                    Field::Node { ty, optional, .. } => {
-                        let is_list = ast.is_list(ty);
-                        let ty = format_ident!("{}", &ty);
+							let field = if is_optional {
+								quote! { #method_name: Option<SyntaxToken> }
+							} else {
+								quote! { #method_name: SyntaxResult<SyntaxToken> }
+							};
 
-                        let method_name = field.method_name(language_kind);
-                        let field = if is_list {
-                            quote! { #method_name: #ty }
-                        } else if *optional {
-                            quote! { #method_name: Option<#ty> }
-                        } else {
-                            quote! { #method_name: SyntaxResult<#ty> }
-                        };
+							(field, quote! { #method_name: self.#method_name() })
+						},
+						Field::Node { ty, optional, .. } => {
+							let is_list = ast.is_list(ty);
+							let ty = format_ident!("{}", &ty);
 
-                        (field, quote! { #method_name: self.#method_name() })
-                    }
-                })
-                .unzip();
+							let method_name = field.method_name(language_kind);
+							let field = if is_list {
+								quote! { #method_name: #ty }
+							} else if *optional {
+								quote! { #method_name: Option<#ty> }
+							} else {
+								quote! { #method_name: SyntaxResult<#ty> }
+							};
 
-            let slot_count = node.fields.len();
-            let slot_map_type = quote! { [u8; #slot_count] };
-            let maybe_dynamic_slot_map_member = if needs_dynamic_slots {
-                quote! { pub(crate) slot_map: #slot_map_type, }
-            } else {
-                Default::default()
-            };
+							(field, quote! { #method_name: self.#method_name() })
+						},
+					}
+				})
+				.unzip();
 
-            let new_unchecked_constructor = if needs_dynamic_slots {
-                let slot_map_builder_impl = get_slot_map_builder_impl(node, language_kind);
-                quote! {
-                    /// Create an AstNode from a SyntaxNode without checking its kind
-                    ///
-                    /// # Safety
-                    /// This function must be guarded with a call to [AstNode::can_cast]
-                    /// or a match on [SyntaxNode::kind]
-                    #[inline]
-                    pub unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
-                        let slot_map = #name::build_slot_map(&syntax);
-                        Self { syntax, slot_map }
-                    }
+			let slot_count = node.fields.len();
+			let slot_map_type = quote! { [u8; #slot_count] };
+			let maybe_dynamic_slot_map_member = if needs_dynamic_slots {
+				quote! { pub(crate) slot_map: #slot_map_type, }
+			} else {
+				Default::default()
+			};
 
-                    // The allow for clippy is needed because nodes that _only_ have
-                    // unordered fields will have a single loop where the loop counter
-                    // is the same as the current slot, but nodes that mix ordered and
-                    // unordered fields will need the value outside of the loop. Generating
-                    // code that does this appeasingly for both cases is not worth the
-                    // effort and has no performance cost.
+			let new_unchecked_constructor = if needs_dynamic_slots {
+				let slot_map_builder_impl = get_slot_map_builder_impl(node, language_kind);
+				quote! {
+					/// Create an AstNode from a SyntaxNode without checking its kind
+					///
+					/// # Safety
+					/// This function must be guarded with a call to [AstNode::can_cast]
+					/// or a match on [SyntaxNode::kind]
+					#[inline]
+					pub unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
+						let slot_map = #name::build_slot_map(&syntax);
+						Self { syntax, slot_map }
+					}
 
-                    /// Construct the `slot_map` for this node by checking the `kind` of
-                    /// each child of `syntax` against the defined grammar for the node.
-                    #[allow(clippy::explicit_counter_loop)]
-                    pub fn build_slot_map(syntax: &SyntaxNode) -> #slot_map_type {
-                        #slot_map_builder_impl
-                    }
-                }
-            } else {
-                quote! {
-                    /// Create an AstNode from a SyntaxNode without checking its kind
-                    ///
-                    /// # Safety
-                    /// This function must be guarded with a call to [AstNode::can_cast]
-                    /// or a match on [SyntaxNode::kind]
-                    #[inline]
-                    pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
-                        Self { syntax }
-                    }
-                }
-            };
+					// The allow for clippy is needed because nodes that _only_ have
+					// unordered fields will have a single loop where the loop counter
+					// is the same as the current slot, but nodes that mix ordered and
+					// unordered fields will need the value outside of the loop. Generating
+					// code that does this appeasingly for both cases is not worth the
+					// effort and has no performance cost.
 
-            let cast_impl = if needs_dynamic_slots {
-                quote! {
-                    if Self::can_cast(syntax.kind()) {
-                        let slot_map = #name::build_slot_map(&syntax);
-                        Some(Self { syntax, slot_map })
-                    } else { None }
-                }
-            } else {
-                quote! { if Self::can_cast(syntax.kind()) { Some(Self { syntax }) } else { None } }
-            };
+					/// Construct the `slot_map` for this node by checking the `kind` of
+					/// each child of `syntax` against the defined grammar for the node.
+					#[allow(clippy::explicit_counter_loop)]
+					pub fn build_slot_map(syntax: &SyntaxNode) -> #slot_map_type {
+						#slot_map_builder_impl
+					}
+				}
+			} else {
+				quote! {
+					/// Create an AstNode from a SyntaxNode without checking its kind
+					///
+					/// # Safety
+					/// This function must be guarded with a call to [AstNode::can_cast]
+					/// or a match on [SyntaxNode::kind]
+					#[inline]
+					pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
+						Self { syntax }
+					}
+				}
+			};
 
-            let ast_node_slot_map_impl = if needs_dynamic_slots {
-                quote! {
-                    impl AstNodeSlotMap<#slot_count> for #name {
-                        fn slot_map(&self) -> &#slot_map_type {
-                            &self.slot_map
-                        }
-                    }
-                }
-            } else {
-                Default::default()
-            };
+			let cast_impl = if needs_dynamic_slots {
+				quote! {
+					if Self::can_cast(syntax.kind()) {
+						let slot_map = #name::build_slot_map(&syntax);
+						Some(Self { syntax, slot_map })
+					} else { None }
+				}
+			} else {
+				quote! { if Self::can_cast(syntax.kind()) { Some(Self { syntax }) } else { None } }
+			};
 
-            (
-                quote! {
-                    // TODO: review documentation
-                    // #[doc = #documentation]
-                    #[derive(Clone, PartialEq, Eq, Hash)]
-                    pub struct #name {
-                        pub(crate) syntax: SyntaxNode,
-                        #maybe_dynamic_slot_map_member
-                    }
+			let ast_node_slot_map_impl = if needs_dynamic_slots {
+				quote! {
+					impl AstNodeSlotMap<#slot_count> for #name {
+						fn slot_map(&self) -> &#slot_map_type {
+							&self.slot_map
+						}
+					}
+				}
+			} else {
+				Default::default()
+			};
 
-                    impl #name {
-                        #new_unchecked_constructor
+			(
+				quote! {
+					// TODO: review documentation
+					// #[doc = #documentation]
+					#[derive(Clone, PartialEq, Eq, Hash)]
+					pub struct #name {
+						pub(crate) syntax: SyntaxNode,
+						#maybe_dynamic_slot_map_member
+					}
 
-                        pub fn as_fields(&self) -> #slots_name {
-                            #slots_name {
-                                #( #slot_constructors, )*
-                            }
-                        }
+					impl #name {
+						#new_unchecked_constructor
 
-                        #(#methods)*
-                    }
+						pub fn as_fields(&self) -> #slots_name {
+							#slots_name {
+								#( #slot_constructors, )*
+							}
+						}
 
-                    impl Serialize for #name {
-                        fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
-                        where
-                        S: Serializer,
-                        {
-                            self.as_fields().serialize(serializer)
-                        }
-                    }
+						#(#methods)*
+					}
 
-                    #[derive(Serialize)]
-                    pub struct #slots_name {
-                        #( pub #slot_fields, )*
-                    }
-                },
-                quote! {
-                    impl AstNode for #name {
-                        type Language = Language;
+					impl Serialize for #name {
+						fn serialize<S>(&self, serializer: S) -> Result<S::Ok, S::Error>
+						where
+						S: Serializer,
+						{
+							self.as_fields().serialize(serializer)
+						}
+					}
 
-                        const KIND_SET: SyntaxKindSet<Language> =
-                            SyntaxKindSet::from_raw(RawSyntaxKind(#node_kind as u16));
+					#[derive(Serialize)]
+					pub struct #slots_name {
+						#( pub #slot_fields, )*
+					}
+				},
+				quote! {
+					impl AstNode for #name {
+						type Language = Language;
 
-                        fn can_cast(kind: SyntaxKind) -> bool {
-                            kind == #node_kind
-                        }
-                        fn cast(syntax: SyntaxNode) -> Option<Self> {
-                            #cast_impl
-                        }
-                        fn syntax(&self) -> &SyntaxNode { &self.syntax }
-                        fn into_syntax(self) -> SyntaxNode { self.syntax }
-                    }
+						const KIND_SET: SyntaxKindSet<Language> =
+							SyntaxKindSet::from_raw(RawSyntaxKind(#node_kind as u16));
 
-                    #ast_node_slot_map_impl
+						fn can_cast(kind: SyntaxKind) -> bool {
+							kind == #node_kind
+						}
+						fn cast(syntax: SyntaxNode) -> Option<Self> {
+							#cast_impl
+						}
+						fn syntax(&self) -> &SyntaxNode { &self.syntax }
+						fn into_syntax(self) -> SyntaxNode { self.syntax }
+					}
 
-                    impl std::fmt::Debug for #name {
-                        fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-                            f.debug_struct(#string_name)
-                                #(#fields)*
-                                .finish()
-                        }
-                    }
+					#ast_node_slot_map_impl
 
-                    impl From<#name> for SyntaxNode {
-                        fn from(n: #name) -> SyntaxNode {
-                            n.syntax
-                        }
-                    }
+					impl std::fmt::Debug for #name {
+						fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+							f.debug_struct(#string_name)
+								#(#fields)*
+								.finish()
+						}
+					}
 
-                    impl From<#name> for SyntaxElement {
-                        fn from(n: #name) -> SyntaxElement {
-                            n.syntax.into()
-                        }
-                    }
-                },
-            )
-        })
-        .unzip();
+					impl From<#name> for SyntaxNode {
+						fn from(n: #name) -> SyntaxNode {
+							n.syntax
+						}
+					}
+
+					impl From<#name> for SyntaxElement {
+						fn from(n: #name) -> SyntaxElement {
+							n.syntax.into()
+						}
+					}
+				},
+			)
+		})
+		.unzip();
 
 	// it maps enum name A and its corresponding variants
-	let name_to_variants: HashMap<_, _> = ast
+	let name_to_variants:HashMap<_, _> = ast
 		.unions
 		.iter()
-		.map(|current_enum| {
-			(current_enum.name.clone(), current_enum.variants.clone())
-		})
+		.map(|current_enum| (current_enum.name.clone(), current_enum.variants.clone()))
 		.collect();
 
-	let (union_defs, union_boilerplate_impls): (Vec<_>, Vec<_>) = ast
+	let (union_defs, union_boilerplate_impls):(Vec<_>, Vec<_>) = ast
 		.unions
 		.iter()
 		.map(|union| {
 			let name = format_ident!("{}", union.name);
 
-			// here we collect all the variants because this will generate the enums
-			// so we don't care about filtered variants
-			let variants_for_union: Vec<_> = union
+			// here we collect all the variants because this will generate the
+			// enums so we don't care about filtered variants
+			let variants_for_union:Vec<_> = union
 				.variants
 				.iter()
 				.map(|variant| {
@@ -348,13 +348,12 @@ pub fn generate_nodes(
 				})
 				.collect();
 
-			let as_method_for_variants_for_union: Vec<_> = union
+			let as_method_for_variants_for_union:Vec<_> = union
 				.variants
 				.iter()
 				.map(|variant| {
 					let variant_name = format_ident!("{}", variant);
-					let fn_name =
-						format_ident!("as_{}", Case::Snake.convert(variant));
+					let fn_name = format_ident!("as_{}", Case::Snake.convert(variant));
 					quote! {
 						pub fn #fn_name(&self) -> Option<&#variant_name> {
 						   match &self {
@@ -368,45 +367,34 @@ pub fn generate_nodes(
 
 			// Here we make the partition
 			//
-			// Inside an enum, we can have variants that point to a "flat" type or to another enum;
-			// we want to divide these variants as we will generate a different code based on these requirements
-			let (variant_of_variants, simple_variants): (Vec<_>, Vec<_>) =
+			// Inside an enum, we can have variants that point to a "flat" type
+			// or to another enum; we want to divide these variants as we
+			// will generate a different code based on these requirements
+			let (variant_of_variants, simple_variants):(Vec<_>, Vec<_>) =
 				union.variants.iter().partition(|current_enum| {
-					if let Some(variants) = name_to_variants.get(*current_enum)
-					{
+					if let Some(variants) = name_to_variants.get(*current_enum) {
 						!variants.is_empty()
 					} else {
 						false
 					}
 				});
 
-			let variants: Vec<_> = simple_variants
+			let variants:Vec<_> =
+				simple_variants.iter().map(|var| format_ident!("{}", var)).collect();
+
+			let kinds:Vec<_> = variants
 				.iter()
-				.map(|var| format_ident!("{}", var))
+				.map(|name| format_ident!("{}", Case::Constant.convert(&name.to_string())))
 				.collect();
 
-			let kinds: Vec<_> = variants
-				.iter()
-				.map(|name| {
-					format_ident!(
-						"{}",
-						Case::Constant.convert(&name.to_string())
-					)
-				})
-				.collect();
-
-			let variant_cast: Vec<_> = simple_variants
+			let variant_cast:Vec<_> = simple_variants
 				.iter()
 				.map(|current_enum| {
-					let variant_is_enum =
-						ast.unions.iter().find(|e| &e.name == *current_enum);
+					let variant_is_enum = ast.unions.iter().find(|e| &e.name == *current_enum);
 					let variant_name = format_ident!("{}", current_enum);
 
-					let variant_is_dynamic = ast
-						.nodes
-						.iter()
-						.find(|e| &e.name == *current_enum)
-						.is_some_and(|node| {
+					let variant_is_dynamic =
+						ast.nodes.iter().find(|e| &e.name == *current_enum).is_some_and(|node| {
 							node.fields.iter().any(|field| field.is_unordered())
 						});
 
@@ -423,13 +411,12 @@ pub fn generate_nodes(
 				.collect();
 
 			// variant of variants
-			let vv: Vec<_> = variant_of_variants
+			let vv:Vec<_> = variant_of_variants
 				.iter()
 				.enumerate()
 				.map(|(i, en)| {
 					let variant_name = format_ident!("{}", en);
-					let variable_name =
-						format_ident!("{}", Case::Snake.convert(en.as_str()));
+					let variable_name = format_ident!("{}", Case::Snake.convert(en.as_str()));
 					(
 						// try_cast() code
 						if i != variant_of_variants.len() - 1 {
@@ -501,23 +488,21 @@ pub fn generate_nodes(
 				}
 			};
 
-			let can_cast_fn =
-				if union.variants.iter().any(|v| !simple_variants.contains(&v))
-				{
-					quote! {
-						match kind {
-							#all_kinds
-							#(#vv_can_cast)*
-							_ => false
-						}
+			let can_cast_fn = if union.variants.iter().any(|v| !simple_variants.contains(&v)) {
+				quote! {
+					match kind {
+						#all_kinds
+						#(#vv_can_cast)*
+						_ => false
 					}
-				} else {
-					quote! {
-						matches!(kind, #(#kinds)|*)
-					}
-				};
+				}
+			} else {
+				quote! {
+					matches!(kind, #(#kinds)|*)
+				}
+			};
 
-			let kind_set: Vec<_> = union
+			let kind_set:Vec<_> = union
 				.variants
 				.iter()
 				.enumerate()
@@ -531,26 +516,22 @@ pub fn generate_nodes(
 				})
 				.collect();
 
-			let (variant_syntax, variant_into_syntax): (Vec<_>, Vec<_>) =
-				simple_variants
-					.iter()
-					.map(|_| {
-						(
-							quote! {
-								&it.syntax
-							},
-							quote! {
-								it.syntax
-							},
-						)
-					})
-					.unzip();
-
-			let all_variant_names: Vec<_> = union
-				.variants
+			let (variant_syntax, variant_into_syntax):(Vec<_>, Vec<_>) = simple_variants
 				.iter()
-				.map(|variant| format_ident!("{}", variant))
-				.collect();
+				.map(|_| {
+					(
+						quote! {
+							&it.syntax
+						},
+						quote! {
+							it.syntax
+						},
+					)
+				})
+				.unzip();
+
+			let all_variant_names:Vec<_> =
+				union.variants.iter().map(|variant| format_ident!("{}", variant)).collect();
 
 			(
 				quote! {
@@ -960,17 +941,13 @@ pub fn generate_nodes(
 
 	};
 
-	let ast =
-		ast.to_string().replace("T ! [ ", "crate::T![").replace(" ] )", "])");
+	let ast = ast.to_string().replace("T ! [ ", "crate::T![").replace(" ] )", "])");
 
 	let pretty = xtask::reformat(ast)?;
 	Ok(pretty)
 }
 
-pub(crate) fn token_kind_to_code(
-	name: &str,
-	language_kind: LanguageKind,
-) -> TokenStream {
+pub(crate) fn token_kind_to_code(name:&str, language_kind:LanguageKind) -> TokenStream {
 	let kind_variant_name = Case::Constant.convert(name);
 
 	let kind_source = language_kind.kinds();
@@ -981,7 +958,8 @@ pub(crate) fn token_kind_to_code(
 		quote! {  #ident }
 	} else if kind_source.keywords.contains(&name) {
 		// we need to replace "-" with "_" for the keywords
-		// e.g. we have `color-profile` in css but it's an invalid ident in rust code
+		// e.g. we have `color-profile` in css but it's an invalid ident in rust
+		// code
 		let token = name.replace('-', "_");
 		// also mark uppercase differently from lowercase
 		// e.g. "query" => "QUERY", "QUERY" => "QUERY_UPPERCASE"
@@ -990,7 +968,7 @@ pub(crate) fn token_kind_to_code(
 		} else {
 			token
 		};
-		let token: TokenStream = token.parse().unwrap();
+		let token:TokenStream = token.parse().unwrap();
 		quote! { T![#token] }
 	} else {
 		// $ is valid syntax in rust and it's part of macros,
@@ -999,7 +977,7 @@ pub(crate) fn token_kind_to_code(
 			let token = Literal::string(name);
 			quote! { T![#token] }
 		} else {
-			let token: TokenStream = name.parse().unwrap();
+			let token:TokenStream = name.parse().unwrap();
 			quote! { T![#token] }
 		}
 	}
@@ -1007,22 +985,19 @@ pub(crate) fn token_kind_to_code(
 
 /// Return a function body that iterates over a SyntaxNode's children, comparing
 /// each against the allowed kinds for that slot from the grammar, tracking each
-/// filled slot in a `slot_map` and returning that value once all of the children
-/// have been consumed.
+/// filled slot in a `slot_map` and returning that value once all of the
+/// children have been consumed.
 ///
 /// To do this:
 ///   - Ordered fields simply check if the current slot is filled with the
 ///     expected syntax kind.
 ///   - Unordered fields are grouped with other consecutive unordered fields,
-///     and each child is checked to find the first matching, unfilled slot
-///     from the grammar, until either all of the fields are filled or the
-///     current child does not match any of the fields.
+///     and each child is checked to find the first matching, unfilled slot from
+///     the grammar, until either all of the fields are filled or the current
+///     child does not match any of the fields.
 ///   - The `slot_map` entry for the defined grammar node is filled with the
 ///     index of the current child.
-fn get_slot_map_builder_impl(
-	node: &AstNodeSrc,
-	language_kind: LanguageKind,
-) -> TokenStream {
+fn get_slot_map_builder_impl(node:&AstNodeSrc, language_kind:LanguageKind) -> TokenStream {
 	let slot_count = node.fields.len();
 
 	// Chunk the fields of the node into groups of unordered nodes that need
@@ -1032,76 +1007,77 @@ fn get_slot_map_builder_impl(
 
 	let last_field = field_groups.last().and_then(|group| group.last());
 
-	let field_mappers = field_groups.iter()
-        .map(|group| {
-            match group.len() {
-                0 => unreachable!("Somehow encountered a group of fields with no entries"),
-                // Single-field groups are assumed to act like ordered fields, so
-                // they can just check the kind and move on if there's no match.
-                1 => {
-                    let field = group[0];
-                    let this_field_index: usize = field_index;
-                    field_index += 1;
-                    let field_predicate = get_field_predicate(field, language_kind);
+	let field_mappers = field_groups
+		.iter()
+		.map(|group| {
+			match group.len() {
+				0 => unreachable!("Somehow encountered a group of fields with no entries"),
+				// Single-field groups are assumed to act like ordered fields, so
+				// they can just check the kind and move on if there's no match.
+				1 => {
+					let field = group[0];
+					let this_field_index:usize = field_index;
+					field_index += 1;
+					let field_predicate = get_field_predicate(field, language_kind);
 
-                    let is_last = last_field.is_some_and(|last| field == *last);
+					let is_last = last_field.is_some_and(|last| field == *last);
 
-                    // Don't increment current_element and current_slot if this is the
-                    // last element, otherwise Rust warns about the value being unused.
-                    if is_last {
-                        quote! {
-                            if let Some(element) = &current_element {
-                                if #field_predicate {
-                                    slot_map[#this_field_index] = current_slot;
-                                }
-                            }
-                        }
-                    } else {
-                        quote! {
-                            if let Some(element) = &current_element {
-                                if #field_predicate {
-                                    slot_map[#this_field_index] = current_slot;
-                                }
-                            }
-                            current_slot += 1;
-                            current_element = children.next();
-                        }
-                    }
-                }
-                _ => {
-                    let variants = group.iter().enumerate().map(|(index, field)| {
-                        let this_field_index = field_index;
-                        field_index += 1;
-                        let field_predicate = get_field_predicate(field, language_kind);
+					// Don't increment current_element and current_slot if this is the
+					// last element, otherwise Rust warns about the value being unused.
+					if is_last {
+						quote! {
+							if let Some(element) = &current_element {
+								if #field_predicate {
+									slot_map[#this_field_index] = current_slot;
+								}
+							}
+						}
+					} else {
+						quote! {
+							if let Some(element) = &current_element {
+								if #field_predicate {
+									slot_map[#this_field_index] = current_slot;
+								}
+							}
+							current_slot += 1;
+							current_element = children.next();
+						}
+					}
+				},
+				_ => {
+					let variants = group.iter().enumerate().map(|(index, field)| {
+						let this_field_index = field_index;
+						field_index += 1;
+						let field_predicate = get_field_predicate(field, language_kind);
 
-                        let maybe_else = if index > 0 {
-                            quote! { else }
-                        } else {
-                            Default::default()
-                        };
+						let maybe_else = if index > 0 {
+							quote! { else }
+						} else {
+							Default::default()
+						};
 
-                        quote! {
-                            #maybe_else if slot_map[#this_field_index] == SLOT_MAP_EMPTY_VALUE && #field_predicate {
-                                slot_map[#this_field_index] = current_slot;
-                            }
-                        }
-                    });
+						quote! {
+							#maybe_else if slot_map[#this_field_index] == SLOT_MAP_EMPTY_VALUE && #field_predicate {
+								slot_map[#this_field_index] = current_slot;
+							}
+						}
+					});
 
-                    let group_length = group.len();
+					let group_length = group.len();
 
-                    quote! {
-                        for _ in 0usize..#group_length {
-                            if let Some(element) = &current_element {
-                                #(#variants)*
-                            };
-                            current_slot += 1;
-                            current_element = children.next();
-                        }
-                    }
-                }
-            }
-        })
-        .collect::<Vec<TokenStream>>();
+					quote! {
+						for _ in 0usize..#group_length {
+							if let Some(element) = &current_element {
+								#(#variants)*
+							};
+							current_slot += 1;
+							current_element = children.next();
+						}
+					}
+				},
+			}
+		})
+		.collect::<Vec<TokenStream>>();
 
 	quote! {
 		let mut children = syntax.children();
@@ -1115,10 +1091,7 @@ fn get_slot_map_builder_impl(
 	}
 }
 
-pub(crate) fn get_field_predicate(
-	field: &Field,
-	language_kind: LanguageKind,
-) -> TokenStream {
+pub(crate) fn get_field_predicate(field:&Field, language_kind:LanguageKind) -> TokenStream {
 	match field {
 		Field::Node { ty, .. } => {
 			let ast_type_name = format_ident!("{}", ty);
@@ -1127,19 +1100,20 @@ pub(crate) fn get_field_predicate(
 				#ast_type_name::can_cast(element.kind())
 			}
 		},
-		Field::Token { kind, .. } => match kind {
-			TokenKind::Single(expected) => {
-				let expected_kind = token_kind_to_code(expected, language_kind);
-				quote! { element.kind() == #expected_kind}
-			},
-			TokenKind::Many(expected) => {
-				let expected_kinds = expected
-					.iter()
-					.map(|kind| token_kind_to_code(kind, language_kind));
-				quote! {
-					matches!(element.kind(), #(#expected_kinds)|*)
-				}
-			},
+		Field::Token { kind, .. } => {
+			match kind {
+				TokenKind::Single(expected) => {
+					let expected_kind = token_kind_to_code(expected, language_kind);
+					quote! { element.kind() == #expected_kind}
+				},
+				TokenKind::Many(expected) => {
+					let expected_kinds =
+						expected.iter().map(|kind| token_kind_to_code(kind, language_kind));
+					quote! {
+						matches!(element.kind(), #(#expected_kinds)|*)
+					}
+				},
+			}
 		},
 	}
 }
@@ -1148,15 +1122,13 @@ pub(crate) fn get_field_predicate(
 /// keeping each ordered field as its own group. This allows the code generation
 /// to create loops/switches/etc for the unordered fields while preserving the
 /// sequential sorting of the ordered fields.
-pub(crate) fn group_fields_for_ordering(node: &AstNodeSrc) -> Vec<Vec<&Field>> {
+pub(crate) fn group_fields_for_ordering(node:&AstNodeSrc) -> Vec<Vec<&Field>> {
 	let mut groups = vec![];
 	let mut current_group = vec![];
 	let mut last_was_ordered = true;
 
 	for field in node.fields.iter() {
-		if (!field.is_unordered() || last_was_ordered)
-			&& !current_group.is_empty()
-		{
+		if (!field.is_unordered() || last_was_ordered) && !current_group.is_empty() {
 			groups.push(current_group);
 			current_group = vec![];
 		}

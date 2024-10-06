@@ -9,12 +9,12 @@ impl SuppressionAction for CssSuppressionAction {
 
 	fn find_token_to_apply_suppression(
 		&self,
-		token: CssSyntaxToken,
+		token:CssSyntaxToken,
 	) -> Option<ApplySuppression<Self::Language>> {
 		let mut apply_suppression = ApplySuppression {
-			token_has_trailing_comments: false,
-			token_to_apply_suppression: token.clone(),
-			should_insert_leading_newline: false,
+			token_has_trailing_comments:false,
+			token_to_apply_suppression:token.clone(),
+			should_insert_leading_newline:false,
 		};
 		let mut current_token = token;
 		loop {
@@ -38,9 +38,9 @@ impl SuppressionAction for CssSuppressionAction {
 
 	fn apply_suppression(
 		&self,
-		mutation: &mut BatchMutation<Self::Language>,
-		apply_suppression: ApplySuppression<Self::Language>,
-		suppression_text: &str,
+		mutation:&mut BatchMutation<Self::Language>,
+		apply_suppression:ApplySuppression<Self::Language>,
+		suppression_text:&str,
 	) {
 		let ApplySuppression {
 			token_to_apply_suppression,
@@ -49,35 +49,25 @@ impl SuppressionAction for CssSuppressionAction {
 		} = apply_suppression;
 
 		let mut new_token = token_to_apply_suppression.clone();
-		let has_leading_whitespace = new_token
-			.leading_trivia()
-			.pieces()
-			.any(|trivia| trivia.is_whitespace());
+		let has_leading_whitespace =
+			new_token.leading_trivia().pieces().any(|trivia| trivia.is_whitespace());
 
 		if token_has_trailing_comments {
 			new_token = new_token.with_trailing_trivia([
 				(
 					TriviaPieceKind::SingleLineComment,
-					format!("/* {}: <explanation> */", suppression_text)
-						.as_str(),
+					format!("/* {}: <explanation> */", suppression_text).as_str(),
 				),
 				(TriviaPieceKind::Newline, "\n"),
 			]);
 		} else if has_leading_whitespace {
-			let suppression_comment =
-				format!("/* {}: <explanation> */", suppression_text);
+			let suppression_comment = format!("/* {}: <explanation> */", suppression_text);
 			let mut trivia = vec![
-				(
-					TriviaPieceKind::SingleLineComment,
-					suppression_comment.as_str(),
-				),
+				(TriviaPieceKind::SingleLineComment, suppression_comment.as_str()),
 				(TriviaPieceKind::Newline, "\n"),
 			];
-			let leading_whitespace: Vec<_> = new_token
-				.leading_trivia()
-				.pieces()
-				.filter(|p| p.is_whitespace())
-				.collect();
+			let leading_whitespace:Vec<_> =
+				new_token.leading_trivia().pieces().filter(|p| p.is_whitespace()).collect();
 
 			for w in leading_whitespace.iter() {
 				trivia.push((TriviaPieceKind::Whitespace, w.text()));
@@ -87,15 +77,11 @@ impl SuppressionAction for CssSuppressionAction {
 			new_token = new_token.with_leading_trivia([
 				(
 					TriviaPieceKind::SingleLineComment,
-					format!("/* {}: <explanation> */", suppression_text)
-						.as_str(),
+					format!("/* {}: <explanation> */", suppression_text).as_str(),
 				),
 				(TriviaPieceKind::Newline, "\n"),
 			]);
 		}
-		mutation.replace_token_transfer_trivia(
-			token_to_apply_suppression,
-			new_token,
-		);
+		mutation.replace_token_transfer_trivia(token_to_apply_suppression, new_token);
 	}
 }
