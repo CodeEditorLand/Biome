@@ -1,20 +1,16 @@
 # Formatter
 
-The crate `biome_formatter` offers a generic infrastructure to implement a
-formatting logic for different languages.
+The crate `biome_formatter` offers a generic infrastructure to implement a formatting logic for different languages.
 
-The formatting infrastructure of Biome is implemented using traits on syntax
-nodes. This means that _each node_ knows how to format itself.
+The formatting infrastructure of Biome is implemented using traits on syntax nodes. This means that *each node* knows how to format itself.
 
 ## Getting started
 
 Let's start creating some plumbing, for our new language called `Html`.
 
-Create a new crate using the command `just new-crate biome_html_formatter`,
-where `html` is the language you want to format.
+Create a new crate using the command `just new-crate biome_html_formatter`, where `html` is the language you want to format.
 
-The infrastructure of the formatter requires some preliminary code that can't be
-vendored from `biome_formatter`, due to some constraints of our infrastructure.
+The infrastructure of the formatter requires some preliminary code that can't be vendored from `biome_formatter`, due to some constraints of our infrastructure.
 
 Add the following code inside your `lib.rs` file:
 
@@ -22,7 +18,7 @@ Add the following code inside your `lib.rs` file:
 
 <summary>Code to copy</summary>
 
-```rust
+```rust 
 
 /// Used to get an object that knows how to format this object.
 pub(crate) trait AsFormat<Context> {
@@ -162,23 +158,20 @@ where
 {
 }
 ```
-
 </details>
 
-Then, you'll have to create four types:
 
+Then, you'll have to create four types:
 1. `HtmlCommentStyle`
 1. `HtmlFormatContext`
-1. `FormatHtmlSyntaxNode`
+1. `FormatHtmlSyntaxNode` 
 1. `HtmlLanguage`
 
 ### `HtmlCommentStyle`
 
-The formatter will use this type to get information about the comments of the
-language.
+The formatter will use this type to get information about the comments of the language.
 
-It's more idiomatic to have `HtmlCommentStyle` inside a file called
-`comments.rs`.
+It's more idiomatic to have `HtmlCommentStyle` inside a file called `comments.rs`.
 
 This type must implement the trait `CommentStyle`.
 
@@ -193,11 +186,9 @@ pub type HtmlComments = Comments<HtmlLanguage>;
 
 ### `HtmlFormatContext`
 
-The formatter infrastructure allows you to define a `context` that can be
-mutated during the IR creation phase.
+The formatter infrastructure allows you to define a `context` that can be mutated during the IR creation phase.
 
-It's more idiomatic to have `HtmlFormatContext` inside a file called
-`context.rs`.
+It's more idiomatic to have `HtmlFormatContext` inside a file called `context.rs`.
 
 Usually, the type context must contain `comments` and `source_map` fields:
 
@@ -205,7 +196,7 @@ Usually, the type context must contain `comments` and `source_map` fields:
 pub struct HtmlFormatContext {
     /// The comments of the nodes and tokens in the program.
     comments: Rc<HtmlComments>,
-    source_map: Option<TransformSourceMap>,
+    source_map: Option<TransformSourceMap>, 
 }
 
 impl HtmlFormatContext {
@@ -227,13 +218,11 @@ This type needs to implement the traits `FormatContext` and `CstFormatContext`.
 
 ### `FormatHtmlSyntaxNode`
 
-This type will instruct the formatter how to format a generic node.
+This type will instruct the formatter how to format a generic node. 
 
-It's more idiomatic to have `FormatHtmlSyntaxNode` inside a file called
-`cst.rs`.
+It's more idiomatic to have `FormatHtmlSyntaxNode` inside a file called `cst.rs`.
 
-This is a low level API, it requires just some plumbing. Copy the following
-code:
+This is a low level API, it requires just some plumbing. Copy the following code:
 
 <details>
 
@@ -271,14 +260,12 @@ impl IntoFormat<HtmlFormatContext> for HtmlSyntaxNode {
     }
 }
 ```
-
 </details>
+
 
 ### `HtmlLanguage`
 
-This is small type that you need to instruct the formatter infra about a certain
-language. This type needs to implement the trait
-`biome_formatter::FormatLanguage`
+This is small type that you need to instruct the formatter infra about a certain language. This type needs to implement the trait `biome_formatter::FormatLanguage`
 
 ```rust
 impl FormatLanguage for HtmlFormatLanguage {
@@ -313,7 +300,7 @@ where
         }
 
         self.fmt_leading_comments(node, f)?;
-        self.fmt_fields(node, f)?;
+        self.fmt_fields(node, f)?; 
         self.fmt_dangling_comments(node, f)?;
         self.fmt_trailing_comments(node, f)
     }
@@ -355,11 +342,10 @@ where
     }
 }
 ```
-
 </details>
 
-Now that everything is wired, you just needs to expose a public method that does
-the actual formattings:
+
+Now that everything is wired, you just needs to expose a public method that does the actual formattings:
 
 ```rust
 pub fn format_node(
@@ -372,44 +358,37 @@ pub fn format_node(
 
 Since this is a public method, make sure it's appropriately documented.
 
+
 ## Code generation
 
-Considering that we work with traits on syntax nodes, there could be a lot of
-initial code to start with. No worries, we have command script that generates
-the initial code for now, starting from the grammar.
+Considering that we work with traits on syntax nodes, there could be a lot of initial code to start with. No worries, we have command script that generates the initial code for now, starting from the grammar.
 
 ```shell
 just gen-formatter
 ```
 
-The initial implementation for the formatting will use the
-`format_verbatim_node` formatting, which means that the code will be formatted
-**as is**. From here, you'll have to remove `format_verbatim_node` and use the
-`biome_formatter` utilities to generate the correct IR.
+The initial implementation for the formatting will use the `format_verbatim_node` formatting, which means that the code will be formatted **as is**. From here, you'll have to remove `format_verbatim_node` and use the `biome_formatter` utilities to generate the correct IR.
 
 ## Testing
 
 ### Plumbing
 
-Inside the `biome_html_formatter` crate, create a folder called `tests`. Inside
-this folder you have to have a `specs` folder and two files called
-`spec_test.rs` and `spec_tests.rs` (the names aren't very important though).
-Create a `language.rs` file too.
+Inside the `biome_html_formatter` crate, create a folder called `tests`. Inside this folder you have to have a `specs` folder and two files called `spec_test.rs` and `spec_tests.rs` (the names aren't very important though). Create a `language.rs` file too.
 
 Updated the `Cargo.toml` file to import some testing utility:
 
 ```toml
 [dev-dependencies]
 biome_formatter_test = { path = "../biome_formatter_test" }
-biome_html_factory = { path = "../biome_html_factory" }
-biome_html_parser = { path = "../biome_html_parser" }
-biome_parser = { path = "../biome_parser" }
-biome_service = { path = "../biome_service" }
-countme = { workspace = true, features = ["enable"] }
-iai = "0.1.1"
-quickcheck = { workspace = true }
-quickcheck_macros = { workspace = true }
-tests_macros = { path = "../tests_macros" }
+biome_html_factory     = { path = "../biome_html_factory" }
+biome_html_parser      = { path = "../biome_html_parser" }
+biome_parser         = { path = "../biome_parser" }
+biome_service        = { path = "../biome_service" }
+countme              = { workspace = true, features = ["enable"] }
+iai                  = "0.1.1"
+quickcheck           = { workspace = true }
+quickcheck_macros    = { workspace = true }
+tests_macros         = { path = "../tests_macros" }
 ```
 
 Update the `spec_tests.rs` file to look like this:
@@ -426,9 +405,7 @@ mod formatter {
 
 ```
 
-This code will generate a test function for each `html` file found inside
-`tests/specs/html`. For each test function, it will run the function
-`spec_test::run`.
+This code will generate a test function for each `html` file found inside `tests/specs/html`. For each test function, it will run the function `spec_test::run`.
 
 Create the function `run` inside the `spec_test.rs` file:
 
@@ -451,9 +428,9 @@ pub fn run(spec_input_file: &str, _expected_file: &str, test_directory: &str, _f
     let language = language::HtmlTestFormatLanguage::default();
 
     let snapshot = SpecSnapshot::new(
-        test_file,
-        test_directory,
-        language,
+        test_file, 
+        test_directory, 
+        language, 
         HtmlFormatLanguage::new(options),
     );
 
@@ -471,7 +448,7 @@ pub struct HtmlTestFormatLanguage {
 }
 
 impl TestFormatLanguage for HtmlTestFormatLanguage {
-
+    
 }
 ```
 
@@ -479,24 +456,15 @@ The `TestFormatLanguage` contains a series of methods that must be implemented.
 
 ### Create and running the tests
 
-Now that the plumbing is ready, you just need to create your first `.html` file
-inside `tests/specs/html`. It's **highly** suggested to create a folder for each
-kind of test.
+Now that the plumbing is ready, you just need to create your first `.html` file inside `tests/specs/html`. It's **highly** suggested to create a folder for each kind of test.
 
-Use `cargo t` to run the testing infrastructure. The infrastructure will create
-a potential snapshot that will show:
+Use `cargo t` to run the testing infrastructure. The infrastructure will create a potential snapshot that will show:
+- the input;
+- the current options applied;
+- the formatted input as output;
 
--   the input;
--   the current options applied;
--   the formatted input as output;
+If the snapshot is correct, use `cargo insta accept`, or use `cargo insta review` to check them one by one and accept or reject them.
 
-If the snapshot is correct, use `cargo insta accept`, or use
-`cargo insta review` to check them one by one and accept or reject them.
+If you require testing something using options that aren't the default ones, create a file called `options.json` in the same folder where the `.html` files are. Those options will be applied to **all** files that are the in current folder.
 
-If you require testing something using options that aren't the default ones,
-create a file called `options.json` in the same folder where the `.html` files
-are. Those options will be applied to **all** files that are the in current
-folder.
-
-The `options.json` file is a `biome.json` file, so you can use the same options
-as you were and end-user.
+The `options.json` file is a `biome.json` file, so you can use the same options as you were and end-user.

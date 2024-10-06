@@ -6,10 +6,10 @@ mod rome_common;
 use biome_js_syntax::JsFileSource;
 use libfuzzer_sys::Corpus;
 
-pub fn do_fuzz(case:&[u8]) -> Corpus {
-	let parse_type = JsFileSource::ts();
-	rome_common::fuzz_js_formatter_with_source_type(case, parse_type)
+pub fn do_fuzz(case: &[u8]) -> Corpus {
+    let parse_type = JsFileSource::ts();
+    rome_common::fuzz_js_formatter_with_source_type(case, parse_type)
 }
 
 #[cfg(not(feature = "rome_all"))]
-libfuzzer_sys::fuzz_target!(|case:&[u8]| -> Corpus { do_fuzz(case) });
+libfuzzer_sys::fuzz_target!(|case: &[u8]| -> Corpus { do_fuzz(case) });
