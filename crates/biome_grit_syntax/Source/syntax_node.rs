@@ -1,24 +1,21 @@
 //! This module defines the Concrete Syntax Tree for Grit used by Biome.
 //!
-//! The tree is entirely lossless, whitespace, comments, and errors are
-//! preserved. It also provides traversal methods including parent, children,
-//! and siblings of nodes.
+//! The tree is entirely lossless, whitespace, comments, and errors are preserved.
+//! It also provides traversal methods including parent, children, and siblings of nodes.
 //!
-//! This is a simple wrapper around the `rowan` crate which does most of the
-//! heavy lifting and is language agnostic.
-
-use biome_rowan::Language;
-use serde::Serialize;
+//! This is a simple wrapper around the `rowan` crate which does most of the heavy lifting and is language agnostic.
 
 use crate::{GritRoot, GritSyntaxKind};
+use biome_rowan::Language;
+use serde::Serialize;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default, Serialize)]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 pub struct GritLanguage;
 
 impl Language for GritLanguage {
-	type Kind = GritSyntaxKind;
-	type Root = GritRoot;
+    type Kind = GritSyntaxKind;
+    type Root = GritRoot;
 }
 
 pub type GritSyntaxNode = biome_rowan::SyntaxNode<GritLanguage>;

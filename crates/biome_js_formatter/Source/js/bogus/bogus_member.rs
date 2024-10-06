@@ -1,6 +1,5 @@
-use biome_js_syntax::JsBogusMember;
-
 use crate::FormatBogusNodeRule;
+use biome_js_syntax::JsBogusMember;
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatJsBogusMember;

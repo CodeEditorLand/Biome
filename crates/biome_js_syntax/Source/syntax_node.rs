@@ -1,25 +1,22 @@
 //! This module defines the Concrete Syntax Tree used by Biome.
 //!
-//! The tree is entirely lossless, whitespace, comments, and errors are
-//! preserved. It also provides traversal methods including parent, children,
-//! and siblings of nodes.
+//! The tree is entirely lossless, whitespace, comments, and errors are preserved.
+//! It also provides traversal methods including parent, children, and siblings of nodes.
 //!
-//! This is a simple wrapper around the `rowan` crate which does most of the
-//! heavy lifting and is language agnostic.
+//! This is a simple wrapper around the `rowan` crate which does most of the heavy lifting and is language agnostic.
 
+use crate::{AnyJsRoot, JsSyntaxKind};
 use biome_rowan::Language;
 #[cfg(feature = "schema")]
 use serde::Serialize;
-
-use crate::{AnyJsRoot, JsSyntaxKind};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
 #[cfg_attr(feature = "schema", derive(Serialize, schemars::JsonSchema))]
 pub struct JsLanguage;
 
 impl Language for JsLanguage {
-	type Kind = JsSyntaxKind;
-	type Root = AnyJsRoot;
+    type Kind = JsSyntaxKind;
+    type Root = AnyJsRoot;
 }
 
 pub type JsSyntaxNode = biome_rowan::SyntaxNode<JsLanguage>;

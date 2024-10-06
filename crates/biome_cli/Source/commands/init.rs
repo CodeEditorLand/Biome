@@ -1,16 +1,18 @@
+use crate::{CliDiagnostic, CliSession};
 use biome_configuration::PartialConfiguration;
 use biome_console::{markup, ConsoleExt};
 use biome_fs::ConfigName;
 use biome_service::configuration::create_config;
 
-use crate::{CliDiagnostic, CliSession};
-
-pub(crate) fn init(mut session:CliSession, emit_jsonc:bool) -> Result<(), CliDiagnostic> {
-	let fs = &mut session.app.fs;
-	create_config(fs, PartialConfiguration::init(), emit_jsonc)?;
-	let file_created =
-		if emit_jsonc { ConfigName::biome_jsonc() } else { ConfigName::biome_json() };
-	session.app.console.log(markup! {
+pub(crate) fn init(mut session: CliSession, emit_jsonc: bool) -> Result<(), CliDiagnostic> {
+    let fs = &mut session.app.fs;
+    create_config(fs, PartialConfiguration::init(), emit_jsonc)?;
+    let file_created = if emit_jsonc {
+        ConfigName::biome_jsonc()
+    } else {
+        ConfigName::biome_json()
+    };
+    session.app.console.log(markup! {
 "
 Welcome to Biome! Let's get you started...
 
@@ -41,5 +43,5 @@ Welcome to Biome! Let's get you started...
      Seek for help on Discord: "<Hyperlink href="https://biomejs.dev/chat">"https://biomejs.dev/chat"</Hyperlink>"
 "
     });
-	Ok(())
+    Ok(())
 }

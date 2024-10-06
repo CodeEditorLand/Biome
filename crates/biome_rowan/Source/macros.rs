@@ -5,11 +5,8 @@ use crate::{AstNode, Language};
 /// # Example:
 ///
 /// ```
-/// use biome_rowan::{
-/// 	match_ast,
-/// 	raw_language::{LiteralExpression, RawLanguageKind, RawLanguageRoot, RawSyntaxTreeBuilder},
-/// 	AstNode,
-/// };
+/// use biome_rowan::{match_ast, AstNode};
+/// use biome_rowan::raw_language::{LiteralExpression, RawLanguageRoot, RawLanguageKind, RawSyntaxTreeBuilder};
 ///
 /// let mut builder = RawSyntaxTreeBuilder::new();
 /// builder.start_node(RawLanguageKind::ROOT);
@@ -21,13 +18,13 @@ use crate::{AstNode, Language};
 /// let root = builder.finish();
 ///
 /// let text = match_ast! {
-/// 	match &root {
-/// 		RawLanguageRoot(root) => { format!("root: {}", root.text()) },
-/// 		LiteralExpression(literal) => { format!("literal: {}", literal.text()) },
-/// 		_ => {
-/// 			root.text().to_string()
-/// 		}
-/// 	}
+///     match &root {
+///         RawLanguageRoot(root) => { format!("root: {}", root.text()) },
+///         LiteralExpression(literal) => { format!("literal: {}", literal.text()) },
+///         _ => {
+///             root.text().to_string()
+///         }
+///     }
 /// };
 ///
 /// assert_eq!(text, "root: 5");
@@ -147,7 +144,7 @@ macro_rules! declare_node_union {
 /// all node types share the same associated language (which is then aliased as
 /// the `Language` associated type on [UnionLanguage] itself)
 pub trait UnionLanguage {
-	type Language: Language;
+    type Language: Language;
 }
 
 macro_rules! impl_union_language {
@@ -166,7 +163,7 @@ macro_rules! impl_union_language {
 }
 
 impl_union_language!(
-	T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16, T17, T18,
-	T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T333, T334, T335, T336,
-	T337, T338, T339
+    T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16, T17, T18,
+    T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T333, T334, T335, T336,
+    T337, T338, T339
 );

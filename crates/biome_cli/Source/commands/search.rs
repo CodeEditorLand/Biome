@@ -1,90 +1,101 @@
-use std::ffi::OsString;
-
+use crate::cli_options::CliOptions;
+use crate::commands::{get_stdin, resolve_manifest, validate_configuration_diagnostics};
+use crate::{
+    execute_mode, setup_cli_subscriber, CliDiagnostic, CliSession, Execution, TraversalMode,
+};
 use biome_configuration::{vcs::PartialVcsConfiguration, PartialFilesConfiguration};
 use biome_deserialize::Merge;
-use biome_service::{
-	configuration::{load_configuration, LoadedConfiguration, PartialConfigurationExt},
-	workspace::{ParsePatternParams, RegisterProjectFolderParams, UpdateSettingsParams},
+use biome_service::configuration::{
+    load_configuration, LoadedConfiguration, PartialConfigurationExt,
 };
-
-use crate::{
-	cli_options::CliOptions,
-	commands::{get_stdin, resolve_manifest, validate_configuration_diagnostics},
-	execute_mode,
-	setup_cli_subscriber,
-	CliDiagnostic,
-	CliSession,
-	Execution,
-	TraversalMode,
+use biome_service::workspace::{
+    ParsePatternParams, RegisterProjectFolderParams, UpdateSettingsParams,
 };
+use std::ffi::OsString;
 
 pub(crate) struct SearchCommandPayload {
-	pub(crate) cli_options:CliOptions,
-	pub(crate) files_configuration:Option<PartialFilesConfiguration>,
-	pub(crate) paths:Vec<OsString>,
-	pub(crate) pattern:String,
-	pub(crate) stdin_file_path:Option<String>,
-	pub(crate) vcs_configuration:Option<PartialVcsConfiguration>,
+    pub(crate) cli_options: CliOptions,
+    pub(crate) files_configuration: Option<PartialFilesConfiguration>,
+    pub(crate) paths: Vec<OsString>,
+    pub(crate) pattern: String,
+    pub(crate) stdin_file_path: Option<String>,
+    pub(crate) vcs_configuration: Option<PartialVcsConfiguration>,
 }
 
 /// Handler for the "search" command of the Biome CLI
 pub(crate) fn search(
-	session:CliSession,
-	payload:SearchCommandPayload,
+    session: CliSession,
+    payload: SearchCommandPayload,
 ) -> Result<(), CliDiagnostic> {
-	let SearchCommandPayload {
-		cli_options,
-		files_configuration,
-		paths,
-		pattern,
-		stdin_file_path,
-		vcs_configuration,
-	} = payload;
-	setup_cli_subscriber(cli_options.log_level, cli_options.log_kind);
+    let SearchCommandPayload {
+        cli_options,
+        files_configuration,
+        paths,
+        pattern,
+        stdin_file_path,
+        vcs_configuration,
+    } = payload;
+    setup_cli_subscriber(cli_options.log_level, cli_options.log_kind);
 
-	let loaded_configuration =
-		load_configuration(&session.app.fs, cli_options.as_configuration_path_hint())?;
-	validate_configuration_diagnostics(
-		&loaded_configuration,
-		session.app.console,
-		cli_options.verbose,
-	)?;
+    let loaded_configuration =
+        load_configuration(&session.app.fs, cli_options.as_configuration_path_hint())?;
+    validate_configuration_diagnostics(
+        &loaded_configuration,
+        session.app.console,
+        cli_options.verbose,
+    )?;
 
-	let LoadedConfiguration { mut configuration, directory_path: configuration_path, .. } =
-		loaded_configuration;
+    let LoadedConfiguration {
+        mut configuration,
+        directory_path: configuration_path,
+        ..
+    } = loaded_configuration;
 
-	configuration.files.merge_with(files_configuration);
-	configuration.vcs.merge_with(vcs_configuration);
+    configuration.files.merge_with(files_configuration);
+    configuration.vcs.merge_with(vcs_configuration);
 
-	// check if support for git ignore files is enabled
-	let vcs_base_path = configuration_path.or(session.app.fs.working_directory());
-	let (vcs_base_path, gitignore_matches) =
-		configuration.retrieve_gitignore_matches(&session.app.fs, vcs_base_path.as_deref())?;
+    // check if support for git ignore files is enabled
+    let vcs_base_path = configuration_path.or(session.app.fs.working_directory());
+    let (vcs_base_path, gitignore_matches) =
+        configuration.retrieve_gitignore_matches(&session.app.fs, vcs_base_path.as_deref())?;
 
-	session.app.workspace.register_project_folder(RegisterProjectFolderParams {
-		path:session.app.fs.working_directory(),
-		set_as_current_workspace:true,
-	})?;
-	let manifest_data = resolve_manifest(&session.app.fs)?;
+    session
+        .app
+        .workspace
+        .register_project_folder(RegisterProjectFolderParams {
+            path: session.app.fs.working_directory(),
+            set_as_current_workspace: true,
+        })?;
+    let manifest_data = resolve_manifest(&session.app.fs)?;
 
-	if let Some(manifest_data) = manifest_data {
-		session.app.workspace.set_manifest_for_project(manifest_data.into())?;
-	}
+    if let Some(manifest_data) = manifest_data {
+        session
+            .app
+            .workspace
+            .set_manifest_for_project(manifest_data.into())?;
+    }
 
-	session.app.workspace.update_settings(UpdateSettingsParams {
-		workspace_directory:session.app.fs.working_directory(),
-		configuration,
-		vcs_base_path,
-		gitignore_matches,
-	})?;
+    session
+        .app
+        .workspace
+        .update_settings(UpdateSettingsParams {
+            workspace_directory: session.app.fs.working_directory(),
+            configuration,
+            vcs_base_path,
+            gitignore_matches,
+        })?;
 
-	let console = &mut *session.app.console;
-	let stdin = get_stdin(stdin_file_path, console, "search")?;
+    let console = &mut *session.app.console;
+    let stdin = get_stdin(stdin_file_path, console, "search")?;
 
-	let pattern = session.app.workspace.parse_pattern(ParsePatternParams { pattern })?.pattern_id;
+    let pattern = session
+        .app
+        .workspace
+        .parse_pattern(ParsePatternParams { pattern })?
+        .pattern_id;
 
-	let execution =
-		Execution::new(TraversalMode::Search { pattern, stdin }).set_report(&cli_options);
+    let execution =
+        Execution::new(TraversalMode::Search { pattern, stdin }).set_report(&cli_options);
 
-	execute_mode(execution, session, &cli_options, paths)
+    execute_mode(execution, session, &cli_options, paths)
 }

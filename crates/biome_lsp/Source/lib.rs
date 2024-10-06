@@ -9,7 +9,5 @@ mod server;
 mod session;
 mod utils;
 
-pub use crate::{
-	extension_settings::WorkspaceSettings,
-	server::{LSPServer, ServerConnection, ServerFactory},
-};
+pub use crate::extension_settings::WorkspaceSettings;
+pub use crate::server::{LSPServer, ServerConnection, ServerFactory};

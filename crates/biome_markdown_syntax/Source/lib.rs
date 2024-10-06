@@ -2,57 +2,71 @@
 mod generated;
 mod syntax_node;
 
+pub use self::generated::*;
 use biome_rowan::{RawSyntaxKind, SyntaxKind, TriviaPieceKind};
 pub use syntax_node::*;
 
-pub use self::generated::*;
-
 impl From<u16> for MarkdownSyntaxKind {
-	fn from(d:u16) -> MarkdownSyntaxKind {
-		assert!(d <= (MarkdownSyntaxKind::__LAST as u16));
-		unsafe { std::mem::transmute::<u16, MarkdownSyntaxKind>(d) }
-	}
+    fn from(d: u16) -> MarkdownSyntaxKind {
+        assert!(d <= (MarkdownSyntaxKind::__LAST as u16));
+        unsafe { std::mem::transmute::<u16, MarkdownSyntaxKind>(d) }
+    }
 }
 
 impl SyntaxKind for MarkdownSyntaxKind {
-	const EOF:Self = MarkdownSyntaxKind::EOF;
-	const TOMBSTONE:Self = MarkdownSyntaxKind::TOMBSTONE;
+    const TOMBSTONE: Self = MarkdownSyntaxKind::TOMBSTONE;
 
-	fn is_bogus(&self) -> bool { matches!(self, MarkdownSyntaxKind::MD_BOGUS) }
+    const EOF: Self = MarkdownSyntaxKind::EOF;
 
-	fn to_bogus(&self) -> Self { Self::MD_BOGUS }
+    fn is_bogus(&self) -> bool {
+        matches!(self, MarkdownSyntaxKind::MD_BOGUS)
+    }
 
-	fn to_raw(&self) -> biome_rowan::RawSyntaxKind { RawSyntaxKind(*self as u16) }
+    fn to_bogus(&self) -> Self {
+        Self::MD_BOGUS
+    }
 
-	fn from_raw(raw:biome_rowan::RawSyntaxKind) -> Self { Self::from(raw.0) }
+    fn to_raw(&self) -> biome_rowan::RawSyntaxKind {
+        RawSyntaxKind(*self as u16)
+    }
 
-	fn is_root(&self) -> bool { todo!() }
+    fn from_raw(raw: biome_rowan::RawSyntaxKind) -> Self {
+        Self::from(raw.0)
+    }
 
-	fn is_list(&self) -> bool { MarkdownSyntaxKind::is_list(*self) }
+    fn is_root(&self) -> bool {
+        todo!()
+    }
 
-	fn is_trivia(self) -> bool {
-		matches!(
-			self,
-			MarkdownSyntaxKind::NEWLINE | MarkdownSyntaxKind::WHITESPACE | MarkdownSyntaxKind::TAB
-		)
-	}
+    fn is_list(&self) -> bool {
+        MarkdownSyntaxKind::is_list(*self)
+    }
 
-	fn to_string(&self) -> Option<&'static str> { MarkdownSyntaxKind::to_string(self) }
+    fn is_trivia(self) -> bool {
+        matches!(
+            self,
+            MarkdownSyntaxKind::NEWLINE | MarkdownSyntaxKind::WHITESPACE | MarkdownSyntaxKind::TAB
+        )
+    }
+
+    fn to_string(&self) -> Option<&'static str> {
+        MarkdownSyntaxKind::to_string(self)
+    }
 }
 
 impl TryFrom<MarkdownSyntaxKind> for TriviaPieceKind {
-	type Error = ();
+    type Error = ();
 
-	fn try_from(value:MarkdownSyntaxKind) -> Result<Self, Self::Error> {
-		if value.is_trivia() {
-			match value {
-				MarkdownSyntaxKind::NEWLINE => Ok(TriviaPieceKind::Newline),
-				MarkdownSyntaxKind::WHITESPACE => Ok(TriviaPieceKind::Whitespace),
-				MarkdownSyntaxKind::TAB => Ok(TriviaPieceKind::Skipped),
-				_ => unreachable!("Not Trivia"),
-			}
-		} else {
-			Err(())
-		}
-	}
+    fn try_from(value: MarkdownSyntaxKind) -> Result<Self, Self::Error> {
+        if value.is_trivia() {
+            match value {
+                MarkdownSyntaxKind::NEWLINE => Ok(TriviaPieceKind::Newline),
+                MarkdownSyntaxKind::WHITESPACE => Ok(TriviaPieceKind::Whitespace),
+                MarkdownSyntaxKind::TAB => Ok(TriviaPieceKind::Skipped),
+                _ => unreachable!("Not Trivia"),
+            }
+        } else {
+            Err(())
+        }
+    }
 }

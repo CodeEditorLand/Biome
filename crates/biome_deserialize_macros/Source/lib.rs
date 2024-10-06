@@ -14,7 +14,8 @@ use syn::{parse_macro_input, DeriveInput};
 /// - Structs with named fields where every field is of type `T` or `Option<T>`
 ///   and where `T` also implements [biome_deserialize::Deserializable]. The
 ///   struct must also implement `Default`.
-/// - Structs with a single unnamed field (a so-called [newtype](https://doc.rust-lang.org/rust-by-example/generics/new_types.html)).
+/// - Structs with a single unnamed field (a so-called
+///   [newtype](https://doc.rust-lang.org/rust-by-example/generics/new_types.html)).
 /// - Enums, so long as the variants don't also have fields.
 ///
 /// ## Examples
@@ -56,8 +57,7 @@ use syn::{parse_macro_input, DeriveInput};
 /// it automatically picks up on Serde's
 /// [`deny_unknown_fields` attribute](https://serde.rs/container-attrs.html#from).
 /// `serde(deny_unknown_fields)` is mapped to `unknown_fields = "error"`.
-/// `deserializable(unknown_fields = _)` takes precdence over
-/// `serde(deny_unknown_fields = _)`.
+/// `deserializable(unknown_fields = _)` takes precdence over `serde(deny_unknown_fields = _)`.
 ///
 /// ```no_test
 /// #[derive(Default, Deserializable)]
@@ -300,8 +300,7 @@ use syn::{parse_macro_input, DeriveInput};
 /// into this field. The field must implement `Extend<K, V>` where `K` is the
 /// `Text` type and `V` implements `Deserializable`.
 ///
-/// Cannot be used with the container attribute `#[deserializable(unknown_fields
-/// = deny)]`
+/// Cannot be used with the container attribute `#[deserializable(unknown_fields = deny)]`
 ///
 /// ```no_test
 /// #[derive(Default, Deserializable)]
@@ -354,36 +353,36 @@ use syn::{parse_macro_input, DeriveInput};
 /// is supported on enums too.
 #[proc_macro_derive(Deserializable, attributes(deserializable))]
 #[proc_macro_error]
-pub fn derive_deserializable(input:TokenStream) -> TokenStream {
-	let input = parse_macro_input!(input as DeriveInput);
+pub fn derive_deserializable(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
 
-	let input = deserializable_derive::DeriveInput::parse(input);
+    let input = deserializable_derive::DeriveInput::parse(input);
 
-	let tokens = deserializable_derive::generate_deserializable(input);
+    let tokens = deserializable_derive::generate_deserializable(input);
 
-	if false {
-		panic!("{tokens}");
-	}
+    if false {
+        panic!("{tokens}");
+    }
 
-	TokenStream::from(tokens)
+    TokenStream::from(tokens)
 }
 
 /// Derives the [biome_deserialize::Merge] trait for a custom enum or
 /// struct.
 #[proc_macro_derive(Merge)]
 #[proc_macro_error]
-pub fn derive_mergeable(input:TokenStream) -> TokenStream {
-	let input = parse_macro_input!(input as DeriveInput);
+pub fn derive_mergeable(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
 
-	let input = merge_derive::DeriveInput::parse(input);
+    let input = merge_derive::DeriveInput::parse(input);
 
-	let tokens = merge_derive::generate_merge(input);
+    let tokens = merge_derive::generate_merge(input);
 
-	if false {
-		panic!("{tokens}");
-	}
+    if false {
+        panic!("{tokens}");
+    }
 
-	TokenStream::from(tokens)
+    TokenStream::from(tokens)
 }
 
 /// Generates a "partial" struct from another.
@@ -445,16 +444,16 @@ pub fn derive_mergeable(input:TokenStream) -> TokenStream {
 /// so using `#[partial(type = "MyPartialType")]`.
 #[proc_macro_derive(Partial, attributes(partial))]
 #[proc_macro_error]
-pub fn derive_partial(input:TokenStream) -> TokenStream {
-	let input = parse_macro_input!(input as DeriveInput);
+pub fn derive_partial(input: TokenStream) -> TokenStream {
+    let input = parse_macro_input!(input as DeriveInput);
 
-	let input = partial_derive::DeriveInput::parse(input);
+    let input = partial_derive::DeriveInput::parse(input);
 
-	let tokens = partial_derive::generate_partial(input);
+    let tokens = partial_derive::generate_partial(input);
 
-	if false {
-		panic!("{tokens}");
-	}
+    if false {
+        panic!("{tokens}");
+    }
 
-	TokenStream::from(tokens)
+    TokenStream::from(tokens)
 }

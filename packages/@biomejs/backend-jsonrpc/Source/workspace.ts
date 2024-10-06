@@ -1,6 +1,5 @@
 // Generated file, do not edit by hand, see `xtask/codegen`
 import type { Transport } from "./transport";
-
 export interface SupportsFeatureParams {
 	features: FeatureName;
 	path: BiomePath;
@@ -1251,6 +1250,10 @@ export interface Nursery {
 	 * Disallow exporting an imported variable.
 	 */
 	noExportedImports?: RuleConfiguration_for_Null;
+	/**
+	 * Prevent usage of \<head> element in a Next.js project.
+	 */
+	noHeadElement?: RuleConfiguration_for_Null;
 	/**
 	 * Disallows the use of irregular whitespace characters.
 	 */
@@ -2863,6 +2866,7 @@ export type Category =
 	| "lint/nursery/noMissingGenericFamilyKeyword"
 	| "lint/nursery/noMissingVarFunction"
 	| "lint/nursery/noNestedTernary"
+	| "lint/nursery/noHeadElement"
 	| "lint/nursery/noOctalEscape"
 	| "lint/nursery/noProcessEnv"
 	| "lint/nursery/noReactSpecificProps"
