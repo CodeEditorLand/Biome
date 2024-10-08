@@ -1,0 +1,667 @@
+---
+source: crates/biome_js_analyze/tests/spec_tests.rs
+expression: invalid.js
+---
+# Input
+```jsx
+RegExp("\\x1f");
+RegExp("\\u{1111}*\\x1F", "u");
+new RegExp("\\x1f\\x1e");
+new RegExp("\\x1fFOO\\x00");
+new RegExp("FOO\\x1fFOO\\x1f");
+new RegExp("\\x1f");
+new RegExp("\\u001F", flags);
+new RegExp("\\u{1111}*\\x1F", "u");
+new RegExp("\\u{1F}", "u");
+new RegExp("\u{1F}");
+new RegExp("\\u{1F}", "gui");
+new RegExp("\\x0C");
+new RegExp("\x0C");
+new RegExp("	");; // tab
+new RegExp("\	");; // escaped tab
+new RegExp("\\	");; // escaped tab
+/\x00/;
+/\x0C/;
+/\x1F/;
+/\u000C/;
+/\u{C}/u;
+/\\\x1f\\x1e/;
+/\\\x1fFOO\\x00/;
+/FOO\\\x1fFOO\\x1f/;
+/(?<a>\\x1f)/;
+/(?<\u{1d49c}>.)\x1f/;
+/\u{1111}*\x1F/u;
+/\u{1111}*\x1F/v;
+/\u{1F}/u;
+/\u{1F}/gui;
+/\u000C\n/u;
+/	/u; // tab
+/\	/u; // escaped tab
+// Edge cases
+/\x1\x1f/g;
+/\u001\u000C/g;
+```
+
+# Diagnostics
+```
+invalid.js:1:9 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+  > 1 │ RegExp("\\x1f");
+      │         ^^^^^
+    2 │ RegExp("\\u{1111}*\\x1F", "u");
+    3 │ new RegExp("\\x1f\\x1e");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:2:19 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    1 │ RegExp("\\x1f");
+  > 2 │ RegExp("\\u{1111}*\\x1F", "u");
+      │                   ^^^^^
+    3 │ new RegExp("\\x1f\\x1e");
+    4 │ new RegExp("\\x1fFOO\\x00");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:3:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    1 │ RegExp("\\x1f");
+    2 │ RegExp("\\u{1111}*\\x1F", "u");
+  > 3 │ new RegExp("\\x1f\\x1e");
+      │             ^^^^^
+    4 │ new RegExp("\\x1fFOO\\x00");
+    5 │ new RegExp("FOO\\x1fFOO\\x1f");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:3:18 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    1 │ RegExp("\\x1f");
+    2 │ RegExp("\\u{1111}*\\x1F", "u");
+  > 3 │ new RegExp("\\x1f\\x1e");
+      │                  ^^^^^
+    4 │ new RegExp("\\x1fFOO\\x00");
+    5 │ new RegExp("FOO\\x1fFOO\\x1f");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:4:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    2 │ RegExp("\\u{1111}*\\x1F", "u");
+    3 │ new RegExp("\\x1f\\x1e");
+  > 4 │ new RegExp("\\x1fFOO\\x00");
+      │             ^^^^^
+    5 │ new RegExp("FOO\\x1fFOO\\x1f");
+    6 │ new RegExp("\\x1f");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:4:21 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    2 │ RegExp("\\u{1111}*\\x1F", "u");
+    3 │ new RegExp("\\x1f\\x1e");
+  > 4 │ new RegExp("\\x1fFOO\\x00");
+      │                     ^^^^^
+    5 │ new RegExp("FOO\\x1fFOO\\x1f");
+    6 │ new RegExp("\\x1f");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:5:16 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    3 │ new RegExp("\\x1f\\x1e");
+    4 │ new RegExp("\\x1fFOO\\x00");
+  > 5 │ new RegExp("FOO\\x1fFOO\\x1f");
+      │                ^^^^^
+    6 │ new RegExp("\\x1f");
+    7 │ new RegExp("\\u001F", flags);
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:5:24 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    3 │ new RegExp("\\x1f\\x1e");
+    4 │ new RegExp("\\x1fFOO\\x00");
+  > 5 │ new RegExp("FOO\\x1fFOO\\x1f");
+      │                        ^^^^^
+    6 │ new RegExp("\\x1f");
+    7 │ new RegExp("\\u001F", flags);
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:6:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    4 │ new RegExp("\\x1fFOO\\x00");
+    5 │ new RegExp("FOO\\x1fFOO\\x1f");
+  > 6 │ new RegExp("\\x1f");
+      │             ^^^^^
+    7 │ new RegExp("\\u001F", flags);
+    8 │ new RegExp("\\u{1111}*\\x1F", "u");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:7:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    5 │ new RegExp("FOO\\x1fFOO\\x1f");
+    6 │ new RegExp("\\x1f");
+  > 7 │ new RegExp("\\u001F", flags);
+      │             ^^^^^^^
+    8 │ new RegExp("\\u{1111}*\\x1F", "u");
+    9 │ new RegExp("\\u{1F}", "u");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:8:23 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+     6 │ new RegExp("\\x1f");
+     7 │ new RegExp("\\u001F", flags);
+   > 8 │ new RegExp("\\u{1111}*\\x1F", "u");
+       │                       ^^^^^
+     9 │ new RegExp("\\u{1F}", "u");
+    10 │ new RegExp("\u{1F}");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:9:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+     7 │ new RegExp("\\u001F", flags);
+     8 │ new RegExp("\\u{1111}*\\x1F", "u");
+   > 9 │ new RegExp("\\u{1F}", "u");
+       │             ^^^^^^^
+    10 │ new RegExp("\u{1F}");
+    11 │ new RegExp("\\u{1F}", "gui");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:10:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+     8 │ new RegExp("\\u{1111}*\\x1F", "u");
+     9 │ new RegExp("\\u{1F}", "u");
+  > 10 │ new RegExp("\u{1F}");
+       │             ^^^^^^
+    11 │ new RegExp("\\u{1F}", "gui");
+    12 │ new RegExp("\\x0C");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:11:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+     9 │ new RegExp("\\u{1F}", "u");
+    10 │ new RegExp("\u{1F}");
+  > 11 │ new RegExp("\\u{1F}", "gui");
+       │             ^^^^^^^
+    12 │ new RegExp("\\x0C");
+    13 │ new RegExp("\x0C");
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:12:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    10 │ new RegExp("\u{1F}");
+    11 │ new RegExp("\\u{1F}", "gui");
+  > 12 │ new RegExp("\\x0C");
+       │             ^^^^^
+    13 │ new RegExp("\x0C");
+    14 │ new RegExp("	");; // tab
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:13:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    11 │ new RegExp("\\u{1F}", "gui");
+    12 │ new RegExp("\\x0C");
+  > 13 │ new RegExp("\x0C");
+       │             ^^^^
+    14 │ new RegExp("	");; // tab
+    15 │ new RegExp("\	");; // escaped tab
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:14:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    12 │ new RegExp("\\x0C");
+    13 │ new RegExp("\x0C");
+  > 14 │ new RegExp("	");; // tab
+       │             ^^
+    15 │ new RegExp("\	");; // escaped tab
+    16 │ new RegExp("\\	");; // escaped tab
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:15:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    13 │ new RegExp("\x0C");
+    14 │ new RegExp("	");; // tab
+  > 15 │ new RegExp("\	");; // escaped tab
+       │             ^^^
+    16 │ new RegExp("\\	");; // escaped tab
+    17 │ /\x00/;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:16:13 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    14 │ new RegExp("	");; // tab
+    15 │ new RegExp("\	");; // escaped tab
+  > 16 │ new RegExp("\\	");; // escaped tab
+       │             ^^^^
+    17 │ /\x00/;
+    18 │ /\x0C/;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:17:2 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    15 │ new RegExp("\	");; // escaped tab
+    16 │ new RegExp("\\	");; // escaped tab
+  > 17 │ /\x00/;
+       │  ^^^^
+    18 │ /\x0C/;
+    19 │ /\x1F/;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:18:2 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    16 │ new RegExp("\\	");; // escaped tab
+    17 │ /\x00/;
+  > 18 │ /\x0C/;
+       │  ^^^^
+    19 │ /\x1F/;
+    20 │ /\u000C/;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:19:2 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    17 │ /\x00/;
+    18 │ /\x0C/;
+  > 19 │ /\x1F/;
+       │  ^^^^
+    20 │ /\u000C/;
+    21 │ /\u{C}/u;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:20:2 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    18 │ /\x0C/;
+    19 │ /\x1F/;
+  > 20 │ /\u000C/;
+       │  ^^^^^^
+    21 │ /\u{C}/u;
+    22 │ /\\\x1f\\x1e/;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:21:2 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    19 │ /\x1F/;
+    20 │ /\u000C/;
+  > 21 │ /\u{C}/u;
+       │  ^^^^^
+    22 │ /\\\x1f\\x1e/;
+    23 │ /\\\x1fFOO\\x00/;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:22:4 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    20 │ /\u000C/;
+    21 │ /\u{C}/u;
+  > 22 │ /\\\x1f\\x1e/;
+       │    ^^^^
+    23 │ /\\\x1fFOO\\x00/;
+    24 │ /FOO\\\x1fFOO\\x1f/;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:23:4 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    21 │ /\u{C}/u;
+    22 │ /\\\x1f\\x1e/;
+  > 23 │ /\\\x1fFOO\\x00/;
+       │    ^^^^
+    24 │ /FOO\\\x1fFOO\\x1f/;
+    25 │ /(?<a>\\x1f)/;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:24:7 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    22 │ /\\\x1f\\x1e/;
+    23 │ /\\\x1fFOO\\x00/;
+  > 24 │ /FOO\\\x1fFOO\\x1f/;
+       │       ^^^^
+    25 │ /(?<a>\\x1f)/;
+    26 │ /(?<\u{1d49c}>.)\x1f/;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:26:17 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    24 │ /FOO\\\x1fFOO\\x1f/;
+    25 │ /(?<a>\\x1f)/;
+  > 26 │ /(?<\u{1d49c}>.)\x1f/;
+       │                 ^^^^
+    27 │ /\u{1111}*\x1F/u;
+    28 │ /\u{1111}*\x1F/v;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:27:11 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    25 │ /(?<a>\\x1f)/;
+    26 │ /(?<\u{1d49c}>.)\x1f/;
+  > 27 │ /\u{1111}*\x1F/u;
+       │           ^^^^
+    28 │ /\u{1111}*\x1F/v;
+    29 │ /\u{1F}/u;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:28:11 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    26 │ /(?<\u{1d49c}>.)\x1f/;
+    27 │ /\u{1111}*\x1F/u;
+  > 28 │ /\u{1111}*\x1F/v;
+       │           ^^^^
+    29 │ /\u{1F}/u;
+    30 │ /\u{1F}/gui;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:29:2 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    27 │ /\u{1111}*\x1F/u;
+    28 │ /\u{1111}*\x1F/v;
+  > 29 │ /\u{1F}/u;
+       │  ^^^^^^
+    30 │ /\u{1F}/gui;
+    31 │ /\u000C\n/u;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:30:2 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    28 │ /\u{1111}*\x1F/v;
+    29 │ /\u{1F}/u;
+  > 30 │ /\u{1F}/gui;
+       │  ^^^^^^
+    31 │ /\u000C\n/u;
+    32 │ /	/u; // tab
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:31:2 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    29 │ /\u{1F}/u;
+    30 │ /\u{1F}/gui;
+  > 31 │ /\u000C\n/u;
+       │  ^^^^^^
+    32 │ /	/u; // tab
+    33 │ /\	/u; // escaped tab
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:32:2 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    30 │ /\u{1F}/gui;
+    31 │ /\u000C\n/u;
+  > 32 │ /	/u; // tab
+       │  ^^
+    33 │ /\	/u; // escaped tab
+    34 │ // Edge cases
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:33:2 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    31 │ /\u000C\n/u;
+    32 │ /	/u; // tab
+  > 33 │ /\	/u; // escaped tab
+       │  ^^^
+    34 │ // Edge cases
+    35 │ /\x1\x1f/g;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:35:5 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    33 │ /\	/u; // escaped tab
+    34 │ // Edge cases
+  > 35 │ /\x1\x1f/g;
+       │     ^^^^
+    36 │ /\u001\u000C/g;
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
+
+```
+invalid.js:36:7 lint/suspicious/noControlCharactersInRegex ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! Unexpected control character in a regular expression.
+  
+    34 │ // Edge cases
+    35 │ /\x1\x1f/g;
+  > 36 │ /\u001\u000C/g;
+       │       ^^^^^^
+  
+  i Control characters are unusual and potentially incorrect inputs, so they are disallowed.
+  
+
+```
