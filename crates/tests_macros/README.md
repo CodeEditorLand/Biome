@@ -4,7 +4,9 @@ A set of utilities that automatically generate unit tests from files.
 
 ## Usage
 
-First argument: glob that will passed to https://github.com/gilnaa/globwalk. Crate's cargo.toml will be the base directory. To pattern format see here: https://git-scm.com/docs/gitignore#_pattern_format  
+First argument: glob that will passed to https://github.com/gilnaa/globwalk.
+Crate's cargo.toml will be the base directory. To pattern format see here:
+https://git-scm.com/docs/gitignore#_pattern_format
 Second argument: method that will be called with full path to each file.
 
 One suggestion to organize tests is to put the macro inside a module.
@@ -15,13 +17,13 @@ mod some_mod {
 
     // input_file and expected_file are full paths
     fn run_test(input_file: &str, expected_file: &str) {
-        println!("{:?} {:?}", input_file, expected_file); 
+        println!("{:?} {:?}", input_file, expected_file);
     }
 }
 ```
 
-Test name is the "snake case" version of the file name.
-this will generate the following for each file:
+Test name is the "snake case" version of the file name. this will generate the
+following for each file:
 
 ```rust
 #[test]

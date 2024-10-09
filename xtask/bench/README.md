@@ -14,7 +14,8 @@ cargo install critcmp
 
 ## Parser Benchmark
 
-To get a benchmark comparison, you need to run the benchmark for `main` branch and your PR:
+To get a benchmark comparison, you need to run the benchmark for `main` branch
+and your PR:
 
 ```bash
 # (commit your code on pr branch, run)
@@ -42,12 +43,13 @@ parser/three.min.js                   1.00    81.6±11.86ms     7.2 MB/sec     1
 parser/vue.global.prod.js             1.09     28.7±6.39ms     4.2 MB/sec     1.00     26.3±0.88ms     4.6 MB/sec
 ```
 
-The 1.xx column is the percentage difference, larger means worse.
-For example jquery is 16% slower on main. And the pr branch performs better overall.
+The 1.xx column is the percentage difference, larger means worse. For example
+jquery is 16% slower on main. And the pr branch performs better overall.
 
 ## Formatter benchmark
 
-To get a benchmark comparison, you need to run the benchmark for `main` branch and your PR:
+To get a benchmark comparison, you need to run the benchmark for `main` branch
+and your PR:
 
 ```bash
 # (commit your code on pr branch, run)
@@ -60,7 +62,8 @@ critcmp main pr
 
 ## Analyzer benchmark
 
-To get a benchmark comparison, you need to run the benchmark for `main` branch and your PR:
+To get a benchmark comparison, you need to run the benchmark for `main` branch
+and your PR:
 
 ```bash
 # (commit your code on pr branch, run)

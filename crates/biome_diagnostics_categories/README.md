@@ -11,5 +11,5 @@ expansion this crate instead uses a build script (in `build.rs`) to control how
 the code resulting from the macro is generated.
 
 Specifically this lets us generate new identifiers, which is something plain
-Rust macros cannot do, without having to use full-blown procedural macros,
-which would require creating and building yet another crate.
+Rust macros cannot do, without having to use full-blown procedural macros, which
+would require creating and building yet another crate.

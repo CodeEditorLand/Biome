@@ -1,7 +1,7 @@
 # coverage
 
-
 ## `cargo coverage`
+
 Runs the parser against the various test suites to validate its conformance.
 
 ```
@@ -31,7 +31,8 @@ OPTIONS
 
 ## `cargo coverage compare`
 
-Useful to compare the coverage, for example between your feature branch and `main`.
+Useful to compare the coverage, for example between your feature branch and
+`main`.
 
 ```bash
 # (commit your code on pr branch, run)

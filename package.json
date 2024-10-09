@@ -1,14 +1,14 @@
 {
-  "name": "@biomejs/monorepo",
-  "version": "0.0.0",
-  "private": true,
-  "scripts": {
-    "check:apply": "cargo biome-cli-dev check --fix --unsafe",
-    "check": "cargo biome-cli-dev check",
-    "ci": "cargo biome-cli-dev ci"
-  },
-  "keywords": [],
-  "author": "Biome Developers and Contributors",
-  "license": "MIT OR Apache-2.0",
-  "packageManager": "pnpm@9.12.0"
+	"name": "@biomejs/monorepo",
+	"version": "0.0.0",
+	"private": true,
+	"keywords": [],
+	"license": "MIT OR Apache-2.0",
+	"author": "Biome Developers and Contributors",
+	"scripts": {
+		"check": "cargo biome-cli-dev check",
+		"check:apply": "cargo biome-cli-dev check --fix --unsafe",
+		"ci": "cargo biome-cli-dev ci"
+	},
+	"packageManager": "pnpm@9.12.0"
 }
