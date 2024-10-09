@@ -10,7 +10,7 @@
 	"dependencies": {},
 	"description": "Tools to introspect Tailwind CSS configurations for integration with Biome",
 	"devDependencies": {
-		"@playform/build": "",
+		"@playform/build": "0.1.7",
 		"@types/bun": "1.1.11",
 		"read-package-up": "11.0.0"
 	},

@@ -12,7 +12,7 @@
 		"@biomejs/wasm-bundler": "link:../wasm-bundler",
 		"@biomejs/wasm-nodejs": "link:../wasm-nodejs",
 		"@biomejs/wasm-web": "link:../wasm-web",
-		"@playform/build": ""
+		"@playform/build": "0.1.7"
 	},
 	"files": [
 		"README.md",
