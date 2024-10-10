@@ -1,6 +1,6 @@
 use biome_rowan::FileSourceError;
-use biome_string_case::StrOnlyExtension;
 use std::{ffi::OsStr, path::Path};
+use biome_string_case::StrOnlyExtension;
 
 #[cfg_attr(feature = "schema", derive(schemars::YamlSchema))]
 #[derive(
@@ -48,21 +48,9 @@ impl YamlFileSource {
         match extension.as_encoded_bytes() {
             // https://github.com/github-linguist/linguist/blob/4ac734c15a96f9e16fd12330d0cb8de82274f700/lib/linguist/languages.yml#L8070-L8079
             // https://yaml.org/spec/1.2.2/
-            b"yaml"
-            | b"yml"
-            | b"eyaml"
-            | b"eyml"
-            | b"cff"
-            | b"yaml-tmlanguage"
-            | b"yaml-tmpreferences"
-            | b"yaml-tmtheme"
-            | b"mir"
-            | b"reek"
-            | b"rviz"
-            | b"sublime-syntax"
-            | b"syntax"
-            | b"yaml.sed"
-            | b"yml.mysql" => Ok(Self::yaml()),
+            b"yaml" | b"yml" | b"eyaml" | b"eyml" | b"cff" | b"yaml-tmlanguage"
+            | b"yaml-tmpreferences" | b"yaml-tmtheme" | b"mir" | b"reek" | b"rviz"
+            | b"sublime-syntax" | b"syntax" | b"yaml.sed" | b"yml.mysql" => Ok(Self::yaml()),
             _ => Err(FileSourceError::UnknownExtension),
         }
     }

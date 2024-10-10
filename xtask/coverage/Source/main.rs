@@ -42,7 +42,7 @@ OPTIONS
     --markdown          Emits supported output into markdown format. Supported by `compare` subcommand.
     --json              Prints the test results in JSON. This mode will send all other test output and user messages to stderr.
     --detailed=[debug]  Prints a detailed summary at the end for all failing tests. Includes in depth details if set to `debug`.
-    --suites=<IDS>      Runs the specified tests suites. Use comma as separator.
+    --suites=<IDS>      Runs the specified tests suites. Use comma as separator. 
                         Valid values are:
                             *: will run all suites
                             js: will run all javascript suites; Same as \"js/262\";

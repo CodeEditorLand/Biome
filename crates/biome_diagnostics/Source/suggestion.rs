@@ -1,7 +1,7 @@
+use ::serde::{Deserialize, Serialize};
 use biome_console::MarkupBuf;
 use biome_rowan::TextRange;
 use biome_text_edit::TextEdit;
-use serde::{Deserialize, Serialize};
 
 /// Indicates how a tool should manage this suggestion.
 #[derive(Clone, Copy, Debug, Eq, PartialEq, Hash, Serialize, Deserialize)]
