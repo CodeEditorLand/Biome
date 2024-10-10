@@ -3,6 +3,7 @@
 use biome_analyze::declare_lint_group;
 
 pub mod no_common_js;
+pub mod no_document_cookie;
 pub mod no_duplicate_else_if;
 pub mod no_dynamic_namespace_import_access;
 pub mod no_enum;
@@ -28,6 +29,7 @@ pub mod use_component_export_only_modules;
 pub mod use_consistent_curly_braces;
 pub mod use_consistent_member_accessibility;
 pub mod use_explicit_function_return_type;
+pub mod use_guard_for_in;
 pub mod use_import_restrictions;
 pub mod use_sorted_classes;
 pub mod use_strict_mode;
@@ -39,6 +41,7 @@ declare_lint_group! {
         name : "nursery" ,
         rules : [
             self :: no_common_js :: NoCommonJs ,
+            self :: no_document_cookie :: NoDocumentCookie ,
             self :: no_duplicate_else_if :: NoDuplicateElseIf ,
             self :: no_dynamic_namespace_import_access :: NoDynamicNamespaceImportAccess ,
             self :: no_enum :: NoEnum ,
@@ -64,6 +67,7 @@ declare_lint_group! {
             self :: use_consistent_curly_braces :: UseConsistentCurlyBraces ,
             self :: use_consistent_member_accessibility :: UseConsistentMemberAccessibility ,
             self :: use_explicit_function_return_type :: UseExplicitFunctionReturnType ,
+            self :: use_guard_for_in :: UseGuardForIn ,
             self :: use_import_restrictions :: UseImportRestrictions ,
             self :: use_sorted_classes :: UseSortedClasses ,
             self :: use_strict_mode :: UseStrictMode ,
