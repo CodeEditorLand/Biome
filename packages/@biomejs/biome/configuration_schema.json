@@ -2099,6 +2099,13 @@
 						{ "type": "null" }
 					]
 				},
+				"noDocumentCookie": {
+					"description": "Disallow direct assignments to document.cookie.",
+					"anyOf": [
+						{ "$ref": "#/definitions/RuleConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"noDuplicateCustomProperties": {
 					"description": "Disallow duplicate custom properties within declaration blocks.",
 					"anyOf": [
@@ -2333,6 +2340,13 @@
 				},
 				"useExplicitFunctionReturnType": {
 					"description": "Require explicit return types on functions and class methods.",
+					"anyOf": [
+						{ "$ref": "#/definitions/RuleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useGuardForIn": {
+					"description": "Require for-in loops to include an if statement.",
 					"anyOf": [
 						{ "$ref": "#/definitions/RuleConfiguration" },
 						{ "type": "null" }
