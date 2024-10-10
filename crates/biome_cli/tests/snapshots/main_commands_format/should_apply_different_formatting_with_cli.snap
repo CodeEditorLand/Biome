@@ -1,0 +1,69 @@
+---
+source: crates/biome_cli/tests/snap_test.rs
+expression: content
+---
+## `biome.json`
+
+```json
+{
+  "formatter": {
+    "indentStyle": "space"
+  }
+}
+```
+
+## `input.css`
+
+```css
+html {
+}
+
+```
+
+## `input.js`
+
+```js
+const a = {
+        array: ["lorem ipsum", "lorem ipsum", "lorem ipsum", "lorem ipsum", "lorem ipsum", "lorem ipsum", "lorem ipsum"],
+};
+
+```
+
+## `input.json`
+
+```json
+{
+  "array": [
+    "lorem ipsum",
+    "lorem ipsum",
+    "lorem ipsum",
+    "lorem ipsum",
+    "lorem ipsum",
+    "lorem ipsum",
+    "lorem ipsum"
+  ]
+}
+
+```
+
+# Emitted Messages
+
+```block
+internalError/fs  DEPRECATED  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The argument --javascript-formatter-indent-size is deprecated, it will be removed in the next major release. Use --javascript-formatter-indent-width instead.
+  
+
+```
+
+```block
+internalError/fs  DEPRECATED  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  ! The argument --json-formatter-indent-size is deprecated, it will be removed in the next major release. Use --json-formatter-indent-width instead.
+  
+
+```
+
+```block
+Formatted 3 files in <TIME>. Fixed 3 files.
+```
