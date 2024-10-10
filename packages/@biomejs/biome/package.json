@@ -1,35 +1,18 @@
 {
-	"name": "@biomejs/biome",
-	"version": "1.9.3",
-	"description": "Biome is a toolchain for the web: formatter, linter and more",
-	"keywords": [
-		"format",
-		"lint",
-		"toolchain",
-		"JavaScript",
-		"TypeScript",
-		"JSON",
-		"JSONC",
-		"JSX",
-		"TSX",
-		"CSS",
-		"GraphQL"
-	],
-	"homepage": "https://biomejs.dev",
-	"bugs": "https://github.com/biomejs/biome/issues",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/biomejs/biome.git",
-		"directory": "packages/@biomejs/biome"
+	"author": {
+		"email": "Source/Open@Editor.Land",
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"url": "HTTPS://Editor.Land"
 	},
-	"funding": {
-		"type": "opencollective",
-		"url": "https://opencollective.com/biome"
-	},
-	"license": "MIT OR Apache-2.0",
-	"author": "Emanuele Stoppa",
 	"bin": {
 		"biome": "bin/biome"
+	},
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
+	},
+	"description": "Biome is a toolchain for the web: formatter, linter and more",
+	"devDependencies": {
+		"@playform/build": "0.1.7"
 	},
 	"files": [
 		"bin/biome",
@@ -40,9 +23,18 @@
 		"LICENSE-MIT",
 		"ROME-LICENSE-MIT"
 	],
-	"scripts": {
-		"postinstall": "node scripts/postinstall.js"
+	"funding": {
+		"type": "opencollective",
+		"url": "https://opencollective.com/biome"
 	},
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"license": "SEE LICENSE IN LICENSE",
+	"name": "@biomejs/biome",
 	"optionalDependencies": {
 		"@biomejs/cli-darwin-arm64": "1.9.3",
 		"@biomejs/cli-darwin-x64": "1.9.3",
@@ -53,10 +45,17 @@
 		"@biomejs/cli-win32-arm64": "1.9.3",
 		"@biomejs/cli-win32-x64": "1.9.3"
 	},
-	"engines": {
-		"node": ">=14.21.3"
-	},
+	"private": false,
 	"publishConfig": {
-		"provenance": true
-	}
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
+	"scripts": {
+		"prepublishOnly": "Build 'Source/**/*.ts'"
+	},
+	"type": "module",
+	"version": "0.0.1"
 }
