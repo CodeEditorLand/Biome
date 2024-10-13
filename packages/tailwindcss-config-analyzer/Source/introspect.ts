@@ -1,6 +1,7 @@
 import type { Config } from "tailwindcss";
 import { createContext } from "tailwindcss/lib/lib/setupContextUtils";
 import resolveConfig from "tailwindcss/resolveConfig.js";
+
 import type { TailwindContext } from "./types.js";
 
 const DEFAULT_CONFIG: Config = { content: [] };
@@ -66,7 +67,8 @@ function introspectVariants(context: TailwindContext): Set<VariantSpec> {
 		for (const value of values) {
 			const composedVariantName = `${name}-${value}`;
 
-			const composedVariantOffset = variantOffsets.get(composedVariantName);
+			const composedVariantOffset =
+				variantOffsets.get(composedVariantName);
 			if (!composedVariantOffset) continue;
 
 			variants.add({
