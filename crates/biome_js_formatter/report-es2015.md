@@ -16,7 +16,7 @@
     $$average = \frac{\sum_{file}^{files}matching\_lines_{file}}{max(lines_{rome}, lines_{prettier})}$$
 </details>
 
-[Metric definition discussion](https://github.com/rome/tools/issues/2555#issuecomment-1124787893)
+[`Metric definition discussion`](https://github.com/rome/tools/issues/2555#issuecomment-1124787893)
 
 
 ## Test cases
@@ -2157,7 +2157,7 @@
        : (resource, params) =>
            new Promise((resolve) =>
              setTimeout(
-               () => resolve(restProvider[name](resource, params)),
+               () => resolve(restProvider[`name`](resource, params)),
                500,
              ),
            ),
