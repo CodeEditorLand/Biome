@@ -5,8 +5,7 @@ import type {
 	PartialConfiguration,
 	Workspace,
 } from "@biomejs/wasm-nodejs";
-
-import { Distribution, loadModule, wrapError, type WasmModule } from "./wasm";
+import { Distribution, type WasmModule, loadModule, wrapError } from "./wasm";
 
 // Re-export of some useful types for users
 export type Configuration = PartialConfiguration;
@@ -207,8 +206,7 @@ export class Biome {
 			});
 
 			const hasErrors = diagnostics.some(
-				(diag) =>
-					diag.severity === "fatal" || diag.severity === "error",
+				(diag) => diag.severity === "fatal" || diag.severity === "error",
 			);
 			if (!hasErrors) {
 				if (options.range) {

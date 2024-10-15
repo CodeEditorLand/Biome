@@ -4,9 +4,8 @@
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import { readPackageUp } from "read-package-up";
-
 import { introspectTailwindConfig } from "./introspect.js";
-import { sortConfigFromSpec, type SortConfig } from "./sort-config.js";
+import { type SortConfig, sortConfigFromSpec } from "./sort-config.js";
 
 const ROOT_PACKAGE_NAME = "@biomejs/monorepo";
 const OUTPUT_PATH =
