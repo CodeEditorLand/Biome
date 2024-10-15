@@ -8,11 +8,11 @@
 
 <div align="center">
 
-[![Chat no Discord][`discord-badge]`][discord-url]
-[![CI na `main`][`ci-badge]`][ci-url]
-[![versão npm][`npm-badge]`][npm-url]
-[![versão VSCode][`vscode-badge]`][vscode-url]
-[![versão Open VSX][`open-vsx-badge]`][open-vsx-url]
+[![Chat no Discord][discord-badge]][discord-url]
+[![CI na `main`][ci-badge]][ci-url]
+[![versão npm][npm-badge]][npm-url]
+[![versão VSCode][vscode-badge]][vscode-url]
+[![versão Open VSX][open-vsx-badge]][open-vsx-url]
 
 [discord-badge]: https://badgen.net/discord/online-members/BypW39g6Yc?icon=discord&label=discord&color=green
 [discord-url]: https://biomejs.dev/chat
@@ -72,14 +72,14 @@ Se você quiser experimentar o Biome sem instalá-lo, use o [playground online](
 
 ## Documentação
 
-Confira nossa [`página inicial`][biomejs] para saber mais sobre o Biome,
-ou vá ao [`Guia de Introdução`][getting-started] para começar a usar o Biome.
+Confira nossa [página inicial][biomejs] para saber mais sobre o Biome,
+ou vá ao [Guia de Introdução][getting-started] para começar a usar o Biome.
 
 ## Mais sobre o Biome
 
 **Biome** tem padrões robustos e não requer configuração.
 
-**Biome** visa suportar [`todas as principais linguagens`][language-support] do desenvolvimento web moderno.
+**Biome** visa suportar [todas as principais linguagens][language-support] do desenvolvimento web moderno.
 
 **Biome** [não requer Node.js](https://biomejs.dev/guides/manual-installation/) para funcionar.
 
@@ -89,7 +89,7 @@ ou vá ao [`Guia de Introdução`][getting-started] para começar a usar o Biome
 
 **Biome** unifica funcionalidades que anteriormente eram ferramentas separadas. Construindo sobre uma base compartilhada, podemos fornecer uma experiência coesa para processar código, exibir erros, paralelizar trabalho, cache e configuração.
 
-Leia mais sobre nossa [`filosofia de projeto`][biome-philosophy].
+Leia mais sobre nossa [filosofia de projeto][biome-philosophy].
 
 **Biome** é licenciado sob [MIT](https://github.com/biomejs/biome/tree/main/LICENSE-MIT) ou [Apache 2.0](https://github.com/biomejs/biome/tree/main/LICENSE-APACHE) e moderado sob o [Código de Conduta do Contribuidor](https://github.com/biomejs/biome/tree/main/CODE_OF_CONDUCT.md).
 

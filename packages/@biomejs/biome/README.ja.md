@@ -8,11 +8,11 @@
 
 <div align="center">
 
-[![Discord chat][`discord-badge]`][discord-url]
-[![CI on main][`ci-badge]`][ci-url]
-[![npm version][`npm-badge]`][npm-url]
-[![VSCode version][`vscode-badge]`][vscode-url]
-[![Open VSX version][`open-vsx-badge]`][open-vsx-url]
+[![Discord chat][discord-badge]][discord-url]
+[![CI on main][ci-badge]][ci-url]
+[![npm version][npm-badge]][npm-url]
+[![VSCode version][vscode-badge]][vscode-url]
+[![Open VSX version][open-vsx-badge]][open-vsx-url]
 
 [discord-badge]: https://badgen.net/discord/online-members/BypW39g6Yc?icon=discord&label=discord&color=green
 [discord-url]: https://biomejs.dev/chat
@@ -72,13 +72,13 @@ Biome をインストールせずに試したい場合は、WebAssembly にコ�
 
 ## ドキュメント
 
-Biome についてもっと知るために[ホームページ][biomejs]をチェックするか、Biome を使い始めるために[`はじめる`][getting-started]に進んでください。
+Biome についてもっと知るために[ホームページ][biomejs]をチェックするか、Biome を使い始めるために[はじめる][getting-started]に進んでください。
 
 ## Biome をもっと詳しく
 
 **Biome** は理にかなったデフォルト設定を持ち、設定を必要としません。
 
-**Biome** はモダンなウェブ開発における[`全ての主要な言語`][language-support]をサポートすることを目指しています。
+**Biome** はモダンなウェブ開発における[全ての主要な言語][language-support]をサポートすることを目指しています。
 
 **Biome** は動作するために Node.js を必要としません。
 
@@ -86,7 +86,7 @@ Biome についてもっと知るために[ホームページ][biomejs]をチェ
 
 **Biome** は以前は別々のツールで提供されていた機能を統合します。共通基盤を構築することで、コードの処理、エラーの表示、並列処理、キャッシュ、設定について統一的な体験を提供します。
 
-興味のある方は、[`プロジェクトの理念`][biome-philosophy]もご覧ください。
+興味のある方は、[プロジェクトの理念][biome-philosophy]もご覧ください。
 
 **Biome** は [MIT ライセンス](https://github.com/biomejs/biome/tree/main/LICENSE-MIT)または [Apache 2.0 ライセンス](https://github.com/biomejs/biome/tree/main/LICENSE-APACHE)であり、[コントリビューター行動規範](https://github.com/biomejs/biome/tree/main/CODE_OF_CONDUCT.md)の下で管理されています。
 

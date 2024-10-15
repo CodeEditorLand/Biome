@@ -8,11 +8,11 @@
 
 <div align="center">
 
-[![Discord chat][`discord-badge]`][discord-url]
-[![CI on main][`ci-badge]`][ci-url]
-[![npm version][`npm-badge]`][npm-url]
-[![VSCode version][`vscode-badge]`][vscode-url]
-[![Open VSX version][`open-vsx-badge]`][open-vsx-url]
+[![Discord chat][discord-badge]][discord-url]
+[![CI on main][ci-badge]][ci-url]
+[![npm version][npm-badge]][npm-url]
+[![VSCode version][vscode-badge]][vscode-url]
+[![Open VSX version][open-vsx-badge]][open-vsx-url]
 
 [discord-badge]: https://badgen.net/discord/online-members/BypW39g6Yc?icon=discord&label=discord&color=green
 [discord-url]: https://biomejs.dev/chat
@@ -70,13 +70,13 @@ npx @biomejs/biome ci ./src
 
 ## 文档
 
-查看我们的[主页][biomejs]以了解更多关于 Biome 的信息，或者直接前往[`入门指南`][getting-started]开始使用 Biome。
+查看我们的[主页][biomejs]以了解更多关于 Biome 的信息，或者直接前往[入门指南][getting-started]开始使用 Biome。
 
 ## 更多信息
 
 **Biome** 有合理的默认设置，不需要配置。
 
-**Biome** 旨在支持[`所有主要的现代网络开发语言`][language-support]。
+**Biome** 旨在支持[所有主要的现代网络开发语言][language-support]。
 
 **Biome** [不需要 Node.js](https://biomejs.dev/zh-cn/guides/manual-installation/) 就可以运行。
 
@@ -84,7 +84,7 @@ npx @biomejs/biome ci ./src
 
 **Biome** 统一了以前分散的功能。基于共享的基础，我们可以提供一个处理代码、显示错误、并行工作、缓存和配置的一致体验。
 
-阅读更多关于我们的[`项目理念`][biome-philosophy]。
+阅读更多关于我们的[项目理念][biome-philosophy]。
 
 **Biome** 采用 [MIT 许可](https://github.com/biomejs/biome/tree/main/LICENSE-MIT) 或 [Apache 2.0 许可](https://github.com/biomejs/biome/tree/main/LICENSE-APACHE)，并在 [贡献者公约行为准则](https://github.com/biomejs/biome/tree/main/CODE_OF_CONDUCT.md) 下进行管理。
 

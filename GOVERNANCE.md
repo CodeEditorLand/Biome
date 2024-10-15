@@ -22,8 +22,8 @@ Leads have additional privileges over core contributors. Leads control and maint
 
 These assets and responsibilities are but are not limited to:
 - Access to social accounts
-- Administration privileges of the [`Biome Discord server`][discord]
-- Administration privileges of the [`Biome GitHub org`][gh-org]
+- Administration privileges of the [Biome Discord server][discord]
+- Administration privileges of the [Biome GitHub org][gh-org]
 - Website accesses (hosting platform, domain name, etc.)
 - Access to sensitive emails, such as the CoC email
 
@@ -52,8 +52,8 @@ In the event of a rejection, the nominated person will be privately given the re
 
 Core Contributors are outstanding [maintainers](#maintainer), are ambassadors of Biome organisation and lead by example the community.
 
-- Push access to the [`Biome GitHub org`][gh-org], this includes all repositories
-- `Core contributor` status on the [`Biome Discord server`][discord]
+- Push access to the [Biome GitHub org][gh-org], this includes all repositories
+- `Core contributor` status on the [Biome Discord server][discord]
 - Takes part in [project decisions](#project-direction-and-planning)
 - Ability to [vote](#maintainer-nomination) on new maintainers and [vote](#core-contributor-nomination) on new core contributors
 - Onboard new [maintainers](#maintainer)
@@ -89,8 +89,8 @@ In the event of a rejection, the nominated person will be privately given the re
 
 Maintainers are those with a history of consistent contributions, including but not limited to pull requests, project management, or support. These privileges include:
 
-- Push access to some of the repositories of the [`Biome GitHub org`][gh-org]
-- `Maintainer` status on the [`Biome Discord server`][discord]
+- Push access to some of the repositories of the [Biome GitHub org][gh-org]
+- `Maintainer` status on the [Biome Discord server][discord]
 - Ability to [vote](#voting) on project decisions
 - Ability to [vote](#maintainer-nomination) on new maintainers
 
@@ -143,7 +143,7 @@ Inactive core contributors or maintainers may have voting and access rights remo
 
 Contributions to the project aren't only limited to code. Contributions come in different forms and ways:
 - Documentation
-- Code to all the repositories of the [`GitHub org`][gh-org]
+- Code to all the repositories of the [GitHub org][gh-org]
 - Support in primary channels of the organization, e.g. GitHub and Discord
 - Support in secondary channels, e.g. StackOverflow, etc.
 - Website;
@@ -258,9 +258,9 @@ Anyone may report a violation. Violations can be reported in the following ways:
 
 - In private, via <biomejs@googlegroups.com> which is listed in the [Code of Conduct](./CODE_OF_CONDUCT.md). All core contributors monitor this email address.
 - In private, via email to one or more core contributors.
-- In private, via direct message to a core contributor on [`Discord server`][discord].
+- In private, via direct message to a core contributor on [Discord server][discord].
 - In public, via a GitHub comment (mentioning `@biomejs/core-contributors`).
-- In public, via the project [`Discord server`][discord].
+- In public, via the project [Discord server][discord].
 
 ### Who gets involved?
 

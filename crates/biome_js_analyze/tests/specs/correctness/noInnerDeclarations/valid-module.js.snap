@@ -1,0 +1,19 @@
+---
+source: crates/biome_js_analyze/tests/spec_tests.rs
+expression: valid-module.js
+---
+# Input
+```jsx
+export var x = 1;
+
+var y = 2;
+
+function foo() {}
+
+export function bar() {}
+
+export default function baz() {}
+
+```
+
+
