@@ -1,19 +1,50 @@
 {
+	"author": {
+		"email": "Source/Open@Editor.Land",
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"url": "HTTPS://Editor.Land"
+	},
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
+	},
 	"collaborators": [
 		"Biome Developers and Contributors"
 	],
 	"description": "WebAssembly bindings to the Biome workspace API",
+	"devDependencies": {
+		"@playform/build": "0.1.7"
+	},
 	"files": [
 		"biome_wasm_bg.wasm",
 		"biome_wasm.js",
 		"biome_wasm_bg.js",
 		"biome_wasm.d.ts"
 	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"license": "SEE LICENSE IN LICENSE",
 	"module": "biome_wasm.js",
 	"name": "@biomejs/wasm-bundler",
+	"private": false,
+	"publishConfig": {
+		"access": "public"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
+	"scripts": {
+		"prepublishOnly": "Build 'Source/**/*.ts'"
+	},
 	"sideEffects": [
 		"./biome_wasm.js",
 		"./snippets/*"
 	],
-	"types": "biome_wasm.d.ts"
+	"type": "module",
+	"types": "biome_wasm.d.ts",
+	"version": "0.0.1"
 }
