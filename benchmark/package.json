@@ -10,7 +10,7 @@
 	"description": "",
 	"devDependencies": {
 		"@playform/build": "0.1.7",
-		"dprint": "0.47.2"
+		"dprint": "0.47.4"
 	},
 	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
 	"keywords": [

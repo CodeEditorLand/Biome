@@ -10,7 +10,7 @@
 	"description": "Bindings to the JSON-RPC Workspace API of the Biome daemon",
 	"devDependencies": {
 		"@playform/build": "0.1.7",
-		"@types/node": "22.7.6"
+		"@types/node": "22.7.7"
 	},
 	"files": [
 		"dist/",
@@ -29,14 +29,14 @@
 	"main": "dist/index.js",
 	"name": "@biomejs/backend-jsonrpc",
 	"optionalDependencies": {
-		"@biomejs/cli-darwin-arm64": "1.9.3",
-		"@biomejs/cli-darwin-x64": "1.9.3",
-		"@biomejs/cli-linux-arm64": "1.9.3",
-		"@biomejs/cli-linux-arm64-musl": "1.9.3",
-		"@biomejs/cli-linux-x64": "1.9.3",
-		"@biomejs/cli-linux-x64-musl": "1.9.3",
-		"@biomejs/cli-win32-arm64": "1.9.3",
-		"@biomejs/cli-win32-x64": "1.9.3"
+		"@biomejs/cli-darwin-arm64": "1.9.4",
+		"@biomejs/cli-darwin-x64": "1.9.4",
+		"@biomejs/cli-linux-arm64": "1.9.4",
+		"@biomejs/cli-linux-arm64-musl": "1.9.4",
+		"@biomejs/cli-linux-x64": "1.9.4",
+		"@biomejs/cli-linux-x64-musl": "1.9.4",
+		"@biomejs/cli-win32-arm64": "1.9.4",
+		"@biomejs/cli-win32-x64": "1.9.4"
 	},
 	"private": false,
 	"publishConfig": {
