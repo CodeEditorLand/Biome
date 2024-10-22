@@ -12,7 +12,7 @@
 	},
 	"description": "Structured representation of the ARIA roles, properties, and states",
 	"devDependencies": {
-		"@playform/build": "0.1.7"
+		"@playform/build": "0.1.8"
 	},
 	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
 	"keywords": [
