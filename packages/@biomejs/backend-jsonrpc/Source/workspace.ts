@@ -1339,6 +1339,10 @@ export interface Nursery {
 	 */
 	noUselessStringRaw?: RuleConfiguration_for_Null;
 	/**
+	 * Disallow the use of useless undefined.
+	 */
+	noUselessUndefined?: RuleFixConfiguration_for_Null;
+	/**
 	 * Disallow use of @value rule in css modules.
 	 */
 	noValueAtRule?: RuleConfiguration_for_Null;
@@ -1382,6 +1386,10 @@ export interface Nursery {
 	 * Require explicit return types on functions and class methods.
 	 */
 	useExplicitType?: RuleConfiguration_for_Null;
+	/**
+	 * Enforces the use of a recommended display strategy with Google Fonts.
+	 */
+	useGoogleFontDisplay?: RuleConfiguration_for_Null;
 	/**
 	 * Require for-in loops to include an if statement.
 	 */
@@ -1640,7 +1648,7 @@ export interface Style {
 	/**
 	 * Prevent extra closing tags for components without children
 	 */
-	useSelfClosingElements?: RuleFixConfiguration_for_Null;
+	useSelfClosingElements?: RuleFixConfiguration_for_UseSelfClosingElementsOptions;
 	/**
 	 * When expressing array types, this rule promotes the usage of T\[] shorthand instead of Array\<T>.
 	 */
@@ -1873,7 +1881,7 @@ export interface Suspicious {
 	/**
 	 * Disallow direct use of Object.prototype builtins.
 	 */
-	noPrototypeBuiltins?: RuleConfiguration_for_Null;
+	noPrototypeBuiltins?: RuleFixConfiguration_for_Null;
 	/**
 	 * Prevents React-specific JSX properties from being used.
 	 */
@@ -2071,6 +2079,9 @@ export type RuleConfiguration_for_FilenamingConventionOptions =
 export type RuleFixConfiguration_for_NamingConventionOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_NamingConventionOptions;
+export type RuleFixConfiguration_for_UseSelfClosingElementsOptions =
+	| RulePlainConfiguration
+	| RuleWithFixOptions_for_UseSelfClosingElementsOptions;
 export type RuleFixConfiguration_for_NoConsoleOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_NoConsoleOptions;
@@ -2310,6 +2321,20 @@ export interface RuleWithFixOptions_for_NamingConventionOptions {
 	 */
 	options: NamingConventionOptions;
 }
+export interface RuleWithFixOptions_for_UseSelfClosingElementsOptions {
+	/**
+	 * The kind of the code actions emitted by the rule
+	 */
+	fix?: FixKind;
+	/**
+	 * The severity of the emitted diagnostics by the rule
+	 */
+	level: RulePlainConfiguration;
+	/**
+	 * Rule's options
+	 */
+	options: UseSelfClosingElementsOptions;
+}
 export interface RuleWithFixOptions_for_NoConsoleOptions {
 	/**
 	 * The kind of the code actions emitted by the rule
@@ -2470,6 +2495,10 @@ export interface FilenamingConventionOptions {
 	 */
 	filenameCases: FilenameCases;
 	/**
+	 * Regular expression to enforce
+	 */
+	match?: Regex;
+	/**
 	 * If `false`, then non-ASCII characters are allowed.
 	 */
 	requireAscii: boolean;
@@ -2498,6 +2527,12 @@ export interface NamingConventionOptions {
 	 * If `false`, then consecutive uppercase are allowed in _camel_ and _pascal_ cases. This does not affect other [Case].
 	 */
 	strictCase: boolean;
+}
+/**
+ * Options for the `useSelfClosingElements` rule.
+ */
+export interface UseSelfClosingElementsOptions {
+	ignoreHtmlElements?: boolean;
 }
 export interface NoConsoleOptions {
 	/**
@@ -2545,6 +2580,7 @@ For example, for React's `useRef()` hook the value would be `true`, while for `u
 export type Accessibility = "noPublic" | "explicit" | "none";
 export type ConsistentArrayType = "shorthand" | "generic";
 export type FilenameCases = FilenameCase[];
+export type Regex = string;
 export interface Convention {
 	/**
 	 * String cases to enforce
@@ -2578,7 +2614,6 @@ export type FilenameCase =
 	| "PascalCase"
 	| "snake_case";
 export type Formats = Format[];
-export type Regex = string;
 export interface Selector {
 	/**
 	 * Declaration kind
@@ -2955,6 +2990,7 @@ export type Category =
 	| "lint/nursery/noUnusedFunctionParameters"
 	| "lint/nursery/noUselessEscapeInRegex"
 	| "lint/nursery/noUselessStringRaw"
+	| "lint/nursery/noUselessUndefined"
 	| "lint/nursery/noValueAtRule"
 	| "lint/nursery/useAdjacentOverloadSignatures"
 	| "lint/nursery/useAriaPropsSupportedByRole"
@@ -2965,7 +3001,9 @@ export type Category =
 	| "lint/nursery/useConsistentCurlyBraces"
 	| "lint/nursery/useConsistentMemberAccessibility"
 	| "lint/nursery/useDeprecatedReason"
+	| "lint/nursery/useExplicitFunctionReturnType"
 	| "lint/nursery/useExplicitType"
+	| "lint/nursery/useGoogleFontDisplay"
 	| "lint/nursery/useGuardForIn"
 	| "lint/nursery/useImportRestrictions"
 	| "lint/nursery/useJsxCurlyBraceConvention"
@@ -3328,7 +3366,10 @@ export interface FixFileParams {
 /**
  * Which fixes should be applied during the analyzing phase
  */
-export type FixFileMode = "SafeFixes" | "SafeAndUnsafeFixes";
+export type FixFileMode =
+	| "SafeFixes"
+	| "SafeAndUnsafeFixes"
+	| "ApplySuppressions";
 export interface FixFileResult {
 	/**
 	 * List of all the code actions applied to the file
