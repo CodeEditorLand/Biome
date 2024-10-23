@@ -11,7 +11,7 @@
 	"description": "Tools to introspect Tailwind CSS configurations for integration with Biome",
 	"devDependencies": {
 		"@playform/build": "0.1.8",
-		"@types/bun": "1.1.11",
+		"@types/bun": "1.1.12",
 		"read-package-up": "11.0.0"
 	},
 	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
