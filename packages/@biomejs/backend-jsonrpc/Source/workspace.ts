@@ -549,6 +549,10 @@ export interface PartialJavascriptOrganizeImports {}
  */
 export interface PartialJavascriptParser {
 	/**
+	 * Enables parsing of Grit metavariables. Defaults to `false`.
+	 */
+	gritMetavariables?: boolean;
+	/**
 	* It enables the experimental and unsafe parsing of parameter decorators
 
 These decorators belong to an old proposal, and they are subject to change. 
@@ -1391,6 +1395,10 @@ export interface Nursery {
 	 */
 	useGoogleFontDisplay?: RuleConfiguration_for_Null;
 	/**
+	 * Ensure the preconnect attribute is used when using Google Fonts.
+	 */
+	useGoogleFontPreconnect?: RuleFixConfiguration_for_Null;
+	/**
 	 * Require for-in loops to include an if statement.
 	 */
 	useGuardForIn?: RuleConfiguration_for_Null;
@@ -1398,6 +1406,10 @@ export interface Nursery {
 	 * Disallows package private imports.
 	 */
 	useImportRestrictions?: RuleConfiguration_for_Null;
+	/**
+	 * Enforce specifying the name of GraphQL operations.
+	 */
+	useNamedOperation?: RuleFixConfiguration_for_Null;
 	/**
 	 * Enforce the sorting of CSS utility classes.
 	 */
@@ -3004,9 +3016,11 @@ export type Category =
 	| "lint/nursery/useExplicitFunctionReturnType"
 	| "lint/nursery/useExplicitType"
 	| "lint/nursery/useGoogleFontDisplay"
+	| "lint/nursery/useGoogleFontPreconnect"
 	| "lint/nursery/useGuardForIn"
 	| "lint/nursery/useImportRestrictions"
 	| "lint/nursery/useJsxCurlyBraceConvention"
+	| "lint/nursery/useNamedOperation"
 	| "lint/nursery/useSortedClasses"
 	| "lint/nursery/useStrictMode"
 	| "lint/nursery/useTrimStartEnd"

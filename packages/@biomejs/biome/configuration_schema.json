@@ -1672,6 +1672,10 @@
 			"description": "Options that changes how the JavaScript parser behaves",
 			"type": "object",
 			"properties": {
+				"gritMetavariables": {
+					"description": "Enables parsing of Grit metavariables. Defaults to `false`.",
+					"type": ["boolean", "null"]
+				},
 				"unsafeParameterDecoratorsEnabled": {
 					"description": "It enables the experimental and unsafe parsing of parameter decorators\n\nThese decorators belong to an old proposal, and they are subject to change.",
 					"type": ["boolean", "null"]
@@ -2391,6 +2395,13 @@
 						{ "type": "null" }
 					]
 				},
+				"useGoogleFontPreconnect": {
+					"description": "Ensure the preconnect attribute is used when using Google Fonts.",
+					"anyOf": [
+						{ "$ref": "#/definitions/RuleFixConfiguration" },
+						{ "type": "null" }
+					]
+				},
 				"useGuardForIn": {
 					"description": "Require for-in loops to include an if statement.",
 					"anyOf": [
@@ -2402,6 +2413,13 @@
 					"description": "Disallows package private imports.",
 					"anyOf": [
 						{ "$ref": "#/definitions/RuleConfiguration" },
+						{ "type": "null" }
+					]
+				},
+				"useNamedOperation": {
+					"description": "Enforce specifying the name of GraphQL operations.",
+					"anyOf": [
+						{ "$ref": "#/definitions/RuleFixConfiguration" },
 						{ "type": "null" }
 					]
 				},
