@@ -1,8 +1,10 @@
+use std::str::FromStr;
+
 use crate::{services::aria::Aria, JsRuleAction};
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, ActionCategory, FixKind, Rule, RuleDiagnostic,
-    RuleSource,
+    context::RuleContext, declare_lint_rule, FixKind, Rule, RuleDiagnostic, RuleSource,
 };
+use biome_aria_metadata::AriaRole;
 use biome_console::markup;
 use biome_js_syntax::jsx_ext::AnyJsxElement;
 use biome_rowan::{AstNode, BatchMutationExt};
@@ -64,7 +66,7 @@ impl Rule for NoInteractiveElementToNoninteractiveRole {
             let attributes = ctx.extract_attributes(&node.attributes());
             let attributes = ctx.convert_all_attribute_values(attributes);
             if !aria_roles.is_not_interactive_element(element_name.text_trimmed(), attributes)
-                && !aria_roles.is_role_interactive(role_attribute_value)
+                && !AriaRole::from_str(role_attribute_value).is_ok_and(|role| role.is_interactive())
             {
                 // <div> and <span> are considered neither interactive nor non-interactive, depending on the presence or absence of the role attribute.
                 // We don't report <div> and <span> here, because we cannot determine whether they are interactive or non-interactive.
@@ -123,7 +125,7 @@ impl Rule for NoInteractiveElementToNoninteractiveRole {
         let mut mutation = ctx.root().begin();
         mutation.remove_node(role_attribute);
         Some(JsRuleAction::new(
-            ActionCategory::QuickFix,
+            ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
             markup! { "Remove the "<Emphasis>"role"</Emphasis>" attribute." }.to_owned(),
             mutation,
