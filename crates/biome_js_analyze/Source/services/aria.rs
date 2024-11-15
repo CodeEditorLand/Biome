@@ -2,7 +2,6 @@ use biome_analyze::{
     AddVisitor, FromServices, MissingServicesDiagnostic, Phase, Phases, QueryKey, Queryable,
     RuleKey, ServiceBag, SyntaxVisitor,
 };
-use biome_aria::iso::{countries, is_valid_country, is_valid_language, languages};
 use biome_aria::AriaRoles;
 use biome_js_syntax::{AnyJsRoot, AnyJsxAttribute, JsLanguage, JsSyntaxNode, JsxAttributeList};
 use biome_rowan::AstNode;
@@ -17,22 +16,6 @@ pub struct AriaServices {
 impl AriaServices {
     pub fn aria_roles(&self) -> &AriaRoles {
         &self.roles
-    }
-
-    pub fn is_valid_iso_language(&self, language: &str) -> bool {
-        is_valid_language(language)
-    }
-
-    pub fn is_valid_iso_country(&self, country: &str) -> bool {
-        is_valid_country(country)
-    }
-
-    pub fn iso_country_list(&self) -> &'static [&'static str] {
-        countries()
-    }
-
-    pub fn iso_language_list(&self) -> &'static [&'static str] {
-        languages()
     }
 
     /// Parses a [JsxAttributeList] and extracts the names and values of each [JsxAttribute],
@@ -52,7 +35,7 @@ impl AriaServices {
                     if let Some(static_value) = initializer.as_static_value() {
                         static_value
                             .text()
-                            .split_whitespace()
+                            .split_ascii_whitespace()
                             .map(|s| AttributeValue::StaticValue(s.to_string()))
                             .collect()
                     } else {

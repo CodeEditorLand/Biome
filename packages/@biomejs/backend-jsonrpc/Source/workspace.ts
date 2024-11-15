@@ -1271,6 +1271,10 @@ export interface Nursery {
 	 */
 	noExportedImports?: RuleConfiguration_for_Null;
 	/**
+	 * Disallow the use of __dirname and __filename in the global scope.
+	 */
+	noGlobalDirnameFilename?: RuleFixConfiguration_for_Null;
+	/**
 	 * Prevent usage of \<head> element in a Next.js project.
 	 */
 	noHeadElement?: RuleConfiguration_for_Null;
@@ -1979,7 +1983,7 @@ export interface Suspicious {
 	 */
 	useNumberToFixedDigitsArgument?: RuleFixConfiguration_for_Null;
 	/**
-	 * This rule verifies the result of typeof $expr unary expressions is being compared to valid values, either string literals containing valid type names or other typeof expressions
+	 * This rule checks that the result of a `typeof' expression is compared to a valid value.
 	 */
 	useValidTypeof?: RuleFixConfiguration_for_Null;
 }
@@ -3057,6 +3061,7 @@ export type Category =
 	| "lint/nursery/noDynamicNamespaceImportAccess"
 	| "lint/nursery/noEnum"
 	| "lint/nursery/noExportedImports"
+	| "lint/nursery/noGlobalDirnameFilename"
 	| "lint/nursery/noHeadElement"
 	| "lint/nursery/noHeadImportInDocument"
 	| "lint/nursery/noImgElement"

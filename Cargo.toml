@@ -172,7 +172,7 @@ biome_ungrammar      = { path = "./crates/biome_ungrammar" }
 tests_macros         = { path = "./crates/tests_macros" }
 
 # Crates needed in the workspace
-anyhow             = "1.0.92"
+anyhow             = "1.0.93"
 bpaf               = { version = "0.9.15", features = ["derive"] }
 countme            = "3.0.1"
 crossbeam          = "0.8.4"
@@ -182,7 +182,7 @@ getrandom          = "0.2.15"
 globset            = "0.4.15"
 ignore             = "0.4.23"
 indexmap           = { version = "2.6.0", features = ["serde"] }
-insta              = "1.40.0"
+insta              = "1.41.1"
 natord             = "1.0.9"
 oxc_resolver       = "1.12.0"
 proc-macro2        = "1.0.86"
@@ -201,7 +201,7 @@ slotmap            = "1.0.7"
 smallvec           = { version = "1.13.2", features = ["union", "const_new", "serde"] }
 syn                = "1.0.109"
 termcolor          = "1.4.1"
-tokio              = "1.40.0"
+tokio              = "1.41.1"
 tracing            = { version = "0.1.40", default-features = false, features = ["std"] }
 tracing-subscriber = "0.3.18"
 unicode-bom        = "2.0.3"
