@@ -1,50 +1,50 @@
 {
-	"name": "@biomejs/wasm-bundler",
-	"version": "0.0.1",
-	"private": false,
-	"description": "WebAssembly bindings to the Biome workspace API",
-	"keywords": [
-		"codeeditorland",
-		"land",
-		"playform"
-	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"author": {
+		"email": "Source/Open@Editor.Land",
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"url": "HTTPS://Editor.Land"
+	},
 	"bugs": {
 		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
 	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
-	},
-	"license": "SEE LICENSE IN LICENSE",
-	"author": {
-		"name": "🖋️ Source — 👐🏻 Open —",
-		"email": "Source/Open@Editor.Land",
-		"url": "HTTPS://Editor.Land"
-	},
-	"sideEffects": [
-		"./biome_wasm.js",
-		"./snippets/*"
+	"collaborators": [
+		"Biome Developers and Contributors"
 	],
-	"type": "module",
-	"module": "biome_wasm.js",
-	"types": "biome_wasm.d.ts",
+	"description": "WebAssembly bindings to the Biome workspace API",
+	"devDependencies": {
+		"@playform/build": "0.1.9"
+	},
 	"files": [
 		"biome_wasm_bg.wasm",
 		"biome_wasm.js",
 		"biome_wasm_bg.js",
 		"biome_wasm.d.ts"
 	],
-	"scripts": {
-		"prepublishOnly": "Build 'Source/**/*.ts'"
-	},
-	"devDependencies": {
-		"@playform/build": "0.1.9"
-	},
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"license": "SEE LICENSE IN LICENSE",
+	"module": "biome_wasm.js",
+	"name": "@biomejs/wasm-bundler",
+	"private": false,
 	"publishConfig": {
 		"access": "public"
 	},
-	"collaborators": [
-		"Biome Developers and Contributors"
-	]
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
+	"scripts": {
+		"prepublishOnly": "Build 'Source/**/*.ts'"
+	},
+	"sideEffects": [
+		"./biome_wasm.js",
+		"./snippets/*"
+	],
+	"type": "module",
+	"types": "biome_wasm.d.ts",
+	"version": "0.0.1"
 }
