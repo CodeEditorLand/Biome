@@ -163,6 +163,7 @@ export class Transport {
 
 	private sendMessage(message: JsonRpcMessage) {
 		const body = Buffer.from(JSON.stringify(message));
+
 		const headers = Buffer.from(
 			`Content-Length: ${body.length}\r\nContent-Type: ${MIME_JSONRPC};charset=utf-8\r\n\r\n`,
 		);
@@ -180,6 +181,7 @@ export class Transport {
 		while (this.pendingData.length > 0) {
 			if (this.readerState.kind === ReaderStateKind.Header) {
 				const lineBreakIndex = this.pendingData.indexOf("\n");
+
 				if (lineBreakIndex < 0) {
 					break;
 				}
@@ -209,6 +211,7 @@ export class Transport {
 	private processIncomingHeader(readerState: ReaderStateHeader, line: string) {
 		if (line === "\r\n") {
 			const { contentLength, contentType } = readerState;
+
 			if (typeof contentLength !== "number") {
 				throw new Error(
 					"incoming message from the remote workspace is missing the Content-Length header",
@@ -220,21 +223,25 @@ export class Transport {
 				contentLength,
 				contentType,
 			};
+
 			return;
 		}
 
 		const colonIndex = line.indexOf(":");
+
 		if (colonIndex < 0) {
 			throw new Error(`could not find colon token in "${line}"`);
 		}
 
 		const headerName = line.substring(0, colonIndex);
+
 		const headerValue = line.substring(colonIndex + 1).trim();
 
 		switch (headerName) {
 			case "Content-Length": {
 				const value = Number.parseInt(headerValue);
 				readerState.contentLength = value;
+
 				break;
 			}
 			case "Content-Type": {
@@ -245,6 +252,7 @@ export class Transport {
 				}
 
 				readerState.contentType = headerValue;
+
 				break;
 			}
 			default:
@@ -254,6 +262,7 @@ export class Transport {
 
 	private processIncomingBody(buffer: Buffer) {
 		const data = buffer.toString("utf-8");
+
 		const body = JSON.parse(data);
 
 		if (isJsonRpcMessage(body)) {
@@ -269,9 +278,12 @@ export class Transport {
 
 			if (isJsonRpcResponse(body)) {
 				const pendingRequest = this.pendingRequests.get(body.id);
+
 				if (pendingRequest) {
 					this.pendingRequests.delete(body.id);
+
 					const { resolve, reject } = pendingRequest;
+
 					if ("result" in body) {
 						resolve(body.result);
 					} else {

@@ -2783,6 +2783,7 @@ export type RestrictedModifier =
 	| "static";
 export interface RegisterProjectFolderParams {
 	path?: string;
+
 	setAsCurrentWorkspace: boolean;
 }
 export type ProjectKey = string;
@@ -2793,6 +2794,7 @@ export interface SetManifestForProjectParams {
 }
 export interface OpenFileParams {
 	content: string;
+
 	document_file_source?: DocumentFileSource;
 	path: BiomePath;
 	version: number;
@@ -2812,6 +2814,7 @@ export interface JsFileSource {
 	embedding_kind: EmbeddingKind;
 	language: Language;
 	module_kind: ModuleKind;
+
 	variant: LanguageVariant;
 	version: LanguageVersion;
 }
@@ -3531,23 +3534,31 @@ export interface Workspace {
 	registerProjectFolder(
 		params: RegisterProjectFolderParams,
 	): Promise<ProjectKey>;
+
 	setManifestForProject(params: SetManifestForProjectParams): Promise<void>;
 	openFile(params: OpenFileParams): Promise<void>;
 	changeFile(params: ChangeFileParams): Promise<void>;
 	closeFile(params: CloseFileParams): Promise<void>;
+
 	getSyntaxTree(params: GetSyntaxTreeParams): Promise<GetSyntaxTreeResult>;
 	organizeImports(
 		params: OrganizeImportsParams,
 	): Promise<OrganizeImportsResult>;
+
 	getFileContent(params: GetFileContentParams): Promise<string>;
+
 	getControlFlowGraph(params: GetControlFlowGraphParams): Promise<string>;
+
 	getFormatterIr(params: GetFormatterIRParams): Promise<string>;
 	pullDiagnostics(
 		params: PullDiagnosticsParams,
 	): Promise<PullDiagnosticsResult>;
 	pullActions(params: PullActionsParams): Promise<PullActionsResult>;
+
 	formatFile(params: FormatFileParams): Promise<Printed>;
+
 	formatRange(params: FormatRangeParams): Promise<Printed>;
+
 	formatOnType(params: FormatOnTypeParams): Promise<Printed>;
 	fixFile(params: FixFileParams): Promise<FixFileResult>;
 	rename(params: RenameParams): Promise<RenameResult>;

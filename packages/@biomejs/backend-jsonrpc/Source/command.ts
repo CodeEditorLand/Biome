@@ -28,6 +28,7 @@ export function getCommand(): string | null {
 	};
 
 	const binPath = PLATFORMS?.[platform]?.[arch];
+
 	if (!binPath) {
 		return null;
 	}

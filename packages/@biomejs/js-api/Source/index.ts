@@ -99,9 +99,12 @@ export class Biome {
 	 */
 	static async create(options: BiomeCreate): Promise<Biome> {
 		const module = await loadModule(options.distribution);
+
 		const workspace = new module.Workspace();
+
 		const biome = new Biome(module, workspace);
 		biome.registerProjectFolder();
+
 		return biome;
 	}
 
@@ -179,6 +182,7 @@ export class Biome {
 	}
 
 	formatContent(content: string, options: FormatContentOptions): FormatResult;
+
 	formatContent(
 		content: string,
 		options: FormatContentDebugOptions,
@@ -208,6 +212,7 @@ export class Biome {
 			const hasErrors = diagnostics.some(
 				(diag) => diag.severity === "fatal" || diag.severity === "error",
 			);
+
 			if (!hasErrors) {
 				if (options.range) {
 					const result = this.workspace.formatRange({
@@ -316,6 +321,7 @@ export class Biome {
 				// Only call `free` if the `print` method throws, `finish` will
 				// take care of deallocating the printer even if it fails
 				printer.free();
+
 				throw err;
 			}
 		});

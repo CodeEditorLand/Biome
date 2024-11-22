@@ -22,5 +22,6 @@ export type TailwindContext = {
 	offsets: {
 		variantOffsets: Map<string, bigint>;
 	};
+
 	getVariants: () => ConfigVariant[];
 };

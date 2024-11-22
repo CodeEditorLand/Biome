@@ -34,14 +34,17 @@ export async function loadModule(dist: Distribution): Promise<WasmModule> {
 	switch (dist) {
 		case Distribution.BUNDLER: {
 			modulePromise = import("@biomejs/wasm-bundler");
+
 			break;
 		}
 		case Distribution.NODE: {
 			modulePromise = import("@biomejs/wasm-nodejs");
+
 			break;
 		}
 		case Distribution.WEB: {
 			modulePromise = import("@biomejs/wasm-web");
+
 			break;
 		}
 	}

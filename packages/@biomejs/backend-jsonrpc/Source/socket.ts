@@ -36,6 +36,7 @@ function getSocket(command: string): Promise<string> {
  */
 export async function createSocket(command: string): Promise<Socket> {
 	const path = await getSocket(command);
+
 	const socket = connect(path);
 
 	await new Promise((resolve, reject) => {

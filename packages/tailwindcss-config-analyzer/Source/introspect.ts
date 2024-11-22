@@ -23,6 +23,7 @@ function introspectUtilities(
 	{ excludedLayers }: { excludedLayers?: Array<string> } = {},
 ): Set<UtilitySpec> {
 	const utilities = new Set<UtilitySpec>();
+
 	for (const [utility, candidates] of context.candidateRuleMap.entries()) {
 		for (const [
 			{
@@ -33,7 +34,9 @@ function introspectUtilities(
 			rule,
 		] of candidates) {
 			if (excludedLayers?.includes(layer)) continue;
+
 			const hasValues = values != null || typeof rule === "function";
+
 			const hasDefault = values != null && "DEFAULT" in values;
 			utilities.add({ utility, layer, index, hasValues, hasDefault });
 		}
@@ -56,6 +59,7 @@ function introspectVariants(context: TailwindContext): Set<VariantSpec> {
 	// TODO: Handle isArbitrary like `has-[]` or `group-has-[]`
 	for (const { name, isArbitrary, values } of configVariants) {
 		const offset = variantOffsets.get(name);
+
 		if (!offset) continue;
 
 		variants.add({
@@ -67,6 +71,7 @@ function introspectVariants(context: TailwindContext): Set<VariantSpec> {
 			const composedVariantName = `${name}-${value}`;
 
 			const composedVariantOffset = variantOffsets.get(composedVariantName);
+
 			if (!composedVariantOffset) continue;
 
 			variants.add({
@@ -81,6 +86,7 @@ function introspectVariants(context: TailwindContext): Set<VariantSpec> {
 
 export type TailwindSpec = {
 	utilities: Set<UtilitySpec>;
+
 	variants: Set<VariantSpec>;
 };
 
@@ -89,7 +95,10 @@ export function introspectTailwindConfig(
 	options: { excludedLayers?: Array<string> } = {},
 ): TailwindSpec {
 	const context = createContextFromConfig(config);
+
 	const utilities = introspectUtilities(context, options);
+
 	const variants = introspectVariants(context);
+
 	return { utilities, variants };
 }

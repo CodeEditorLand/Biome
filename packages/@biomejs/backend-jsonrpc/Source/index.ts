@@ -11,6 +11,7 @@ import { type Workspace, createWorkspace as wrapTransport } from "./workspace";
  */
 export async function createWorkspace(): Promise<Workspace | null> {
 	const command = getCommand();
+
 	if (!command) {
 		return null;
 	}
@@ -30,6 +31,7 @@ export async function createWorkspaceWithBinary(
 	command: string,
 ): Promise<Workspace> {
 	const socket = await createSocket(command);
+
 	const transport = new Transport(socket);
 
 	await transport.request("initialize", {
