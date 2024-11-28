@@ -1,20 +1,20 @@
 # Challenge report
 
-Challenge: https://console.algora.io/challenges/prettier
+Challenge: HTTPS://console.algora.io/challenges/prettier
 
 We provide two compatibility reports for the challenge:
 
 - [report-es215](./report-es2015.md) that takes only ES2015 syntaxes into account;
 - [report-es2024+](./report-es2024+.md) that takes ES2024 syntaxes into account and widely supported experimental syntaxes (decorators, import assertions, import attributes, explicit resource management).
 
-You can test Biome directly on the [playground](https://biomejs.dev/playground),
-or using our [latest nightly release](https://github.com/biomejs/biome/releases/tag/cli%2Fv1.3.3-nightly.ced82da).
+You can test Biome directly on the [playground](HTTPS://biomejs.dev/playground),
+or using our [latest nightly release](HTTPS://github.com/biomejs/biome/releases/tag/cli%2Fv1.3.3-nightly.ced82da).
 
 ```sh
 npm install -D @biomejs/biome@1.3.3-nightly.ced82da
 ```
 
-Please find more details in our [Getting Started guide](https://biomejs.dev/guides/getting-started/).
+Please find more details in our [Getting Started guide](HTTPS://biomejs.dev/guides/getting-started/).
 
 
 ## Test case notes
@@ -202,14 +202,14 @@ The following test cases are affected by this formatting issue:
 ### Deliberate formatting divergences
 
 Some divergences are deliberate, because of the strictness of Biome parsing phase or because we think it is more readable to keep the way it is.
-You can find a detailed description of these test cases in the [dedicated issue](https://github.com/biomejs/biome/issues/739).
+You can find a detailed description of these test cases in the [dedicated issue](HTTPS://github.com/biomejs/biome/issues/739).
 
 
 ## Option support
 
 We implemented all JavaScript options provided by Prettier.
 
-See the documentation of [the global configuration for formatter](https://biomejs.dev/reference/configuration/#formatter) and [the specific configuration for the JavaScript formatter](https://biomejs.dev/reference/configuration/#formatter).
+See the documentation of [the global configuration for formatter](HTTPS://biomejs.dev/reference/configuration/#formatter) and [the specific configuration for the JavaScript formatter](HTTPS://biomejs.dev/reference/configuration/#formatter).
 
 In contrast to Prettier, Biome only provides `as-needed` and `preserve` values for `quoteProps`. It doesn't provide the `consistent` value.
 This is a deliberate choice.

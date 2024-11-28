@@ -183,8 +183,8 @@ There are two ways to fund Biome and its development: sponsorship and funded bou
 Sponsorship is the first and foremost way of making financial contributions to Biome. Sponsorship can be
 done through a one-time donation, or through recurring donations. We offer incentives for certain levels of recurring donations.
 
-To learn more about sponsorship incentives, or to make a donation, please visit our [Open Collective page](https://opencollective.com/biome).
-You can also sponsor the project through [GitHub](https://github.com/sponsors/biomejs).
+To learn more about sponsorship incentives, or to make a donation, please visit our [Open Collective page](HTTPS://opencollective.com/biome).
+You can also sponsor the project through [GitHub](HTTPS://github.com/sponsors/biomejs).
 
 ### Community-Funded Bounties
 
@@ -196,15 +196,15 @@ Bounties are the second approach towards funding Biome development. Unlike a spo
   - We reserve the right to decide on a different split in the future.
 - Bounties cannot be opened for bug fixes. Users who wish to see bugs fixed are advised to consider [sponsorship](#sponsorship) instead, in order to give the project a better long-term ability to fix bugs as well.
 - If an issue in our issue tracker is not yet open for pledges, the person who wishes to pledge should indicate their desire in the comments of the issue, or do so through the `Community > #funding` channel on Discord. A [Core Contributor](#core-contributor) can then **accept** or **reject** the request for the bounty. Reasons for rejection include, but are not limited to:
-  - Implementation of the task would conflict with the project direction or [its values](https://biomejs.dev/internals/philosophy/).
+  - Implementation of the task would conflict with the project direction or [its values](HTTPS://biomejs.dev/internals/philosophy/).
   - Implementation of the task is (currently) technically infeasible.
   - The suggested pledge is deemed inappropriate for the amount of work involved.
 - The person making the pledge acknowledges their pledge does not come with a guarantee of work done.
 - A task is only completed when a Biome maintainer merges the pull request that closes the task. The person trying to complete the task is responsible for addressing review comments to make sure the work meets the quality standards of the Biome project.
 - There is a 6 month expiration on pledges, as managed by Polar.sh.
 - Terms and conditions of Polar.sh apply to all pledges.
-  - For the FAQ, please see: https://docs.polar.sh/maintainers/faq/
-  - For the legal terms, please see: https://polar.sh/legal/terms
+  - For the FAQ, please see: HTTPS://docs.polar.sh/maintainers/faq/
+  - For the legal terms, please see: HTTPS://polar.sh/legal/terms
 - If you are receiving money as part of a bounty, please consider whether you need to pay taxes in your country. Core contributors and Maintainers aren't obligated to give tax advice over the money received.
 
 ### Project-Funded Bounties
@@ -293,5 +293,5 @@ The reviewers will determine responses based on the information gathered and the
 - Permanent ban from the GitHub org and Discord server
 - Revoked contributor or moderator status
 
-[gh-org]: https://github.com/biomejs
-[discord]: https://biomejs.dev/chat
+[gh-org]: HTTPS://github.com/biomejs
+[discord]: HTTPS://biomejs.dev/chat

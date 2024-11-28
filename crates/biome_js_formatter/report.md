@@ -16,7 +16,7 @@
     $$average = \frac{\sum_{file}^{files}matching\_lines_{file}}{max(lines_{rome}, lines_{prettier})}$$
 </details>
 
-[Metric definition discussion](https://github.com/rome/tools/issues/2555#issuecomment-1124787893)
+[Metric definition discussion](HTTPS://github.com/rome/tools/issues/2555#issuecomment-1124787893)
 
 ## Test cases
 
@@ -1774,7 +1774,7 @@
    );
  }
  
- // See https://github.com/prettier/prettier/issues/2392
+ // See HTTPS://github.com/prettier/prettier/issues/2392
  // function sequenceExpression() {
  //   return (
  //     // Reason for a
@@ -2077,7 +2077,7 @@
  // concatened string in consequent should be visually distinguishable from alternate
  // … or maybe this is okay, because the colon is enough?
  const avatar = has_ordered
-   ? "https://marmelab.com/posters/avatar/longer-word-that-breaks-consequent-" +
+   ? "HTTPS://marmelab.com/posters/avatar/longer-word-that-breaks-consequent-" +
      numberOfCustomers +
      ".jpeg"
    : undefined;
@@ -3079,7 +3079,7 @@
 
 ### js/for/for-in-with-initializer.js
 ```diff
- // https://github.com/babel/babel/blob/HEAD/packages/babel-generator/test/fixtures/parentheses/in-inside-for/input.js
+ // HTTPS://github.com/babel/babel/blob/HEAD/packages/babel-generator/test/fixtures/parentheses/in-inside-for/input.js
  
  for (var a = (b in c) in {});
 -for (var a = (1 || b in c) in {});
@@ -3123,7 +3123,7 @@
 
 ### js/for/parentheses.js
 ```diff
- // https://github.com/babel/babel/blob/HEAD/packages/babel-generator/test/fixtures/parentheses/in-inside-for/input.js
+ // HTTPS://github.com/babel/babel/blob/HEAD/packages/babel-generator/test/fixtures/parentheses/in-inside-for/input.js
  
  for (var a = (b in c); ; );
  for (var a = 1 || (b in c); ; );

@@ -1,8 +1,8 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-dark-transparent.svg">
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg">
-    <img alt="Shows the banner of Biome, with its logo and the phrase 'Biome - Toolchain of the web'." src="https://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg" width="700">
+    <source media="(prefers-color-scheme: dark)" srcset="HTTPS://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-dark-transparent.svg">
+    <source media="(prefers-color-scheme: light)" srcset="HTTPS://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg">
+    <img alt="Shows the banner of Biome, with its logo and the phrase 'Biome - Toolchain of the web'." src="HTTPS://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg" width="700">
   </picture>
 
   <br>
@@ -15,36 +15,36 @@
   [![Open VSX version][open-vsx-badge]][open-vsx-url]
   [![Polar bounties][polar-badge]][polar-url]
   
-  [ci-badge]: https://github.com/biomejs/biome/actions/workflows/main.yml/badge.svg
-  [ci-url]: https://github.com/biomejs/biome/actions/workflows/main.yml
-  [discord-badge]: https://badgen.net/discord/online-members/BypW39g6Yc?icon=discord&label=discord&color=60a5fa
-  [discord-url]: https://biomejs.dev/chat
-  [npm-badge]: https://badgen.net/npm/v/@biomejs/biome?icon=npm&color=60a5fa&label=%40biomejs%2Fbiome
-  [npm-url]: https://www.npmjs.com/package/@biomejs/biome/v/latest
-  [vscode-badge]: https://badgen.net/vs-marketplace/v/biomejs.biome?label=vscode&icon=visualstudio&color=60a5fa
-  [vscode-url]: https://marketplace.visualstudio.com/items?itemName=biomejs.biome
-  [open-vsx-badge]: https://badgen.net/open-vsx/version/biomejs/biome?label=open-vsx&color=60a5fa
-  [open-vsx-url]: https://open-vsx.org/extension/biomejs/biome
-  [polar-badge]: https://polar.sh/embed/seeks-funding-shield.svg?org=biomejs
-  [polar-url]: https://polar.sh/biomejs
+  [ci-badge]: HTTPS://github.com/biomejs/biome/actions/workflows/main.yml/badge.svg
+  [ci-url]: HTTPS://github.com/biomejs/biome/actions/workflows/main.yml
+  [discord-badge]: HTTPS://badgen.net/discord/online-members/BypW39g6Yc?icon=discord&label=discord&color=60a5fa
+  [discord-url]: HTTPS://biomejs.dev/chat
+  [npm-badge]: HTTPS://badgen.net/npm/v/@biomejs/biome?icon=npm&color=60a5fa&label=%40biomejs%2Fbiome
+  [npm-url]: HTTPS://www.npmjs.com/package/@biomejs/biome/v/latest
+  [vscode-badge]: HTTPS://badgen.net/vs-marketplace/v/biomejs.biome?label=vscode&icon=visualstudio&color=60a5fa
+  [vscode-url]: HTTPS://marketplace.visualstudio.com/items?itemName=biomejs.biome
+  [open-vsx-badge]: HTTPS://badgen.net/open-vsx/version/biomejs/biome?label=open-vsx&color=60a5fa
+  [open-vsx-url]: HTTPS://open-vsx.org/extension/biomejs/biome
+  [polar-badge]: HTTPS://polar.sh/embed/seeks-funding-shield.svg?org=biomejs
+  [polar-url]: HTTPS://polar.sh/biomejs
 
   <!-- Insert new entries lexicographically by language code.
      For example given below is the same order as these files appear on page:
-     https://github.com/biomejs/biome/tree/main/packages/@biomejs/biome -->
+     HTTPS://github.com/biomejs/biome/tree/main/packages/@biomejs/biome -->
 
-  [हिन्दी](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.hi.md) | [English](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.md) | [繁體中文](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.zh-TW.md) | [简体中文](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.zh-CN.md) | [日本語](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.ja.md) | Português do Brasil | [한국어](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.kr.md) | [Русский](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.ru.md) | [Українська](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.uk.md)
+  [हिन्दी](HTTPS://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.hi.md) | [English](HTTPS://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.md) | [繁體中文](HTTPS://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.zh-TW.md) | [简体中文](HTTPS://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.zh-CN.md) | [日本語](HTTPS://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.ja.md) | Português do Brasil | [한국어](HTTPS://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.kr.md) | [Русский](HTTPS://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.ru.md) | [Українська](HTTPS://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.uk.md)
 </div>
 
 <br>
 
 **Biome** é um conjunto de ferramentas de alto desempenho para projetos web, visando fornecer recursos de desenvolvimento para manter a saúde desses projetos.
 
-**Biome é um [formatador rápido](./benchmark#formatting)** para _JavaScript_, _TypeScript_, _JSX_, e _JSON_ que atinge **[97% de compatibilidade com o _Prettier_](https://console.algora.io/challenges/prettier)**.
+**Biome é um [formatador rápido](./benchmark#formatting)** para _JavaScript_, _TypeScript_, _JSX_, e _JSON_ que atinge **[97% de compatibilidade com o _Prettier_](HTTPS://console.algora.io/challenges/prettier)**.
 
-**Biome é um [linter eficiente](https://github.com/biomejs/biome/tree/main/benchmark#linting)** para _JavaScript_, _TypeScript_, e _JSX_ que possui **[mais de 270 regras](https://biomejs.dev/linter/rules/)** do ESLint, typescript-eslint, e de [outras fontes](https://github.com/biomejs/biome/discussions/3).
+**Biome é um [linter eficiente](HTTPS://github.com/biomejs/biome/tree/main/benchmark#linting)** para _JavaScript_, _TypeScript_, e _JSX_ que possui **[mais de 270 regras](HTTPS://biomejs.dev/linter/rules/)** do ESLint, typescript-eslint, e de [outras fontes](HTTPS://github.com/biomejs/biome/discussions/3).
 Ele **fornece diagnósticos detalhados e contextualizados** que ajudam você a melhorar seu código e se tornar um programador melhor!
 
-**Biome** é projetado desde o início para ser usado [interativamente dentro de um editor](https://biomejs.dev/guides/integrate-in-editor/).
+**Biome** é projetado desde o início para ser usado [interativamente dentro de um editor](HTTPS://biomejs.dev/guides/integrate-in-editor/).
 Isso permite formatar e lintar códigos malformados enquanto você programa.
 
 ### Instalação
@@ -69,7 +69,7 @@ npx @biomejs/biome check --write ./src
 npx @biomejs/biome ci ./src
 ```
 
-Se você quiser experimentar o Biome sem instalá-lo, use o [playground online](https://biomejs.dev/playground/), compilado para WebAssembly.
+Se você quiser experimentar o Biome sem instalá-lo, use o [playground online](HTTPS://biomejs.dev/playground/), compilado para WebAssembly.
 
 ## Documentação
 
@@ -82,7 +82,7 @@ ou vá ao [Guia de Introdução][getting-started] para começar a usar o Biome.
 
 **Biome** visa suportar [todas as principais linguagens][language-support] do desenvolvimento web moderno.
 
-**Biome** [não requer Node.js](https://biomejs.dev/guides/manual-installation/) para funcionar.
+**Biome** [não requer Node.js](HTTPS://biomejs.dev/guides/manual-installation/) para funcionar.
 
 **Biome** tem suporte de primeira linha para LSP, com um
 
@@ -92,7 +92,7 @@ ou vá ao [Guia de Introdução][getting-started] para começar a usar o Biome.
 
 Leia mais sobre nossa [filosofia de projeto][biome-philosophy].
 
-**Biome** é licenciado sob [MIT](https://github.com/biomejs/biome/tree/main/LICENSE-MIT) ou [Apache 2.0](https://github.com/biomejs/biome/tree/main/LICENSE-APACHE) e moderado sob o [Código de Conduta do Contribuidor](https://github.com/biomejs/biome/tree/main/CODE_OF_CONDUCT.md).
+**Biome** é licenciado sob [MIT](HTTPS://github.com/biomejs/biome/tree/main/LICENSE-MIT) ou [Apache 2.0](HTTPS://github.com/biomejs/biome/tree/main/LICENSE-APACHE) e moderado sob o [Código de Conduta do Contribuidor](HTTPS://github.com/biomejs/biome/tree/main/CODE_OF_CONDUCT.md).
 
 ## Patrocinadores
 
@@ -104,10 +104,10 @@ Leia mais sobre nossa [filosofia de projeto][biome-philosophy].
   <tbody>
     <tr>
       <td align="center" valign="middle">
-        <a href="https://l2beat.com/" target="_blank"><img src="https://images.opencollective.com/l2beat/c2b2a27/logo/256.png" height="100"></a>
+        <a href="HTTPS://l2beat.com/" target="_blank"><img src="HTTPS://images.opencollective.com/l2beat/c2b2a27/logo/256.png" height="100"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://www.phoenixlabs.dev/" target="_blank"><img src="https://images.opencollective.com/phoenix-labs/2824ed4/logo/100.png?height=100" height="100"></a>
+        <a href="HTTPS://www.phoenixlabs.dev/" target="_blank"><img src="HTTPS://images.opencollective.com/phoenix-labs/2824ed4/logo/100.png?height=100" height="100"></a>
       </td>
     </tr>
   </tbody>
@@ -119,28 +119,28 @@ Leia mais sobre nossa [filosofia de projeto][biome-philosophy].
   <tbody>
     <tr>
       <td align="center" valign="middle">
-        <a href="https://www.kanamekey.com" target="_blank"><img src="https://images.opencollective.com/kaname/d15fd98/logo/256.png?height=80" width="80"></a>
+        <a href="HTTPS://www.kanamekey.com" target="_blank"><img src="HTTPS://images.opencollective.com/kaname/d15fd98/logo/256.png?height=80" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://nanabit.dev/" target="_blank"><img src="https://images.opencollective.com/nanabit/d15fd98/logo/256.png?height=80" width="80"></a>
+        <a href="HTTPS://nanabit.dev/" target="_blank"><img src="HTTPS://images.opencollective.com/nanabit/d15fd98/logo/256.png?height=80" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://vital.io/" target="_blank"><img src="https://avatars.githubusercontent.com/u/25357309?s=200" width="80"></a>
+        <a href="HTTPS://vital.io/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/25357309?s=200" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://coderabbit.ai/" target="_blank"><img src="https://avatars.githubusercontent.com/u/132028505?s=200&v=4" width="80"></a>
+        <a href="HTTPS://coderabbit.ai/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/132028505?s=200&v=4" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://forge42.dev/" target="_blank"><img src="https://avatars.githubusercontent.com/u/161314831?s=200&v=4" width="80"></a>
+        <a href="HTTPS://forge42.dev/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/161314831?s=200&v=4" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="https://forge42.dev/" target="_blank"><img src="https://avatars.githubusercontent.com/u/513560?s=200&v=4" width="80"></a>
+        <a href="HTTPS://forge42.dev/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/513560?s=200&v=4" width="80"></a>
       </td>
     </tr>
   </tbody>
 </table>
 
-[biomejs]: https://biomejs.dev/pt-br/
-[biome-philosophy]: https://biomejs.dev/pt-br/internals/philosophy/
-[language-support]: https://biomejs.dev/pt-br/internals/language-support/
-[getting-started]: https://biomejs.dev/pt-br/guides/getting-started/
+[biomejs]: HTTPS://biomejs.dev/pt-br/
+[biome-philosophy]: HTTPS://biomejs.dev/pt-br/internals/philosophy/
+[language-support]: HTTPS://biomejs.dev/pt-br/internals/language-support/
+[getting-started]: HTTPS://biomejs.dev/pt-br/guides/getting-started/

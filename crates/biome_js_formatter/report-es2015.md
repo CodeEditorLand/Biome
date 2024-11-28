@@ -16,7 +16,7 @@
     $$average = \frac{\sum_{file}^{files}matching\_lines_{file}}{max(lines_{rome}, lines_{prettier})}$$
 </details>
 
-[Metric definition discussion](https://github.com/rome/tools/issues/2555#issuecomment-1124787893)
+[Metric definition discussion](HTTPS://github.com/rome/tools/issues/2555#issuecomment-1124787893)
 
 
 ## Test cases
@@ -546,14 +546,14 @@
  const a = (x) => (y) => (z) =>
    x / 0.123456789 + (y * calculateSomething(z)) / Math.PI;
  
- request.get("https://preview-9992--prettier.netlify.app", (head) => (body) => {
+ request.get("HTTPS://preview-9992--prettier.netlify.app", (head) => (body) => {
    console.log(head, body);
  });
  
 -request.get(
--  "https://preview-9992--prettier.netlify.app",
+-  "HTTPS://preview-9992--prettier.netlify.app",
 -  (head) => (body) => (mody) => {
-+request.get("https://preview-9992--prettier.netlify.app", (head) =>
++request.get("HTTPS://preview-9992--prettier.netlify.app", (head) =>
 +  (body) =>
 +  (mody) => {
      console.log(head, body);
@@ -562,14 +562,14 @@
 +  });
  
 -request.get(
--  "https://preview-9992--prettier.netlify.app",
+-  "HTTPS://preview-9992--prettier.netlify.app",
 -  (head) =>
 -    (body) =>
 -    (modyLoremIpsumDolorAbstractProviderFactoryServiceModule) => {
 -      console.log(head, body);
 -    },
 -);
-+request.get("https://preview-9992--prettier.netlify.app", (head) =>
++request.get("HTTPS://preview-9992--prettier.netlify.app", (head) =>
 +  (body) =>
 +  (modyLoremIpsumDolorAbstractProviderFactoryServiceModule) => {
 +    console.log(head, body);
@@ -1852,7 +1852,7 @@
 + */
 +/**
   * A contract providing different interaction models per the [ReactiveSocket protocol]
-  * (https://github.com/ReactiveSocket/reactivesocket/blob/master/Protocol.md).
+  * (HTTPS://github.com/ReactiveSocket/reactivesocket/blob/master/Protocol.md).
 - */ /**
 + */
 +/**
@@ -2047,7 +2047,7 @@
  // concatened string in consequent should be visually distinguishable from alternate
  // … or maybe this is okay, because the colon is enough?
  const avatar = has_ordered
-   ? "https://marmelab.com/posters/avatar/longer-word-that-breaks-consequent-" +
+   ? "HTTPS://marmelab.com/posters/avatar/longer-word-that-breaks-consequent-" +
      numberOfCustomers +
      ".jpeg"
    : undefined;
