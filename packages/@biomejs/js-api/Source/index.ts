@@ -10,7 +10,9 @@ import { Distribution, loadModule, wrapError, type WasmModule } from "./wasm";
 
 // Re-export of some useful types for users
 export type Configuration = PartialConfiguration;
+
 export type { Diagnostic };
+
 export { Distribution };
 
 export interface FormatContentDebugOptions extends FormatContentOptions {

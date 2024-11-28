@@ -6,6 +6,7 @@ export interface SupportsFeatureParams {
 	path: BiomePath;
 }
 export type FeatureName = FeatureKind[];
+
 export interface BiomePath {
 	/**
 	 * Determines the kind of the file inside Biome. Some files are considered as configuration files, others as manifest files, and others as files to handle
@@ -27,6 +28,7 @@ export type FeatureKind =
 	| "Search"
 	| "Assists"
 	| "Debug";
+
 export type FileKind = FileKind2[];
 /**
  * The priority of the file
@@ -37,6 +39,7 @@ export type FileKind2 =
 	| "Ignore"
 	| "Inspectable"
 	| "Handleable";
+
 export interface FileFeaturesResult {
 	features_supported: {};
 }
@@ -401,9 +404,13 @@ export interface PartialCssParser {
 	cssModules?: boolean;
 }
 export type AttributePosition = "auto" | "multiline";
+
 export type BracketSpacing = boolean;
+
 export type IndentWidth = number;
+
 export type IndentStyle = "tab" | "space";
+
 export type LineEnding = "lf" | "crlf" | "cr";
 /**
 	* Validated value for the `line_width` formatter options
@@ -696,13 +703,17 @@ export interface Source {
 	useSortedKeys?: RuleAssistConfiguration_for_Null;
 }
 export type QuoteStyle = "double" | "single";
+
 export type ArrowParentheses = "always" | "asNeeded";
+
 export type QuoteProperties = "asNeeded" | "preserve";
+
 export type Semicolons = "always" | "asNeeded";
 /**
  * Print trailing commas wherever possible in multi-line comma-separated syntactic structures.
  */
 export type TrailingCommas = "all" | "es5" | "none";
+
 export type TrailingCommas2 = "none" | "all";
 /**
  * A list of rules that belong to this group
@@ -2042,85 +2053,113 @@ export interface OverrideOrganizeImportsConfiguration {
 export type RuleAssistConfiguration_for_Options =
 	| RuleAssistPlainConfiguration
 	| RuleAssistWithOptions_for_Options;
+
 export type RuleAssistConfiguration_for_Null =
 	| RuleAssistPlainConfiguration
 	| RuleAssistWithOptions_for_Null;
+
 export type RuleFixConfiguration_for_Null =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_Null;
+
 export type RuleFixConfiguration_for_AllowDomainOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_AllowDomainOptions;
+
 export type RuleConfiguration_for_NoLabelWithoutControlOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_NoLabelWithoutControlOptions;
+
 export type RuleConfiguration_for_Null =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_Null;
+
 export type RuleFixConfiguration_for_ValidAriaRoleOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_ValidAriaRoleOptions;
+
 export type RuleConfiguration_for_ComplexityOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_ComplexityOptions;
+
 export type RuleConfiguration_for_NoUndeclaredDependenciesOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_NoUndeclaredDependenciesOptions;
+
 export type RuleConfiguration_for_UndeclaredVariablesOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_UndeclaredVariablesOptions;
+
 export type RuleConfiguration_for_UseExhaustiveDependenciesOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_UseExhaustiveDependenciesOptions;
+
 export type RuleConfiguration_for_DeprecatedHooksOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_DeprecatedHooksOptions;
+
 export type RuleFixConfiguration_for_UseImportExtensionsOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_UseImportExtensionsOptions;
+
 export type RuleConfiguration_for_RestrictedImportsOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_RestrictedImportsOptions;
+
 export type RuleFixConfiguration_for_NoRestrictedTypesOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_NoRestrictedTypesOptions;
+
 export type RuleConfiguration_for_NoSecretsOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_NoSecretsOptions;
+
 export type RuleConfiguration_for_UseComponentExportOnlyModulesOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_UseComponentExportOnlyModulesOptions;
+
 export type RuleConfiguration_for_ConsistentMemberAccessibilityOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_ConsistentMemberAccessibilityOptions;
+
 export type RuleFixConfiguration_for_UtilityClassSortingOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_UtilityClassSortingOptions;
+
 export type RuleConfiguration_for_UseValidAutocompleteOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_UseValidAutocompleteOptions;
+
 export type RuleConfiguration_for_RestrictedGlobalsOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_RestrictedGlobalsOptions;
+
 export type RuleFixConfiguration_for_ConsistentArrayTypeOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_ConsistentArrayTypeOptions;
+
 export type RuleConfiguration_for_FilenamingConventionOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_FilenamingConventionOptions;
+
 export type RuleFixConfiguration_for_NamingConventionOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_NamingConventionOptions;
+
 export type RuleFixConfiguration_for_UseSelfClosingElementsOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_UseSelfClosingElementsOptions;
+
 export type RuleFixConfiguration_for_NoConsoleOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_NoConsoleOptions;
+
 export type RuleFixConfiguration_for_NoDoubleEqualsOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_NoDoubleEqualsOptions;
+
 export type RuleAssistPlainConfiguration = "on" | "off";
+
 export interface RuleAssistWithOptions_for_Options {
 	/**
 	 * The severity of the emitted diagnostics by the rule
@@ -2142,6 +2181,7 @@ export interface RuleAssistWithOptions_for_Null {
 	options: null;
 }
 export type RulePlainConfiguration = "warn" | "error" | "info" | "off";
+
 export interface RuleWithFixOptions_for_Null {
 	/**
 	 * The kind of the code actions emitted by the rule
@@ -2444,6 +2484,7 @@ export interface Options {
  * Used to identify the kind of code action emitted by a rule
  */
 export type FixKind = "none" | "safe" | "unsafe";
+
 export interface AllowDomainOptions {
 	/**
 	 * List of domains to allow `target="_blank"` without `rel="noreferrer"`
@@ -2652,7 +2693,9 @@ If `false`, no such exception will be made.
 	ignoreNull: boolean;
 }
 export type ImportGroup = PredefinedImportGroup | Regex;
+
 export type DependencyAvailability = boolean | string[];
+
 export interface Hook {
 	/**
 	* The "position" of the closure function, starting from zero.
@@ -2680,9 +2723,13 @@ For example, for React's `useRef()` hook the value would be `true`, while for `u
 	stableResult?: StableHookResult;
 }
 export type Accessibility = "noPublic" | "explicit" | "none";
+
 export type ConsistentArrayType = "shorthand" | "generic";
+
 export type FilenameCases = FilenameCase[];
+
 export type Regex = string;
+
 export interface Convention {
 	/**
 	 * String cases to enforce
@@ -2705,11 +2752,13 @@ export type Format =
 	| "CONSTANT_CASE"
 	| "PascalCase"
 	| "snake_case";
+
 export type PredefinedImportGroup =
 	| ":blank-line:"
 	| ":bun:"
 	| ":node:"
 	| ":types:";
+
 export type StableHookResult = boolean | number[];
 /**
  * Supported cases for file names.
@@ -2720,7 +2769,9 @@ export type FilenameCase =
 	| "kebab-case"
 	| "PascalCase"
 	| "snake_case";
+
 export type Formats = Format[];
+
 export interface Selector {
 	/**
 	 * Declaration kind
@@ -2774,20 +2825,25 @@ export type Kind =
 	| "typeProperty"
 	| "typeSetter"
 	| "typeMethod";
+
 export type Modifiers = RestrictedModifier[];
+
 export type Scope = "any" | "global";
+
 export type RestrictedModifier =
 	| "abstract"
 	| "private"
 	| "protected"
 	| "readonly"
 	| "static";
+
 export interface RegisterProjectFolderParams {
 	path?: string;
 
 	setAsCurrentWorkspace: boolean;
 }
 export type ProjectKey = string;
+
 export interface SetManifestForProjectParams {
 	content: string;
 	manifest_path: BiomePath;
@@ -2808,6 +2864,7 @@ export type DocumentFileSource =
 	| { Graphql: GraphqlFileSource }
 	| { Html: HtmlFileSource }
 	| { Grit: GritFileSource };
+
 export interface JsFileSource {
 	/**
 	 * Used to mark if the source is being used for an Astro, Svelte or Vue file
@@ -2836,6 +2893,7 @@ export interface GritFileSource {
 	variant: GritVariant;
 }
 export type EmbeddingKind = "Astro" | "Vue" | "Svelte" | "None";
+
 export type Language =
 	| "JavaScript"
 	| { TypeScript: { definition_file: boolean } };
@@ -2843,6 +2901,7 @@ export type Language =
  * Is the source file an ECMAScript Module or Script. Changes the parsing semantic.
  */
 export type ModuleKind = "Script" | "Module";
+
 export type LanguageVariant = "Standard" | "StandardRestricted" | "Jsx";
 /**
 	* Enum of the different ECMAScript standard versions. The versions are ordered in increasing order; The newest version comes last.
@@ -2860,8 +2919,11 @@ export type CssVariant = "Standard";
  * The style of GraphQL contained in the file.
  */
 export type GraphqlVariant = "Standard";
+
 export type HtmlVariant = "Standard" | "Astro";
+
 export type GritVariant = "Standard";
+
 export interface ChangeFileParams {
 	content: string;
 	path: BiomePath;
@@ -2891,6 +2953,7 @@ export interface GetControlFlowGraphParams {
 	path: BiomePath;
 }
 export type TextSize = number;
+
 export interface GetFormatterIRParams {
 	path: BiomePath;
 }
@@ -2902,8 +2965,11 @@ export interface PullDiagnosticsParams {
 	skip: RuleCode[];
 }
 export type RuleCategories = RuleCategory[];
+
 export type RuleCode = string;
+
 export type RuleCategory = "Syntax" | "Lint" | "Action" | "Transformation";
+
 export interface PullDiagnosticsResult {
 	diagnostics: Diagnostic[];
 	errors: number;
@@ -3291,6 +3357,7 @@ export type Category =
 	| "args/fileNotFound"
 	| "flags/invalid"
 	| "semanticTests";
+
 export interface Location {
 	path?: Resource_for_String;
 	sourceCode?: string;
@@ -3301,6 +3368,7 @@ export type MarkupBuf = MarkupNodeBuf[];
  * The severity to associate to a diagnostic.
  */
 export type Severity = "hint" | "information" | "warning" | "error" | "fatal";
+
 export type DiagnosticTags = DiagnosticTag[];
 /**
 	* Serializable representation of a [Diagnostic](super::Diagnostic) advice
@@ -3319,7 +3387,9 @@ export type Advice =
  * Represents the resource a diagnostic is associated with.
  */
 export type Resource_for_String = "argv" | "memory" | { file: string };
+
 export type TextRange = [TextSize, TextSize];
+
 export interface MarkupNodeBuf {
 	content: string;
 	elements: MarkupElement[];
@@ -3337,6 +3407,7 @@ export type DiagnosticTag =
  * The category for a log advice, defines how the message should be presented to the user.
  */
 export type LogCategory = "none" | "info" | "warn" | "error";
+
 export interface TextEdit {
 	dictionary: string;
 	ops: CompressedOp[];
@@ -3358,6 +3429,7 @@ export type MarkupElement =
 	| "Trace"
 	| "Inverse"
 	| { Hyperlink: { href: string } };
+
 export type CompressedOp =
 	| { diffOp: DiffOp }
 	| { equalLines: { line_count: number } };
@@ -3439,6 +3511,7 @@ export type SourceActionKind =
  * Indicates how a tool should manage this suggestion.
  */
 export type Applicability = "Always" | "MaybeIncorrect";
+
 export interface FormatFileParams {
 	path: BiomePath;
 }
@@ -3485,6 +3558,7 @@ export type FixFileMode =
 	| "SafeFixes"
 	| "SafeAndUnsafeFixes"
 	| "ApplySuppressions";
+
 export interface FixFileResult {
 	/**
 	 * List of all the code actions applied to the file
@@ -3529,6 +3603,7 @@ export interface RenameResult {
 	range: TextRange;
 }
 export type Configuration = PartialConfiguration;
+
 export interface Workspace {
 	fileFeatures(params: SupportsFeatureParams): Promise<FileFeaturesResult>;
 	updateSettings(params: UpdateSettingsParams): Promise<void>;

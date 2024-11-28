@@ -1,5 +1,7 @@
 export type WasmBundler = typeof import("@biomejs/wasm-bundler");
+
 export type WasmNodejs = typeof import("@biomejs/wasm-nodejs");
+
 export type WasmWeb = typeof import("@biomejs/wasm-web");
 
 export type WasmModule = WasmBundler | WasmNodejs | WasmWeb;
