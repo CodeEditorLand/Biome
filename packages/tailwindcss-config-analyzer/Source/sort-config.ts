@@ -2,6 +2,7 @@ import type { TailwindSpec, UtilitySpec } from "./introspect.js";
 
 type Variant = {
 	name: string;
+
 	weight: bigint;
 };
 
@@ -51,9 +52,12 @@ function buildConfigUtilities(spec: TailwindSpec, layerOrder: Array<string>) {
 
 	for (const utilitySpec of spec.utilities) {
 		const layer = utilitiesByLayer.get(utilitySpec.layer) ?? new Set();
+
 		layer.add(utilitySpec);
+
 		utilitiesByLayer.set(utilitySpec.layer, layer);
 	}
+
 	const layerIndexes = new Map(
 		layerOrder.map((layer, index) => [layer, index]),
 	);

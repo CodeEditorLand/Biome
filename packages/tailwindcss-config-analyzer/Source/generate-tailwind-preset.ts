@@ -52,10 +52,14 @@ function generateLayerArray(layers: SortConfig["utilities"]) {
 
 	for (const { layer } of layers) {
 		output += `${INDENT}UtilityLayer {\n`;
+
 		output += `${INDENT}${INDENT}name: "${layer}",\n`;
+
 		output += `${INDENT}${INDENT}classes: ${layer.toUpperCase()}_LAYER_CLASSES.as_slice(),\n`;
+
 		output += `${INDENT}},\n`;
 	}
+
 	output += "];\n";
 
 	return output;
@@ -68,6 +72,7 @@ function generateVariants(variants: SortConfig["variants"]) {
 	for (const { name } of variants) {
 		output += `${INDENT}"${name}",\n`;
 	}
+
 	output += "];\n";
 
 	return output;
@@ -75,11 +80,17 @@ function generateVariants(variants: SortConfig["variants"]) {
 
 function generateFile(sortConfig: SortConfig) {
 	let output = FILE_HEADER;
+
 	output += "\n";
+
 	output += sortConfig.utilities.map(generateLayer).join("\n");
+
 	output += "\n";
+
 	output += generateVariants(sortConfig.variants);
+
 	output += "\n";
+
 	output += generateLayerArray(sortConfig.utilities);
 
 	return output;
@@ -108,6 +119,7 @@ async function findRoot() {
 			nextPath = path.resolve(dirPath, "..");
 		}
 	}
+
 	return rootPath;
 }
 
@@ -126,6 +138,7 @@ async function generateTailwindPreset() {
 	const rootPath = await findRoot();
 
 	const outputPath = path.join(rootPath, OUTPUT_PATH);
+
 	await Bun.write(outputPath, file);
 }
 

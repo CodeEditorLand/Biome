@@ -58,11 +58,13 @@ export interface LintContentOptions {
 	 * so Biome knows how to parse the content
 	 */
 	filePath: string;
+
 	fixFileMode?: FixFileMode;
 }
 
 export interface LintResult {
 	content: string;
+
 	diagnostics: Diagnostic[];
 }
 
@@ -106,6 +108,7 @@ export class Biome {
 		const workspace = new module.Workspace();
 
 		const biome = new Biome(module, workspace);
+
 		biome.registerProjectFolder();
 
 		return biome;
@@ -141,6 +144,7 @@ export class Biome {
 	}
 
 	registerProjectFolder(): void;
+
 	registerProjectFolder(path?: string): void {
 		this.workspace.registerProjectFolder({
 			path,
@@ -223,11 +227,13 @@ export class Biome {
 						path,
 						range: options.range,
 					});
+
 					code = result.code;
 				} else {
 					const result = this.workspace.formatFile({
 						path,
 					});
+
 					code = result.code;
 				}
 
@@ -320,6 +326,7 @@ export class Biome {
 						printer.print_simple(diag);
 					}
 				}
+
 				return printer.finish();
 			} catch (err) {
 				// Only call `free` if the `print` method throws, `finish` will

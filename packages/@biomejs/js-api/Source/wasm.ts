@@ -39,11 +39,13 @@ export async function loadModule(dist: Distribution): Promise<WasmModule> {
 
 			break;
 		}
+
 		case Distribution.NODE: {
 			modulePromise = import("@biomejs/wasm-nodejs");
 
 			break;
 		}
+
 		case Distribution.WEB: {
 			modulePromise = import("@biomejs/wasm-web");
 
@@ -55,6 +57,7 @@ export async function loadModule(dist: Distribution): Promise<WasmModule> {
 
 	if (!isInitialized[dist]) {
 		isInitialized[dist] = true;
+
 		module.main();
 	}
 
@@ -71,8 +74,10 @@ class WasmError extends Error {
 	 * It might be useful, but the first like of the stack trace contains the error
 	 */
 	stackTrace: string;
+
 	private constructor(stackTrace: string) {
 		super();
+
 		this.stackTrace = stackTrace;
 	}
 

@@ -3,6 +3,7 @@ import type { Transport } from "./transport";
 
 export interface SupportsFeatureParams {
 	features: FeatureName;
+
 	path: BiomePath;
 }
 export type FeatureName = FeatureKind[];
@@ -45,8 +46,11 @@ export interface FileFeaturesResult {
 }
 export interface UpdateSettingsParams {
 	configuration: PartialConfiguration;
+
 	gitignore_matches: string[];
+
 	vcs_base_path?: string;
+
 	workspace_directory?: string;
 }
 /**
@@ -179,6 +183,7 @@ export interface PartialFormatterConfiguration {
 	 * Whether to insert spaces around brackets in object literals. Defaults to true.
 	 */
 	bracketSpacing?: BracketSpacing;
+
 	enabled?: boolean;
 	/**
 	 * Stores whether formatting should be allowed to proceed if a given file has syntax errors
@@ -225,6 +230,7 @@ export interface PartialGraphqlConfiguration {
 	 * GraphQL formatter options
 	 */
 	formatter?: PartialGraphqlFormatter;
+
 	linter?: PartialGraphqlLinter;
 }
 /**
@@ -253,6 +259,7 @@ If defined here, they should not emit diagnostics.
 	 * Linter options
 	 */
 	linter?: PartialJavascriptLinter;
+
 	organizeImports?: PartialJavascriptOrganizeImports;
 	/**
 	 * Parsing options
@@ -634,16 +641,23 @@ export interface Rules {
 	 * It enables ALL rules. The rules that belong to `nursery` won't be enabled.
 	 */
 	all?: boolean;
+
 	complexity?: Complexity;
+
 	correctness?: Correctness;
+
 	nursery?: Nursery;
+
 	performance?: Performance;
 	/**
 	 * It enables the lint rules recommended by Biome. `true` by default.
 	 */
 	recommended?: boolean;
+
 	security?: Security;
+
 	style?: Style;
+
 	suspicious?: Suspicious;
 }
 export interface OverridePattern {
@@ -2008,6 +2022,7 @@ export interface OverrideFormatterConfiguration {
 	 * Whether to insert spaces around brackets in object literals. Defaults to true.
 	 */
 	bracketSpacing?: BracketSpacing;
+
 	enabled?: boolean;
 	/**
 	 * Stores whether formatting should be allowed to proceed if a given file has syntax errors
@@ -2478,6 +2493,7 @@ export interface RuleWithFixOptions_for_NoDoubleEqualsOptions {
 }
 export interface Options {
 	importGroups?: ImportGroup[];
+
 	legacy?: boolean;
 }
 /**
@@ -2507,6 +2523,7 @@ export interface NoLabelWithoutControlOptions {
 }
 export interface ValidAriaRoleOptions {
 	allowInvalidRoles?: string[];
+
 	ignoreNonDom?: boolean;
 }
 /**
@@ -2846,14 +2863,18 @@ export type ProjectKey = string;
 
 export interface SetManifestForProjectParams {
 	content: string;
+
 	manifest_path: BiomePath;
+
 	version: number;
 }
 export interface OpenFileParams {
 	content: string;
 
 	document_file_source?: DocumentFileSource;
+
 	path: BiomePath;
+
 	version: number;
 }
 export type DocumentFileSource =
@@ -2870,14 +2891,18 @@ export interface JsFileSource {
 	 * Used to mark if the source is being used for an Astro, Svelte or Vue file
 	 */
 	embedding_kind: EmbeddingKind;
+
 	language: Language;
+
 	module_kind: ModuleKind;
 
 	variant: LanguageVariant;
+
 	version: LanguageVersion;
 }
 export interface JsonFileSource {
 	allow_comments: boolean;
+
 	allow_trailing_commas: boolean;
 }
 export interface CssFileSource {
@@ -2926,7 +2951,9 @@ export type GritVariant = "Standard";
 
 export interface ChangeFileParams {
 	content: string;
+
 	path: BiomePath;
+
 	version: number;
 }
 export interface CloseFileParams {
@@ -2937,6 +2964,7 @@ export interface GetSyntaxTreeParams {
 }
 export interface GetSyntaxTreeResult {
 	ast: string;
+
 	cst: string;
 }
 export interface OrganizeImportsParams {
@@ -2950,6 +2978,7 @@ export interface GetFileContentParams {
 }
 export interface GetControlFlowGraphParams {
 	cursor: TextSize;
+
 	path: BiomePath;
 }
 export type TextSize = number;
@@ -2959,9 +2988,13 @@ export interface GetFormatterIRParams {
 }
 export interface PullDiagnosticsParams {
 	categories: RuleCategories;
+
 	max_diagnostics: number;
+
 	only: RuleCode[];
+
 	path: BiomePath;
+
 	skip: RuleCode[];
 }
 export type RuleCategories = RuleCategory[];
@@ -2972,7 +3005,9 @@ export type RuleCategory = "Syntax" | "Lint" | "Action" | "Transformation";
 
 export interface PullDiagnosticsResult {
 	diagnostics: Diagnostic[];
+
 	errors: number;
+
 	skipped_diagnostics: number;
 }
 /**
@@ -2980,13 +3015,21 @@ export interface PullDiagnosticsResult {
  */
 export interface Diagnostic {
 	advices: Advices;
+
 	category?: Category;
+
 	description: string;
+
 	location: Location;
+
 	message: MarkupBuf;
+
 	severity: Severity;
+
 	source?: Diagnostic;
+
 	tags: DiagnosticTags;
+
 	verboseAdvices: Advices;
 }
 /**
@@ -3360,7 +3403,9 @@ export type Category =
 
 export interface Location {
 	path?: Resource_for_String;
+
 	sourceCode?: string;
+
 	span?: TextRange;
 }
 export type MarkupBuf = MarkupNodeBuf[];
@@ -3392,6 +3437,7 @@ export type TextRange = [TextSize, TextSize];
 
 export interface MarkupNodeBuf {
 	content: string;
+
 	elements: MarkupElement[];
 }
 /**
@@ -3410,6 +3456,7 @@ export type LogCategory = "none" | "info" | "warn" | "error";
 
 export interface TextEdit {
 	dictionary: string;
+
 	ops: CompressedOp[];
 }
 export type Backtrace = BacktraceFrame[];
@@ -3438,6 +3485,7 @@ export type CompressedOp =
  */
 export interface BacktraceFrame {
 	ip: number;
+
 	symbols: BacktraceSymbol[];
 }
 export type DiffOp =
@@ -3449,15 +3497,22 @@ export type DiffOp =
  */
 export interface BacktraceSymbol {
 	colno?: number;
+
 	filename?: string;
+
 	lineno?: number;
+
 	name?: string;
 }
 export interface PullActionsParams {
 	only: RuleCode[];
+
 	path: BiomePath;
+
 	range?: TextRange;
+
 	skip: RuleCode[];
+
 	suppression_reason?: string;
 }
 export interface PullActionsResult {
@@ -3465,7 +3520,9 @@ export interface PullActionsResult {
 }
 export interface CodeAction {
 	category: ActionCategory;
+
 	rule_name?: [string, string];
+
 	suggestion: CodeSuggestion;
 }
 /**
@@ -3483,9 +3540,13 @@ export type ActionCategory =
  */
 export interface CodeSuggestion {
 	applicability: Applicability;
+
 	labels: TextRange[];
+
 	msg: MarkupBuf;
+
 	span: TextRange;
+
 	suggestion: TextEdit;
 }
 /**
@@ -3517,8 +3578,11 @@ export interface FormatFileParams {
 }
 export interface Printed {
 	code: string;
+
 	range?: TextRange;
+
 	sourcemap: SourceMarker[];
+
 	verbatim_ranges: TextRange[];
 }
 /**
@@ -3536,19 +3600,27 @@ export interface SourceMarker {
 }
 export interface FormatRangeParams {
 	path: BiomePath;
+
 	range: TextRange;
 }
 export interface FormatOnTypeParams {
 	offset: TextSize;
+
 	path: BiomePath;
 }
 export interface FixFileParams {
 	fix_file_mode: FixFileMode;
+
 	only: RuleCode[];
+
 	path: BiomePath;
+
 	rule_categories: RuleCategories;
+
 	should_format: boolean;
+
 	skip: RuleCode[];
+
 	suppression_reason?: string;
 }
 /**
@@ -3589,7 +3661,9 @@ export interface FixAction {
 }
 export interface RenameParams {
 	new_name: string;
+
 	path: BiomePath;
+
 	symbol_at: TextSize;
 }
 export interface RenameResult {
@@ -3606,17 +3680,23 @@ export type Configuration = PartialConfiguration;
 
 export interface Workspace {
 	fileFeatures(params: SupportsFeatureParams): Promise<FileFeaturesResult>;
+
 	updateSettings(params: UpdateSettingsParams): Promise<void>;
+
 	registerProjectFolder(
 		params: RegisterProjectFolderParams,
 	): Promise<ProjectKey>;
 
 	setManifestForProject(params: SetManifestForProjectParams): Promise<void>;
+
 	openFile(params: OpenFileParams): Promise<void>;
+
 	changeFile(params: ChangeFileParams): Promise<void>;
+
 	closeFile(params: CloseFileParams): Promise<void>;
 
 	getSyntaxTree(params: GetSyntaxTreeParams): Promise<GetSyntaxTreeResult>;
+
 	organizeImports(
 		params: OrganizeImportsParams,
 	): Promise<OrganizeImportsResult>;
@@ -3626,9 +3706,11 @@ export interface Workspace {
 	getControlFlowGraph(params: GetControlFlowGraphParams): Promise<string>;
 
 	getFormatterIr(params: GetFormatterIRParams): Promise<string>;
+
 	pullDiagnostics(
 		params: PullDiagnosticsParams,
 	): Promise<PullDiagnosticsResult>;
+
 	pullActions(params: PullActionsParams): Promise<PullActionsResult>;
 
 	formatFile(params: FormatFileParams): Promise<Printed>;
@@ -3636,8 +3718,11 @@ export interface Workspace {
 	formatRange(params: FormatRangeParams): Promise<Printed>;
 
 	formatOnType(params: FormatOnTypeParams): Promise<Printed>;
+
 	fixFile(params: FixFileParams): Promise<FixFileResult>;
+
 	rename(params: RenameParams): Promise<RenameResult>;
+
 	destroy(): void;
 }
 export function createWorkspace(transport: Transport): Workspace {

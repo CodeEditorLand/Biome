@@ -1,6 +1,8 @@
 interface Socket {
 	on(event: "data", fn: (data: Buffer) => void): void;
+
 	write(data: Buffer): void;
+
 	destroy(): void;
 }
 
@@ -11,13 +13,17 @@ enum ReaderStateKind {
 
 interface ReaderStateHeader {
 	readonly kind: ReaderStateKind.Header;
+
 	contentLength?: number;
+
 	contentType?: string;
 }
 
 interface ReaderStateBody {
 	readonly kind: ReaderStateKind.Body;
+
 	readonly contentLength: number;
+
 	readonly contentType?: string;
 }
 
@@ -25,8 +31,11 @@ type ReaderState = ReaderStateHeader | ReaderStateBody;
 
 interface JsonRpcRequest {
 	jsonrpc: "2.0";
+
 	id: number;
+
 	method: string;
+
 	params: unknown;
 }
 
@@ -42,7 +51,9 @@ function isJsonRpcRequest(message: JsonRpcMessage): message is JsonRpcRequest {
 
 interface JsonRpcNotification {
 	jsonrpc: "2.0";
+
 	method: string;
+
 	params: unknown;
 }
 
@@ -60,12 +71,16 @@ function isJsonRpcNotification(
 type JsonRpcResponse =
 	| {
 			jsonrpc: "2.0";
+
 			id: number;
+
 			result: unknown;
 	  }
 	| {
 			jsonrpc: "2.0";
+
 			id: number;
+
 			error: unknown;
 	  };
 
@@ -93,6 +108,7 @@ function isJsonRpcMessage(message: unknown): message is JsonRpcMessage {
 
 interface PendingRequest {
 	resolve(result: unknown): void;
+
 	reject(error: unknown): void;
 }
 
@@ -130,7 +146,9 @@ export class Transport {
 	request(method: string, params: unknown): Promise<any> {
 		return new Promise((resolve, reject) => {
 			const id = this.nextRequestId++;
+
 			this.pendingRequests.set(id, { resolve, reject });
+
 			this.sendMessage({
 				jsonrpc: "2.0",
 				id,
@@ -167,10 +185,12 @@ export class Transport {
 		const headers = Buffer.from(
 			`Content-Length: ${body.length}\r\nContent-Type: ${MIME_JSONRPC};charset=utf-8\r\n\r\n`,
 		);
+
 		this.socket.write(Buffer.concat([headers, body]));
 	}
 
 	private pendingData = Buffer.from("");
+
 	private readerState: ReaderState = {
 		kind: ReaderStateKind.Header,
 	};
@@ -187,9 +207,11 @@ export class Transport {
 				}
 
 				const header = this.pendingData.subarray(0, lineBreakIndex + 1);
+
 				this.pendingData = this.pendingData.subarray(
 					lineBreakIndex + 1,
 				);
+
 				this.processIncomingHeader(
 					this.readerState,
 					header.toString("utf-8"),
@@ -201,9 +223,11 @@ export class Transport {
 					0,
 					this.readerState.contentLength,
 				);
+
 				this.pendingData = this.pendingData.subarray(
 					this.readerState.contentLength,
 				);
+
 				this.processIncomingBody(body);
 
 				this.readerState = {
@@ -250,10 +274,12 @@ export class Transport {
 		switch (headerName) {
 			case "Content-Length": {
 				const value = Number.parseInt(headerValue);
+
 				readerState.contentLength = value;
 
 				break;
 			}
+
 			case "Content-Type": {
 				if (!headerValue.startsWith(MIME_JSONRPC)) {
 					throw new Error(
@@ -265,6 +291,7 @@ export class Transport {
 
 				break;
 			}
+
 			default:
 				console.warn(`ignoring unknown header "${headerName}"`);
 		}
@@ -304,6 +331,7 @@ export class Transport {
 						`could not find any pending request matching RPC response ID ${body.id}`,
 					);
 				}
+
 				return;
 			}
 		}

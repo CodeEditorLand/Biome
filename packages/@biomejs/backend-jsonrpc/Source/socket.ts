@@ -10,6 +10,7 @@ function getSocket(command: string): Promise<string> {
 		process.on("error", reject);
 
 		let pipeName = "";
+
 		process.stdout.on("data", (data) => {
 			pipeName += data.toString("utf-8");
 		});
@@ -41,6 +42,7 @@ export async function createSocket(command: string): Promise<Socket> {
 
 	await new Promise((resolve, reject) => {
 		socket.once("error", reject);
+
 		socket.once("ready", resolve);
 	});
 

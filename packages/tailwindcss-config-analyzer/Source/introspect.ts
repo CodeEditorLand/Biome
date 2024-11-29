@@ -12,10 +12,15 @@ function createContextFromConfig(config: Partial<Config>) {
 
 export type UtilitySpec = {
 	utility: string;
+
 	layer: string;
+
 	index: bigint;
+
 	hasValues: boolean;
+
 	hasDefault: boolean;
+
 	valueType?: string; // TODO: find a way to disambiguate value types
 };
 
@@ -39,14 +44,17 @@ function introspectUtilities(
 			const hasValues = values != null || typeof rule === "function";
 
 			const hasDefault = values != null && "DEFAULT" in values;
+
 			utilities.add({ utility, layer, index, hasValues, hasDefault });
 		}
 	}
+
 	return utilities;
 }
 
 type VariantSpec = {
 	variant: string;
+
 	weight: bigint;
 };
 
