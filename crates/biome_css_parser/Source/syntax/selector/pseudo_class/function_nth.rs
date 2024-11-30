@@ -40,6 +40,7 @@ pub(crate) fn parse_pseudo_class_function_nth(p: &mut CssParser) -> ParsedSyntax
     let m = p.start();
 
     p.bump_ts(PSEUDO_CLASS_FUNCTION_NTH_SET);
+
     p.bump_with_context(T!['('], CssLexContext::PseudoNthSelector);
 
     let kind = if is_at_pseudo_class_nth_selector(p) {
@@ -54,7 +55,9 @@ pub(crate) fn parse_pseudo_class_function_nth(p: &mut CssParser) -> ParsedSyntax
         }
     } else {
         recover_selector_function_parameter(p, expected_any_pseudo_class_nth);
+
         p.expect(T![')']);
+
         CSS_BOGUS_PSEUDO_CLASS
     };
 
@@ -85,6 +88,7 @@ fn parse_pseudo_class_nth_selector(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     parse_pseudo_class_nth(p).ok();
+
     parse_pseudo_class_of_nth_selector(p).ok();
 
     Present(m.complete(p, CSS_PSEUDO_CLASS_NTH_SELECTOR))
@@ -119,11 +123,14 @@ fn parse_pseudo_class_nth(p: &mut CssParser) -> ParsedSyntax {
                 // Re-cast the value as a number literal and into a CssNumber
                 // to fit the Pseudo node.
                 let m = p.start();
+
                 p.bump_remap_with_context(CSS_NUMBER_LITERAL, CssLexContext::PseudoNthSelector);
+
                 m.complete(p, CSS_NUMBER);
 
                 if p.eat_with_context(T![n], CssLexContext::PseudoNthSelector) {
                     parse_nth_offset(p).ok();
+
                     CSS_PSEUDO_CLASS_NTH
                 } else {
                     // This branch means the selector was invalid, like `2px`
@@ -134,12 +141,14 @@ fn parse_pseudo_class_nth(p: &mut CssParser) -> ParsedSyntax {
             // Matches `2` or `5`
             CSS_NUMBER_LITERAL => {
                 parse_number(p, CssLexContext::PseudoNthSelector).ok();
+
                 CSS_PSEUDO_CLASS_NTH_NUMBER
             }
             // Tests for just `n` or `n + 1`
             _ => {
                 if p.eat_with_context(T![n], CssLexContext::PseudoNthSelector) {
                     parse_nth_offset(p).ok();
+
                     CSS_PSEUDO_CLASS_NTH
                 } else {
                     // This branch is an error and should be handled as bogus
@@ -161,6 +170,7 @@ fn parse_nth_offset(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump_ts(PSEUDO_CLASS_FUNCTION_NTH_CLASS_SIGN_SET);
+
     parse_regular_number(p).or_add_diagnostic(p, expected_number);
 
     Present(m.complete(p, CSS_NTH_OFFSET))

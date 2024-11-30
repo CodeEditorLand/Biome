@@ -47,6 +47,7 @@ impl SemanticModelBuilder {
             range_to_rule: self.range_to_rule,
             rules_by_id: self.rules_by_id,
         };
+
         SemanticModel::new(data)
     }
 
@@ -55,6 +56,7 @@ impl SemanticModelBuilder {
         match event {
             SemanticEvent::RuleStart(range) => {
                 let new_rule_id = self.next_rule_id;
+
                 self.next_rule_id = RuleId::new(new_rule_id.index() + 1);
 
                 let parent_id = self.current_rule_stack.last().copied();
@@ -76,11 +78,14 @@ impl SemanticModelBuilder {
                 }
 
                 self.rules_by_id.insert(new_rule_id, new_rule);
+
                 self.current_rule_stack.push(new_rule_id);
             }
+
             SemanticEvent::RuleEnd => {
                 if let Some(completed_rule) = self.current_rule_stack.pop() {
                     let completed_rule = &self.rules_by_id[&completed_rule];
+
                     let has_parent = self.current_rule_stack.last().is_some();
 
                     if has_parent {
@@ -89,10 +94,12 @@ impl SemanticModelBuilder {
                     } else {
                         self.range_to_rule
                             .insert(completed_rule.range, completed_rule.clone());
+
                         self.rules.push(completed_rule.clone());
                     }
                 }
             }
+
             SemanticEvent::SelectorDeclaration {
                 name,
                 range,
@@ -110,6 +117,7 @@ impl SemanticModelBuilder {
 
                 if let Some(current_rule) = self.current_rule_stack.last() {
                     let current_rule = self.rules_by_id.get_mut(current_rule).unwrap();
+
                     current_rule.selectors.push(Selector {
                         name,
                         range,
@@ -120,6 +128,7 @@ impl SemanticModelBuilder {
                     current_rule.specificity += specificity;
                 }
             }
+
             SemanticEvent::PropertyDeclaration {
                 property,
                 value,
@@ -129,6 +138,7 @@ impl SemanticModelBuilder {
 
                 if let Some(current_rule) = self.current_rule_stack.last_mut() {
                     let current_rule = self.rules_by_id.get_mut(current_rule).unwrap();
+
                     if is_global_var {
                         self.global_custom_variables.insert(
                             property.name.clone(),
@@ -139,6 +149,7 @@ impl SemanticModelBuilder {
                             }),
                         );
                     }
+
                     current_rule.declarations.push(CssDeclaration {
                         property,
                         value,
@@ -146,12 +157,15 @@ impl SemanticModelBuilder {
                     });
                 }
             }
+
             SemanticEvent::RootSelectorStart => {
                 self.is_in_root_selector = true;
             }
+
             SemanticEvent::RootSelectorEnd => {
                 self.is_in_root_selector = false;
             }
+
             SemanticEvent::AtProperty {
                 property,
                 initial_value,

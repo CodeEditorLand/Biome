@@ -35,6 +35,7 @@ impl<'a, K: SyntaxKind> ParsedChildren<'a, K> {
 
 impl<'a, K: SyntaxKind> IntoIterator for ParsedChildren<'a, K> {
     type Item = RawSyntaxElement<K>;
+
     type IntoIter = ParsedChildrenIntoIterator<'a, K>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -84,6 +85,7 @@ impl<'a, K: SyntaxKind> DoubleEndedIterator for ParsedChildrenIntoIterator<'a, K
 
 impl<'a, K: SyntaxKind> IntoIterator for &'a ParsedChildren<'a, K> {
     type Item = RawSyntaxElementRef<'a, K>;
+
     type IntoIter = ParsedChildrenIterator<'a, K>;
 
     fn into_iter(self) -> Self::IntoIter {

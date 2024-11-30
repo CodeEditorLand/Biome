@@ -49,6 +49,7 @@ impl FormatNodeRule<JsScript> for FormatJsScript {
             !f.comments().has_dangling_comments(node.syntax()),
             "Scrip should never have dangling comments."
         );
+
         Ok(())
     }
 

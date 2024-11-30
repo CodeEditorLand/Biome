@@ -51,8 +51,11 @@ declare_lint_rule! {
 
 impl Rule for UseSingleVarDeclarator {
     type Query = Ast<JsVariableStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -61,6 +64,7 @@ impl Rule for UseSingleVarDeclarator {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),
@@ -70,7 +74,9 @@ impl Rule for UseSingleVarDeclarator {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let prev_parent = node.syntax().parent()?;
+
         if !matches!(
             prev_parent.kind(),
             JsSyntaxKind::JS_STATEMENT_LIST | JsSyntaxKind::JS_MODULE_ITEM_LIST
@@ -82,12 +88,15 @@ impl Rule for UseSingleVarDeclarator {
             declaration,
             semicolon_token,
         } = node.as_fields();
+
         let JsVariableDeclarationFields {
             await_token,
             kind,
             declarators,
         } = declaration.ok()?.as_fields();
+
         let kind = kind.ok()?;
+
         let index = prev_parent
             .children()
             .position(|slot| &slot == node.syntax())?;
@@ -96,6 +105,7 @@ impl Rule for UseSingleVarDeclarator {
             .indentation_trivia_pieces()
             .map(|piece| (piece.kind(), piece.text().to_string()))
             .collect::<Vec<_>>();
+
         let kind_indent = if kind_indent.is_empty() {
             vec![(TriviaPieceKind::Newline, String::from("\n"))]
         } else {
@@ -103,8 +113,11 @@ impl Rule for UseSingleVarDeclarator {
         };
 
         let declarators_len = declarators.len();
+
         let mut separators = declarators.separators();
+
         let last_semicolon_token = semicolon_token;
+
         let next_parent = prev_parent.clone().splice_slots(
             index..=index,
             declarators
@@ -113,7 +126,9 @@ impl Rule for UseSingleVarDeclarator {
                 .filter_map(|(index, declarator)| {
                     // Remove the leading trivia for the declarators
                     let declarator = declarator.ok()?;
+
                     let declarator_leading_trivia = declarator.syntax().first_leading_trivia()?;
+
                     let declarator = declarator.with_leading_trivia_pieces([])?;
 
                     let kind = if index == 0 {
@@ -139,25 +154,37 @@ impl Rule for UseSingleVarDeclarator {
                         // from the declarator node, with the indentation
                         // fixed up to match the original kind token
                         let indent: &[(TriviaPieceKind, String)] = &kind_indent;
+
                         let mut trivia_pieces = Vec::new();
+
                         let mut token_text = String::new();
+
                         for piece in declarator_leading_trivia.pieces() {
                             if !piece.is_comments() {
                                 continue;
                             }
+
                             for (kind, text) in indent {
                                 trivia_pieces.push(TriviaPiece::new(*kind, TextSize::of(text)));
+
                                 token_text.push_str(text);
                             }
+
                             trivia_pieces.push(TriviaPiece::new(piece.kind(), piece.text_len()));
+
                             token_text.push_str(piece.text());
                         }
+
                         for (kind, text) in indent {
                             trivia_pieces.push(TriviaPiece::new(*kind, TextSize::of(text)));
+
                             token_text.push_str(text);
                         }
+
                         token_text.push_str(kind.text_trimmed());
+
                         token_text.push(' ');
+
                         JsSyntaxToken::new_detached(
                             kind.kind(),
                             &token_text,
@@ -173,20 +200,25 @@ impl Rule for UseSingleVarDeclarator {
                         kind,
                         make::js_variable_declarator_list([declarator], []),
                     );
+
                     if let Some(await_token) = await_token.clone() {
                         variable_declaration = variable_declaration.with_await_token(await_token);
                     }
 
                     let mut builder = make::js_variable_statement(variable_declaration.build());
+
                     if let Some(last_semicolon_token) = last_semicolon_token.as_ref() {
                         let semicolon_token = if index + 1 == declarators_len {
                             last_semicolon_token.clone()
                         } else {
                             make::token(T![;])
                         };
+
                         builder = builder.with_semicolon_token(semicolon_token)
                     }
+
                     let mut result = builder.build();
+
                     if let Some(Ok(separator)) = separators.next() {
                         if separator.has_trailing_comments() {
                             result = result
@@ -199,6 +231,7 @@ impl Rule for UseSingleVarDeclarator {
         );
 
         let mut mutation = ctx.root().begin();
+
         mutation.replace_element(prev_parent.into(), next_parent.into());
 
         Some(JsRuleAction::new(

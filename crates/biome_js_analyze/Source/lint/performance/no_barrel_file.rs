@@ -51,12 +51,16 @@ declare_lint_rule! {
 
 impl Rule for NoBarrelFile {
     type Query = Ast<JsModule>;
+
     type State = JsExport;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let items = ctx.query().items();
+
         for item in items {
             if let Some(export) = JsExport::cast(item.into()) {
                 if let Ok(export_from_clause) = export.export_clause() {
@@ -74,6 +78,7 @@ impl Rule for NoBarrelFile {
                         if export_from_clause.type_token().is_some() {
                             continue;
                         }
+
                         if !export_from_clause
                             .specifiers()
                             .into_iter()
@@ -83,15 +88,18 @@ impl Rule for NoBarrelFile {
                             return Some(export);
                         }
                     }
+
                     continue;
                 }
             }
         }
+
         None
     }
 
     fn diagnostic(_: &RuleContext<Self>, js_export: &Self::State) -> Option<RuleDiagnostic> {
         let span = js_export.range();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             span,

@@ -17,7 +17,9 @@ use std::sync::LazyLock;
 
 pub static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
     let mut metadata = MetadataRegistry::default();
+
     visit_transformation_registry(&mut metadata);
+
     metadata
 });
 
@@ -41,6 +43,7 @@ where
     B: 'a,
 {
     let mut registry = RuleRegistry::builder(&filter, root);
+
     visit_transformation_registry(&mut registry);
 
     let (registry, mut services, diagnostics, visitors) = registry.build();
@@ -51,6 +54,7 @@ where
     }
 
     struct TestAction;
+
     impl SuppressionAction for TestAction {
         type Language = JsLanguage;
 
@@ -71,6 +75,7 @@ where
             unreachable!("")
         }
     }
+
     let mut analyzer = Analyzer::new(
         METADATA.deref(),
         InspectMatcher::new(registry, inspect_matcher),
@@ -117,8 +122,11 @@ pub(crate) type JsBatchMutation = BatchMutation<JsLanguage>;
 #[cfg(test)]
 mod tests {
     use biome_analyze::{AnalyzerOptions, Never, RuleCategoriesBuilder, RuleFilter};
+
     use biome_js_parser::{parse, JsParserOptions};
+
     use biome_js_syntax::JsFileSource;
+
     use std::slice;
 
     use crate::{transform, AnalysisFilter, ControlFlow};
@@ -131,6 +139,7 @@ mod tests {
         let parsed = parse(SOURCE, JsFileSource::tsx(), JsParserOptions::default());
 
         let options = AnalyzerOptions::default();
+
         let rule_filter = RuleFilter::Rule("transformations", "transformEnum");
 
         transform(
@@ -147,6 +156,7 @@ mod tests {
             |signal| {
                 for transformation in signal.transformations() {
                     let new_code = transformation.mutation.commit();
+
                     eprintln!("{new_code}");
                 }
 

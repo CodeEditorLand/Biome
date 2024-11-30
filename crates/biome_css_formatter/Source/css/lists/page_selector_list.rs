@@ -4,11 +4,13 @@ use biome_css_syntax::CssPageSelectorList;
 pub(crate) struct FormatCssPageSelectorList;
 impl FormatRule<CssPageSelectorList> for FormatCssPageSelectorList {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &CssPageSelectorList, f: &mut CssFormatter) -> FormatResult<()> {
         // Using `join_with` instead of `join_nodes_with_soft_line` to avoid
         // preserving empty lines from the input source. See the comment in
         // [FormatCssSelectorList] for more information.
         let separator = soft_line_break_or_space();
+
         let mut joiner = f.join_with(&separator);
 
         for formatted in node.format_separated(",") {

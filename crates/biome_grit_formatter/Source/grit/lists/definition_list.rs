@@ -4,6 +4,7 @@ use biome_grit_syntax::GritDefinitionList;
 pub(crate) struct FormatGritDefinitionList;
 impl FormatRule<GritDefinitionList> for FormatGritDefinitionList {
     type Context = GritFormatContext;
+
     fn fmt(&self, node: &GritDefinitionList, f: &mut GritFormatter) -> FormatResult<()> {
         let mut join = f.join_nodes_with_hardline();
 

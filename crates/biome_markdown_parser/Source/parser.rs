@@ -36,6 +36,7 @@ impl<'source> MarkdownParser<'source> {
         let MarkdownParserCheckpoint { context, source } = checkpoint;
 
         self.context.rewind(context);
+
         self.source.rewind(source);
     }
 
@@ -47,6 +48,7 @@ impl<'source> MarkdownParser<'source> {
         Vec<Trivia>,
     ) {
         let (trivia, lexer_diagnostics) = self.source.finish();
+
         let (events, parse_diagnostics) = self.context.finish();
 
         let diagnostics = merge_diagnostics(lexer_diagnostics, parse_diagnostics);
@@ -57,6 +59,7 @@ impl<'source> MarkdownParser<'source> {
 
 impl<'source> Parser for MarkdownParser<'source> {
     type Kind = MarkdownSyntaxKind;
+
     type Source = MarkdownTokenSource<'source>;
 
     fn context(&self) -> &ParserContext<Self::Kind> {

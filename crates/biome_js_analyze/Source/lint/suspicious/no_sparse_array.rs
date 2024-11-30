@@ -30,8 +30,11 @@ declare_lint_rule! {
 
 impl Rule for NoSparseArray {
     type Query = Ast<JsArrayExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -61,6 +64,7 @@ markup! {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let mut final_array_element_list = node.elements();
@@ -73,11 +77,13 @@ markup! {
                     make::ident("undefined")
                         .with_leading_trivia([(TriviaPieceKind::Whitespace, " ")])
                 };
+
                 let ident_expr =
                     make::js_identifier_expression(make::js_reference_identifier(undefine_indent));
                 // Why we need to use `final_array_element_list.iter().nth(i)` instead of `item`, because every time we
                 // call `replace_node` the previous iteration `item` is not the descent child of current `final_array_element_list` any more.
                 let n_element = final_array_element_list.iter().nth(i)?.ok()?;
+
                 final_array_element_list = final_array_element_list.replace_node(
                     n_element,
                     AnyJsArrayElement::AnyJsExpression(AnyJsExpression::JsIdentifierExpression(

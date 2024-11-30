@@ -57,14 +57,20 @@ declare_lint_rule! {
 
 impl Rule for NoDuplicateElseIf {
     type Query = Ast<JsIfStatement>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let expr = node.test().ok()?;
+
         let mut conditions_to_check: Vec<AnyJsExpression> = vec![];
+
         conditions_to_check.push(expr.clone());
 
         if let Some(logical_expression) = expr.as_js_logical_expression() {
@@ -85,12 +91,14 @@ impl Rule for NoDuplicateElseIf {
                     .collect()
             })
             .collect();
+
         let mut current = node.syntax().clone();
 
         while let Some(grand_parent_node) = current.grand_parent() {
             let Some(if_stmt) = grand_parent_node.cast::<JsIfStatement>() else {
                 break;
             };
+
             if let Ok(expr) = if_stmt.test() {
                 let current_or_operands: Vec<Vec<AnyJsExpression>> =
                     split_by_logical_operator_wrapper(JsLogicalOperator::LogicalOr, expr)
@@ -114,10 +122,12 @@ impl Rule for NoDuplicateElseIf {
                             .collect()
                     })
                     .collect();
+
                 if list_to_check.iter().any(|f| f.is_empty()) {
                     return node.test().ok().map(|f| f.range());
                 }
             }
+
             current = if_stmt.into_syntax();
         }
 
@@ -140,7 +150,9 @@ fn split_by_logical_operator_wrapper(
     node: AnyJsExpression,
 ) -> Vec<AnyJsExpression> {
     let mut result: Vec<AnyJsExpression> = vec![];
+
     split_by_logical_operator(operator, node, &mut result);
+
     result
 }
 
@@ -150,23 +162,28 @@ fn split_by_logical_operator(
     result: &mut Vec<AnyJsExpression>,
 ) {
     let node = node.omit_parentheses();
+
     match &node {
         AnyJsExpression::JsLogicalExpression(logic_expression) => {
             if let Ok(operator_token) = logic_expression.operator() {
                 if operator_token != operator {
                     result.push(node);
+
                     return;
                 }
             }
+
             if let (Ok(left_node), Ok(right_node)) =
                 (logic_expression.left(), logic_expression.right())
             {
                 split_by_logical_operator(operator, left_node, result);
+
                 split_by_logical_operator(operator, right_node, result);
             } else {
                 result.push(node);
             }
         }
+
         _ => {
             result.push(node);
         }
@@ -177,6 +194,7 @@ fn equal(a: &AnyJsExpression, b: &AnyJsExpression) -> bool {
     if a.syntax().kind() != b.syntax().kind() {
         return false;
     }
+
     if let (Some(a_exp), Some(b_exp)) = (a.as_js_logical_expression(), b.as_js_logical_expression())
     {
         if a_exp.operator() == b_exp.operator()
@@ -190,11 +208,14 @@ fn equal(a: &AnyJsExpression, b: &AnyJsExpression) -> bool {
                     return (equal(&left_a, &left_b) && equal(&right_a, &right_b))
                         || (equal(&left_a, &right_b) && equal(&right_a, &left_b));
                 }
+
                 _ => return false,
             }
         }
+
         return false;
     }
+
     is_node_equal(a.syntax(), b.syntax())
 }
 

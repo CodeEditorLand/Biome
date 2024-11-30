@@ -45,11 +45,13 @@ pub(super) fn parse_union_type_extension(p: &mut GraphqlParser) -> ParsedSyntax 
     let m = p.start();
 
     p.bump(T![extend]);
+
     p.bump(T![union]);
 
     parse_reference(p).or_add_diagnostic(p, expected_name);
 
     let directive_list = DirectiveList.parse_list(p);
+
     let directive_empty = directive_list.range(p).is_empty();
 
     let union_members_empty = parse_union_member_types(p).is_absent();
@@ -66,8 +68,11 @@ fn parse_union_member_types(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_union_member_types(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.expect(T![=]);
+
     p.eat(T![|]); // leading pipe separator is optional
 
     UnionMemberTypeList.parse_list(p);
@@ -80,6 +85,7 @@ struct UnionMemberTypeList;
 
 impl ParseSeparatedList for UnionMemberTypeList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_UNION_MEMBER_TYPE_LIST;
@@ -117,7 +123,9 @@ struct UnionMemberListParseRecovery;
 
 impl ParseRecovery for UnionMemberListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {

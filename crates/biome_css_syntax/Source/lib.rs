@@ -17,6 +17,7 @@ use biome_rowan::{AstNode, RawSyntaxKind, SyntaxKind};
 impl From<u16> for CssSyntaxKind {
     fn from(d: u16) -> CssSyntaxKind {
         assert!(d <= (CssSyntaxKind::__LAST as u16));
+
         unsafe { std::mem::transmute::<u16, CssSyntaxKind>(d) }
     }
 }
@@ -50,6 +51,7 @@ impl CssSyntaxKind {
     #[inline]
     pub const fn is_attribute_modifier_keyword(self) -> bool {
         let k = self as u16;
+
         k == (I_KW as u16) || k == (S_KW as u16)
     }
 
@@ -72,6 +74,7 @@ impl CssSyntaxKind {
 
 impl biome_rowan::SyntaxKind for CssSyntaxKind {
     const TOMBSTONE: Self = CssSyntaxKind::TOMBSTONE;
+
     const EOF: Self = EOF;
 
     fn is_bogus(&self) -> bool {

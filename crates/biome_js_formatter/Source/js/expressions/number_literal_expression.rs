@@ -15,6 +15,7 @@ impl FormatNodeRule<JsNumberLiteralExpression> for FormatJsNumberLiteralExpressi
         f: &mut JsFormatter,
     ) -> FormatResult<()> {
         let JsNumberLiteralExpressionFields { value_token } = node.as_fields();
+
         format_number_token(&value_token?).fmt(f)
     }
 
@@ -27,12 +28,15 @@ impl FormatNodeRule<JsNumberLiteralExpression> for FormatJsNumberLiteralExpressi
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsNumberLiteralExpression;
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("(5).test", JsNumberLiteralExpression);
+
         assert_needs_parentheses!("(5)[test]", JsNumberLiteralExpression);
+
         assert_not_needs_parentheses!("test[5]", JsNumberLiteralExpression);
     }
 }

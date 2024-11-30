@@ -34,10 +34,12 @@ impl NodeVisitor for ForVisitor {
 
         // Create the condition block and unconditionally jump to it
         let cond_block = builder.append_block();
+
         builder.append_jump(false, cond_block);
 
         // Create the continue block and break block immediately
         let continue_block = builder.append_block();
+
         let break_block = builder.append_block();
 
         // Fill the continue block
@@ -51,6 +53,7 @@ impl NodeVisitor for ForVisitor {
 
         // Create the loop block and fill it with the loop body statement
         let loop_block = builder.append_block();
+
         builder.set_cursor(loop_block);
 
         let label = node

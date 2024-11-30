@@ -48,15 +48,20 @@ declare_lint_rule! {
 
 impl Rule for NoNodejsModules {
     type Query = Manifest<AnyJsImportLike>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.is_in_ts_module_declaration() {
             return None;
         }
+
         if let AnyJsImportLike::JsModuleSource(module_source) = &node {
             if let Some(import_clause) = module_source.parent::<AnyJsImportClause>() {
                 if import_clause.type_token().is_some() {
@@ -65,8 +70,11 @@ impl Rule for NoNodejsModules {
                 }
             }
         }
+
         let module_name = node.module_name_token()?;
+
         let module_name_text = inner_string_text(&module_name);
+
         let module_name_text = module_name_text.text();
         // Ignore dependencies
         if ctx.is_dependency(module_name_text)
@@ -76,6 +84,7 @@ impl Rule for NoNodejsModules {
         {
             return None;
         }
+
         is_node_builtin_module(module_name_text).then_some(module_name.text_trimmed_range())
     }
 

@@ -29,7 +29,9 @@ impl RestrictedRegex {
     /// Returns the original string of this regex.
     pub fn as_str(&self) -> &str {
         let repr = self.0.as_str();
+
         debug_assert!(repr.starts_with("^(?:"));
+
         debug_assert!(repr.ends_with(")$"));
         &repr[4..(repr.len() - 2)]
     }
@@ -60,6 +62,7 @@ impl FromStr for RestrictedRegex {
 
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         validate_restricted_regex(value)?;
+
         regex::Regex::new(&format!("^(?:{value})$"))
             .map(RestrictedRegex)
             .map_err(|error| RestrictedRegexError { error, index: None })
@@ -82,16 +85,20 @@ impl biome_deserialize::Deserializable for RestrictedRegex {
         diagnostics: &mut Vec<biome_deserialize::DeserializationDiagnostic>,
     ) -> Option<Self> {
         let regex = String::deserialize(value, name, diagnostics)?;
+
         match regex.parse() {
             Ok(regex) => Some(regex),
             Err(error) => {
                 let range = value.range();
+
                 let range = error.index().map_or(range, |index| {
                     TextRange::at(range.start() + TextSize::from(1 + index), 1u32.into())
                 });
+
                 diagnostics.push(
                     DeserializationDiagnostic::new(format_args!("{error}")).with_range(range),
                 );
+
                 None
             }
         }
@@ -145,7 +152,9 @@ impl std::fmt::Display for RestrictedRegexError {
 /// Returns an error if `pattern` doesn't follow the restricted regular expression syntax.
 fn validate_restricted_regex(pattern: &str) -> Result<(), RestrictedRegexError> {
     let mut it = pattern.bytes().enumerate();
+
     let mut is_in_char_class = false;
+
     while let Some((i, c)) = it.next() {
         match c {
             b'\\' => {
@@ -199,6 +208,7 @@ fn validate_restricted_regex(pattern: &str) -> Result<(), RestrictedRegexError> 
                     ));
                 }
             }
+
             b'^' | b'$' if !is_in_char_class => {
                 // Anchors are implicit and always present in a restricted regex
                 return Err(RestrictedRegexError::new(
@@ -209,18 +219,22 @@ fn validate_restricted_regex(pattern: &str) -> Result<(), RestrictedRegexError> 
                     i,
                 ));
             }
+
             b'[' if is_in_char_class => {
                 return Err(RestrictedRegexError::new(
                     regex::Error::Syntax("Nested character class are not supported.".to_string()),
                     i,
                 ));
             }
+
             b'[' => {
                 is_in_char_class = true;
             }
+
             b']' => {
                 is_in_char_class = false;
             }
+
             b'&' | b'~' | b'-' if is_in_char_class => {
                 if it.next().is_some_and(|(_, x)| x == c) {
                     return Err(RestrictedRegexError::new(
@@ -232,11 +246,13 @@ fn validate_restricted_regex(pattern: &str) -> Result<(), RestrictedRegexError> 
                     ));
                 }
             }
+
             b'(' if !is_in_char_class => {
                 match it.next() {
                     Some((_, b'[')) => {
                         is_in_char_class = true;
                     }
+
                     Some((_, b'?')) => match it.next() {
                         Some((i, b'P' | b'=' | b'!' | b'<')) => {
                             return if c == b'P'
@@ -255,14 +271,19 @@ fn validate_restricted_regex(pattern: &str) -> Result<(), RestrictedRegexError> 
                             ), i))
                             };
                         }
+
                         Some((_, b':')) => {}
+
                         c => {
                             let mut current = c;
+
                             while matches!(current, Some((_, b'i' | b'm' | b's' | b'-'))) {
                                 current = it.next()
                             }
+
                             match current {
                                 Some((_, b':')) => {}
+
                                 Some((_, b')')) => {
                                     return Err(RestrictedRegexError::new(
                                         regex::Error::Syntax(
@@ -272,9 +293,11 @@ fn validate_restricted_regex(pattern: &str) -> Result<(), RestrictedRegexError> 
                                         i,
                                     ));
                                 }
+
                                 Some((i, c)) if c.is_ascii() => {
                                     // SAFETY: `c` is ASCII according to the guard
                                     let c = c as char;
+
                                     return Err(RestrictedRegexError::new(
                                         regex::Error::Syntax(format!(
                                             "Group flags `(?{c}:)` are not supported."
@@ -282,6 +305,7 @@ fn validate_restricted_regex(pattern: &str) -> Result<(), RestrictedRegexError> 
                                         i,
                                     ));
                                 }
+
                                 _ => {
                                     return Err(RestrictedRegexError::new(
                                         regex::Error::Syntax(
@@ -296,9 +320,11 @@ fn validate_restricted_regex(pattern: &str) -> Result<(), RestrictedRegexError> 
                     _ => {}
                 }
             }
+
             _ => {}
         }
     }
+
     Ok(())
 }
 
@@ -309,27 +335,47 @@ mod tests {
     #[test]
     fn test_validate_restricted_regex() {
         assert!(validate_restricted_regex("^a").is_err());
+
         assert!(validate_restricted_regex("a$").is_err());
+
         assert!(validate_restricted_regex(r"\").is_err());
+
         assert!(validate_restricted_regex(r"\p{L}").is_err());
+
         assert!(validate_restricted_regex(r"\😀").is_err());
+
         assert!(validate_restricted_regex(r"(?=a)").is_err());
+
         assert!(validate_restricted_regex(r"(?!a)").is_err());
+
         assert!(validate_restricted_regex(r"(?<NAME>:a)").is_err());
+
         assert!(validate_restricted_regex(r"[[:digit:]]").is_err());
+
         assert!(validate_restricted_regex(r"[a[bc]d]").is_err());
+
         assert!(validate_restricted_regex(r"[ab--a]").is_err());
+
         assert!(validate_restricted_regex(r"[ab&&a]").is_err());
+
         assert!(validate_restricted_regex(r"[ab~~a]").is_err());
 
         assert!(validate_restricted_regex("").is_ok());
+
         assert!(validate_restricted_regex("abc").is_ok());
+
         assert!(validate_restricted_regex("(?:a)(.+)z").is_ok());
+
         assert!(validate_restricted_regex("(?ims:a)(.+)z").is_ok());
+
         assert!(validate_restricted_regex("(?-ims:a)(.+)z").is_ok());
+
         assert!(validate_restricted_regex("(?i-ms:a)(.+)z").is_ok());
+
         assert!(validate_restricted_regex("[A-Z][^a-z]").is_ok());
+
         assert!(validate_restricted_regex(r"\n\t\v\f").is_ok());
+
         assert!(validate_restricted_regex("([^_])").is_ok());
     }
 }

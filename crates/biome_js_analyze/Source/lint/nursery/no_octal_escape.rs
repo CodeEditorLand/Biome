@@ -38,17 +38,24 @@ declare_lint_rule! {
 
 impl Rule for NoOctalEscape {
     type Query = Ast<JsStringLiteralExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let token = node.value_token().ok()?;
+
         let text = token.text();
 
         let bytes = text.as_bytes();
+
         let mut byte_it = bytes.iter();
+
         while let Some(&byte) = byte_it.next() {
             if byte == b'\\' {
                 if let Some(&next_byte) = byte_it.next() {
@@ -58,13 +65,17 @@ impl Rule for NoOctalEscape {
                 }
             }
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let token = node.value_token().ok()?;
+
         let text = token.text();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

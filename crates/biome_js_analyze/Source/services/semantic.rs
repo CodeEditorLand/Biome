@@ -24,6 +24,7 @@ impl FromServices for SemanticServices {
         let model: &SemanticModel = services.get_service().ok_or_else(|| {
             MissingServicesDiagnostic::new(rule_key.rule_name(), &["SemanticModel"])
         })?;
+
         Ok(Self {
             model: model.clone(),
         })
@@ -40,13 +41,16 @@ impl Phase for SemanticServices {
 /// of the whole [SemanticModel] without matching on a specific AST node
 impl Queryable for SemanticServices {
     type Input = SemanticModelEvent;
+
     type Output = SemanticModel;
 
     type Language = JsLanguage;
+
     type Services = Self;
 
     fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, root: &AnyJsRoot) {
         analyzer.add_visitor(Phases::Syntax, || SemanticModelBuilderVisitor::new(root));
+
         analyzer.add_visitor(Phases::Semantic, || SemanticModelVisitor);
     }
 
@@ -67,13 +71,16 @@ where
     N: AstNode<Language = JsLanguage> + 'static,
 {
     type Input = JsSyntaxNode;
+
     type Output = N;
 
     type Language = JsLanguage;
+
     type Services = SemanticServices;
 
     fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, root: &AnyJsRoot) {
         analyzer.add_visitor(Phases::Syntax, || SemanticModelBuilderVisitor::new(root));
+
         analyzer.add_visitor(Phases::Semantic, SyntaxVisitor::default);
     }
 
@@ -107,8 +114,10 @@ impl Visitor for SemanticModelBuilderVisitor {
         match event {
             WalkEvent::Enter(node) => {
                 self.builder.push_node(node);
+
                 self.extractor.enter(node);
             }
+
             WalkEvent::Leave(node) => {
                 self.extractor.leave(node);
             }
@@ -121,6 +130,7 @@ impl Visitor for SemanticModelBuilderVisitor {
 
     fn finish(self: Box<Self>, ctx: VisitorFinishContext<JsLanguage>) {
         let model = self.builder.build();
+
         ctx.services.insert_service(model);
     }
 }
@@ -147,10 +157,12 @@ impl Visitor for SemanticModelVisitor {
 
                 node
             }
+
             WalkEvent::Leave(_) => return,
         };
 
         let text_range = root.text_range();
+
         ctx.match_query(SemanticModelEvent(text_range));
     }
 }

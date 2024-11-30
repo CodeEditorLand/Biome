@@ -56,6 +56,7 @@ impl Format<JsFormatContext> for FormatComputedMemberLookup<'_> {
                     ]
                 )
             }
+
             member => {
                 write![
                     f,
@@ -75,16 +76,20 @@ impl Format<JsFormatContext> for FormatComputedMemberLookup<'_> {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsComputedMemberExpression;
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("new (test()[a])()", JsComputedMemberExpression);
+
         assert_needs_parentheses!("new (test().a[b])()", JsComputedMemberExpression);
+
         assert_needs_parentheses!(
             "new (test()`template`[index])()",
             JsComputedMemberExpression
         );
+
         assert_needs_parentheses!("new (test()![member])()", JsComputedMemberExpression);
 
         assert_not_needs_parentheses!("new (test[a])()", JsComputedMemberExpression);

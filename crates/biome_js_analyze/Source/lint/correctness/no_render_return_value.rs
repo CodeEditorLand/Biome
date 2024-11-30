@@ -39,14 +39,20 @@ declare_lint_rule! {
 
 impl Rule for NoRenderReturnValue {
     type Query = Semantic<JsCallExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let callee = node.callee().ok()?.omit_parentheses();
+
         let model = ctx.model();
+
         if is_react_call_api(&callee, model, ReactLibrary::ReactDOM, "render") {
             let parent = node.syntax().parent()?;
 
@@ -54,11 +60,13 @@ impl Rule for NoRenderReturnValue {
                 return Some(());
             }
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(rule_category!(),
             node.syntax().text_trimmed_range(),
             markup! {

@@ -20,11 +20,15 @@ pub(crate) struct ConsoleReporter {
 impl Reporter for ConsoleReporter {
     fn write(self, visitor: &mut dyn ReporterVisitor) -> io::Result<()> {
         let verbose = self.diagnostics_payload.verbose;
+
         visitor.report_diagnostics(&self.execution, self.diagnostics_payload)?;
+
         visitor.report_summary(&self.execution, self.summary)?;
+
         if verbose {
             visitor.report_handled_paths(self.evaluated_paths)?;
         }
+
         Ok(())
     }
 }
@@ -103,6 +107,7 @@ impl<'a> ReporterVisitor for ConsoleReporterVisitor<'a> {
         self.0.log(markup! {
             {PrintDiagnostic::verbose(&evaluated_paths_diagnostic)}
         });
+
         self.0.log(markup! {
             {PrintDiagnostic::verbose(&fixed_paths_diagnostic)}
         });
@@ -118,6 +123,7 @@ impl<'a> ReporterVisitor for ConsoleReporterVisitor<'a> {
         for diagnostic in &diagnostics_payload.diagnostics {
             if execution.is_search() {
                 self.0.log(markup! {{PrintDiagnostic::search(diagnostic)}});
+
                 continue;
             }
 
@@ -141,6 +147,7 @@ struct Files(usize);
 impl fmt::Display for Files {
     fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
         fmt.write_markup(markup!({self.0} " "))?;
+
         if self.0 == 1 {
             fmt.write_str("file")
         } else {
@@ -173,12 +180,14 @@ struct SummaryTotal<'a>(&'a TraversalMode, usize, &'a Duration);
 impl<'a> fmt::Display for SummaryTotal<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
         let files = Files(self.1);
+
         match self.0 {
             TraversalMode::Check { .. } | TraversalMode::Lint { .. } | TraversalMode::CI { .. } => {
                 fmt.write_markup(markup! {
                     "Checked "{files}" in "{self.2}"."
                 })
             }
+
             TraversalMode::Format { write, .. } => {
                 if *write {
                     fmt.write_markup(markup! {
@@ -217,7 +226,9 @@ pub(crate) struct ConsoleTraversalSummary<'a>(
 impl<'a> fmt::Display for ConsoleTraversalSummary<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
         let summary = SummaryTotal(self.0, self.1.changed + self.1.unchanged, &self.1.duration);
+
         let detail = SummaryDetail(self.0, self.1.changed);
+
         fmt.write_markup(markup!(<Info>{summary}{detail}</Info>))?;
 
         if self.1.errors > 0 {
@@ -227,6 +238,7 @@ impl<'a> fmt::Display for ConsoleTraversalSummary<'a> {
                 fmt.write_markup(markup!("\n"<Error>"Found "{self.1.errors}" errors."</Error>))?;
             }
         }
+
         if self.1.warnings > 0 {
             if self.1.warnings == 1 {
                 fmt.write_markup(markup!("\n"<Warn>"Found "{self.1.warnings}" warning."</Warn>))?;
@@ -242,6 +254,7 @@ impl<'a> fmt::Display for ConsoleTraversalSummary<'a> {
                 fmt.write_markup(markup!(" "<Info>"Found "{self.1.matches}" matches."</Info>))?
             };
         };
+
         Ok(())
     }
 }

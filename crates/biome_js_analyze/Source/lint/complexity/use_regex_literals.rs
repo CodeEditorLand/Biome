@@ -59,35 +59,46 @@ pub struct UseRegexLiteralsState {
 
 impl Rule for UseRegexLiterals {
     type Query = Semantic<JsNewOrCallExpression>;
+
     type State = UseRegexLiteralsState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
 
         let (callee, arguments) = parse_node(node)?;
+
         if !is_regexp_object(callee, model) {
             return None;
         }
 
         let args = arguments.args();
+
         if args.len() > 2 {
             return None;
         }
+
         let mut args = args.iter();
 
         let pattern = args.next()?;
+
         let pattern = create_pattern(pattern, model)?;
 
         let flags = match args.next() {
             Some(flags) => {
                 let flags = create_flags(flags)?;
+
                 Some(flags)
             }
+
             None => None,
         };
+
         Some(UseRegexLiteralsState { pattern, flags })
     }
 
@@ -119,10 +130,13 @@ impl Rule for UseRegexLiterals {
             [],
             [],
         );
+
         let next = AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::from(
             js_regex_literal_expression(token),
         ));
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(prev, next);
 
         Some(JsRuleAction::new(
@@ -142,29 +156,39 @@ fn create_pattern(
     model: &SemanticModel,
 ) -> Option<String> {
     let pattern = pattern.ok()?;
+
     let expr = pattern.as_any_js_expression()?;
+
     if let Some(expr) = expr.as_js_template_expression() {
         if let Some(tag) = expr.tag() {
             let (object, member) = match tag.omit_parentheses() {
                 AnyJsExpression::JsStaticMemberExpression(expr) => {
                     let object = expr.object().ok()?;
+
                     let member = expr.member().ok()?;
                     (object, member.value_token().ok()?.token_text_trimmed())
                 }
+
                 AnyJsExpression::JsComputedMemberExpression(expr) => {
                     let object = expr.object().ok()?;
+
                     let member = extract_inner_text(&expr)?;
                     (object, member)
                 }
+
                 _ => return None,
             };
+
             let (reference, name) = global_identifier(&object)?;
+
             if model.binding(&reference).is_some() || name.text() != "String" || member != "raw" {
                 return None;
             }
         };
     };
+
     let pattern = extract_literal_string(pattern)?;
+
     let pattern = pattern.replace("\\\\", "\\");
 
     // Convert slash to "\/" to avoid parsing error in autofix.
@@ -179,6 +203,7 @@ fn create_pattern(
     if pattern == "*" || pattern == "+" || pattern == "?" {
         return None;
     }
+
     Some(pattern)
 }
 
@@ -196,12 +221,17 @@ fn parse_node(node: &JsNewOrCallExpression) -> Option<(AnyJsExpression, JsCallAr
     match node {
         JsNewOrCallExpression::JsNewExpression(node) => {
             let callee = node.callee().ok()?;
+
             let args = node.arguments()?;
+
             Some((callee, args))
         }
+
         JsNewOrCallExpression::JsCallExpression(node) => {
             let callee = node.callee().ok()?;
+
             let args = node.arguments().ok()?;
+
             Some((callee, args))
         }
     }
@@ -209,11 +239,13 @@ fn parse_node(node: &JsNewOrCallExpression) -> Option<(AnyJsExpression, JsCallAr
 
 fn create_flags(flags: Result<AnyJsCallArgument, SyntaxError>) -> Option<String> {
     let flags = flags.ok()?;
+
     let flags = extract_literal_string(flags)?;
     // u flag (Unicode mode) and v flag (unicodeSets mode) cannot be combined.
     if flags == "uv" || flags == "vu" {
         return None;
     }
+
     Some(flags)
 }
 
@@ -221,6 +253,7 @@ fn extract_literal_string(from: AnyJsCallArgument) -> Option<String> {
     let AnyJsCallArgument::AnyJsExpression(expr) = from else {
         return None;
     };
+
     expr.omit_parentheses()
         .as_static_value()
         .and_then(|value| match value {

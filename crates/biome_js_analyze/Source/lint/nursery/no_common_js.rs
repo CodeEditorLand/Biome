@@ -63,8 +63,11 @@ declare_lint_rule! {
 
 impl Rule for NoCommonJs {
     type Query = Semantic<CommonJsImportExport>;
+
     type State = bool;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -75,10 +78,12 @@ impl Rule for NoCommonJs {
         }
 
         let expression = ctx.query();
+
         let (reference, is_export) = match expression {
             CommonJsImportExport::JsCallExpression(node) => {
                 Some((is_require_call_expression(node)?, false))
             }
+
             CommonJsImportExport::JsStaticMemberAssignment(node) => {
                 Some((is_common_js_exports(node)?, true))
             }
@@ -93,6 +98,7 @@ impl Rule for NoCommonJs {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let (es_name, common_js_name) = match state {
             true => ("export", "module.exports"),
             false => ("import", "require"),
@@ -119,6 +125,7 @@ declare_node_union! {
 
 fn is_require_call_expression(node: &JsCallExpression) -> Option<JsReferenceIdentifier> {
     let callee = node.callee().ok()?;
+
     let (reference, name) = global_identifier(&callee.omit_parentheses())?;
 
     if name.text() == "require" {
@@ -130,7 +137,9 @@ fn is_require_call_expression(node: &JsCallExpression) -> Option<JsReferenceIden
 
 fn is_common_js_exports(node: &JsStaticMemberAssignment) -> Option<JsReferenceIdentifier> {
     let object = node.object().ok()?;
+
     let (reference, name) = global_identifier(&object.omit_parentheses())?;
+
     let object_name = name.text();
 
     // exports.*
@@ -144,7 +153,9 @@ fn is_common_js_exports(node: &JsStaticMemberAssignment) -> Option<JsReferenceId
     }
 
     let value_token = node.member().ok()?.value_token().ok()?;
+
     let member_name = value_token.text_trimmed();
+
     if member_name == "exports" {
         return Some(reference);
     }

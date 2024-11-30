@@ -10,6 +10,7 @@ impl FormatNodeRule<GritBracketedPredicate> for FormatGritBracketedPredicate {
             predicate,
             r_paren_token,
         } = node.as_fields();
+
         write!(
             f,
             [

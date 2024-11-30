@@ -78,6 +78,7 @@ impl TransformSourceMap {
         );
 
         debug_assert!(range.end() <= self.source_text.text.text_len() - self.source_text.offset, "Mapped range {:?} exceeds the length of the source document {:?}. Please check if the passed `transformed_range` is a range of the transformed tree and not of the source tree, and that it belongs to the tree for which the source map was created for.", range, self.source_text.text.text_len() - self.source_text.offset);
+
         range
     }
 
@@ -90,6 +91,7 @@ impl TransformSourceMap {
 
     fn resolve_trimmed_range(&self, mut source_range: TextRange) -> TextRange {
         let start_mapping = self.mapped_node_ranges.get(&source_range.start());
+
         if let Some(mapping) = start_mapping {
             // If the queried node fully encloses the original range of the node, then extend the range
             if source_range.contains_range(mapping.original_range) {
@@ -98,6 +100,7 @@ impl TransformSourceMap {
         }
 
         let end_mapping = self.mapped_node_ranges.get(&source_range.end());
+
         if let Some(mapping) = end_mapping {
             // If the queried node fully encloses the original range of the node, then extend the range
             if source_range.contains_range(mapping.original_range) {
@@ -130,6 +133,7 @@ impl TransformSourceMap {
     /// Returns the source text of the trimmed range of `node`.
     pub fn trimmed_source_text<L: Language>(&self, node: &SyntaxNode<L>) -> &str {
         let range = self.trimmed_source_range(node);
+
         self.source().text_slice(range)
     }
 
@@ -144,6 +148,7 @@ impl TransformSourceMap {
     #[cfg(test)]
     fn trimmed_source_text_from_transformed_range(&self, range: TextRange) -> &str {
         let range = self.trimmed_source_range_from_transformed_range(range);
+
         self.source().text_slice(range)
     }
 
@@ -195,9 +200,11 @@ impl TransformSourceMap {
                 // That means, the trimmed and non-trimmed offsets are the same
                 else {
                     let transformed_delta = transformed_offset - range.transformed_start();
+
                     range.source_start() + range.len() + transformed_delta
                 }
             }
+
             None => transformed_offset,
         }
     }
@@ -225,6 +232,7 @@ impl TransformSourceMap {
         }
 
         let mut previous_marker: Option<SourceMarker> = None;
+
         let mut next_range_index = 0;
 
         for marker in markers {
@@ -244,6 +252,7 @@ impl TransformSourceMap {
                     Ok(index) => {
                         next_range_index = index + 1;
                     }
+
                     Err(index) => next_range_index = index,
                 }
             } else {
@@ -476,6 +485,7 @@ impl TransformSourceMapBuilder {
 
         self.mapped_node_ranges
             .insert(original_range.start(), mapping);
+
         self.mapped_node_ranges
             .insert(original_range.end(), mapping);
     }
@@ -508,6 +518,7 @@ impl TransformSourceMapBuilder {
 
                     last_mapping = DeletedRange::new(range, transformed_offset);
                 }
+
                 transformed_offset += range.len();
             }
 
@@ -593,19 +604,25 @@ impl ExactSizeIterator for DeletedRanges<'_> {}
 #[cfg(test)]
 mod tests {
     use crate::source_map::DeletedRangeEntry;
+
     use crate::{TextRange, TextSize, TransformSourceMapBuilder};
+
     use biome_rowan::raw_language::{RawLanguageKind, RawSyntaxTreeBuilder};
 
     #[test]
     fn range_mapping() {
         let mut cst_builder = RawSyntaxTreeBuilder::new();
+
         cst_builder.start_node(RawLanguageKind::ROOT);
         // The shape of the tree doesn't matter for the test case
         cst_builder.token(RawLanguageKind::STRING_TOKEN, "(a + (((b + c)) + d)) + e");
+
         cst_builder.finish_node();
+
         let root = cst_builder.finish();
 
         let mut builder = TransformSourceMapBuilder::new();
+
         builder.push_source_text(&root.text().to_string());
 
         // Add mappings for all removed parentheses.
@@ -617,14 +634,17 @@ mod tests {
         builder.add_deleted_range(TextRange::new(TextSize::from(5), TextSize::from(6)));
         // Ranges can be added out of order
         builder.add_deleted_range(TextRange::new(TextSize::from(7), TextSize::from(8)));
+
         builder.add_deleted_range(TextRange::new(TextSize::from(6), TextSize::from(7)));
 
         // `))`
         builder.add_deleted_range(TextRange::new(TextSize::from(13), TextSize::from(14)));
+
         builder.add_deleted_range(TextRange::new(TextSize::from(14), TextSize::from(15)));
 
         // `))`
         builder.add_deleted_range(TextRange::new(TextSize::from(19), TextSize::from(20)));
+
         builder.add_deleted_range(TextRange::new(TextSize::from(20), TextSize::from(21)));
 
         let source_map = builder.finish();
@@ -668,22 +688,29 @@ mod tests {
         // Build up a tree for `((a))`
         // Don't mind the unknown nodes, it doesn't really matter what the nodes are.
         let mut cst_builder = RawSyntaxTreeBuilder::new();
+
         cst_builder.start_node(RawLanguageKind::ROOT);
 
         cst_builder.start_node(RawLanguageKind::BOGUS);
+
         cst_builder.token(RawLanguageKind::STRING_TOKEN, "(");
 
         cst_builder.start_node(RawLanguageKind::BOGUS);
+
         cst_builder.token(RawLanguageKind::BOGUS, "(");
 
         cst_builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
         cst_builder.token(RawLanguageKind::STRING_TOKEN, "a");
+
         cst_builder.finish_node();
 
         cst_builder.token(RawLanguageKind::BOGUS, ")");
+
         cst_builder.finish_node();
 
         cst_builder.token(RawLanguageKind::BOGUS, ")");
+
         cst_builder.finish_node();
 
         cst_builder.token(RawLanguageKind::BOGUS, ";");
@@ -711,10 +738,12 @@ mod tests {
             .unwrap();
 
         let mut builder = TransformSourceMapBuilder::new();
+
         builder.push_source_text(&root.text().to_string());
 
         // Add mappings for all removed parentheses.
         builder.add_deleted_range(TextRange::new(TextSize::from(0), TextSize::from(2)));
+
         builder.add_deleted_range(TextRange::new(TextSize::from(3), TextSize::from(5)));
 
         // Extend `a` to the range of `(a)`
@@ -747,13 +776,17 @@ mod tests {
     #[test]
     fn deleted_ranges() {
         let mut cst_builder = RawSyntaxTreeBuilder::new();
+
         cst_builder.start_node(RawLanguageKind::ROOT);
         // The shape of the tree doesn't matter for the test case
         cst_builder.token(RawLanguageKind::STRING_TOKEN, "(a + (((b + c)) + d)) + e");
+
         cst_builder.finish_node();
+
         let root = cst_builder.finish();
 
         let mut builder = TransformSourceMapBuilder::new();
+
         builder.push_source_text(&root.text().to_string());
 
         // Add mappings for all removed parentheses.
@@ -765,14 +798,17 @@ mod tests {
         builder.add_deleted_range(TextRange::new(TextSize::from(5), TextSize::from(6)));
         // Ranges can be added out of order
         builder.add_deleted_range(TextRange::new(TextSize::from(7), TextSize::from(8)));
+
         builder.add_deleted_range(TextRange::new(TextSize::from(6), TextSize::from(7)));
 
         // `))`
         builder.add_deleted_range(TextRange::new(TextSize::from(13), TextSize::from(14)));
+
         builder.add_deleted_range(TextRange::new(TextSize::from(14), TextSize::from(15)));
 
         // `))`
         builder.add_deleted_range(TextRange::new(TextSize::from(19), TextSize::from(20)));
+
         builder.add_deleted_range(TextRange::new(TextSize::from(20), TextSize::from(21)));
 
         let source_map = builder.finish();

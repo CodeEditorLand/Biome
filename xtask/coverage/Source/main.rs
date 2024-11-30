@@ -12,6 +12,7 @@ fn main() -> Result<()> {
     let _d = pushd(project_root());
 
     let mut args = Arguments::from_env();
+
     let sub_command = args.subcommand()?;
 
     if sub_command.as_deref() == Some("compare") {
@@ -22,10 +23,15 @@ fn main() -> Result<()> {
         // cargo coverage js --json > new_results.json
         // cargo coverage compare ./base_results.json ./new_results.json --markdown
         let markdown = args.contains("--markdown");
+
         let free = args.finish();
+
         let base_result_path = free.first().and_then(|arg| arg.to_str());
+
         let new_result_path = free.get(1).and_then(|arg| arg.to_str());
+
         coverage_compare(base_result_path, new_result_path, markdown);
+
         return Ok(());
     }
 
@@ -46,9 +52,13 @@ OPTIONS
                         Valid values are:
                             *: will run all suites
                             js: will run all javascript suites; Same as \"js/262\";
+
                             ts: will run all typescript suites; Same as \"ts/microsoft,ts/babel\";
+
                             jsx: will run all jsx suites; Same as \"jsx/babel\";
+
                             js/262: will run https://github.com/tc39/test262/tree/main/test;
+
                             ts/microsoft: will run https://github.com/microsoft/Typescript/tree/main/tests/cases
                             ts/babel: will run https://github.com/babel/babel/tree/main/packages/babel-parser/test/fixtures/typescript
                             jsx/babel: will run https://github.com/babel/babel/tree/main/packages/babel-parser/test/fixtures/jsx/basic
@@ -57,11 +67,14 @@ OPTIONS
     --help              Prints this help.
 			"
         );
+
         return Ok(());
     }
 
     let json = args.contains("--json");
+
     let suites: Option<String> = args.opt_value_from_str("--suites").unwrap();
+
     let filter: Option<String> = args.opt_value_from_str("--filter").unwrap();
 
     let detail_level: Option<SummaryDetailLevel> =

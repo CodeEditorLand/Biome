@@ -8,6 +8,7 @@ impl FormatRule<AnyCssSupportsAndCombinableCondition>
     for FormatAnyCssSupportsAndCombinableCondition
 {
     type Context = CssFormatContext;
+
     fn fmt(
         &self,
         node: &AnyCssSupportsAndCombinableCondition,
@@ -17,6 +18,7 @@ impl FormatRule<AnyCssSupportsAndCombinableCondition>
             AnyCssSupportsAndCombinableCondition::AnyCssSupportsInParens(node) => {
                 node.format().fmt(f)
             }
+
             AnyCssSupportsAndCombinableCondition::CssSupportsAndCondition(node) => {
                 node.format().fmt(f)
             }

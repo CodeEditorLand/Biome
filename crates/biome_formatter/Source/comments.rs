@@ -925,6 +925,7 @@ impl<L: Language> Comments<L> {
     /// call expression is nested inside of the expression statement.
     pub fn is_suppressed(&self, node: &SyntaxNode<L>) -> bool {
         self.mark_suppression_checked(node);
+
         let is_suppression = self.data.is_suppression;
 
         self.leading_dangling_trailing_comments(node)
@@ -939,6 +940,7 @@ impl<L: Language> Comments<L> {
     #[cfg(debug_assertions)]
     pub fn mark_suppression_checked(&self, node: &SyntaxNode<L>) {
         let mut checked_nodes = self.data.checked_suppressions.borrow_mut();
+
         checked_nodes.insert(node.clone());
     }
 
@@ -956,6 +958,7 @@ impl<L: Language> Comments<L> {
         use biome_rowan::SyntaxKind;
 
         let checked_nodes = self.data.checked_suppressions.borrow();
+
         for node in root.descendants() {
             if node.kind().is_list() || node.kind().is_root() {
                 continue;
@@ -1006,6 +1009,7 @@ Node:
                         })
                     },
                 ));
+
                 unformatted_comments.extend(self.dangling_comments(&node).iter().filter_map(
                     |comment| {
                         (!comment.formatted.get()).then_some(DebugComment::Dangling {
@@ -1014,6 +1018,7 @@ Node:
                         })
                     },
                 ));
+
                 unformatted_comments.extend(self.trailing_comments(&node).iter().filter_map(
                     |comment| {
                         (!comment.formatted.get()).then_some(DebugComment::Trailing {

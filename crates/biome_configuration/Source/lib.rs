@@ -263,6 +263,7 @@ impl PartialConfiguration {
             })
             .unwrap_or_default()
     }
+
     pub fn get_graphql_linter_configuration(&self) -> GraphqlLinter {
         self.graphql
             .as_ref()
@@ -389,6 +390,7 @@ impl ConfigurationPathHint {
     pub const fn is_from_user(&self) -> bool {
         matches!(self, Self::FromUser(_))
     }
+
     pub const fn is_from_lsp(&self) -> bool {
         matches!(self, Self::FromLsp(_))
     }
@@ -397,7 +399,9 @@ impl ConfigurationPathHint {
 #[cfg(test)]
 mod test {
     use oxc_resolver::{FileMetadata, ResolveOptions, ResolverGeneric};
+
     use std::env;
+
     use std::path::{Path, PathBuf};
 
     #[test]

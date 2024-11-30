@@ -29,16 +29,19 @@ pub(crate) fn parse_pseudo_class_function_relative_selector_list(
     let m = p.start();
 
     p.bump_ts(PSEUDO_CLASS_FUNCTION_RELATIVE_SELECTOR_LIST_SET);
+
     p.bump(T!['(']);
 
     let list = RelativeSelectorList::new(T![')'])
         // we don't need to recover here, because we have a better diagnostic message in a close token
         .disable_recovery()
         .parse_list(p);
+
     let list_range = list.range(p);
 
     if list_range.is_empty() && p.at(T![')']) {
         let diagnostic = expected_relative_selector(p, list_range);
+
         p.error(diagnostic);
     }
 

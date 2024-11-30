@@ -93,6 +93,7 @@ impl AnyJsFunctionOrMethod {
             AnyJsFunctionOrMethod::AnyJsFunction(function) => {
                 function.binding().as_ref().map(AnyJsBinding::text)
             }
+
             AnyJsFunctionOrMethod::JsMethodObjectMember(method) => {
                 method.name().ok().as_ref().map(AnyJsObjectMemberName::text)
             }
@@ -121,12 +122,14 @@ fn enclosing_function_if_call_is_at_top_level(
             Ok(enclosing_function) => {
                 return Some(enclosing_function);
             }
+
             Err(node) => {
                 if let Some(prev_node) = prev_node {
                     if is_conditional_expression(&node, &prev_node) {
                         return None;
                     }
                 }
+
                 prev_node = Some(node);
             }
         }
@@ -283,9 +286,11 @@ impl Visitor for EarlyReturnDetectionVisitor {
                         .push(EarlyReturnDetectionVisitorStackEntry::default());
                 }
             }
+
             WalkEvent::Leave(node) => {
                 if AnyFunctionLike::can_cast(node.kind()) {
                     self.stack.pop();
+
                     return;
                 }
 
@@ -320,6 +325,7 @@ impl Visitor for FunctionCallVisitor {
     ) {
         match event {
             WalkEvent::Enter(_) => {}
+
             WalkEvent::Leave(node) => {
                 if let Some(call) = JsCallExpression::cast_ref(node) {
                     ctx.match_query(FunctionCall(call));
@@ -352,6 +358,7 @@ impl FromServices for FunctionCallServices {
         let early_returns: &EarlyReturnsModel = services.get_service().ok_or_else(|| {
             MissingServicesDiagnostic::new(rule_key.rule_name(), &["EarlyReturnsModel"])
         })?;
+
         Ok(Self {
             early_returns: early_returns.clone(),
             semantic_services: SemanticServices::from_services(rule_key, services)?,
@@ -376,8 +383,11 @@ impl QueryMatch for FunctionCall {
 
 impl Queryable for FunctionCall {
     type Input = Self;
+
     type Language = JsLanguage;
+
     type Output = Self;
+
     type Services = FunctionCallServices;
 
     fn build_visitor(
@@ -385,7 +395,9 @@ impl Queryable for FunctionCall {
         root: &<Self::Language as Language>::Root,
     ) {
         analyzer.add_visitor(Phases::Syntax, || SemanticModelBuilderVisitor::new(root));
+
         analyzer.add_visitor(Phases::Syntax, EarlyReturnDetectionVisitor::default);
+
         analyzer.add_visitor(Phases::Semantic, FunctionCallVisitor::default);
     }
 
@@ -402,12 +414,16 @@ pub struct CallPath {
 
 impl Rule for UseHookAtTopLevel {
     type Query = FunctionCall;
+
     type State = Suggestion;
+
     type Signals = Option<Self::State>;
+
     type Options = DeprecatedHooksOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let FunctionCall(call) = ctx.query();
+
         let get_hook_name_range = || match call.callee() {
             Ok(callee) => Some(AnyJsExpression::syntax(&callee).text_trimmed_range()),
             Err(_) => None,
@@ -419,18 +435,21 @@ impl Rule for UseHookAtTopLevel {
         }
 
         let model = ctx.semantic_model();
+
         let early_returns = ctx.early_returns_model();
 
         let root = CallPath {
             call: call.clone(),
             path: vec![],
         };
+
         let mut calls = vec![root];
 
         while let Some(CallPath { call, path }) = calls.pop() {
             let range = call.syntax().text_range();
 
             let mut path = path.clone();
+
             path.push(range);
 
             if let Some(enclosing_function) = enclosing_function_if_call_is_at_top_level(&call) {
@@ -542,6 +561,7 @@ impl Rule for UseHookAtTopLevel {
                         "See https://reactjs.org/docs/hooks-rules.html#only-call-hooks-at-the-top-level"
                     },
                 );
+
                 Some(diag)
             }
         }
@@ -581,10 +601,12 @@ impl DeserializationVisitor for DeprecatedHooksOptionsVisitor {
         diagnostics: &mut Vec<DeserializationDiagnostic>,
     ) -> Option<Self::Output> {
         const ALLOWED_KEYS: &[&str] = &["hooks"];
+
         for (key, value) in members.flatten() {
             let Some(key_text) = Text::deserialize(&key, "", diagnostics) else {
                 continue;
             };
+
             match key_text.text() {
                 "hooks" => {
                     diagnostics.push(
@@ -597,6 +619,7 @@ impl DeserializationVisitor for DeprecatedHooksOptionsVisitor {
                         })
                     );
                 }
+
                 text => diagnostics.push(DeserializationDiagnostic::new_unknown_key(
                     text,
                     key.range(),
@@ -604,6 +627,7 @@ impl DeserializationVisitor for DeprecatedHooksOptionsVisitor {
                 )),
             }
         }
+
         Some(Self::Output::default())
     }
 }

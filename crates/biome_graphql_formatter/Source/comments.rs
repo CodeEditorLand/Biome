@@ -29,6 +29,7 @@ impl FormatRule<SourceComment<GraphqlLanguage>> for FormatGraphqlLeadingComment 
 
             // SAFETY: Safe, `is_doc_comment` only returns `true` for multiline comments
             let first_line = lines.next().unwrap();
+
             write!(f, [dynamic_text(first_line.trim_end(), source_offset)])?;
 
             source_offset += first_line.text_len();

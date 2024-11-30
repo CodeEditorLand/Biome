@@ -98,6 +98,7 @@ pub(crate) fn should_inline_jsx_expression(
                 matches!(argument.tag(), Ok(AnyJsxTag::JsxElement(_)))
                     && should_inline_jsx_expression(&argument.into(), comments)
             }
+
             _ => false,
         },
         _ => false,

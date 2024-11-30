@@ -13,6 +13,7 @@ pub struct Reference {
 impl Reference {
     pub(crate) fn find_next(&self) -> Option<Reference> {
         let id = self.data.next_reference(self.id)?;
+
         Some(Reference {
             data: self.data.clone(),
             id,
@@ -21,7 +22,9 @@ impl Reference {
 
     pub(crate) fn find_next_read(&self) -> Option<Reference> {
         let references = &self.data.binding(self.id.binding_id()).references;
+
         let mut index = self.id.index() + 1;
+
         while index < references.len() {
             if references[index].is_read() {
                 return Some(Reference {
@@ -32,12 +35,15 @@ impl Reference {
                 index += 1;
             }
         }
+
         None
     }
 
     pub(crate) fn find_next_write(&self) -> Option<Reference> {
         let references = &self.data.binding(self.id.binding_id()).references;
+
         let mut index = self.id.index() + 1;
+
         while index < references.len() {
             if references[index].is_write() {
                 return Some(Reference {
@@ -48,6 +54,7 @@ impl Reference {
                 index += 1;
             }
         }
+
         None
     }
 
@@ -59,11 +66,13 @@ impl Reference {
     /// Returns the scope of this reference
     pub fn scope(&self) -> Scope {
         let start = self.range_start();
+
         let id = self.data.scope(TextRange::new(
             start,
             // SAFETY: A reference name has at least a length of 1 byte.
             start + TextSize::from(1),
         ));
+
         Scope {
             data: self.data.clone(),
             id,
@@ -86,6 +95,7 @@ impl Reference {
     /// Returns if the declaration of this reference is hoisted or not
     pub fn is_using_hoisted_declaration(&self) -> bool {
         let reference = &self.data.reference(self.id);
+
         match reference.ty {
             SemanticModelReferenceType::Read { hoisted } => hoisted,
             SemanticModelReferenceType::Write { hoisted } => hoisted,
@@ -95,12 +105,14 @@ impl Reference {
     /// Returns if this reference is just reading its binding
     pub fn is_read(&self) -> bool {
         let reference = self.data.reference(self.id);
+
         matches!(reference.ty, SemanticModelReferenceType::Read { .. })
     }
 
     /// Returns if this reference is writing its binding
     pub fn is_write(&self) -> bool {
         let reference = self.data.reference(self.id);
+
         matches!(reference.ty, SemanticModelReferenceType::Write { .. })
     }
 
@@ -144,15 +156,18 @@ impl FunctionCall {
     /// Returns the typed AST node of this reference
     pub fn tree(&self) -> JsCallExpression {
         let node = self.syntax();
+
         let call = node.ancestors().find(|x| {
             !matches!(
                 x.kind(),
                 JsSyntaxKind::JS_REFERENCE_IDENTIFIER | JsSyntaxKind::JS_IDENTIFIER_EXPRESSION
             )
         });
+
         debug_assert!(matches!(&call,
             Some(call) if call.kind() == JsSyntaxKind::JS_CALL_EXPRESSION
         ));
+
         JsCallExpression::unwrap_cast(call.unwrap())
     }
 }

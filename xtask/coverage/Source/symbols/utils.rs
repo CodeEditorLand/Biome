@@ -35,18 +35,22 @@ pub fn parse_separated_list<T>(
     let mut list = vec![];
 
     let mut input = input;
+
     loop {
         let s = trivia(input);
 
         let s = if let Some((s, item)) = item(s) {
             list.push(item);
+
             s
         } else {
             break;
         };
 
         let s = trivia(s);
+
         let s = separator(s);
+
         input = s;
     }
 

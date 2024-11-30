@@ -67,6 +67,8 @@ pub(crate) fn rewrite_events<T: RewriteParseEvents>(
         parser: RewriteParser::new(p, checkpoint.source),
         reparse: rewriter,
     };
+
     process(&mut sink, events, Vec::default());
+
     sink.parser.finish();
 }

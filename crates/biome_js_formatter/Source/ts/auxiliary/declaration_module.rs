@@ -57,6 +57,7 @@ impl FormatNodeRule<TsDeclarationModule> for FormatTsDeclarationModule {
             !f.comments().has_dangling_comments(module.syntax()),
             "Module should never have dangling comments."
         );
+
         Ok(())
     }
 

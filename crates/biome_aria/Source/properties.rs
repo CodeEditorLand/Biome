@@ -427,6 +427,7 @@ pub trait AriaPropertyDefinition: Debug {
         if input_value.is_empty() {
             return false;
         }
+
         match self.property_type() {
             AriaPropertyTypeEnum::String => true,
             AriaPropertyTypeEnum::Id => is_valid_html_id(input_value),
@@ -446,6 +447,7 @@ pub trait AriaPropertyDefinition: Debug {
                         .any(|allowed_token| allowed_token.trim() == input_token)
                 })
             }
+
             AriaPropertyTypeEnum::Tristate => matches!(input_value, "false" | "true" | "mixed"),
         }
     }

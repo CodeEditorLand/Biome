@@ -55,19 +55,25 @@ pub struct UseAriaPropsForRoleState {
 
 impl Rule for UseAriaPropsForRole {
     type Query = Ast<AnyJsxElement>;
+
     type State = UseAriaPropsForRoleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let is_inside_element = node
             .syntax()
             .ancestors()
             .find_map(|ancestor| AnyJsxElement::cast(ancestor).map(|element| element.is_element()))
             .unwrap_or(false);
+
         if is_inside_element {
             let role_attribute = node.find_attribute_by_name("role")?;
+
             let name = role_attribute
                 .initializer()?
                 .value()
@@ -75,17 +81,21 @@ impl Rule for UseAriaPropsForRole {
                 .as_jsx_string()?
                 .inner_string_text()
                 .ok()?;
+
             let role = AriaRole::from_roles(name.text());
+
             let missing_aria_props: Vec<_> = role
                 .into_iter()
                 .flat_map(|role| role.required_attributes().iter())
                 .filter_map(|attribute| {
                     let attribute_name = attribute.as_str();
+
                     node.find_attribute_by_name(attribute_name)
                         .is_none()
                         .then_some(attribute_name)
                 })
                 .collect();
+
             if !missing_aria_props.is_empty() {
                 return Some(UseAriaPropsForRoleState {
                     attribute: Some((role_attribute, name)),
@@ -93,6 +103,7 @@ impl Rule for UseAriaPropsForRole {
                 });
             }
         }
+
         None
     }
 
@@ -100,10 +111,14 @@ impl Rule for UseAriaPropsForRole {
         if state.missing_aria_props.is_empty() {
             return None;
         }
+
         state.attribute.as_ref().map(|(attribute, role_name)| {
             let role_name = role_name.text();
+
             let joined_attributes = &state.missing_aria_props.join(", ");
+
             let description = format!("The element with the {role_name} ARIA role does not have the required ARIA attributes: {joined_attributes}.");
+
             RuleDiagnostic::new(
                 rule_category!(),
                 attribute.range(),

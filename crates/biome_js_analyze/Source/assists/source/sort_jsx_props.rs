@@ -45,14 +45,20 @@ declare_source_rule! {
 
 impl Rule for UseSortedAttributes {
     type Query = Ast<JsxAttributeList>;
+
     type State = PropGroup;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let props = ctx.query().clone();
+
         let mut current_prop_group = PropGroup::default();
+
         let mut prop_groups = Vec::new();
+
         for prop in props.clone() {
             match prop {
                 AnyJsxAttribute::JsxAttribute(attr) => {
@@ -61,11 +67,14 @@ impl Rule for UseSortedAttributes {
                 // spread prop reset sort order
                 AnyJsxAttribute::JsxSpreadAttribute(_) => {
                     prop_groups.push(current_prop_group);
+
                     current_prop_group = PropGroup::default();
                 }
             }
         }
+
         prop_groups.push(current_prop_group);
+
         prop_groups.into_boxed_slice()
     }
 
@@ -73,6 +82,7 @@ impl Rule for UseSortedAttributes {
         if state.is_sorted() {
             return None;
         }
+
         let mut mutation = ctx.root().begin();
 
         for (PropElement { prop }, PropElement { prop: sorted_prop }) in
@@ -100,6 +110,7 @@ impl Ord for PropElement {
         let (Ok(self_name), Ok(other_name)) = (self.prop.name(), other.prop.name()) else {
             return Ordering::Equal;
         };
+
         let (a_name, b_name) = (self_name.text(), other_name.text());
 
         a_name.cmp(&b_name)
@@ -120,13 +131,17 @@ pub struct PropGroup {
 impl PropGroup {
     fn is_sorted(&self) -> bool {
         let mut new_props = self.props.clone();
+
         new_props.sort();
+
         new_props == self.props
     }
 
     fn get_sorted_props(&self) -> Vec<PropElement> {
         let mut new_props = self.props.clone();
+
         new_props.sort();
+
         new_props
     }
 }

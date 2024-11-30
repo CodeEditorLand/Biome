@@ -53,39 +53,51 @@ declare_lint_rule! {
 
 impl Rule for NoApproximativeNumericConstant {
     type Query = Ast<JsNumberLiteralExpression>;
+
     type State = &'static str;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let token = ctx.query().value_token().ok()?;
+
         let num = token.text_trimmed();
+
         let (10, num) = split_into_radix_and_number(num) else {
             return None;
         };
+
         let (decimal, fraction) = num.split_once('.')?;
+
         if fraction.len() < (MIN_FRACTION_DIGITS as usize)
             || !matches!(decimal, "" | "0" | "1" | "2" | "3")
             || fraction.contains(['e', 'E'])
         {
             return None;
         }
+
         let num = num.trim_matches('0');
+
         for (constant, name) in KNOWN_CONSTS {
             let is_constant_approximated = match constant.len().cmp(&num.len()) {
                 Ordering::Less => is_approx_const(num, constant),
                 Ordering::Equal => constant == num,
                 Ordering::Greater => is_approx_const(constant, num),
             };
+
             if is_constant_approximated {
                 return Some(name);
             }
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),
@@ -95,17 +107,21 @@ impl Rule for NoApproximativeNumericConstant {
 
     fn action(ctx: &RuleContext<Self>, constant_name: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let new_node = make::js_static_member_expression(
             make::js_identifier_expression(make::js_reference_identifier(make::ident("Math")))
                 .into(),
             make::token(T![.]),
             make::js_name(make::ident(constant_name)).into(),
         );
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(
             AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::from(node.clone())),
             AnyJsExpression::from(new_node),
         );
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -136,23 +152,32 @@ fn is_approx_const(constant: &str, value: &str) -> bool {
         // The value is a truncated constant
         return true;
     }
+
     let (digits, last_digit) = value.split_at(value.len() - 1);
+
     if constant.starts_with(digits) {
         let Ok(last_digit) = last_digit.parse::<u8>() else {
             return false;
         };
+
         let Ok(extra_constant_digit) = constant[value.len()..value.len() + 1].parse::<u8>() else {
             return false;
         };
+
         let can_be_rounded = extra_constant_digit < 5;
+
         if can_be_rounded {
             return false;
         }
+
         let Ok(constant_digit) = constant[digits.len()..digits.len() + 1].parse::<u8>() else {
             return false;
         };
+
         let rounded_constant_digit = constant_digit + 1;
+
         return last_digit == rounded_constant_digit;
     }
+
     false
 }

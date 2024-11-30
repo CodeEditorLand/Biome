@@ -42,6 +42,7 @@ impl<'source> GritTokenSource<'source> {
         };
 
         source.advance_to_next_non_trivia_token(true);
+
         source
     }
 
@@ -57,10 +58,14 @@ impl<'source> GritTokenSource<'source> {
             Some(next) => next.kind,
             None if self.current.kind != EOF => {
                 let next_token = self.next_non_trivia_token(false);
+
                 let next_kind = next_token.kind;
+
                 self.next = Some(next_token);
+
                 next_kind
             }
+
             None => EOF,
         }
     }
@@ -73,18 +78,23 @@ impl<'source> GritTokenSource<'source> {
 
         loop {
             let kind = self.lexer.next_token(());
+
             let trivia_kind = TriviaPieceKind::try_from(kind);
 
             match trivia_kind {
                 Err(_) => {
                     // Not trivia
                     non_trivia_token.kind = kind;
+
                     non_trivia_token.range = self.lexer.current_range();
+
                     break;
                 }
+
                 Ok(trivia_kind) => {
                     if trivia_kind.is_newline() {
                         trailing = false;
+
                         non_trivia_token.preceding_line_break = true;
                     }
 

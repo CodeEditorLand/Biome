@@ -74,6 +74,7 @@ impl FromIterator<String> for StringSet {
 
 impl IntoIterator for StringSet {
     type Item = String;
+
     type IntoIter = IntoIter<String>;
 
     fn into_iter(self) -> Self::IntoIter {

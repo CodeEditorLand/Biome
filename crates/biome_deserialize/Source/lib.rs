@@ -271,12 +271,14 @@ pub trait DeserializationVisitor: Sized {
             !Self::EXPECTED_TYPE.contains(DeserializableTypes::NULL),
             "This method should be implemented because the expected type is null."
         );
+
         diagnostics.push(DeserializationDiagnostic::new_incorrect_type_with_name(
             DeserializableType::Null,
             Self::EXPECTED_TYPE,
             name,
             range,
         ));
+
         None
     }
 
@@ -295,12 +297,14 @@ pub trait DeserializationVisitor: Sized {
             !Self::EXPECTED_TYPE.contains(DeserializableTypes::BOOL),
             "This method should be implemented because the expected type is bool."
         );
+
         diagnostics.push(DeserializationDiagnostic::new_incorrect_type_with_name(
             DeserializableType::Bool,
             Self::EXPECTED_TYPE,
             name,
             range,
         ));
+
         None
     }
 
@@ -320,12 +324,14 @@ pub trait DeserializationVisitor: Sized {
             !Self::EXPECTED_TYPE.contains(DeserializableTypes::NUMBER),
             "This method should be implemented because the expected type is number."
         );
+
         diagnostics.push(DeserializationDiagnostic::new_incorrect_type_with_name(
             DeserializableType::Number,
             Self::EXPECTED_TYPE,
             name,
             range,
         ));
+
         None
     }
 
@@ -344,12 +350,14 @@ pub trait DeserializationVisitor: Sized {
             !Self::EXPECTED_TYPE.contains(DeserializableTypes::STR),
             "This method should be implemented because the expected type is str."
         );
+
         diagnostics.push(DeserializationDiagnostic::new_incorrect_type_with_name(
             DeserializableType::Str,
             Self::EXPECTED_TYPE,
             name,
             range,
         ));
+
         None
     }
 
@@ -368,12 +376,14 @@ pub trait DeserializationVisitor: Sized {
             !Self::EXPECTED_TYPE.contains(DeserializableTypes::ARRAY),
             "This method should be implemented because the expected type is array."
         );
+
         diagnostics.push(DeserializationDiagnostic::new_incorrect_type_with_name(
             DeserializableType::Array,
             Self::EXPECTED_TYPE,
             name,
             range,
         ));
+
         None
     }
 
@@ -392,12 +402,14 @@ pub trait DeserializationVisitor: Sized {
             !Self::EXPECTED_TYPE.contains(DeserializableTypes::MAP),
             "This method should be implemented because the expected type is map."
         );
+
         diagnostics.push(DeserializationDiagnostic::new_incorrect_type_with_name(
             DeserializableType::Map,
             Self::EXPECTED_TYPE,
             name,
             range,
         ));
+
         None
     }
 }

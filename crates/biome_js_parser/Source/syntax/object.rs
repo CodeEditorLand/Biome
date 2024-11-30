@@ -42,6 +42,7 @@ struct ObjectMembersList;
 
 impl ParseSeparatedList for ObjectMembersList {
     type Kind = JsSyntaxKind;
+
     type Parser<'source> = JsParser<'source>;
 
     const LIST_KIND: Self::Kind = JS_OBJECT_MEMBER_LIST;
@@ -77,12 +78,15 @@ pub(super) fn parse_object_expression(p: &mut JsParser) -> ParsedSyntax {
     if !p.at(T!['{']) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump(T!['{']);
 
     ObjectMembersList.parse_list(p);
 
     p.expect(T!['}']);
+
     Present(m.complete(p, JS_OBJECT_EXPRESSION))
 }
 
@@ -107,6 +111,7 @@ fn parse_object_member(p: &mut JsParser) -> ParsedSyntax {
         //    return "This is a method and not a getter";
         //   }
         // }
+
         T![get] if !p.has_nth_preceding_line_break(1) && is_nth_at_type_member_name(p, 1) => {
             parse_getter_object_member(p)
         }
@@ -134,6 +139,7 @@ fn parse_object_member(p: &mut JsParser) -> ParsedSyntax {
         //     return 5;
         //  }
         // }
+
         T![set] if !p.has_nth_preceding_line_break(1) && is_nth_at_type_member_name(p, 1) => {
             parse_setter_object_member(p)
         }
@@ -143,21 +149,27 @@ fn parse_object_member(p: &mut JsParser) -> ParsedSyntax {
         //   async foo() {},
         //   async *foo() {}
         // }
+
         T![async] if is_parser_at_async_method_member(p) => parse_method_object_member(p),
 
         // test js object_expr_spread_prop
         // let a = {...foo}
+
         T![...] => {
             let m = p.start();
+
             p.bump_any();
+
             parse_assignment_expression_or_higher(p, ExpressionContext::default())
                 .or_add_diagnostic(p, js_parse_error::expected_expression_assignment);
+
             Present(m.complete(p, JS_SPREAD))
         }
 
         T![*] => {
             // test js object_expr_generator_method
             // let b = { *foo() {} }
+
             parse_method_object_member(p)
         }
 
@@ -183,8 +195,11 @@ fn parse_object_member(p: &mut JsParser) -> ParsedSyntax {
                     // ({ arrow = () => {} })
                     p.error(p.err_builder("Did you mean to use a `:`? An `=` can only follow a property name when the containing object literal is part of a destructuring pattern.",
 						p.cur_range()));
+
                     p.bump(T![=]);
+
                     parse_assignment_expression_or_higher(p, ExpressionContext::default()).ok();
+
                     return Present(m.complete(p, JS_BOGUS_MEMBER));
                 }
 
@@ -192,6 +207,7 @@ fn parse_object_member(p: &mut JsParser) -> ParsedSyntax {
             }
 
             let checkpoint = p.checkpoint();
+
             let member_name = parse_object_member_name(p)
                 .or_add_diagnostic(p, js_parse_error::expected_object_member);
 
@@ -205,8 +221,10 @@ fn parse_object_member(p: &mut JsParser) -> ParsedSyntax {
 
             // test_err js object_expr_method
             // let b = { foo) }
+
             if p.at(T!['(']) || p.at(T![<]) {
                 parse_method_object_member_body(p, SignatureFlags::empty());
+
                 Present(m.complete(p, JS_METHOD_OBJECT_MEMBER))
             } else if member_name.is_some() {
                 // test js object_prop_name
@@ -220,8 +238,10 @@ fn parse_object_member(p: &mut JsParser) -> ParsedSyntax {
 
                 // test js object_prop_in_rhs
                 // for ({ a: "x" in {} };;) {}
+
                 parse_assignment_expression_or_higher(p, ExpressionContext::default())
                     .or_add_diagnostic(p, js_parse_error::expected_expression_assignment);
+
                 Present(m.complete(p, JS_PROPERTY_OBJECT_MEMBER))
             } else {
                 // test_err js object_expr_error_prop_name
@@ -237,13 +257,16 @@ fn parse_object_member(p: &mut JsParser) -> ParsedSyntax {
                 if p.eat(T![:]) {
                     parse_assignment_expression_or_higher(p, ExpressionContext::default())
                         .or_add_diagnostic(p, js_parse_error::expected_object_member);
+
                     Present(m.complete(p, JS_PROPERTY_OBJECT_MEMBER))
                 } else {
                     // It turns out that this isn't a valid member after all. Make sure to throw
                     // away everything that has been parsed so far so that the caller can
                     // do its error recovery
                     p.rewind(checkpoint);
+
                     m.abandon(p);
+
                     Absent
                 }
             }
@@ -266,11 +289,13 @@ fn parse_getter_object_member(p: &mut JsParser) -> ParsedSyntax {
     // test_err ts ts_object_getter_type_parameters
     // ({ get a<A>(): A {} });
     // ({ get a<>(): A {} });
+
     if let Present(type_parameters) = parse_ts_type_parameters(p, TypeContext::default()) {
         p.error(ts_accessor_type_parameters_error(p, &type_parameters))
     }
 
     p.expect(T!['(']);
+
     p.expect(T![')']);
 
     TypeScript
@@ -292,6 +317,7 @@ fn parse_setter_object_member(p: &mut JsParser) -> ParsedSyntax {
     if !p.at(T![set]) {
         return Absent;
     }
+
     let m = p.start();
 
     p.expect(T![set]);
@@ -301,6 +327,7 @@ fn parse_setter_object_member(p: &mut JsParser) -> ParsedSyntax {
     // test_err ts ts_object_setter_type_parameters
     // ({ set a<A>(value: A) {} });
     // ({ set a<>(value: A) {} });
+
     if let Present(type_parameters) = parse_ts_type_parameters(p, TypeContext::default()) {
         p.error(ts_accessor_type_parameters_error(p, &type_parameters))
     }
@@ -321,6 +348,7 @@ fn parse_setter_object_member(p: &mut JsParser) -> ParsedSyntax {
             .add_diagnostic_if_present(p, decorators_not_allowed)
             .map(|mut decorator_list| {
                 decorator_list.change_to_bogus(p);
+
                 decorator_list
             })
             .into();
@@ -343,6 +371,7 @@ fn parse_setter_object_member(p: &mut JsParser) -> ParsedSyntax {
 
     // test_err ts ts_object_setter_return_type
     // ({ set a(value: string): void {} });
+
     if let Present(return_type_annotation) =
         parse_ts_return_type_annotation(p, TypeContext::default())
     {
@@ -394,14 +423,17 @@ pub(crate) fn parse_computed_member_name(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.expect(T!['[']);
 
     // test js computed_member_name_in
     // for ({["x" in {}]: 3} ;;) {}
+
     parse_expression(p, ExpressionContext::default())
         .or_add_diagnostic(p, js_parse_error::expected_expression);
 
     p.expect(T![']']);
+
     Present(m.complete(p, JS_COMPUTED_MEMBER_NAME))
 }
 
@@ -414,33 +446,42 @@ pub(super) fn is_at_literal_member_name(p: &mut JsParser, offset: usize) -> bool
 
 pub(super) fn parse_literal_member_name(p: &mut JsParser) -> ParsedSyntax {
     let m = p.start();
+
     match p.cur() {
         JS_STRING_LITERAL | JS_NUMBER_LITERAL | T![ident] => {
             p.bump_any();
         }
+
         t if t.is_keyword() => {
             p.bump_remap(T![ident]);
         }
+
         t if t.is_metavariable() => {
             m.abandon(p);
+
             return parse_metavariable(p);
         }
+
         _ => {
             m.abandon(p);
+
             return Absent;
         }
     }
+
     Present(m.complete(p, JS_LITERAL_MEMBER_NAME))
 }
 
 /// Parses a method object member
 fn parse_method_object_member(p: &mut JsParser) -> ParsedSyntax {
     let is_async = is_parser_at_async_method_member(p);
+
     if !is_async && !p.at(T![*]) && !is_at_object_member_name(p) {
         return Absent;
     }
 
     let m = p.start();
+
     let mut flags = SignatureFlags::empty();
 
     // test js async_method
@@ -448,8 +489,10 @@ fn parse_method_object_member(p: &mut JsParser) -> ParsedSyntax {
     //  async foo() {}
     //  async *foo() {}
     // }
+
     if is_async {
         p.eat(T![async]);
+
         flags |= SignatureFlags::ASYNC;
     }
 

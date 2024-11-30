@@ -27,8 +27,10 @@ impl FormatNodeRule<JsxTagExpression> for FormatJsxTagExpression {
                     ]
                 ]
             }
+
             WrapState::WrapOnBreak => {
                 let should_expand = should_expand(node);
+
                 let needs_parentheses = node.needs_parentheses();
 
                 let format_inner = format_with(|f| {

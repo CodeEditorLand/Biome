@@ -275,10 +275,13 @@ impl JsxAttributeList {
     ) -> [Option<JsxAttribute>; N] {
         // assert there are no duplicates
         debug_assert!(HashSet::<_>::from_iter(names_to_lookup).len() == N);
+
         debug_assert!(N <= 16);
 
         const INIT: Option<JsxAttribute> = None;
+
         let mut results = [INIT; N];
+
         let mut missing = N;
 
         for att in self {
@@ -289,13 +292,16 @@ impl JsxAttributeList {
                     .and_then(|x| x.as_jsx_name()?.value_token().ok())
                 {
                     let name = name.text_trimmed();
+
                     for i in 0..N {
                         if results[i].is_none() && names_to_lookup[i] == name {
                             results[i] = Some(attribute);
+
                             if missing == 1 {
                                 return results;
                             } else {
                                 missing -= 1;
+
                                 break;
                             }
                         }
@@ -316,23 +322,28 @@ impl JsxAttributeList {
                     }
                 }
             }
+
             None
         })
     }
 
     pub fn has_trailing_spread_prop(&self, current_attribute: &JsxAttribute) -> bool {
         let mut current_attribute_found = false;
+
         for attribute in self {
             if let Some(attribute) = attribute.as_jsx_attribute() {
                 if attribute == current_attribute {
                     current_attribute_found = true;
+
                     continue;
                 }
             }
+
             if current_attribute_found && attribute.as_jsx_spread_attribute().is_some() {
                 return true;
             }
         }
+
         false
     }
 }
@@ -398,6 +409,7 @@ impl AnyJsxElement {
             AnyJsxElement::JsxSelfClosingElement(element) => {
                 element.has_trailing_spread_prop(current_attribute)
             }
+
             AnyJsxElement::JsxOpeningElement(element) => {
                 element.has_trailing_spread_prop(current_attribute)
             }
@@ -409,6 +421,7 @@ impl AnyJsxElement {
             AnyJsxElement::JsxSelfClosingElement(element) => {
                 element.find_attribute_by_name(name_to_lookup)
             }
+
             AnyJsxElement::JsxOpeningElement(element) => {
                 element.find_attribute_by_name(name_to_lookup)
             }
@@ -468,6 +481,7 @@ impl AnyJsxElement {
     pub fn get_attribute_inner_string_text(&self, name_to_lookup: &str) -> Option<TokenText> {
         if let Some(attr) = self.find_attribute_by_name(name_to_lookup) {
             let initializer = attr.initializer()?.value().ok()?;
+
             initializer.as_jsx_string()?.inner_string_text().ok()
         } else {
             None
@@ -500,6 +514,7 @@ impl biome_aria::Element for AnyJsxElement {
             let AnyJsxAttribute::JsxAttribute(attribute) = attribute else {
                 return None;
             };
+
             Some(attribute)
         })
     }
@@ -571,6 +586,7 @@ impl AnyJsxAttributeValue {
             AnyJsxAttributeValue::JsxExpressionAttributeValue(expression) => {
                 expression.expression().ok()?.as_static_value()
             }
+
             AnyJsxAttributeValue::JsxString(string) => {
                 Some(StaticValue::String(string.value_token().ok()?))
             }
@@ -584,16 +600,21 @@ impl AnyJsxChild {
         Some(match self {
             AnyJsxChild::JsxText(text) => {
                 let value_token = text.value_token().ok()?;
+
                 value_token.text_trimmed().trim() != ""
             }
+
             AnyJsxChild::JsxExpressionChild(expression) => {
                 let expression = expression.expression()?;
+
                 expression
                     .as_static_value()
                     .map_or(true, |value| !value.is_falsy())
             }
+
             AnyJsxChild::JsxElement(element) => {
                 let opening_element = element.opening_element().ok()?;
+
                 let jsx_element = AnyJsxElement::cast(opening_element.into_syntax())?;
 
                 // We don't check if a component (e.g. <Text aria-hidden />) is using the `aria-hidden` property,
@@ -601,11 +622,14 @@ impl AnyJsxChild {
                 jsx_element.is_custom_component()
                     || !jsx_element.has_truthy_attribute("aria-hidden")
             }
+
             AnyJsxChild::JsxSelfClosingElement(element) => {
                 let jsx_element = AnyJsxElement::unwrap_cast(element.syntax().clone());
+
                 jsx_element.is_custom_component()
                     || !jsx_element.has_truthy_attribute("aria-hidden")
             }
+
             AnyJsxChild::JsxFragment(fragment) => fragment
                 .children()
                 .into_iter()

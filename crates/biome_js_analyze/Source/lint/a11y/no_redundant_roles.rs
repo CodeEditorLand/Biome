@@ -57,15 +57,20 @@ pub struct RuleState {
 
 impl Rule for NoRedundantRoles {
     type Query = Aria<AnyJsxElement>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
 
         let role_attribute = node.find_attribute_by_name("role")?;
+
         let role_attribute_value = role_attribute.initializer()?.value().ok()?;
+
         let explicit_role = AriaRole::from_roles(role_attribute_value.as_static_value()?.text())?;
 
         if ctx.aria_roles().get_implicit_role(node)? == explicit_role {
@@ -74,14 +79,19 @@ impl Rule for NoRedundantRoles {
                 redundant_attribute_value: role_attribute_value,
             });
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let binding = state.redundant_attribute_value.as_static_value()?;
+
         let role_attribute = binding.text();
+
         let element_name = ctx.query().name().ok()?.as_jsx_name()?.value_token().ok()?;
+
         let element_name = element_name.text_trimmed();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             state.redundant_attribute_value.range(),
@@ -93,7 +103,9 @@ impl Rule for NoRedundantRoles {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         mutation.remove_node(state.redundant_attribute.clone());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

@@ -119,6 +119,7 @@ fn parse_module_item(p: &mut JsParser) -> ParsedSyntax {
         T![import] if !token_set![T![.], T!['(']].contains(p.nth(1)) => {
             parse_import_or_import_equals_declaration(p)
         }
+
         T![export] => parse_export(p, Absent),
         T![@] => {
             let decorator_list = parse_decorators(p);
@@ -159,21 +160,26 @@ fn parse_module_item(p: &mut JsParser) -> ParsedSyntax {
                     // test ts decorator_export_default_top_level_5
                     //  @before
                     //  export default @after abstract class Foo { }
+
                     parse_export(p, decorator_list)
                 }
+
                 T![class] => {
                     // test js decorator_class_declaration_top_level
                     // @decorator
                     // class Foo { }
                     // @first.field @second @(() => decorator)()
                     // class Bar {}
+
                     parse_class_declaration(p, decorator_list, StatementContext::StatementList)
                 }
+
                 T![abstract] if is_at_ts_abstract_class_declaration(p, LineBreak::DoCheck) => {
                     // test ts decorator_abstract_class_declaration_top_level
                     // @decorator abstract class A {}
                     // @first.field @second @(() => decorator)()
                     // abstract class Bar {}
+
                     TypeScript.parse_exclusive_syntax(
                         p,
                         |p| {
@@ -188,16 +194,19 @@ fn parse_module_item(p: &mut JsParser) -> ParsedSyntax {
                         },
                     )
                 }
+
                 _ => {
                     // test_err js decorator_class_declaration_top_level
                     // @decorator
                     // let a;
                     // @decorator1 @decorator2
                     // function Foo() { }
+
                     decorator_list
                         .add_diagnostic_if_present(p, decorators_not_allowed)
                         .map(|mut marker| {
                             marker.change_kind(p, JS_BOGUS_STATEMENT);
+
                             marker
                         });
 
@@ -205,6 +214,7 @@ fn parse_module_item(p: &mut JsParser) -> ParsedSyntax {
                 }
             }
         }
+
         _ => parse_statement(p, StatementContext::StatementList),
     }
 }
@@ -215,14 +225,18 @@ pub(crate) fn parse_import_or_import_equals_declaration(p: &mut JsParser) -> Par
     }
 
     let start = p.cur_range().start();
+
     let import = p.start();
+
     p.bump(T![import]);
 
     debug_assert!(p.state().name_map.is_empty());
+
     p.state_mut().duplicate_binding_parent = Some("import");
 
     let statement = if is_at_identifier_binding(p) && (p.nth_at(1, T![=]) || p.nth_at(2, T![=])) {
         let import_equals = parse_ts_import_equals_declaration_rest(p, import, start);
+
         TypeScript.exclusive_syntax(p, import_equals, |p, decl| {
             ts_only_syntax_error(p, "'import =' declarations", decl.range(p))
         })
@@ -238,6 +252,7 @@ pub(crate) fn parse_import_or_import_equals_declaration(p: &mut JsParser) -> Par
         // import { as x } from "c";
         // import 4 from "c";
         // import y from 4;
+
         parse_import_clause(p).or_add_diagnostic(p, |p, range| {
             expected_any(
                 &["default import", "namespace import", "named import"],
@@ -249,10 +264,12 @@ pub(crate) fn parse_import_or_import_equals_declaration(p: &mut JsParser) -> Par
         let end = p.cur_range().start();
 
         semi(p, TextRange::new(start, end));
+
         Present(import.complete(p, JS_IMPORT))
     };
 
     p.state_mut().duplicate_binding_parent = None;
+
     p.state_mut().name_map.clear();
 
     statement
@@ -266,6 +283,7 @@ fn parse_import_clause(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let pos = p.source().position();
+
     let m = p.start();
 
     // test ts ts_import_clause_types
@@ -274,6 +292,7 @@ fn parse_import_clause(p: &mut JsParser) -> ParsedSyntax {
     // import type * as foo2 from "./mod";
     // import type { foo3 } from "mod";
     // import type from from "./mod";
+
     let is_typed = 'is_typed: {
         if !p.at(T![type]) {
             break 'is_typed false;
@@ -299,15 +318,21 @@ fn parse_import_clause(p: &mut JsParser) -> ParsedSyntax {
         T!['{'] => parse_import_named_clause_rest(p, m),
         _ if is_at_identifier_binding(p) => {
             let default_specifier = p.start();
+
             parse_identifier_binding(p).unwrap();
+
             default_specifier.complete(p, JS_DEFAULT_IMPORT_SPECIFIER);
+
             parse_import_default_clauses_rest(p, m, is_typed)
         }
+
         _ => {
             // SAFETY: Safe because the parser only eats the "type" keyword if it's followed by
             // either a *, {, or binding
             debug_assert_eq!(pos, p.source().position());
+
             m.abandon(p);
+
             return Absent;
         }
     };
@@ -335,27 +360,37 @@ fn parse_import_default_clauses_rest(
     let syntax_type = match p.cur() {
         T![,] | T!['{'] | T![*] => {
             p.expect(T![,]);
+
             match p.cur() {
                 T![*] => parse_namespace_import_specifier(p),
                 _ => parse_named_import_specifier_list(p),
             }
             .or_add_diagnostic(p, expected_namespace_or_named_import);
+
             if is_typed {
                 let start = m.start();
+
                 let end = p.last_end().unwrap_or_else(|| p.cur_range().start());
 
                 // test_err ts ts_typed_default_import_with_named
                 // import type A, { B, C } from './a';
+
                 p.error(p.err_builder("A type-only import can specify a default import or named bindings, but not both.",
                     start..end,))
             }
+
             JS_IMPORT_COMBINED_CLAUSE
         }
+
         _ => JS_IMPORT_DEFAULT_CLAUSE,
     };
+
     p.expect(T![from]);
+
     parse_module_source(p).or_add_diagnostic(p, expected_module_source);
+
     parse_import_assertion(p).ok();
+
     m.complete(p, syntax_type)
 }
 
@@ -365,7 +400,9 @@ fn parse_import_default_clauses_rest(
 fn parse_import_bare_clause(p: &mut JsParser) -> ParsedSyntax {
     parse_module_source(p).map(|module_source| {
         let m = module_source.precede(p);
+
         parse_import_assertion(p).ok();
+
         m.complete(p, JS_IMPORT_BARE_CLAUSE)
     })
 }
@@ -374,8 +411,11 @@ fn parse_import_bare_clause(p: &mut JsParser) -> ParsedSyntax {
 // import * as foo from "bla";
 fn parse_import_namespace_clause_rest(p: &mut JsParser, m: Marker) -> CompletedMarker {
     parse_namespace_import_specifier(p).or_add_diagnostic(p, expected_namespace_import);
+
     p.expect(T![from]);
+
     parse_module_source(p).or_add_diagnostic(p, expected_module_source);
+
     parse_import_assertion(p).ok();
 
     m.complete(p, JS_IMPORT_NAMESPACE_CLAUSE)
@@ -387,8 +427,11 @@ fn parse_import_namespace_clause_rest(p: &mut JsParser, m: Marker) -> CompletedM
 // import { f as x, default as w, "a-b-c" as y } from "b";
 fn parse_import_named_clause_rest(p: &mut JsParser, m: Marker) -> CompletedMarker {
     parse_named_import_specifier_list(p).or_add_diagnostic(p, expected_named_import);
+
     p.expect(T![from]);
+
     parse_module_source(p).or_add_diagnostic(p, expected_module_source);
+
     parse_import_assertion(p).ok();
 
     m.complete(p, JS_IMPORT_NAMED_CLAUSE)
@@ -400,8 +443,11 @@ fn parse_namespace_import_specifier(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump_any();
+
     p.expect(T![as]);
+
     parse_binding(p).or_add_diagnostic(p, expected_binding);
 
     Present(m.complete(p, JS_NAMESPACE_IMPORT_SPECIFIER))
@@ -413,8 +459,11 @@ fn parse_named_import_specifier_list(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['{']);
+
     NamedImportSpecifierList.parse_list(p);
+
     p.expect(T!['}']);
 
     Present(m.complete(p, JS_NAMED_IMPORT_SPECIFIERS))
@@ -424,7 +473,9 @@ struct NamedImportSpecifierList;
 
 impl ParseSeparatedList for NamedImportSpecifierList {
     type Kind = JsSyntaxKind;
+
     type Parser<'source> = JsParser<'source>;
+
     const LIST_KIND: Self::Kind = JS_NAMED_IMPORT_SPECIFIER_LIST;
 
     fn parse_element(&mut self, p: &mut JsParser) -> ParsedSyntax {
@@ -492,6 +543,7 @@ fn parse_any_named_import_specifier(p: &mut JsParser) -> ParsedSyntax {
             if metadata.is_local_name_missing {
                 // test_err js import_as_identifier_err
                 // import { as c } from "test";
+
                 p.error(expected_literal_export_name(
                     p,
                     TextRange::new(p.cur_range().start(), p.cur_range().start()),
@@ -499,16 +551,21 @@ fn parse_any_named_import_specifier(p: &mut JsParser) -> ParsedSyntax {
             } else {
                 // test js import_as_as_as_identifier
                 // import { as as as } from "test";
+
                 parse_literal_export_name(p).or_add_diagnostic(p, expected_literal_export_name);
             }
 
             p.expect(T![as]);
+
             parse_binding(p).or_add_diagnostic(p, expected_binding);
+
             m.complete(p, JS_NAMED_IMPORT_SPECIFIER)
         } else {
             // test js import_as_identifier
             // import { as } from "test";
+
             parse_binding(p).or_add_diagnostic(p, expected_identifier);
+
             m.complete(p, JS_SHORTHAND_NAMED_IMPORT_SPECIFIER)
         };
 
@@ -563,26 +620,32 @@ fn parse_import_assertion(p: &mut JsParser) -> ParsedSyntax {
     if p.has_preceding_line_break() {
         return Absent;
     }
+
     if !p.at(T![assert]) && !p.at(T![with]) {
         return Absent;
     }
 
     let m = p.start();
+
     match p.cur() {
         T![assert] => {
             p.expect(T![assert]);
         }
+
         T![with] => {
             p.expect(T![with]);
         }
+
         _ => {
             m.abandon(p);
+
             return Absent;
         }
     };
 
     // bump assert or with
     p.expect(T!['{']);
+
     ImportAssertionList::default().parse_list(p);
 
     p.expect(T!['}']);
@@ -597,6 +660,7 @@ pub(crate) struct ImportAssertionList {
 
 impl ParseSeparatedList for ImportAssertionList {
     type Kind = JsSyntaxKind;
+
     type Parser<'source> = JsParser<'source>;
 
     const LIST_KIND: Self::Kind = JS_IMPORT_ASSERTION_ENTRY_LIST;
@@ -635,6 +699,7 @@ fn parse_import_assertion_entry(
     seen_assertion_keys: &mut FxHashMap<String, TextRange>,
 ) -> ParsedSyntax {
     let m = p.start();
+
     let key_range = p.cur_range();
 
     let key = match p.cur() {
@@ -649,9 +714,11 @@ fn parse_import_assertion_entry(
         JS_STRING_LITERAL | T![ident] => {
             p.bump_any();
         }
+
         t if t.is_keyword() => {
             p.bump_remap(T![ident]);
         }
+
         T![:] => {
             p.error(expected_any(
                 &["identifier", "string literal"],
@@ -659,8 +726,10 @@ fn parse_import_assertion_entry(
                 p,
             ));
         }
+
         _ => {
             m.abandon(p);
+
             return Absent;
         }
     };
@@ -672,6 +741,7 @@ fn parse_import_assertion_entry(
             p.error(duplicate_assertion_keys_error(
                 p, &key, *first_use, key_range,
             ));
+
             valid = false;
         } else {
             seen_assertion_keys.insert(key, key_range);
@@ -679,6 +749,7 @@ fn parse_import_assertion_entry(
     };
 
     p.expect(T![:]);
+
     p.expect(JS_STRING_LITERAL);
 
     let mut entry = m.complete(p, JS_IMPORT_ASSERTION_ENTRY);
@@ -711,6 +782,7 @@ pub(super) fn parse_export(p: &mut JsParser, decorators_list: ParsedSyntax) -> P
     }
 
     let stmt_start = p.cur_range().start();
+
     let decorators_list = decorators_list.or_else(|| empty_decorator_list(p));
 
     let m = decorators_list.precede(p);
@@ -770,11 +842,14 @@ pub(super) fn parse_export(p: &mut JsParser, decorators_list: ParsedSyntax) -> P
 
 fn parse_export_named_or_named_from_clause(p: &mut JsParser) -> ParsedSyntax {
     let checkpoint = p.checkpoint();
+
     match parse_export_named_clause(p) {
         Present(_) if p.at(T![from]) => {
             p.rewind(checkpoint);
+
             parse_export_named_from_clause(p)
         }
+
         t => t,
     }
 }
@@ -805,11 +880,15 @@ fn parse_export_named_clause(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let start = p.cur_range().start();
+
     let m = p.start();
 
     let has_type = p.eat(T![type]);
+
     p.bump(T!['{']);
+
     ExportNamedSpecifierList.parse_list(p);
+
     p.expect(T!['}']);
 
     semi(p, TextRange::new(start, p.cur_range().start()));
@@ -829,6 +908,7 @@ struct ExportNamedSpecifierList;
 
 impl ParseSeparatedList for ExportNamedSpecifierList {
     type Kind = JsSyntaxKind;
+
     type Parser<'source> = JsParser<'source>;
 
     const LIST_KIND: Self::Kind = JS_EXPORT_NAMED_SPECIFIER_LIST;
@@ -879,6 +959,7 @@ fn parse_any_export_named_specifier(p: &mut JsParser) -> ParsedSyntax {
     // export { type }
     // export { type type }
     // export { type as somethingElse }
+
     if metadata.is_type {
         p.expect(T![type]);
     }
@@ -925,6 +1006,7 @@ fn parse_any_export_named_specifier(p: &mut JsParser) -> ParsedSyntax {
     //
     let specifier = if metadata.has_alias {
         p.expect(T![as]);
+
         parse_literal_export_name(p).or_add_diagnostic(p, expected_literal_export_name);
 
         m.complete(p, JS_EXPORT_NAMED_SPECIFIER)
@@ -1005,6 +1087,7 @@ where
         } else {
             // `{ type x }` or `{ type "x" }` or `{ type x as }`
             metadata.is_type = is_nth_name(p, 1);
+
             metadata.has_alias = p.nth_at(2, T![as]);
         }
     } else if p.at(T![as]) && is_nth_alias(p, 1) {
@@ -1047,15 +1130,21 @@ fn parse_export_from_clause(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let start = p.cur_range().start();
+
     let m = p.start();
 
     p.eat(T![type]);
+
     p.expect(T![*]);
 
     parse_export_as_clause(p).ok();
+
     p.expect(T![from]);
+
     parse_module_source(p).or_add_diagnostic(p, expected_module_source);
+
     parse_import_assertion(p).ok();
+
     semi(p, TextRange::new(start, p.cur_range().end()));
 
     Present(m.complete(p, JS_EXPORT_FROM_CLAUSE))
@@ -1090,17 +1179,21 @@ fn parse_export_named_from_clause(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let start = p.cur_range().start();
+
     let m = p.start();
 
     let has_type = p.eat(T![type]);
 
     p.bump(T!['{']);
+
     ExportNamedFromSpecifierList.parse_list(p);
+
     p.expect(T!['}']);
 
     p.expect(T![from]);
 
     parse_module_source(p).or_add_diagnostic(p, expected_module_source);
+
     parse_import_assertion(p).ok();
 
     semi(p, TextRange::new(start, p.cur_range().start()));
@@ -1120,6 +1213,7 @@ struct ExportNamedFromSpecifierList;
 
 impl ParseSeparatedList for ExportNamedFromSpecifierList {
     type Kind = JsSyntaxKind;
+
     type Parser<'source> = JsParser<'source>;
 
     const LIST_KIND: Self::Kind = JS_EXPORT_NAMED_FROM_SPECIFIER_LIST;
@@ -1162,6 +1256,7 @@ fn parse_export_named_from_specifier(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     let metadata = specifier_metadata(
         p,
         is_nth_at_reference_identifier,
@@ -1202,7 +1297,9 @@ fn parse_export_default_clause(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let start = p.cur_range().start();
+
     let m = p.start();
+
     p.bump(T![default]);
 
     let (clause, default_item_kind) = match p.cur() {
@@ -1213,18 +1310,22 @@ fn parse_export_default_clause(p: &mut JsParser) -> ParsedSyntax {
                 // test ts decorator_class_export_default_declaration_clause
                 // @decorator
                 // export default class Foo { }
+
                 T![class] => parse_class_export_default_declaration_clause(p, m, decorator_list),
                 T![abstract] if p.nth_at(1, T![class]) => {
                     // test ts decorator_abstract_class_export_default_declaration_clause
                     // @decorator
                     // export default abstract class Foo { }
+
                     parse_class_export_default_declaration_clause(p, m, decorator_list)
                 }
+
                 _ => {
                     decorator_list
                         .add_diagnostic_if_present(p, decorators_not_allowed)
                         .map(|mut marker| {
                             marker.change_kind(p, JS_BOGUS_STATEMENT);
+
                             marker
                         });
 
@@ -1232,27 +1333,32 @@ fn parse_export_default_clause(p: &mut JsParser) -> ParsedSyntax {
                         // test_err ts decorator_function_export_default_declaration_clause
                         // @decorator
                         // export default function foo() { }
+
                         T![function] => parse_function_export_default_declaration_clause(p, m),
                         // test_err ts decorator_async_function_export_default_declaration_clause
                         // @decorator
                         // export default async function foo() { }
+
                         T![async] if p.nth_at(1, T![function]) => {
                             parse_function_export_default_declaration_clause(p, m)
                         }
                         // test_err ts decorator_interface_export_default_declaration_clause
                         // @decorator
                         // export default interface A { }
+
                         T![interface] if !p.has_nth_preceding_line_break(1) => {
                             parse_ts_interface_export_default_declaration_clause(p, m)
                         }
                         // test_err ts decorator_enum_export_default_declaration_clause
                         // @decorator
                         // export default enum A { X, Y, Z }
+
                         T![enum] => parse_ts_enum_export_default_declaration_clause(p, m),
                         _ => (
                             // test_err ts decorator_export_default_expression_clause
                             // @decorator
                             // export default a;
+
                             parse_export_default_expression_clause(p, m, start),
                             ExportDefaultItemKind::Expression,
                         ),
@@ -1260,17 +1366,21 @@ fn parse_export_default_clause(p: &mut JsParser) -> ParsedSyntax {
                 }
             }
         }
+
         T![class] => parse_class_export_default_declaration_clause(p, m, Absent),
         T![abstract] if p.nth_at(1, T![class]) => {
             parse_class_export_default_declaration_clause(p, m, Absent)
         }
+
         T![function] => parse_function_export_default_declaration_clause(p, m),
         T![async] if p.nth_at(1, T![function]) => {
             parse_function_export_default_declaration_clause(p, m)
         }
+
         T![interface] if !p.has_nth_preceding_line_break(1) => {
             parse_ts_interface_export_default_declaration_clause(p, m)
         }
+
         T![enum] => parse_ts_enum_export_default_declaration_clause(p, m),
         _ => (
             parse_export_default_expression_clause(p, m, start),
@@ -1303,6 +1413,7 @@ fn parse_export_default_clause(p: &mut JsParser) -> ParsedSyntax {
                     );
 
                 p.error(err);
+
                 clause.change_kind(p, JsSyntaxKind::JS_BOGUS);
             }
         }
@@ -1312,6 +1423,7 @@ fn parse_export_default_clause(p: &mut JsParser) -> ParsedSyntax {
         // export default interface A { a: string; }
         // export default interface B { a: string }
         // export default function test() {}
+
         else if !default_item_kind.is_interface() {
             p.state_mut().default_item = Some(ExportDefaultItem {
                 range: clause.range(p).into(),
@@ -1348,6 +1460,7 @@ fn parse_function_export_default_declaration_clause(
         Some(TS_DECLARE_FUNCTION_DECLARATION | TS_DECLARE_FUNCTION_EXPORT_DEFAULT_DECLARATION) => {
             ExportDefaultItemKind::FunctionOverload
         }
+
         _ => ExportDefaultItemKind::FunctionDeclaration,
     };
 
@@ -1365,6 +1478,7 @@ fn parse_ts_interface_export_default_declaration_clause(
 ) -> (ParsedSyntax, ExportDefaultItemKind) {
     // test ts ts_export_default_interface
     // export default interface A { }
+
     let declaration =
         TypeScript.parse_exclusive_syntax(p, parse_ts_interface_declaration, |p, interface| {
             ts_only_syntax_error(p, "interface", interface.range(p))
@@ -1384,6 +1498,7 @@ fn parse_ts_enum_export_default_declaration_clause(
 ) -> (ParsedSyntax, ExportDefaultItemKind) {
     // test_err ts ts_export_default_enum
     // export default enum A { X, Y, Z }
+
     let declaration = parse_ts_enum_declaration(p).map(|enum_declaration| {
         p.error(
             p.err_builder(
@@ -1419,6 +1534,7 @@ fn parse_export_default_expression_clause(
         // export default
         // export default @decorator
         m.abandon(p);
+
         return Absent;
     }
 
@@ -1426,6 +1542,7 @@ fn parse_export_default_expression_clause(
         .or_add_diagnostic(p, expected_expression);
 
     semi(p, TextRange::new(start, p.cur_range().start()));
+
     Present(m.complete(p, JS_EXPORT_DEFAULT_EXPRESSION_CLAUSE))
 }
 
@@ -1435,6 +1552,7 @@ fn parse_export_as_clause(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.expect(T![as]);
 
     parse_literal_export_name(p).or_add_diagnostic(p, expected_literal_export_name);
@@ -1451,10 +1569,15 @@ fn parse_ts_export_namespace_clause(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     let start_pos = p.cur_range().start();
+
     p.expect(T![as]);
+
     p.expect(T![namespace]);
+
     parse_name(p).or_add_diagnostic(p, expected_identifier);
+
     semi(p, TextRange::new(start_pos, p.cur_range().end()));
 
     Present(m.complete(p, TS_EXPORT_AS_NAMESPACE_CLAUSE))
@@ -1476,11 +1599,16 @@ fn parse_ts_export_assignment_clause(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     let start_pos = p.cur_range().start();
+
     p.bump(T![=]);
+
     parse_assignment_expression_or_higher(p, ExpressionContext::default())
         .or_add_diagnostic(p, expected_expression);
+
     semi(p, TextRange::new(start_pos, p.cur_range().end()));
+
     Present(m.complete(p, TS_EXPORT_ASSIGNMENT_CLAUSE))
 }
 
@@ -1497,11 +1625,14 @@ fn parse_ts_export_declare_clause(p: &mut JsParser, stmt_start: TextSize) -> Par
     }
 
     let m = p.start();
+
     p.expect(T![declare]);
+
     p.with_state(EnterAmbientContext, |p| {
         // test_err ts ts_export_declare
         // export declare @decorator class D {}
         // export declare @decorator abstract class D {}
+
         parse_declaration_clause(p, stmt_start).or_add_diagnostic(p, expected_declaration)
     });
 
@@ -1520,14 +1651,20 @@ fn parse_literal_export_name(p: &mut JsParser) -> ParsedSyntax {
     match p.cur() {
         JS_STRING_LITERAL | T![ident] => {
             let m = p.start();
+
             p.bump_any();
+
             Present(m.complete(p, JS_LITERAL_EXPORT_NAME))
         }
+
         t if t.is_keyword() => {
             let m = p.start();
+
             p.bump_remap(T![ident]);
+
             Present(m.complete(p, JS_LITERAL_EXPORT_NAME))
         }
+
         t if t.is_metavariable() => parse_metavariable(p),
         _ => Absent,
     }
@@ -1536,7 +1673,9 @@ fn parse_literal_export_name(p: &mut JsParser) -> ParsedSyntax {
 pub(crate) fn parse_module_source(p: &mut JsParser) -> ParsedSyntax {
     if p.at(JS_STRING_LITERAL) {
         let m = p.start();
+
         p.bump_any();
+
         Present(m.complete(p, JS_MODULE_SOURCE))
     } else if is_at_metavariable(p) {
         parse_metavariable(p)

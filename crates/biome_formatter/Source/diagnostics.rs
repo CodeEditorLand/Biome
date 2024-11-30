@@ -181,9 +181,11 @@ impl std::fmt::Display for InvalidDocumentError {
                     "Expected end tag of kind {start_kind:?} but found {end_kind:?}."
                 )
             }
+
             InvalidDocumentError::StartTagMissing { kind } => {
                 std::write!(f, "End tag of kind {kind:?} without matching start tag.")
             }
+
             InvalidDocumentError::ExpectedStart {
                 expected_start,
                 actual,
@@ -192,12 +194,15 @@ impl std::fmt::Display for InvalidDocumentError {
                     ActualStart::EndOfDocument => {
                         std::write!(f, "Expected start tag of kind {expected_start:?} but at the end of document.")
                     }
+
                     ActualStart::Start(start) => {
                         std::write!(f, "Expected start tag of kind {expected_start:?} but found start tag of kind {start:?}.")
                     }
+
                     ActualStart::End(end) => {
                         std::write!(f, "Expected start tag of kind {expected_start:?} but found end tag of kind {end:?}.")
                     }
+
                     ActualStart::Content => {
                         std::write!(f, "Expected start tag of kind {expected_start:?} but found non-tag element.")
                     }
@@ -238,6 +243,7 @@ impl Diagnostic for PrintError {
         match self {
             PrintError::InvalidDocument(inner) => {
                 let inner = format!("{inner}");
+
                 fmt.write_markup(markup! {
                     "Invalid document: "{{inner}}
                 })
@@ -249,8 +255,11 @@ impl Diagnostic for PrintError {
 #[cfg(test)]
 mod test {
     use crate::diagnostics::{ActualStart, InvalidDocumentError};
+
     use crate::prelude::{FormatError, TagKind};
+
     use biome_diagnostics::{print_diagnostic_to_string, DiagnosticExt, Error};
+
     use biome_js_syntax::TextRange;
 
     fn snap_diagnostic(test_name: &str, diagnostic: Error) {

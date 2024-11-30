@@ -99,13 +99,18 @@ declare_lint_rule! {
 
 impl Rule for NoBannedTypes {
     type Query = Semantic<TsBannedType>;
+
     type State = State;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let query = ctx.query();
+
         let model = ctx.model();
+
         match query {
             TsBannedType::TsObjectType(ts_object_type) => {
                 // Allow empty object type for type constraint and intersections.
@@ -126,12 +131,16 @@ impl Rule for NoBannedTypes {
                     });
                 }
             }
+
             TsBannedType::TsReferenceType(ts_reference_type) => {
                 let ts_any_name = ts_reference_type.name().ok()?;
+
                 let reference_identifier = ts_any_name.as_js_reference_identifier()?;
+
                 if model.binding(reference_identifier).is_none() {
                     // if the dientifier is global
                     let identifier_token = reference_identifier.value_token().ok()?;
+
                     if let Some(banned_type) = BannedType::from_str(identifier_token.text_trimmed())
                     {
                         return Some(State {
@@ -161,6 +170,7 @@ impl Rule for NoBannedTypes {
             markup! {"Don't use '"{banned_type.to_string()}"' as a type."}.to_owned(),
         )
         .note(markup! { {banned_type.message()} }.to_owned());
+
         Some(diagnostic)
     }
 
@@ -173,8 +183,11 @@ impl Rule for NoBannedTypes {
         }: &Self::State,
     ) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let suggested_type = banned_type.as_js_syntax_kind()?.to_string()?;
+
         mutation.replace_node(reference_identifier.clone()?, banned_type.fix_with()?);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -209,6 +222,7 @@ pub enum BannedType {
     String,
     Symbol,
     /// {}
+
     EmptyObject,
 }
 
@@ -263,6 +277,7 @@ impl BannedType {
             Self::BigInt | Self::Boolean | Self::Number | Self::String | Self::Symbol => {
                 make::js_reference_identifier(make::token(Self::as_js_syntax_kind(self)?))
             }
+
             _ => return None,
         })
     }
@@ -280,6 +295,7 @@ impl Display for BannedType {
             Self::Symbol => "Symbol",
             Self::EmptyObject => "{}",
         };
+
         write!(f, "{representation}")
     }
 }

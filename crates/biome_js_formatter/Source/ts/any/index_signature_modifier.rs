@@ -6,6 +6,7 @@ use biome_js_syntax::AnyTsIndexSignatureModifier;
 pub(crate) struct FormatAnyTsIndexSignatureModifier;
 impl FormatRule<AnyTsIndexSignatureModifier> for FormatAnyTsIndexSignatureModifier {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyTsIndexSignatureModifier, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyTsIndexSignatureModifier::JsStaticModifier(node) => node.format().fmt(f),

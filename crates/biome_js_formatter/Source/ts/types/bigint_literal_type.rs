@@ -15,10 +15,13 @@ impl FormatNodeRule<TsBigintLiteralType> for FormatTsBigintLiteralType {
             minus_token,
             literal_token,
         } = node.as_fields();
+
         write![f, [minus_token.format()]]?;
+
         let literal_token = literal_token?;
 
         let original = literal_token.text_trimmed();
+
         match original.to_ascii_lowercase_cow() {
             Cow::Borrowed(_) => write![f, [literal_token.format()]],
             Cow::Owned(lowercase) => {

@@ -24,6 +24,7 @@ impl FormatNodeRule<CssAttributeMatcherValue> for FormatCssAttributeMatcherValue
             AnyCssAttributeMatcherValue::CssString(string) => {
                 write!(f, [string.format()])
             }
+
             AnyCssAttributeMatcherValue::CssIdentifier(ident) => {
                 if f.comments().is_suppressed(ident.syntax()) {
                     return write!(f, [ident.format()]);

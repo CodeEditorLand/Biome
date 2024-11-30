@@ -14,6 +14,7 @@ pub struct PathInterner {
 impl PathInterner {
     pub fn new() -> (Self, Receiver<PathBuf>) {
         let (send, recv) = unbounded();
+
         let interner = Self {
             storage: RwLock::new(FxHashSet::default()),
             handler: send,
@@ -26,9 +27,11 @@ impl PathInterner {
     /// Returns `true` if the path was not previously inserted.
     pub fn intern_path(&self, path: PathBuf) -> bool {
         let result = self.storage.write().unwrap().insert(path.clone());
+
         if result {
             self.handler.send(path).ok();
         }
+
         result
     }
 }

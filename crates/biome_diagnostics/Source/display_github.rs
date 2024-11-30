@@ -11,6 +11,7 @@ pub struct PrintGitHubDiagnostic<'fmt, D: ?Sized>(pub &'fmt D);
 impl<D: AsDiagnostic + ?Sized> fmt::Display for PrintGitHubDiagnostic<'_, D> {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> io::Result<()> {
         let diagnostic = self.0.as_diagnostic();
+
         let location = diagnostic.location();
 
         // Docs:
@@ -30,7 +31,9 @@ impl<D: AsDiagnostic + ?Sized> fmt::Display for PrintGitHubDiagnostic<'_, D> {
         };
 
         let source = SourceFile::new(source_code);
+
         let start = source.location(span.start())?;
+
         let end = source.location(span.end())?;
 
         let command = match diagnostic.severity() {
@@ -41,8 +44,11 @@ impl<D: AsDiagnostic + ?Sized> fmt::Display for PrintGitHubDiagnostic<'_, D> {
 
         let message = {
             let mut message = MarkupBuf::default();
+
             let mut fmt = fmt::Formatter::new(&mut message);
+
             fmt.write_markup(markup!({ PrintDiagnosticMessage(diagnostic) }))?;
+
             markup_to_string(&message)
         };
 
@@ -77,7 +83,9 @@ struct PrintDiagnosticMessage<'fmt, D: ?Sized>(&'fmt D);
 impl<D: Diagnostic + ?Sized> fmt::Display for PrintDiagnosticMessage<'_, D> {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> io::Result<()> {
         let Self(diagnostic) = *self;
+
         diagnostic.message(fmt)?;
+
         Ok(())
     }
 }
@@ -89,6 +97,7 @@ fn escape_data<S: AsRef<str>>(value: S) -> String {
     // - https://github.com/actions/runner/blob/a4c57f27477077e57545af79851551ff7f5632bd/src/Runner.Common/ActionCommand.cs#L18-L22
     // - https://github.com/actions/toolkit/blob/fe3e7ce9a7f995d29d1fcfd226a32bca407f9dc8/packages/core/src/command.ts#L80-L94
     let mut result = String::with_capacity(value.len());
+
     for c in value.chars() {
         match c {
             '\r' => result.push_str("%0D"),
@@ -97,6 +106,7 @@ fn escape_data<S: AsRef<str>>(value: S) -> String {
             _ => result.push(c),
         }
     }
+
     result
 }
 
@@ -107,6 +117,7 @@ fn escape_property<S: AsRef<str>>(value: S) -> String {
     // - https://github.com/actions/runner/blob/a4c57f27477077e57545af79851551ff7f5632bd/src/Runner.Common/ActionCommand.cs#L25-L32
     // - https://github.com/actions/toolkit/blob/fe3e7ce9a7f995d29d1fcfd226a32bca407f9dc8/packages/core/src/command.ts#L80-L94
     let mut result = String::with_capacity(value.len());
+
     for c in value.chars() {
         match c {
             '\r' => result.push_str("%0D"),
@@ -117,13 +128,18 @@ fn escape_property<S: AsRef<str>>(value: S) -> String {
             _ => result.push(c),
         }
     }
+
     result
 }
 
 fn markup_to_string(markup: &MarkupBuf) -> Option<String> {
     let mut buffer = Vec::new();
+
     let mut write = fmt::Termcolor(termcolor::NoColor::new(&mut buffer));
+
     let mut fmt = fmt::Formatter::new(&mut write);
+
     fmt.write_markup(markup! { {markup} }).ok()?;
+
     String::from_utf8(buffer).ok()
 }

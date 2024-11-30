@@ -94,16 +94,24 @@ declare_lint_rule! {
 
 impl Rule for NoGlobalObjectCalls {
     type Query = Semantic<QueryNode>;
+
     type State = (NonCallableGlobals, TextRange);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let callee = node.callee().ok()?.omit_parentheses();
+
         let (reference, name) = global_identifier(&callee)?;
+
         let non_callable = NonCallableGlobals::from_str(name.text()).ok()?;
+
         model
             .binding(&reference)
             .is_none()
@@ -149,6 +157,7 @@ pub enum NonCallableGlobals {
 
 impl FromStr for NonCallableGlobals {
     type Err = String;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "Atomics" => Ok(NonCallableGlobals::Atomics),
@@ -170,6 +179,7 @@ impl Display for NonCallableGlobals {
             NonCallableGlobals::Reflect => "Reflect",
             NonCallableGlobals::Intl => "Intl",
         };
+
         write!(f, "{repr}")
     }
 }

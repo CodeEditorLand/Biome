@@ -36,9 +36,11 @@ impl YamlFileSource {
             .file_name()
             .and_then(OsStr::to_str)
             .ok_or_else(|| FileSourceError::MissingFileName(path.into()))?;
+
         if Self::is_well_known_yaml_file(file_name) {
             return Ok(Self::yaml());
         }
+
         Err(FileSourceError::UnknownFileName)
     }
 

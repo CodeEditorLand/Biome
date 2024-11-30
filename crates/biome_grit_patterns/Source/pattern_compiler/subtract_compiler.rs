@@ -11,6 +11,7 @@ impl SubtractCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Subtract<GritQueryContext>, CompileError> {
         let left = PatternCompiler::from_node(&node.left()?, context)?;
+
         let right = PatternCompiler::from_node(&node.right()?, context)?;
 
         Ok(Subtract::new(left, right))

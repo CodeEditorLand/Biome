@@ -14,7 +14,9 @@ impl AccumulateCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Accumulate<GritQueryContext>, CompileError> {
         let left = PatternCompiler::from_node(&node.left()?, context)?;
+
         let right = PatternCompiler::from_node_with_rhs(&node.right()?, context, true)?;
+
         let dynamic_right = match right.clone() {
             Pattern::Dynamic(pattern) => Some(pattern),
             Pattern::CodeSnippet(GritCodeSnippet {
@@ -37,7 +39,9 @@ impl PrAccumulateCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Accumulate<GritQueryContext>, CompileError> {
         let left = Pattern::Variable(VariableCompiler::from_node(&node.left()?, context));
+
         let right = PatternCompiler::from_node_with_rhs(&node.right()?, context, true)?;
+
         let dynamic_right = match right.clone() {
             Pattern::Dynamic(pattern) => Some(pattern),
             Pattern::CodeSnippet(GritCodeSnippet {

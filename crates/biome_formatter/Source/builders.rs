@@ -326,6 +326,7 @@ impl<L: Language, Context> Format<Context> for SyntaxTokenCowSlice<'_, L> {
         match &self.text {
             Cow::Borrowed(text) => {
                 let range = TextRange::at(self.start, text.text_len());
+
                 debug_assert_eq!(
                     *text,
                     &self.token.text()[range - self.token.text_range().start()],
@@ -333,6 +334,7 @@ impl<L: Language, Context> Format<Context> for SyntaxTokenCowSlice<'_, L> {
                 );
 
                 let relative_range = range - self.token.text_range().start();
+
                 let slice = self.token.token_text().slice(relative_range);
 
                 f.write_element(FormatElement::LocatedTokenText {
@@ -340,6 +342,7 @@ impl<L: Language, Context> Format<Context> for SyntaxTokenCowSlice<'_, L> {
                     source_position: self.start,
                 })
             }
+
             Cow::Owned(text) => f.write_element(FormatElement::DynamicText {
                 text: text.to_string().into_boxed_str(),
                 source_position: self.start,
@@ -360,6 +363,7 @@ pub fn located_token_text<L: Language>(
     range: TextRange,
 ) -> LocatedTokenText {
     let relative_range = range - token.text_range().start();
+
     let slice = token.token_text().slice(relative_range);
 
     debug_assert_no_newlines(&slice);
@@ -434,7 +438,9 @@ pub struct LineSuffix<'a, Context> {
 impl<Context> Format<Context> for LineSuffix<'_, Context> {
     fn fmt(&self, f: &mut Formatter<Context>) -> FormatResult<()> {
         f.write_element(FormatElement::Tag(StartLineSuffix))?;
+
         Arguments::from(&self.content).fmt(f)?;
+
         f.write_element(FormatElement::Tag(EndLineSuffix))
     }
 }
@@ -566,7 +572,9 @@ pub struct FormatLabelled<'a, Context> {
 impl<Context> Format<Context> for FormatLabelled<'_, Context> {
     fn fmt(&self, f: &mut Formatter<Context>) -> FormatResult<()> {
         f.write_element(FormatElement::Tag(StartLabelled(self.label_id)))?;
+
         Arguments::from(&self.content).fmt(f)?;
+
         f.write_element(FormatElement::Tag(EndLabelled))
     }
 }
@@ -792,7 +800,9 @@ pub struct Indent<'a, Context> {
 impl<Context> Format<Context> for Indent<'_, Context> {
     fn fmt(&self, f: &mut Formatter<Context>) -> FormatResult<()> {
         f.write_element(FormatElement::Tag(StartIndent))?;
+
         Arguments::from(&self.content).fmt(f)?;
+
         f.write_element(FormatElement::Tag(EndIndent))
     }
 }
@@ -952,7 +962,9 @@ pub struct Dedent<'a, Context> {
 impl<Context> Format<Context> for Dedent<'_, Context> {
     fn fmt(&self, f: &mut Formatter<Context>) -> FormatResult<()> {
         f.write_element(FormatElement::Tag(StartDedent(self.mode)))?;
+
         Arguments::from(&self.content).fmt(f)?;
+
         f.write_element(FormatElement::Tag(EndDedent(self.mode)))
     }
 }
@@ -1138,7 +1150,9 @@ pub struct Align<'a, Context> {
 impl<Context> Format<Context> for Align<'_, Context> {
     fn fmt(&self, f: &mut Formatter<Context>) -> FormatResult<()> {
         f.write_element(FormatElement::Tag(StartAlign(tag::Align(self.count))))?;
+
         Arguments::from(&self.content).fmt(f)?;
+
         f.write_element(FormatElement::Tag(EndAlign))
     }
 }
@@ -1573,17 +1587,21 @@ impl<Context> Format<Context> for BlockIndent<'_, Context> {
             IndentMode::SoftLineOrSpace | IndentMode::SoftSpace => {
                 write!(f, [soft_line_break_or_space()])?
             }
+
             IndentMode::HardSpace => write!(f, [hard_space(), soft_line_break()])?,
         }
 
         let is_empty = {
             let mut recording = f.start_recording();
+
             recording.write_fmt(Arguments::from(&self.content))?;
+
             recording.stop().is_empty()
         };
 
         if is_empty {
             f.restore_snapshot(snapshot);
+
             return Ok(());
         }
 
@@ -1773,6 +1791,7 @@ pub struct Group<'a, Context> {
 impl<Context> Group<'_, Context> {
     pub fn with_group_id(mut self, group_id: Option<GroupId>) -> Self {
         self.group_id = group_id;
+
         self
     }
 
@@ -1784,6 +1803,7 @@ impl<Context> Group<'_, Context> {
     /// See the documentation of the [`best_fitting`] macro for an example.
     pub fn should_expand(mut self, should_expand: bool) -> Self {
         self.should_expand = should_expand;
+
         self
     }
 }
@@ -2093,6 +2113,7 @@ impl<Context> IfGroupBreaks<'_, Context> {
     /// ```
     pub fn with_group_id(mut self, group_id: Option<GroupId>) -> Self {
         self.group_id = group_id;
+
         self
     }
 }
@@ -2102,7 +2123,9 @@ impl<Context> Format<Context> for IfGroupBreaks<'_, Context> {
         f.write_element(FormatElement::Tag(StartConditionalContent(
             Condition::new(self.mode).with_group_id(self.group_id),
         )))?;
+
         Arguments::from(&self.content).fmt(f)?;
+
         f.write_element(FormatElement::Tag(EndConditionalContent))
     }
 }
@@ -2224,7 +2247,9 @@ pub struct IndentIfGroupBreaks<'a, Context> {
 impl<Context> Format<Context> for IndentIfGroupBreaks<'_, Context> {
     fn fmt(&self, f: &mut Formatter<Context>) -> FormatResult<()> {
         f.write_element(FormatElement::Tag(StartIndentIfGroupBreaks(self.group_id)))?;
+
         Arguments::from(&self.content).fmt(f)?;
+
         f.write_element(FormatElement::Tag(EndIndentIfGroupBreaks(self.group_id)))
     }
 }
@@ -2451,6 +2476,7 @@ where
                     with.fmt(self.fmt)?;
                 }
             }
+
             self.has_elements = true;
 
             entry.fmt(self.fmt)
@@ -2614,12 +2640,16 @@ impl<'a, 'buf, Context> FillBuilder<'a, 'buf, Context> {
                 self.empty = false;
             } else {
                 self.fmt.write_element(FormatElement::Tag(StartEntry))?;
+
                 separator.fmt(self.fmt)?;
+
                 self.fmt.write_element(FormatElement::Tag(EndEntry))?;
             }
 
             self.fmt.write_element(FormatElement::Tag(StartEntry))?;
+
             entry.fmt(self.fmt)?;
+
             self.fmt.write_element(FormatElement::Tag(EndEntry))
         });
 
@@ -2662,13 +2692,16 @@ impl<'a, Context> BestFitting<'a, Context> {
 impl<Context> Format<Context> for BestFitting<'_, Context> {
     fn fmt(&self, f: &mut Formatter<Context>) -> FormatResult<()> {
         let mut buffer = VecBuffer::new(f.state_mut());
+
         let variants = self.variants.items();
 
         let mut formatted_variants = Vec::with_capacity(variants.len());
 
         for variant in variants {
             buffer.write_element(FormatElement::Tag(StartEntry))?;
+
             buffer.write_fmt(Arguments::from(variant))?;
+
             buffer.write_element(FormatElement::Tag(EndEntry))?;
 
             formatted_variants.push(buffer.take_vec().into_boxed_slice());

@@ -90,16 +90,22 @@ impl SyntaxNode {
 
     pub fn text_trimmed_range(&self) -> TextRange {
         let range = self.text_range();
+
         let mut start = range.start();
+
         let mut end = range.end();
 
         // Remove all trivia from the start of the node
         let mut token = self.first_token();
+
         while let Some(t) = token.take() {
             let (leading_len, trailing_len, total_len) = t.green().leading_trailing_total_len();
+
             let token_len: u32 = (total_len - leading_len - trailing_len).into();
+
             if token_len == 0 {
                 start += total_len;
+
                 token = t.next_token();
             } else {
                 start += leading_len;
@@ -108,11 +114,15 @@ impl SyntaxNode {
 
         // Remove all trivia from the end of the node
         let mut token = self.last_token();
+
         while let Some(t) = token.take() {
             let (leading_len, trailing_len, total_len) = t.green().leading_trailing_total_len();
+
             let token_len: u32 = (total_len - leading_len - trailing_len).into();
+
             if token_len == 0 {
                 end -= total_len;
+
                 token = t.prev_token();
             } else {
                 end -= trailing_len;
@@ -225,6 +235,7 @@ impl SyntaxNode {
             )
         })
     }
+
     pub fn last_child_or_token(&self) -> Option<SyntaxElement> {
         self.green().children().next_back().map(|child| {
             SyntaxElement::new(
@@ -239,6 +250,7 @@ impl SyntaxNode {
     pub fn next_sibling(&self) -> Option<SyntaxNode> {
         self.data().next_sibling()
     }
+
     pub fn prev_sibling(&self) -> Option<SyntaxNode> {
         self.data().prev_sibling()
     }
@@ -246,6 +258,7 @@ impl SyntaxNode {
     pub fn next_sibling_or_token(&self) -> Option<SyntaxElement> {
         self.data().next_sibling_or_token()
     }
+
     pub fn prev_sibling_or_token(&self) -> Option<SyntaxElement> {
         self.data().prev_sibling_or_token()
     }
@@ -278,6 +291,7 @@ impl SyntaxNode {
         direction: Direction,
     ) -> impl Iterator<Item = SyntaxElement> {
         let me: SyntaxElement = self.clone().into();
+
         iter::successors(Some(me), move |el| match direction {
             Direction::Next => el.next_sibling_or_token(),
             Direction::Prev => el.prev_sibling_or_token(),
@@ -323,10 +337,12 @@ impl SyntaxNode {
         // then switch to token search. We should also replace explicit
         // recursion with a loop.
         let range = self.text_range();
+
         assert!(
             range.start() <= offset && offset <= range.end(),
             "Bad offset: range {range:?} offset {offset:?}"
         );
+
         if range.is_empty() {
             return TokenAtOffset::None;
         }
@@ -337,7 +353,9 @@ impl SyntaxNode {
         });
 
         let left = children.next().unwrap();
+
         let right = children.next();
+
         assert!(children.next().is_none());
 
         if let Some(right) = right {
@@ -345,6 +363,7 @@ impl SyntaxNode {
                 (TokenAtOffset::Single(left), TokenAtOffset::Single(right)) => {
                     TokenAtOffset::Between(left, right)
                 }
+
                 _ => unreachable!(),
             }
         } else {
@@ -354,6 +373,7 @@ impl SyntaxNode {
 
     pub fn covering_element(&self, range: TextRange) -> SyntaxElement {
         let mut res: SyntaxElement = self.clone().into();
+
         loop {
             assert!(
                 res.text_range().contains_range(range),
@@ -361,6 +381,7 @@ impl SyntaxNode {
                 res.text_range(),
                 range,
             );
+
             res = match &res {
                 NodeOrToken::Token(_) => return res,
                 NodeOrToken::Node(node) => match node.child_or_token_at_range(range) {
@@ -373,6 +394,7 @@ impl SyntaxNode {
 
     pub fn child_or_token_at_range(&self, range: TextRange) -> Option<SyntaxElement> {
         let rel_range = range - self.offset();
+
         self.green()
             .slot_at_range(rel_range)
             .and_then(|(index, rel_offset, slot)| {
@@ -475,6 +497,7 @@ impl SyntaxNodeChildren {
 
 impl Iterator for SyntaxNodeChildren {
     type Item = SyntaxNode;
+
     fn next(&mut self) -> Option<SyntaxNode> {
         self.next.take().inspect(|next| {
             self.next = next.next_sibling();
@@ -499,6 +522,7 @@ impl SyntaxElementChildren {
 
 impl Iterator for SyntaxElementChildren {
     type Item = SyntaxElement;
+
     fn next(&mut self) -> Option<SyntaxElement> {
         self.next.take().inspect(|next| {
             self.next = next.next_sibling_or_token();
@@ -517,6 +541,7 @@ pub(crate) struct Preorder {
 impl Preorder {
     fn new(start: SyntaxNode) -> Preorder {
         let next = Some(WalkEvent::Enter(start.clone()));
+
         Preorder {
             start,
             next,
@@ -543,9 +568,12 @@ impl Iterator for Preorder {
     fn next(&mut self) -> Option<WalkEvent<SyntaxNode>> {
         if self.skip_subtree {
             self.do_skip();
+
             self.skip_subtree = false;
         }
+
         let next = self.next.take();
+
         self.next = next.as_ref().and_then(|next| {
             Some(match next {
                 WalkEvent::Enter(node) => match node.first_child() {
@@ -556,6 +584,7 @@ impl Iterator for Preorder {
                     if node == &self.start {
                         return None;
                     }
+
                     match node.next_sibling() {
                         Some(sibling) => WalkEvent::Enter(sibling),
                         None => WalkEvent::Leave(node.parent()?),
@@ -563,6 +592,7 @@ impl Iterator for Preorder {
                 }
             })
         });
+
         next
     }
 }
@@ -579,6 +609,7 @@ pub(crate) struct PreorderWithTokens {
 impl PreorderWithTokens {
     fn new(start: SyntaxNode, direction: Direction) -> PreorderWithTokens {
         let next = Some(WalkEvent::Enter(start.clone().into()));
+
         PreorderWithTokens {
             start: start.into(),
             next,
@@ -606,9 +637,12 @@ impl Iterator for PreorderWithTokens {
     fn next(&mut self) -> Option<WalkEvent<SyntaxElement>> {
         if self.skip_subtree {
             self.do_skip();
+
             self.skip_subtree = false;
         }
+
         let next = self.next.take();
+
         self.next = next.as_ref().and_then(|next| {
             Some(match next {
                 WalkEvent::Enter(el) => match el {
@@ -617,11 +651,13 @@ impl Iterator for PreorderWithTokens {
                             Direction::Next => node.first_child_or_token(),
                             Direction::Prev => node.last_child_or_token(),
                         };
+
                         match next {
                             Some(child) => WalkEvent::Enter(child),
                             None => WalkEvent::Leave(node.clone().into()),
                         }
                     }
+
                     NodeOrToken::Token(token) => WalkEvent::Leave(token.clone().into()),
                 },
                 WalkEvent::Leave(el) if el == &self.start => return None,
@@ -638,6 +674,7 @@ impl Iterator for PreorderWithTokens {
                 }
             })
         });
+
         next
     }
 }
@@ -739,8 +776,11 @@ impl Iterator for SyntaxSlots {
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         let slot = self.slice().first()?;
+
         let mapped = self.map_slot(slot, self.pos);
+
         self.pos += 1;
+
         Some(mapped)
     }
 
@@ -769,6 +809,7 @@ impl Iterator for SyntaxSlots {
     #[inline]
     fn nth(&mut self, n: usize) -> Option<Self::Item> {
         self.pos += n as u32;
+
         self.next()
     }
 }
@@ -786,14 +827,18 @@ impl DoubleEndedIterator for SyntaxSlots {
     #[inline]
     fn next_back(&mut self) -> Option<Self::Item> {
         let slot = self.slice().last()?;
+
         let mapped = self.map_slot(slot, self.back_pos - 1);
+
         self.back_pos -= 1;
+
         Some(mapped)
     }
 
     #[inline]
     fn nth_back(&mut self, n: usize) -> Option<Self::Item> {
         self.back_pos -= n as u32;
+
         self.next_back()
     }
 }
@@ -807,6 +852,7 @@ pub(crate) struct SlotsPreorder {
 impl SlotsPreorder {
     fn new(start: SyntaxNode) -> Self {
         let next = Some(WalkEvent::Enter(SyntaxSlot::Node(start.clone())));
+
         SlotsPreorder { start, next }
     }
 }
@@ -816,12 +862,14 @@ impl Iterator for SlotsPreorder {
 
     fn next(&mut self) -> Option<WalkEvent<SyntaxSlot>> {
         let next = self.next.take();
+
         self.next = next.as_ref().and_then(|next| {
             Some(match next {
                 WalkEvent::Enter(slot) => match slot {
                     SyntaxSlot::Empty { .. } | SyntaxSlot::Token(_) => {
                         WalkEvent::Leave(slot.clone())
                     }
+
                     SyntaxSlot::Node(node) => match node.slots().next() {
                         None => WalkEvent::Leave(SyntaxSlot::Node(node.clone())),
                         Some(first_slot) => WalkEvent::Enter(first_slot),
@@ -841,6 +889,7 @@ impl Iterator for SlotsPreorder {
                     };
 
                     let next_slot = parent.slots().nth(slot_index + 1);
+
                     match next_slot {
                         Some(slot) => WalkEvent::Enter(slot),
                         None => WalkEvent::Leave(SyntaxSlot::Node(parent)),
@@ -848,6 +897,7 @@ impl Iterator for SlotsPreorder {
                 }
             })
         });
+
         next
     }
 }
@@ -909,13 +959,17 @@ mod tests {
     #[test]
     fn slots_iter() {
         let mut builder = RawSyntaxTreeBuilder::new();
+
         builder.start_node(RawLanguageKind::EXPRESSION_LIST);
 
         for number in [1, 2, 3, 4] {
             builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
             builder.token(RawLanguageKind::NUMBER_TOKEN, &number.to_string());
+
             builder.finish_node();
         }
+
         builder.finish_node();
 
         let list = builder.finish();

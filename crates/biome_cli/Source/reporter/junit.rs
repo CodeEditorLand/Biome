@@ -15,7 +15,9 @@ pub(crate) struct JunitReporter {
 impl Reporter for JunitReporter {
     fn write(self, visitor: &mut dyn ReporterVisitor) -> io::Result<()> {
         visitor.report_summary(&self.execution, self.summary)?;
+
         visitor.report_diagnostics(&self.execution, self.diagnostics_payload)?;
+
         Ok(())
     }
 }
@@ -35,6 +37,7 @@ pub(crate) struct JunitReporterVisitor<'a>(pub(crate) Report, pub(crate) &'a mut
 impl<'a> JunitReporterVisitor<'a> {
     pub(crate) fn new(console: &'a mut dyn Console) -> Self {
         let report = Report::new("Biome");
+
         Self(report, console)
     }
 }
@@ -46,6 +49,7 @@ impl<'a> ReporterVisitor for JunitReporterVisitor<'a> {
         summary: TraversalSummary,
     ) -> io::Result<()> {
         self.0.time = Some(summary.duration);
+
         self.0.errors = summary.errors as usize;
 
         Ok(())
@@ -66,7 +70,9 @@ impl<'a> ReporterVisitor for JunitReporterVisitor<'a> {
 
         for diagnostic in diagnostics {
             let mut status = TestCaseStatus::non_success(NonSuccessKind::Failure);
+
             let message = format!("{}", JunitDiagnostic { diagnostic });
+
             status.set_message(message.clone());
 
             let location = diagnostic.location();
@@ -75,6 +81,7 @@ impl<'a> ReporterVisitor for JunitReporterVisitor<'a> {
                 (location.span, location.source_code, location.resource)
             {
                 let source = SourceFile::new(source_code);
+
                 let start = source.location(span.start())?;
 
                 status.set_description(format!(
@@ -83,6 +90,7 @@ impl<'a> ReporterVisitor for JunitReporterVisitor<'a> {
                     col = start.column_number.to_zero_indexed(),
                     body = message
                 ));
+
                 let mut case = TestCase::new(
                     format!(
                         "org.biome.{}",
@@ -97,16 +105,21 @@ impl<'a> ReporterVisitor for JunitReporterVisitor<'a> {
 
                 if let Resource::File(path) = resource {
                     let mut test_suite = TestSuite::new(path);
+
                     case.extra
                         .insert("line".into(), start.line_number.get().to_string().into());
+
                     case.extra.insert(
                         "column".into(),
                         start.column_number.get().to_string().into(),
                     );
+
                     test_suite
                         .extra
                         .insert("package".into(), "org.biome".into());
+
                     test_suite.add_test_case(case);
+
                     self.0.add_test_suite(test_suite);
                 }
             }

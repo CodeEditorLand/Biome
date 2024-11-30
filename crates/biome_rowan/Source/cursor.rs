@@ -134,6 +134,7 @@ impl WeakGreenElement {
             WeakGreenElement::Node { ptr } => {
                 GreenElement::Node(unsafe { ptr.as_ref().to_owned() })
             }
+
             WeakGreenElement::Token { ptr } => {
                 GreenElement::Token(unsafe { ptr.as_ref().to_owned() })
             }
@@ -160,6 +161,7 @@ impl NodeData {
             NodeKind::Root { green } => WeakGreenElement::new(green.as_deref()),
             NodeKind::Child { green, .. } => green.clone(),
         };
+
         let ptr = match weak {
             WeakGreenElement::Node { ptr } => ptr.cast(),
             WeakGreenElement::Token { ptr } => ptr.cast(),
@@ -173,6 +175,7 @@ impl NodeData {
             self.parent()?.green(),
             GreenElementRef::Node { .. }
         ));
+
         match &self.kind {
             NodeKind::Child { parent, .. } => Some(SyntaxNode {
                 ptr: parent.clone(),
@@ -207,6 +210,7 @@ impl NodeData {
                     false,
                     "A token should never be a parent of a token or node."
                 );
+
                 None
             }
         }
@@ -224,7 +228,9 @@ impl NodeData {
     #[inline]
     fn text_range(&self) -> TextRange {
         let offset = self.offset();
+
         let len = self.green().text_len();
+
         TextRange::at(offset, len)
     }
 
@@ -235,20 +241,27 @@ impl NodeData {
 
     fn next_sibling(&self) -> Option<SyntaxNode> {
         let siblings = self.green_siblings()?;
+
         siblings.following().find_map(|child| {
             child.element().into_node().and_then(|green| {
                 let parent = self.parent_node()?;
+
                 let offset = parent.offset() + child.rel_offset();
+
                 Some(SyntaxNode::new_child(green, parent, child.slot(), offset))
             })
         })
     }
+
     fn prev_sibling(&self) -> Option<SyntaxNode> {
         let siblings = self.green_siblings()?;
+
         siblings.previous().find_map(|child| {
             child.element().into_node().and_then(|green| {
                 let parent = self.parent_node()?;
+
                 let offset = parent.offset() + child.rel_offset();
+
                 Some(SyntaxNode::new_child(green, parent, child.slot(), offset))
             })
         })
@@ -259,7 +272,9 @@ impl NodeData {
 
         siblings.following().next().and_then(|child| {
             let parent = self.parent_node()?;
+
             let offset = parent.offset() + child.rel_offset();
+
             Some(SyntaxElement::new(
                 child.element(),
                 parent,
@@ -268,12 +283,15 @@ impl NodeData {
             ))
         })
     }
+
     fn prev_sibling_or_token(&self) -> Option<SyntaxElement> {
         let siblings = self.green_siblings()?;
 
         siblings.previous().next().and_then(|child| {
             let parent = self.parent_node()?;
+
             let offset = parent.offset() + child.rel_offset();
+
             Some(SyntaxElement::new(
                 child.element(),
                 parent,
@@ -327,10 +345,14 @@ impl NodeData {
         match Rc::get_mut(&mut self) {
             Some(node) => {
                 node.kind = NodeKind::Root { green };
+
                 node.slot = 0;
+
                 node.offset = TextSize::from(0);
+
                 self
             }
+
             None => Self::new(NodeKind::Root { green }, 0, 0.into()),
         }
     }
@@ -347,17 +369,22 @@ impl NodeData {
         next_elem: SyntaxElement,
     ) -> Option<Rc<Self>> {
         let mut green = next_elem.into_green();
+
         let mut elem = prev_elem;
 
         loop {
             let node = elem.parent()?;
+
             let is_self = node.key() == self.key();
 
             let index = elem.index();
+
             let range = index..=index;
 
             let replace_with = iter::once(Some(green));
+
             green = node.green().splice_slots(range, replace_with).into();
+
             elem = node.into();
 
             if is_self {
@@ -370,10 +397,14 @@ impl NodeData {
         let result = match Rc::get_mut(&mut self) {
             Some(node) => {
                 node.kind = NodeKind::Root { green };
+
                 node.slot = 0;
+
                 node.offset = TextSize::from(0);
+
                 self
             }
+
             None => Self::new(NodeKind::Root { green }, 0, 0.into()),
         };
 

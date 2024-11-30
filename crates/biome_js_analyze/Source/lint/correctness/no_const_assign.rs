@@ -58,15 +58,22 @@ declare_lint_rule! {
 
 impl Rule for NoConstAssign {
     type Query = Semantic<JsIdentifierAssignment>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let id_binding = model.binding(node)?.tree();
+
         let decl = id_binding.declaration()?;
+
         if let AnyJsBindingDeclaration::JsVariableDeclarator(declarator) =
             decl.parent_binding_pattern_declaration().unwrap_or(decl)
         {
@@ -74,13 +81,17 @@ impl Rule for NoConstAssign {
                 return Some(id_binding.range());
             }
         };
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let name = node.name_token().ok()?;
+
         let name = name.text_trimmed();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -96,15 +107,22 @@ impl Rule for NoConstAssign {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let mut mutation = ctx.root().begin();
+
         let decl = model.binding(node)?.tree().declaration()?;
+
         if let AnyJsBindingDeclaration::JsVariableDeclarator(declarator) =
             decl.parent_binding_pattern_declaration().unwrap_or(decl)
         {
             let const_token = declarator.declaration()?.kind_token().ok()?;
+
             let let_token = make::token(JsSyntaxKind::LET_KW);
+
             mutation.replace_token(const_token, let_token);
+
             return Some(JsRuleAction::new(
                             ctx.metadata().action_category(ctx.category(), ctx.group()),
                             ctx.metadata().applicability(),
@@ -113,6 +131,7 @@ impl Rule for NoConstAssign {
                             mutation,
             ));
         }
+
         None
     }
 }

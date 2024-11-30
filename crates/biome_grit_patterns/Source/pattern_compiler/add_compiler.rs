@@ -11,6 +11,7 @@ impl AddCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Add<GritQueryContext>, CompileError> {
         let left = PatternCompiler::from_node(&node.left()?, context)?;
+
         let right = PatternCompiler::from_node(&node.right()?, context)?;
 
         Ok(Add::new(left, right))

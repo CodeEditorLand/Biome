@@ -37,8 +37,10 @@ pub(crate) fn parse_charset_at_rule(p: &mut CssParser) -> ParsedSyntax {
                 CSS_BOGUS_AT_RULE
             }
         }
+
         _ => {
             p.expect(T![;]);
+
             CSS_BOGUS_AT_RULE
         }
     };
@@ -61,6 +63,7 @@ fn eat_or_recover_close_token(p: &mut CssParser, encoding: CompletedMarker) -> b
                 p,
                 TextRange::new(encoding.range(p).start(), m.range(p).end()),
             );
+
             p.error(diagnostic);
         }
 

@@ -16,6 +16,7 @@ pub(crate) type GraphqlLosslessTreeSink<'source> =
 
 pub fn parse_graphql(source: &str) -> GraphqlParse {
     let mut cache = NodeCache::default();
+
     parse_graphql_with_cache(source, &mut cache)
 }
 
@@ -29,7 +30,9 @@ pub fn parse_graphql_with_cache(source: &str, cache: &mut NodeCache) -> GraphqlP
         let (events, diagnostics, trivia) = parser.finish();
 
         let mut tree_sink = GraphqlLosslessTreeSink::with_cache(source, &trivia, cache);
+
         biome_parser::event::process(&mut tree_sink, events, diagnostics);
+
         let (green, diagnostics) = tree_sink.finish();
 
         GraphqlParse::new(green, diagnostics)
@@ -99,7 +102,9 @@ impl GraphqlParse {
 impl From<GraphqlParse> for AnyParse {
     fn from(parse: GraphqlParse) -> Self {
         let root = parse.syntax();
+
         let diagnostics = parse.into_diagnostics();
+
         Self::new(
             // SAFETY: the parser should always return a root node
             root.as_send().unwrap(),

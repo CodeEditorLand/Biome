@@ -10,6 +10,7 @@ macro_rules! define_role {
 
         impl $id {
             const PROPS: &'static [(&'static str, bool)] = &$p_value;
+
             const ROLES: &'static [&'static str] = &$r_value;
         }
 
@@ -34,7 +35,9 @@ macro_rules! define_role {
 
         impl $id {
             const PROPS: &'static [(&'static str, bool)] = &$p_value;
+
             const ROLES: &'static [&'static str] = &$r_value;
+
             const CONCEPTS: &'static [(&'static str, &'static [(&'static str, &'static str)])] =
                 $c_value;
         }

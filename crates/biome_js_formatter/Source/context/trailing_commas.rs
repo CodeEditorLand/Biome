@@ -31,6 +31,7 @@ impl FormatTrailingCommas {
                     TrailingSeparator::Omit
                 }
             }
+
             FormatTrailingCommas::ES5 => TrailingSeparator::Allowed,
         }
     }
@@ -71,9 +72,11 @@ impl TrailingCommas {
     pub const fn is_es5(&self) -> bool {
         matches!(self, TrailingCommas::Es5)
     }
+
     pub const fn is_all(&self) -> bool {
         matches!(self, TrailingCommas::All)
     }
+
     pub const fn is_none(&self) -> bool {
         matches!(self, TrailingCommas::None)
     }

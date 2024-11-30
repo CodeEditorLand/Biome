@@ -16,6 +16,7 @@ pub(crate) fn full_version(session: CliSession) -> Result<(), CliDiagnostic> {
                 "Server:     "<Dim>"not connected"</Dim>
             });
         }
+
         Some(info) => {
             session.app.console.log(markup! {
 "Server:

@@ -31,6 +31,7 @@ fn should_nestle_adjacent_doc_comments<L: Language>(
     second_comment: &SourceComment<L>,
 ) -> bool {
     let first = first_comment.piece();
+
     let second = second_comment.piece();
 
     first.has_newline()
@@ -67,8 +68,10 @@ where
         };
 
         let mut leading_comments_iter = leading_comments.iter().peekable();
+
         while let Some(comment) = leading_comments_iter.next() {
             let format_comment = FormatRefWithRule::new(comment, Context::CommentRule::default());
+
             write!(f, [format_comment])?;
 
             match comment.kind() {
@@ -82,6 +85,7 @@ where
 
                             write!(f, [maybe_space(!should_nestle)])?;
                         }
+
                         1 => {
                             if comment.lines_before() == 0 {
                                 write!(f, [soft_line_break_or_space()])?;
@@ -89,9 +93,11 @@ where
                                 write!(f, [hard_line_break()])?;
                             }
                         }
+
                         _ => write!(f, [empty_line()])?,
                     };
                 }
+
                 CommentKind::Line => match comment.lines_after() {
                     0 | 1 => write!(f, [hard_line_break()])?,
                     _ => write!(f, [empty_line()])?,
@@ -125,12 +131,14 @@ where
 {
     fn fmt(&self, f: &mut Formatter<Context>) -> FormatResult<()> {
         let comments = f.context().comments().clone();
+
         let trailing_comments = match self {
             FormatTrailingComments::Node(node) => comments.trailing_comments(node),
             FormatTrailingComments::Comments(comments) => comments,
         };
 
         let mut total_lines_before = 0;
+
         let mut previous_comment: Option<&SourceComment<Context::Language>> = None;
 
         for comment in trailing_comments {
@@ -160,6 +168,7 @@ where
                         line_suffix(&format_with(|f| {
                             match comment.lines_before() {
                                 _ if should_nestle => {}
+
                                 0 => {
                                     // If the comment is immediately following a block-like comment,
                                     // then it can stay on the same line with just a space between.
@@ -177,6 +186,7 @@ where
                                         write!(f, [space()])?;
                                     }
                                 }
+
                                 1 => write!(f, [hard_line_break()])?,
                                 _ => write!(f, [empty_line()])?,
                             };
@@ -189,6 +199,7 @@ where
             } else {
                 let content =
                     format_with(|f| write!(f, [maybe_space(!should_nestle), format_comment]));
+
                 if comment.kind().is_line() {
                     write!(f, [line_suffix(&content), expand_parent()])?;
                 } else {
@@ -197,6 +208,7 @@ where
             }
 
             previous_comment = Some(comment);
+
             comment.mark_formatted();
         }
 
@@ -282,6 +294,7 @@ impl<L: Language> FormatDanglingComments<'_, L> {
             FormatDanglingComments::Node { indent, .. } => *indent = mode,
             FormatDanglingComments::Comments { indent, .. } => *indent = mode,
         }
+
         self
     }
 
@@ -299,6 +312,7 @@ where
 {
     fn fmt(&self, f: &mut Formatter<Context>) -> FormatResult<()> {
         let comments = f.context().comments().clone();
+
         let dangling_comments = match self {
             FormatDanglingComments::Node { node, .. } => comments.dangling_comments(node),
             FormatDanglingComments::Comments { comments, .. } => *comments,
@@ -328,6 +342,7 @@ where
                 )?;
 
                 previous_comment = Some(comment);
+
                 comment.mark_formatted();
             }
 
@@ -346,9 +361,11 @@ where
             DanglingIndentMode::Block => {
                 write!(f, [block_indent(&format_dangling_comments)])
             }
+
             DanglingIndentMode::Soft => {
                 write!(f, [group(&soft_block_indent(&format_dangling_comments))])
             }
+
             DanglingIndentMode::None => {
                 write!(f, [format_dangling_comments])
             }
@@ -375,6 +392,7 @@ where
 {
     fn fmt(&self, f: &mut Formatter<C>) -> FormatResult<()> {
         let trimmed_range = self.token.text_trimmed_range();
+
         located_token_text(self.token, trimmed_range).fmt(f)
     }
 }
@@ -482,6 +500,7 @@ where
 {
     pub fn with_group_id(mut self, group_id: Option<GroupId>) -> Self {
         self.group_id = group_id;
+
         self
     }
 }
@@ -534,12 +553,15 @@ impl<L: Language> FormatSkippedTokenTrivia<'_, L> {
         let (mut lines, mut spaces) = match self.token.prev_token() {
             Some(token) => {
                 let mut lines = 0u32;
+
                 let mut spaces = 0u32;
+
                 for piece in token.trailing_trivia().pieces().rev() {
                     if piece.is_whitespace() {
                         spaces += 1;
                     } else if piece.is_newline() {
                         spaces = 0;
+
                         lines += 1;
                     } else {
                         break;
@@ -548,11 +570,13 @@ impl<L: Language> FormatSkippedTokenTrivia<'_, L> {
 
                 (lines, spaces)
             }
+
             None => (0, 0),
         };
 
         // The comments between the last skipped token trivia and the token
         let mut dangling_comments = Vec::new();
+
         let mut skipped_range: Option<TextRange> = None;
 
         // Iterate over the remaining pieces to find the full range from the first to the last skipped token trivia.
@@ -560,11 +584,13 @@ impl<L: Language> FormatSkippedTokenTrivia<'_, L> {
         for piece in self.token.leading_trivia().pieces() {
             if piece.is_whitespace() {
                 spaces += 1;
+
                 continue;
             }
 
             if piece.is_newline() {
                 lines += 1;
+
                 spaces = 0;
             } else if let Some(comment) = piece.as_comments() {
                 let source_comment = SourceComment {
@@ -579,6 +605,7 @@ impl<L: Language> FormatSkippedTokenTrivia<'_, L> {
                 dangling_comments.push(source_comment);
 
                 lines = 0;
+
                 spaces = 0;
             } else if piece.is_skipped() {
                 skipped_range = Some(match skipped_range {
@@ -589,6 +616,7 @@ impl<L: Language> FormatSkippedTokenTrivia<'_, L> {
                                 0 if spaces == 0 => {
                                     // Token had no space to previous token nor any preceding comment. Keep it that way
                                 }
+
                                 0 => write!(f, [space()])?,
                                 _ => write!(f, [hard_line_break()])?,
                             };
@@ -605,7 +633,9 @@ impl<L: Language> FormatSkippedTokenTrivia<'_, L> {
                 });
 
                 lines = 0;
+
                 spaces = 0;
+
                 dangling_comments.clear();
             }
         }
@@ -618,7 +648,9 @@ impl<L: Language> FormatSkippedTokenTrivia<'_, L> {
                 length: skipped_range.len(),
             },
         )))?;
+
         write!(f, [located_token_text(self.token, skipped_range)])?;
+
         f.write_element(FormatElement::Tag(Tag::EndVerbatim))?;
 
         // Write whitespace separator between skipped/last comment and token
@@ -628,6 +660,7 @@ impl<L: Language> FormatSkippedTokenTrivia<'_, L> {
                     // Don't write a space if there was non in the source document
                     Ok(())
                 }
+
                 0 => write!(f, [space()]),
                 _ => write!(f, [hard_line_break()]),
             }

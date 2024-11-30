@@ -66,6 +66,7 @@ impl AnyJsxCurlyQuery {
             AnyJsxCurlyQuery::JsxAttributeInitializerClause(node) => {
                 node.value().map(|value| value.range())
             }
+
             AnyJsxCurlyQuery::AnyJsxChild(_) => Ok(self.range()),
         }
         .unwrap_or(self.range())
@@ -82,23 +83,30 @@ pub enum CurlyBraceResolution {
 
 impl Rule for UseConsistentCurlyBraces {
     type Query = Ast<AnyJsxCurlyQuery>;
+
     type State = CurlyBraceResolution;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let query = ctx.query();
+
         let has_curly_braces = has_curly_braces(query);
+
         match query {
             AnyJsxCurlyQuery::JsxAttributeInitializerClause(attr) => {
                 handle_attr_init_clause(attr, has_curly_braces)
             }
+
             AnyJsxCurlyQuery::AnyJsxChild(child) => handle_jsx_child(child, has_curly_braces),
         }
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let source_range = node.source_range();
 
         let diag = match (state, node) {
@@ -149,7 +157,9 @@ impl Rule for UseConsistentCurlyBraces {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         match (state, node) {
             (
                 CurlyBraceResolution::AddBraces,
@@ -162,6 +172,7 @@ impl Rule for UseConsistentCurlyBraces {
                             let expr = make::jsx_tag_expression(node);
                             // HACK: removes the trailing whitespace from the expression
                             let expr = expr.clone().trim_trailing_trivia().unwrap_or(expr);
+
                             let value = make::jsx_expression_attribute_value(
                                 make::token(T!['{']),
                                 AnyJsExpression::JsxTagExpression(expr),
@@ -170,9 +181,11 @@ impl Rule for UseConsistentCurlyBraces {
 
                             Ok(AnyJsxAttributeValue::JsxExpressionAttributeValue(value))
                         }
+
                         AnyJsxAttributeValue::JsxExpressionAttributeValue(node) => {
                             Ok(AnyJsxAttributeValue::JsxExpressionAttributeValue(node))
                         }
+
                         AnyJsxAttributeValue::JsxString(node) => {
                             let value = make::jsx_expression_attribute_value(
                                 make::token(T!['{']),
@@ -183,10 +196,12 @@ impl Rule for UseConsistentCurlyBraces {
                                 ),
                                 make::token(T!['}']),
                             );
+
                             Ok(AnyJsxAttributeValue::JsxExpressionAttributeValue(value))
                         }
                     })
                     .ok()?;
+
                 mutation.replace_node(
                     node.clone(),
                     make::jsx_attribute_initializer_clause(make::token(T![=]), value),
@@ -216,8 +231,11 @@ impl Rule for UseConsistentCurlyBraces {
                         None
                     }
                 })?;
+
                 let jsx_string = make::jsx_string(str_literal.value_token().ok()?);
+
                 let value = AnyJsxAttributeValue::JsxString(jsx_string);
+
                 mutation.replace_node(
                     node.clone(),
                     make::jsx_attribute_initializer_clause(make::token(T![=]), value),
@@ -237,6 +255,7 @@ impl Rule for UseConsistentCurlyBraces {
                     })?;
                     // extract the trivia so we can apply it to the string literal
                     let l_brace_trivia = expr.l_curly_token().ok()?.trailing_trivia().pieces();
+
                     let str_literal_trivia =
                         str_literal.value_token().ok()?.trailing_trivia().pieces();
 
@@ -246,12 +265,14 @@ impl Rule for UseConsistentCurlyBraces {
                         .clone()
                         .filter(|t| t.is_comments())
                         .collect::<Vec<_>>();
+
                     let trailing_comments = str_literal_trivia
                         .clone()
                         .filter(|t| t.is_comments())
                         .collect::<Vec<_>>();
 
                     let leading_comments_expr = build_comment_expression_child(&leading_comments);
+
                     let trailing_comments_expr = build_comment_expression_child(&trailing_comments);
 
                     let text = &str_literal.value_token().ok()?.token_text_trimmed();
@@ -260,6 +281,7 @@ impl Rule for UseConsistentCurlyBraces {
                         1.into(),
                         text.len().checked_sub(1.into()).unwrap_or(text.len()),
                     ));
+
                     let jsx_text =
                         AnyJsxChild::JsxText(make::jsx_text(JsSyntaxToken::new_detached(
                             JsSyntaxKind::JS_STRING_LITERAL,
@@ -269,17 +291,25 @@ impl Rule for UseConsistentCurlyBraces {
                         )));
 
                     let child_list = node.parent::<JsxChildList>()?;
+
                     let mut children = vec![];
+
                     let mut iter = (&child_list).into_iter();
+
                     children.extend(iter.by_ref().take_while(|c| c != node));
+
                     if let Some(leading_comments_expr) = leading_comments_expr {
                         children.push(leading_comments_expr);
                     }
+
                     children.push(jsx_text.clone());
+
                     if let Some(trailing_comments_expr) = trailing_comments_expr {
                         children.push(trailing_comments_expr);
                     }
+
                     children.extend(iter);
+
                     let new_child_list = make::jsx_child_list(children);
 
                     mutation.replace_element_discard_trivia(
@@ -318,13 +348,16 @@ fn build_comment_expression_child(
         .unzip();
 
     let kind = T!['{'];
+
     let text = kind.to_string()?;
+
     let l_curly = JsSyntaxToken::new_detached(
         kind,
         format!("{text}{}", texts.join("")).as_str(),
         [],
         pieces,
     );
+
     Some(AnyJsxChild::JsxExpressionChild(
         make::jsx_expression_child(l_curly, make::token(T!['}'])).build(),
     ))
@@ -347,6 +380,7 @@ fn handle_attr_init_clause(
                 None
             }
         }
+
         AnyJsxAttributeValue::JsxString(_) => None,
     }
 }
@@ -377,6 +411,7 @@ fn has_curly_braces(node: &AnyJsxCurlyQuery) -> bool {
                 .map(|node| matches!(node, AnyJsxAttributeValue::JsxExpressionAttributeValue(attr) if attr.l_curly_token().is_ok() || attr.r_curly_token().is_ok()))
                 .unwrap_or(false)
         }
+
         AnyJsxCurlyQuery::AnyJsxChild(node) => match node {
             AnyJsxChild::JsxExpressionChild(node) => node.l_curly_token().is_ok() || node.r_curly_token().is_ok(),
             AnyJsxChild::JsxSpreadChild(_) => true,

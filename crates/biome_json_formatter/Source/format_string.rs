@@ -14,6 +14,7 @@ pub(crate) struct CleanedStringLiteralText<'token> {
 impl Format<JsonFormatContext> for CleanedStringLiteralText<'_> {
     fn fmt(&self, f: &mut Formatter<JsonFormatContext>) -> FormatResult<()> {
         let content = self.token.text_trimmed();
+
         let raw_content = &content[1..content.len() - 1];
 
         let text = match normalize_string(raw_content, Quote::Double, false) {

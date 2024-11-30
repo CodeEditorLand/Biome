@@ -91,6 +91,7 @@ macro_rules! define_language_kind_function {
                 $( LanguageKind::$kind => {
                     // HACK: workaround for $kind$out adding an extra space between the two
                     let ident = format_ident!("{}{}", stringify!($kind), stringify!($out));
+
                     quote! { #ident }
                 },)*
             }
@@ -102,12 +103,19 @@ macro_rules! define_language_kind_function {
 macro_rules! define_language_kind_functions {
     ([$($kind:ident),*]) => {
         define_language_kind_function!([$($kind),*], syntax_kind, SyntaxKind);
+
         define_language_kind_function!([$($kind),*], syntax_factory, SyntaxFactory);
+
         define_language_kind_function!([$($kind),*], syntax_node, SyntaxNode);
+
         define_language_kind_function!([$($kind),*], syntax_element, SyntaxElement);
+
         define_language_kind_function!([$($kind),*], syntax_token, SyntaxToken);
+
         define_language_kind_function!([$($kind),*], syntax_element_children, SyntaxElementChildren);
+
         define_language_kind_function!([$($kind),*], syntax_list, SyntaxList);
+
         define_language_kind_function!([$($kind),*], language, Language);
     }
 }

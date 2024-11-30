@@ -44,12 +44,14 @@ pub(super) fn print_frame(fmt: &mut fmt::Formatter<'_>, location: Location<'_>) 
     let source_file = SourceFile::new(source_code);
 
     let start_index = span.start();
+
     let start_location = match source_file.location(start_index) {
         Ok(location) => location,
         Err(_) => return Ok(()),
     };
 
     let end_index = span.end();
+
     let end_location = match source_file.location(end_index) {
         Ok(location) => location,
         Err(_) => return Ok(()),
@@ -75,13 +77,16 @@ pub(super) fn print_frame(fmt: &mut fmt::Formatter<'_>, location: Location<'_>) 
             Ok(index) => index,
             Err(_) => continue,
         };
+
         let line_end = match source_file.line_start(line_index.to_zero_indexed() + 1) {
             Ok(index) => index,
             Err(_) => continue,
         };
 
         let line_range = TextRange::new(line_start, line_end);
+
         let line_text = source_file.source[line_range].trim();
+
         if !line_text.is_empty() {
             break;
         }
@@ -91,9 +96,12 @@ pub(super) fn print_frame(fmt: &mut fmt::Formatter<'_>, location: Location<'_>) 
 
     // If we have too many lines in our selection, then collapse them to an ellipsis
     let range_len = (context_end.get() + 1).saturating_sub(context_start.get());
+
     let ellipsis_range = if range_len > MAX_CODE_FRAME_LINES + 2 {
         let ellipsis_start = context_start.saturating_add(HALF_MAX_CODE_FRAME_LINES);
+
         let ellipsis_end = context_end.saturating_sub(HALF_MAX_CODE_FRAME_LINES);
+
         Some(ellipsis_start..=ellipsis_end)
     } else {
         None
@@ -101,6 +109,7 @@ pub(super) fn print_frame(fmt: &mut fmt::Formatter<'_>, location: Location<'_>) 
 
     // Calculate the maximum width of the line number
     let max_gutter_len = calculate_print_width(context_end);
+
     let mut printed_lines = false;
 
     for line_index in IntoIter::new(context_start..=context_end) {
@@ -112,8 +121,10 @@ pub(super) fn print_frame(fmt: &mut fmt::Formatter<'_>, location: Location<'_>) 
                     }
 
                     fmt.write_markup(markup! { <Emphasis>"    ...\n"</Emphasis> })?;
+
                     printed_lines = true;
                 }
+
                 continue;
             }
         }
@@ -122,12 +133,14 @@ pub(super) fn print_frame(fmt: &mut fmt::Formatter<'_>, location: Location<'_>) 
             Ok(index) => index,
             Err(_) => continue,
         };
+
         let line_end = match source_file.line_start(line_index.to_zero_indexed() + 1) {
             Ok(index) => index,
             Err(_) => continue,
         };
 
         let line_range = TextRange::new(line_start, line_end);
+
         let line_text = source_file.source[line_range].trim_end_matches(['\r', '\n']);
 
         // Ensure that the frame doesn't start with whitespace
@@ -179,10 +192,12 @@ pub(super) fn print_frame(fmt: &mut fmt::Formatter<'_>, location: Location<'_>) 
 
         if should_highlight {
             let is_first_line = line_index == start_location.line_number;
+
             let is_last_line = line_index == end_location.line_number;
 
             let start_index_relative_to_line =
                 start_index.max(line_range.start()) - line_range.start();
+
             let end_index_relative_to_line = end_index.min(line_range.end()) - line_range.start();
 
             let marker = if is_first_line && is_last_line {
@@ -205,6 +220,7 @@ pub(super) fn print_frame(fmt: &mut fmt::Formatter<'_>, location: Location<'_>) 
                     // SAFETY: The length of `line_text.trim_start()` should
                     // never be larger than `line_text` itself
                     .expect("integer overflow");
+
                 Some(TextRange::new(start_index, end_index_relative_to_line))
             } else {
                 None
@@ -226,6 +242,7 @@ pub(super) fn print_frame(fmt: &mut fmt::Formatter<'_>, location: Location<'_>) 
                 // still get printed as tabs to respect the user-defined tab
                 // display width
                 let leading_range = TextRange::new(TextSize::from(0), marker.start());
+
                 for c in line_text[leading_range].chars() {
                     match c {
                         '\t' => fmt.write_str("\t")?,
@@ -238,6 +255,7 @@ pub(super) fn print_frame(fmt: &mut fmt::Formatter<'_>, location: Location<'_>) 
                 }
 
                 let marker_width = text_width(&line_text[marker]);
+
                 for _ in 0..marker_width {
                     fmt.write_markup(markup! {
                         <Emphasis><Error>'^'</Error></Emphasis>
@@ -259,6 +277,7 @@ pub(super) fn print_highlighted_frame(
     let Some(span) = location.span else {
         return Ok(());
     };
+
     let Some(source_code) = location.source_code else {
         return Ok(());
     };
@@ -268,13 +287,16 @@ pub(super) fn print_highlighted_frame(
     let source = SourceFile::new(source_code);
 
     let start = source.location(span.start())?;
+
     let end = source.location(span.end())?;
 
     let match_line_start = start.line_number;
+
     let match_line_end = end.line_number.saturating_add(1);
 
     for line_index in IntoIter::new(match_line_start..match_line_end) {
         let current_range = source.line_range(line_index.to_zero_indexed());
+
         let current_range = match current_range {
             Ok(v) => v,
             Err(_) => continue,
@@ -283,10 +305,12 @@ pub(super) fn print_highlighted_frame(
         let current_text = source_code.text[current_range].trim_end_matches(['\r', '\n']);
 
         let is_first_line = line_index == start.line_number;
+
         let is_last_line = line_index == end.line_number;
 
         let start_index_relative_to_line =
             span.start().max(current_range.start()) - current_range.start();
+
         let end_index_relative_to_line =
             span.end().min(current_range.end()) - current_range.start();
 
@@ -308,11 +332,15 @@ pub(super) fn print_highlighted_frame(
         })?;
 
         let start_range = &current_text[0..marker.start().into()];
+
         let highlighted_range = &current_text[marker.start().into()..marker.end().into()];
+
         let end_range = &current_text[marker.end().into()..current_text.text_len().into()];
 
         write!(fmt, "{start_range}")?;
+
         fmt.write_markup(markup! { <Emphasis><Info>{highlighted_range}</Info></Emphasis> })?;
+
         write!(fmt, "{end_range}")?;
 
         writeln!(fmt)?;
@@ -330,6 +358,7 @@ pub(super) fn calculate_print_width(mut value: OneIndexed) -> NonZeroUsize {
 
     while value >= TEN {
         value = OneIndexed::new(value.get() / 10).unwrap_or(OneIndexed::MIN);
+
         width = width.checked_add(1).unwrap();
     }
 
@@ -400,6 +429,7 @@ pub(super) fn print_invisibles(
         .map_or(input.len(), |(index, _)| index);
 
     let mut iter = input.char_indices().peekable();
+
     let mut prev_char_was_whitespace = false;
 
     while let Some((i, char)) = iter.next() {
@@ -437,6 +467,7 @@ pub(super) fn print_invisibles(
         // If we are a carriage return next to a \n then don't show the character as visible
         if options.ignore_trailing_carriage_return && char == '\r' {
             let next_char_is_line_feed = iter.peek().map_or(false, |(_, char)| *char == '\n');
+
             if next_char_is_line_feed {
                 continue;
             }
@@ -448,17 +479,21 @@ pub(super) fn print_invisibles(
             }
 
             write!(fmt, "{char}")?;
+
             continue;
         }
 
         if let Some(visible) = show_invisible_char(char) {
             fmt.write_markup(markup! { <Dim>{visible}</Dim> })?;
+
             continue;
         }
 
         if (char.is_whitespace() && !char.is_ascii_whitespace()) || char.is_control() {
             let code = u32::from(char);
+
             fmt.write_markup(markup! { <Inverse>"U+"{format_args!("{code:x}")}</Inverse> })?;
+
             continue;
         }
 
@@ -558,6 +593,7 @@ impl<'diagnostic> SourceFile<'diagnostic> {
 
     fn line_range(&self, line_index: usize) -> io::Result<TextRange> {
         let line_start = self.line_start(line_index)?;
+
         let next_line_start = self.line_start(line_index + 1)?;
 
         Ok(TextRange::new(line_start, next_line_start))
@@ -570,7 +606,9 @@ impl<'diagnostic> SourceFile<'diagnostic> {
 
     fn column_number(&self, line_index: usize, byte_index: TextSize) -> io::Result<OneIndexed> {
         let source = self.source;
+
         let line_range = self.line_range(line_index)?;
+
         let column_index = column_index(source, line_range, byte_index);
 
         // SAFETY: Adding `1` to the value of `column_index` ensures it's non-zero
@@ -730,24 +768,37 @@ mod tests {
     #[test]
     fn print_width() {
         let one = NonZeroUsize::new(1).unwrap();
+
         let two = NonZeroUsize::new(2).unwrap();
+
         let three = NonZeroUsize::new(3).unwrap();
+
         let four = NonZeroUsize::new(4).unwrap();
 
         assert_eq!(calculate_print_width(OneIndexed::new(1).unwrap()), one);
+
         assert_eq!(calculate_print_width(OneIndexed::new(9).unwrap()), one);
 
         assert_eq!(calculate_print_width(OneIndexed::new(10).unwrap()), two);
+
         assert_eq!(calculate_print_width(OneIndexed::new(11).unwrap()), two);
+
         assert_eq!(calculate_print_width(OneIndexed::new(19).unwrap()), two);
+
         assert_eq!(calculate_print_width(OneIndexed::new(20).unwrap()), two);
+
         assert_eq!(calculate_print_width(OneIndexed::new(21).unwrap()), two);
+
         assert_eq!(calculate_print_width(OneIndexed::new(99).unwrap()), two);
 
         assert_eq!(calculate_print_width(OneIndexed::new(100).unwrap()), three);
+
         assert_eq!(calculate_print_width(OneIndexed::new(101).unwrap()), three);
+
         assert_eq!(calculate_print_width(OneIndexed::new(110).unwrap()), three);
+
         assert_eq!(calculate_print_width(OneIndexed::new(199).unwrap()), three);
+
         assert_eq!(calculate_print_width(OneIndexed::new(999).unwrap()), three);
 
         assert_eq!(calculate_print_width(OneIndexed::new(1000).unwrap()), four);

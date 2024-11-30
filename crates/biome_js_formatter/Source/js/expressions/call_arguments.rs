@@ -76,6 +76,7 @@ impl FormatNodeRule<JsCallArguments> for FormatJsCallArguments {
         }
 
         let last_index = args.len().saturating_sub(1);
+
         let mut has_empty_line = false;
 
         let arguments: Vec<_> = args
@@ -85,6 +86,7 @@ impl FormatNodeRule<JsCallArguments> for FormatJsCallArguments {
                 let leading_lines = element
                     .node()
                     .map_or(0, |node| get_lines_before(node.syntax()));
+
                 has_empty_line = has_empty_line || leading_lines > 1;
 
                 FormatCallArgument::Default {
@@ -190,8 +192,10 @@ impl FormatCallArgument {
                     element: element.clone(),
                     leading_lines: *leading_lines,
                 };
+
                 breaks
             }
+
             FormatCallArgument::Inspected {
                 content: Ok(Some(result)),
                 ..
@@ -216,6 +220,7 @@ impl FormatCallArgument {
             } => {
                 let interned = f.intern(&format_once(|f| {
                     self.fmt_with_cache_mode(FunctionBodyCacheMode::Cache, f)?;
+
                     Ok(())
                 }));
 
@@ -225,6 +230,7 @@ impl FormatCallArgument {
                     leading_lines: *leading_lines,
                 };
             }
+
             FormatCallArgument::Inspected { .. } => {
                 panic!("`cache` must be called before inspecting or formatting the element.");
             }
@@ -241,8 +247,10 @@ impl FormatCallArgument {
             FormatCallArgument::Inspected { content, .. } => match content.clone()? {
                 Some(element) => {
                     f.write_element(element)?;
+
                     Ok(())
                 }
+
                 None => Ok(()),
             },
             FormatCallArgument::Default {
@@ -260,6 +268,7 @@ impl FormatCallArgument {
                             })]
                         )?;
                     }
+
                     AnyJsCallArgument::AnyJsExpression(
                         AnyJsExpression::JsArrowFunctionExpression(arrow),
                     ) => {
@@ -273,6 +282,7 @@ impl FormatCallArgument {
                                 })]
                         )?;
                     }
+
                     node => write!(f, [node.format()])?,
                 }
 
@@ -311,6 +321,7 @@ impl FormatCallArgument {
 impl Format<JsFormatContext> for FormatCallArgument {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         self.fmt_with_cache_mode(FunctionBodyCacheMode::default(), f)?;
+
         Ok(())
     }
 }
@@ -323,6 +334,7 @@ fn write_grouped_arguments(
     f: &mut JsFormatter,
 ) -> FormatResult<()> {
     let l_paren_token = call_arguments.l_paren_token();
+
     let r_paren_token = call_arguments.r_paren_token();
 
     let grouped_breaks = {
@@ -331,8 +343,10 @@ fn write_grouped_arguments(
                 let (first, tail) = arguments.split_at_mut(1);
                 (&mut first[0], tail)
             }
+
             GroupedCallArgumentLayout::GroupedLastArgument => {
                 let end_index = arguments.len().saturating_sub(1);
+
                 let (head, last) = arguments.split_at_mut(end_index);
                 (&mut last[0], head)
             }
@@ -359,11 +373,13 @@ fn write_grouped_arguments(
             AnyJsCallArgument::AnyJsExpression(AnyJsExpression::JsArrowFunctionExpression(_)) => {
                 grouped_arg.cache_function_body(f);
             }
+
             AnyJsCallArgument::AnyJsExpression(AnyJsExpression::JsFunctionExpression(function))
                 if !other_args.is_empty() || function_has_only_simple_parameters(function) =>
             {
                 grouped_arg.cache_function_body(f);
             }
+
             _ => {
                 // Node doesn't have a function body or its a function that doesn't get re-formatted.
             }
@@ -383,6 +399,7 @@ fn write_grouped_arguments(
     // First write the most expanded variant because it needs `arguments`.
     let most_expanded = {
         let mut buffer = VecBuffer::new(f.state_mut());
+
         buffer.write_element(FormatElement::Tag(Tag::StartEntry))?;
 
         write!(
@@ -395,6 +412,7 @@ fn write_grouped_arguments(
                 expand: true,
             }]
         )?;
+
         buffer.write_element(FormatElement::Tag(Tag::EndEntry))?;
 
         buffer.into_vec()
@@ -408,6 +426,7 @@ fn write_grouped_arguments(
     // to avoid quadratic complexity if the functions' body contains another call expression with an arrow or function expression
     // as first or last argument.
     let last_index = arguments.len() - 1;
+
     let grouped = arguments
         .into_iter()
         .enumerate()
@@ -416,9 +435,11 @@ fn write_grouped_arguments(
                 GroupedCallArgumentLayout::GroupedFirstArgument if index == 0 => {
                     Some(GroupedCallArgumentLayout::GroupedFirstArgument)
                 }
+
                 GroupedCallArgumentLayout::GroupedLastArgument if index == last_index => {
                     Some(GroupedCallArgumentLayout::GroupedLastArgument)
                 }
+
                 _ => None,
             };
 
@@ -434,7 +455,9 @@ fn write_grouped_arguments(
     // Write the most flat variant with the first or last argument grouped.
     let most_flat = {
         let snapshot = f.state_snapshot();
+
         let mut buffer = VecBuffer::new(f.state_mut());
+
         buffer.write_element(FormatElement::Tag(Tag::StartEntry))?;
 
         let result = write!(
@@ -458,11 +481,13 @@ fn write_grouped_arguments(
         // any content in the signature breaks.
         if matches!(result, Err(FormatError::PoorLayout)) {
             drop(buffer);
+
             f.restore_state_snapshot(snapshot);
 
             let mut most_expanded_iter = most_expanded.into_iter();
             // Skip over the Start/EndEntry items.
             most_expanded_iter.next();
+
             most_expanded_iter.next_back();
 
             return f.write_elements(most_expanded_iter);
@@ -489,11 +514,15 @@ fn write_grouped_arguments(
                     match group_layout {
                         GroupedCallArgumentLayout::GroupedFirstArgument => {
                             joiner.entry(&group(&grouped[0]).should_expand(true));
+
                             joiner.entries(&grouped[1..]).finish()
                         }
+
                         GroupedCallArgumentLayout::GroupedLastArgument => {
                             let last_index = grouped.len() - 1;
+
                             joiner.entries(&grouped[..last_index]);
+
                             joiner
                                 .entry(&group(&grouped[last_index]).should_expand(true))
                                 .finish()
@@ -513,6 +542,7 @@ fn write_grouped_arguments(
     // since we already know that it won't be fitting on a single line.
     let variants = if grouped_breaks {
         write!(f, [expand_parent()])?;
+
         vec![middle_variant, most_expanded.into_boxed_slice()]
     } else {
         vec![most_flat, middle_variant, most_expanded.into_boxed_slice()]
@@ -598,6 +628,7 @@ struct FormatGroupedLastArgument<'a> {
 impl Format<JsFormatContext> for FormatGroupedLastArgument<'_> {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         use AnyJsExpression::*;
+
         let element = self.argument.element();
 
         // For function and arrow expressions, re-format the node and pass the argument that it is the
@@ -648,6 +679,7 @@ impl Format<JsFormatContext> for FormatGroupedLastArgument<'_> {
                     Ok(())
                 })
             }
+
             _ => self.argument.fmt(f),
         }
     }
@@ -659,6 +691,7 @@ fn with_token_tracking_disabled<F: FnOnce(&mut JsFormatter) -> R, R>(
     callback: F,
 ) -> R {
     let was_disabled = f.state().is_token_tracking_disabled();
+
     f.state_mut().set_token_tracking_disabled(true);
 
     let result = callback(f);
@@ -734,6 +767,7 @@ impl<'a> Format<JsFormatContext> for FormatAllArgsBrokenOut<'a> {
                     if !is_inside_import {
                         write!(f, [FormatTrailingCommas::All])?;
                     }
+
                     Ok(())
                 })),
                 self.r_paren,
@@ -773,6 +807,7 @@ fn should_group_first_argument(
     use AnyJsExpression::*;
 
     let mut iter = list.iter();
+
     match (iter.next(), iter.next()) {
         (
             Some(Ok(AnyJsCallArgument::AnyJsExpression(first))),
@@ -789,6 +824,7 @@ fn should_group_first_argument(
                         return Ok(false);
                     }
                 }
+
                 _ => return Ok(false),
             };
 
@@ -803,6 +839,7 @@ fn should_group_first_argument(
                 && !can_group_expression_argument(&second, false, comments)?
                 && is_relatively_short_argument(second))
         }
+
         _ => Ok(false),
     }
 }
@@ -815,6 +852,7 @@ fn should_group_last_argument(
     use AnyJsExpression::*;
 
     let mut iter = list.iter();
+
     let last = iter.next_back();
 
     match last {
@@ -857,9 +895,11 @@ fn should_group_last_argument(
 
                     Ok(true)
                 }
+
                 _ => Ok(true),
             }
         }
+
         _ => Ok(false),
     }
 }
@@ -903,6 +943,7 @@ fn is_simple_ts_type(ty: &AnyTsType) -> bool {
         Some(AnyTsType::TsReferenceType(generic)) => {
             if let Some(type_arguments) = generic.type_arguments() {
                 let argument_list = type_arguments.ts_type_argument_list();
+
                 if argument_list.len() == 1 {
                     argument_list.first().and_then(|first| first.ok())
                 } else {
@@ -912,10 +953,12 @@ fn is_simple_ts_type(ty: &AnyTsType) -> bool {
                 extracted_array_type
             }
         }
+
         _ => extracted_array_type,
     };
 
     let resolved_type = extracted_generic_type.as_ref().unwrap_or(ty);
+
     match resolved_type {
         // Any keyword or literal types
         AnyTsType::TsAnyType(_)
@@ -960,6 +1003,7 @@ fn is_relatively_short_argument(argument: AnyJsExpression) -> bool {
                 false
             }
         }
+
         AnyJsExpression::JsLogicalExpression(logical_expression) => {
             if let JsLogicalExpressionFields {
                 left: Ok(left),
@@ -972,6 +1016,7 @@ fn is_relatively_short_argument(argument: AnyJsExpression) -> bool {
                 false
             }
         }
+
         AnyJsExpression::TsAsExpression(as_expression) => {
             if let TsAsExpressionFields {
                 expression: Ok(expression),
@@ -984,6 +1029,7 @@ fn is_relatively_short_argument(argument: AnyJsExpression) -> bool {
                 false
             }
         }
+
         AnyJsExpression::TsSatisfiesExpression(as_expression) => {
             if let TsSatisfiesExpressionFields {
                 expression: Ok(expression),
@@ -996,6 +1042,7 @@ fn is_relatively_short_argument(argument: AnyJsExpression) -> bool {
                 false
             }
         }
+
         AnyJsExpression::AnyJsLiteralExpression(
             AnyJsLiteralExpression::JsRegexLiteralExpression(_),
         ) => true,
@@ -1010,6 +1057,7 @@ fn is_relatively_short_argument(argument: AnyJsExpression) -> bool {
                 true
             }
         }
+
         _ => SimpleArgument::from(argument).is_simple(),
     }
 }
@@ -1047,6 +1095,7 @@ fn can_group_expression_argument(
 
         JsArrowFunctionExpression(arrow_function) => {
             let body = arrow_function.body()?;
+
             let return_type_annotation = arrow_function.return_type_annotation();
 
             // Handles cases like:
@@ -1060,6 +1109,7 @@ fn can_group_expression_argument(
             //     (type: ObjectType): Provider<Opts> => {}
             //   );
             // }
+
             let can_group_type =
                 return_type_annotation
                     .and_then(|rty| rty.ty().ok())
@@ -1076,9 +1126,11 @@ fn can_group_expression_argument(
                                         // printer.
                                         comments.has_comments(s.syntax())
                                     }
+
                                     _ => true,
                                 }) || comments.has_dangling_comments(body.syntax())
                             }
+
                             _ => false,
                         },
                         _ => true,
@@ -1092,6 +1144,7 @@ fn can_group_expression_argument(
                 AnyJsFunctionBody::AnyJsExpression(arrow @ JsArrowFunctionExpression(_)) => {
                     can_group_expression_argument(arrow, true, comments)?
                 }
+
                 AnyJsFunctionBody::AnyJsExpression(
                     JsCallExpression(_) | JsConditionalExpression(_),
                 ) if !is_arrow_recursion => true,
@@ -1117,9 +1170,11 @@ fn is_commonjs_or_amd_call(
     let Some(reference) = call.callee()?.as_js_reference_identifier() else {
         return Ok(false);
     };
+
     let result = match reference.name()?.text() {
         "require" => {
             let args = arguments.args();
+
             match args.len() {
                 0 => false,
                 // `require` can be called with any expression that resolves to a
@@ -1135,6 +1190,7 @@ fn is_commonjs_or_amd_call(
                 //   require(
                 //     path.join(__dirname, 'relative/path')
                 //   );
+
                 1 => matches!(
                     args.first(),
                     Some(Ok(AnyJsCallArgument::AnyJsExpression(
@@ -1148,8 +1204,10 @@ fn is_commonjs_or_amd_call(
         }
         "define" => {
             let in_statement = call.parent::<JsExpressionStatement>().is_some();
+
             if in_statement {
                 let args = arguments.args();
+
                 match args.len() {
                     1 => true,
                     2 => matches!(
@@ -1160,8 +1218,11 @@ fn is_commonjs_or_amd_call(
                     ),
                     3 => {
                         let mut iter = args.iter();
+
                         let first = iter.next();
+
                         let second = iter.next();
+
                         matches!(
                             (first, second),
                             (
@@ -1176,14 +1237,17 @@ fn is_commonjs_or_amd_call(
                             )
                         )
                     }
+
                     _ => false,
                 }
             } else {
                 false
             }
         }
+
         _ => false,
     };
+
     Ok(result)
 }
 
@@ -1210,7 +1274,9 @@ fn is_react_hook_with_deps_array(arguments: &JsCallArguments, comments: &JsComme
     };
 
     use AnyJsExpression::*;
+
     let mut args = arguments.args().iter();
+
     if arguments.args().len() == 3 {
         args.next();
     }
@@ -1233,6 +1299,7 @@ fn is_react_hook_with_deps_array(arguments: &JsCallArguments, comments: &JsComme
 
             matches!(callback.body(), Ok(AnyJsFunctionBody::JsFunctionBody(_)))
         }
+
         _ => false,
     }
 }
@@ -1255,6 +1322,7 @@ fn is_function_composition_args(arguments: &JsCallArguments) -> bool {
 
     for arg in args.iter().flatten() {
         use AnyJsExpression::*;
+
         match arg {
             AnyJsCallArgument::AnyJsExpression(
                 JsFunctionExpression(_) | JsArrowFunctionExpression(_),
@@ -1262,8 +1330,10 @@ fn is_function_composition_args(arguments: &JsCallArguments) -> bool {
                 if has_seen_function_like {
                     return true;
                 }
+
                 has_seen_function_like = true;
             }
+
             AnyJsCallArgument::AnyJsExpression(JsCallExpression(call)) => {
                 if call.arguments().map_or(false, |call_arguments| {
                     call_arguments.args().iter().flatten().any(|arg| {
@@ -1278,6 +1348,7 @@ fn is_function_composition_args(arguments: &JsCallArguments) -> bool {
                     return true;
                 }
             }
+
             _ => {
                 continue;
             }

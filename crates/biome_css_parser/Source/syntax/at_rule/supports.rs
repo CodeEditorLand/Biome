@@ -40,16 +40,22 @@ pub(crate) fn parse_any_supports_condition(p: &mut CssParser) -> ParsedSyntax {
         match p.cur() {
             T![and] => {
                 let m = condition_in_parens.precede(p);
+
                 p.bump(T![and]);
+
                 parse_supports_and_condition(p).ok(); // TODO handle error
                 Present(m.complete(p, CSS_SUPPORTS_AND_CONDITION))
             }
+
             T![or] => {
                 let m = condition_in_parens.precede(p);
+
                 p.bump(T![or]);
+
                 parse_supports_or_condition(p).ok(); // TODO handle error
                 Present(m.complete(p, CSS_SUPPORTS_OR_CONDITION))
             }
+
             _ => condition_in_parens,
         }
     }
@@ -61,7 +67,9 @@ fn parse_supports_and_condition(p: &mut CssParser) -> ParsedSyntax {
 
     if p.at(T![and]) {
         let m = condition_in_parens.precede(p);
+
         p.bump(T![and]);
+
         parse_supports_and_condition(p).ok(); // TODO handle error
         Present(m.complete(p, CSS_SUPPORTS_AND_CONDITION))
     } else {
@@ -75,7 +83,9 @@ fn parse_supports_or_condition(p: &mut CssParser) -> ParsedSyntax {
 
     if p.at(T![or]) {
         let m = condition_in_parens.precede(p);
+
         p.bump(T![or]);
+
         parse_supports_or_condition(p).ok(); // TODO handle error
         Present(m.complete(p, CSS_SUPPORTS_OR_CONDITION))
     } else {
@@ -96,6 +106,7 @@ fn parse_supports_not_condition(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![not]);
+
     parse_any_supports_condition_in_parens(p).ok(); // TODO handle error
 
     Present(m.complete(p, CSS_SUPPORTS_NOT_CONDITION))
@@ -129,6 +140,7 @@ fn parse_supports_condition_in_parens(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T!['(']);
+
     parse_any_supports_condition(p).ok(); // TODO handle error
     p.bump(T![')']);
 
@@ -149,7 +161,9 @@ fn parse_supports_feature_selector(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![selector]);
+
     p.bump(T!['(']);
+
     parse_selector(p).ok(); // TODO handle error
     p.expect(T![')']); // TODO handle error
 
@@ -170,6 +184,7 @@ fn parse_supports_feature_declaration(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T!['(']);
+
     parse_declaration(p).ok(); // TODO handle error
     p.expect(T![')']); // TODO handle error
 

@@ -6,6 +6,7 @@ use biome_js_syntax::AnyTsPropertyParameterModifier;
 pub(crate) struct FormatAnyTsPropertyParameterModifier;
 impl FormatRule<AnyTsPropertyParameterModifier> for FormatAnyTsPropertyParameterModifier {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyTsPropertyParameterModifier, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyTsPropertyParameterModifier::TsAccessibilityModifier(node) => node.format().fmt(f),

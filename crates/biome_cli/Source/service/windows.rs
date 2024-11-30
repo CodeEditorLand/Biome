@@ -31,10 +31,13 @@ pub(crate) fn enumerate_pipes() -> io::Result<impl Iterator<Item = String>> {
     read_dir(r"\\.\pipe").map(|iter| {
         iter.filter_map(|entry| {
             let entry = entry.ok()?.path();
+
             let file_name = entry.file_name()?;
+
             let file_name = file_name.to_str()?;
 
             let version = file_name.strip_prefix("rome-service")?;
+
             if version.is_empty() {
                 Some(String::new())
             } else {
@@ -56,6 +59,7 @@ async fn try_connect() -> io::Result<NamedPipeClient> {
             // milliseconds then retry the connection (we should be using
             // WaitNamedPipe here but that's not exposed by tokio / mio)
             Err(e) if e.raw_os_error() == Some(ERROR_PIPE_BUSY) => {}
+
             Err(e) => return Err(e),
         }
 
@@ -77,6 +81,7 @@ fn spawn_daemon(
     let binary = env::current_exe()?;
 
     let mut cmd = Command::new(binary);
+
     cmd.arg("__run_server");
 
     if stop_on_disconnect {
@@ -86,12 +91,15 @@ fn spawn_daemon(
     if let Some(config_path) = config_path {
         cmd.arg(format!("--config-path={}", config_path.display()));
     }
+
     if let Some(log_path) = log_path {
         cmd.arg(format!("--log-path={}", log_path.display()));
     }
+
     if let Some(log_file_name_prefix) = log_file_name_prefix {
         cmd.arg(format!("--log-prefix-name={}", log_file_name_prefix));
     }
+
     cmd.creation_flags(CREATE_NEW_PROCESS_GROUP);
 
     cmd.spawn()?;
@@ -105,6 +113,7 @@ pub(crate) async fn open_socket() -> io::Result<Option<(ClientReadHalf, ClientWr
     match try_connect().await {
         Ok(socket) => {
             let inner = Arc::new(socket);
+
             Ok(Some((
                 ClientReadHalf {
                     inner: inner.clone(),
@@ -112,6 +121,7 @@ pub(crate) async fn open_socket() -> io::Result<Option<(ClientReadHalf, ClientWr
                 ClientWriteHalf { inner },
             )))
         }
+
         Err(err) if err.kind() == ErrorKind::NotFound => Ok(None),
         Err(err) => Err(err),
     }
@@ -132,6 +142,7 @@ impl AsyncRead for ClientReadHalf {
                 Poll::Ready(Ok(())) => match self.inner.try_read(buf.initialize_unfilled()) {
                     Ok(count) => {
                         buf.advance(count);
+
                         return Poll::Ready(Ok(()));
                     }
 
@@ -201,9 +212,12 @@ pub(crate) async fn ensure_daemon(
                     log_path.clone(),
                     log_file_name_prefix.clone(),
                 )?;
+
                 did_spawn = true;
+
                 time::sleep(Duration::from_millis(50)).await;
             }
+
             Err(err) => return Err(err),
         }
     }
@@ -215,7 +229,9 @@ pub(crate) async fn ensure_daemon(
 /// print the global pipe name in the standard output
 pub(crate) async fn print_socket() -> io::Result<()> {
     ensure_daemon(true, None, None, None).await?;
+
     println!("{}", get_pipe_name());
+
     Ok(())
 }
 
@@ -231,11 +247,15 @@ pub(crate) async fn run_daemon(
 
     loop {
         prev_server.connect().await?;
+
         let mut next_server = ServerOptions::new().create(get_pipe_name())?;
+
         swap(&mut prev_server, &mut next_server);
 
         let connection = factory.create(config_path.clone());
+
         let span = tracing::trace_span!("run_server");
+
         tokio::spawn(run_server(connection, next_server).instrument(span.or_current()));
     }
 }
@@ -243,10 +263,13 @@ pub(crate) async fn run_daemon(
 /// Async task driving a single client connection
 async fn run_server(connection: ServerConnection, stream: NamedPipeServer) {
     let inner = Arc::new(stream);
+
     let read = ServerReadHalf {
         inner: inner.clone(),
     };
+
     let write = ServerWriteHalf { inner };
+
     connection.accept(read, write).await;
 }
 
@@ -265,6 +288,7 @@ impl AsyncRead for ServerReadHalf {
                 Poll::Ready(Ok(())) => match self.inner.try_read(buf.initialize_unfilled()) {
                     Ok(count) => {
                         buf.advance(count);
+
                         return Poll::Ready(Ok(()));
                     }
 

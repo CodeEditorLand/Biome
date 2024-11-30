@@ -54,6 +54,7 @@ pub trait Diagnostic: Debug {
     /// advices for the diagnostic either.
     fn description(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let _ = fmt;
+
         Ok(())
     }
 
@@ -64,6 +65,7 @@ pub trait Diagnostic: Debug {
     /// user.
     fn message(&self, fmt: &mut fmt::Formatter<'_>) -> io::Result<()> {
         let _ = fmt;
+
         Ok(())
     }
 
@@ -73,6 +75,7 @@ pub trait Diagnostic: Debug {
     /// purpose of display or introspection.
     fn advices(&self, visitor: &mut dyn Visit) -> io::Result<()> {
         let _ = visitor;
+
         Ok(())
     }
 
@@ -80,6 +83,7 @@ pub trait Diagnostic: Debug {
     /// requires more detail about the diagnostic.
     fn verbose_advices(&self, visitor: &mut dyn Visit) -> io::Result<()> {
         let _ = visitor;
+
         Ok(())
     }
 
@@ -192,24 +196,31 @@ impl DiagnosticTags {
     pub const DEPRECATED_CODE: Self = Self(make_bitflags!(DiagnosticTag::{DeprecatedCode}));
     /// This diagnostic is verbose and should be printed only if the `--verbose` option is provided
     pub const VERBOSE: Self = Self(make_bitflags!(DiagnosticTag::{Verbose}));
+
     pub const fn all() -> Self {
         Self(BitFlags::ALL)
     }
+
     pub const fn empty() -> Self {
         Self(BitFlags::EMPTY)
     }
+
     pub fn insert(&mut self, other: DiagnosticTags) {
         self.0 |= other.0;
     }
+
     pub fn contains(self, other: impl Into<DiagnosticTags>) -> bool {
         self.0.contains(other.into().0)
     }
+
     pub const fn union(self, other: Self) -> Self {
         Self(self.0.union_c(other.0))
     }
+
     pub fn is_empty(self) -> bool {
         self.0.is_empty()
     }
+
     pub fn is_verbose(&self) -> bool {
         self.contains(DiagnosticTag::Verbose)
     }
@@ -253,7 +264,9 @@ pub(crate) mod internal {
     /// `Error`.
     pub trait AsDiagnostic: Debug {
         type Diagnostic: Diagnostic + ?Sized;
+
         fn as_diagnostic(&self) -> &Self::Diagnostic;
+
         fn as_dyn(&self) -> &dyn Diagnostic;
     }
 

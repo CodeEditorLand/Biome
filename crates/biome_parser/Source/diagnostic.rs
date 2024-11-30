@@ -88,14 +88,18 @@ impl Advices for ParserAdvice {
             match advice_kind {
                 ParserAdviceKind::Detail(detail) => {
                     let ParserAdviceDetail { span, message } = detail;
+
                     visitor.record_log(LogCategory::Info, message)?;
 
                     let location = Location::builder().span(span).build();
+
                     visitor.record_frame(location)?;
                 }
+
                 ParserAdviceKind::Hint(hint) => {
                     visitor.record_log(LogCategory::Info, hint)?;
                 }
+
                 ParserAdviceKind::List(message, list) => {
                     visitor.record_log(LogCategory::Info, message)?;
 
@@ -103,6 +107,7 @@ impl Advices for ParserAdvice {
                         .iter()
                         .map(|suggestion| suggestion as &dyn Display)
                         .collect();
+
                     visitor.record_list(&list)?;
                 }
             }
@@ -123,11 +128,13 @@ impl ParseDiagnostic {
 
     pub fn new_single_node(name: &str, range: TextRange, p: &impl Parser) -> Self {
         let names = format!("{} {}", article_for(name), name);
+
         let msg = if p.source().text().text_len() <= range.start() {
             format!("Expected {names} but instead found the end of the file.")
         } else {
             format!("Expected {} but instead found '{}'.", names, p.text(range))
         };
+
         Self {
             span: range.as_span(),
             message: MessageAndDescription::from(msg),
@@ -155,7 +162,9 @@ impl ParseDiagnostic {
             }
 
             joined_names.push_str(article_for(name));
+
             joined_names.push(' ');
+
             joined_names.push_str(name);
         }
 
@@ -217,8 +226,10 @@ impl ParseDiagnostic {
     ///     "{}",
     ///     std::str::from_utf8(write.as_slice()).expect("non utf8 in error buffer")
     /// ).expect("");
+
     pub fn with_detail(mut self, range: impl AsSpan, message: impl Display) -> Self {
         self.advice.add_detail(message, range.as_span());
+
         self
     }
 
@@ -266,6 +277,7 @@ impl ParseDiagnostic {
     ///
     pub fn with_hint(mut self, message: impl Display) -> Self {
         self.advice.add_hint(message);
+
         self
     }
 
@@ -317,6 +329,7 @@ impl ParseDiagnostic {
     ) -> Self {
         self.advice
             .add_hint_with_alternatives(message, alternatives);
+
         self
     }
 
@@ -354,6 +367,7 @@ where
 #[must_use]
 pub fn expected_token_any<K: SyntaxKind>(tokens: &[K]) -> ExpectedTokens {
     use std::fmt::Write;
+
     let mut expected = String::new();
 
     for (index, token) in tokens.iter().enumerate() {
@@ -464,9 +478,11 @@ pub fn merge_diagnostics(
     let mut merged = Vec::new();
 
     let mut first_iter = first.into_iter();
+
     let mut second_iter = second.into_iter();
 
     let mut current_first: Option<ParseDiagnostic> = first_iter.next();
+
     let mut current_second: Option<ParseDiagnostic> = second_iter.next();
 
     loop {
@@ -482,10 +498,12 @@ pub fn merge_diagnostics(
                                 merged.push(first_item);
                                 (first_iter.next(), Some(second_item))
                             }
+
                             Ordering::Equal => {
                                 // Only keep one error, skip the one from the second list.
                                 (Some(first_item), second_iter.next())
                             }
+
                             Ordering::Greater => {
                                 merged.push(second_item);
                                 (Some(first_item), second_iter.next())
@@ -502,6 +520,7 @@ pub fn merge_diagnostics(
                     }
                     (None, None) => {
                         merged.push(first_item);
+
                         merged.push(second_item);
 
                         (first_iter.next(), second_iter.next())
@@ -509,18 +528,23 @@ pub fn merge_diagnostics(
                 };
 
                 current_first = first;
+
                 current_second = second;
             }
 
             (None, None) => return merged,
             (Some(first_item), None) => {
                 merged.push(first_item);
+
                 merged.extend(first_iter);
+
                 return merged;
             }
             (None, Some(second_item)) => {
                 merged.push(second_item);
+
                 merged.extend(second_iter);
+
                 return merged;
             }
         }

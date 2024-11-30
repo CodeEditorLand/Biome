@@ -5,6 +5,7 @@ use biome_grit_syntax::GritPatternList;
 pub(crate) struct FormatGritPatternList;
 impl FormatRule<GritPatternList> for FormatGritPatternList {
     type Context = GritFormatContext;
+
     fn fmt(&self, node: &GritPatternList, f: &mut GritFormatter) -> FormatResult<()> {
         f.join_with(&hard_line_break())
             .entries(

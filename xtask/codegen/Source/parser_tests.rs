@@ -18,35 +18,44 @@ fn extract_comment_blocks(
     let mut res = Vec::new();
 
     let prefix = "// ";
+
     let lines = text.lines().map(str::trim_start);
 
     let mut block = (0, vec![]);
+
     for (line_num, line) in lines.enumerate() {
         if line == "//" && allow_blocks_with_empty_lines {
             block.1.push(String::new());
+
             continue;
         }
 
         let is_comment = line.starts_with(prefix);
+
         if is_comment {
             block.1.push(line[prefix.len()..].to_string());
         } else {
             if !block.1.is_empty() {
                 res.push(mem::take(&mut block));
             }
+
             block.0 = line_num + 2;
         }
     }
+
     if !block.1.is_empty() {
         res.push(block)
     }
+
     res
 }
 
 pub fn generate_parser_tests(mode: Mode) -> Result<()> {
     let tests = tests_from_dir(&project_root().join(Path::new("crates/biome_js_parser/src")))?;
+
     fn install_tests(tests: &HashMap<String, Test>, into: &str, mode: Mode) -> Result<bool> {
         let tests_dir = project_root().join(into);
+
         if !tests_dir.is_dir() {
             fs::create_dir_all(&tests_dir)?;
         }
@@ -66,6 +75,7 @@ pub fn generate_parser_tests(mode: Mode) -> Result<()> {
                     .join(name)
                     .with_extension(test.language.extension()),
             };
+
             if let crate::UpdateResult::Updated = update(&path, &test.text, &mode)? {
                 some_file_was_updated = true;
             }
@@ -83,11 +93,13 @@ pub fn generate_parser_tests(mode: Mode) -> Result<()> {
     }
 
     let mut some_file_was_updated = false;
+
     some_file_was_updated |= install_tests(
         &tests.ok,
         "crates/biome_js_parser/test_data/inline/ok",
         mode,
     )?;
+
     some_file_was_updated |= install_tests(
         &tests.err,
         "crates/biome_js_parser/test_data/inline/err",
@@ -156,6 +168,7 @@ struct Tests {
 
 fn collect_tests(s: &str) -> Vec<Test> {
     let mut res = Vec::new();
+
     for comment_block in extract_comment_blocks(s, false).into_iter().map(|(_, x)| x) {
         let first_line = &comment_block[0];
 
@@ -188,6 +201,7 @@ fn collect_tests(s: &str) -> Vec<Test> {
             .join("\n");
 
         assert!(!text.trim().is_empty() && text.ends_with('\n'));
+
         res.push(Test {
             name: name.to_string(),
             options,
@@ -196,22 +210,29 @@ fn collect_tests(s: &str) -> Vec<Test> {
             language,
         })
     }
+
     res
 }
 
 fn tests_from_dir(dir: &Path) -> Result<Tests> {
     let mut res = Tests::default();
+
     for entry in ::walkdir::WalkDir::new(dir) {
         let entry = entry.unwrap();
+
         if !entry.file_type().is_file() {
             continue;
         }
+
         if entry.path().extension().unwrap_or_default() != "rs" {
             continue;
         }
+
         process_file(&mut res, entry.path())?;
     }
+
     return Ok(res);
+
     fn process_file(res: &mut Tests, path: &Path) -> Result<()> {
         let text = fs::read_to_string(path)?;
 
@@ -224,14 +245,17 @@ fn tests_from_dir(dir: &Path) -> Result<Tests> {
                 anyhow::bail!("Duplicate test: {}", old_test.name);
             }
         }
+
         Ok(())
     }
 }
 
 fn existing_tests(dir: &Path, ok: bool) -> Result<HashMap<String, (PathBuf, Test)>> {
     let mut res = HashMap::new();
+
     for file in fs::read_dir(dir)? {
         let path = file?.path();
+
         let language = path
             .extension()
             .and_then(|ext| ext.to_str())
@@ -242,7 +266,9 @@ fn existing_tests(dir: &Path, ok: bool) -> Result<HashMap<String, (PathBuf, Test
                 .file_stem()
                 .map(|x| x.to_string_lossy().to_string())
                 .unwrap();
+
             let text = fs::read_to_string(&path)?;
+
             let test = Test {
                 name: name.clone(),
                 options: None,
@@ -250,10 +276,12 @@ fn existing_tests(dir: &Path, ok: bool) -> Result<HashMap<String, (PathBuf, Test
                 ok,
                 language,
             };
+
             if let Some(old) = res.insert(name, (path, test)) {
                 println!("Duplicate test: {old:?}");
             }
         }
     }
+
     Ok(res)
 }

@@ -4,6 +4,7 @@ use biome_graphql_syntax::GraphqlInputFieldList;
 pub(crate) struct FormatGraphqlInputFieldList;
 impl FormatRule<GraphqlInputFieldList> for FormatGraphqlInputFieldList {
     type Context = GraphqlFormatContext;
+
     fn fmt(&self, node: &GraphqlInputFieldList, f: &mut GraphqlFormatter) -> FormatResult<()> {
         let mut join = f.join_nodes_with_hardline();
 

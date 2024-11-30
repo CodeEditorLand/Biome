@@ -68,6 +68,7 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::JsonMemberList::new_unchecked(node) };
                     $body
                 }
+
                 _ => unreachable!(),
             },
         }

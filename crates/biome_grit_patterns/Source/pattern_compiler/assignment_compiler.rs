@@ -18,7 +18,9 @@ impl AssignmentCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Assignment<GritQueryContext>, CompileError> {
         let container = node.container()?;
+
         let var_text = container.syntax().text_trimmed().to_string();
+
         if is_reserved_metavariable(&var_text, None::<&GritTargetLanguage>) {
             return Err(CompileError::ReservedMetavariable(
                 var_text
@@ -28,6 +30,7 @@ impl AssignmentCompiler {
         }
 
         let variable = ContainerCompiler::from_node(&container, context)?;
+
         let pattern = PatternCompiler::from_node_with_rhs(&node.pattern()?, context, true)?;
 
         Ok(Assignment::new(variable, pattern))
@@ -42,7 +45,9 @@ impl PrAssignmentCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Assignment<GritQueryContext>, CompileError> {
         let container = node.container()?;
+
         let var_text = container.syntax().text_trimmed().to_string();
+
         if is_reserved_metavariable(&var_text, None::<&GritTargetLanguage>) {
             return Err(CompileError::ReservedMetavariable(
                 var_text
@@ -52,6 +57,7 @@ impl PrAssignmentCompiler {
         }
 
         let variable = ContainerCompiler::from_node(&container, context)?;
+
         let pattern = PatternCompiler::from_node_with_rhs(&node.pattern()?, context, true)?;
 
         Ok(Assignment::new(variable, pattern))

@@ -91,8 +91,11 @@ fn collect_control_characters(
     is_pattern_in_str: bool,
 ) -> Option<Vec<TextRange>> {
     let mut control_chars = Vec::new();
+
     let is_unicode_flag_set = flags.contains('u') || flags.contains('v');
+
     let bytes = pattern.as_bytes();
+
     let mut iter = pattern.bytes().enumerate();
 
     while let Some((index, c)) = iter.next() {
@@ -101,6 +104,7 @@ fn collect_control_characters(
                 let Some((escaped_index, c)) = iter.next() else {
                     break;
                 };
+
                 let (is_str_escape_seq, escaped_index, c) = if c == b'\\' && is_pattern_in_str {
                     let Some((escaped_index, c)) = iter.next() else {
                         break;
@@ -109,7 +113,9 @@ fn collect_control_characters(
                 } else {
                     (is_pattern_in_str, escaped_index, c)
                 };
+
                 let hex_index = escaped_index + 1;
+
                 match c {
                     b'x' if (hex_index + 2) <= bytes.len() => (
                         decode_hex(&bytes[hex_index..(hex_index + 2)]),
@@ -118,6 +124,7 @@ fn collect_control_characters(
                     b'u' if is_str_escape_seq || is_unicode_flag_set => {
                         if matches!(iter.next(), Some((_, b'{'))) {
                             let hex_index = hex_index + 1;
+
                             let Some((end, _)) = iter.find(|(_, c)| c == &b'}') else {
                                 continue;
                             };
@@ -131,6 +138,7 @@ fn collect_control_characters(
                             continue;
                         }
                     }
+
                     b'u' if (hex_index + 4) <= bytes.len() => (
                         decode_hex(&bytes[hex_index..(hex_index + 4)]),
                         hex_index + 4,
@@ -148,17 +156,21 @@ fn collect_control_characters(
                 continue;
             }
         };
+
         let (Some(control_char), end) = decoded else {
             continue;
         };
+
         if matches!(control_char, 0..=31) {
             let range = TextRange::new(
                 pattern_index + TextSize::from(index as u32),
                 pattern_index + TextSize::from(end as u32),
             );
+
             control_chars.push(range);
         }
     }
+
     Some(control_chars)
 }
 
@@ -171,24 +183,30 @@ fn collect_control_characters_from_expression(
         .is_some_and(|name| name.has_name("RegExp"))
     {
         let mut args = js_call_arguments.args().iter();
+
         let Some(static_value) = args
             .next()
             .and_then(|arg| arg.ok()?.as_any_js_expression()?.as_static_value())
         else {
             return Default::default();
         };
+
         let Some(pattern) = static_value.as_string_constant() else {
             return Default::default();
         };
+
         let pattern_start = static_value.range().start() + TextSize::from(1);
+
         let flags = args
             .next()
             .and_then(|arg| arg.ok()?.as_any_js_expression()?.as_static_value());
+
         let flags = if let Some(StaticValue::String(flags)) = &flags {
             flags.text()
         } else {
             ""
         };
+
         collect_control_characters(pattern_start, pattern, flags, true).unwrap_or_default()
     } else {
         Vec::new()
@@ -197,30 +215,40 @@ fn collect_control_characters_from_expression(
 
 impl Rule for NoControlCharactersInRegex {
     type Query = Ast<AnyRegexExpression>;
+
     type State = TextRange;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         match node {
             AnyRegexExpression::JsNewExpression(new_expr) => {
                 let (Ok(callee), Some(args)) = (new_expr.callee(), new_expr.arguments()) else {
                     return Default::default();
                 };
+
                 collect_control_characters_from_expression(&callee, &args)
             }
+
             AnyRegexExpression::JsCallExpression(call_expr) => {
                 let (Ok(callee), Ok(args)) = (call_expr.callee(), call_expr.arguments()) else {
                     return Default::default();
                 };
+
                 collect_control_characters_from_expression(&callee, &args)
             }
+
             AnyRegexExpression::JsRegexLiteralExpression(regex_literal_expr) => {
                 let Ok((pattern, flags)) = regex_literal_expr.decompose() else {
                     return Default::default();
                 };
+
                 let pattern_start = regex_literal_expr.range().start() + TextSize::from(1);
+
                 collect_control_characters(pattern_start, pattern.text(), flags.text(), false)
                     .unwrap_or_default()
             }

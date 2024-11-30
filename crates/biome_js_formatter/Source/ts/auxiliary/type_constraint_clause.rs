@@ -11,8 +11,11 @@ impl FormatNodeRule<TsTypeConstraintClause> for FormatTsTypeConstraintClause {
         let TsTypeConstraintClauseFields { extends_token, ty } = node.as_fields();
 
         let extends = extends_token.format();
+
         let ty = ty.format();
+
         let group_id = f.group_id("constraint");
+
         write![
             f,
             [

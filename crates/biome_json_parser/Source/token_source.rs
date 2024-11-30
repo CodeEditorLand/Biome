@@ -30,11 +30,13 @@ impl<'source> JsonTokenSource<'source> {
         };
 
         source.next_non_trivia_token(true);
+
         source
     }
 
     fn next_non_trivia_token(&mut self, first_token: bool) {
         let mut trailing = !first_token;
+
         self.preceding_line_break = false;
 
         while let Some(token) = self.lexer.next_token() {
@@ -46,15 +48,18 @@ impl<'source> JsonTokenSource<'source> {
                     // Not trivia
                     break;
                 }
+
                 Ok(trivia_kind) if trivia_kind.is_comment() && !self.options.allow_comments => {
                     self.set_current_token(token);
 
                     // Not trivia
                     break;
                 }
+
                 Ok(trivia_kind) => {
                     if trivia_kind.is_newline() {
                         trailing = false;
+
                         self.preceding_line_break = true;
                     }
 
@@ -67,6 +72,7 @@ impl<'source> JsonTokenSource<'source> {
 
     fn set_current_token(&mut self, token: Token) {
         self.current = token.kind();
+
         self.current_range = token.range()
     }
 }

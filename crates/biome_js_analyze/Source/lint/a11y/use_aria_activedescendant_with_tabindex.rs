@@ -59,8 +59,11 @@ declare_lint_rule! {
 
 impl Rule for UseAriaActivedescendantWithTabindex {
     type Query = Aria<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -81,6 +84,7 @@ impl Rule for UseAriaActivedescendantWithTabindex {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -97,7 +101,9 @@ impl Rule for UseAriaActivedescendantWithTabindex {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let descendant_attribute = node.find_attribute_by_name("aria-activedescendant")?;
 
         let old_attribute_list = descendant_attribute
@@ -115,6 +121,7 @@ impl Rule for UseAriaActivedescendantWithTabindex {
         .build();
 
         let mut new_attribute_list: Vec<_> = old_attribute_list.iter().collect();
+
         new_attribute_list.push(AnyJsxAttribute::JsxAttribute(new_attribute));
 
         mutation.replace_node(old_attribute_list, jsx_attribute_list(new_attribute_list));

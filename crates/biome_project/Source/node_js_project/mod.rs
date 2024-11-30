@@ -23,8 +23,11 @@ pub struct NodeJsProject {
 impl NodeJsProject {
     pub fn deserialize_tsconfig(&mut self, content: &ProjectLanguageRoot<TsConfigJson>) {
         let tsconfig = TsConfigJson::deserialize_manifest(content);
+
         let (tsconfig, deserialize_diagnostics) = tsconfig.consume();
+
         self.tsconfig = tsconfig.unwrap_or_default();
+
         self.diagnostics = deserialize_diagnostics
             .into_iter()
             .map(biome_diagnostics::serde::Diagnostic::new)
@@ -39,8 +42,11 @@ impl Project for NodeJsProject {
 
     fn deserialize_manifest(&mut self, content: &ProjectLanguageRoot<Self::Manifest>) {
         let manifest = Self::Manifest::deserialize_manifest(content);
+
         let (package, deserialize_diagnostics) = manifest.consume();
+
         self.manifest = package.unwrap_or_default();
+
         self.diagnostics = deserialize_diagnostics
             .into_iter()
             .map(biome_diagnostics::serde::Diagnostic::new)
@@ -57,6 +63,7 @@ impl Project for NodeJsProject {
 
     fn analyze(&self) -> ProjectAnalyzeResult {
         let mut diagnostics = vec![];
+
         if let Some((license, range)) = &self.manifest.license {
             if !LICENSE_LIST.is_valid(license) {
                 diagnostics

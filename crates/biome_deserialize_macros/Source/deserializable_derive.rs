@@ -22,6 +22,7 @@ impl DeriveInput {
     pub fn parse(input: syn::DeriveInput) -> Self {
         let attrs =
             ContainerAttrs::try_from(&input.attrs).expect("Could not parse field attributes");
+
         let data = if let ContainerAttrs {
             with_validator,
             from: Some(from),
@@ -55,8 +56,11 @@ impl DeriveInput {
                                 "Deserializable derive cannot handle enum variants with fields -- you may need a custom Deserializable implementation"
                             )
                         }
+
                         let attrs = EnumVariantAttrs::try_from(&variant.attrs).expect("Could not parse enum variant attributes");
+
                         let ident = variant.ident;
+
                         let key = attrs
                             .rename
                             .unwrap_or_else(|| Case::Camel.convert(&ident.to_string()));
@@ -64,14 +68,17 @@ impl DeriveInput {
                         DeserializableVariantData { ident, key }
                     })
                     .collect();
+
                     DeserializableData::Enum(DeserializableEnumData {
                         variants,
                         with_validator: attrs.with_validator,
                     })
                 }
+
                 Data::Struct(data) => {
                     if data.fields.iter().all(|field| field.ident.is_some()) {
                         let mut rest_field = None;
+
                         let fields = data
                             .fields
                             .into_iter()
@@ -81,6 +88,7 @@ impl DeriveInput {
                             .filter_map(|(ident, attrs, ty)| {
                                 let attrs = StructFieldAttrs::try_from(&attrs)
                                     .expect("Could not parse field attributes");
+
                                 let key = attrs
                                     .rename
                                     .unwrap_or_else(|| Case::Camel.convert(&ident.to_string()));
@@ -91,6 +99,7 @@ impl DeriveInput {
                                         "Cannot have multiple fields with #[deserializable(rest)]"
                                     )
                                 }
+
                                 if attrs.rest {
                                     rest_field = Some(ident.clone());
                                     // If rest field, we don't return a field data, because we don't
@@ -137,6 +146,7 @@ impl DeriveInput {
                     )
                     }
                 }
+
                 _ => abort!(
                     input,
                     "Deserializable can only be derived for enums and structs"
@@ -215,15 +225,19 @@ pub(crate) fn generate_deserializable(input: DeriveInput) -> TokenStream {
         DeserializableData::Enum(data) => {
             generate_deserializable_enum(input.ident, input.generics, data)
         }
+
         DeserializableData::Newtype(data) => {
             generate_deserializable_newtype(input.ident, input.generics, data)
         }
+
         DeserializableData::Struct(data) => {
             generate_deserializable_struct(input.ident, input.generics, data)
         }
+
         DeserializableData::From(data) => {
             generate_deserializable_from(input.ident, input.generics, data)
         }
+
         DeserializableData::TryFrom(data) => {
             generate_deserializable_try_from(input.ident, input.generics, data)
         }
@@ -277,11 +291,13 @@ fn generate_deserializable_enum(
                     #(#deserialize_variants),*,
                     unknown_variant => {
                         const ALLOWED_VARIANTS: &[&str] = &[#(#allowed_variants),*];
+
                         diagnostics.push(biome_deserialize::DeserializationDiagnostic::new_unknown_value(
                             unknown_variant,
                             value.range(),
                             ALLOWED_VARIANTS,
                         ));
+
                         return None;
                     }
                 };
@@ -308,6 +324,7 @@ fn generate_deserializable_newtype(
     };
 
     let trait_bounds = generate_trait_bounds(&generics);
+
     let generics = generate_generics_without_trait_bounds(&generics);
 
     quote! {
@@ -354,6 +371,7 @@ fn generate_deserializable_struct(
                 key,
                 ..
             } = field_data;
+
             let deprecation_notice = field_data.deprecated.map(|deprecated| match deprecated {
                 DeprecatedField::Message(message) => quote! {
                     diagnostics.push(DeserializationDiagnostic::new_deprecated(
@@ -394,6 +412,7 @@ fn generate_deserializable_struct(
                             #deprecation_notice
                             result.#field_ident = value;
                         }
+
                         None => #error_result
                     }
                 }
@@ -408,6 +427,7 @@ fn generate_deserializable_struct(
             .iter()
             .map(|field_data| &field_data.key)
             .collect();
+
         let required_fields = required_fields.iter().map(|field_data| {
             let DeserializableFieldData {
                 ident: field_ident,
@@ -415,6 +435,7 @@ fn generate_deserializable_struct(
                 ty,
                 ..
             } = field_data;
+
             quote! {
                 if result.#field_ident == #ty::default() {
                     diagnostics.push(DeserializationDiagnostic::new_missing_key(
@@ -425,11 +446,13 @@ fn generate_deserializable_struct(
                 }
             }
         });
+
         quote! {
             const REQUIRED_KEYS: &[&str] = &[#(#required_keys),*];
             #(#required_fields)*
         }
     };
+
     let validator = if data.with_validator {
         quote! {
             #validator
@@ -440,10 +463,12 @@ fn generate_deserializable_struct(
     } else {
         validator
     };
+
     let unknown_key_handler = if let Some(rest_field) = data.rest_field {
         quote! {
             unknown_key => {
                 let key_text = Text::deserialize(&key, "", diagnostics)?;
+
                 if let Some(value) = Deserializable::deserialize(&value, key_text.text(), diagnostics) {
                     std::iter::Extend::extend(&mut result.#rest_field, [(key_text, value)]);
                 }
@@ -457,9 +482,11 @@ fn generate_deserializable_struct(
                 } else {
                     quote! {}
                 };
+
                 quote! {
                     unknown_key => {
                         const ALLOWED_KEYS: &[&str] = &[#(#allowed_keys),*];
+
                         diagnostics.push(DeserializationDiagnostic::new_unknown_key(
                             unknown_key,
                             key.range(),
@@ -468,12 +495,15 @@ fn generate_deserializable_struct(
                     }
                 }
             }
+
             UnknownFields::Allow => quote! { _ => {} },
         }
     };
 
     let tuple_type = generate_generics_tuple(&generics);
+
     let trait_bounds = generate_trait_bounds(&generics);
+
     let generics = generate_generics_without_trait_bounds(&generics);
 
     quote! {
@@ -484,7 +514,9 @@ fn generate_deserializable_struct(
                 diagnostics: &mut Vec<biome_deserialize::DeserializationDiagnostic>,
             ) -> Option<Self> {
                 use std::marker::PhantomData;
+
                 struct Visitor #generics (PhantomData< #tuple_type >);
+
                 impl #generics biome_deserialize::DeserializationVisitor for Visitor #generics #trait_bounds {
                     type Output = #ident #generics;
 
@@ -498,11 +530,14 @@ fn generate_deserializable_struct(
                         diagnostics: &mut Vec<biome_deserialize::DeserializationDiagnostic>,
                     ) -> Option<Self::Output> {
                         use biome_deserialize::{Deserializable, DeserializationDiagnostic, Text};
+
                         let mut result: Self::Output = Self::Output::default();
+
                         for (key, value) in members.flatten() {
                             let Some(key_text) = Text::deserialize(&key, "", diagnostics) else {
                                 continue;
                             };
+
                             match key_text.text() {
                                 #(#deserialize_fields)*
                                 #unknown_key_handler
@@ -525,8 +560,11 @@ fn generate_deserializable_from(
     data: DeserializableFromData,
 ) -> TokenStream {
     let trait_bounds = generate_trait_bounds(&generics);
+
     let generics = generate_generics_without_trait_bounds(&generics);
+
     let from = data.from;
+
     let validator = if data.with_validator {
         quote! {
             if !biome_deserialize::DeserializableValidator::validate(&mut result, name, value.range(), diagnostics) {
@@ -536,6 +574,7 @@ fn generate_deserializable_from(
     } else {
         quote! {}
     };
+
     quote! {
         impl #generics biome_deserialize::Deserializable for #ident #generics #trait_bounds {
             fn deserialize(
@@ -544,6 +583,7 @@ fn generate_deserializable_from(
                 diagnostics: &mut Vec<biome_deserialize::DeserializationDiagnostic>,
             ) -> Option<Self> {
                 let result: #from = biome_deserialize::Deserializable::deserialize(value, name, diagnostics)?;
+
                 let mut result: Self = result.into();
                 #validator
                 Some(result)
@@ -558,8 +598,11 @@ fn generate_deserializable_try_from(
     data: DeserializableTryFromData,
 ) -> TokenStream {
     let trait_bounds = generate_trait_bounds(&generics);
+
     let generics = generate_generics_without_trait_bounds(&generics);
+
     let try_from = data.try_from;
+
     let validator = if data.with_validator {
         quote! {
             if !biome_deserialize::DeserializableValidator::validate(&mut result, name, value.range(), diagnostics) {
@@ -569,6 +612,7 @@ fn generate_deserializable_try_from(
     } else {
         quote! {}
     };
+
     quote! {
         impl #generics biome_deserialize::Deserializable for #ident #generics #trait_bounds {
             fn deserialize(
@@ -577,15 +621,18 @@ fn generate_deserializable_try_from(
                 diagnostics: &mut Vec<biome_deserialize::DeserializationDiagnostic>,
             ) -> Option<Self> {
                 let mut result: #try_from = biome_deserialize::Deserializable::deserialize(value, name, diagnostics)?;
+
                 match result.try_into() {
                     Ok(result) => {
                         #validator
                         Some(result)
                     }
+
                     Err(err) => {
                         diagnostics.push(biome_deserialize::DeserializationDiagnostic::new(
                             format_args!("{}", err)
                         ).with_range(value.range()));
+
                         None
                     }
                 }
@@ -604,11 +651,15 @@ fn generate_generics_without_trait_bounds(generics: &Generics) -> TokenStream {
                     .attrs
                     .iter()
                     .fold(quote! {}, |acc, attr| quote! { #acc #attr });
+
                 let ident = &ty.ident;
+
                 quote! { #attrs #ident }
             }
+
             _ => abort!(generics, "Unsupported generic parameter"),
         });
+
         quote! {
             < #(#params),* >
         }
@@ -622,15 +673,19 @@ fn generate_trait_bounds(generics: &Generics) -> TokenStream {
         let params = generics.params.iter().map(|param| match param {
             GenericParam::Type(ty) => {
                 let ident = &ty.ident;
+
                 let bounds = &ty.bounds;
+
                 if bounds.is_empty() {
                     quote! { #ident: biome_deserialize::Deserializable }
                 } else {
                     quote! { #ident: #bounds + biome_deserialize::Deserializable }
                 }
             }
+
             _ => abort!(generics, "Unsupported generic parameter"),
         });
+
         quote! {
             where #(#params),*
         }
@@ -641,10 +696,13 @@ fn generate_generics_tuple(generics: &Generics) -> TokenStream {
     let params = generics.params.iter().map(|param| match param {
         GenericParam::Type(ty) => {
             let ident = &ty.ident;
+
             quote! { #ident }
         }
+
         _ => abort!(generics, "Unsupported generic parameter"),
     });
+
     quote! {
         ( #(#params),* )
     }

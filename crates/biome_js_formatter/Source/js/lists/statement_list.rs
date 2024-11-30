@@ -15,6 +15,7 @@ impl FormatRule<JsStatementList> for FormatJsStatementList {
                 AnyJsStatement::JsEmptyStatement(empty) => {
                     join.entry_no_separator(&empty.format());
                 }
+
                 _ => {
                     join.entry(statement.syntax(), &format_or_verbatim(statement.format()));
                 }

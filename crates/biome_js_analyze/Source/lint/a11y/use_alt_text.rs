@@ -72,8 +72,11 @@ impl Display for ValidatedElement {
 
 impl Rule for UseAltText {
     type Query = Ast<AnyJsxElement>;
+
     type State = (ValidatedElement, TextRange);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -84,9 +87,13 @@ impl Rule for UseAltText {
         }
 
         let has_alt = has_valid_alt_text(element);
+
         let has_aria_label = has_valid_label(element, "aria-label");
+
         let has_aria_labelledby = has_valid_label(element, "aria-labelledby");
+
         let aria_hidden = is_aria_hidden(element);
+
         match element.name_value_token().ok()?.text_trimmed() {
             "object" => {
                 let has_title = has_valid_label(element, "title");
@@ -101,6 +108,7 @@ impl Rule for UseAltText {
                                 ));
                             }
                         }
+
                         AnyJsxElement::JsxSelfClosingElement(_) => {
                             return Some((ValidatedElement::Object, element.syntax().text_range()));
                         }
@@ -127,6 +135,7 @@ impl Rule for UseAltText {
                     return Some((ValidatedElement::Input, element.syntax().text_range()));
                 }
             }
+
             _ => {}
         }
 
@@ -135,9 +144,11 @@ impl Rule for UseAltText {
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let (validate_element, range) = state;
+
         let message = markup!(
             "Provide a text alternative through the "{{validate_element}}", "<Emphasis>"aria-label"</Emphasis>" or "<Emphasis>"aria-labelledby"</Emphasis>" attribute"
         ).to_owned();
+
         Some(
             RuleDiagnostic::new(rule_category!(), range, message).note(markup! {
                 "Meaningful alternative text on elements helps users relying on screen readers to understand content's purpose within a page."
@@ -178,6 +189,7 @@ fn has_valid_label(element: &AnyJsxElement, name_to_lookup: &str) -> bool {
             if attribute.initializer().is_none() {
                 return false;
             }
+
             attribute.as_static_value().map_or(true, |value| {
                 !value.is_null_or_undefined() && value.is_not_string_constant("")
             }) && !element.has_trailing_spread_prop(&attribute)

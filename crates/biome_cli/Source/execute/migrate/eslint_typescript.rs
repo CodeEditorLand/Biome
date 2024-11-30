@@ -40,6 +40,7 @@ impl From<ArrayType> for use_consistent_array_type::ConsistentArrayType {
             ArrayType::Array | ArrayType::ArraySimple => {
                 use_consistent_array_type::ConsistentArrayType::Shorthand
             }
+
             ArrayType::Generic => use_consistent_array_type::ConsistentArrayType::Generic,
         }
     }
@@ -84,63 +85,77 @@ impl NamingConventionOptions {
         let mut inner: Vec<_> = overrides.into_iter().collect();
         // Order of the least general selection to the most geenral selection
         inner.sort_by(|a, b| a.precedence(b));
+
         Self(inner)
     }
 }
 impl From<NamingConventionOptions> for use_naming_convention::NamingConventionOptions {
     fn from(val: NamingConventionOptions) -> Self {
         let mut conventions = Vec::new();
+
         for selection in val.0 {
             if selection.types.is_some() || selection.filter.is_some() || selection.custom.is_some()
             {
                 // We don't support types/filter/custom
                 continue;
             }
+
             let matching = if selection.leading_underscore.is_some()
                 || selection.trailing_underscore.is_some()
             {
                 let leading_underscore = selection
                     .leading_underscore
                     .map_or("", |underscore| underscore.as_regex_part());
+
                 let trailing_underscore = selection
                     .trailing_underscore
                     .map_or("", |underscore| underscore.as_regex_part());
+
                 let regex = format!("{leading_underscore}([^_]*){trailing_underscore}");
+
                 RestrictedRegex::from_str(&regex).ok()
             } else {
                 None
             };
+
             let prefix = selection
                 .prefix
                 .iter()
                 .map(|p| regex::escape(p))
                 .collect::<Vec<_>>()
                 .join("|");
+
             let suffix = selection
                 .suffix
                 .iter()
                 .map(|p| regex::escape(p))
                 .collect::<Vec<_>>()
                 .join("|");
+
             let prefix = if prefix.is_empty() {
                 prefix
             } else {
                 format!("(?:{prefix})")
             };
+
             let suffix = if suffix.is_empty() {
                 suffix
             } else {
                 format!("(?:{suffix})")
             };
+
             let matching = if !prefix.is_empty() || !suffix.is_empty() {
                 if matching.is_some() {
                     continue;
                 }
+
                 RestrictedRegex::try_from(format!("{prefix}(.*){suffix}")).ok()
             } else {
                 matching
             };
+
             let selectors = selection.selectors();
+
             let formats = if let Some(format) = selection.format {
                 format
                     .into_iter()
@@ -149,6 +164,7 @@ impl From<NamingConventionOptions> for use_naming_convention::NamingConventionOp
             } else {
                 use_naming_convention::Formats::default()
             };
+
             for selector in selectors {
                 conventions.push(use_naming_convention::Convention {
                     selector,
@@ -157,6 +173,7 @@ impl From<NamingConventionOptions> for use_naming_convention::NamingConventionOp
                 });
             }
         }
+
         use_naming_convention::NamingConventionOptions {
             strict_case: false,
             require_ascii: false,
@@ -183,52 +200,66 @@ impl NamingConventionSelection {
     fn precedence(&self, other: &Self) -> Ordering {
         // Simplification: We compare only the first selectors.
         let selector = self.selector.iter().next();
+
         let other_selector = other.selector.iter().next();
+
         match selector.cmp(&other_selector) {
             Ordering::Equal => {}
+
             ord => return ord,
         }
+
         match (&self.types, &other.types) {
             (None, None) | (Some(_), Some(_)) => {}
             (None, Some(_)) => return Ordering::Greater,
             (Some(_), None) => return Ordering::Less,
         }
+
         match (&self.modifiers, &other.modifiers) {
             (None, None) | (Some(_), Some(_)) => {}
             (None, Some(_)) => return Ordering::Greater,
             (Some(_), None) => return Ordering::Less,
         }
+
         Ordering::Equal
     }
 
     fn selectors(&self) -> Vec<use_naming_convention::Selector> {
         let mut result = Vec::new();
+
         let modifiers: use_naming_convention::Modifiers = self
             .modifiers
             .iter()
             .flatten()
             .filter_map(|m| m.as_modifier())
             .collect();
+
         let has_class_modifier =
             modifiers.contains(use_naming_convention::RestrictedModifier::Abstract);
+
         let has_class_member_modifier = modifiers
             .contains(use_naming_convention::RestrictedModifier::Private)
             || modifiers.contains(use_naming_convention::RestrictedModifier::Protected);
+
         let has_property_modifier =
             modifiers.contains(use_naming_convention::RestrictedModifier::Readonly);
+
         modifiers.contains(use_naming_convention::RestrictedModifier::Private);
+
         let scope = self
             .modifiers
             .iter()
             .flatten()
             .find_map(|m| m.as_scope())
             .unwrap_or_default();
+
         for selector in self.selector.iter() {
             match selector {
                 Selector::AutoAccessor => {
                     // currently unsupported by Biome
                     continue;
                 }
+
                 Selector::Class => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::Class,
@@ -236,6 +267,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::ClassMethod => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ClassMethod,
@@ -243,6 +275,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::ClassProperty => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ClassProperty,
@@ -250,6 +283,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::Enum => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::Enum,
@@ -257,6 +291,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::EnumMember => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::EnumMember,
@@ -264,6 +299,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::Function => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::Function,
@@ -271,18 +307,21 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::Import => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ImportNamespace,
                         modifiers,
                         scope,
                     });
+
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ImportAlias,
                         modifiers,
                         scope,
                     });
                 }
+
                 Selector::Interface => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::Interface,
@@ -290,6 +329,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::ObjectLiteralMethod => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ObjectLiteralMethod,
@@ -297,6 +337,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::ObjectLiteralProperty => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ObjectLiteralProperty,
@@ -304,6 +345,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::Parameter => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::FunctionParameter,
@@ -311,6 +353,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::ParameterProperty => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ClassProperty,
@@ -318,6 +361,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::TypeAlias => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::TypeAlias,
@@ -325,6 +369,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::TypeMethod => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::TypeMethod,
@@ -332,6 +377,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::TypeParameter => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::TypeParameter,
@@ -339,6 +385,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::TypeProperty => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::TypeProperty,
@@ -346,6 +393,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::Variable => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::Variable,
@@ -353,6 +401,7 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::Default => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::Any,
@@ -360,33 +409,39 @@ impl NamingConventionSelection {
                         scope,
                     });
                 }
+
                 Selector::ClassicAccessor | Selector::Accessor => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ClassGetter,
                         modifiers,
                         scope,
                     });
+
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ClassSetter,
                         modifiers,
                         scope,
                     });
+
                     if !has_class_member_modifier {
                         result.push(use_naming_convention::Selector {
                             kind: use_naming_convention::Kind::ObjectLiteralGetter,
                             modifiers,
                             scope,
                         });
+
                         result.push(use_naming_convention::Selector {
                             kind: use_naming_convention::Kind::ObjectLiteralSetter,
                             modifiers,
                             scope,
                         });
+
                         result.push(use_naming_convention::Selector {
                             kind: use_naming_convention::Kind::TypeGetter,
                             modifiers,
                             scope,
                         });
+
                         result.push(use_naming_convention::Selector {
                             kind: use_naming_convention::Kind::TypeSetter,
                             modifiers,
@@ -394,18 +449,21 @@ impl NamingConventionSelection {
                         });
                     }
                 }
+
                 Selector::MemberLike => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ClassMember,
                         modifiers,
                         scope,
                     });
+
                     if !has_class_member_modifier {
                         result.push(use_naming_convention::Selector {
                             kind: use_naming_convention::Kind::ObjectLiteralMember,
                             modifiers,
                             scope,
                         });
+
                         result.push(use_naming_convention::Selector {
                             kind: use_naming_convention::Kind::TypeMember,
                             modifiers,
@@ -413,18 +471,21 @@ impl NamingConventionSelection {
                         });
                     }
                 }
+
                 Selector::Method => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ClassMethod,
                         modifiers,
                         scope,
                     });
+
                     if !has_class_member_modifier {
                         result.push(use_naming_convention::Selector {
                             kind: use_naming_convention::Kind::ObjectLiteralMethod,
                             modifiers,
                             scope,
                         });
+
                         result.push(use_naming_convention::Selector {
                             kind: use_naming_convention::Kind::TypeMethod,
                             modifiers,
@@ -432,18 +493,21 @@ impl NamingConventionSelection {
                         });
                     }
                 }
+
                 Selector::Property => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::ClassProperty,
                         modifiers,
                         scope,
                     });
+
                     if !has_class_member_modifier {
                         result.push(use_naming_convention::Selector {
                             kind: use_naming_convention::Kind::TypeProperty,
                             modifiers,
                             scope,
                         });
+
                         if !has_property_modifier {
                             result.push(use_naming_convention::Selector {
                                 kind: use_naming_convention::Kind::ObjectLiteralProperty,
@@ -453,6 +517,7 @@ impl NamingConventionSelection {
                         }
                     }
                 }
+
                 Selector::TypeLike => {
                     if has_class_modifier {
                         result.push(use_naming_convention::Selector {
@@ -468,17 +533,20 @@ impl NamingConventionSelection {
                         });
                     }
                 }
+
                 Selector::VariableLike => {
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::Variable,
                         modifiers,
                         scope,
                     });
+
                     result.push(use_naming_convention::Selector {
                         kind: use_naming_convention::Kind::Function,
                         modifiers,
                         scope,
                     });
+
                     if scope != use_naming_convention::Scope::Global {
                         result.push(use_naming_convention::Selector {
                             kind: use_naming_convention::Kind::FunctionParameter,
@@ -492,6 +560,7 @@ impl NamingConventionSelection {
         // Remove invalid selectors.
         // This avoids to generate errors when loading the Biome configuration.
         result.retain(|selector| selector.check().is_ok());
+
         result
     }
 }
@@ -594,6 +663,7 @@ impl Modifier {
             _ => None,
         }
     }
+
     fn as_scope(self) -> Option<use_naming_convention::Scope> {
         match self {
             Modifier::Global => Some(use_naming_convention::Scope::Global),

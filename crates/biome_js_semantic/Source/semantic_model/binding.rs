@@ -58,6 +58,7 @@ impl Binding {
     /// Returns the scope of this binding
     pub fn scope(&self) -> Scope {
         let binding = self.data.binding(self.id);
+
         Scope {
             data: self.data.clone(),
             id: self.data.scope(binding.range),
@@ -78,6 +79,7 @@ impl Binding {
     /// Returns an iterator to all references of this binding.
     pub fn all_references(&self) -> AllBindingReferencesIter {
         let binding = self.data.binding(self.id);
+
         let first = if binding.references.is_empty() {
             None
         } else {
@@ -86,12 +88,14 @@ impl Binding {
                 id: ReferenceId::new(self.id, 0),
             })
         };
+
         std::iter::successors(first, Reference::find_next)
     }
 
     /// Returns an iterator to all reads references of this binding.
     pub fn all_reads(&self) -> AllBindingReadReferencesIter {
         let binding = self.data.binding(self.id);
+
         let first = binding
             .references
             .iter()
@@ -101,12 +105,14 @@ impl Binding {
                 data: self.data.clone(),
                 id: ReferenceId::new(self.id, index),
             });
+
         std::iter::successors(first, Reference::find_next_read)
     }
 
     /// Returns an iterator to all write references of this binding.
     pub fn all_writes(&self) -> AllBindingWriteReferencesIter {
         let binding = self.data.binding(self.id);
+
         let first = binding
             .references
             .iter()
@@ -116,6 +122,7 @@ impl Binding {
                 data: self.data.clone(),
                 id: ReferenceId::new(self.id, index),
             });
+
         std::iter::successors(first, Reference::find_next_write)
     }
 
@@ -124,6 +131,7 @@ impl Binding {
     /// or an identifier usage.
     pub fn exports(&self) -> impl Iterator<Item = JsSyntaxNode> + '_ {
         let binding = self.data.binding(self.id);
+
         binding
             .export_by_start
             .iter()

@@ -67,14 +67,20 @@ declare_lint_rule! {
 
 impl Rule for NoUnknownProperty {
     type Query = Ast<CssGenericProperty>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let property_name = node.name().ok()?.text();
+
         let property_name_lower = property_name.to_ascii_lowercase_cow();
+
         if !property_name_lower.starts_with("--")
             // Ignore `composes` property.
             // See https://github.com/css-modules/css-modules/blob/master/docs/composition.md for more details.
@@ -84,6 +90,7 @@ impl Rule for NoUnknownProperty {
         {
             return Some(node.name().ok()?.range());
         }
+
         None
     }
 

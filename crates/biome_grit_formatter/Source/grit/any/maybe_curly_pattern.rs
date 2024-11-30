@@ -6,6 +6,7 @@ use biome_grit_syntax::AnyGritMaybeCurlyPattern;
 pub(crate) struct FormatAnyGritMaybeCurlyPattern;
 impl FormatRule<AnyGritMaybeCurlyPattern> for FormatAnyGritMaybeCurlyPattern {
     type Context = GritFormatContext;
+
     fn fmt(&self, node: &AnyGritMaybeCurlyPattern, f: &mut GritFormatter) -> FormatResult<()> {
         match node {
             AnyGritMaybeCurlyPattern::AnyGritPattern(node) => node.format().fmt(f),

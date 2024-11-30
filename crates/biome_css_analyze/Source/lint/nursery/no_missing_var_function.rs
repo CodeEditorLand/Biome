@@ -143,17 +143,22 @@ pub const IGNORED_PROPERTIES: [&str; 17] = [
 
 impl Rule for NoMissingVarFunction {
     type Query = Semantic<CssDashedIdentifier>;
+
     type State = CssDashedIdentifier;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         if is_wrapped_in_var(node) {
             return None;
         }
 
         let property_name = get_property_name(node)?;
+
         let custom_variable_name = node.text();
 
         if IGNORED_PROPERTIES.contains(&property_name.as_str()) {
@@ -161,6 +166,7 @@ impl Rule for NoMissingVarFunction {
         }
 
         let model = ctx.model();
+
         let rule = model.get_rule_by_range(node.range())?;
 
         if rule
@@ -172,8 +178,10 @@ impl Rule for NoMissingVarFunction {
         }
 
         let mut parent_id = rule.parent_id;
+
         while let Some(id) = parent_id {
             let parent_rule = model.get_rule_by_id(id)?;
+
             if parent_rule
                 .declarations
                 .iter()
@@ -181,6 +189,7 @@ impl Rule for NoMissingVarFunction {
             {
                 return Some(node.clone());
             }
+
             parent_id = parent_rule.parent_id;
         }
 
@@ -196,7 +205,9 @@ impl Rule for NoMissingVarFunction {
 
     fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
         let span = node.range();
+
         let custom_variable_name = node.text();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -214,6 +225,7 @@ impl Rule for NoMissingVarFunction {
 
 fn is_wrapped_in_var(node: &CssDashedIdentifier) -> bool {
     let mut current_node = node.syntax().parent();
+
     while let Some(parent) = current_node {
         match parent.kind() {
             // Ignore declarations of custom properties
@@ -225,23 +237,29 @@ fn is_wrapped_in_var(node: &CssDashedIdentifier) -> bool {
             CssSyntaxKind::CSS_FUNCTION => return parent.text_trimmed().starts_with("var"),
             _ => {}
         }
+
         current_node = parent.parent();
     }
+
     false
 }
 
 fn get_property_name(node: &CssDashedIdentifier) -> Option<String> {
     let mut current_node = node.syntax().parent();
+
     while let Some(parent) = current_node {
         if let Some(node) = CssDeclaration::cast(parent.clone()) {
             let prop = node.property().ok()?;
+
             return match prop {
                 AnyCssProperty::CssBogusProperty(_) => None,
                 AnyCssProperty::CssComposesProperty(prop) => Some(prop.name().ok()?.text()),
                 AnyCssProperty::CssGenericProperty(prop) => Some(prop.name().ok()?.text()),
             };
         }
+
         current_node = parent.parent();
     }
+
     None
 }

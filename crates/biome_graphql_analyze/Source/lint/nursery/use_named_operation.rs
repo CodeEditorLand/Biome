@@ -44,13 +44,18 @@ declare_lint_rule! {
 
 impl Rule for UseNamedOperation {
     type Query = Ast<GraphqlOperationDefinition>;
+
     type State = GraphqlOperationType;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let operation_type = node.ty().ok()?;
+
         if node.name().is_some() {
             None
         } else {
@@ -78,11 +83,17 @@ impl Rule for UseNamedOperation {
 
     fn action(ctx: &RuleContext<Self>, operation_type: &Self::State) -> Option<GraphqlRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let node = ctx.query().clone();
+
         let operation_type = operation_type.text();
+
         let suggested_name = get_suggested_name(&node, operation_type.clone());
+
         let new_name = make::graphql_name_binding(make::ident(&suggested_name));
+
         let new_node = node.clone().with_name(Some(new_name));
+
         mutation.replace_node(node, new_node);
 
         Some(GraphqlRuleAction::new(
@@ -113,5 +124,6 @@ fn get_suggested_name(operation: &GraphqlOperationDefinition, operation_type: St
                 .or(first_field.name().ok().map(|name| name.text()))
         })
         .unwrap_or(operation_type);
+
     Case::Pascal.convert(&suggested_name)
 }

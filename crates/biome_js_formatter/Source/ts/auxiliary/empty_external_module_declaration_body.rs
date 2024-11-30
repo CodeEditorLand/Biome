@@ -17,6 +17,7 @@ impl FormatNodeRule<TsEmptyExternalModuleDeclarationBody>
         f: &mut JsFormatter,
     ) -> FormatResult<()> {
         let TsEmptyExternalModuleDeclarationBodyFields { semicolon_token } = node.as_fields();
+
         write![f, [FormatOptionalSemicolon::new(Some(&semicolon_token?))]]
     }
 }

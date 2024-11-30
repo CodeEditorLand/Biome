@@ -45,11 +45,14 @@ impl ExtensionSettings {
 
     pub(crate) fn set_workspace_settings(&mut self, value: Value) -> Result<(), Error> {
         let workspace_settings = serde_json::from_value(value)?;
+
         self.settings = workspace_settings;
+
         trace!(
             "Correctly stored the settings coming from the client: {:?}",
             self.settings
         );
+
         Ok(())
     }
 

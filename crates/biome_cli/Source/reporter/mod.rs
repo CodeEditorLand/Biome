@@ -54,6 +54,7 @@ pub trait ReporterVisitor {
     /// Writes the paths that were handled during a run.
     fn report_handled_paths(&mut self, evaluated_paths: BTreeSet<BiomePath>) -> io::Result<()> {
         let _ = evaluated_paths;
+
         Ok(())
     }
 

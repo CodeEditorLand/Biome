@@ -25,6 +25,7 @@ impl DeriveInput {
                     MergeableData::Newtype
                 }
             }
+
             Data::Union(_) => abort!(input, "Merge can only be derived for enums and structs"),
         };
 
@@ -65,6 +66,7 @@ fn generate_merge_newtype(ident: Ident) -> TokenStream {
 
 fn generate_merge_struct(ident: Ident, fields: Fields) -> TokenStream {
     let field_idents = fields.into_iter().filter_map(|field| field.ident);
+
     quote! {
         impl biome_deserialize::Merge for #ident {
             fn merge_with(&mut self, other: Self) {

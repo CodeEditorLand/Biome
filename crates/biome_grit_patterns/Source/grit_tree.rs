@@ -11,6 +11,7 @@ pub struct GritTargetTree {
 impl GritTargetTree {
     pub fn new(root: GritTargetLanguageNode) -> Self {
         let source = root.owned_text().into_owned();
+
         Self { root, source }
     }
 

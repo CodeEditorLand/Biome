@@ -61,8 +61,11 @@ declare_node_union! {
 
 impl Rule for NoExtraNonNullAssertion {
     type Query = Ast<AnyTsNonNullAssertion>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -78,6 +81,7 @@ impl Rule for NoExtraNonNullAssertion {
                     return Some(());
                 }
             }
+
             AnyTsNonNullAssertion::TsNonNullAssertionExpression(_) => {
                 let parent = node
                     .syntax()
@@ -125,12 +129,14 @@ impl Rule for NoExtraNonNullAssertion {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let node = ctx.query();
 
         let excl_token = match node {
             AnyTsNonNullAssertion::TsNonNullAssertionAssignment(assignment) => {
                 assignment.excl_token().ok()?
             }
+
             AnyTsNonNullAssertion::TsNonNullAssertionExpression(expression) => {
                 expression.excl_token().ok()?
             }

@@ -59,8 +59,11 @@ declare_node_union! {
 
 impl Rule for NoNonNullAssertion {
     type Query = Ast<AnyTsNonNullAssertion>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -86,6 +89,7 @@ impl Rule for NoNonNullAssertion {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         match node {
             AnyTsNonNullAssertion::TsNonNullAssertionAssignment(_) => None,
             AnyTsNonNullAssertion::TsNonNullAssertionExpression(node) => {
@@ -94,10 +98,13 @@ impl Rule for NoNonNullAssertion {
                 // get the expression without assertion marker
                 // the loop handles repetitive (useless) assertion marker such as `expr!!!`.
                 let mut expr = node.expression();
+
                 while let Ok(AnyJsExpression::TsNonNullAssertionExpression(assertion)) = expr {
                     expr = assertion.expression()
                 }
+
                 let assertion_less_expr = expr.ok()?;
+
                 let old_node = AnyJsExpression::TsNonNullAssertionExpression(node.clone());
 
                 match node.parent::<AnyJsExpression>()? {
@@ -117,9 +124,11 @@ impl Rule for NoNonNullAssertion {
                                 .clone()
                                 .with_optional_chain_token(Some(make::token(T![?.])))
                                 .with_object(assertion_less_expr);
+
                             mutation.replace_node(parent, new_parent);
                         }
                     }
+
                     AnyJsExpression::JsCallExpression(parent) => {
                         if parent.is_optional() {
                             // f!?() --> f?()
@@ -130,9 +139,11 @@ impl Rule for NoNonNullAssertion {
                                 .clone()
                                 .with_optional_chain_token(Some(make::token(T![?.])))
                                 .with_callee(assertion_less_expr);
+
                             mutation.replace_node(parent, new_parent);
                         }
                     }
+
                     AnyJsExpression::JsStaticMemberExpression(parent) => {
                         if parent.is_optional() {
                             // object!?.prop --> object?.prop
@@ -143,9 +154,11 @@ impl Rule for NoNonNullAssertion {
                                 .clone()
                                 .with_operator_token_token(make::token(T![?.]))
                                 .with_object(assertion_less_expr);
+
                             mutation.replace_node(parent, new_parent);
                         }
                     }
+
                     _ => {
                         // unsupported
                         return None;

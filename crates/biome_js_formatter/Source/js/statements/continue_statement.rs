@@ -34,8 +34,10 @@ impl FormatNodeRule<JsContinueStatement> for FormatJsContinueStatement {
         if !f.comments().has_dangling_comments(node.syntax()) {
             return Ok(());
         }
+
         let content =
             format_with(|f| write!(f, [space(), format_dangling_comments(node.syntax())]));
+
         write!(f, [line_suffix(&content), expand_parent()])
     }
 }

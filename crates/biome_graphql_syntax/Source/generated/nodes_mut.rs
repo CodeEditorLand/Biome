@@ -10,6 +10,7 @@ impl GraphqlAlias {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_colon_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -24,12 +25,14 @@ impl GraphqlArgument {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_colon_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_value(self, element: AnyGraphqlValue) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -44,12 +47,14 @@ impl GraphqlArguments {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_arguments(self, element: GraphqlArgumentList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_paren_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -64,12 +69,14 @@ impl GraphqlArgumentsDefinition {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_arguments(self, element: GraphqlArgumentDefinitionList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_paren_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -92,6 +99,7 @@ impl GraphqlDefaultValue {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_value(self, element: AnyGraphqlValue) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -114,12 +122,14 @@ impl GraphqlDirective {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameReference) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_arguments(self, element: Option<GraphqlArguments>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             2usize..=2usize,
@@ -134,48 +144,56 @@ impl GraphqlDirectiveDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_directive_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_at_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameBinding) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_arguments(self, element: Option<GraphqlArgumentsDefinition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             4usize..=4usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_repeatable_token(self, element: Option<SyntaxToken>) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(5usize..=5usize, once(element.map(|element| element.into()))),
         )
     }
+
     pub fn with_on_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(6usize..=6usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_bitwise_or_token(self, element: Option<SyntaxToken>) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(7usize..=7usize, once(element.map(|element| element.into()))),
         )
     }
+
     pub fn with_locations(self, element: GraphqlDirectiveLocationList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -198,24 +216,28 @@ impl GraphqlEnumTypeDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_enum_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameBinding) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_enum_values(self, element: Option<GraphqlEnumValuesDefinition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             4usize..=4usize,
@@ -230,24 +252,28 @@ impl GraphqlEnumTypeExtension {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_enum_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameReference) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_enum_values(self, element: Option<GraphqlEnumValuesDefinition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             4usize..=4usize,
@@ -270,12 +296,14 @@ impl GraphqlEnumValueDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_value(self, element: GraphqlLiteralName) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -290,12 +318,14 @@ impl GraphqlEnumValuesDefinition {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_values(self, element: GraphqlEnumValueList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_curly_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -310,24 +340,28 @@ impl GraphqlField {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_name(self, element: GraphqlLiteralName) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_arguments(self, element: Option<GraphqlArguments>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             2usize..=2usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_selection_set(self, element: Option<GraphqlSelectionSet>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             4usize..=4usize,
@@ -342,30 +376,35 @@ impl GraphqlFieldDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_name(self, element: GraphqlLiteralName) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_arguments(self, element: Option<GraphqlArgumentsDefinition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             2usize..=2usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_colon_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_ty(self, element: AnyGraphqlType) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(4usize..=4usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -380,12 +419,14 @@ impl GraphqlFieldsDefinition {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_fields(self, element: GraphqlFieldDefinitionList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_curly_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -408,24 +449,28 @@ impl GraphqlFragmentDefinition {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameBinding) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_type_condition(self, element: GraphqlTypeCondition) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_selection_set(self, element: GraphqlSelectionSet) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -440,12 +485,14 @@ impl GraphqlFragmentSpread {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameReference) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -460,12 +507,14 @@ impl GraphqlImplementsInterfaces {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_amp_token(self, element: Option<SyntaxToken>) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(element.map(|element| element.into()))),
         )
     }
+
     pub fn with_interfaces(self, element: GraphqlImplementsInterfaceList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -480,18 +529,21 @@ impl GraphqlInlineFragment {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_type_condition(self, element: Option<GraphqlTypeCondition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             1usize..=1usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_selection_set(self, element: GraphqlSelectionSet) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -506,12 +558,14 @@ impl GraphqlInputFieldsDefinition {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_fields(self, element: GraphqlInputFieldList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_curly_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -526,24 +580,28 @@ impl GraphqlInputObjectTypeDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_input_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameBinding) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_input_fields(self, element: Option<GraphqlInputFieldsDefinition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             4usize..=4usize,
@@ -558,24 +616,28 @@ impl GraphqlInputObjectTypeExtension {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_input_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameReference) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_input_fields(self, element: Option<GraphqlInputFieldsDefinition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             4usize..=4usize,
@@ -590,30 +652,35 @@ impl GraphqlInputValueDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_name(self, element: GraphqlLiteralName) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_colon_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_ty(self, element: AnyGraphqlType) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_default(self, element: Option<GraphqlDefaultValue>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             4usize..=4usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -636,30 +703,35 @@ impl GraphqlInterfaceTypeDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_interface_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameBinding) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_implements(self, element: Option<GraphqlImplementsInterfaces>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             3usize..=3usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(4usize..=4usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_fields(self, element: Option<GraphqlFieldsDefinition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             5usize..=5usize,
@@ -674,30 +746,35 @@ impl GraphqlInterfaceTypeExtension {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_interface_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameReference) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_implements(self, element: Option<GraphqlImplementsInterfaces>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             3usize..=3usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(4usize..=4usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_fields(self, element: Option<GraphqlFieldsDefinition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             5usize..=5usize,
@@ -712,12 +789,14 @@ impl GraphqlListType {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_element(self, element: AnyGraphqlType) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_brack_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -732,12 +811,14 @@ impl GraphqlListValue {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_elements(self, element: GraphqlListValueElementList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_brack_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -776,6 +857,7 @@ impl GraphqlNonNullType {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_excl_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -798,12 +880,14 @@ impl GraphqlObjectField {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_colon_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_value(self, element: AnyGraphqlValue) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -818,30 +902,35 @@ impl GraphqlObjectTypeDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_type_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameBinding) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_implements(self, element: Option<GraphqlImplementsInterfaces>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             3usize..=3usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(4usize..=4usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_fields(self, element: Option<GraphqlFieldsDefinition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             5usize..=5usize,
@@ -856,30 +945,35 @@ impl GraphqlObjectTypeExtension {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_type_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameReference) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_implements(self, element: Option<GraphqlImplementsInterfaces>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             3usize..=3usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(4usize..=4usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_fields(self, element: Option<GraphqlFieldsDefinition>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             5usize..=5usize,
@@ -894,12 +988,14 @@ impl GraphqlObjectValue {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_members(self, element: GraphqlObjectValueMemberList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_curly_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -914,24 +1010,28 @@ impl GraphqlOperationDefinition {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_name(self, element: Option<GraphqlNameBinding>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             1usize..=1usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_variables(self, element: Option<GraphqlVariableDefinitions>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             2usize..=2usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_selection_set(self, element: GraphqlSelectionSet) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -954,12 +1054,14 @@ impl GraphqlRoot {
                 .splice_slots(0usize..=0usize, once(element.map(|element| element.into()))),
         )
     }
+
     pub fn with_definitions(self, element: GraphqlDefinitionList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_eof_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -974,12 +1076,14 @@ impl GraphqlRootOperationTypeDefinition {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_colon_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_named_type(self, element: GraphqlNameReference) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -994,12 +1098,14 @@ impl GraphqlRootOperationTypes {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_root_operation_type(self, element: GraphqlRootOperationTypeDefinitionList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_curly_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -1014,18 +1120,21 @@ impl GraphqlScalarTypeDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_scalar_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameBinding) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -1040,18 +1149,21 @@ impl GraphqlScalarTypeExtension {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_scalar_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameReference) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -1066,18 +1178,21 @@ impl GraphqlSchemaDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_schema_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_root_operation_types(self, element: GraphqlRootOperationTypes) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -1092,18 +1207,21 @@ impl GraphqlSchemaExtension {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_schema_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_root_operation_types(self, element: Option<GraphqlRootOperationTypes>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             3usize..=3usize,
@@ -1118,12 +1236,14 @@ impl GraphqlSelectionSet {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_selections(self, element: GraphqlSelectionList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_curly_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -1146,6 +1266,7 @@ impl GraphqlTypeCondition {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_ty(self, element: GraphqlNameReference) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -1160,12 +1281,14 @@ impl GraphqlUnionMemberTypes {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_bitwise_or_token(self, element: Option<SyntaxToken>) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(element.map(|element| element.into()))),
         )
     }
+
     pub fn with_members(self, element: GraphqlUnionMemberTypeList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -1180,24 +1303,28 @@ impl GraphqlUnionTypeDefinition {
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_union_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameBinding) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_union_members(self, element: Option<GraphqlUnionMemberTypes>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             4usize..=4usize,
@@ -1212,24 +1339,28 @@ impl GraphqlUnionTypeExtension {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_union_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlNameReference) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(3usize..=3usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_union_members(self, element: Option<GraphqlUnionMemberTypes>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             4usize..=4usize,
@@ -1244,6 +1375,7 @@ impl GraphqlVariableBinding {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlLiteralName) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -1258,24 +1390,28 @@ impl GraphqlVariableDefinition {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_colon_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_ty(self, element: AnyGraphqlType) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(2usize..=2usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_default(self, element: Option<GraphqlDefaultValue>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             3usize..=3usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_directives(self, element: GraphqlDirectiveList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -1290,12 +1426,14 @@ impl GraphqlVariableDefinitions {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_elements(self, element: GraphqlVariableDefinitionList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_paren_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -1310,6 +1448,7 @@ impl GraphqlVariableReference {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_name(self, element: GraphqlLiteralName) -> Self {
         Self::unwrap_cast(
             self.syntax

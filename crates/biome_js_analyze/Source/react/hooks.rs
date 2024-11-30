@@ -50,9 +50,11 @@ impl TryFrom<AnyJsExpression> for AnyJsFunctionExpression {
             AnyJsExpression::JsArrowFunctionExpression(arrow_function) => {
                 Ok(Self::JsArrowFunctionExpression(arrow_function))
             }
+
             AnyJsExpression::JsFunctionExpression(function) => {
                 Ok(Self::JsFunctionExpression(function))
             }
+
             _ => Err(()),
         }
     }
@@ -67,7 +69,9 @@ impl ReactCallWithDependencyResult {
             .and_then(|node| AnyJsFunctionExpression::try_from(node.clone()).ok())
             .map(|function_expression| {
                 let closure = function_expression.closure(model);
+
                 let range = closure.closure_range();
+
                 closure
                     .descendents()
                     .flat_map(|closure| closure.all_captures())
@@ -190,6 +194,7 @@ pub(crate) fn react_hook_with_dependency(
     model: &SemanticModel,
 ) -> Option<ReactCallWithDependencyResult> {
     let expression = call.callee().ok()?.omit_parentheses();
+
     let name = if let Some(identifier) = expression.as_js_reference_identifier() {
         Some(StaticValue::String(identifier.value_token().ok()?))
     } else if let Some(member_expr) = AnyJsMemberExpression::cast_ref(expression.syntax()) {
@@ -197,7 +202,9 @@ pub(crate) fn react_hook_with_dependency(
     } else {
         None
     }?;
+
     let function_name_range = name.range();
+
     let name = name.text();
 
     let hook = hooks.get(name)?;
@@ -208,10 +215,13 @@ pub(crate) fn react_hook_with_dependency(
     }
 
     let closure_index = hook.closure_index as usize;
+
     let dependencies_index = hook.dependencies_index as usize;
 
     let mut indices = [closure_index, dependencies_index];
+
     indices.sort_unstable();
+
     let [closure_node, dependencies_node] = call.arguments().ok()?.get_arguments_by_index(indices);
 
     Some(ReactCallWithDependencyResult {
@@ -276,6 +286,7 @@ impl JsonSchema for StableHookResult {
 
     fn json_schema(_gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
         use schemars::schema::*;
+
         Schema::Object(SchemaObject {
             subschemas: Some(Box::new(SubschemaValidation {
                 one_of: Some(vec![
@@ -372,6 +383,7 @@ impl DeserializationVisitor for StableResultVisitor {
                     .with_custom_severity(Severity::Warning)
                     .with_range(range),
                 );
+
                 Some(StableHookResult::None)
             }
         }
@@ -414,6 +426,7 @@ impl DeserializationVisitor for StableResultIndexVisitor {
                 diagnostics.push(DeserializationDiagnostic::new_out_of_bound_integer(
                     0, 255, range,
                 ));
+
                 None
             }
         }
@@ -445,10 +458,12 @@ pub fn is_binding_react_stable(
     else {
         return false;
     };
+
     let index = binding
         .parent::<JsArrayBindingPatternElement>()
         .map(|parent| parent.syntax().index() / 2)
         .and_then(|index| index.try_into().ok());
+
     let Some(callee) = declarator
         .initializer()
         .and_then(|initializer| initializer.expression().ok())
@@ -456,10 +471,13 @@ pub fn is_binding_react_stable(
     else {
         return false;
     };
+
     let Some(function_name) = callee.get_callee_member_name() else {
         return false;
     };
+
     let function_name = function_name.text_trimmed();
+
     stable_config.iter().any(|config| {
         if !config.builtin && config.hook_name.as_str() != function_name {
             return false;
@@ -482,9 +500,13 @@ pub fn is_binding_react_stable(
 #[cfg(test)]
 mod test {
     use super::*;
+
     use crate::react::hooks::is_react_hook_call;
+
     use biome_js_parser::JsParserOptions;
+
     use biome_js_semantic::{semantic_model, SemanticModelOptions};
+
     use biome_js_syntax::JsFileSource;
 
     #[test]
@@ -495,12 +517,14 @@ mod test {
                 JsFileSource::js_module(),
                 JsParserOptions::default(),
             );
+
             let node = r
                 .syntax()
                 .descendants()
                 .filter(|x| x.text_trimmed() == "useRef()")
                 .last()
                 .unwrap();
+
             assert!(is_react_hook_call(&JsCallExpression::unwrap_cast(node)));
         }
 
@@ -510,13 +534,16 @@ mod test {
                 JsFileSource::js_module(),
                 JsParserOptions::default(),
             );
+
             let node = r
                 .syntax()
                 .descendants()
                 .filter(|x| x.text_trimmed() == "userCredentials()")
                 .last()
                 .unwrap();
+
             let call = JsCallExpression::cast_ref(&node).unwrap();
+
             assert!(!is_react_hook_call(&call));
         }
     }
@@ -526,17 +553,20 @@ mod test {
         let r = biome_js_parser::parse(
             r#"
                 import { useRef } from "react";
+
                 const ref = useRef();
             "#,
             JsFileSource::js_module(),
             JsParserOptions::default(),
         );
+
         let node = r
             .syntax()
             .descendants()
             .filter(|x| x.text_trimmed() == "ref")
             .last()
             .unwrap();
+
         let set_name = AnyJsIdentifierBinding::cast(node).unwrap();
 
         let config = FxHashSet::from_iter([
@@ -556,17 +586,20 @@ mod test {
         let r = biome_js_parser::parse(
             r#"
                 import * as React from "react";
+
                 const ref = React.useRef();
             "#,
             JsFileSource::js_module(),
             JsParserOptions::default(),
         );
+
         let node = r
             .syntax()
             .descendants()
             .filter(|x| x.text_trimmed() == "ref")
             .last()
             .unwrap();
+
         let set_name = AnyJsIdentifierBinding::cast(node).unwrap();
 
         let config = FxHashSet::from_iter([

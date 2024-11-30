@@ -24,6 +24,7 @@ impl DefinitionList {
 
 impl ParseNodeList for DefinitionList {
     type Kind = GritSyntaxKind;
+
     type Parser<'source> = GritParser<'source>;
 
     const LIST_KIND: Self::Kind = GRIT_DEFINITION_LIST;
@@ -38,6 +39,7 @@ impl ParseNodeList for DefinitionList {
                 }
 
                 syntax = Present(pattern);
+
                 self.has_pattern = true
             }
         }
@@ -82,10 +84,15 @@ fn parse_function_definition(p: &mut GritParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(FUNCTION_KW);
+
     parse_name(p).ok();
+
     p.expect(T!['(']);
+
     VariableList.parse_list(p);
+
     p.expect(T![')']);
+
     parse_curly_predicate_list(p).ok();
 
     Present(m.complete(p, GRIT_FUNCTION_DEFINITION))
@@ -100,7 +107,9 @@ fn parse_curly_predicate_list(p: &mut GritParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T!['{']);
+
     PredicateList.parse_list(p);
+
     p.expect(T!['}']);
 
     Present(m.complete(p, GRIT_PREDICATE_CURLY))
@@ -115,12 +124,19 @@ fn parse_pattern_definition(p: &mut GritParser) -> ParsedSyntax {
     let m = p.start();
 
     p.eat(PRIVATE_KW);
+
     p.bump(PATTERN_KW);
+
     parse_name(p).ok();
+
     p.expect(T!['(']);
+
     parse_variable_list(p);
+
     p.expect(T![')']);
+
     parse_language_declaration(p).ok();
+
     parse_pattern_definition_body(p).ok();
 
     Present(m.complete(p, GRIT_PATTERN_DEFINITION))
@@ -135,7 +151,9 @@ fn parse_pattern_definition_body(p: &mut GritParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T!['{']);
+
     PatternList.parse_list(p);
+
     p.expect(T!['}']);
 
     Present(m.complete(p, GRIT_PATTERN_DEFINITION_BODY))
@@ -150,10 +168,15 @@ fn parse_predicate_definition(p: &mut GritParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(PREDICATE_KW);
+
     parse_name(p).ok();
+
     p.expect(T!['(']);
+
     parse_variable_list(p);
+
     p.expect(T![')']);
+
     parse_curly_predicate_list(p).ok();
 
     Present(m.complete(p, GRIT_PREDICATE_DEFINITION))

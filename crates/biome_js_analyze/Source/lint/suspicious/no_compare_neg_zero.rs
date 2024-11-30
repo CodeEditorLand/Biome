@@ -44,8 +44,11 @@ declare_lint_rule! {
 
 impl Rule for NoCompareNegZero {
     type Query = Ast<JsBinaryExpression>;
+
     type State = NoCompareNegZeroState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -56,10 +59,15 @@ impl Rule for NoCompareNegZero {
         }
 
         let op = node.operator_token().ok()?;
+
         let left = node.left().ok()?;
+
         let right = node.right().ok()?;
+
         let is_left_neg_zero = is_neg_zero(&left).unwrap_or(false);
+
         let is_right_neg_zero = is_neg_zero(&right).unwrap_or(false);
+
         if is_left_neg_zero || is_right_neg_zero {
             // SAFETY: Because we know those T![>] | T![>=] | T![<] | T![<=] | T![==] | T![===] | T![!=] | T![!==] SyntaxKind will
             // always success in to_string, you could look at our test case `noCompareNegZero.js`
@@ -86,8 +94,10 @@ impl Rule for NoCompareNegZero {
             },
         ))
     }
+
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         if state.left_need_replaced {
@@ -137,6 +147,7 @@ fn is_neg_zero(node: &AnyJsExpression) -> Option<bool> {
             if !matches!(expr.operator().ok()?, JsUnaryOperator::Minus) {
                 return Some(false);
             }
+
             let argument = expr.argument().ok()?;
 
             if let AnyJsExpression::AnyJsLiteralExpression(
@@ -148,6 +159,7 @@ fn is_neg_zero(node: &AnyJsExpression) -> Option<bool> {
                 Some(false)
             }
         }
+
         _ => Some(false),
     }
 }

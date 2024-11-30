@@ -17,6 +17,7 @@ impl TryFrom<&Vec<Attribute>> for EnumVariantAttrs {
 
     fn try_from(attrs: &Vec<Attribute>) -> Result<Self, Self::Error> {
         let mut opts = Self::default();
+
         for attr in attrs {
             if attr.path.is_ident("deserializable") {
                 parse_meta_list(&attr.parse_meta()?, |meta| {
@@ -28,12 +29,14 @@ impl TryFrom<&Vec<Attribute>> for EnumVariantAttrs {
                         }) if path.is_ident("rename") => opts.rename = Some(s.value()),
                         val => {
                             let val_str = val.to_token_stream().to_string();
+
                             return Err(Error::new(
                                 val.span(),
                                 format_args!("Unexpected attribute: {val_str}"),
                             ));
                         }
                     }
+
                     Ok(())
                 })?;
             } else if attr.path.is_ident("serde") {
@@ -46,13 +49,16 @@ impl TryFrom<&Vec<Attribute>> for EnumVariantAttrs {
                         }) if opts.rename.is_none() && path.is_ident("rename") => {
                             opts.rename = Some(s.value())
                         }
+
                         _ => {} // Don't fail on unrecognized Serde attrs
                     }
+
                     Ok(())
                 })
                 .ok();
             }
         }
+
         Ok(opts)
     }
 }

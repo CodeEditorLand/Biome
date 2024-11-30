@@ -99,6 +99,7 @@ impl ParsedSyntax {
             Absent => {
                 panic!("Called `unwrap` on an `Absent` syntax");
             }
+
             Present(marker) => marker,
         }
     }
@@ -181,11 +182,16 @@ impl ParsedSyntax {
         match self {
             Present(syntax) => {
                 let range = syntax.range(p);
+
                 let range = TextRange::new(range.start(), range.end());
+
                 let diagnostic = error_builder(p, range);
+
                 p.error(diagnostic);
+
                 Some(syntax)
             }
+
             Absent => None,
         }
     }
@@ -202,7 +208,9 @@ impl ParsedSyntax {
             Present(syntax) => Some(syntax),
             Absent => {
                 let diagnostic = error_builder(p, p.cur_range());
+
                 p.error(diagnostic);
+
                 None
             }
         }
@@ -222,7 +230,9 @@ impl ParsedSyntax {
             Present(completed) => completed.precede(p),
             Absent => {
                 let diagnostic = error_builder(p, p.cur_range());
+
                 p.error(diagnostic);
+
                 p.start()
             }
         }
@@ -264,13 +274,17 @@ impl ParsedSyntax {
             Absent => match recovery.recover(p) {
                 Ok(recovered) => {
                     let diagnostic = error_builder(p, recovered.range(p));
+
                     p.error(diagnostic);
+
                     Ok(recovered)
                 }
 
                 Err(recovery_error) => {
                     let diagnostic = error_builder(p, p.cur_range());
+
                     p.error(diagnostic);
+
                     Err(recovery_error)
                 }
             },
@@ -302,13 +316,17 @@ impl ParsedSyntax {
             Absent => match recovery.recover(p) {
                 Ok(recovered) => {
                     let diagnostic = error_builder(p, recovered.range(p));
+
                     p.error(diagnostic);
+
                     Ok(recovered)
                 }
 
                 Err(recovery_error) => {
                     let diagnostic = error_builder(p, p.cur_range());
+
                     p.error(diagnostic);
+
                     Err(recovery_error)
                 }
             },

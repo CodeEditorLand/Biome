@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssDeclarationOrAtRuleBlock;
 pub(crate) struct FormatAnyCssDeclarationOrAtRuleBlock;
 impl FormatRule<AnyCssDeclarationOrAtRuleBlock> for FormatAnyCssDeclarationOrAtRuleBlock {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssDeclarationOrAtRuleBlock, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssDeclarationOrAtRuleBlock::CssBogusBlock(node) => node.format().fmt(f),

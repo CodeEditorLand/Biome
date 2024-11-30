@@ -24,6 +24,7 @@ pub(crate) fn organize_imports_with_guard<'ctx>(
                 )?;
 
             let input = workspace_file.input()?;
+
             let mut output = sorted.code;
 
             match workspace_file.as_extension().map(OsStr::as_encoded_bytes) {
@@ -31,12 +32,15 @@ pub(crate) fn organize_imports_with_guard<'ctx>(
                     if output.is_empty() {
                         return Ok(FileStatus::Unchanged);
                     }
+
                     output = AstroFileHandler::output(input.as_str(), output.as_str());
                 }
+
                 Some(b"vue") => {
                     if output.is_empty() {
                         return Ok(FileStatus::Unchanged);
                     }
+
                     output = VueFileHandler::output(input.as_str(), output.as_str());
                 }
 
@@ -44,8 +48,10 @@ pub(crate) fn organize_imports_with_guard<'ctx>(
                     if output.is_empty() {
                         return Ok(FileStatus::Unchanged);
                     }
+
                     output = SvelteFileHandler::output(input.as_str(), output.as_str());
                 }
+
                 _ => {}
             }
 
@@ -60,6 +66,7 @@ pub(crate) fn organize_imports_with_guard<'ctx>(
                         diff_kind: DiffKind::OrganizeImports,
                     }));
                 }
+
                 Ok(FileStatus::Changed)
             } else {
                 Ok(FileStatus::Unchanged)

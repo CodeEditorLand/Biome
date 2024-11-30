@@ -14,6 +14,7 @@ pub fn generate_target_language_constants(
         .iter()
         .flat_map(|node| {
             let node_kind = Case::Constant.convert(node.name.as_str());
+
             node.fields
                 .iter()
                 .enumerate()
@@ -31,6 +32,7 @@ pub fn generate_target_language_constants(
                 .collect::<Vec<_>>()
         })
         .collect();
+
     let disregarded_slots = disregarded_slots.join("\n    ");
 
     let result = format!(

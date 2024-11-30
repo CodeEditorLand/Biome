@@ -26,6 +26,7 @@ impl FromServices for AriaServices {
         let roles: &Arc<AriaRoles> = services
             .get_service()
             .ok_or_else(|| MissingServicesDiagnostic::new(rule_key.rule_name(), &["AriaRoles"]))?;
+
         Ok(Self {
             roles: roles.clone(),
         })
@@ -47,9 +48,11 @@ where
     N: AstNode<Language = JsLanguage> + 'static,
 {
     type Input = JsSyntaxNode;
+
     type Output = N;
 
     type Language = JsLanguage;
+
     type Services = AriaServices;
 
     fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, _: &AnyJsRoot) {

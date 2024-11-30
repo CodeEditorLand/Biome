@@ -56,16 +56,22 @@ fn parse_any_container_query(p: &mut CssParser) -> ParsedSyntax {
         match p.cur() {
             T![and] => {
                 let m = query_in_parens.precede(p);
+
                 p.bump(T![and]);
+
                 parse_container_and_query(p).ok(); // TODO handle error
                 Present(m.complete(p, CSS_CONTAINER_AND_QUERY))
             }
+
             T![or] => {
                 let m = query_in_parens.precede(p);
+
                 p.bump(T![or]);
+
                 parse_container_or_query(p).ok(); // TODO handle error
                 Present(m.complete(p, CSS_CONTAINER_OR_QUERY))
             }
+
             _ => query_in_parens,
         }
     }
@@ -77,7 +83,9 @@ fn parse_container_and_query(p: &mut CssParser) -> ParsedSyntax {
 
     if p.at(T![and]) {
         let m = query_in_parens.precede(p);
+
         p.bump(T![and]);
+
         parse_container_and_query(p).ok(); // TODO handle error
         Present(m.complete(p, CSS_CONTAINER_AND_QUERY))
     } else {
@@ -91,7 +99,9 @@ fn parse_container_or_query(p: &mut CssParser) -> ParsedSyntax {
 
     if p.at(T![or]) {
         let m = query_in_parens.precede(p);
+
         p.bump(T![or]);
+
         parse_container_or_query(p).ok(); // TODO handle error
         Present(m.complete(p, CSS_CONTAINER_OR_QUERY))
     } else {
@@ -112,6 +122,7 @@ fn parse_container_not_query(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![not]);
+
     parse_any_container_query_in_parens(p).ok(); // TODO handle error
 
     Present(m.complete(p, CSS_CONTAINER_NOT_QUERY))
@@ -143,6 +154,7 @@ fn parse_container_query_in_parens(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T!['(']);
+
     parse_any_container_query(p).ok(); // TODO handle error
     p.bump(T![')']);
 
@@ -163,6 +175,7 @@ fn parse_container_size_feature_in_parens(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T!['(']);
+
     parse_any_query_feature(p).ok(); // TODO handle error
     p.expect(T![')']);
 
@@ -183,7 +196,9 @@ fn parse_container_style_query_in_parens(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![style]);
+
     p.expect(T!['(']);
+
     parse_any_container_style_query(p).ok(); // TODO handle error
     p.expect(T![')']);
 
@@ -208,16 +223,22 @@ fn parse_any_container_style_combinable_query(p: &mut CssParser) -> ParsedSyntax
     match p.cur() {
         T![and] => {
             let m = style_in_parens.precede(p);
+
             p.bump(T![and]);
+
             parse_any_container_style_combinable_query(p).ok(); // TODO handle error
             Present(m.complete(p, CSS_CONTAINER_STYLE_AND_QUERY))
         }
+
         T![or] => {
             let m = style_in_parens.precede(p);
+
             p.bump(T![or]);
+
             parse_any_container_style_combinable_query(p).ok(); // TODO handle error
             Present(m.complete(p, CSS_CONTAINER_STYLE_OR_QUERY))
         }
+
         _ => style_in_parens,
     }
 }
@@ -236,6 +257,7 @@ fn parse_container_style_not_query(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![not]);
+
     parse_container_style_in_parens(p).ok(); // TODO handle error
 
     Present(m.complete(p, CSS_CONTAINER_STYLE_NOT_QUERY))
@@ -248,8 +270,11 @@ fn parse_container_style_in_parens(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['(']);
+
     parse_any_container_style_query(p).ok(); // TODO handle error
     p.expect(T![')']);
+
     Present(m.complete(p, CSS_CONTAINER_STYLE_IN_PARENS))
 }

@@ -45,19 +45,25 @@ declare_lint_rule! {
 
 impl Rule for UseFlatMap {
     type Query = Ast<JsCallExpression>;
+
     type State = JsCallExpression;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let flat_call = ctx.query();
+
         let arguments = flat_call.arguments().ok()?.args();
         // Probably not a `flat` call.
         if arguments.len() > 1 {
             return None;
         }
+
         if let Some(first_argument) = arguments.first() {
             let first_argument = first_argument.ok()?;
+
             let first_argument = first_argument
                 .as_any_js_expression()?
                 .as_any_js_literal_expression()?
@@ -67,21 +73,27 @@ impl Rule for UseFlatMap {
                 return None;
             }
         }
+
         let flat_member_expression =
             AnyJsMemberExpression::cast(flat_call.callee().ok()?.into_syntax())?;
+
         if flat_member_expression.member_name()?.text() == "flat" {
             let Ok(AnyJsExpression::JsCallExpression(map_call)) = flat_member_expression.object()
             else {
                 return None;
             };
+
             let map_call_arguments = map_call.arguments().ok()?.args();
+
             let map_member_expression =
                 AnyJsMemberExpression::cast(map_call.callee().ok()?.into_syntax())?;
+
             if map_member_expression.member_name()?.text() == "map" && map_call_arguments.len() == 1
             {
                 return Some(map_call);
             }
         }
+
         None
     }
 
@@ -99,12 +111,15 @@ impl Rule for UseFlatMap {
 
     fn action(ctx: &RuleContext<Self>, flat_call: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let Ok(AnyJsExpression::JsStaticMemberExpression(old_static_member_expression)) =
             flat_call.callee()
         else {
             return None;
         };
+
         let member = js_name(ident("flatMap"));
 
         let flat_map_member_expression =

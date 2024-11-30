@@ -61,13 +61,16 @@ impl Eq for RestrictedGlob {}
 impl std::hash::Hash for RestrictedGlob {
     fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
         self.is_negated.hash(state);
+
         self.glob.glob().hash(state);
     }
 }
 impl std::fmt::Display for RestrictedGlob {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let repr = self.glob.glob();
+
         let negation = if self.is_negated { "!" } else { "" };
+
         write!(f, "{negation}{repr}")
     }
 }
@@ -78,18 +81,22 @@ impl From<RestrictedGlob> for String {
 }
 impl std::str::FromStr for RestrictedGlob {
     type Err = RestrictedGlobError;
+
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         let (is_negated, value) = if let Some(stripped) = value.strip_prefix('!') {
             (true, stripped)
         } else {
             (false, value)
         };
+
         validate_restricted_glob(value)?;
+
         let mut glob_builder = globset::GlobBuilder::new(value);
         // Allow escaping with `\` on all platforms.
         glob_builder.backslash_escape(true);
         // Only `**` can match `/`
         glob_builder.literal_separator(true);
+
         match glob_builder.build() {
             Ok(glob) => Ok(RestrictedGlob {
                 is_negated,
@@ -103,6 +110,7 @@ impl std::str::FromStr for RestrictedGlob {
 }
 impl TryFrom<String> for RestrictedGlob {
     type Error = RestrictedGlobError;
+
     fn try_from(value: String) -> Result<Self, Self::Error> {
         value.parse()
     }
@@ -115,17 +123,21 @@ impl biome_deserialize::Deserializable for RestrictedGlob {
         diagnostics: &mut Vec<biome_deserialize::DeserializationDiagnostic>,
     ) -> Option<Self> {
         let glob = String::deserialize(value, name, diagnostics)?;
+
         match glob.parse() {
             Ok(glob) => Some(glob),
             Err(error) => {
                 let range = value.range();
+
                 let range = error.index().map_or(range, |index| {
                     TextRange::at(range.start() + TextSize::from(1 + index), 1u32.into())
                 });
+
                 diagnostics.push(
                     biome_deserialize::DeserializationDiagnostic::new(format_args!("{error}"))
                         .with_range(range),
                 );
+
                 None
             }
         }
@@ -241,6 +253,7 @@ impl<'a> CandidatePath<'a> {
                 return !glob.is_negated();
             }
         }
+
         default
     }
 }
@@ -291,16 +304,20 @@ impl std::fmt::Display for RestrictedGlobErrorKind {
             Self::InvalidEscape(c) => {
                 return write!(f, "The escape sequence `\\{c}` is not supported.");
             }
+
             Self::UnsupportedAlternates => {
                 r"Alternates `{}` are not supported. Use `\{` and `\}` to escape the characters."
             }
+
             Self::UnsupportedCharacterClass => {
                 r"Character class `[]` are not supported. Use `\[` and `\]` to escape the characters."
             }
+
             Self::UnsupportedAnyCharacter => {
                 r"`?` matcher is not supported. Use `\?` to escape the character."
             }
         };
+
         write!(f, "{desc}")
     }
 }
@@ -308,6 +325,7 @@ impl std::fmt::Display for RestrictedGlobErrorKind {
 /// Returns an error if `pattern` doesn't follow the restricted glob syntax.
 fn validate_restricted_glob(pattern: &str) -> Result<(), RestrictedGlobError> {
     let mut it = pattern.bytes().enumerate();
+
     while let Some((i, c)) = it.next() {
         match c {
             b'\\' => {
@@ -330,27 +348,32 @@ fn validate_restricted_glob(pattern: &str) -> Result<(), RestrictedGlobError> {
                     });
                 }
             }
+
             b'?' => {
                 return Err(RestrictedGlobError::Regular {
                     kind: RestrictedGlobErrorKind::UnsupportedAnyCharacter,
                     index: i as u32,
                 });
             }
+
             b'[' | b']' => {
                 return Err(RestrictedGlobError::Regular {
                     kind: RestrictedGlobErrorKind::UnsupportedCharacterClass,
                     index: i as u32,
                 });
             }
+
             b'{' | b'}' => {
                 return Err(RestrictedGlobError::Regular {
                     kind: RestrictedGlobErrorKind::UnsupportedAlternates,
                     index: i as u32,
                 });
             }
+
             _ => {}
         }
     }
+
     Ok(())
 }
 
@@ -363,17 +386,27 @@ mod tests {
     #[test]
     fn test_validate_restricted_glob() {
         assert!(validate_restricted_glob("*.[jt]s").is_err());
+
         assert!(validate_restricted_glob("*.{js,ts}").is_err());
+
         assert!(validate_restricted_glob("?*.js").is_err());
+
         assert!(validate_restricted_glob(r"\").is_err());
+
         assert!(validate_restricted_glob(r"\n").is_err());
+
         assert!(validate_restricted_glob(r"\😀").is_err());
 
         assert!(validate_restricted_glob("!*.js").is_ok());
+
         assert!(validate_restricted_glob("!").is_ok());
+
         assert!(validate_restricted_glob("*.js").is_ok());
+
         assert!(validate_restricted_glob("**/*.js").is_ok());
+
         assert!(validate_restricted_glob(r"\*").is_ok());
+
         assert!(validate_restricted_glob(r"\!").is_ok());
     }
 
@@ -398,10 +431,12 @@ mod tests {
             RestrictedGlob::from_str("*").unwrap(),
             RestrictedGlob::from_str("!b").unwrap(),
         ]));
+
         assert!(!a.matches_with_exceptions(&[
             RestrictedGlob::from_str("*").unwrap(),
             RestrictedGlob::from_str("!a*").unwrap(),
         ]));
+
         assert!(a.matches_with_exceptions(&[
             RestrictedGlob::from_str("*").unwrap(),
             RestrictedGlob::from_str("!a*").unwrap(),
@@ -415,6 +450,7 @@ mod tests {
             RestrictedGlob::from_str("**/*.js").unwrap().to_string(),
             "**/*.js"
         );
+
         assert_eq!(
             RestrictedGlob::from_str("!**/*.js").unwrap().to_string(),
             "!**/*.js"

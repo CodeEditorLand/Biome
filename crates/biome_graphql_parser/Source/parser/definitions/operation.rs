@@ -31,6 +31,7 @@ struct SelectionList;
 
 impl ParseNodeList for SelectionList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_SELECTION_LIST;
@@ -56,7 +57,9 @@ struct SelectionListParseRecovery;
 
 impl ParseRecovery for SelectionListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS_SELECTION;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -69,6 +72,7 @@ struct VariableDefinitionList;
 
 impl ParseNodeList for VariableDefinitionList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_VARIABLE_DEFINITION_LIST;
@@ -98,7 +102,9 @@ struct VariableDefinitionListParseRecovery;
 
 impl ParseRecovery for VariableDefinitionListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -112,7 +118,9 @@ pub(crate) fn parse_operation_definition(p: &mut GraphqlParser) -> ParsedSyntax 
     let m = p.start();
     {
         let m = p.start();
+
         p.bump_ts(OPERATION_TYPE);
+
         m.complete(p, GRAPHQL_OPERATION_TYPE);
     }
 
@@ -122,6 +130,7 @@ pub(crate) fn parse_operation_definition(p: &mut GraphqlParser) -> ParsedSyntax 
     parse_variable_definitions(p).ok();
 
     DirectiveList.parse_list(p);
+
     parse_selection_set(p).ok();
 
     Present(m.complete(p, GRAPHQL_OPERATION_DEFINITION))
@@ -130,9 +139,13 @@ pub(crate) fn parse_operation_definition(p: &mut GraphqlParser) -> ParsedSyntax 
 #[inline]
 pub(crate) fn parse_selection_set(p: &mut GraphqlParser) -> ParsedSyntax {
     let m = p.start();
+
     p.expect(T!['{']);
+
     SelectionList.parse_list(p);
+
     p.expect(T!['}']);
+
     Present(m.complete(p, GRAPHQL_SELECTION_SET))
 }
 
@@ -152,12 +165,14 @@ fn parse_field(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_field(p) {
         return Absent;
     }
+
     let m = p.start();
 
     // alias is optional, so if there is a colon, we parse it as an alias
     // otherwise we parse it as a normal field name
     if is_at_alias(p) {
         let m = p.start();
+
         if p.at(T![:]) {
             p.error(expected_name(p, p.cur_range()));
         } else if is_nth_at_name(p, 0) {
@@ -165,10 +180,12 @@ fn parse_field(p: &mut GraphqlParser) -> ParsedSyntax {
             parse_literal_name(p).ok();
         } else {
             p.error(expected_name(p, p.cur_range()));
+
             p.bump_any();
         }
 
         p.bump(T![:]);
+
         m.complete(p, GRAPHQL_ALIAS);
 
         parse_literal_name(p).or_add_diagnostic(p, expected_name);
@@ -178,11 +195,13 @@ fn parse_field(p: &mut GraphqlParser) -> ParsedSyntax {
 
     // arguments are optional
     parse_arguments(p).ok();
+
     DirectiveList.parse_list(p);
 
     if p.at(T!['{']) {
         parse_selection_set(p).ok();
     }
+
     Present(m.complete(p, GRAPHQL_FIELD))
 }
 
@@ -191,19 +210,27 @@ fn parse_fragment(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_fragment(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.expect(DOT3);
+
     if is_nth_at_name(p, 0) && !p.nth_at(0, T![on]) {
         // name is checked for in `is_at_name`
         parse_reference(p).ok();
+
         DirectiveList.parse_list(p);
+
         Present(m.complete(p, GRAPHQL_FRAGMENT_SPREAD))
     } else {
         if is_at_type_condition(p) {
             parse_type_condition(p);
         }
+
         DirectiveList.parse_list(p);
+
         parse_selection_set(p).ok();
+
         Present(m.complete(p, GRAPHQL_INLINE_FRAGMENT))
     }
 }
@@ -217,7 +244,9 @@ fn parse_variable_definitions(p: &mut GraphqlParser) -> ParsedSyntax {
     let m = p.start();
 
     p.expect(T!['(']);
+
     VariableDefinitionList.parse_list(p);
+
     p.expect(T![')']);
 
     Present(m.complete(p, GRAPHQL_VARIABLE_DEFINITIONS))
@@ -234,15 +263,19 @@ fn parse_variable_definition(p: &mut GraphqlParser) -> ParsedSyntax {
     // Malformed variable
     if !is_at_variable(p) && p.nth_at(1, T![:]) {
         p.error(expected_variable(p, p.cur_range()));
+
         p.bump_any()
     } else {
         parse_variable_binding(p).or_add_diagnostic(p, expected_variable);
     }
+
     p.expect(T![:]);
+
     parse_type(p).or_add_diagnostic(p, expected_type);
 
     // default value is optional
     parse_default_value(p).ok();
+
     DirectiveList.parse_list(p);
 
     Present(m.complete(p, GRAPHQL_VARIABLE_DEFINITION))

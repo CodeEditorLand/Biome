@@ -82,8 +82,11 @@ pub struct RuleState {
 
 impl Rule for UseCollapsedIf {
     type Query = Ast<JsIfStatement>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -99,6 +102,7 @@ impl Rule for UseCollapsedIf {
             // `JsIfStatement`, the child `if` statement should be merged.
             AnyJsStatement::JsBlockStatement(parent_block_statement) => {
                 let statements = parent_block_statement.statements();
+
                 if statements.len() != 1 {
                     return None;
                 }
@@ -142,8 +146,11 @@ impl Rule for UseCollapsedIf {
         } = state;
 
         let parent_consequent = parent_if_statement.consequent().ok()?;
+
         let parent_test = parent_if_statement.test().ok()?;
+
         let child_consequent = child_if_statement.consequent().ok()?;
+
         let child_test = child_if_statement.test().ok()?;
 
         let parent_has_comments = match &parent_consequent {
@@ -151,6 +158,7 @@ impl Rule for UseCollapsedIf {
                 block_stmt.l_curly_token().ok()?.has_trailing_comments()
                     || block_stmt.r_curly_token().ok()?.has_leading_comments()
             }
+
             _ => false,
         };
 
@@ -160,20 +168,25 @@ impl Rule for UseCollapsedIf {
                 .r_paren_token()
                 .ok()?
                 .has_trailing_comments();
+
         if has_comments {
             return None;
         }
+
         let operator = make::token_decorated_with_space(T![&&]);
+
         let mut expr =
             make::js_logical_expression(parent_test.clone(), operator, child_test.clone());
 
         // Parenthesize arms of the `&&` expression if needed
         let left = expr.left().ok()?;
+
         if left.needs_parentheses() {
             expr = expr.with_left(make::parenthesized(left).into());
         }
 
         let right = expr.right().ok()?;
+
         if right.needs_parentheses() {
             expr = expr.with_right(make::parenthesized(right).into());
         }
@@ -182,13 +195,16 @@ impl Rule for UseCollapsedIf {
         // it cannot be fixed automatically because that will break the ASI rule.
         if !matches!(&child_consequent, AnyJsStatement::JsBlockStatement(_)) {
             let last_token = child_consequent.syntax().last_token()?;
+
             if last_token.kind() != T![;] {
                 return None;
             }
         }
 
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(parent_test, expr.into());
+
         mutation.replace_node(parent_consequent, child_consequent);
 
         Some(JsRuleAction::new(

@@ -15,6 +15,7 @@ pub struct GritLanguage;
 
 impl Language for GritLanguage {
     type Kind = GritSyntaxKind;
+
     type Root = GritRoot;
 }
 

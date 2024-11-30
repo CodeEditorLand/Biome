@@ -14,8 +14,11 @@ pub(crate) fn read_ignore_file(
         Path::new(ignore_filename),
         OpenOptions::default().read(true),
     )?;
+
     let mut content = String::new();
+
     file.read_to_string(&mut content)?;
+
     Ok(IgnorePatterns::from(&content))
 }
 
@@ -27,7 +30,9 @@ pub(crate) struct IgnorePatterns {
 impl IgnorePatterns {
     pub(crate) fn from(content: &str) -> Self {
         let mut has_negated_patterns = false;
+
         let mut patterns = IndexSet::new();
+
         for line in content.lines() {
             // Trailing spaces are ignored
             let line = line.trim_end();
@@ -35,10 +40,12 @@ impl IgnorePatterns {
             if line.is_empty() || line.starts_with('#') {
                 continue;
             }
+
             match convert_pattern(line) {
                 Ok(pattern) => {
                     patterns.insert(pattern);
                 }
+
                 Err(_) => {
                     has_negated_patterns = true;
                     // Skip negated patterns because we don't support them.
@@ -46,6 +53,7 @@ impl IgnorePatterns {
                 }
             }
         }
+
         IgnorePatterns {
             patterns,
             has_negated_patterns,
@@ -58,6 +66,7 @@ pub(crate) fn convert_pattern(line: &str) -> Result<String, &'static str> {
         // Skip negated patterns because we don't support them.
         return Err("Negated patterns are not supported.");
     }
+
     let result = if let Some(stripped_line) = line.strip_prefix('/') {
         // Patterns tha tstarts with `/` are relative to the ignore file
         format!("./{stripped_line}")
@@ -70,6 +79,7 @@ pub(crate) fn convert_pattern(line: &str) -> Result<String, &'static str> {
     } else {
         format!("**/{line}")
     };
+
     Ok(result)
 }
 
@@ -80,9 +90,11 @@ mod tests {
     #[test]
     fn empty() {
         const IGNORE_FILE_CONTENT: &str = r#""#;
+
         let result = IgnorePatterns::from(IGNORE_FILE_CONTENT);
 
         assert!(!result.has_negated_patterns);
+
         assert!(result.patterns.is_empty());
     }
 
@@ -96,9 +108,11 @@ mod tests {
 # folloed by a blank line (trailing space are ignored)
 
         "#;
+
         let result = IgnorePatterns::from(IGNORE_FILE_CONTENT);
 
         assert!(!result.has_negated_patterns);
+
         assert!(result.patterns.is_empty());
     }
 
@@ -112,9 +126,11 @@ dir/
 *
 */
 "#;
+
         let result = IgnorePatterns::from(IGNORE_FILE_CONTENT);
 
         assert!(!result.has_negated_patterns);
+
         assert_eq!(
             result.patterns,
             [
@@ -139,9 +155,11 @@ dir/subdir/
 **/a/b
 **/a/b/
 "#;
+
         let result = IgnorePatterns::from(IGNORE_FILE_CONTENT);
 
         assert!(!result.has_negated_patterns);
+
         assert_eq!(
             result.patterns,
             [
@@ -166,9 +184,11 @@ dir/subdir/
 /**/a/b
 /**/a/b/
 "#;
+
         let result = IgnorePatterns::from(IGNORE_FILE_CONTENT);
 
         assert!(!result.has_negated_patterns);
+
         assert_eq!(
             result.patterns,
             [
@@ -186,9 +206,11 @@ dir/subdir/
     #[test]
     fn negated_pattern() {
         const IGNORE_FILE_CONTENT: &str = r#"!a"#;
+
         let result = IgnorePatterns::from(IGNORE_FILE_CONTENT);
 
         assert!(result.has_negated_patterns);
+
         assert!(result.patterns.is_empty());
     }
 
@@ -197,9 +219,11 @@ dir/subdir/
         const IGNORE_FILE_CONTENT: &str = r#"
     # This is not a comment because there is some leading spaces
         "#;
+
         let result = IgnorePatterns::from(IGNORE_FILE_CONTENT);
 
         assert!(!result.has_negated_patterns);
+
         assert_eq!(
             result.patterns,
             ["**/    # This is not a comment because there is some leading spaces".to_string()]

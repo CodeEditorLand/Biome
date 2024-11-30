@@ -95,31 +95,39 @@ declare_lint_rule! {
 
 impl Rule for NoVoidTypeReturn {
     type Query = Ast<JsReturnStatement>;
+
     type State = AnyJsFunctionMethodWithReturnType;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let ret = ctx.query();
         // Ignore arg-less returns such as `return;`
         let arg = ret.argument()?;
+
         if let AnyJsExpression::JsUnaryExpression(expr) = arg {
             if expr.operator_token().ok()?.kind() == JsSyntaxKind::VOID_KW {
                 // Ignore `return void <foo>;`
                 return None;
             }
         }
+
         let func = ret
             .syntax()
             .ancestors()
             .find(|x| AnyJsControlFlowRoot::can_cast(x.kind()))
             .and_then(AnyJsFunctionMethodWithReturnType::cast)?;
+
         let ret_type = func.return_type()?;
+
         ret_type.as_any_ts_type()?.as_ts_void_type().and(Some(func))
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, func: &Self::State) -> Option<RuleDiagnostic> {
         let ret = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             ret.range(),
@@ -144,13 +152,16 @@ impl AnyJsFunctionMethodWithReturnType {
             Self::JsFunctionExportDefaultDeclaration(func) => {
                 func.return_type_annotation()?.ty().ok()
             }
+
             Self::JsFunctionExpression(func) => func.return_type_annotation()?.ty().ok(),
             Self::JsGetterClassMember(func) => {
                 Some(AnyTsReturnType::AnyTsType(func.return_type()?.ty().ok()?))
             }
+
             Self::JsGetterObjectMember(func) => {
                 Some(AnyTsReturnType::AnyTsType(func.return_type()?.ty().ok()?))
             }
+
             Self::JsMethodClassMember(func) => func.return_type_annotation()?.ty().ok(),
             Self::JsMethodObjectMember(func) => func.return_type_annotation()?.ty().ok(),
         }

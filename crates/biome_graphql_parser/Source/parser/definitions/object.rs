@@ -25,6 +25,7 @@ pub(crate) fn parse_object_type_definition(p: &mut GraphqlParser) -> ParsedSynta
 
     // implements interface is optional
     parse_implements_interface(p).ok();
+
     DirectiveList.parse_list(p);
 
     // fields definition is optional
@@ -39,6 +40,7 @@ pub(crate) fn parse_object_type_extension(p: &mut GraphqlParser) -> ParsedSyntax
     let m = p.start();
 
     p.bump(T![extend]);
+
     p.bump(T![type]);
 
     parse_reference(p).or_add_diagnostic(p, expected_name);
@@ -46,7 +48,9 @@ pub(crate) fn parse_object_type_extension(p: &mut GraphqlParser) -> ParsedSyntax
     let implements_interface_empty = parse_implements_interface(p).is_absent();
 
     let pos = p.source().position();
+
     DirectiveList.parse_list(p);
+
     let directive_empty = p.source().position() == pos;
 
     let fields_definition_empty = parse_fields_definition(p).is_absent();

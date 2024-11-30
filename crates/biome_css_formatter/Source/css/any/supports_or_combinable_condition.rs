@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssSupportsOrCombinableCondition;
 pub(crate) struct FormatAnyCssSupportsOrCombinableCondition;
 impl FormatRule<AnyCssSupportsOrCombinableCondition> for FormatAnyCssSupportsOrCombinableCondition {
     type Context = CssFormatContext;
+
     fn fmt(
         &self,
         node: &AnyCssSupportsOrCombinableCondition,
@@ -15,6 +16,7 @@ impl FormatRule<AnyCssSupportsOrCombinableCondition> for FormatAnyCssSupportsOrC
             AnyCssSupportsOrCombinableCondition::AnyCssSupportsInParens(node) => {
                 node.format().fmt(f)
             }
+
             AnyCssSupportsOrCombinableCondition::CssSupportsOrCondition(node) => {
                 node.format().fmt(f)
             }

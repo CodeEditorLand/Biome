@@ -166,6 +166,7 @@ where
         match slot {
             SyntaxSlot::Node(node) => {
                 let original_key = node.key();
+
                 let index = node.index();
 
                 let updated = rewriter.transform(node);
@@ -174,8 +175,10 @@ where
                     parent = parent.splice_slots(index..=index, [Some(updated.into())]);
                 }
             }
+
             SyntaxSlot::Token(token) => {
                 let original_key = token.key();
+
                 let index = token.index();
 
                 let updated = rewriter.visit_token(token);
@@ -184,6 +187,7 @@ where
                     parent = parent.splice_slots(index..=index, [Some(updated.into())]);
                 }
             }
+
             SyntaxSlot::Empty { .. } => {
                 // Nothing to visit
             }
@@ -196,6 +200,7 @@ where
 #[cfg(test)]
 mod tests {
     use crate::raw_language::{RawLanguage, RawLanguageKind, RawSyntaxTreeBuilder};
+
     use crate::{SyntaxNode, SyntaxRewriter, SyntaxToken, VisitNodeSignal};
 
     #[test]
@@ -203,14 +208,19 @@ mod tests {
         let mut builder = RawSyntaxTreeBuilder::new();
 
         builder.start_node(RawLanguageKind::ROOT);
+
         builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
         builder.token(RawLanguageKind::NUMBER_TOKEN, "5");
+
         builder.finish_node();
+
         builder.finish_node();
 
         let root = builder.finish();
 
         let mut recorder = RecordRewritter::default();
+
         let transformed = recorder.transform(root.clone());
 
         assert_eq!(
@@ -226,6 +236,7 @@ mod tests {
         assert_eq!(&recorder.nodes, &[root.clone(), literal_expression]);
 
         let number_literal = root.first_token().unwrap();
+
         assert_eq!(&recorder.tokens, &[number_literal]);
     }
 
@@ -244,6 +255,7 @@ mod tests {
             node: SyntaxNode<Self::Language>,
         ) -> VisitNodeSignal<Self::Language> {
             self.nodes.push(node.clone());
+
             VisitNodeSignal::Traverse(node)
         }
 
@@ -252,6 +264,7 @@ mod tests {
             token: SyntaxToken<Self::Language>,
         ) -> SyntaxToken<Self::Language> {
             self.tokens.push(token.clone());
+
             token
         }
     }

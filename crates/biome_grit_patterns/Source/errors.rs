@@ -93,72 +93,94 @@ impl Diagnostic for CompileError {
         match self {
             CompileError::ParsePatternError(diagnostic) => {
                 fmt.write_markup(markup! { "Error parsing pattern: " })?;
+
                 diagnostic.message(fmt)
             }
+
             CompileError::MissingSyntaxNode => {
                 fmt.write_markup(markup! { "A syntax node was missing" })
             }
+
             CompileError::UnexpectedBuiltinCall(name) => {
                 fmt.write_markup(markup! { "Unexpected call to built-in: "{{name}}"()" })
             }
+
             CompileError::UnexpectedMetavariable => {
                 fmt.write_markup(markup! { "Unexpected metavariable" })
             }
+
             CompileError::DuplicateFunctionDefinition(name) => {
                 fmt.write_markup(markup! { "Duplicate function definition: "{{name}} })
             }
+
             CompileError::DuplicateParameters => {
                 fmt.write_markup(markup! { "Duplicate parameters" })
             }
+
             CompileError::DuplicatePatternDefinition(name) => {
                 fmt.write_markup(markup! { "Duplicate pattern definition: "{{name}} })
             }
+
             CompileError::DuplicatePredicateDefinition(name) => {
                 fmt.write_markup(markup! { "Duplicate predicate definition: "{{name}} })
             }
+
             CompileError::InvalidMetavariableRange(_) => {
                 fmt.write_markup(markup! { "Invalid range for metavariable" })
             }
+
             CompileError::InvalidRawSnippetPosition => {
                 fmt.write_markup(markup! { "Invalid range for metavariable" })
             }
+
             CompileError::InvalidRegexPosition => fmt.write_markup(
                 markup! { "Regular expressions are not allowed on the right-hand side of a rule" },
             ),
             CompileError::MetavariableNotFound(var) => {
                 fmt.write_markup(markup! { "Metavariable not found: "{{var}} })
             }
+
             CompileError::ReservedMetavariable(var) => {
                 fmt.write_markup(markup! { "Reserved metavariable: "{{var}} })
             }
+
             CompileError::UnsupportedKind(kind) => {
                 fmt.write_markup(markup! { "Unsupported syntax kind ("{{kind}}")" })
             }
+
             CompileError::UnexpectedKind(kind) => {
                 fmt.write_markup(markup! { "Unexpected syntax kind ("{{kind}}")" })
             }
+
             CompileError::UnknownFunctionOrPattern(name) => {
                 fmt.write_markup(markup! { "Unknown function or pattern: "{{name}} })
             }
+
             CompileError::LiteralOutOfRange(value) => {
                 fmt.write_markup(markup! { "Literal value out of range: "{{value}} })
             }
+
             CompileError::MissingPattern => fmt.write_markup(markup! { "Missing pattern" }),
             CompileError::NormalizationError => {
                 fmt.write_markup(markup! { "Could not normalize node in code snippet" })
             }
+
             CompileError::InvalidBracketedMetavariable => {
                 fmt.write_markup(markup! { "Invalid bracketed metavariable" })
             }
+
             CompileError::FunctionArgument(_) => {
                 fmt.write_markup(markup! { "Invalid function argument" })
             }
+
             CompileError::UnknownFunctionOrPredicate(name) => {
                 fmt.write_markup(markup! { "Unknown function or predicate: "{{name}} })
             }
+
             CompileError::UnknownTargetLanguage(lang) => {
                 fmt.write_markup(markup! { "Unknown target language: "{{lang}} })
             }
+
             CompileError::UnknownVariable(var) => {
                 fmt.write_markup(markup! { "Unknown variable: "{{var}} })
             }

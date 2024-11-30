@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsArrayElement;
 pub(crate) struct FormatAnyJsArrayElement;
 impl FormatRule<AnyJsArrayElement> for FormatAnyJsArrayElement {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsArrayElement, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsArrayElement::AnyJsExpression(node) => node.format().fmt(f),

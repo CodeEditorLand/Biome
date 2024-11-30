@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsImportClause;
 pub(crate) struct FormatAnyJsImportClause;
 impl FormatRule<AnyJsImportClause> for FormatAnyJsImportClause {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsImportClause, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsImportClause::JsImportBareClause(node) => node.format().fmt(f),

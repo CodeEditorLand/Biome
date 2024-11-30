@@ -41,15 +41,19 @@ impl Iterator for AllFiles {
                     if file_name.contains("expected") {
                         continue;
                     }
+
                     let meta = match entry.metadata().map_err(|_| "Cannot open file") {
                         Ok(v) => v,
                         Err(e) => return Some(Err(e)),
                     };
+
                     if meta.is_file() {
                         let path = entry.path().to_path_buf();
+
                         break Some(Ok(path));
                     }
                 }
+
                 _ => break None,
             }
         }
@@ -107,8 +111,10 @@ impl Modules {
         match path.next() {
             Some(module) => {
                 let name = transform_file_name(module);
+
                 self.modules.entry(name).or_default().insert(path, test);
             }
+
             None => {
                 self.tests.push(test);
             }
@@ -120,7 +126,9 @@ impl Modules {
             let name = syn::Ident::new(&name, Span::call_site());
 
             let mut stream = proc_macro2::TokenStream::new();
+
             module.print(&mut stream);
+
             output.extend(quote! {
                 mod #name { #stream }
             });
@@ -134,10 +142,12 @@ impl Arguments {
     fn get_all_files(&self) -> Result<AllFiles, &str> {
         let base = std::env::var("CARGO_MANIFEST_DIR")
             .map_err(|_| "Cannot find CARGO_MANIFEST_DIR. Are you using cargo?")?;
+
         let glob = match &self.pattern.lit {
             syn::Lit::Str(v) => v.value(),
             _ => return Err("Only string literals supported"),
         };
+
         let walker = GlobWalkerBuilder::new(base, glob)
             .build()
             .map_err(|_| "Cannot walk the requested glob")?;
@@ -147,8 +157,11 @@ impl Arguments {
 
     fn get_variables<P: AsRef<Path>>(path: P) -> Option<Variables> {
         let path = path.as_ref();
+
         let file_stem = path.file_stem()?;
+
         let file_stem = file_stem.to_str()?;
+
         let test_name = format!(
             "{}{}",
             file_stem.to_snake(),
@@ -158,17 +171,22 @@ impl Arguments {
                 String::new()
             }
         );
+
         let test_directory = path.parent().unwrap().display().to_string();
 
         let test_full_path = path.display().to_string();
+
         let extension = match path.extension() {
             Some(ext) => format!(".{}", ext.to_str().unwrap_or("")),
             None => String::new(),
         };
 
         let mut test_expected_file = path.to_path_buf();
+
         test_expected_file.pop();
+
         test_expected_file.push(format!("{file_stem}.expected{extension}"));
+
         let test_expected_fullpath = test_expected_file.display().to_string();
 
         Some(Variables {
@@ -181,6 +199,7 @@ impl Arguments {
 
     pub fn gen(&self) -> Result<TokenStream, &str> {
         let files = self.get_all_files()?;
+
         let mut modules = Modules::default();
 
         for file in files.flatten() {
@@ -202,8 +221,11 @@ impl Arguments {
                 .filter_map(OsStr::to_str);
 
             let span = self.pattern.lit.span();
+
             let test_name = syn::Ident::new(&test_name, span);
+
             let f = &self.called_function;
+
             let file_type = &self.file_type;
 
             modules.insert(
@@ -212,8 +234,11 @@ impl Arguments {
                     #[test]
                     pub fn #test_name () {
                         let test_file = #test_full_path;
+
                         let test_expected_file = #test_expected_fullpath;
+
                         let file_type = #file_type;
+
                         let test_directory = #test_directory;
                         #f(test_file, test_expected_file, test_directory, file_type);
                     }
@@ -222,7 +247,9 @@ impl Arguments {
         }
 
         let mut output = proc_macro2::TokenStream::new();
+
         modules.print(&mut output);
+
         Ok(output.into())
     }
 }
@@ -230,10 +257,15 @@ impl Arguments {
 impl syn::parse::Parse for Arguments {
     fn parse(input: ParseStream<'_>) -> syn::Result<Self> {
         let path: syn::ExprLit = input.parse()?;
+
         let _: syn::Token!(,) = input.parse()?;
+
         let call: syn::Path = input.parse()?;
+
         let _: syn::Token!(,) = input.parse()?;
+
         let file_type: syn::ExprLit = input.parse()?;
+
         Ok(Arguments {
             pattern: path,
             called_function: call,

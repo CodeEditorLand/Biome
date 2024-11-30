@@ -105,6 +105,7 @@ impl UseValidAnchorState {
                     "Provide a valid value for the attribute "<Emphasis>"href"</Emphasis>"."
                 }).to_owned()
             }
+
             UseValidAnchorState::CantBeAnchor(_) => {
                 (markup! {
                     "Use a "<Emphasis>"button"</Emphasis>" element instead of an "<Emphasis>"a"</Emphasis>" element."
@@ -141,16 +142,21 @@ impl UseValidAnchorState {
 
 impl Rule for UseValidAnchor {
     type Query = Ast<AnyJsxElement>;
+
     type State = UseValidAnchorState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let name = node.name().ok()?.name_value_token().ok()?;
 
         if name.text_trimmed() == "a" {
             let anchor_attribute = node.find_attribute_by_name("href");
+
             let on_click_attribute = node.find_attribute_by_name("onClick");
 
             match (anchor_attribute, on_click_attribute) {
@@ -160,6 +166,7 @@ impl Rule for UseValidAnchor {
                     }
 
                     let static_value = anchor_attribute.as_static_value()?;
+
                     if static_value.as_string_constant().map_or(true, |const_str| {
                         const_str.is_empty()
                             || const_str.contains('#')
@@ -174,6 +181,7 @@ impl Rule for UseValidAnchor {
                     }
 
                     let static_value = anchor_attribute.as_static_value()?;
+
                     if static_value.as_string_constant().map_or(true, |const_str| {
                         const_str.is_empty()
                             || const_str == "#"

@@ -67,8 +67,11 @@ impl GritQuery {
         file: GritTargetFile,
     ) -> GritResult<(Vec<GritQueryResult>, AnalysisLogs)> {
         let file_owners = FileOwners::new();
+
         let files = vec![file];
+
         let file_ptr = FilePtr::new(0, 0);
+
         let context = GritExecContext {
             lang: self.language.clone(),
             name: self.name.as_deref(),
@@ -84,12 +87,15 @@ impl GritQuery {
 
         let file_registry =
             FileRegistry::new_from_paths(files.iter().map(|file| &file.path).collect());
+
         let binding = FilePattern::Single(file_ptr);
 
         let mut state = State::new(var_registry.into(), file_registry);
+
         let mut logs = Vec::new().into();
 
         let mut results: Vec<GritQueryResult> = Vec::new();
+
         if self
             .pattern
             .execute(&binding.into(), &mut state, &context, &mut logs)?
@@ -134,10 +140,12 @@ impl GritQuery {
                 locations: BTreeSet::new(),
             })
             .collect::<Vec<VariableSource>>()];
+
         let mut global_vars: BTreeMap<String, usize> = GLOBAL_VARS
             .iter()
             .map(|(global_var, index)| ((*global_var).to_string(), *index))
             .collect();
+
         let mut diagnostics = Vec::new();
 
         // We're not in a local scope yet, so this map is kinda useless.
@@ -172,7 +180,9 @@ impl GritQuery {
             .and_then(Path::file_stem)
             .map(OsStr::to_string_lossy)
             .map(|stem| stem.into_owned());
+
         let language = context.lang;
+
         let variable_locations = VariableLocations::new(vars_array);
 
         Ok(Self {
@@ -201,6 +211,7 @@ impl GritQueryResult {
 
         let result = if file.len() == 1 {
             let file = file.last().unwrap();
+
             if file.new {
                 Some(GritQueryResult::CreateFile(CreateFile::new(
                     &file.name,
@@ -303,7 +314,9 @@ impl Rewrite {
         } else {
             return Err(GritPatternError::new("cannot have rewrite without matches"));
         };
+
         let rewritten = OutputFile::from_file(rewritten_file);
+
         Ok(Rewrite::new(original, rewritten))
     }
 }

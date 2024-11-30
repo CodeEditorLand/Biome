@@ -53,12 +53,15 @@ impl TestReporter for DefaultReporter {
         self.pb.finish_and_clear();
 
         let pb = ProgressBar::new(count as u64);
+
         pb.set_message(format!("{} test files", "Loading".bold().cyan()));
+
         pb.set_style(
             indicatif::ProgressStyle::with_template("{msg} [{bar:40}]")
                 .unwrap()
                 .progress_chars("=> "),
         );
+
         self.pb = pb;
     }
 
@@ -68,6 +71,7 @@ impl TestReporter for DefaultReporter {
 
     fn test_suite_run_started(&mut self, suite: &TestSuiteInstance) {
         self.pb.finish_and_clear();
+
         self.pb.println(format!(
             "{} {} test files in {:.2}s",
             "Loaded".bold().bright_green(),
@@ -97,6 +101,7 @@ impl TestReporter for DefaultReporter {
 
     fn test_suite_completed(&mut self, suite: &TestSuiteInstance, _results: &TestResults) {
         self.pb.finish_and_clear();
+
         self.pb.println(format!(
             "{}: {} {} tests in {:.2}s",
             suite.name(),
@@ -206,6 +211,7 @@ impl SummaryReporter {
 
     fn summary_table(results: HashMap<String, Summary>) -> String {
         let mut table = AsciiTable::default();
+
         let has_multiple_test_suites = results.len() > 1;
 
         let offset = if has_multiple_test_suites {
@@ -213,6 +219,7 @@ impl SummaryReporter {
                 .column(0)
                 .set_header("Test suite")
                 .set_align(Align::Left);
+
             1
         } else {
             0
@@ -222,30 +229,38 @@ impl SummaryReporter {
             .column(offset)
             .set_header("Tests ran".to_string())
             .set_align(Align::Right);
+
         table
             .column(offset + 1)
             .set_header("Passed")
             .set_align(Align::Right);
+
         table
             .column(offset + 2)
             .set_header("Failed")
             .set_align(Align::Right);
+
         table
             .column(offset + 3)
             .set_header("Panics")
             .set_align(Align::Right);
+
         table
             .column(offset + 4)
             .set_header("Coverage")
             .set_align(Align::Right);
 
         let mut results: Vec<_> = results.into_iter().collect();
+
         results.sort_by(|(l, _), (r, _)| l.cmp(r));
 
         let rows = results.into_iter().map(|(suite, summary)| {
             let panicked = summary.panics;
+
             let errored = summary.failed;
+
             let passed = summary.passed;
+
             let coverage = if summary.coverage.is_nan() {
                 "\u{221E}".to_string()
             } else {
@@ -276,6 +291,7 @@ impl SummaryReporter {
 
     fn write_errors(&mut self, errors: &[Error], files: &TestCaseFiles) {
         files.emit_errors(errors, &mut self.buffer);
+
         self.writeln("");
     }
 }
@@ -292,6 +308,7 @@ impl TestReporter for SummaryReporter {
                     self.writeln(&format!("{} {}", "[PASS]".bold().green(), result.test_case));
 
                     let mut all_errors = Vec::new();
+
                     for file in files {
                         if let Some(errors) = file.parse().ok().err() {
                             all_errors.extend(errors.into_iter().map(|error| {
@@ -307,8 +324,10 @@ impl TestReporter for SummaryReporter {
                     }
                 }
             }
+
             TestRunOutcome::Panicked(_) => {
                 let panic = result.outcome.panic_message();
+
                 self.writeln(&format!(
                     "{} {}: {}",
                     "[PANIC]".bold().red(),
@@ -316,6 +335,7 @@ impl TestReporter for SummaryReporter {
                     panic.unwrap_or("Unknown panic reason")
                 ));
             }
+
             TestRunOutcome::IncorrectlyPassed(_) => {
                 self.writeln(&format!(
                     "{} {}: Incorrectly passed",
@@ -323,16 +343,19 @@ impl TestReporter for SummaryReporter {
                     result.test_case
                 ));
             }
+
             TestRunOutcome::IncorrectlyErrored { errors, files } => {
                 self.writeln(&format!(
                     "{} {}: Incorrectly errored:",
                     "[FAIL]".bold().red(),
                     result.test_case
                 ));
+
                 let errors: Vec<_> = errors
                     .iter()
                     .map(|diagnostic| Error::from(diagnostic.clone()))
                     .collect();
+
                 self.write_errors(&errors, files);
             }
         }
@@ -341,6 +364,7 @@ impl TestReporter for SummaryReporter {
             if let Some(files) = result.outcome.files() {
                 for file in files {
                     let program = file.parse();
+
                     self.writeln(&format!(
                         "RAST Output for {}:\n{:#?}\n",
                         &file.name().bold(),
@@ -358,6 +382,7 @@ impl TestReporter for SummaryReporter {
 
     fn run_completed(&mut self) {
         let results = std::mem::take(&mut self.results);
+
         let table = Self::summary_table(results);
 
         self.output_target
@@ -383,6 +408,7 @@ impl TestReporter for JsonReporter {
 
     fn run_completed(&mut self) {
         let results = std::mem::take(&mut self.results);
+
         println!("{}", serde_json::to_string(&results).unwrap());
     }
 }

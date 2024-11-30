@@ -15,6 +15,7 @@ impl JsObjectLike {
             JsObjectLike::TsObjectType(ot) => ot.l_curly_token(),
         }
     }
+
     fn r_curly_token(&self) -> SyntaxResult<JsSyntaxToken> {
         match self {
             JsObjectLike::JsObjectExpression(oe) => oe.r_curly_token(),
@@ -41,6 +42,7 @@ impl JsObjectLike {
             JsObjectLike::JsObjectExpression(oe) => {
                 write!(f, [oe.members().format()])
             }
+
             JsObjectLike::TsObjectType(ot) => {
                 write!(f, [ot.members().format()])
             }
@@ -61,7 +63,9 @@ impl Format<JsFormatContext> for JsObjectLike {
             )?;
         } else {
             let should_insert_space_around_brackets = f.options().bracket_spacing().value();
+
             let should_expand = self.members_have_leading_newline();
+
             write!(
                 f,
                 [group(&soft_block_indent_with_maybe_space(

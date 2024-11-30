@@ -63,24 +63,30 @@ declare_lint_rule! {
 
 impl Rule for NoConstructorReturn {
     type Query = Ast<JsReturnStatement>;
+
     type State = JsConstructorClassMember;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let ret = ctx.query();
         // Do not take arg-less returns into account
         let _arg = ret.argument()?;
+
         let constructor = ret
             .syntax()
             .ancestors()
             .find(|x| AnyJsControlFlowRoot::can_cast(x.kind()))
             .and_then(JsConstructorClassMember::cast);
+
         constructor
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, constructor: &Self::State) -> Option<RuleDiagnostic> {
         let ret = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             ret.range(),

@@ -88,6 +88,7 @@ impl JsFormatContext {
 
     pub fn with_source_map(mut self, source_map: Option<TransformSourceMap>) -> Self {
         self.source_map = source_map;
+
         self
     }
 }
@@ -121,7 +122,9 @@ impl FormatContext for JsFormatContext {
 
 impl CstFormatContext for JsFormatContext {
     type Language = JsLanguage;
+
     type Style = JsCommentStyle;
+
     type CommentRule = FormatJsLeadingComment;
 
     fn comments(&self) -> &JsComments {
@@ -196,66 +199,79 @@ impl JsFormatOptions {
 
     pub fn with_arrow_parentheses(mut self, arrow_parentheses: ArrowParentheses) -> Self {
         self.arrow_parentheses = arrow_parentheses;
+
         self
     }
 
     pub fn with_bracket_spacing(mut self, bracket_spacing: BracketSpacing) -> Self {
         self.bracket_spacing = bracket_spacing;
+
         self
     }
 
     pub fn with_bracket_same_line(mut self, bracket_same_line: BracketSameLine) -> Self {
         self.bracket_same_line = bracket_same_line;
+
         self
     }
 
     pub fn with_indent_style(mut self, indent_style: IndentStyle) -> Self {
         self.indent_style = indent_style;
+
         self
     }
 
     pub fn with_indent_width(mut self, indent_width: IndentWidth) -> Self {
         self.indent_width = indent_width;
+
         self
     }
 
     pub fn with_line_ending(mut self, line_ending: LineEnding) -> Self {
         self.line_ending = line_ending;
+
         self
     }
 
     pub fn with_line_width(mut self, line_width: LineWidth) -> Self {
         self.line_width = line_width;
+
         self
     }
 
     pub fn with_quote_style(mut self, quote_style: QuoteStyle) -> Self {
         self.quote_style = quote_style;
+
         self
     }
 
     pub fn with_jsx_quote_style(mut self, jsx_quote_style: QuoteStyle) -> Self {
         self.jsx_quote_style = jsx_quote_style;
+
         self
     }
 
     pub fn with_quote_properties(mut self, quote_properties: QuoteProperties) -> Self {
         self.quote_properties = quote_properties;
+
         self
     }
 
     pub fn with_trailing_commas(mut self, trailing_commas: TrailingCommas) -> Self {
         self.trailing_commas = trailing_commas;
+
         self
     }
 
     pub fn with_semicolons(mut self, semicolons: Semicolons) -> Self {
         self.semicolons = semicolons;
+
         self
     }
 
     pub fn with_attribute_position(mut self, attribute_position: AttributePosition) -> Self {
         self.attribute_position = attribute_position;
+
         self
     }
 
@@ -302,6 +318,7 @@ impl JsFormatOptions {
     pub fn set_trailing_commas(&mut self, trailing_commas: TrailingCommas) {
         self.trailing_commas = trailing_commas;
     }
+
     pub fn set_attribute_position(&mut self, attribute_position: AttributePosition) {
         self.attribute_position = attribute_position;
     }
@@ -388,17 +405,29 @@ impl FormatOptions for JsFormatOptions {
 impl fmt::Display for JsFormatOptions {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         writeln!(f, "Indent style: {}", self.indent_style)?;
+
         writeln!(f, "Indent width: {}", self.indent_width.value())?;
+
         writeln!(f, "Line ending: {}", self.line_ending)?;
+
         writeln!(f, "Line width: {}", self.line_width.value())?;
+
         writeln!(f, "Quote style: {}", self.quote_style)?;
+
         writeln!(f, "JSX quote style: {}", self.jsx_quote_style)?;
+
         writeln!(f, "Quote properties: {}", self.quote_properties)?;
+
         writeln!(f, "Trailing commas: {}", self.trailing_commas)?;
+
         writeln!(f, "Semicolons: {}", self.semicolons)?;
+
         writeln!(f, "Arrow parentheses: {}", self.arrow_parentheses)?;
+
         writeln!(f, "Bracket spacing: {}", self.bracket_spacing.value())?;
+
         writeln!(f, "Bracket same line: {}", self.bracket_same_line.value())?;
+
         writeln!(f, "Attribute Position: {}", self.attribute_position)
     }
 }

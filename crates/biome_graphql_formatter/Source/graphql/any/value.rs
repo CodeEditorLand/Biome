@@ -6,6 +6,7 @@ use biome_graphql_syntax::AnyGraphqlValue;
 pub(crate) struct FormatAnyGraphqlValue;
 impl FormatRule<AnyGraphqlValue> for FormatAnyGraphqlValue {
     type Context = GraphqlFormatContext;
+
     fn fmt(&self, node: &AnyGraphqlValue, f: &mut GraphqlFormatter) -> FormatResult<()> {
         match node {
             AnyGraphqlValue::GraphqlBogusValue(node) => node.format().fmt(f),

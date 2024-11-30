@@ -128,19 +128,25 @@ declare_lint_rule! {
 
 impl Rule for NoUselessConstructor {
     type Query = Ast<JsConstructorClassMember>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let constructor = ctx.query();
+
         let is_not_public = constructor
             .modifiers()
             .iter()
             .any(|modifier| !modifier.is_public());
+
         if is_not_public {
             return None;
         }
+
         for parameter in constructor.parameters().ok()?.parameters() {
             let decorators = match parameter.ok()? {
                 AnyJsConstructorParameter::AnyJsFormalParameter(
@@ -151,26 +157,33 @@ impl Rule for NoUselessConstructor {
                     // Ignore constructors with Bogus parameters or parameter properties
                     return None;
                 }
+
                 AnyJsConstructorParameter::AnyJsFormalParameter(
                     AnyJsFormalParameter::JsFormalParameter(parameter),
                 ) => parameter.decorators(),
                 AnyJsConstructorParameter::JsRestParameter(parameter) => parameter.decorators(),
             };
+
             if !decorators.is_empty() {
                 // Ignore constructors with decorated parameters
                 return None;
             }
         }
+
         let class = constructor.syntax().ancestors().find_map(AnyJsClass::cast);
+
         if let Some(class) = &class {
             if !class.decorators().is_empty() {
                 // Ignore decorated classes
                 return None;
             }
         }
+
         let mut body_statements = constructor.body().ok()?.statements().iter();
+
         let Some(first) = body_statements.next() else {
             let has_parent_class = class.and_then(|x| x.extends_clause()).is_some();
+
             if has_parent_class {
                 // A `super` call is missing.
                 // Do not report as useless constructor.
@@ -179,16 +192,22 @@ impl Rule for NoUselessConstructor {
             // empty body and no parent class
             return Some(());
         };
+
         if body_statements.count() != 0 {
             // There are more than one statement.
             return None;
         }
+
         let js_expr = first.as_js_expression_statement()?.expression().ok()?;
+
         let js_call = js_expr.as_js_call_expression()?;
+
         let is_super_call = js_call.callee().ok()?.as_js_super_expression().is_some();
+
         if !is_super_call {
             return None;
         }
+
         if !is_delegating_initialization(constructor, js_call) {
             return None;
         }
@@ -199,6 +218,7 @@ impl Rule for NoUselessConstructor {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let constructor = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             constructor.range(),
@@ -210,8 +230,11 @@ impl Rule for NoUselessConstructor {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let constructor = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         mutation.remove_node(constructor.clone());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -230,14 +253,20 @@ fn is_delegating_initialization(
 ) -> bool {
     let result = || {
         let parameters = constructor.parameters().ok()?.parameters();
+
         let arguments = super_call.arguments().ok()?.args();
+
         if parameters.len() != arguments.len() {
             return None;
         }
+
         let zipped = parameters.iter().zip(arguments.iter());
+
         for (param, arg) in zipped {
             let param = param.ok()?;
+
             let arg = arg.ok()?;
+
             match (param, arg) {
                 (
                     AnyJsConstructorParameter::AnyJsFormalParameter(
@@ -258,6 +287,7 @@ fn is_delegating_initialization(
                         .as_js_identifier_binding()?
                         .name_token()
                         .ok()?;
+
                     let arg_name = arg
                         .argument()
                         .ok()?
@@ -266,6 +296,7 @@ fn is_delegating_initialization(
                         .ok()?
                         .value_token()
                         .ok()?;
+
                     if param_name.text_trimmed() != arg_name.text_trimmed() {
                         return Some(false);
                     }
@@ -282,12 +313,14 @@ fn is_delegating_initialization(
                         .as_js_identifier_binding()?
                         .name_token()
                         .ok()?;
+
                     let arg_name = expr
                         .as_js_identifier_expression()?
                         .name()
                         .ok()?
                         .value_token()
                         .ok()?;
+
                     if param_name.text_trimmed() != arg_name.text_trimmed() {
                         return Some(false);
                     }
@@ -297,7 +330,9 @@ fn is_delegating_initialization(
                 }
             }
         }
+
         Some(true)
     };
+
     result().unwrap_or(false)
 }

@@ -12,6 +12,7 @@ use std::collections::BTreeSet;
 
 pub(super) fn transform(root: JsSyntaxNode) -> (JsSyntaxNode, TransformSourceMap) {
     let mut rewriter = JsFormatSyntaxRewriter::with_offset(root.text_range().start());
+
     let transformed = rewriter.transform(root);
     (transformed, rewriter.finish())
 }
@@ -162,6 +163,7 @@ impl JsFormatSyntaxRewriter {
                     (l_paren, inner, r_paren)
                 }
             }
+
             _ => {
                 // At least one missing child, handle as a regular node
                 return VisitNodeSignal::Traverse(parenthesized.into_syntax());
@@ -173,7 +175,9 @@ impl JsFormatSyntaxRewriter {
         let inner_trimmed_range = inner.text_trimmed_range();
         // Store away the inner offset because the new returned inner might be a detached node
         let original_inner_offset = inner.text_range().start();
+
         let inner = self.transform(inner);
+
         let inner_offset = original_inner_offset - inner.text_range().start();
 
         match inner.first_token() {
@@ -187,12 +191,14 @@ impl JsFormatSyntaxRewriter {
                             .with_expression(AnyJsExpression::unwrap_cast(inner))
                             .into_syntax()
                     }
+
                     AnyJsParenthesized::JsParenthesizedAssignment(assignment) => {
                         // SAFETY: Safe because the rewriter never rewrites an assignment to a non assignment.
                         assignment
                             .with_assignment(AnyJsAssignment::unwrap_cast(inner))
                             .into_syntax()
                     }
+
                     AnyJsParenthesized::TsParenthesizedType(ty) => {
                         ty.with_ty(AnyTsType::unwrap_cast(inner)).into_syntax()
                     }
@@ -210,7 +216,9 @@ impl JsFormatSyntaxRewriter {
                 );
 
                 let l_paren_trimmed_range = l_paren.text_trimmed_range();
+
                 self.source_map.add_deleted_range(l_paren_trimmed_range);
+
                 self.l_paren_source_position
                     .insert(l_paren_trimmed_range.start());
 
@@ -220,6 +228,7 @@ impl JsFormatSyntaxRewriter {
                 while let Some(piece) = l_paren_trailing.peek() {
                     if piece.is_whitespace() {
                         self.source_map.add_deleted_range(piece.text_range());
+
                         l_paren_trailing.next();
                     } else {
                         break;
@@ -234,6 +243,7 @@ impl JsFormatSyntaxRewriter {
                     chain_trivia_pieces(l_paren.leading_trivia().pieces(), l_paren_trailing);
 
                 let mut leading_trivia = first_token.leading_trivia().pieces().peekable();
+
                 let mut first_new_line = None;
 
                 let mut inner_offset = inner_offset;
@@ -256,6 +266,7 @@ impl JsFormatSyntaxRewriter {
                     } else if trivia.is_whitespace() || trivia.is_newline() {
                         self.source_map
                             .add_deleted_range(trivia.text_range() + inner_offset);
+
                         leading_trivia.next();
                     } else {
                         break;
@@ -279,6 +290,7 @@ impl JsFormatSyntaxRewriter {
                 );
 
                 let new_leading = chain_trivia_pieces(l_paren_trivia, leading_trivia);
+
                 let new_first = first_token.with_leading_trivia_pieces(new_leading);
 
                 // SAFETY: Calling `unwrap` is safe because we know that `inner_first` is part of the `inner` subtree.
@@ -342,11 +354,14 @@ impl JsFormatSyntaxRewriter {
         match (logical.left(), logical.operator_token(), logical.right()) {
             (Ok(left), Ok(operator), Ok(right)) => {
                 let left_key = left.syntax().key();
+
                 let operator_key = operator.key();
+
                 let right_key = right.syntax().key();
 
                 // SAFETY: Safe because the rewriter never rewrites an expression to a non expression.
                 let left = AnyJsExpression::unwrap_cast(self.transform(left.into_syntax()));
+
                 let operator = self.visit_token(operator);
                 // SAFETY: Safe because the rewriter never rewrites an expression to a non expression.
                 let right = AnyJsExpression::unwrap_cast(self.transform(right.into_syntax()));
@@ -400,6 +415,7 @@ impl JsFormatSyntaxRewriter {
 
                 VisitNodeSignal::Replace(updated.into_syntax())
             }
+
             _ => VisitNodeSignal::Traverse(logical.into_syntax()),
         }
     }
@@ -421,6 +437,7 @@ fn decorator_expression_needs_parens(inner: &JsSyntaxNode) -> bool {
                     object.syntax().kind() != JsSyntaxKind::JS_IDENTIFIER_EXPRESSION
                 })
         }
+
         Some(AnyJsExpression::JsIdentifierExpression(_)) => false,
         _ => true,
     }
@@ -436,17 +453,20 @@ impl SyntaxRewriter for JsFormatSyntaxRewriter {
 
                 self.visit_parenthesized(parenthesized)
             }
+
             JsSyntaxKind::JS_LOGICAL_EXPRESSION => {
                 let logical = JsLogicalExpression::unwrap_cast(node);
 
                 self.visit_logical_expression(logical)
             }
+
             _ => VisitNodeSignal::Traverse(node),
         }
     }
 
     fn visit_token(&mut self, token: SyntaxToken<Self::Language>) -> SyntaxToken<Self::Language> {
         self.source_map.push_source_text(token.text());
+
         token
     }
 }
@@ -464,14 +484,19 @@ fn has_type_cast_comment_or_skipped(trivia: &JsSyntaxTrivia) -> bool {
 #[cfg(test)]
 mod tests {
     use super::JsFormatSyntaxRewriter;
+
     use crate::{format_node, JsFormatOptions, TextRange};
+
     use biome_formatter::{SourceMarker, TransformSourceMap};
+
     use biome_js_parser::{parse, parse_module, JsParserOptions};
+
     use biome_js_syntax::{
         JsArrayExpression, JsBinaryExpression, JsExpressionStatement, JsFileSource,
         JsIdentifierExpression, JsLogicalExpression, JsSequenceExpression,
         JsStringLiteralExpression, JsSyntaxNode, JsUnaryExpression, JsxTagExpression,
     };
+
     use biome_rowan::{AstNode, SyntaxRewriter, TextSize};
 
     #[test]
@@ -494,18 +519,22 @@ mod tests {
         assert_eq!(logical_expressions.len(), 2);
 
         let left = logical_expressions.pop().unwrap();
+
         let top = logical_expressions.pop().unwrap();
 
         assert_eq!(top.left().unwrap().syntax(), left.syntax());
+
         assert_eq!(&top.right().unwrap().text(), "c");
 
         assert_eq!(left.left().unwrap().text(), "a");
+
         assert_eq!(left.right().unwrap().text(), "b");
     }
 
     #[test]
     fn only_rebalances_logical_expressions_with_same_operator() {
         let root = parse_module("a && (b || c)", JsParserOptions::default()).syntax();
+
         let transformed = JsFormatSyntaxRewriter::default().transform(root);
 
         // Removes parentheses
@@ -519,11 +548,15 @@ mod tests {
         assert_eq!(logical_expressions.len(), 2);
 
         let top = logical_expressions.first().unwrap();
+
         let right = logical_expressions.last().unwrap();
 
         assert_eq!(top.left().unwrap().text(), "a");
+
         assert_eq!(top.right().unwrap().syntax(), right.syntax());
+
         assert_eq!(right.left().unwrap().text(), "b");
+
         assert_eq!(right.right().unwrap().text(), "c");
     }
 
@@ -591,12 +624,14 @@ mod tests {
         assert_eq!(2, identifiers.len());
         // Parentheses should be associated with the binary expression
         assert_eq!(source_map.trimmed_source_text(identifiers[0].syntax()), "a");
+
         assert_eq!(source_map.trimmed_source_text(identifiers[1].syntax()), "b");
 
         let binary = transformed
             .descendants()
             .find_map(JsBinaryExpression::cast)
             .unwrap();
+
         assert_eq!(source_map.trimmed_source_text(binary.syntax()), "(a + b)")
     }
 
@@ -620,6 +655,7 @@ mod tests {
             .descendants()
             .find_map(JsSequenceExpression::cast)
             .unwrap();
+
         assert_eq!(
             source_map.trimmed_source_text(sequence.syntax()),
             "(interface, \"foo\")"
@@ -751,6 +787,7 @@ mod tests {
             .descendants()
             .filter_map(JsUnaryExpression::cast)
             .collect::<Vec<_>>();
+
         assert_eq!(unary_expressions.len(), 5);
 
         assert_eq!(
@@ -832,7 +869,9 @@ mod tests {
         let tree = parse(input, JsFileSource::jsx(), JsParserOptions::default()).syntax();
 
         let mut rewriter = JsFormatSyntaxRewriter::default();
+
         let transformed = rewriter.transform(tree);
+
         let source_map = rewriter.finish();
 
         (transformed, source_map)
@@ -844,11 +883,13 @@ mod tests {
 
         let formatted =
             format_node(JsFormatOptions::new(JsFileSource::default()), &transformed).unwrap();
+
         let printed = formatted.print().unwrap();
 
         assert_eq!(printed.as_code(), "(a * b * c) / 3;\n");
 
         let mapped = source_map.map_printed(printed);
+
         let markers = mapped.into_sourcemap();
 
         assert_eq!(

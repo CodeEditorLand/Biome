@@ -32,15 +32,19 @@ static GLOBAL: std::alloc::System = std::alloc::System;
 
 fn main() -> ExitCode {
     setup_panic_handler();
+
     set_bottom_frame(main as usize);
 
     let mut console = EnvConsole::default();
+
     let command = biome_command().fallback_to_usage().run();
 
     console.set_color(to_color_mode(command.get_color()));
 
     let is_verbose = command.is_verbose();
+
     let result = run_workspace(&mut console, command);
+
     match result {
         Err(termination) => {
             if termination.tags().is_verbose() && is_verbose {
@@ -48,8 +52,10 @@ fn main() -> ExitCode {
             } else {
                 console.error(markup! {{PrintDiagnostic::simple(&termination)}})
             }
+
             termination.report()
         }
+
         Ok(_) => ExitCode::SUCCESS,
     }
 }
@@ -59,6 +65,7 @@ fn run_workspace(console: &mut EnvConsole, command: BiomeCommand) -> Result<(), 
     // existing Biome server socket
     let workspace = if command.should_use_server() {
         let runtime = Runtime::new()?;
+
         match open_transport(runtime)? {
             Some(transport) => workspace::client(transport)?,
             None => return Err(CliDiagnostic::server_not_running()),
@@ -68,5 +75,6 @@ fn run_workspace(console: &mut EnvConsole, command: BiomeCommand) -> Result<(), 
     };
 
     let session = CliSession::new(&*workspace, console)?;
+
     session.run(command)
 }

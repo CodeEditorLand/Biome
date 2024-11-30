@@ -73,19 +73,26 @@ declare_lint_rule! {
 
 impl Rule for UseExportType {
     type Query = Semantic<AnyJsExportNamedClause>;
+
     type State = ExportTypeFix;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let source_type = ctx.source_type::<JsFileSource>();
+
         if !source_type.language().is_typescript() || source_type.language().is_definition_file() {
             return None;
         }
+
         let export_named_clause = ctx.query();
+
         match export_named_clause {
             AnyJsExportNamedClause::JsExportNamedClause(clause) => {
                 let specifiers = clause.specifiers();
+
                 if specifiers.is_empty() {
                     // Don't report `export {}`
                     None
@@ -95,6 +102,7 @@ impl Rule for UseExportType {
                         .iter()
                         .filter_map(|specifier| specifier.ok()?.type_token())
                         .collect();
+
                     if useless_type_tokens.is_empty() {
                         None
                     } else {
@@ -104,27 +112,36 @@ impl Rule for UseExportType {
                     }
                 } else {
                     let mut exports_only_types = true;
+
                     let mut specifiers_requiring_type_marker = Vec::new();
+
                     for specifier in specifiers {
                         let Ok((ref_name, specifier)) = specifier
                             .and_then(|specifier| Ok((specifier.local_name()?, specifier)))
                         else {
                             exports_only_types = false;
+
                             continue;
                         };
+
                         if specifier.type_token().is_some() {
                             // `export { type <specifier> }`
                             continue;
                         }
+
                         let model = ctx.model();
+
                         let binding = model.binding(&ref_name)?;
+
                         let binding = binding.tree();
+
                         if binding.is_type_only() {
                             specifiers_requiring_type_marker.push(specifier);
                         } else {
                             exports_only_types = false;
                         }
                     }
+
                     if exports_only_types {
                         Some(ExportTypeFix::UseExportType)
                     } else if specifiers_requiring_type_marker.is_empty() {
@@ -136,8 +153,10 @@ impl Rule for UseExportType {
                     }
                 }
             }
+
             AnyJsExportNamedClause::JsExportNamedFromClause(clause) => {
                 let specifiers = clause.specifiers();
+
                 if specifiers.is_empty() {
                     None
                 } else if clause.type_token().is_some() {
@@ -145,6 +164,7 @@ impl Rule for UseExportType {
                         .iter()
                         .filter_map(|specifier| specifier.ok()?.type_token())
                         .collect();
+
                     if useless_type_tokens.is_empty() {
                         None
                     } else {
@@ -166,6 +186,7 @@ impl Rule for UseExportType {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let named_export_clause = ctx.query();
+
         let diagnostic = match state {
             ExportTypeFix::UseExportType => RuleDiagnostic::new(
                 rule_category!(),
@@ -178,11 +199,14 @@ impl Rule for UseExportType {
                     named_export_clause.range(),
                     "Some exports are only types.",
                 );
+
                 for specifier in specifiers {
                     diagnostic = diagnostic.detail(specifier.range(), "This export is a type.")
                 }
+
                 diagnostic
             }
+
             ExportTypeFix::RemoveInlineTypeQualifiers(type_tokens) => {
                 let mut diagnostic = RuleDiagnostic::new(
                     rule_category!(),
@@ -191,6 +215,7 @@ impl Rule for UseExportType {
                         "This "<Emphasis>"type"</Emphasis>" keyword makes all inline "<Emphasis>"type"</Emphasis>" keywords useless."
                     },
                 );
+
                 for type_token in type_tokens {
                     diagnostic = diagnostic.detail(
                         type_token.text_trimmed_range(),
@@ -199,9 +224,11 @@ impl Rule for UseExportType {
                         },
                     )
                 }
+
                 return Some(diagnostic);
             }
         };
+
         Some(diagnostic.note(markup! {
             "Using "<Emphasis>"export type"</Emphasis>" allows compilers to safely drop exports of types without looking for their definition."
         }))
@@ -209,13 +236,17 @@ impl Rule for UseExportType {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let export_named_clause = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let diagnostic = match state {
             ExportTypeFix::UseExportType => {
                 match export_named_clause {
                     AnyJsExportNamedClause::JsExportNamedClause(clause) => {
                         let specifier_list = clause.specifiers();
+
                         let mut new_specifiers = Vec::new();
+
                         for specifier in specifier_list.iter().filter_map(|x| x.ok()) {
                             if let Some(type_token) = specifier.type_token() {
                                 let new_specifier = specifier
@@ -227,11 +258,13 @@ impl Rule for UseExportType {
                                             type_token.trailing_trivia().pieces(),
                                         ),
                                     ))?;
+
                                 new_specifiers.push(new_specifier);
                             } else {
                                 new_specifiers.push(specifier)
                             }
                         }
+
                         let new_specifier_list = make::js_export_named_specifier_list(
                             new_specifiers,
                             specifier_list
@@ -239,6 +272,7 @@ impl Rule for UseExportType {
                                 .filter_map(|sep| sep.ok())
                                 .collect::<Vec<_>>(),
                         );
+
                         mutation.replace_node(
                             clause.clone(),
                             clause
@@ -250,9 +284,12 @@ impl Rule for UseExportType {
                                 .with_specifiers(new_specifier_list),
                         );
                     }
+
                     AnyJsExportNamedClause::JsExportNamedFromClause(clause) => {
                         let specifier_list = clause.specifiers();
+
                         let mut new_specifiers = Vec::new();
+
                         for specifier in specifier_list.iter().filter_map(|x| x.ok()) {
                             if let Some(type_token) = specifier.type_token() {
                                 let new_specifier = specifier
@@ -264,11 +301,13 @@ impl Rule for UseExportType {
                                             type_token.trailing_trivia().pieces(),
                                         ),
                                     ))?;
+
                                 new_specifiers.push(new_specifier);
                             } else {
                                 new_specifiers.push(specifier)
                             }
                         }
+
                         let new_specifier_list = make::js_export_named_from_specifier_list(
                             new_specifiers,
                             specifier_list
@@ -276,6 +315,7 @@ impl Rule for UseExportType {
                                 .filter_map(|sep| sep.ok())
                                 .collect::<Vec<_>>(),
                         );
+
                         mutation.replace_node(
                             clause.clone(),
                             clause
@@ -288,6 +328,7 @@ impl Rule for UseExportType {
                         );
                     }
                 }
+
                 JsRuleAction::new(
                     ctx.metadata().action_category(ctx.category(), ctx.group()),
                     ctx.metadata().applicability(),
@@ -295,6 +336,7 @@ impl Rule for UseExportType {
                     mutation,
                 )
             }
+
             ExportTypeFix::AddInlineTypeQualifiers(specifiers) => {
                 for specifier in specifiers {
                     mutation.replace_node(
@@ -311,6 +353,7 @@ impl Rule for UseExportType {
                             )),
                     );
                 }
+
                 JsRuleAction::new(
                     ctx.metadata().action_category(ctx.category(), ctx.group()),
                     ctx.metadata().applicability(),
@@ -318,10 +361,12 @@ impl Rule for UseExportType {
                     mutation,
                 )
             }
+
             ExportTypeFix::RemoveInlineTypeQualifiers(type_tokens) => {
                 for type_token in type_tokens {
                     mutation.remove_token(type_token.clone());
                 }
+
                 JsRuleAction::new(
                     ctx.metadata().action_category(ctx.category(), ctx.group()),
                     ctx.metadata().applicability(),
@@ -331,6 +376,7 @@ impl Rule for UseExportType {
                 )
             }
         };
+
         Some(diagnostic)
     }
 }

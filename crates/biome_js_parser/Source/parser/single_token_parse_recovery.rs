@@ -38,6 +38,7 @@ impl SingleTokenParseRecovery {
     /// If [SingleTokenParseRecovery] has an error, it gets tracked in the events.
     pub fn recover(&self, p: &mut JsParser) {
         let error = self.get_error();
+
         if let Some(error) = error {
             p.error(error);
         }
@@ -48,7 +49,9 @@ impl SingleTokenParseRecovery {
 
         if !self.parsing_is_recoverable(p) {
             let m = p.start();
+
             p.bump_any();
+
             m.complete(p, self.get_bogus_node_kind());
         }
     }

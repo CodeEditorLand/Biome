@@ -40,13 +40,18 @@ declare_lint_rule! {
 
 impl Rule for UseDeprecatedReason {
     type Query = Ast<GraphqlDirective>;
+
     type State = GraphqlDirective;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let name = node.name().ok()?;
+
         if name.text() != "deprecated" {
             return None;
         }
@@ -54,10 +59,13 @@ impl Rule for UseDeprecatedReason {
         let Some(arguments) = node.arguments() else {
             return Some(node.clone());
         };
+
         let arguments = arguments.arguments();
+
         let has_reason = arguments
             .into_iter()
             .any(|argument| argument.name().is_ok_and(|name| name.text() == "reason"));
+
         if has_reason {
             None
         } else {
@@ -71,6 +79,7 @@ impl Rule for UseDeprecatedReason {
         // https://docs.rs/biome_analyze/latest/biome_analyze/#what-a-rule-should-say-to-the-user
         //
         let span = ctx.query().range();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

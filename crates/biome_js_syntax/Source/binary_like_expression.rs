@@ -51,6 +51,7 @@ impl AnyJsBinaryLikeExpression {
             Self::JsLogicalExpression(logical) => {
                 logical.operator().map(BinaryLikeOperator::Logical)
             }
+
             Self::JsBinaryExpression(binary) => binary.operator().map(BinaryLikeOperator::Binary),
             Self::JsInstanceofExpression(_) => Ok(BinaryLikeOperator::Instanceof),
             Self::JsInExpression(_) => Ok(BinaryLikeOperator::In),
@@ -83,14 +84,18 @@ impl AnyJsBinaryLikeExpression {
                 JsSyntaxKind::JS_DO_WHILE_STATEMENT => {
                     JsDoWhileStatement::unwrap_cast(parent.clone()).test()
                 }
+
                 JsSyntaxKind::JS_WHILE_STATEMENT => {
                     JsWhileStatement::unwrap_cast(parent.clone()).test()
                 }
+
                 JsSyntaxKind::JS_SWITCH_STATEMENT => {
                     JsSwitchStatement::unwrap_cast(parent.clone()).discriminant()
                 }
+
                 _ => return false,
             };
+
             test.map_or(false, |test| test.syntax() == self.syntax())
         })
     }
@@ -99,7 +104,9 @@ impl AnyJsBinaryLikeExpression {
     /// can be flattened if its left hand side has the same operator-precedence
     pub fn can_flatten(&self) -> SyntaxResult<bool> {
         let left = self.left()?.into_expression();
+
         let left_expression = left.map(|expression| expression.into_syntax());
+
         if let Some(left_binary_like) = left_expression.and_then(AnyJsBinaryLikeExpression::cast) {
             Ok(should_flatten(
                 self.operator()?,
@@ -120,6 +127,7 @@ impl AnyJsBinaryLikeExpression {
                     _ => false,
                 })
             }
+
             _ => false,
         }
     }
@@ -143,6 +151,7 @@ impl AnyJsBinaryLikeExpression {
                     .body()
                     .is_ok_and(|body| body.syntax() == self.syntax())
             }
+
             JsSyntaxKind::JS_CONDITIONAL_EXPRESSION => {
                 parent.parent().is_some_and(|grand_parent| {
                     !matches!(
@@ -156,6 +165,7 @@ impl AnyJsBinaryLikeExpression {
                     )
                 })
             }
+
             _ => false,
         })
     }
@@ -168,6 +178,7 @@ pub(crate) fn should_flatten(
     if operator.precedence() != parent_operator.precedence() {
         return false;
     }
+
     match (parent_operator.precedence(), operator.precedence()) {
         // `**` is right associative
         (OperatorPrecedence::Exponential, _) => false,

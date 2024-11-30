@@ -75,6 +75,7 @@ pub(crate) fn server_capabilities(capabilities: &ClientCapabilities) -> ServerCa
             .into()
         })
         .or(Some(CodeActionProviderCapability::Simple(true)));
+
     ServerCapabilities {
         position_encoding: Some(match negotiated_encoding(capabilities) {
             PositionEncoding::Utf8 => PositionEncodingKind::UTF8,

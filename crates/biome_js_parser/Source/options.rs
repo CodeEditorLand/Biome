@@ -18,11 +18,13 @@ impl JsParserOptions {
     /// Enables parsing of Grit metavariables.
     pub fn with_metavariables(mut self) -> Self {
         self.grit_metavariables = true;
+
         self
     }
 
     pub fn with_parse_class_parameter_decorators(mut self) -> Self {
         self.parse_class_parameter_decorators = true;
+
         self
     }
 

@@ -21,6 +21,7 @@ impl FormatNodeRule<JsExportNamedFromClause> for FormatJsExportNamedFromClause {
             assertion,
             semicolon_token,
         } = node.as_fields();
+
         let should_insert_space_around_brackets = f.options().bracket_spacing().value();
 
         if let Some(type_token) = &type_token {
@@ -48,6 +49,7 @@ impl FormatNodeRule<JsExportNamedFromClause> for FormatJsExportNamedFromClause {
 
                 write!(f, [maybe_space(should_insert_space_around_brackets)])?;
             }
+
             _ => {
                 if specifiers.syntax().has_leading_newline() {
                     write!(f, [block_indent(&specifiers.format()),])?;

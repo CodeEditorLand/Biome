@@ -11,6 +11,7 @@ impl FormatNodeRule<GraphqlVariableReference> for FormatGraphqlVariableReference
         f: &mut GraphqlFormatter,
     ) -> FormatResult<()> {
         let GraphqlVariableReferenceFields { dollar_token, name } = node.as_fields();
+
         write!(f, [dollar_token.format(), name.format()])
     }
 }

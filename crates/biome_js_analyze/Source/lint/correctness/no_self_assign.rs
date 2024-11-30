@@ -77,16 +77,24 @@ declare_lint_rule! {
 
 impl Rule for NoSelfAssign {
     type Query = Ast<JsAssignmentExpression>;
+
     type State = IdentifiersLike;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let left = node.left().ok();
+
         let right = node.right().ok();
+
         let operator = node.operator().ok();
+
         let mut result = vec![];
+
         if let Some(operator) = operator {
             if matches!(
                 operator,
@@ -102,11 +110,13 @@ impl Rule for NoSelfAssign {
                 }
             }
         }
+
         result.into_boxed_slice()
     }
 
     fn diagnostic(_: &RuleContext<Self>, identifier_like: &Self::State) -> Option<RuleDiagnostic> {
         let name = identifier_like.name()?;
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -170,6 +180,7 @@ impl SameIdentifiers {
     /// The iterator logic makes sure to return the next eligible assignment-like.
     fn next_assignment_like(&mut self) -> Option<AnyAssignmentLike> {
         let current_assignment_like = &mut self.current_assignment_like;
+
         match current_assignment_like {
             AnyAssignmentLike::Arrays { left, right } => {
                 let new_assignment_like = Self::next_array_assignment(left, right);
@@ -181,8 +192,10 @@ impl SameIdentifiers {
                             .push_back(self.current_assignment_like.clone());
                     }
                 }
+
                 new_assignment_like
             }
+
             AnyAssignmentLike::Object { left, right } => {
                 let new_assignment_like = Self::next_object_assignment(left, right);
                 // In case we have nested array/object structures, we save the current
@@ -193,14 +206,19 @@ impl SameIdentifiers {
                             .push_back(self.current_assignment_like.clone());
                     }
                 }
+
                 new_assignment_like
             }
+
             AnyAssignmentLike::StaticExpression { left, right } => {
                 Self::next_static_expression(left, right)
             }
+
             AnyAssignmentLike::None | AnyAssignmentLike::Identifiers { .. } => {
                 let new_assignment = self.current_assignment_like.clone();
+
                 self.current_assignment_like = AnyAssignmentLike::None;
+
                 Some(new_assignment)
             }
         }
@@ -216,6 +234,7 @@ impl SameIdentifiers {
     ) -> Option<AnyAssignmentLike> {
         if let (Some(left_element), Some(right_element)) = (left.next(), right.next()) {
             let left_element = left_element.ok()?;
+
             let right_element = right_element.ok()?;
 
             if let (
@@ -227,12 +246,14 @@ impl SameIdentifiers {
                     // Allow self assign when the pattern has a default value.
                     return Some(AnyAssignmentLike::None);
                 }
+
                 let new_assignment_like =
                     AnyAssignmentLike::try_from((left.pattern().ok()?, right)).ok()?;
 
                 return Some(new_assignment_like);
             }
         }
+
         Some(AnyAssignmentLike::None)
     }
 
@@ -250,6 +271,7 @@ impl SameIdentifiers {
         let result = if let (Some(left_element), Some(right_element)) = (left.next(), right.next())
         {
             let left_element = left_element.ok()?;
+
             let right_element = right_element.ok()?;
 
             match (left_element, right_element) {
@@ -269,7 +291,9 @@ impl SameIdentifiers {
                     AnyJsObjectMember::JsPropertyObjectMember(right),
                 ) => {
                     let left = left.pattern().ok()?;
+
                     let right = right.value().ok()?;
+
                     match (left, right) {
                         // matches {a: b} = {a: b}
                         (
@@ -299,6 +323,7 @@ impl SameIdentifiers {
                         _ => AnyAssignmentLike::None,
                     }
                 }
+
                 _ => AnyAssignmentLike::None,
             }
         } else {
@@ -322,6 +347,7 @@ impl SameIdentifiers {
     ) -> Option<AnyAssignmentLike> {
         if let (Some(left_item), Some(right_item)) = (left.next(), right.next()) {
             let (left_name, left_reference) = left_item;
+
             let (right_name, right_reference) = right_item;
 
             if let Ok(identifier_like) = IdentifiersLike::try_from((left_name, right_name)) {
@@ -340,6 +366,7 @@ impl SameIdentifiers {
                                 right.source_member.clone(),
                             ))
                             .ok()?;
+
                             return Some(AnyAssignmentLike::Identifiers(source_identifier));
                         }
                     } else {
@@ -348,6 +375,7 @@ impl SameIdentifiers {
                 }
             }
         }
+
         Some(AnyAssignmentLike::None)
     }
 }
@@ -370,6 +398,7 @@ impl Iterator for SameIdentifiers {
                     // we still have assignments-like to complete, so we continue the loop
                     if let Some(pair) = self.assignment_queue.pop_front() {
                         self.current_assignment_like = pair;
+
                         continue;
                     }
                     // the queue is empty
@@ -377,6 +406,7 @@ impl Iterator for SameIdentifiers {
                         return None;
                     }
                 }
+
                 AnyAssignmentLike::Identifiers(identifier_like) => {
                     return Some(identifier_like);
                 }
@@ -388,7 +418,9 @@ impl Iterator for SameIdentifiers {
                 | AnyAssignmentLike::Arrays { .. } => {
                     self.assignment_queue
                         .push_back(self.current_assignment_like.clone());
+
                     self.current_assignment_like = new_assignment_like;
+
                     continue;
                 }
             }
@@ -432,6 +464,7 @@ impl AnyJsAssignmentExpressionLikeIterator {
                 AnyJsExpression::JsIdentifierExpression(node) => {
                     Ok(AnyNameLike::from(node.name()?))
                 }
+
                 AnyJsExpression::AnyJsLiteralExpression(node) => Ok(AnyNameLike::from(node)),
                 _ => Err(SyntaxError::MissingRequiredChild),
             })?,
@@ -447,6 +480,7 @@ impl AnyJsAssignmentExpressionLikeIterator {
                 AnyJsExpression::JsIdentifierExpression(node) => {
                     Ok(AnyNameLike::from(node.name()?))
                 }
+
                 AnyJsExpression::AnyJsLiteralExpression(node) => Ok(AnyNameLike::from(node)),
 
                 _ => Err(SyntaxError::MissingRequiredChild),
@@ -480,12 +514,15 @@ impl Iterator for AnyJsAssignmentExpressionLikeIterator {
             AnyJsExpression::JsStaticMemberExpression(expression) => {
                 self.current_member_expression =
                     Some(AnyAssignmentExpressionLike::from(expression));
+
                 None
             }
+
             AnyJsExpression::JsIdentifierExpression(identifier) => {
                 // the left side of the static member expression is an identifier, which means that we can't
                 // go any further and we should mark the iterator and drained
                 self.drained = true;
+
                 Some(identifier.name().ok()?)
             }
 
@@ -493,8 +530,10 @@ impl Iterator for AnyJsAssignmentExpressionLikeIterator {
                 self.current_member_expression = Some(
                     AnyAssignmentExpressionLike::JsComputedMemberExpression(computed_expression),
                 );
+
                 None
             }
+
             _ => return None,
         };
 
@@ -562,6 +601,7 @@ impl AnyAssignmentExpressionLike {
             AnyAssignmentExpressionLike::JsStaticMemberExpression(node) => {
                 node.member().ok().map(AnyNameLike::from)
             }
+
             AnyAssignmentExpressionLike::JsComputedMemberExpression(node) => {
                 node.member().ok().and_then(|node| {
                     Some(match node {
@@ -761,30 +801,39 @@ fn with_same_identifiers(identifiers_like: &IdentifiersLike) -> Option<()> {
     let (left_value, right_value) = match &identifiers_like {
         IdentifiersLike::IdentifierAndReference(left, right) => {
             let left_value = left.name_token().ok()?;
+
             let right_value = right.value_token().ok()?;
             (left_value, right_value)
         }
+
         IdentifiersLike::Name(left, right) => {
             let left_value = left.value_token().ok()?;
+
             let right_value = right.value_token().ok()?;
             (left_value, right_value)
         }
+
         IdentifiersLike::PrivateName(left, right) => {
             let left_value = left.value_token().ok()?;
+
             let right_value = right.value_token().ok()?;
             (left_value, right_value)
         }
+
         IdentifiersLike::References(left, right) => {
             let left_value = left.value_token().ok()?;
+
             let right_value = right.value_token().ok()?;
             (left_value, right_value)
         }
+
         IdentifiersLike::Literal(left, right) => match (left, right) {
             (
                 AnyJsLiteralExpression::JsStringLiteralExpression(left),
                 AnyJsLiteralExpression::JsStringLiteralExpression(right),
             ) => {
                 let left_value = left.value_token().ok()?;
+
                 let right_value = right.value_token().ok()?;
                 (left_value, right_value)
             }
@@ -794,6 +843,7 @@ fn with_same_identifiers(identifiers_like: &IdentifiersLike) -> Option<()> {
                 AnyJsLiteralExpression::JsNumberLiteralExpression(right),
             ) => {
                 let left_value = left.value_token().ok()?;
+
                 let right_value = right.value_token().ok()?;
                 (left_value, right_value)
             }

@@ -17,6 +17,7 @@ fn remove_vendor_prefix<'a>(prop: &'a str, prefix: &'a str) -> &'a str {
 
 fn get_override_props(property: &str) -> Vec<&str> {
     let longhand_sub_props = get_longhand_sub_properties(property);
+
     let reset_to_initial_props = get_reset_to_initial_properties(property);
 
     let mut merged = Vec::with_capacity(longhand_sub_props.len() + reset_to_initial_props.len());
@@ -26,9 +27,11 @@ fn get_override_props(property: &str) -> Vec<&str> {
     while i < longhand_sub_props.len() && j < reset_to_initial_props.len() {
         if longhand_sub_props[i] < reset_to_initial_props[j] {
             merged.push(longhand_sub_props[i]);
+
             i += 1;
         } else {
             merged.push(reset_to_initial_props[j]);
+
             j += 1;
         }
     }
@@ -100,6 +103,7 @@ impl Visitor for NoDeclarationBlockShorthandPropertyOverridesVisitor {
                 CssSyntaxKind::CSS_DECLARATION_OR_RULE_BLOCK => {
                     self.prior_props_in_block.clear();
                 }
+
                 CssSyntaxKind::CSS_GENERIC_PROPERTY => {
                     if let Some(prop_node) = CssGenericProperty::cast_ref(node)
                         .and_then(|property_node| property_node.name().ok())
@@ -109,11 +113,14 @@ impl Visitor for NoDeclarationBlockShorthandPropertyOverridesVisitor {
                         let prop_lowercase = prop.to_lowercase();
 
                         let prop_prefix = vender_prefix(&prop_lowercase);
+
                         let unprefixed_prop = remove_vendor_prefix(&prop_lowercase, prop_prefix);
+
                         let override_props = get_override_props(unprefixed_prop);
 
                         self.prior_props_in_block.iter().for_each(|prior_prop| {
                             let prior_prop_prefix = vender_prefix(&prior_prop.lowercase);
+
                             let unprefixed_prior_prop =
                                 remove_vendor_prefix(&prior_prop.lowercase, prior_prop_prefix);
 
@@ -135,6 +142,7 @@ impl Visitor for NoDeclarationBlockShorthandPropertyOverridesVisitor {
                         });
                     }
                 }
+
                 _ => {}
             }
         }
@@ -155,8 +163,11 @@ impl QueryMatch for NoDeclarationBlockShorthandPropertyOverridesQuery {
 
 impl Queryable for NoDeclarationBlockShorthandPropertyOverridesQuery {
     type Input = Self;
+
     type Language = CssLanguage;
+
     type Output = NoDeclarationBlockShorthandPropertyOverridesQuery;
+
     type Services = ();
 
     fn build_visitor(
@@ -182,8 +193,11 @@ pub struct NoDeclarationBlockShorthandPropertyOverridesState {
 
 impl Rule for NoShorthandPropertyOverrides {
     type Query = NoDeclarationBlockShorthandPropertyOverridesQuery;
+
     type State = NoDeclarationBlockShorthandPropertyOverridesState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {

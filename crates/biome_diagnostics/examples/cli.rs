@@ -43,6 +43,7 @@ impl Advices for CliAdvices {
         visitor.record_command(&self.suggested_command)?;
 
         visitor.record_log(LogCategory::Info, &"To see all available commands run")?;
+
         visitor.record_command("biome --help")
     }
 }

@@ -38,17 +38,24 @@ declare_lint_rule! {
 
 impl Rule for NoSelfCompare {
     type Query = Ast<JsBinaryExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if !node.is_comparison_operator() {
             return None;
         }
+
         let left = node.left().ok()?;
+
         let right = node.right().ok()?;
+
         is_node_equal(left.syntax(), right.syntax()).then_some(())
     }
 

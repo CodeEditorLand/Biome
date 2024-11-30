@@ -80,12 +80,16 @@ declare_lint_rule! {
 
 impl Rule for NoSwitchDeclarations {
     type Query = Ast<AnyJsSwitchClause>;
+
     type State = TextRange;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let switch_clause = ctx.query();
+
         switch_clause
             .consequent()
             .syntax()
@@ -105,6 +109,7 @@ impl Rule for NoSwitchDeclarations {
 
     fn diagnostic(ctx: &RuleContext<Self>, decl_range: &Self::State) -> Option<RuleDiagnostic> {
         let switch_clause = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             decl_range,
@@ -118,10 +123,15 @@ impl Rule for NoSwitchDeclarations {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let switch_clause = ctx.query();
+
         let clause_token = switch_clause.clause_token().ok()?;
+
         let colon_token = switch_clause.colon_token().ok()?;
+
         let consequent = switch_clause.consequent();
+
         let new_colon_token = colon_token.with_trailing_trivia([]);
+
         let new_consequent = make::js_statement_list(Some(AnyJsStatement::JsBlockStatement(
             make::js_block_statement(
                 make::token(T!['{'])
@@ -132,9 +142,13 @@ impl Rule for NoSwitchDeclarations {
                     .with_leading_trivia_pieces(clause_token.indentation_trivia_pieces()),
             ),
         )));
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_token_discard_trivia(colon_token, new_colon_token);
+
         mutation.replace_node_discard_trivia(consequent, new_consequent);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

@@ -96,6 +96,7 @@ pub enum JsxRuntime {
 
 impl FromStr for JsxRuntime {
     type Err = String;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "transparent" => Ok(Self::Transparent),

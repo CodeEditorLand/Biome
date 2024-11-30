@@ -70,6 +70,7 @@ where
 impl PrinterOptions {
     pub fn with_print_width(mut self, width: PrintWidth) -> Self {
         self.print_width = width;
+
         self
     }
 

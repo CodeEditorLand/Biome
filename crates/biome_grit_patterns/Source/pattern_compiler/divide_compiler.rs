@@ -11,6 +11,7 @@ impl DivideCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Divide<GritQueryContext>, CompileError> {
         let left = PatternCompiler::from_node(&node.left()?, context)?;
+
         let right = PatternCompiler::from_node(&node.right()?, context)?;
 
         Ok(Divide::new(left, right))

@@ -44,6 +44,7 @@ impl Diagnostic {
         let description = PrintDescription(diag).to_string();
 
         let mut message = MarkupBuf::default();
+
         let mut fmt = fmt::Formatter::new(&mut message);
         // SAFETY: Writing to a MarkupBuf should never fail
         diag.message(&mut fmt).unwrap();
@@ -80,6 +81,7 @@ impl Diagnostic {
             .location
             .span
             .map(|span| TextRange::new(span.start() + offset, span.end() + offset));
+
         self
     }
 }
@@ -181,6 +183,7 @@ impl Visit for Advices {
     fn record_log(&mut self, category: LogCategory, text: &dyn fmt::Display) -> io::Result<()> {
         self.advices
             .push(Advice::Log(category, markup!({ text }).to_owned()));
+
         Ok(())
     }
 
@@ -190,16 +193,19 @@ impl Visit for Advices {
                 .map(|item| markup!({ item }).to_owned())
                 .collect(),
         ));
+
         Ok(())
     }
 
     fn record_frame(&mut self, location: super::Location<'_>) -> io::Result<()> {
         self.advices.push(Advice::Frame(location.into()));
+
         Ok(())
     }
 
     fn record_diff(&mut self, diff: &TextEdit) -> io::Result<()> {
         self.advices.push(Advice::Diff(diff.clone()));
+
         Ok(())
     }
 
@@ -212,11 +218,13 @@ impl Visit for Advices {
             markup!({ title }).to_owned(),
             backtrace.clone(),
         ));
+
         Ok(())
     }
 
     fn record_command(&mut self, command: &str) -> io::Result<()> {
         self.advices.push(Advice::Command(command.into()));
+
         Ok(())
     }
 
@@ -226,10 +234,12 @@ impl Visit for Advices {
         advice: &dyn super::Advices,
     ) -> io::Result<()> {
         let mut advices = Advices::new();
+
         advice.record(&mut advices)?;
 
         self.advices
             .push(Advice::Group(markup!({ title }).to_owned(), advices));
+
         Ok(())
     }
 }
@@ -269,8 +279,10 @@ impl super::Advices for Advice {
             Advice::List(list) => {
                 let as_display: Vec<&dyn fmt::Display> =
                     list.iter().map(|item| item as &dyn fmt::Display).collect();
+
                 visitor.record_list(&as_display)
             }
+
             Advice::Frame(location) => visitor.record_frame(super::Location {
                 resource: location.path.as_ref().map(super::Resource::as_deref),
                 span: location.span,
@@ -375,11 +387,13 @@ mod tests {
     use std::io;
 
     use biome_text_size::{TextRange, TextSize};
+
     use serde_json::{from_value, json, to_value, Value};
 
     use crate::{
         self as biome_diagnostics, {Advices, LogCategory, Visit},
     };
+
     use biome_diagnostics_macros::Diagnostic;
 
     #[derive(Debug, Diagnostic)]
@@ -423,6 +437,7 @@ mod tests {
     impl Advices for TestAdvices {
         fn record(&self, visitor: &mut dyn Visit) -> io::Result<()> {
             visitor.record_log(LogCategory::Warn, &"log")?;
+
             Ok(())
         }
     }
@@ -480,19 +495,24 @@ mod tests {
     #[test]
     fn test_serialize() {
         let diag = TestDiagnostic::default();
+
         let diag = super::Diagnostic::new(diag);
+
         let json = to_value(&diag).unwrap();
 
         let expected = serialized();
+
         assert_eq!(json, expected);
     }
 
     #[test]
     fn test_deserialize() {
         let json = serialized();
+
         let diag: super::Diagnostic = from_value(json).unwrap();
 
         let expected = TestDiagnostic::default();
+
         let expected = super::Diagnostic::new(expected);
 
         assert_eq!(diag, expected);

@@ -22,6 +22,7 @@ impl FormatNodeRule<TsFunctionType> for FormatTsFunctionType {
             write![f, [type_parameters.format()]]?;
 
             let mut format_return_type = return_type.format().memoized();
+
             let should_group_parameters = should_group_function_parameters(
                 type_parameters.as_ref(),
                 parameters.as_ref()?.items().len(),
@@ -58,6 +59,7 @@ impl FormatNodeRule<TsFunctionType> for FormatTsFunctionType {
 #[cfg(test)]
 mod tests {
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::TsFunctionType;
 
     #[test]
@@ -67,12 +69,15 @@ mod tests {
         assert_needs_parentheses!("type s = unique (() => string);", TsFunctionType);
 
         assert_needs_parentheses!("type s = [number, ...(() => string)]", TsFunctionType);
+
         assert_needs_parentheses!("type s = [(() => string)?]", TsFunctionType);
 
         assert_needs_parentheses!("type s = (() => string)[a]", TsFunctionType);
+
         assert_not_needs_parentheses!("type s = a[() => string]", TsFunctionType);
 
         assert_needs_parentheses!("type s = (() => string) & b", TsFunctionType);
+
         assert_needs_parentheses!("type s = a & (() => string)", TsFunctionType);
 
         // This does require parentheses but the formatter will strip the leading `&`, leaving only the inner type
@@ -80,17 +85,21 @@ mod tests {
         assert_not_needs_parentheses!("type s = &(() => string)", TsFunctionType);
 
         assert_needs_parentheses!("type s = (() => string) | b", TsFunctionType);
+
         assert_needs_parentheses!("type s = a | (() => string)", TsFunctionType);
+
         assert_not_needs_parentheses!("type s = |(() => string)", TsFunctionType);
 
         assert_needs_parentheses!(
             "type s = (() => string) extends string ? string : number",
             TsFunctionType
         );
+
         assert_not_needs_parentheses!(
             "type s = A extends string ? (() => string) : number",
             TsFunctionType
         );
+
         assert_not_needs_parentheses!(
             "type s = A extends string ? string : (() => string)",
             TsFunctionType

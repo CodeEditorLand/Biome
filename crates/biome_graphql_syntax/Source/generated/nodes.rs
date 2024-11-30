@@ -37,15 +37,18 @@ impl GraphqlAlias {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlAliasFields {
         GraphqlAliasFields {
             value: self.value(),
             colon_token: self.colon_token(),
         }
     }
+
     pub fn value(&self) -> SyntaxResult<GraphqlLiteralName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -77,6 +80,7 @@ impl GraphqlArgument {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlArgumentFields {
         GraphqlArgumentFields {
             name: self.name(),
@@ -84,12 +88,15 @@ impl GraphqlArgument {
             value: self.value(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlLiteralName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn value(&self) -> SyntaxResult<AnyGraphqlValue> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -122,6 +129,7 @@ impl GraphqlArguments {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlArgumentsFields {
         GraphqlArgumentsFields {
             l_paren_token: self.l_paren_token(),
@@ -129,12 +137,15 @@ impl GraphqlArguments {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn arguments(&self) -> GraphqlArgumentList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -167,6 +178,7 @@ impl GraphqlArgumentsDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlArgumentsDefinitionFields {
         GraphqlArgumentsDefinitionFields {
             l_paren_token: self.l_paren_token(),
@@ -174,12 +186,15 @@ impl GraphqlArgumentsDefinition {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn arguments(&self) -> GraphqlArgumentDefinitionList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -212,11 +227,13 @@ impl GraphqlBooleanValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlBooleanValueFields {
         GraphqlBooleanValueFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -247,15 +264,18 @@ impl GraphqlDefaultValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlDefaultValueFields {
         GraphqlDefaultValueFields {
             eq_token: self.eq_token(),
             value: self.value(),
         }
     }
+
     pub fn eq_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> SyntaxResult<AnyGraphqlValue> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -287,11 +307,13 @@ impl GraphqlDescription {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlDescriptionFields {
         GraphqlDescriptionFields {
             graphql_string_value: self.graphql_string_value(),
         }
     }
+
     pub fn graphql_string_value(&self) -> SyntaxResult<GraphqlStringValue> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -322,6 +344,7 @@ impl GraphqlDirective {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlDirectiveFields {
         GraphqlDirectiveFields {
             at_token: self.at_token(),
@@ -329,12 +352,15 @@ impl GraphqlDirective {
             arguments: self.arguments(),
         }
     }
+
     pub fn at_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameReference> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn arguments(&self) -> Option<GraphqlArguments> {
         support::node(&self.syntax, 2usize)
     }
@@ -367,6 +393,7 @@ impl GraphqlDirectiveDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlDirectiveDefinitionFields {
         GraphqlDirectiveDefinitionFields {
             description: self.description(),
@@ -380,30 +407,39 @@ impl GraphqlDirectiveDefinition {
             locations: self.locations(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn directive_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn at_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameBinding> {
         support::required_node(&self.syntax, 3usize)
     }
+
     pub fn arguments(&self) -> Option<GraphqlArgumentsDefinition> {
         support::node(&self.syntax, 4usize)
     }
+
     pub fn repeatable_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 5usize)
     }
+
     pub fn on_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 6usize)
     }
+
     pub fn bitwise_or_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 7usize)
     }
+
     pub fn locations(&self) -> GraphqlDirectiveLocationList {
         support::list(&self.syntax, 8usize)
     }
@@ -442,11 +478,13 @@ impl GraphqlDirectiveLocation {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlDirectiveLocationFields {
         GraphqlDirectiveLocationFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -477,6 +515,7 @@ impl GraphqlEnumTypeDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlEnumTypeDefinitionFields {
         GraphqlEnumTypeDefinitionFields {
             description: self.description(),
@@ -486,18 +525,23 @@ impl GraphqlEnumTypeDefinition {
             enum_values: self.enum_values(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn enum_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameBinding> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn enum_values(&self) -> Option<GraphqlEnumValuesDefinition> {
         support::node(&self.syntax, 4usize)
     }
@@ -532,6 +576,7 @@ impl GraphqlEnumTypeExtension {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlEnumTypeExtensionFields {
         GraphqlEnumTypeExtensionFields {
             extend_token: self.extend_token(),
@@ -541,18 +586,23 @@ impl GraphqlEnumTypeExtension {
             enum_values: self.enum_values(),
         }
     }
+
     pub fn extend_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn enum_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameReference> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn enum_values(&self) -> Option<GraphqlEnumValuesDefinition> {
         support::node(&self.syntax, 4usize)
     }
@@ -587,11 +637,13 @@ impl GraphqlEnumValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlEnumValueFields {
         GraphqlEnumValueFields {
             value: self.value(),
         }
     }
+
     pub fn value(&self) -> SyntaxResult<GraphqlLiteralName> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -622,6 +674,7 @@ impl GraphqlEnumValueDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlEnumValueDefinitionFields {
         GraphqlEnumValueDefinitionFields {
             description: self.description(),
@@ -629,12 +682,15 @@ impl GraphqlEnumValueDefinition {
             directives: self.directives(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> SyntaxResult<GraphqlLiteralName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 2usize)
     }
@@ -667,6 +723,7 @@ impl GraphqlEnumValuesDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlEnumValuesDefinitionFields {
         GraphqlEnumValuesDefinitionFields {
             l_curly_token: self.l_curly_token(),
@@ -674,12 +731,15 @@ impl GraphqlEnumValuesDefinition {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn values(&self) -> GraphqlEnumValueList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -712,6 +772,7 @@ impl GraphqlField {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlFieldFields {
         GraphqlFieldFields {
             alias: self.alias(),
@@ -721,18 +782,23 @@ impl GraphqlField {
             selection_set: self.selection_set(),
         }
     }
+
     pub fn alias(&self) -> Option<GraphqlAlias> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlLiteralName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn arguments(&self) -> Option<GraphqlArguments> {
         support::node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn selection_set(&self) -> Option<GraphqlSelectionSet> {
         support::node(&self.syntax, 4usize)
     }
@@ -767,6 +833,7 @@ impl GraphqlFieldDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlFieldDefinitionFields {
         GraphqlFieldDefinitionFields {
             description: self.description(),
@@ -777,21 +844,27 @@ impl GraphqlFieldDefinition {
             directives: self.directives(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlLiteralName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn arguments(&self) -> Option<GraphqlArgumentsDefinition> {
         support::node(&self.syntax, 2usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
+
     pub fn ty(&self) -> SyntaxResult<AnyGraphqlType> {
         support::required_node(&self.syntax, 4usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 5usize)
     }
@@ -827,6 +900,7 @@ impl GraphqlFieldsDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlFieldsDefinitionFields {
         GraphqlFieldsDefinitionFields {
             l_curly_token: self.l_curly_token(),
@@ -834,12 +908,15 @@ impl GraphqlFieldsDefinition {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn fields(&self) -> GraphqlFieldDefinitionList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -872,11 +949,13 @@ impl GraphqlFloatValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlFloatValueFields {
         GraphqlFloatValueFields {
             graphql_float_literal_token: self.graphql_float_literal_token(),
         }
     }
+
     pub fn graphql_float_literal_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -907,6 +986,7 @@ impl GraphqlFragmentDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlFragmentDefinitionFields {
         GraphqlFragmentDefinitionFields {
             fragment_token: self.fragment_token(),
@@ -916,18 +996,23 @@ impl GraphqlFragmentDefinition {
             selection_set: self.selection_set(),
         }
     }
+
     pub fn fragment_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameBinding> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn type_condition(&self) -> SyntaxResult<GraphqlTypeCondition> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn selection_set(&self) -> SyntaxResult<GraphqlSelectionSet> {
         support::required_node(&self.syntax, 4usize)
     }
@@ -962,6 +1047,7 @@ impl GraphqlFragmentSpread {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlFragmentSpreadFields {
         GraphqlFragmentSpreadFields {
             dotdotdot_token: self.dotdotdot_token(),
@@ -969,12 +1055,15 @@ impl GraphqlFragmentSpread {
             directives: self.directives(),
         }
     }
+
     pub fn dotdotdot_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameReference> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 2usize)
     }
@@ -1007,6 +1096,7 @@ impl GraphqlImplementsInterfaces {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlImplementsInterfacesFields {
         GraphqlImplementsInterfacesFields {
             implements_token: self.implements_token(),
@@ -1014,12 +1104,15 @@ impl GraphqlImplementsInterfaces {
             interfaces: self.interfaces(),
         }
     }
+
     pub fn implements_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn amp_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 1usize)
     }
+
     pub fn interfaces(&self) -> GraphqlImplementsInterfaceList {
         support::list(&self.syntax, 2usize)
     }
@@ -1052,6 +1145,7 @@ impl GraphqlInlineFragment {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlInlineFragmentFields {
         GraphqlInlineFragmentFields {
             dotdotdot_token: self.dotdotdot_token(),
@@ -1060,15 +1154,19 @@ impl GraphqlInlineFragment {
             selection_set: self.selection_set(),
         }
     }
+
     pub fn dotdotdot_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn type_condition(&self) -> Option<GraphqlTypeCondition> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn selection_set(&self) -> SyntaxResult<GraphqlSelectionSet> {
         support::required_node(&self.syntax, 3usize)
     }
@@ -1102,6 +1200,7 @@ impl GraphqlInputFieldsDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlInputFieldsDefinitionFields {
         GraphqlInputFieldsDefinitionFields {
             l_curly_token: self.l_curly_token(),
@@ -1109,12 +1208,15 @@ impl GraphqlInputFieldsDefinition {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn fields(&self) -> GraphqlInputFieldList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1147,6 +1249,7 @@ impl GraphqlInputObjectTypeDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlInputObjectTypeDefinitionFields {
         GraphqlInputObjectTypeDefinitionFields {
             description: self.description(),
@@ -1156,18 +1259,23 @@ impl GraphqlInputObjectTypeDefinition {
             input_fields: self.input_fields(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn input_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameBinding> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn input_fields(&self) -> Option<GraphqlInputFieldsDefinition> {
         support::node(&self.syntax, 4usize)
     }
@@ -1202,6 +1310,7 @@ impl GraphqlInputObjectTypeExtension {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlInputObjectTypeExtensionFields {
         GraphqlInputObjectTypeExtensionFields {
             extend_token: self.extend_token(),
@@ -1211,18 +1320,23 @@ impl GraphqlInputObjectTypeExtension {
             input_fields: self.input_fields(),
         }
     }
+
     pub fn extend_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn input_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameReference> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn input_fields(&self) -> Option<GraphqlInputFieldsDefinition> {
         support::node(&self.syntax, 4usize)
     }
@@ -1257,6 +1371,7 @@ impl GraphqlInputValueDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlInputValueDefinitionFields {
         GraphqlInputValueDefinitionFields {
             description: self.description(),
@@ -1267,21 +1382,27 @@ impl GraphqlInputValueDefinition {
             directives: self.directives(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlLiteralName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
+
     pub fn ty(&self) -> SyntaxResult<AnyGraphqlType> {
         support::required_node(&self.syntax, 3usize)
     }
+
     pub fn default(&self) -> Option<GraphqlDefaultValue> {
         support::node(&self.syntax, 4usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 5usize)
     }
@@ -1317,11 +1438,13 @@ impl GraphqlIntValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlIntValueFields {
         GraphqlIntValueFields {
             graphql_int_literal_token: self.graphql_int_literal_token(),
         }
     }
+
     pub fn graphql_int_literal_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1352,6 +1475,7 @@ impl GraphqlInterfaceTypeDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlInterfaceTypeDefinitionFields {
         GraphqlInterfaceTypeDefinitionFields {
             description: self.description(),
@@ -1362,21 +1486,27 @@ impl GraphqlInterfaceTypeDefinition {
             fields: self.fields(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn interface_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameBinding> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn implements(&self) -> Option<GraphqlImplementsInterfaces> {
         support::node(&self.syntax, 3usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 4usize)
     }
+
     pub fn fields(&self) -> Option<GraphqlFieldsDefinition> {
         support::node(&self.syntax, 5usize)
     }
@@ -1412,6 +1542,7 @@ impl GraphqlInterfaceTypeExtension {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlInterfaceTypeExtensionFields {
         GraphqlInterfaceTypeExtensionFields {
             extend_token: self.extend_token(),
@@ -1422,21 +1553,27 @@ impl GraphqlInterfaceTypeExtension {
             fields: self.fields(),
         }
     }
+
     pub fn extend_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn interface_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameReference> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn implements(&self) -> Option<GraphqlImplementsInterfaces> {
         support::node(&self.syntax, 3usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 4usize)
     }
+
     pub fn fields(&self) -> Option<GraphqlFieldsDefinition> {
         support::node(&self.syntax, 5usize)
     }
@@ -1472,6 +1609,7 @@ impl GraphqlListType {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlListTypeFields {
         GraphqlListTypeFields {
             l_brack_token: self.l_brack_token(),
@@ -1479,12 +1617,15 @@ impl GraphqlListType {
             r_brack_token: self.r_brack_token(),
         }
     }
+
     pub fn l_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn element(&self) -> SyntaxResult<AnyGraphqlType> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1517,6 +1658,7 @@ impl GraphqlListValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlListValueFields {
         GraphqlListValueFields {
             l_brack_token: self.l_brack_token(),
@@ -1524,12 +1666,15 @@ impl GraphqlListValue {
             r_brack_token: self.r_brack_token(),
         }
     }
+
     pub fn l_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn elements(&self) -> GraphqlListValueElementList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1562,11 +1707,13 @@ impl GraphqlLiteralName {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlLiteralNameFields {
         GraphqlLiteralNameFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1597,11 +1744,13 @@ impl GraphqlNameBinding {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlNameBindingFields {
         GraphqlNameBindingFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1632,11 +1781,13 @@ impl GraphqlNameReference {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlNameReferenceFields {
         GraphqlNameReferenceFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1667,15 +1818,18 @@ impl GraphqlNonNullType {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlNonNullTypeFields {
         GraphqlNonNullTypeFields {
             base: self.base(),
             excl_token: self.excl_token(),
         }
     }
+
     pub fn base(&self) -> SyntaxResult<AnyGraphqlPrimitiveType> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn excl_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -1707,11 +1861,13 @@ impl GraphqlNullValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlNullValueFields {
         GraphqlNullValueFields {
             null_token: self.null_token(),
         }
     }
+
     pub fn null_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1742,6 +1898,7 @@ impl GraphqlObjectField {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlObjectFieldFields {
         GraphqlObjectFieldFields {
             name: self.name(),
@@ -1749,12 +1906,15 @@ impl GraphqlObjectField {
             value: self.value(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlLiteralName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn value(&self) -> SyntaxResult<AnyGraphqlValue> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1787,6 +1947,7 @@ impl GraphqlObjectTypeDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlObjectTypeDefinitionFields {
         GraphqlObjectTypeDefinitionFields {
             description: self.description(),
@@ -1797,21 +1958,27 @@ impl GraphqlObjectTypeDefinition {
             fields: self.fields(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn type_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameBinding> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn implements(&self) -> Option<GraphqlImplementsInterfaces> {
         support::node(&self.syntax, 3usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 4usize)
     }
+
     pub fn fields(&self) -> Option<GraphqlFieldsDefinition> {
         support::node(&self.syntax, 5usize)
     }
@@ -1847,6 +2014,7 @@ impl GraphqlObjectTypeExtension {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlObjectTypeExtensionFields {
         GraphqlObjectTypeExtensionFields {
             extend_token: self.extend_token(),
@@ -1857,21 +2025,27 @@ impl GraphqlObjectTypeExtension {
             fields: self.fields(),
         }
     }
+
     pub fn extend_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn type_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameReference> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn implements(&self) -> Option<GraphqlImplementsInterfaces> {
         support::node(&self.syntax, 3usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 4usize)
     }
+
     pub fn fields(&self) -> Option<GraphqlFieldsDefinition> {
         support::node(&self.syntax, 5usize)
     }
@@ -1907,6 +2081,7 @@ impl GraphqlObjectValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlObjectValueFields {
         GraphqlObjectValueFields {
             l_curly_token: self.l_curly_token(),
@@ -1914,12 +2089,15 @@ impl GraphqlObjectValue {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn members(&self) -> GraphqlObjectValueMemberList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1952,6 +2130,7 @@ impl GraphqlOperationDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlOperationDefinitionFields {
         GraphqlOperationDefinitionFields {
             ty: self.ty(),
@@ -1961,18 +2140,23 @@ impl GraphqlOperationDefinition {
             selection_set: self.selection_set(),
         }
     }
+
     pub fn ty(&self) -> SyntaxResult<GraphqlOperationType> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> Option<GraphqlNameBinding> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn variables(&self) -> Option<GraphqlVariableDefinitions> {
         support::node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn selection_set(&self) -> SyntaxResult<GraphqlSelectionSet> {
         support::required_node(&self.syntax, 4usize)
     }
@@ -2007,11 +2191,13 @@ impl GraphqlOperationType {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlOperationTypeFields {
         GraphqlOperationTypeFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -2042,6 +2228,7 @@ impl GraphqlRoot {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlRootFields {
         GraphqlRootFields {
             bom_token: self.bom_token(),
@@ -2049,12 +2236,15 @@ impl GraphqlRoot {
             eof_token: self.eof_token(),
         }
     }
+
     pub fn bom_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn definitions(&self) -> GraphqlDefinitionList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn eof_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -2087,6 +2277,7 @@ impl GraphqlRootOperationTypeDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlRootOperationTypeDefinitionFields {
         GraphqlRootOperationTypeDefinitionFields {
             operation_type: self.operation_type(),
@@ -2094,12 +2285,15 @@ impl GraphqlRootOperationTypeDefinition {
             named_type: self.named_type(),
         }
     }
+
     pub fn operation_type(&self) -> SyntaxResult<GraphqlOperationType> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn named_type(&self) -> SyntaxResult<GraphqlNameReference> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -2132,6 +2326,7 @@ impl GraphqlRootOperationTypes {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlRootOperationTypesFields {
         GraphqlRootOperationTypesFields {
             l_curly_token: self.l_curly_token(),
@@ -2139,12 +2334,15 @@ impl GraphqlRootOperationTypes {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn root_operation_type(&self) -> GraphqlRootOperationTypeDefinitionList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -2177,6 +2375,7 @@ impl GraphqlScalarTypeDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlScalarTypeDefinitionFields {
         GraphqlScalarTypeDefinitionFields {
             description: self.description(),
@@ -2185,15 +2384,19 @@ impl GraphqlScalarTypeDefinition {
             directives: self.directives(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn scalar_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameBinding> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
@@ -2227,6 +2430,7 @@ impl GraphqlScalarTypeExtension {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlScalarTypeExtensionFields {
         GraphqlScalarTypeExtensionFields {
             extend_token: self.extend_token(),
@@ -2235,15 +2439,19 @@ impl GraphqlScalarTypeExtension {
             directives: self.directives(),
         }
     }
+
     pub fn extend_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn scalar_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameReference> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
@@ -2277,6 +2485,7 @@ impl GraphqlSchemaDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlSchemaDefinitionFields {
         GraphqlSchemaDefinitionFields {
             description: self.description(),
@@ -2285,15 +2494,19 @@ impl GraphqlSchemaDefinition {
             root_operation_types: self.root_operation_types(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn schema_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn root_operation_types(&self) -> SyntaxResult<GraphqlRootOperationTypes> {
         support::required_node(&self.syntax, 3usize)
     }
@@ -2327,6 +2540,7 @@ impl GraphqlSchemaExtension {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlSchemaExtensionFields {
         GraphqlSchemaExtensionFields {
             extend_token: self.extend_token(),
@@ -2335,15 +2549,19 @@ impl GraphqlSchemaExtension {
             root_operation_types: self.root_operation_types(),
         }
     }
+
     pub fn extend_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn schema_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn root_operation_types(&self) -> Option<GraphqlRootOperationTypes> {
         support::node(&self.syntax, 3usize)
     }
@@ -2377,6 +2595,7 @@ impl GraphqlSelectionSet {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlSelectionSetFields {
         GraphqlSelectionSetFields {
             l_curly_token: self.l_curly_token(),
@@ -2384,12 +2603,15 @@ impl GraphqlSelectionSet {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn selections(&self) -> GraphqlSelectionList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -2422,11 +2644,13 @@ impl GraphqlStringValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlStringValueFields {
         GraphqlStringValueFields {
             graphql_string_literal_token: self.graphql_string_literal_token(),
         }
     }
+
     pub fn graphql_string_literal_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -2457,15 +2681,18 @@ impl GraphqlTypeCondition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlTypeConditionFields {
         GraphqlTypeConditionFields {
             on_token: self.on_token(),
             ty: self.ty(),
         }
     }
+
     pub fn on_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn ty(&self) -> SyntaxResult<GraphqlNameReference> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2497,6 +2724,7 @@ impl GraphqlUnionMemberTypes {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlUnionMemberTypesFields {
         GraphqlUnionMemberTypesFields {
             eq_token: self.eq_token(),
@@ -2504,12 +2732,15 @@ impl GraphqlUnionMemberTypes {
             members: self.members(),
         }
     }
+
     pub fn eq_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn bitwise_or_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 1usize)
     }
+
     pub fn members(&self) -> GraphqlUnionMemberTypeList {
         support::list(&self.syntax, 2usize)
     }
@@ -2542,6 +2773,7 @@ impl GraphqlUnionTypeDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlUnionTypeDefinitionFields {
         GraphqlUnionTypeDefinitionFields {
             description: self.description(),
@@ -2551,18 +2783,23 @@ impl GraphqlUnionTypeDefinition {
             union_members: self.union_members(),
         }
     }
+
     pub fn description(&self) -> Option<GraphqlDescription> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn union_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameBinding> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn union_members(&self) -> Option<GraphqlUnionMemberTypes> {
         support::node(&self.syntax, 4usize)
     }
@@ -2597,6 +2834,7 @@ impl GraphqlUnionTypeExtension {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlUnionTypeExtensionFields {
         GraphqlUnionTypeExtensionFields {
             extend_token: self.extend_token(),
@@ -2606,18 +2844,23 @@ impl GraphqlUnionTypeExtension {
             union_members: self.union_members(),
         }
     }
+
     pub fn extend_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn union_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlNameReference> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn union_members(&self) -> Option<GraphqlUnionMemberTypes> {
         support::node(&self.syntax, 4usize)
     }
@@ -2652,15 +2895,18 @@ impl GraphqlVariableBinding {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlVariableBindingFields {
         GraphqlVariableBindingFields {
             dollar_token: self.dollar_token(),
             name: self.name(),
         }
     }
+
     pub fn dollar_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlLiteralName> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2692,6 +2938,7 @@ impl GraphqlVariableDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlVariableDefinitionFields {
         GraphqlVariableDefinitionFields {
             variable: self.variable(),
@@ -2701,18 +2948,23 @@ impl GraphqlVariableDefinition {
             directives: self.directives(),
         }
     }
+
     pub fn variable(&self) -> SyntaxResult<GraphqlVariableBinding> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn ty(&self) -> SyntaxResult<AnyGraphqlType> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn default(&self) -> Option<GraphqlDefaultValue> {
         support::node(&self.syntax, 3usize)
     }
+
     pub fn directives(&self) -> GraphqlDirectiveList {
         support::list(&self.syntax, 4usize)
     }
@@ -2747,6 +2999,7 @@ impl GraphqlVariableDefinitions {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlVariableDefinitionsFields {
         GraphqlVariableDefinitionsFields {
             l_paren_token: self.l_paren_token(),
@@ -2754,12 +3007,15 @@ impl GraphqlVariableDefinitions {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn elements(&self) -> GraphqlVariableDefinitionList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -2792,15 +3048,18 @@ impl GraphqlVariableReference {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GraphqlVariableReferenceFields {
         GraphqlVariableReferenceFields {
             dollar_token: self.dollar_token(),
             name: self.name(),
         }
     }
+
     pub fn dollar_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GraphqlLiteralName> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2837,48 +3096,56 @@ impl AnyGraphqlDefinition {
             _ => None,
         }
     }
+
     pub fn as_any_graphql_type_extension(&self) -> Option<&AnyGraphqlTypeExtension> {
         match &self {
             AnyGraphqlDefinition::AnyGraphqlTypeExtension(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_bogus_definition(&self) -> Option<&GraphqlBogusDefinition> {
         match &self {
             AnyGraphqlDefinition::GraphqlBogusDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_directive_definition(&self) -> Option<&GraphqlDirectiveDefinition> {
         match &self {
             AnyGraphqlDefinition::GraphqlDirectiveDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_fragment_definition(&self) -> Option<&GraphqlFragmentDefinition> {
         match &self {
             AnyGraphqlDefinition::GraphqlFragmentDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_operation_definition(&self) -> Option<&GraphqlOperationDefinition> {
         match &self {
             AnyGraphqlDefinition::GraphqlOperationDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_schema_definition(&self) -> Option<&GraphqlSchemaDefinition> {
         match &self {
             AnyGraphqlDefinition::GraphqlSchemaDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_schema_extension(&self) -> Option<&GraphqlSchemaExtension> {
         match &self {
             AnyGraphqlDefinition::GraphqlSchemaExtension(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_selection_set(&self) -> Option<&GraphqlSelectionSet> {
         match &self {
             AnyGraphqlDefinition::GraphqlSelectionSet(item) => Some(item),
@@ -2898,6 +3165,7 @@ impl AnyGraphqlOperationDefinition {
             _ => None,
         }
     }
+
     pub fn as_graphql_selection_set(&self) -> Option<&GraphqlSelectionSet> {
         match &self {
             AnyGraphqlOperationDefinition::GraphqlSelectionSet(item) => Some(item),
@@ -2917,6 +3185,7 @@ impl AnyGraphqlPrimitiveType {
             _ => None,
         }
     }
+
     pub fn as_graphql_name_reference(&self) -> Option<&GraphqlNameReference> {
         match &self {
             AnyGraphqlPrimitiveType::GraphqlNameReference(item) => Some(item),
@@ -2938,18 +3207,21 @@ impl AnyGraphqlSelection {
             _ => None,
         }
     }
+
     pub fn as_graphql_field(&self) -> Option<&GraphqlField> {
         match &self {
             AnyGraphqlSelection::GraphqlField(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_fragment_spread(&self) -> Option<&GraphqlFragmentSpread> {
         match &self {
             AnyGraphqlSelection::GraphqlFragmentSpread(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_inline_fragment(&self) -> Option<&GraphqlInlineFragment> {
         match &self {
             AnyGraphqlSelection::GraphqlInlineFragment(item) => Some(item),
@@ -2970,12 +3242,14 @@ impl AnyGraphqlType {
             _ => None,
         }
     }
+
     pub fn as_graphql_bogus_type(&self) -> Option<&GraphqlBogusType> {
         match &self {
             AnyGraphqlType::GraphqlBogusType(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_non_null_type(&self) -> Option<&GraphqlNonNullType> {
         match &self {
             AnyGraphqlType::GraphqlNonNullType(item) => Some(item),
@@ -2999,6 +3273,7 @@ impl AnyGraphqlTypeDefinition {
             _ => None,
         }
     }
+
     pub fn as_graphql_input_object_type_definition(
         &self,
     ) -> Option<&GraphqlInputObjectTypeDefinition> {
@@ -3007,24 +3282,28 @@ impl AnyGraphqlTypeDefinition {
             _ => None,
         }
     }
+
     pub fn as_graphql_interface_type_definition(&self) -> Option<&GraphqlInterfaceTypeDefinition> {
         match &self {
             AnyGraphqlTypeDefinition::GraphqlInterfaceTypeDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_object_type_definition(&self) -> Option<&GraphqlObjectTypeDefinition> {
         match &self {
             AnyGraphqlTypeDefinition::GraphqlObjectTypeDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_scalar_type_definition(&self) -> Option<&GraphqlScalarTypeDefinition> {
         match &self {
             AnyGraphqlTypeDefinition::GraphqlScalarTypeDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_union_type_definition(&self) -> Option<&GraphqlUnionTypeDefinition> {
         match &self {
             AnyGraphqlTypeDefinition::GraphqlUnionTypeDefinition(item) => Some(item),
@@ -3048,6 +3327,7 @@ impl AnyGraphqlTypeExtension {
             _ => None,
         }
     }
+
     pub fn as_graphql_input_object_type_extension(
         &self,
     ) -> Option<&GraphqlInputObjectTypeExtension> {
@@ -3056,24 +3336,28 @@ impl AnyGraphqlTypeExtension {
             _ => None,
         }
     }
+
     pub fn as_graphql_interface_type_extension(&self) -> Option<&GraphqlInterfaceTypeExtension> {
         match &self {
             AnyGraphqlTypeExtension::GraphqlInterfaceTypeExtension(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_object_type_extension(&self) -> Option<&GraphqlObjectTypeExtension> {
         match &self {
             AnyGraphqlTypeExtension::GraphqlObjectTypeExtension(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_scalar_type_extension(&self) -> Option<&GraphqlScalarTypeExtension> {
         match &self {
             AnyGraphqlTypeExtension::GraphqlScalarTypeExtension(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_union_type_extension(&self) -> Option<&GraphqlUnionTypeExtension> {
         match &self {
             AnyGraphqlTypeExtension::GraphqlUnionTypeExtension(item) => Some(item),
@@ -3101,54 +3385,63 @@ impl AnyGraphqlValue {
             _ => None,
         }
     }
+
     pub fn as_graphql_boolean_value(&self) -> Option<&GraphqlBooleanValue> {
         match &self {
             AnyGraphqlValue::GraphqlBooleanValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_enum_value(&self) -> Option<&GraphqlEnumValue> {
         match &self {
             AnyGraphqlValue::GraphqlEnumValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_float_value(&self) -> Option<&GraphqlFloatValue> {
         match &self {
             AnyGraphqlValue::GraphqlFloatValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_int_value(&self) -> Option<&GraphqlIntValue> {
         match &self {
             AnyGraphqlValue::GraphqlIntValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_list_value(&self) -> Option<&GraphqlListValue> {
         match &self {
             AnyGraphqlValue::GraphqlListValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_null_value(&self) -> Option<&GraphqlNullValue> {
         match &self {
             AnyGraphqlValue::GraphqlNullValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_object_value(&self) -> Option<&GraphqlObjectValue> {
         match &self {
             AnyGraphqlValue::GraphqlObjectValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_string_value(&self) -> Option<&GraphqlStringValue> {
         match &self {
             AnyGraphqlValue::GraphqlStringValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_graphql_variable_reference(&self) -> Option<&GraphqlVariableReference> {
         match &self {
             AnyGraphqlValue::GraphqlVariableReference(item) => Some(item),
@@ -3158,11 +3451,14 @@ impl AnyGraphqlValue {
 }
 impl AstNode for GraphqlAlias {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ALIAS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ALIAS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3170,9 +3466,11 @@ impl AstNode for GraphqlAlias {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3200,11 +3498,14 @@ impl From<GraphqlAlias> for SyntaxElement {
 }
 impl AstNode for GraphqlArgument {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ARGUMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ARGUMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3212,9 +3513,11 @@ impl AstNode for GraphqlArgument {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3243,11 +3546,14 @@ impl From<GraphqlArgument> for SyntaxElement {
 }
 impl AstNode for GraphqlArguments {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ARGUMENTS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ARGUMENTS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3255,9 +3561,11 @@ impl AstNode for GraphqlArguments {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3289,11 +3597,14 @@ impl From<GraphqlArguments> for SyntaxElement {
 }
 impl AstNode for GraphqlArgumentsDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ARGUMENTS_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ARGUMENTS_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3301,9 +3612,11 @@ impl AstNode for GraphqlArgumentsDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3335,11 +3648,14 @@ impl From<GraphqlArgumentsDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlBooleanValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_BOOLEAN_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_BOOLEAN_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3347,9 +3663,11 @@ impl AstNode for GraphqlBooleanValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3376,11 +3694,14 @@ impl From<GraphqlBooleanValue> for SyntaxElement {
 }
 impl AstNode for GraphqlDefaultValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_DEFAULT_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_DEFAULT_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3388,9 +3709,11 @@ impl AstNode for GraphqlDefaultValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3415,11 +3738,14 @@ impl From<GraphqlDefaultValue> for SyntaxElement {
 }
 impl AstNode for GraphqlDescription {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_DESCRIPTION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_DESCRIPTION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3427,9 +3753,11 @@ impl AstNode for GraphqlDescription {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3456,11 +3784,14 @@ impl From<GraphqlDescription> for SyntaxElement {
 }
 impl AstNode for GraphqlDirective {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_DIRECTIVE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_DIRECTIVE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3468,9 +3799,11 @@ impl AstNode for GraphqlDirective {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3499,11 +3832,14 @@ impl From<GraphqlDirective> for SyntaxElement {
 }
 impl AstNode for GraphqlDirectiveDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_DIRECTIVE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_DIRECTIVE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3511,9 +3847,11 @@ impl AstNode for GraphqlDirectiveDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3560,11 +3898,14 @@ impl From<GraphqlDirectiveDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlDirectiveLocation {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_DIRECTIVE_LOCATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_DIRECTIVE_LOCATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3572,9 +3913,11 @@ impl AstNode for GraphqlDirectiveLocation {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3601,11 +3944,14 @@ impl From<GraphqlDirectiveLocation> for SyntaxElement {
 }
 impl AstNode for GraphqlEnumTypeDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ENUM_TYPE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ENUM_TYPE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3613,9 +3959,11 @@ impl AstNode for GraphqlEnumTypeDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3649,11 +3997,14 @@ impl From<GraphqlEnumTypeDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlEnumTypeExtension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ENUM_TYPE_EXTENSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ENUM_TYPE_EXTENSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3661,9 +4012,11 @@ impl AstNode for GraphqlEnumTypeExtension {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3697,11 +4050,14 @@ impl From<GraphqlEnumTypeExtension> for SyntaxElement {
 }
 impl AstNode for GraphqlEnumValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ENUM_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ENUM_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3709,9 +4065,11 @@ impl AstNode for GraphqlEnumValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3735,11 +4093,14 @@ impl From<GraphqlEnumValue> for SyntaxElement {
 }
 impl AstNode for GraphqlEnumValueDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ENUM_VALUE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ENUM_VALUE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3747,9 +4108,11 @@ impl AstNode for GraphqlEnumValueDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3778,11 +4141,14 @@ impl From<GraphqlEnumValueDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlEnumValuesDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ENUM_VALUES_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ENUM_VALUES_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3790,9 +4156,11 @@ impl AstNode for GraphqlEnumValuesDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3824,11 +4192,14 @@ impl From<GraphqlEnumValuesDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlField {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_FIELD as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_FIELD
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3836,9 +4207,11 @@ impl AstNode for GraphqlField {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3872,11 +4245,14 @@ impl From<GraphqlField> for SyntaxElement {
 }
 impl AstNode for GraphqlFieldDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_FIELD_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_FIELD_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3884,9 +4260,11 @@ impl AstNode for GraphqlFieldDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3924,11 +4302,14 @@ impl From<GraphqlFieldDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlFieldsDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_FIELDS_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_FIELDS_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3936,9 +4317,11 @@ impl AstNode for GraphqlFieldsDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -3970,11 +4353,14 @@ impl From<GraphqlFieldsDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlFloatValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_FLOAT_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_FLOAT_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -3982,9 +4368,11 @@ impl AstNode for GraphqlFloatValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4011,11 +4399,14 @@ impl From<GraphqlFloatValue> for SyntaxElement {
 }
 impl AstNode for GraphqlFragmentDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_FRAGMENT_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_FRAGMENT_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4023,9 +4414,11 @@ impl AstNode for GraphqlFragmentDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4062,11 +4455,14 @@ impl From<GraphqlFragmentDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlFragmentSpread {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_FRAGMENT_SPREAD as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_FRAGMENT_SPREAD
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4074,9 +4470,11 @@ impl AstNode for GraphqlFragmentSpread {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4105,11 +4503,14 @@ impl From<GraphqlFragmentSpread> for SyntaxElement {
 }
 impl AstNode for GraphqlImplementsInterfaces {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_IMPLEMENTS_INTERFACES as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_IMPLEMENTS_INTERFACES
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4117,9 +4518,11 @@ impl AstNode for GraphqlImplementsInterfaces {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4151,11 +4554,14 @@ impl From<GraphqlImplementsInterfaces> for SyntaxElement {
 }
 impl AstNode for GraphqlInlineFragment {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_INLINE_FRAGMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_INLINE_FRAGMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4163,9 +4569,11 @@ impl AstNode for GraphqlInlineFragment {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4201,11 +4609,14 @@ impl From<GraphqlInlineFragment> for SyntaxElement {
 }
 impl AstNode for GraphqlInputFieldsDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_INPUT_FIELDS_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_INPUT_FIELDS_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4213,9 +4624,11 @@ impl AstNode for GraphqlInputFieldsDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4247,11 +4660,14 @@ impl From<GraphqlInputFieldsDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlInputObjectTypeDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_INPUT_OBJECT_TYPE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_INPUT_OBJECT_TYPE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4259,9 +4675,11 @@ impl AstNode for GraphqlInputObjectTypeDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4298,11 +4716,14 @@ impl From<GraphqlInputObjectTypeDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlInputObjectTypeExtension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_INPUT_OBJECT_TYPE_EXTENSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_INPUT_OBJECT_TYPE_EXTENSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4310,9 +4731,11 @@ impl AstNode for GraphqlInputObjectTypeExtension {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4349,11 +4772,14 @@ impl From<GraphqlInputObjectTypeExtension> for SyntaxElement {
 }
 impl AstNode for GraphqlInputValueDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_INPUT_VALUE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_INPUT_VALUE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4361,9 +4787,11 @@ impl AstNode for GraphqlInputValueDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4398,11 +4826,14 @@ impl From<GraphqlInputValueDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlIntValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_INT_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_INT_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4410,9 +4841,11 @@ impl AstNode for GraphqlIntValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4439,11 +4872,14 @@ impl From<GraphqlIntValue> for SyntaxElement {
 }
 impl AstNode for GraphqlInterfaceTypeDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_INTERFACE_TYPE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_INTERFACE_TYPE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4451,9 +4887,11 @@ impl AstNode for GraphqlInterfaceTypeDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4491,11 +4929,14 @@ impl From<GraphqlInterfaceTypeDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlInterfaceTypeExtension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_INTERFACE_TYPE_EXTENSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_INTERFACE_TYPE_EXTENSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4503,9 +4944,11 @@ impl AstNode for GraphqlInterfaceTypeExtension {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4543,11 +4986,14 @@ impl From<GraphqlInterfaceTypeExtension> for SyntaxElement {
 }
 impl AstNode for GraphqlListType {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_LIST_TYPE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_LIST_TYPE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4555,9 +5001,11 @@ impl AstNode for GraphqlListType {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4589,11 +5037,14 @@ impl From<GraphqlListType> for SyntaxElement {
 }
 impl AstNode for GraphqlListValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_LIST_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_LIST_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4601,9 +5052,11 @@ impl AstNode for GraphqlListValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4635,11 +5088,14 @@ impl From<GraphqlListValue> for SyntaxElement {
 }
 impl AstNode for GraphqlLiteralName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_LITERAL_NAME as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_LITERAL_NAME
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4647,9 +5103,11 @@ impl AstNode for GraphqlLiteralName {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4676,11 +5134,14 @@ impl From<GraphqlLiteralName> for SyntaxElement {
 }
 impl AstNode for GraphqlNameBinding {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_NAME_BINDING as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_NAME_BINDING
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4688,9 +5149,11 @@ impl AstNode for GraphqlNameBinding {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4717,11 +5180,14 @@ impl From<GraphqlNameBinding> for SyntaxElement {
 }
 impl AstNode for GraphqlNameReference {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_NAME_REFERENCE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_NAME_REFERENCE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4729,9 +5195,11 @@ impl AstNode for GraphqlNameReference {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4758,11 +5226,14 @@ impl From<GraphqlNameReference> for SyntaxElement {
 }
 impl AstNode for GraphqlNonNullType {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_NON_NULL_TYPE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_NON_NULL_TYPE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4770,9 +5241,11 @@ impl AstNode for GraphqlNonNullType {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4797,11 +5270,14 @@ impl From<GraphqlNonNullType> for SyntaxElement {
 }
 impl AstNode for GraphqlNullValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_NULL_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_NULL_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4809,9 +5285,11 @@ impl AstNode for GraphqlNullValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4835,11 +5313,14 @@ impl From<GraphqlNullValue> for SyntaxElement {
 }
 impl AstNode for GraphqlObjectField {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_OBJECT_FIELD as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_OBJECT_FIELD
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4847,9 +5328,11 @@ impl AstNode for GraphqlObjectField {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4878,11 +5361,14 @@ impl From<GraphqlObjectField> for SyntaxElement {
 }
 impl AstNode for GraphqlObjectTypeDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_OBJECT_TYPE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_OBJECT_TYPE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4890,9 +5376,11 @@ impl AstNode for GraphqlObjectTypeDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4927,11 +5415,14 @@ impl From<GraphqlObjectTypeDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlObjectTypeExtension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_OBJECT_TYPE_EXTENSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_OBJECT_TYPE_EXTENSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4939,9 +5430,11 @@ impl AstNode for GraphqlObjectTypeExtension {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -4976,11 +5469,14 @@ impl From<GraphqlObjectTypeExtension> for SyntaxElement {
 }
 impl AstNode for GraphqlObjectValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_OBJECT_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_OBJECT_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -4988,9 +5484,11 @@ impl AstNode for GraphqlObjectValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5022,11 +5520,14 @@ impl From<GraphqlObjectValue> for SyntaxElement {
 }
 impl AstNode for GraphqlOperationDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_OPERATION_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_OPERATION_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5034,9 +5535,11 @@ impl AstNode for GraphqlOperationDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5070,11 +5573,14 @@ impl From<GraphqlOperationDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlOperationType {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_OPERATION_TYPE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_OPERATION_TYPE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5082,9 +5588,11 @@ impl AstNode for GraphqlOperationType {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5111,11 +5619,14 @@ impl From<GraphqlOperationType> for SyntaxElement {
 }
 impl AstNode for GraphqlRoot {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ROOT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ROOT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5123,9 +5634,11 @@ impl AstNode for GraphqlRoot {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5154,11 +5667,14 @@ impl From<GraphqlRoot> for SyntaxElement {
 }
 impl AstNode for GraphqlRootOperationTypeDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ROOT_OPERATION_TYPE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ROOT_OPERATION_TYPE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5166,9 +5682,11 @@ impl AstNode for GraphqlRootOperationTypeDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5200,11 +5718,14 @@ impl From<GraphqlRootOperationTypeDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlRootOperationTypes {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ROOT_OPERATION_TYPES as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ROOT_OPERATION_TYPES
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5212,9 +5733,11 @@ impl AstNode for GraphqlRootOperationTypes {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5246,11 +5769,14 @@ impl From<GraphqlRootOperationTypes> for SyntaxElement {
 }
 impl AstNode for GraphqlScalarTypeDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_SCALAR_TYPE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_SCALAR_TYPE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5258,9 +5784,11 @@ impl AstNode for GraphqlScalarTypeDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5293,11 +5821,14 @@ impl From<GraphqlScalarTypeDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlScalarTypeExtension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_SCALAR_TYPE_EXTENSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_SCALAR_TYPE_EXTENSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5305,9 +5836,11 @@ impl AstNode for GraphqlScalarTypeExtension {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5340,11 +5873,14 @@ impl From<GraphqlScalarTypeExtension> for SyntaxElement {
 }
 impl AstNode for GraphqlSchemaDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_SCHEMA_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_SCHEMA_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5352,9 +5888,11 @@ impl AstNode for GraphqlSchemaDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5390,11 +5928,14 @@ impl From<GraphqlSchemaDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlSchemaExtension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_SCHEMA_EXTENSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_SCHEMA_EXTENSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5402,9 +5943,11 @@ impl AstNode for GraphqlSchemaExtension {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5440,11 +5983,14 @@ impl From<GraphqlSchemaExtension> for SyntaxElement {
 }
 impl AstNode for GraphqlSelectionSet {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_SELECTION_SET as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_SELECTION_SET
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5452,9 +5998,11 @@ impl AstNode for GraphqlSelectionSet {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5486,11 +6034,14 @@ impl From<GraphqlSelectionSet> for SyntaxElement {
 }
 impl AstNode for GraphqlStringValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_STRING_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_STRING_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5498,9 +6049,11 @@ impl AstNode for GraphqlStringValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5527,11 +6080,14 @@ impl From<GraphqlStringValue> for SyntaxElement {
 }
 impl AstNode for GraphqlTypeCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_TYPE_CONDITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_TYPE_CONDITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5539,9 +6095,11 @@ impl AstNode for GraphqlTypeCondition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5566,11 +6124,14 @@ impl From<GraphqlTypeCondition> for SyntaxElement {
 }
 impl AstNode for GraphqlUnionMemberTypes {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_UNION_MEMBER_TYPES as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_UNION_MEMBER_TYPES
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5578,9 +6139,11 @@ impl AstNode for GraphqlUnionMemberTypes {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5609,11 +6172,14 @@ impl From<GraphqlUnionMemberTypes> for SyntaxElement {
 }
 impl AstNode for GraphqlUnionTypeDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_UNION_TYPE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_UNION_TYPE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5621,9 +6187,11 @@ impl AstNode for GraphqlUnionTypeDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5660,11 +6228,14 @@ impl From<GraphqlUnionTypeDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlUnionTypeExtension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_UNION_TYPE_EXTENSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_UNION_TYPE_EXTENSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5672,9 +6243,11 @@ impl AstNode for GraphqlUnionTypeExtension {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5711,11 +6284,14 @@ impl From<GraphqlUnionTypeExtension> for SyntaxElement {
 }
 impl AstNode for GraphqlVariableBinding {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_VARIABLE_BINDING as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_VARIABLE_BINDING
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5723,9 +6299,11 @@ impl AstNode for GraphqlVariableBinding {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5753,11 +6331,14 @@ impl From<GraphqlVariableBinding> for SyntaxElement {
 }
 impl AstNode for GraphqlVariableDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_VARIABLE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_VARIABLE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5765,9 +6346,11 @@ impl AstNode for GraphqlVariableDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5798,11 +6381,14 @@ impl From<GraphqlVariableDefinition> for SyntaxElement {
 }
 impl AstNode for GraphqlVariableDefinitions {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_VARIABLE_DEFINITIONS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_VARIABLE_DEFINITIONS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5810,9 +6396,11 @@ impl AstNode for GraphqlVariableDefinitions {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5844,11 +6432,14 @@ impl From<GraphqlVariableDefinitions> for SyntaxElement {
 }
 impl AstNode for GraphqlVariableReference {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_VARIABLE_REFERENCE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_VARIABLE_REFERENCE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5856,9 +6447,11 @@ impl AstNode for GraphqlVariableReference {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5921,6 +6514,7 @@ impl From<GraphqlSelectionSet> for AnyGraphqlDefinition {
 }
 impl AstNode for AnyGraphqlDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyGraphqlTypeDefinition::KIND_SET
         .union(AnyGraphqlTypeExtension::KIND_SET)
         .union(GraphqlBogusDefinition::KIND_SET)
@@ -5930,6 +6524,7 @@ impl AstNode for AnyGraphqlDefinition {
         .union(GraphqlSchemaDefinition::KIND_SET)
         .union(GraphqlSchemaExtension::KIND_SET)
         .union(GraphqlSelectionSet::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             GRAPHQL_BOGUS_DEFINITION
@@ -5944,35 +6539,43 @@ impl AstNode for AnyGraphqlDefinition {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRAPHQL_BOGUS_DEFINITION => {
                 AnyGraphqlDefinition::GraphqlBogusDefinition(GraphqlBogusDefinition { syntax })
             }
+
             GRAPHQL_DIRECTIVE_DEFINITION => {
                 AnyGraphqlDefinition::GraphqlDirectiveDefinition(GraphqlDirectiveDefinition {
                     syntax,
                 })
             }
+
             GRAPHQL_FRAGMENT_DEFINITION => {
                 AnyGraphqlDefinition::GraphqlFragmentDefinition(GraphqlFragmentDefinition {
                     syntax,
                 })
             }
+
             GRAPHQL_OPERATION_DEFINITION => {
                 AnyGraphqlDefinition::GraphqlOperationDefinition(GraphqlOperationDefinition {
                     syntax,
                 })
             }
+
             GRAPHQL_SCHEMA_DEFINITION => {
                 AnyGraphqlDefinition::GraphqlSchemaDefinition(GraphqlSchemaDefinition { syntax })
             }
+
             GRAPHQL_SCHEMA_EXTENSION => {
                 AnyGraphqlDefinition::GraphqlSchemaExtension(GraphqlSchemaExtension { syntax })
             }
+
             GRAPHQL_SELECTION_SET => {
                 AnyGraphqlDefinition::GraphqlSelectionSet(GraphqlSelectionSet { syntax })
             }
+
             _ => {
                 let syntax = match AnyGraphqlTypeDefinition::try_cast(syntax) {
                     Ok(any_graphql_type_definition) => {
@@ -5980,18 +6583,23 @@ impl AstNode for AnyGraphqlDefinition {
                             any_graphql_type_definition,
                         ));
                     }
+
                     Err(syntax) => syntax,
                 };
+
                 if let Some(any_graphql_type_extension) = AnyGraphqlTypeExtension::cast(syntax) {
                     return Some(AnyGraphqlDefinition::AnyGraphqlTypeExtension(
                         any_graphql_type_extension,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGraphqlDefinition::GraphqlBogusDefinition(it) => &it.syntax,
@@ -6005,6 +6613,7 @@ impl AstNode for AnyGraphqlDefinition {
             AnyGraphqlDefinition::AnyGraphqlTypeExtension(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGraphqlDefinition::GraphqlBogusDefinition(it) => it.syntax,
@@ -6052,6 +6661,7 @@ impl From<AnyGraphqlDefinition> for SyntaxNode {
 impl From<AnyGraphqlDefinition> for SyntaxElement {
     fn from(n: AnyGraphqlDefinition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -6067,11 +6677,14 @@ impl From<GraphqlSelectionSet> for AnyGraphqlOperationDefinition {
 }
 impl AstNode for AnyGraphqlOperationDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         GraphqlOperationDefinition::KIND_SET.union(GraphqlSelectionSet::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, GRAPHQL_OPERATION_DEFINITION | GRAPHQL_SELECTION_SET)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRAPHQL_OPERATION_DEFINITION => {
@@ -6079,19 +6692,24 @@ impl AstNode for AnyGraphqlOperationDefinition {
                     GraphqlOperationDefinition { syntax },
                 )
             }
+
             GRAPHQL_SELECTION_SET => {
                 AnyGraphqlOperationDefinition::GraphqlSelectionSet(GraphqlSelectionSet { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGraphqlOperationDefinition::GraphqlOperationDefinition(it) => &it.syntax,
             AnyGraphqlOperationDefinition::GraphqlSelectionSet(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGraphqlOperationDefinition::GraphqlOperationDefinition(it) => it.syntax,
@@ -6105,6 +6723,7 @@ impl std::fmt::Debug for AnyGraphqlOperationDefinition {
             AnyGraphqlOperationDefinition::GraphqlOperationDefinition(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyGraphqlOperationDefinition::GraphqlSelectionSet(it) => std::fmt::Debug::fmt(it, f),
         }
     }
@@ -6120,6 +6739,7 @@ impl From<AnyGraphqlOperationDefinition> for SyntaxNode {
 impl From<AnyGraphqlOperationDefinition> for SyntaxElement {
     fn from(n: AnyGraphqlOperationDefinition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -6135,29 +6755,37 @@ impl From<GraphqlNameReference> for AnyGraphqlPrimitiveType {
 }
 impl AstNode for AnyGraphqlPrimitiveType {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         GraphqlListType::KIND_SET.union(GraphqlNameReference::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, GRAPHQL_LIST_TYPE | GRAPHQL_NAME_REFERENCE)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRAPHQL_LIST_TYPE => {
                 AnyGraphqlPrimitiveType::GraphqlListType(GraphqlListType { syntax })
             }
+
             GRAPHQL_NAME_REFERENCE => {
                 AnyGraphqlPrimitiveType::GraphqlNameReference(GraphqlNameReference { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGraphqlPrimitiveType::GraphqlListType(it) => &it.syntax,
             AnyGraphqlPrimitiveType::GraphqlNameReference(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGraphqlPrimitiveType::GraphqlListType(it) => it.syntax,
@@ -6184,6 +6812,7 @@ impl From<AnyGraphqlPrimitiveType> for SyntaxNode {
 impl From<AnyGraphqlPrimitiveType> for SyntaxElement {
     fn from(n: AnyGraphqlPrimitiveType) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -6209,10 +6838,12 @@ impl From<GraphqlInlineFragment> for AnyGraphqlSelection {
 }
 impl AstNode for AnyGraphqlSelection {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = GraphqlBogusSelection::KIND_SET
         .union(GraphqlField::KIND_SET)
         .union(GraphqlFragmentSpread::KIND_SET)
         .union(GraphqlInlineFragment::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -6222,22 +6853,28 @@ impl AstNode for AnyGraphqlSelection {
                 | GRAPHQL_INLINE_FRAGMENT
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRAPHQL_BOGUS_SELECTION => {
                 AnyGraphqlSelection::GraphqlBogusSelection(GraphqlBogusSelection { syntax })
             }
+
             GRAPHQL_FIELD => AnyGraphqlSelection::GraphqlField(GraphqlField { syntax }),
             GRAPHQL_FRAGMENT_SPREAD => {
                 AnyGraphqlSelection::GraphqlFragmentSpread(GraphqlFragmentSpread { syntax })
             }
+
             GRAPHQL_INLINE_FRAGMENT => {
                 AnyGraphqlSelection::GraphqlInlineFragment(GraphqlInlineFragment { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGraphqlSelection::GraphqlBogusSelection(it) => &it.syntax,
@@ -6246,6 +6883,7 @@ impl AstNode for AnyGraphqlSelection {
             AnyGraphqlSelection::GraphqlInlineFragment(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGraphqlSelection::GraphqlBogusSelection(it) => it.syntax,
@@ -6278,6 +6916,7 @@ impl From<AnyGraphqlSelection> for SyntaxNode {
 impl From<AnyGraphqlSelection> for SyntaxElement {
     fn from(n: AnyGraphqlSelection) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -6293,9 +6932,11 @@ impl From<GraphqlNonNullType> for AnyGraphqlType {
 }
 impl AstNode for AnyGraphqlType {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyGraphqlPrimitiveType::KIND_SET
         .union(GraphqlBogusType::KIND_SET)
         .union(GraphqlNonNullType::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             GRAPHQL_BOGUS_TYPE | GRAPHQL_NON_NULL_TYPE => true,
@@ -6303,23 +6944,28 @@ impl AstNode for AnyGraphqlType {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRAPHQL_BOGUS_TYPE => AnyGraphqlType::GraphqlBogusType(GraphqlBogusType { syntax }),
             GRAPHQL_NON_NULL_TYPE => {
                 AnyGraphqlType::GraphqlNonNullType(GraphqlNonNullType { syntax })
             }
+
             _ => {
                 if let Some(any_graphql_primitive_type) = AnyGraphqlPrimitiveType::cast(syntax) {
                     return Some(AnyGraphqlType::AnyGraphqlPrimitiveType(
                         any_graphql_primitive_type,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGraphqlType::GraphqlBogusType(it) => &it.syntax,
@@ -6327,6 +6973,7 @@ impl AstNode for AnyGraphqlType {
             AnyGraphqlType::AnyGraphqlPrimitiveType(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGraphqlType::GraphqlBogusType(it) => it.syntax,
@@ -6356,6 +7003,7 @@ impl From<AnyGraphqlType> for SyntaxNode {
 impl From<AnyGraphqlType> for SyntaxElement {
     fn from(n: AnyGraphqlType) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -6391,12 +7039,14 @@ impl From<GraphqlUnionTypeDefinition> for AnyGraphqlTypeDefinition {
 }
 impl AstNode for AnyGraphqlTypeDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = GraphqlEnumTypeDefinition::KIND_SET
         .union(GraphqlInputObjectTypeDefinition::KIND_SET)
         .union(GraphqlInterfaceTypeDefinition::KIND_SET)
         .union(GraphqlObjectTypeDefinition::KIND_SET)
         .union(GraphqlScalarTypeDefinition::KIND_SET)
         .union(GraphqlUnionTypeDefinition::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -6408,6 +7058,7 @@ impl AstNode for AnyGraphqlTypeDefinition {
                 | GRAPHQL_UNION_TYPE_DEFINITION
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRAPHQL_ENUM_TYPE_DEFINITION => {
@@ -6415,35 +7066,43 @@ impl AstNode for AnyGraphqlTypeDefinition {
                     syntax,
                 })
             }
+
             GRAPHQL_INPUT_OBJECT_TYPE_DEFINITION => {
                 AnyGraphqlTypeDefinition::GraphqlInputObjectTypeDefinition(
                     GraphqlInputObjectTypeDefinition { syntax },
                 )
             }
+
             GRAPHQL_INTERFACE_TYPE_DEFINITION => {
                 AnyGraphqlTypeDefinition::GraphqlInterfaceTypeDefinition(
                     GraphqlInterfaceTypeDefinition { syntax },
                 )
             }
+
             GRAPHQL_OBJECT_TYPE_DEFINITION => {
                 AnyGraphqlTypeDefinition::GraphqlObjectTypeDefinition(GraphqlObjectTypeDefinition {
                     syntax,
                 })
             }
+
             GRAPHQL_SCALAR_TYPE_DEFINITION => {
                 AnyGraphqlTypeDefinition::GraphqlScalarTypeDefinition(GraphqlScalarTypeDefinition {
                     syntax,
                 })
             }
+
             GRAPHQL_UNION_TYPE_DEFINITION => {
                 AnyGraphqlTypeDefinition::GraphqlUnionTypeDefinition(GraphqlUnionTypeDefinition {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGraphqlTypeDefinition::GraphqlEnumTypeDefinition(it) => &it.syntax,
@@ -6454,6 +7113,7 @@ impl AstNode for AnyGraphqlTypeDefinition {
             AnyGraphqlTypeDefinition::GraphqlUnionTypeDefinition(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGraphqlTypeDefinition::GraphqlEnumTypeDefinition(it) => it.syntax,
@@ -6472,15 +7132,19 @@ impl std::fmt::Debug for AnyGraphqlTypeDefinition {
             AnyGraphqlTypeDefinition::GraphqlInputObjectTypeDefinition(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyGraphqlTypeDefinition::GraphqlInterfaceTypeDefinition(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyGraphqlTypeDefinition::GraphqlObjectTypeDefinition(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyGraphqlTypeDefinition::GraphqlScalarTypeDefinition(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyGraphqlTypeDefinition::GraphqlUnionTypeDefinition(it) => std::fmt::Debug::fmt(it, f),
         }
     }
@@ -6500,6 +7164,7 @@ impl From<AnyGraphqlTypeDefinition> for SyntaxNode {
 impl From<AnyGraphqlTypeDefinition> for SyntaxElement {
     fn from(n: AnyGraphqlTypeDefinition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -6535,12 +7200,14 @@ impl From<GraphqlUnionTypeExtension> for AnyGraphqlTypeExtension {
 }
 impl AstNode for AnyGraphqlTypeExtension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = GraphqlEnumTypeExtension::KIND_SET
         .union(GraphqlInputObjectTypeExtension::KIND_SET)
         .union(GraphqlInterfaceTypeExtension::KIND_SET)
         .union(GraphqlObjectTypeExtension::KIND_SET)
         .union(GraphqlScalarTypeExtension::KIND_SET)
         .union(GraphqlUnionTypeExtension::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -6552,6 +7219,7 @@ impl AstNode for AnyGraphqlTypeExtension {
                 | GRAPHQL_UNION_TYPE_EXTENSION
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRAPHQL_ENUM_TYPE_EXTENSION => {
@@ -6559,35 +7227,43 @@ impl AstNode for AnyGraphqlTypeExtension {
                     syntax,
                 })
             }
+
             GRAPHQL_INPUT_OBJECT_TYPE_EXTENSION => {
                 AnyGraphqlTypeExtension::GraphqlInputObjectTypeExtension(
                     GraphqlInputObjectTypeExtension { syntax },
                 )
             }
+
             GRAPHQL_INTERFACE_TYPE_EXTENSION => {
                 AnyGraphqlTypeExtension::GraphqlInterfaceTypeExtension(
                     GraphqlInterfaceTypeExtension { syntax },
                 )
             }
+
             GRAPHQL_OBJECT_TYPE_EXTENSION => {
                 AnyGraphqlTypeExtension::GraphqlObjectTypeExtension(GraphqlObjectTypeExtension {
                     syntax,
                 })
             }
+
             GRAPHQL_SCALAR_TYPE_EXTENSION => {
                 AnyGraphqlTypeExtension::GraphqlScalarTypeExtension(GraphqlScalarTypeExtension {
                     syntax,
                 })
             }
+
             GRAPHQL_UNION_TYPE_EXTENSION => {
                 AnyGraphqlTypeExtension::GraphqlUnionTypeExtension(GraphqlUnionTypeExtension {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGraphqlTypeExtension::GraphqlEnumTypeExtension(it) => &it.syntax,
@@ -6598,6 +7274,7 @@ impl AstNode for AnyGraphqlTypeExtension {
             AnyGraphqlTypeExtension::GraphqlUnionTypeExtension(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGraphqlTypeExtension::GraphqlEnumTypeExtension(it) => it.syntax,
@@ -6616,9 +7293,11 @@ impl std::fmt::Debug for AnyGraphqlTypeExtension {
             AnyGraphqlTypeExtension::GraphqlInputObjectTypeExtension(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyGraphqlTypeExtension::GraphqlInterfaceTypeExtension(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyGraphqlTypeExtension::GraphqlObjectTypeExtension(it) => std::fmt::Debug::fmt(it, f),
             AnyGraphqlTypeExtension::GraphqlScalarTypeExtension(it) => std::fmt::Debug::fmt(it, f),
             AnyGraphqlTypeExtension::GraphqlUnionTypeExtension(it) => std::fmt::Debug::fmt(it, f),
@@ -6640,6 +7319,7 @@ impl From<AnyGraphqlTypeExtension> for SyntaxNode {
 impl From<AnyGraphqlTypeExtension> for SyntaxElement {
     fn from(n: AnyGraphqlTypeExtension) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -6695,6 +7375,7 @@ impl From<GraphqlVariableReference> for AnyGraphqlValue {
 }
 impl AstNode for AnyGraphqlValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = GraphqlBogusValue::KIND_SET
         .union(GraphqlBooleanValue::KIND_SET)
         .union(GraphqlEnumValue::KIND_SET)
@@ -6705,6 +7386,7 @@ impl AstNode for AnyGraphqlValue {
         .union(GraphqlObjectValue::KIND_SET)
         .union(GraphqlStringValue::KIND_SET)
         .union(GraphqlVariableReference::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -6720,12 +7402,14 @@ impl AstNode for AnyGraphqlValue {
                 | GRAPHQL_VARIABLE_REFERENCE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRAPHQL_BOGUS_VALUE => AnyGraphqlValue::GraphqlBogusValue(GraphqlBogusValue { syntax }),
             GRAPHQL_BOOLEAN_VALUE => {
                 AnyGraphqlValue::GraphqlBooleanValue(GraphqlBooleanValue { syntax })
             }
+
             GRAPHQL_ENUM_VALUE => AnyGraphqlValue::GraphqlEnumValue(GraphqlEnumValue { syntax }),
             GRAPHQL_FLOAT_VALUE => AnyGraphqlValue::GraphqlFloatValue(GraphqlFloatValue { syntax }),
             GRAPHQL_INT_VALUE => AnyGraphqlValue::GraphqlIntValue(GraphqlIntValue { syntax }),
@@ -6734,16 +7418,21 @@ impl AstNode for AnyGraphqlValue {
             GRAPHQL_OBJECT_VALUE => {
                 AnyGraphqlValue::GraphqlObjectValue(GraphqlObjectValue { syntax })
             }
+
             GRAPHQL_STRING_VALUE => {
                 AnyGraphqlValue::GraphqlStringValue(GraphqlStringValue { syntax })
             }
+
             GRAPHQL_VARIABLE_REFERENCE => {
                 AnyGraphqlValue::GraphqlVariableReference(GraphqlVariableReference { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGraphqlValue::GraphqlBogusValue(it) => &it.syntax,
@@ -6758,6 +7447,7 @@ impl AstNode for AnyGraphqlValue {
             AnyGraphqlValue::GraphqlVariableReference(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGraphqlValue::GraphqlBogusValue(it) => it.syntax,
@@ -6808,6 +7498,7 @@ impl From<AnyGraphqlValue> for SyntaxNode {
 impl From<AnyGraphqlValue> for SyntaxElement {
     fn from(n: AnyGraphqlValue) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -7165,17 +7856,21 @@ impl GraphqlBogus {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GraphqlBogus {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_BOGUS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_BOGUS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7183,9 +7878,11 @@ impl AstNode for GraphqlBogus {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7221,17 +7918,21 @@ impl GraphqlBogusDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GraphqlBogusDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_BOGUS_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_BOGUS_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7239,9 +7940,11 @@ impl AstNode for GraphqlBogusDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7277,17 +7980,21 @@ impl GraphqlBogusSelection {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GraphqlBogusSelection {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_BOGUS_SELECTION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_BOGUS_SELECTION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7295,9 +8002,11 @@ impl AstNode for GraphqlBogusSelection {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7333,17 +8042,21 @@ impl GraphqlBogusType {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GraphqlBogusType {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_BOGUS_TYPE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_BOGUS_TYPE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7351,9 +8064,11 @@ impl AstNode for GraphqlBogusType {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7389,17 +8104,21 @@ impl GraphqlBogusValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GraphqlBogusValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_BOGUS_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_BOGUS_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7407,9 +8126,11 @@ impl AstNode for GraphqlBogusValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7450,11 +8171,14 @@ impl GraphqlArgumentDefinitionList {
 }
 impl AstNode for GraphqlArgumentDefinitionList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ARGUMENT_DEFINITION_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ARGUMENT_DEFINITION_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlArgumentDefinitionList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlArgumentDefinitionList {
@@ -7464,9 +8188,11 @@ impl AstNode for GraphqlArgumentDefinitionList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -7477,18 +8203,23 @@ impl Serialize for GraphqlArgumentDefinitionList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlArgumentDefinitionList {
     type Language = Language;
+
     type Node = GraphqlInputValueDefinition;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -7496,19 +8227,24 @@ impl AstNodeList for GraphqlArgumentDefinitionList {
 impl Debug for GraphqlArgumentDefinitionList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlArgumentDefinitionList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlArgumentDefinitionList {
     type Item = GraphqlInputValueDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlInputValueDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlArgumentDefinitionList {
     type Item = GraphqlInputValueDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlInputValueDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -7532,11 +8268,14 @@ impl GraphqlArgumentList {
 }
 impl AstNode for GraphqlArgumentList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ARGUMENT_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ARGUMENT_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlArgumentList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlArgumentList {
@@ -7546,9 +8285,11 @@ impl AstNode for GraphqlArgumentList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -7559,18 +8300,23 @@ impl Serialize for GraphqlArgumentList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlArgumentList {
     type Language = Language;
+
     type Node = GraphqlArgument;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -7578,19 +8324,24 @@ impl AstNodeList for GraphqlArgumentList {
 impl Debug for GraphqlArgumentList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlArgumentList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlArgumentList {
     type Item = GraphqlArgument;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlArgument>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlArgumentList {
     type Item = GraphqlArgument;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlArgument>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -7614,11 +8365,14 @@ impl GraphqlDefinitionList {
 }
 impl AstNode for GraphqlDefinitionList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_DEFINITION_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_DEFINITION_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlDefinitionList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlDefinitionList {
@@ -7628,9 +8382,11 @@ impl AstNode for GraphqlDefinitionList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -7641,18 +8397,23 @@ impl Serialize for GraphqlDefinitionList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlDefinitionList {
     type Language = Language;
+
     type Node = AnyGraphqlDefinition;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -7660,19 +8421,24 @@ impl AstNodeList for GraphqlDefinitionList {
 impl Debug for GraphqlDefinitionList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlDefinitionList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlDefinitionList {
     type Item = AnyGraphqlDefinition;
+
     type IntoIter = AstNodeListIterator<Language, AnyGraphqlDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlDefinitionList {
     type Item = AnyGraphqlDefinition;
+
     type IntoIter = AstNodeListIterator<Language, AnyGraphqlDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -7696,11 +8462,14 @@ impl GraphqlDirectiveList {
 }
 impl AstNode for GraphqlDirectiveList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_DIRECTIVE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_DIRECTIVE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlDirectiveList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlDirectiveList {
@@ -7710,9 +8479,11 @@ impl AstNode for GraphqlDirectiveList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -7723,18 +8494,23 @@ impl Serialize for GraphqlDirectiveList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlDirectiveList {
     type Language = Language;
+
     type Node = GraphqlDirective;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -7742,19 +8518,24 @@ impl AstNodeList for GraphqlDirectiveList {
 impl Debug for GraphqlDirectiveList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlDirectiveList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlDirectiveList {
     type Item = GraphqlDirective;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlDirective>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlDirectiveList {
     type Item = GraphqlDirective;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlDirective>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -7778,11 +8559,14 @@ impl GraphqlDirectiveLocationList {
 }
 impl AstNode for GraphqlDirectiveLocationList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_DIRECTIVE_LOCATION_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_DIRECTIVE_LOCATION_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlDirectiveLocationList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlDirectiveLocationList {
@@ -7792,9 +8576,11 @@ impl AstNode for GraphqlDirectiveLocationList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -7805,18 +8591,23 @@ impl Serialize for GraphqlDirectiveLocationList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GraphqlDirectiveLocationList {
     type Language = Language;
+
     type Node = GraphqlDirectiveLocation;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -7824,19 +8615,24 @@ impl AstSeparatedList for GraphqlDirectiveLocationList {
 impl Debug for GraphqlDirectiveLocationList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlDirectiveLocationList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GraphqlDirectiveLocationList {
     type Item = SyntaxResult<GraphqlDirectiveLocation>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, GraphqlDirectiveLocation>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GraphqlDirectiveLocationList {
     type Item = SyntaxResult<GraphqlDirectiveLocation>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, GraphqlDirectiveLocation>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -7860,11 +8656,14 @@ impl GraphqlEnumValueList {
 }
 impl AstNode for GraphqlEnumValueList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_ENUM_VALUE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ENUM_VALUE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlEnumValueList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlEnumValueList {
@@ -7874,9 +8673,11 @@ impl AstNode for GraphqlEnumValueList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -7887,18 +8688,23 @@ impl Serialize for GraphqlEnumValueList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlEnumValueList {
     type Language = Language;
+
     type Node = GraphqlEnumValueDefinition;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -7906,19 +8712,24 @@ impl AstNodeList for GraphqlEnumValueList {
 impl Debug for GraphqlEnumValueList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlEnumValueList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlEnumValueList {
     type Item = GraphqlEnumValueDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlEnumValueDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlEnumValueList {
     type Item = GraphqlEnumValueDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlEnumValueDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -7942,11 +8753,14 @@ impl GraphqlFieldDefinitionList {
 }
 impl AstNode for GraphqlFieldDefinitionList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_FIELD_DEFINITION_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_FIELD_DEFINITION_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlFieldDefinitionList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlFieldDefinitionList {
@@ -7956,9 +8770,11 @@ impl AstNode for GraphqlFieldDefinitionList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -7969,18 +8785,23 @@ impl Serialize for GraphqlFieldDefinitionList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlFieldDefinitionList {
     type Language = Language;
+
     type Node = GraphqlFieldDefinition;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -7988,19 +8809,24 @@ impl AstNodeList for GraphqlFieldDefinitionList {
 impl Debug for GraphqlFieldDefinitionList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlFieldDefinitionList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlFieldDefinitionList {
     type Item = GraphqlFieldDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlFieldDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlFieldDefinitionList {
     type Item = GraphqlFieldDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlFieldDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -8024,11 +8850,14 @@ impl GraphqlImplementsInterfaceList {
 }
 impl AstNode for GraphqlImplementsInterfaceList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_IMPLEMENTS_INTERFACE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_IMPLEMENTS_INTERFACE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlImplementsInterfaceList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlImplementsInterfaceList {
@@ -8038,9 +8867,11 @@ impl AstNode for GraphqlImplementsInterfaceList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -8051,18 +8882,23 @@ impl Serialize for GraphqlImplementsInterfaceList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GraphqlImplementsInterfaceList {
     type Language = Language;
+
     type Node = GraphqlNameReference;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -8070,19 +8906,24 @@ impl AstSeparatedList for GraphqlImplementsInterfaceList {
 impl Debug for GraphqlImplementsInterfaceList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlImplementsInterfaceList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GraphqlImplementsInterfaceList {
     type Item = SyntaxResult<GraphqlNameReference>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, GraphqlNameReference>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GraphqlImplementsInterfaceList {
     type Item = SyntaxResult<GraphqlNameReference>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, GraphqlNameReference>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -8106,11 +8947,14 @@ impl GraphqlInputFieldList {
 }
 impl AstNode for GraphqlInputFieldList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_INPUT_FIELD_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_INPUT_FIELD_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlInputFieldList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlInputFieldList {
@@ -8120,9 +8964,11 @@ impl AstNode for GraphqlInputFieldList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -8133,18 +8979,23 @@ impl Serialize for GraphqlInputFieldList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlInputFieldList {
     type Language = Language;
+
     type Node = GraphqlInputValueDefinition;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -8152,19 +9003,24 @@ impl AstNodeList for GraphqlInputFieldList {
 impl Debug for GraphqlInputFieldList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlInputFieldList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlInputFieldList {
     type Item = GraphqlInputValueDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlInputValueDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlInputFieldList {
     type Item = GraphqlInputValueDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlInputValueDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -8188,11 +9044,14 @@ impl GraphqlListValueElementList {
 }
 impl AstNode for GraphqlListValueElementList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_LIST_VALUE_ELEMENT_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_LIST_VALUE_ELEMENT_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlListValueElementList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlListValueElementList {
@@ -8202,9 +9061,11 @@ impl AstNode for GraphqlListValueElementList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -8215,18 +9076,23 @@ impl Serialize for GraphqlListValueElementList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlListValueElementList {
     type Language = Language;
+
     type Node = AnyGraphqlValue;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -8234,19 +9100,24 @@ impl AstNodeList for GraphqlListValueElementList {
 impl Debug for GraphqlListValueElementList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlListValueElementList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlListValueElementList {
     type Item = AnyGraphqlValue;
+
     type IntoIter = AstNodeListIterator<Language, AnyGraphqlValue>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlListValueElementList {
     type Item = AnyGraphqlValue;
+
     type IntoIter = AstNodeListIterator<Language, AnyGraphqlValue>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -8270,11 +9141,14 @@ impl GraphqlObjectValueMemberList {
 }
 impl AstNode for GraphqlObjectValueMemberList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_OBJECT_VALUE_MEMBER_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_OBJECT_VALUE_MEMBER_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlObjectValueMemberList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlObjectValueMemberList {
@@ -8284,9 +9158,11 @@ impl AstNode for GraphqlObjectValueMemberList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -8297,18 +9173,23 @@ impl Serialize for GraphqlObjectValueMemberList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlObjectValueMemberList {
     type Language = Language;
+
     type Node = GraphqlObjectField;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -8316,19 +9197,24 @@ impl AstNodeList for GraphqlObjectValueMemberList {
 impl Debug for GraphqlObjectValueMemberList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlObjectValueMemberList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlObjectValueMemberList {
     type Item = GraphqlObjectField;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlObjectField>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlObjectValueMemberList {
     type Item = GraphqlObjectField;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlObjectField>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -8352,12 +9238,15 @@ impl GraphqlRootOperationTypeDefinitionList {
 }
 impl AstNode for GraphqlRootOperationTypeDefinitionList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = SyntaxKindSet::from_raw(RawSyntaxKind(
         GRAPHQL_ROOT_OPERATION_TYPE_DEFINITION_LIST as u16,
     ));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_ROOT_OPERATION_TYPE_DEFINITION_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlRootOperationTypeDefinitionList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlRootOperationTypeDefinitionList {
@@ -8367,9 +9256,11 @@ impl AstNode for GraphqlRootOperationTypeDefinitionList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -8380,18 +9271,23 @@ impl Serialize for GraphqlRootOperationTypeDefinitionList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlRootOperationTypeDefinitionList {
     type Language = Language;
+
     type Node = GraphqlRootOperationTypeDefinition;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -8399,19 +9295,24 @@ impl AstNodeList for GraphqlRootOperationTypeDefinitionList {
 impl Debug for GraphqlRootOperationTypeDefinitionList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlRootOperationTypeDefinitionList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlRootOperationTypeDefinitionList {
     type Item = GraphqlRootOperationTypeDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlRootOperationTypeDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlRootOperationTypeDefinitionList {
     type Item = GraphqlRootOperationTypeDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlRootOperationTypeDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -8435,11 +9336,14 @@ impl GraphqlSelectionList {
 }
 impl AstNode for GraphqlSelectionList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_SELECTION_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_SELECTION_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlSelectionList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlSelectionList {
@@ -8449,9 +9353,11 @@ impl AstNode for GraphqlSelectionList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -8462,18 +9368,23 @@ impl Serialize for GraphqlSelectionList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlSelectionList {
     type Language = Language;
+
     type Node = AnyGraphqlSelection;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -8481,19 +9392,24 @@ impl AstNodeList for GraphqlSelectionList {
 impl Debug for GraphqlSelectionList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlSelectionList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlSelectionList {
     type Item = AnyGraphqlSelection;
+
     type IntoIter = AstNodeListIterator<Language, AnyGraphqlSelection>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlSelectionList {
     type Item = AnyGraphqlSelection;
+
     type IntoIter = AstNodeListIterator<Language, AnyGraphqlSelection>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -8517,11 +9433,14 @@ impl GraphqlUnionMemberTypeList {
 }
 impl AstNode for GraphqlUnionMemberTypeList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_UNION_MEMBER_TYPE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_UNION_MEMBER_TYPE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlUnionMemberTypeList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlUnionMemberTypeList {
@@ -8531,9 +9450,11 @@ impl AstNode for GraphqlUnionMemberTypeList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -8544,18 +9465,23 @@ impl Serialize for GraphqlUnionMemberTypeList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GraphqlUnionMemberTypeList {
     type Language = Language;
+
     type Node = GraphqlNameReference;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -8563,19 +9489,24 @@ impl AstSeparatedList for GraphqlUnionMemberTypeList {
 impl Debug for GraphqlUnionMemberTypeList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlUnionMemberTypeList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GraphqlUnionMemberTypeList {
     type Item = SyntaxResult<GraphqlNameReference>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, GraphqlNameReference>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GraphqlUnionMemberTypeList {
     type Item = SyntaxResult<GraphqlNameReference>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, GraphqlNameReference>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -8599,11 +9530,14 @@ impl GraphqlVariableDefinitionList {
 }
 impl AstNode for GraphqlVariableDefinitionList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRAPHQL_VARIABLE_DEFINITION_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRAPHQL_VARIABLE_DEFINITION_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GraphqlVariableDefinitionList> {
         if Self::can_cast(syntax.kind()) {
             Some(GraphqlVariableDefinitionList {
@@ -8613,9 +9547,11 @@ impl AstNode for GraphqlVariableDefinitionList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -8626,18 +9562,23 @@ impl Serialize for GraphqlVariableDefinitionList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for GraphqlVariableDefinitionList {
     type Language = Language;
+
     type Node = GraphqlVariableDefinition;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -8645,19 +9586,24 @@ impl AstNodeList for GraphqlVariableDefinitionList {
 impl Debug for GraphqlVariableDefinitionList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GraphqlVariableDefinitionList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &GraphqlVariableDefinitionList {
     type Item = GraphqlVariableDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlVariableDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for GraphqlVariableDefinitionList {
     type Item = GraphqlVariableDefinition;
+
     type IntoIter = AstNodeListIterator<Language, GraphqlVariableDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -8678,6 +9624,7 @@ impl Debug for DebugSyntaxElement {
             SyntaxElement::Node(node) => {
                 map_syntax_node ! (node . clone () , node => std :: fmt :: Debug :: fmt (& node , f))
             }
+
             SyntaxElement::Token(token) => Debug::fmt(token, f),
         }
     }

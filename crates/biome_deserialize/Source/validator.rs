@@ -34,6 +34,7 @@ pub fn non_empty<T: IsEmpty>(
             })
             .with_range(range),
         );
+
         false
     } else {
         true

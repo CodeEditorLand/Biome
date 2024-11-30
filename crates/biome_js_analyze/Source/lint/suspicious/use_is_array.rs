@@ -47,18 +47,26 @@ declare_lint_rule! {
 
 impl Rule for UseIsArray {
     type Query = Semantic<JsInstanceofExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let right = node.right().ok()?.omit_parentheses();
+
         let (reference, name) = global_identifier(&right)?;
+
         if name.text() != "Array" {
             return None;
         }
+
         model.binding(&reference).is_none().then_some(())
     }
 
@@ -79,16 +87,23 @@ impl Rule for UseIsArray {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let array = node.right().ok()?;
+
         let array_trailing_trivia = array.syntax().last_trailing_trivia()?.pieces();
+
         let mut mutation = ctx.root().begin();
+
         let is_array = make::js_static_member_expression(
             array.with_trailing_trivia_pieces([])?,
             make::token(T![.]),
             make::js_name(make::ident("isArray")).into(),
         );
+
         let arg = AnyJsCallArgument::AnyJsExpression(node.left().ok()?.trim_trivia()?);
+
         let instanceof_trailing_trivia = node.instanceof_token().ok()?.trailing_trivia().pieces();
+
         let args = make::js_call_arguments(
             make::token(T!['(']).with_trailing_trivia_pieces(trim_leading_trivia_pieces(
                 instanceof_trailing_trivia,
@@ -96,11 +111,14 @@ impl Rule for UseIsArray {
             make::js_call_argument_list([arg], []),
             make::token(T![')']).with_trailing_trivia_pieces(array_trailing_trivia),
         );
+
         let call = make::js_call_expression(is_array.into(), args).build();
+
         mutation.replace_node_discard_trivia(
             AnyJsExpression::JsInstanceofExpression(node.clone()),
             call.into(),
         );
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

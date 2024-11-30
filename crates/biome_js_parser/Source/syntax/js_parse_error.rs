@@ -253,6 +253,7 @@ pub(crate) fn modifier_already_seen(
     first_range: TextRange,
 ) -> ParseDiagnostic {
     let modifier = p.text(second_range);
+
     p.err_builder(format!("'{modifier}' already seen"), second_range)
         .with_detail(second_range, "duplicate modifier")
         .with_detail(first_range, "first seen here")
@@ -264,6 +265,7 @@ pub(crate) fn modifier_cannot_be_used_with_modifier(
     other_modifier_range: TextRange,
 ) -> ParseDiagnostic {
     let modifier = p.text(range);
+
     let other_modifier = p.text(other_modifier_range);
 
     p.err_builder(
@@ -280,6 +282,7 @@ pub(crate) fn modifier_must_precede_modifier(
     to_precede_modifier_range: TextRange,
 ) -> ParseDiagnostic {
     let modifier_name = p.text(range);
+
     let to_precede_name = p.text(to_precede_modifier_range);
 
     p.err_builder(

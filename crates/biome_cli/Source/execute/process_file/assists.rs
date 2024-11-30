@@ -18,8 +18,11 @@ pub(crate) fn assists_with_guard<'ctx>(
     tracing::info_span!("Processes assists", path =? workspace_file.path.display()).in_scope(
         move || {
             let input = workspace_file.input()?;
+
             let only = Vec::new();
+
             let skip = Vec::new();
+
             let fix_result = workspace_file
                 .guard()
                 .fix_file(
@@ -45,14 +48,18 @@ pub(crate) fn assists_with_guard<'ctx>(
                 Some(b"astro") => {
                     output = AstroFileHandler::output(input.as_str(), output.as_str());
                 }
+
                 Some(b"vue") => {
                     output = VueFileHandler::output(input.as_str(), output.as_str());
                 }
+
                 Some(b"svelte") => {
                     output = SvelteFileHandler::output(input.as_str(), output.as_str());
                 }
+
                 _ => {}
             }
+
             if input != output {
                 if ctx.execution.as_fix_file_mode().is_none() {
                     return Ok(FileStatus::Message(Message::Diff {
@@ -65,6 +72,7 @@ pub(crate) fn assists_with_guard<'ctx>(
                     if output != input && ctx.execution.as_fix_file_mode().is_some() {
                         workspace_file.update_file(output)?;
                     }
+
                     Ok(FileStatus::Changed)
                 }
             } else {

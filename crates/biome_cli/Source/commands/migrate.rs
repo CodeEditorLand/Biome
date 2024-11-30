@@ -31,7 +31,9 @@ impl CommandRunner for MigrateCommandPayload {
         _console: &mut dyn Console,
     ) -> Result<PartialConfiguration, WorkspaceError> {
         self.configuration_file_path = loaded_configuration.file_path;
+
         self.configuration_directory_path = loaded_configuration.directory_path;
+
         Ok(loaded_configuration.configuration)
     }
 
@@ -71,6 +73,7 @@ impl CommandRunner for MigrateCommandPayload {
             console.log(markup! {
             <Info>"If this project has not yet been set up with Biome yet, please follow the "<Hyperlink href="https://biomejs.dev/guides/getting-started/">"Getting Started guide"</Hyperlink>" first."</Info>
         });
+
             Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
                 reason: "Biome couldn't find the Biome configuration file.".to_string(),
             }))

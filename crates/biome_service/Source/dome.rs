@@ -13,6 +13,7 @@ pub struct Dome {
 impl Dome {
     pub fn with_path(mut self, path: impl Into<BiomePath>) -> Self {
         self.paths.insert(path.into());
+
         self
     }
 

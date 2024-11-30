@@ -167,6 +167,7 @@ where
 
                 Ok(())
             }
+
             Ok(None) => Ok(()),
             Err(err) => Err(*err),
         }

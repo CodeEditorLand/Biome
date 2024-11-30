@@ -47,18 +47,25 @@ fn get_replacement_for_react_prop(str: &str) -> Option<&'static str> {
 
 impl Rule for NoReactSpecificProps {
     type Query = Ast<JsxAttribute>;
+
     type State = (TextRange, &'static str);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let attribute = ctx.query();
+
         let name = attribute.name().ok()?;
+
         let range = name.range();
+
         let name = name.text();
 
         if REACT_SPECIFIC_JSX_PROPS.contains(&name.as_str()) {
             let replacement = get_replacement_for_react_prop(&name)?;
+
             Some((range, replacement))
         } else {
             None
@@ -81,9 +88,11 @@ impl Rule for NoReactSpecificProps {
 
     fn action(ctx: &RuleContext<Self>, (_, replacement): &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let original_name_node = ctx.query().name().ok()?;
 
         let new_name_node = AnyJsxAttributeName::JsxName(jsx_name(jsx_ident(replacement)));
+
         mutation.replace_node(original_name_node, new_name_node);
 
         Some(JsRuleAction::new(

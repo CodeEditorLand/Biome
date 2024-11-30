@@ -6,11 +6,13 @@ use biome_css_syntax::AnyCssFontFeatureValuesItem;
 pub(crate) struct FormatAnyCssFontFeatureValuesItem;
 impl FormatRule<AnyCssFontFeatureValuesItem> for FormatAnyCssFontFeatureValuesItem {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssFontFeatureValuesItem, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssFontFeatureValuesItem::CssBogusFontFeatureValuesItem(node) => {
                 node.format().fmt(f)
             }
+
             AnyCssFontFeatureValuesItem::CssFontFeatureValuesItem(node) => node.format().fmt(f),
         }
     }

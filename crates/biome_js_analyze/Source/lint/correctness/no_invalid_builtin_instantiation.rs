@@ -85,13 +85,18 @@ declare_lint_rule! {
 
 impl Rule for NoInvalidBuiltinInstantiation {
     type Query = Semantic<JsNewOrCallExpression>;
+
     type State = NoInvalidBuiltinInstantiationState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let (callee, creation_rule) = extract_callee_and_rule(node)?;
+
         let (reference, name) = global_identifier(&callee.omit_parentheses())?;
 
         if creation_rule
@@ -112,6 +117,7 @@ impl Rule for NoInvalidBuiltinInstantiation {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let name = state.name.text();
 
         let (use_this, instead_of) = match state.creation_rule {
@@ -130,13 +136,16 @@ impl Rule for NoInvalidBuiltinInstantiation {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         match node {
             JsNewOrCallExpression::JsNewExpression(node) => {
                 let call_expression = convert_new_expression_to_call_expression(node)?;
 
                 mutation
                     .replace_node::<AnyJsExpression>(node.clone().into(), call_expression.into());
+
                 Some(JsRuleAction::new(
                     ctx.metadata().action_category(ctx.category(), ctx.group()),
                     ctx.metadata().applicability(),
@@ -144,11 +153,13 @@ impl Rule for NoInvalidBuiltinInstantiation {
                     mutation,
                 ))
             }
+
             JsNewOrCallExpression::JsCallExpression(node) => {
                 let new_expression = convert_call_expression_to_new_expression(node)?;
 
                 mutation
                     .replace_node::<AnyJsExpression>(node.clone().into(), new_expression.into());
+
                 Some(JsRuleAction::new(
                     ctx.metadata().action_category(ctx.category(), ctx.group()),
                     ctx.metadata().applicability(),
@@ -215,7 +226,9 @@ fn extract_callee_and_rule(
         JsNewOrCallExpression::JsNewExpression(_) => BuiltinCreationRule::MustNotUseNew,
         JsNewOrCallExpression::JsCallExpression(_) => BuiltinCreationRule::MustUseNew,
     };
+
     let callee = node.callee().ok()?;
+
     Some((callee, rule))
 }
 
@@ -223,13 +236,16 @@ pub(crate) fn convert_new_expression_to_call_expression(
     expr: &JsNewExpression,
 ) -> Option<JsCallExpression> {
     let new_token = expr.new_token().ok()?;
+
     let mut callee = expr.callee().ok()?;
+
     if new_token.has_leading_comments() || new_token.has_trailing_comments() {
         callee = callee.prepend_trivia_pieces(chain_trivia_pieces(
             new_token.leading_trivia().pieces(),
             new_token.trailing_trivia().pieces(),
         ))?;
     }
+
     Some(make::js_call_expression(callee, expr.arguments()?).build())
 }
 
@@ -238,6 +254,7 @@ fn test_order() {
     for items in BUILTINS_REQUIRING_NEW.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in BUILTINS_REQUIRING_NO_NEW.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }

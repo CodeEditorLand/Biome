@@ -116,7 +116,9 @@ impl<T: AstNode<Language = JsLanguage>> Parse<T> {
 impl<T> From<Parse<T>> for AnyParse {
     fn from(parse: Parse<T>) -> Self {
         let root = parse.syntax();
+
         let diagnostics = parse.into_diagnostics();
+
         Self::new(
             // SAFETY: the parser should always return a root node
             root.as_send().unwrap(),
@@ -131,6 +133,7 @@ fn parse_common(
     options: JsParserOptions,
 ) -> (Vec<Event<JsSyntaxKind>>, Vec<ParseDiagnostic>, Vec<Trivia>) {
     let mut parser = JsParser::new(text, source_type, options);
+
     syntax::program::parse(&mut parser);
 
     let (events, trivia, errors) = parser.finish();
@@ -246,6 +249,7 @@ pub fn parse_module(text: &str, options: JsParserOptions) -> Parse<JsModule> {
 /// ```
 pub fn parse(text: &str, source_type: JsFileSource, options: JsParserOptions) -> Parse<AnyJsRoot> {
     let mut cache = NodeCache::default();
+
     parse_js_with_cache(text, source_type, options, &mut cache)
 }
 
@@ -277,9 +281,13 @@ pub fn parse_js_with_cache(
 ) -> Parse<AnyJsRoot> {
     tracing::debug_span!("parse").in_scope(move || {
         let (events, errors, tokens) = parse_common(text, source_type, options);
+
         let mut tree_sink = JsLosslessTreeSink::with_cache(text, &tokens, cache);
+
         biome_parser::event::process(&mut tree_sink, events, errors);
+
         let (green, parse_errors) = tree_sink.finish();
+
         Parse::new(green, parse_errors)
     })
 }

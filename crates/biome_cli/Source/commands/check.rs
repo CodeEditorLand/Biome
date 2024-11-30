@@ -50,10 +50,12 @@ impl CommandRunner for CheckCommandPayload {
         console: &mut dyn Console,
     ) -> Result<PartialConfiguration, WorkspaceError> {
         let editorconfig_search_path = loaded_configuration.directory_path.clone();
+
         let LoadedConfiguration {
             configuration: biome_configuration,
             ..
         } = loaded_configuration;
+
         let mut fs_configuration =
             self.load_editor_config(editorconfig_search_path, &biome_configuration, fs, console)?;
         // this makes biome configuration take precedence over editorconfig configuration
@@ -99,6 +101,7 @@ impl CommandRunner for CheckCommandPayload {
                 // configuration.
                 linter.rules = None;
             }
+
             fs_configuration.merge_with(configuration);
         }
 

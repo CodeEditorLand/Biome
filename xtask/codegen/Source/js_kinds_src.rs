@@ -556,7 +556,9 @@ impl AstSrc {
     pub fn sort(&mut self) {
         // No need to sort lists, they're stored in a btree
         self.nodes.sort_unstable_by(|a, b| a.name.cmp(&b.name));
+
         self.unions.sort_unstable_by(|a, b| a.name.cmp(&b.name));
+
         self.bogus.sort_unstable();
 
         for union in self.unions.iter_mut() {
@@ -708,8 +710,10 @@ impl Field {
                     format_ident!("{}_token", name)
                 }
             }
+
             Field::Node { name, .. } => {
                 let (prefix, tail) = name.split_once('_').unwrap_or(("", name));
+
                 let final_name = if LANGUAGE_PREFIXES.contains(&prefix) {
                     tail
                 } else {

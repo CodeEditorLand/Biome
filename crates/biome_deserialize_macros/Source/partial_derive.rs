@@ -24,6 +24,7 @@ pub(crate) struct FieldData {
 impl DeriveInput {
     pub fn parse(input: syn::DeriveInput) -> Self {
         let ident = input.ident.clone();
+
         let partial_ident = Ident::new(&format!("Partial{}", input.ident), Span::call_site());
 
         let attrs = Attrs::try_from(&input.attrs).expect("Could not parse attributes");
@@ -53,9 +54,11 @@ impl DeriveInput {
                                                 ),
                                             }
                                         }
+
                                         _ => abort!(segment, "Expected argument in Option type"),
                                     }
                                 }
+
                                 _ => (ty, true),
                             },
                             _ => (ty, true),
@@ -85,6 +88,7 @@ impl DeriveInput {
 
 pub(crate) fn generate_partial(input: DeriveInput) -> TokenStream {
     let ident = input.ident;
+
     let partial_ident = input.partial_ident;
 
     let derives = input.attrs.derives.iter();
@@ -111,14 +115,17 @@ pub(crate) fn generate_partial(input: DeriveInput) -> TokenStream {
                 Some(PartialType::Literal(ty)) => ty.clone(),
                 Some(PartialType::Prefixed) => {
                     let mut ty = ty.clone();
+
                     if let Type::Path(type_path) = &mut ty {
                         if let Some(segment) = type_path.path.segments.first_mut() {
                             segment.ident =
                                 Ident::new(&format!("Partial{}", segment.ident), Span::call_site())
                         }
                     }
+
                     ty
                 }
+
                 None => ty.clone(),
             };
 
@@ -167,6 +174,7 @@ pub(crate) fn generate_partial(input: DeriveInput) -> TokenStream {
         impl From<#partial_ident> for #ident {
             fn from(partial: #partial_ident) -> Self {
                 let default = Self::default();
+
                 Self {
                     #( #from_partial_fields ),*
                 }

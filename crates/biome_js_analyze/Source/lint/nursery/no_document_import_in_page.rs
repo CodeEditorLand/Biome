@@ -41,8 +41,11 @@ declare_lint_rule! {
 
 impl Rule for NoDocumentImportInPage {
     type Query = Ast<JsImport>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -51,7 +54,9 @@ impl Rule for NoDocumentImportInPage {
         }
 
         let import = ctx.query();
+
         let import_source = import.import_clause().ok()?.source().ok()?;
+
         let module_name = import_source.inner_string_text().ok()?;
 
         if module_name != "next/document" {
@@ -69,6 +74,7 @@ impl Rule for NoDocumentImportInPage {
         }
 
         let file_name = path.file_stem()?.to_str()?;
+
         let parent_name = path.parent()?.file_stem()?.to_str()?;
 
         if parent_name == "_document" || file_name == "_document" {

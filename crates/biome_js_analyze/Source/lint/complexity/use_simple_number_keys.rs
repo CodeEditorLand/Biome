@@ -95,52 +95,72 @@ impl TryFrom<AnyJsObjectMember> for NumberLiteral {
         else {
             return Err(NumberLiteralError);
         };
+
         let Ok(token) = literal_member_name.value() else {
             return Err(NumberLiteralError);
         };
+
         match token.kind() {
             JsSyntaxKind::JS_NUMBER_LITERAL | JsSyntaxKind::JS_BIGINT_LITERAL => {
                 let text = token.text_trimmed();
+
                 let mut value = String::new();
 
                 let mut is_first_char_zero: bool = false;
+
                 let mut is_second_char_a_letter: Option<u8> = None;
+
                 let mut contains_dot: bool = false;
+
                 let mut exponent: bool = false;
+
                 let mut largest_digit: u8 = b'0';
+
                 let mut underscore: bool = false;
+
                 let mut big_int: bool = false;
 
                 for (i, b) in text.bytes().enumerate() {
                     match b {
                         b'0' if i == 0 && text.len() > 1 => {
                             is_first_char_zero = true;
+
                             continue;
                         }
+
                         b'n' => {
                             big_int = true;
+
                             break;
                         }
+
                         b'e' | b'E' => {
                             exponent = true;
                         }
+
                         b'_' => {
                             underscore = true;
+
                             continue;
                         }
+
                         b'.' => {
                             contains_dot = true;
                         }
+
                         b if i == 1 && b.is_ascii_alphabetic() => {
                             is_second_char_a_letter = Some(b);
+
                             continue;
                         }
+
                         _ => {
                             if largest_digit < b {
                                 largest_digit = b;
                             }
                         }
                     }
+
                     value.push(b as char);
                 }
 
@@ -152,6 +172,7 @@ impl TryFrom<AnyJsObjectMember> for NumberLiteral {
                         underscore,
                     });
                 };
+
                 if !is_first_char_zero {
                     return Ok(Self::Decimal {
                         node: literal_member_name,
@@ -169,6 +190,7 @@ impl TryFrom<AnyJsObjectMember> for NumberLiteral {
                             big_int,
                         })
                     }
+
                     Some(b'o' | b'O') => {
                         return Ok(Self::Octal {
                             node: literal_member_name,
@@ -176,6 +198,7 @@ impl TryFrom<AnyJsObjectMember> for NumberLiteral {
                             big_int,
                         })
                     }
+
                     Some(b'x' | b'X') => {
                         return Ok(Self::Hexadecimal {
                             node: literal_member_name,
@@ -183,6 +206,7 @@ impl TryFrom<AnyJsObjectMember> for NumberLiteral {
                             big_int,
                         })
                     }
+
                     _ => (),
                 }
 
@@ -201,6 +225,7 @@ impl TryFrom<AnyJsObjectMember> for NumberLiteral {
                     underscore,
                 })
             }
+
             _ => Err(NumberLiteralError),
         }
     }
@@ -245,6 +270,7 @@ impl NumberLiteral {
             Self::Decimal { value, .. } | Self::FloatingPoint { value, .. } => {
                 f64::from_str(value).ok()
             }
+
             Self::Octal { value, .. } => i64::from_str_radix(value, 7).map(|num| num as f64).ok(),
             Self::Hexadecimal { value, .. } => {
                 i64::from_str_radix(value, 16).map(|num| num as f64).ok()
@@ -264,13 +290,18 @@ pub struct RuleState(WrongNumberLiteralName, NumberLiteral);
 
 impl Rule for UseSimpleNumberKeys {
     type Query = Ast<JsObjectExpression>;
+
     type State = RuleState;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let mut result = Vec::new();
+
         let node = ctx.query();
+
         for number_literal in node
             .members()
             .into_iter()
@@ -281,6 +312,7 @@ impl Rule for UseSimpleNumberKeys {
                 NumberLiteral::Decimal { big_int: true, .. } => {
                     result.push(RuleState(WrongNumberLiteralName::BigInt, number_literal))
                 }
+
                 NumberLiteral::FloatingPoint {
                     underscore: true, ..
                 }
@@ -293,6 +325,7 @@ impl Rule for UseSimpleNumberKeys {
                 NumberLiteral::Binary { .. } => {
                     result.push(RuleState(WrongNumberLiteralName::Binary, number_literal))
                 }
+
                 NumberLiteral::Hexadecimal { .. } => result.push(RuleState(
                     WrongNumberLiteralName::Hexadecimal,
                     number_literal,
@@ -300,9 +333,11 @@ impl Rule for UseSimpleNumberKeys {
                 NumberLiteral::Octal { .. } => {
                     result.push(RuleState(WrongNumberLiteralName::Octal, number_literal))
                 }
+
                 _ => (),
             }
         }
+
         result.into_boxed_slice()
     }
 
@@ -315,10 +350,12 @@ impl Rule for UseSimpleNumberKeys {
             WrongNumberLiteralName::WithUnderscore => {
                 "Number literal with underscore is not allowed here."
             }
+
             WrongNumberLiteralName::Binary => "Binary number literal in is not allowed here.",
             WrongNumberLiteralName::Hexadecimal => {
                 "Hexadecimal number literal is not allowed here."
             }
+
             WrongNumberLiteralName::Octal => "Octal number literal is not allowed here.",
         };
 
@@ -332,7 +369,9 @@ impl Rule for UseSimpleNumberKeys {
         RuleState(reason, literal): &Self::State,
     ) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let token = literal.token().ok()?;
+
         let token_text = token.text_trimmed().to_string();
 
         let message = match reason {
@@ -340,12 +379,17 @@ impl Rule for UseSimpleNumberKeys {
             | WrongNumberLiteralName::Octal
             | WrongNumberLiteralName::Hexadecimal => {
                 let text = literal.to_base_ten()?;
+
                 mutation.replace_token(token, make::js_number_literal(text));
+
                 markup! ("Replace "{ token_text } " with "{text.to_string()}).to_owned()
             }
+
             WrongNumberLiteralName::WithUnderscore | WrongNumberLiteralName::BigInt => {
                 let text = literal.value();
+
                 mutation.replace_token(token, make::js_number_literal(text));
+
                 markup! ("Replace "{ token_text } " with "{text}).to_owned()
             }
         };

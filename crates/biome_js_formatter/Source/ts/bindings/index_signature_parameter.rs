@@ -16,7 +16,9 @@ impl FormatNodeRule<TsIndexSignatureParameter> for FormatTsIndexSignatureParamet
             binding,
             type_annotation,
         } = node.as_fields();
+
         let binding = binding.format();
+
         let type_annotation = type_annotation.format();
 
         write![f, [binding, type_annotation]]

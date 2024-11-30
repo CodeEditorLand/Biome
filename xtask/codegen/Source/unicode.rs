@@ -5,6 +5,7 @@ use quote::quote;
 
 mod paths {
     pub const DERIVED_CORE_PROPERTIES: &str = "target/DerivedCoreProperties.txt";
+
     pub const TABLES: &str = "crates/biome_unicode_table/src/tables.rs";
 }
 
@@ -21,6 +22,7 @@ pub fn generate_tables() -> Result<()> {
                 .collect::<Vec<_>>();
 
             let fn_ident = quote::format_ident!("{}", property);
+
             let table_ident = quote::format_ident!("{}_table", property);
 
             Ok(quote! {
@@ -40,6 +42,7 @@ pub fn generate_tables() -> Result<()> {
 
         fn bsearch_range_table(c: char, r: &[(char,char)]) -> bool {
             use core::cmp::Ordering::{Equal, Less, Greater};
+
             r.binary_search_by(|&(lo,hi)| {
                 // Because ASCII ranges are at the start of the tables, a search for an
                 // ASCII char will involve more `Greater` results (i.e. the `(lo,hi)`
@@ -47,7 +50,9 @@ pub fn generate_tables() -> Result<()> {
                 // ASCII chars are so common, it makes sense to favor them. Therefore,
                 // the `Greater` case is tested for before the `Less` case.
                 if lo > c { Greater }
+
                 else if hi < c { Less }
+
                 else { Equal }
             }).is_ok()
         }
@@ -75,7 +80,9 @@ impl Properties {
     pub fn cached_or_fetch() -> Result<Self> {
         Self::from_cache().or_else(|_| {
             let fetched = Self::fetch()?;
+
             fetched.save_cache()?;
+
             Ok(fetched)
         })
     }
@@ -102,6 +109,7 @@ impl Properties {
     /// Return an error if the cache file couldn't be read.
     fn from_cache() -> Result<Self> {
         let path = Self::path();
+
         let raw = std::fs::read_to_string(&path)?;
 
         println!("Loaded properties from cache ({})", path.display());
@@ -114,6 +122,7 @@ impl Properties {
     /// Return an error if saving to disk fails.
     fn save_cache(&self) -> Result<()> {
         let path = Self::path();
+
         std::fs::write(&path, &self.raw)?;
 
         println!("Saved properties to cache ({})", path.display());

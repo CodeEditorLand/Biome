@@ -49,6 +49,7 @@ impl RelativeSelectorList {
     /// It is useful when strict parsing is required without fallbacks.
     pub(crate) fn disable_recovery(mut self) -> Self {
         self.is_recovery_disabled = true;
+
         self
     }
 }
@@ -77,7 +78,9 @@ impl RelativeSelectorListParseRecovery {
 
 impl ParseRecovery for RelativeSelectorListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_SELECTOR;
 
     /// Determines if the current parser position is a point of recovery.
@@ -114,6 +117,7 @@ impl ParseRecovery for RelativeSelectorListParseRecovery {
 
 impl ParseSeparatedList for RelativeSelectorList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
 
     const LIST_KIND: CssSyntaxKind = CSS_RELATIVE_SELECTOR_LIST;

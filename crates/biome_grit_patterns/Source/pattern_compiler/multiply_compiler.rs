@@ -11,6 +11,7 @@ impl MultiplyCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Multiply<GritQueryContext>, CompileError> {
         let left = PatternCompiler::from_node(&node.left()?, context)?;
+
         let right = PatternCompiler::from_node(&node.right()?, context)?;
 
         Ok(Multiply::new(left, right))

@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssUrlModifier;
 pub(crate) struct FormatAnyCssUrlModifier;
 impl FormatRule<AnyCssUrlModifier> for FormatAnyCssUrlModifier {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssUrlModifier, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssUrlModifier::CssBogusUrlModifier(node) => node.format().fmt(f),

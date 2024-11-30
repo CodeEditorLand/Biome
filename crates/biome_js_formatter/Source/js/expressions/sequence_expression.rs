@@ -18,6 +18,7 @@ impl FormatNodeRule<JsSequenceExpression> for FormatJsSequenceExpression {
         } = node.as_fields();
 
         let mut is_nested = false;
+
         let mut first_non_sequence_or_paren_parent = None;
 
         // Skip 1 because ancestor starts with the current node but we're interested in the parent
@@ -26,6 +27,7 @@ impl FormatNodeRule<JsSequenceExpression> for FormatJsSequenceExpression {
                 is_nested = true;
             } else {
                 first_non_sequence_or_paren_parent = Some(parent);
+
                 break;
             }
         }
@@ -76,15 +78,21 @@ impl FormatNodeRule<JsSequenceExpression> for FormatJsSequenceExpression {
 mod tests {
 
     use crate::assert_not_needs_parentheses;
+
     use biome_js_syntax::JsSequenceExpression;
 
     #[test]
     fn needs_parentheses() {
         assert_not_needs_parentheses!("function test() { return a, b }", JsSequenceExpression);
+
         assert_not_needs_parentheses!("for (let i, x; i++, x++;) {}", JsSequenceExpression);
+
         assert_not_needs_parentheses!("a, b;", JsSequenceExpression);
+
         assert_not_needs_parentheses!("a, b, c", JsSequenceExpression[0]);
+
         assert_not_needs_parentheses!("a, b, c", JsSequenceExpression[1]);
+
         assert_not_needs_parentheses!("a => a, b", JsSequenceExpression);
     }
 }

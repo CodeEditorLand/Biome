@@ -13,6 +13,7 @@ use std::{fmt::Debug, path::Path};
 pub fn has_bogus_nodes_or_empty_slots(node: &JsSyntaxNode) -> bool {
     node.descendants().any(|descendant| {
         let kind = descendant.kind();
+
         if kind.is_bogus() {
             return true;
         }
@@ -35,7 +36,9 @@ where
     T: AstNode<Language = JsLanguage> + Debug,
 {
     let syntax = program.syntax();
+
     let debug_tree = format!("{:?}", program.tree());
+
     let has_missing_children = debug_tree.contains("missing (required)");
 
     if has_bogus_nodes_or_empty_slots(&syntax) {
@@ -47,11 +50,13 @@ where
     }
 
     let mut buffer = Buffer::no_color();
+
     for diagnostic in program.diagnostics() {
         let error = diagnostic
             .clone()
             .with_file_path(path.to_str().unwrap())
             .with_file_source_code(syntax.to_string());
+
         Formatter::new(&mut Termcolor(&mut buffer))
             .write_markup(markup! {
                 {PrintDiagnostic::verbose(&error)}

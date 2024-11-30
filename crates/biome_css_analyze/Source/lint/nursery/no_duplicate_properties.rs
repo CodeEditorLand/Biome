@@ -45,12 +45,16 @@ declare_lint_rule! {
 
 impl Rule for NoDuplicateProperties {
     type Query = Semantic<CssDeclarationOrRuleList>;
+
     type State = (TextRange, (TextRange, String));
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let model = ctx.model();
 
         let rule = model.get_rule_by_range(node.range())?;
@@ -59,7 +63,9 @@ impl Rule for NoDuplicateProperties {
 
         for declaration in rule.declarations.iter() {
             let prop = &declaration.property;
+
             let prop_name = prop.name.to_lowercase_cow();
+
             let prop_range = prop.range;
 
             let is_custom_property = prop_name.starts_with("--");
@@ -72,6 +78,7 @@ impl Rule for NoDuplicateProperties {
                 Entry::Occupied(entry) => {
                     return Some((*entry.get(), (prop_range, prop_name.to_string())));
                 }
+
                 Entry::Vacant(_) => {
                     seen.insert(prop_name, prop_range);
                 }
@@ -83,6 +90,7 @@ impl Rule for NoDuplicateProperties {
 
     fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let (first_occurrence_range, (duplicate_range, duplicate_property_name)) = state;
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

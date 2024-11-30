@@ -6,6 +6,7 @@ use biome_graphql_syntax::GraphqlImplementsInterfaceList;
 pub(crate) struct FormatGraphqlImplementsInterfaceList;
 impl FormatRule<GraphqlImplementsInterfaceList> for FormatGraphqlImplementsInterfaceList {
     type Context = GraphqlFormatContext;
+
     fn fmt(
         &self,
         node: &GraphqlImplementsInterfaceList,

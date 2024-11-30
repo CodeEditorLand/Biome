@@ -140,10 +140,12 @@ impl FileFeaturesResult {
             self.features_supported
                 .insert(FeatureKind::Format, SupportKind::Supported);
         }
+
         if capabilities.analyzer.lint.is_some() {
             self.features_supported
                 .insert(FeatureKind::Lint, SupportKind::Supported);
         }
+
         if capabilities.analyzer.organize_imports.is_some() {
             self.features_supported
                 .insert(FeatureKind::OrganizeImports, SupportKind::Supported);
@@ -189,6 +191,7 @@ impl FileFeaturesResult {
             } else {
                 !settings.formatter().enabled
             };
+
         if formatter_disabled {
             self.features_supported
                 .insert(FeatureKind::Format, SupportKind::FeatureNotEnabled);
@@ -390,15 +393,19 @@ impl SupportKind {
     pub const fn is_supported(&self) -> bool {
         matches!(self, SupportKind::Supported)
     }
+
     pub const fn is_not_enabled(&self) -> bool {
         matches!(self, SupportKind::FeatureNotEnabled)
     }
+
     pub const fn is_not_supported(&self) -> bool {
         matches!(self, SupportKind::FileNotSupported)
     }
+
     pub const fn is_ignored(&self) -> bool {
         matches!(self, SupportKind::Ignored)
     }
+
     pub const fn is_protected(&self) -> bool {
         matches!(self, SupportKind::Protected)
     }
@@ -428,6 +435,7 @@ impl FeatureName {
     pub fn iter(&self) -> enumflags2::Iter<FeatureKind> {
         self.0.iter()
     }
+
     pub fn empty() -> Self {
         Self(BitFlags::empty())
     }
@@ -443,6 +451,7 @@ impl From<SmallVec<[FeatureKind; 6]>> for FeatureName {
             .into_iter()
             .fold(FeatureName::empty(), |mut acc, kind| {
                 acc.insert(kind);
+
                 acc
             })
     }
@@ -475,26 +484,31 @@ impl FeaturesBuilder {
 
     pub fn with_formatter(mut self) -> Self {
         self.0.insert(FeatureKind::Format);
+
         self
     }
 
     pub fn with_linter(mut self) -> Self {
         self.0.insert(FeatureKind::Lint);
+
         self
     }
 
     pub fn with_organize_imports(mut self) -> Self {
         self.0.insert(FeatureKind::OrganizeImports);
+
         self
     }
 
     pub fn with_search(mut self) -> Self {
         self.0.insert(FeatureKind::Search);
+
         self
     }
 
     pub fn with_assists(mut self) -> Self {
         self.0.insert(FeatureKind::Assists);
+
         self
     }
 
@@ -1016,7 +1030,9 @@ pub struct FileGuard<'app, W: Workspace + ?Sized> {
 impl<'app, W: Workspace + ?Sized> FileGuard<'app, W> {
     pub fn open(workspace: &'app W, params: OpenFileParams) -> Result<Self, WorkspaceError> {
         let path = params.path.clone();
+
         workspace.open_file(params)?;
+
         Ok(Self { workspace, path })
     }
 

@@ -7,11 +7,14 @@ pub(crate) fn parse_meta_list(
     let Meta::List(MetaList { nested, .. }) = meta else {
         return Err(Error::new(meta.span(), "A list of attribute is expected"));
     };
+
     for nested_meta in nested {
         let NestedMeta::Meta(meta) = nested_meta else {
             return Err(Error::new(nested_meta.span(), "Literals are not allowed"));
         };
+
         consume(meta)?;
     }
+
     Ok(())
 }

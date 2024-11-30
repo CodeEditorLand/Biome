@@ -74,24 +74,33 @@ declare_lint_rule! {
 
 impl Rule for UseLiteralEnumMembers {
     type Query = Ast<TsEnumDeclaration>;
+
     type State = TextRange;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let enum_declaration = ctx.query();
+
         let mut result = Vec::new();
+
         let mut enum_member_names = FxHashSet::default();
+
         let Ok(enum_name) = enum_declaration.id() else {
             return result.into_boxed_slice();
         };
+
         let Some(enum_name) = enum_name
             .as_js_identifier_binding()
             .and_then(|x| x.name_token().ok())
         else {
             return result.into_boxed_slice();
         };
+
         let enum_name = enum_name.text_trimmed();
+
         for enum_member in enum_declaration.members() {
             let Ok(enum_member) = enum_member else {
                 continue;
@@ -100,17 +109,20 @@ impl Rule for UseLiteralEnumMembers {
             if let Some(initializer) = enum_member.initializer() {
                 if let Ok(initializer) = initializer.expression() {
                     let range = initializer.range();
+
                     if !is_constant_enum_expression(initializer, enum_name, &enum_member_names) {
                         result.push(range);
                     }
                 }
             };
+
             if let Ok(name) = enum_member.name() {
                 if let Some(name) = name.name() {
                     enum_member_names.insert(name.to_string());
                 }
             }
         }
+
         result.into_boxed_slice()
     }
 
@@ -140,7 +152,9 @@ fn is_constant_enum_expression(
     (move || {
         // stack that holds expressions to validate.
         let mut stack = Vec::new();
+
         stack.push(expr);
+
         while let Some(expr) = stack.pop() {
             match expr.omit_parentheses() {
                 AnyJsExpression::AnyJsLiteralExpression(expr) => {
@@ -152,11 +166,13 @@ fn is_constant_enum_expression(
                         return Some(false);
                     }
                 }
+
                 AnyJsExpression::JsTemplateExpression(expr) => {
                     if !expr.is_constant() {
                         return Some(false);
                     }
                 }
+
                 AnyJsExpression::JsUnaryExpression(expr) => {
                     if !matches!(
                         expr.operator(),
@@ -166,37 +182,47 @@ fn is_constant_enum_expression(
                     ) {
                         return Some(false);
                     }
+
                     stack.push(expr.argument().ok()?)
                 }
+
                 AnyJsExpression::JsBinaryExpression(expr) => {
                     if !expr.is_binary_operation() && !expr.is_numeric_operation() {
                         return Some(false);
                     }
+
                     stack.push(expr.left().ok()?);
+
                     stack.push(expr.right().ok()?);
                 }
+
                 AnyJsExpression::JsIdentifierExpression(expr) => {
                     // Allow reference to previous member name
                     let name = expr.name().ok()?;
+
                     if !enum_member_names.contains(name.value_token().ok()?.text_trimmed()) {
                         return Some(false);
                     }
                 }
+
                 AnyJsExpression::JsStaticMemberExpression(expr) => {
                     if !is_enum_member_reference(expr.into(), enum_name, enum_member_names) {
                         return Some(false);
                     }
                 }
+
                 AnyJsExpression::JsComputedMemberExpression(expr) => {
                     if !is_enum_member_reference(expr.into(), enum_name, enum_member_names) {
                         return Some(false);
                     }
                 }
+
                 _ => {
                     return Some(false);
                 }
             }
         }
+
         Some(true)
     })()
     .unwrap_or_default()
@@ -212,7 +238,9 @@ fn is_enum_member_reference(
     (move || {
         // Allow reference to previous member name namespaced by the enum name
         let object = expr.object().ok()?.omit_parentheses();
+
         let object = object.as_js_reference_identifier()?;
+
         Some(object.has_name(enum_name) && enum_member_names.contains(expr.member_name()?.text()))
     })()
     .unwrap_or_default()

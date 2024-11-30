@@ -18,6 +18,7 @@ impl<'a> MarkupElements<'a> {
     ) -> io::Result<()> {
         if let Self::Node(parent, elem) = self {
             parent.for_each(func)?;
+
             func(elem)?;
         }
 
@@ -31,6 +32,7 @@ impl<'a> MarkupElements<'a> {
     ) -> io::Result<()> {
         if let Self::Node(parent, elem) = self {
             func(elem)?;
+
             parent.for_each(func)?;
         }
 
@@ -82,6 +84,7 @@ impl<'fmt> Formatter<'fmt> {
     pub fn write_markup(&mut self, markup: Markup) -> io::Result<()> {
         for node in markup.0 {
             let mut fmt = self.with_elements(node.elements);
+
             node.content.fmt(&mut fmt)?;
         }
 
@@ -217,6 +220,7 @@ impl Display for Duration {
         use crate as biome_console;
 
         let secs = self.as_secs();
+
         if secs > 1 {
             return fmt.write_markup(markup! {
                 {secs}<Dim>"s"</Dim>
@@ -224,6 +228,7 @@ impl Display for Duration {
         }
 
         let millis = self.as_millis();
+
         if millis > 1 {
             return fmt.write_markup(markup! {
                 {millis}<Dim>"ms"</Dim>
@@ -231,6 +236,7 @@ impl Display for Duration {
         }
 
         let micros = self.as_micros();
+
         if micros > 1 {
             return fmt.write_markup(markup! {
                 {micros}<Dim>"µs"</Dim>
@@ -238,6 +244,7 @@ impl Display for Duration {
         }
 
         let nanos = self.as_nanos();
+
         fmt.write_markup(markup! {
             {nanos}<Dim>"ns"</Dim>
         })
@@ -257,15 +264,18 @@ impl std::fmt::Display for Bytes {
         }
 
         const PREFIX: [char; 4] = ['K', 'M', 'G', 'T'];
+
         let prefix = PREFIX
             .into_iter()
             .find(|_| {
                 let next_value = value / 1024;
+
                 if next_value < 1024 {
                     return true;
                 }
 
                 value = next_value;
+
                 false
             })
             .unwrap_or('T');
@@ -288,17 +298,29 @@ mod tests {
     fn display_bytes() {
         // Examples taken from https://stackoverflow.com/a/3758880
         assert_eq!(Bytes(0).to_string(), "0 B");
+
         assert_eq!(Bytes(27).to_string(), "27 B");
+
         assert_eq!(Bytes(999).to_string(), "999 B");
+
         assert_eq!(Bytes(1_000).to_string(), "1000 B");
+
         assert_eq!(Bytes(1_023).to_string(), "1023 B");
+
         assert_eq!(Bytes(1_024).to_string(), "1.0 KiB");
+
         assert_eq!(Bytes(1_728).to_string(), "1.7 KiB");
+
         assert_eq!(Bytes(110_592).to_string(), "108.0 KiB");
+
         assert_eq!(Bytes(999_999).to_string(), "976.6 KiB");
+
         assert_eq!(Bytes(7_077_888).to_string(), "6.8 MiB");
+
         assert_eq!(Bytes(452_984_832).to_string(), "432.0 MiB");
+
         assert_eq!(Bytes(28_991_029_248).to_string(), "27.0 GiB");
+
         assert_eq!(Bytes(1_855_425_871_872).to_string(), "1.7 TiB");
 
         #[cfg(target_pointer_width = "32")]

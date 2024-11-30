@@ -14,9 +14,11 @@ where
     N: AstNode + 'static,
 {
     type Input = SyntaxNode<NodeLanguage<N>>;
+
     type Output = N;
 
     type Language = NodeLanguage<N>;
+
     type Services = ();
 
     fn build_visitor(
@@ -82,6 +84,7 @@ impl<L: Language + 'static> Visitor for SyntaxVisitor<L> {
         if let Some(range) = ctx.range {
             if node.text_range().ordering(range).is_ne() {
                 self.skip_subtree = Some(node.clone());
+
                 return;
             }
         }
@@ -96,6 +99,7 @@ mod tests {
         raw_language::{RawLanguage, RawLanguageKind, RawLanguageRoot, RawSyntaxTreeBuilder},
         AstNode, BatchMutation, SyntaxNode, SyntaxToken,
     };
+
     use std::convert::Infallible;
 
     use crate::{
@@ -128,29 +132,37 @@ mod tests {
             let mut builder = RawSyntaxTreeBuilder::new();
 
             builder.start_node(RawLanguageKind::ROOT);
+
             builder.start_node(RawLanguageKind::EXPRESSION_LIST);
 
             builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
             builder.token(RawLanguageKind::NUMBER_TOKEN, "1");
+
             builder.finish_node();
 
             builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
             builder.token(RawLanguageKind::NUMBER_TOKEN, "2");
+
             builder.finish_node();
 
             builder.finish_node();
+
             builder.finish_node();
 
             RawLanguageRoot::unwrap_cast(builder.finish())
         };
 
         let mut matcher = BufferMatcher::default();
+
         let mut emit_signal =
             |_: &dyn AnalyzerSignal<RawLanguage>| -> ControlFlow<Never> { unreachable!() };
 
         let metadata = MetadataRegistry::default();
 
         struct TestAction;
+
         impl SuppressionAction for TestAction {
             type Language = RawLanguage;
 
@@ -190,6 +202,7 @@ mod tests {
         };
 
         let result: Option<Never> = analyzer.run(ctx);
+
         assert!(result.is_none());
 
         assert_eq!(

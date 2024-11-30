@@ -77,8 +77,11 @@ pub struct UseConsistentGridAreasState {
 
 impl Rule for NoInvalidGridAreas {
     type Query = Ast<CssDeclarationOrRuleList>;
+
     type State = UseConsistentGridAreasState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -95,12 +98,15 @@ impl Rule for NoInvalidGridAreas {
                     .ok()?;
 
                 let decl = binding.as_css_generic_property()?;
+
                 let name = decl.name().ok()?.as_css_identifier()?.value_token().ok()?;
 
                 if GRID_AREA_PROPERTIES.contains(&name.text()) {
                     let grid_props = decl.value();
+
                     return Some(grid_props);
                 }
+
                 None
             })
             .flat_map(|grid_props| {
@@ -112,6 +118,7 @@ impl Rule for NoInvalidGridAreas {
             // Ex: "\"a a a\""
             .map(|x| {
                 let trimmed_text = x.token_text_trimmed();
+
                 let text_range = x.text_range();
                 (trimmed_text, text_range)
             })
@@ -169,7 +176,9 @@ impl Rule for NoInvalidGridAreas {
 // Check if the grid areas are consistent
 fn is_consistent_grids(grid_areas_props: GridAreasProps) -> Option<UseConsistentGridAreasState> {
     let first_prop = inner_string_text(&grid_areas_props[0].0);
+
     let first_len = first_prop.len();
+
     let mut shortest = &grid_areas_props[0];
 
     for grid_areas_prop in &grid_areas_props {
@@ -187,6 +196,7 @@ fn is_consistent_grids(grid_areas_props: GridAreasProps) -> Option<UseConsistent
             if cleaned_text.len() < inner_string_text(&shortest.0).len() {
                 shortest = grid_areas_prop;
             }
+
             return Some(UseConsistentGridAreasState {
                 text: None,
                 span: shortest.1,
@@ -224,10 +234,13 @@ fn is_consistent_grids(grid_areas_props: GridAreasProps) -> Option<UseConsistent
 // Check if all characters in a string are the same
 fn is_all_same(token_text: TokenText) -> bool {
     let prop = inner_string_text(&token_text);
+
     let mut iter = prop.chars().filter(|c| !c.is_whitespace());
+
     let Some(head) = iter.next() else {
         return true;
     };
+
     iter.all(|c| c == head)
 }
 
@@ -236,10 +249,12 @@ fn has_partial_match(grid_areas_props: &GridAreasProps) -> Option<GridAreasProp>
 
     for (text, range) in grid_areas_props {
         let prop = inner_string_text(text);
+
         let parts: FxHashSet<String> = prop
             .split_whitespace()
             .map(|part| part.to_string())
             .collect();
+
         for part in parts {
             if !seen_parts.insert(part.clone()) {
                 return Some((part, *range));
@@ -252,11 +267,13 @@ fn has_partial_match(grid_areas_props: &GridAreasProps) -> Option<GridAreasProp>
 
 fn inner_string_text(text: &TokenText) -> &str {
     let result = text.text();
+
     if result.len() >= 2 {
         debug_assert!(
             (result.starts_with('"') && result.len() >= 2 && result.ends_with('"'))
                 || (result.starts_with('\'') && result.len() >= 2 && result.ends_with('\''))
         );
+
         result[1..result.len() - 1].trim()
     } else {
         result

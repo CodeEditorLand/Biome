@@ -18,6 +18,7 @@ impl MapAccessorCompiler {
             AnyGritMapAccessorSubject::AnyGritContainer(container) => {
                 AccessorMap::Container(ContainerCompiler::from_node(&container, context)?)
             }
+
             AnyGritMapAccessorSubject::GritMap(map) => {
                 AccessorMap::Map(MapCompiler::from_node(&map, context)?)
             }
@@ -27,6 +28,7 @@ impl MapAccessorCompiler {
             AnyGritMapKey::GritName(name) => {
                 AccessorKey::String(name.syntax().text_trimmed().to_string())
             }
+
             AnyGritMapKey::GritVariable(variable) => {
                 AccessorKey::Variable(VariableCompiler::from_node(&variable, context))
             }

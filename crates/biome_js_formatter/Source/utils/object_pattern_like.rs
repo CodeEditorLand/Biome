@@ -42,6 +42,7 @@ impl JsObjectPatternLike {
             JsObjectPatternLike::JsObjectAssignmentPattern(node) => {
                 write!(f, [node.properties().format()])
             }
+
             JsObjectPatternLike::JsObjectBindingPattern(node) => {
                 write!(f, [node.properties().format()])
             }
@@ -84,6 +85,7 @@ impl JsObjectPatternLike {
                     ) = property
                     {
                         let pattern = node.pattern();
+
                         matches!(
                             pattern,
                             Ok(AnyJsAssignmentPattern::JsObjectAssignmentPattern(_)
@@ -94,6 +96,7 @@ impl JsObjectPatternLike {
                     }
                 })
             }
+
             JsObjectPatternLike::JsObjectBindingPattern(node) => {
                 node.properties().iter().any(|property| {
                     if let Ok(AnyJsObjectBindingPatternMember::JsObjectBindingPatternProperty(
@@ -161,6 +164,7 @@ impl JsObjectPatternLike {
 impl Format<JsFormatContext> for JsObjectPatternLike {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         let should_insert_space_around_brackets = f.options().bracket_spacing().value();
+
         let format_properties = format_with(|f| {
             write!(
                 f,
@@ -180,9 +184,11 @@ impl Format<JsFormatContext> for JsObjectPatternLike {
                     [format_dangling_comments(self.syntax()).with_soft_block_indent()]
                 )?;
             }
+
             ObjectPatternLayout::Inline => {
                 write!(f, [format_properties])?;
             }
+
             ObjectPatternLayout::Group { expand } => {
                 write!(f, [group(&format_properties).should_expand(expand)])?;
             }

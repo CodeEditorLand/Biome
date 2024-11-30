@@ -51,13 +51,18 @@ declare_lint_rule! {
 
 impl Rule for UseNamespaceKeyword {
     type Query = Ast<TsModuleDeclaration>;
+
     type State = JsSyntaxToken;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let ts_module = ctx.query();
+
         let token = ts_module.module_or_namespace().ok()?;
+
         ts_module.is_module().ok()?.then_some(token)
     }
 
@@ -75,7 +80,9 @@ impl Rule for UseNamespaceKeyword {
 
     fn action(ctx: &RuleContext<Self>, module_token: &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         mutation.replace_token_transfer_trivia(module_token.clone(), make::token(T![namespace]));
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

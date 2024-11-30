@@ -6,6 +6,7 @@ use biome_html_syntax::AnyHtmlElement;
 pub(crate) struct FormatAnyHtmlElement;
 impl FormatRule<AnyHtmlElement> for FormatAnyHtmlElement {
     type Context = HtmlFormatContext;
+
     fn fmt(&self, node: &AnyHtmlElement, f: &mut HtmlFormatter) -> FormatResult<()> {
         match node {
             AnyHtmlElement::HtmlBogusElement(node) => node.format().fmt(f),

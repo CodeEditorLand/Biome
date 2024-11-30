@@ -136,8 +136,11 @@ const JSX_FILE_EXT: [&str; 2] = [".jsx", ".tsx"];
 
 impl Rule for UseComponentExportOnlyModules {
     type Query = Ast<JsModule>;
+
     type State = UseComponentExportOnlyModulesState;
+
     type Signals = Box<[Self::State]>;
+
     type Options = UseComponentExportOnlyModulesOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -146,10 +149,15 @@ impl Rule for UseComponentExportOnlyModules {
                 return Vec::new().into_boxed_slice();
             }
         }
+
         let root = ctx.query();
+
         let mut local_declaration_ids = Vec::new();
+
         let mut exported_component_ids = Vec::new();
+
         let mut exported_non_component_ids = Vec::new();
+
         for item in root.items() {
             if let AnyJsModuleItem::AnyJsStatement(stmt) = item {
                 // Explore unexported component declarations
@@ -193,11 +201,13 @@ impl Rule for UseComponentExportOnlyModules {
                                 AnyJsExported::AnyJsExpression(expr) => {
                                     expr.is_literal_expression()
                                 }
+
                                 _ => false,
                             })
                     {
                         continue;
                     }
+
                     if is_exported_react_component(&exported_item) {
                         exported_component_ids.push(exported_item);
                     } else {
@@ -223,6 +233,7 @@ impl Rule for UseComponentExportOnlyModules {
                         || id.exported.as_ref().map(|exported| exported.range()),
                         |identifier| Some(identifier.range()),
                     );
+
                     range.map(|range| UseComponentExportOnlyModulesState {
                         error: ErrorType::ExportedNonComponentWithComponent,
                         range,
@@ -295,31 +306,39 @@ fn is_exported_react_component(any_exported_item: &ExportedItem) -> bool {
             if !REACT_HOOKS.contains(&fn_name.text().as_str()) {
                 return false;
             }
+
             let Ok(args) = f.arguments() else {
                 return false;
             };
+
             let itr = args
                 .args()
                 .into_iter()
                 .filter_map(Result::ok)
                 .collect::<Vec<_>>();
+
             if itr.len() != 1 {
                 return false;
             }
+
             let AnyJsCallArgument::AnyJsExpression(AnyJsExpression::JsIdentifierExpression(arg)) =
                 &itr[0]
             else {
                 return false;
             };
+
             let Ok(arg_name) = arg.name() else {
                 return false;
             };
+
             return Case::identify(&arg_name.text(), false) == Case::Pascal;
         }
     }
+
     let Some(exported_item_id) = any_exported_item.identifier.clone() else {
         return false;
     };
+
     Case::identify(&exported_item_id.text(), false) == Case::Pascal
         && match any_exported_item.exported.clone() {
             Some(exported) => !matches!(exported, AnyJsExported::TsEnumDeclaration(_)),

@@ -59,9 +59,13 @@ fn format_trimmed_number(text: &str) -> Cow<str> {
     use FormatNumberLiteralState::*;
 
     let text = text.to_ascii_lowercase_cow();
+
     let mut copied_or_ignored_chars = 0usize;
+
     let mut iter = text.bytes().enumerate();
+
     let mut curr = iter.next();
+
     let mut state = IntegerPart;
 
     // Will be filled only if and when the first place that needs reformatting is detected.
@@ -71,9 +75,12 @@ fn format_trimmed_number(text: &str) -> Cow<str> {
     if let Some((_, b'+' | b'-')) = curr {
         curr = iter.next();
     }
+
     if let Some((curr_index, b'.')) = curr {
         cleaned_text.push_str(&text[copied_or_ignored_chars..curr_index]);
+
         copied_or_ignored_chars = curr_index;
+
         cleaned_text.push('0');
     }
 
@@ -97,10 +104,12 @@ fn format_trimmed_number(text: &str) -> Cow<str> {
                 // Caveat: Prettier still prints a single `.0` unless there was *only* a trailing dot.
                 if curr_index > dot_index + 1 {
                     cleaned_text.push_str(&text[copied_or_ignored_chars..=*dot_index]);
+
                     cleaned_text.push('0');
                 } else {
                     cleaned_text.push_str(&text[copied_or_ignored_chars..*dot_index]);
                 }
+
                 copied_or_ignored_chars = curr_index;
             }
             (
@@ -112,6 +121,7 @@ fn format_trimmed_number(text: &str) -> Cow<str> {
             ) if last_non_zero_index.get() < curr_index - 1 => {
                 // The decimal part ends with at least one zero, ignore them but copy the part from the dot until the last non-zero.
                 cleaned_text.push_str(&text[copied_or_ignored_chars..=last_non_zero_index.get()]);
+
                 copied_or_ignored_chars = curr_index;
             }
             (
@@ -124,6 +134,7 @@ fn format_trimmed_number(text: &str) -> Cow<str> {
             ) => {
                 // The exponent equals zero, ignore it completely.
                 cleaned_text.push_str(&text[copied_or_ignored_chars..*e_index]);
+
                 copied_or_ignored_chars = curr_index;
             }
             (
@@ -139,12 +150,16 @@ fn format_trimmed_number(text: &str) -> Cow<str> {
             {
                 // The exponent begins with a plus or at least one zero, ignore them but copy the part from the first non-zero until the end.
                 cleaned_text.push_str(&text[copied_or_ignored_chars..=*e_index]);
+
                 if *is_negative {
                     cleaned_text.push('-');
                 }
+
                 cleaned_text.push_str(&text[first_non_zero_index.get()..curr_index]);
+
                 copied_or_ignored_chars = curr_index;
             }
+
             _ => {}
         }
 
@@ -220,6 +235,7 @@ fn format_trimmed_number(text: &str) -> Cow<str> {
                     ..*exponent
                 });
             }
+
             _ => {}
         }
 
@@ -235,6 +251,7 @@ fn format_trimmed_number(text: &str) -> Cow<str> {
     } else {
         // Append any unconsidered text
         cleaned_text.push_str(&text[copied_or_ignored_chars..]);
+
         Cow::Owned(cleaned_text)
     }
 }
@@ -248,17 +265,20 @@ mod tests {
     #[test]
     fn removes_unnecessary_plus_and_zeros_from_scientific_notation() {
         assert_eq!("1e2", format_trimmed_number("1e02"));
+
         assert_eq!("1e2", format_trimmed_number("1e+2"));
     }
 
     #[test]
     fn removes_unnecessary_scientific_notation() {
         assert_eq!("1", format_trimmed_number("1e0"));
+
         assert_eq!("1", format_trimmed_number("1e-0"));
     }
     #[test]
     fn does_not_get_bamboozled_by_hex() {
         assert_eq!("0xe0", format_trimmed_number("0xe0"));
+
         assert_eq!("0x10e0", format_trimmed_number("0x10e0"));
     }
 

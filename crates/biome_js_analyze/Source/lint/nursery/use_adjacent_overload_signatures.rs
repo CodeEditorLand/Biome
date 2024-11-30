@@ -100,36 +100,48 @@ declare_lint_rule! {
 
 impl Rule for UseAdjacentOverloadSignatures {
     type Query = Ast<DeclarationOrModuleNode>;
+
     type State = Box<[(TokenText, TextRange)]>;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let methods = match ctx.query() {
             // Handle export function foo() {} in declare namespace Foo {}
+
             DeclarationOrModuleNode::TsDeclareStatement(node) => {
                 let declaration = node.declaration().ok()?;
+
                 let items = declaration.as_ts_module_declaration()?.body().ok()?.items();
+
                 collect_exports(&items)
             }
             // Handle interface Foo {}
+
             DeclarationOrModuleNode::TsInterfaceDeclaration(node) => {
                 collect_type_member_list(&node.members())
             }
             // Handle type Foo = {}
+
             DeclarationOrModuleNode::TsTypeAliasDeclaration(node) => {
                 let members = node
                     .ty()
                     .ok()
                     .and_then(|ty| ty.as_ts_object_type().cloned())?
                     .members();
+
                 collect_type_member_list(&members)
             }
             // Handle class Foo {}
+
             DeclarationOrModuleNode::JsClassDeclaration(node) => collect_class(node),
             // Handle export function foo() {}
+
             DeclarationOrModuleNode::JsFunctionDeclaration(node) => collect_function(node),
             // Handle export function foo() {}
+
             DeclarationOrModuleNode::JsModule(node) => collect_exports(&node.items()),
             DeclarationOrModuleNode::TsDeclarationModule(node) => collect_exports(&node.items()),
         };
@@ -151,6 +163,7 @@ impl Rule for UseAdjacentOverloadSignatures {
                 "All "{text_ranges[0].0.text()}" signatures must be adjacent."
             },
         );
+
         for text_range in text_ranges.iter().skip(1) {
             diagnostic = diagnostic.detail(
                 text_range.1,
@@ -166,13 +179,17 @@ impl Rule for UseAdjacentOverloadSignatures {
 
 fn collect_type_member_list(node: &TsTypeMemberList) -> Vec<(TokenText, TextRange)> {
     let mut methods: Vec<(TokenText, TextRange)> = Vec::new();
+
     let mut seen_methods = FxHashSet::default();
+
     let mut last_method = None;
+
     for member in node {
         if let Some(ts_method_signature) = member.as_ts_method_signature_type_member() {
             if let Ok(method_member) = ts_method_signature.name() {
                 if let Some(text) = method_member.name() {
                     let range = method_member.range();
+
                     check_method(
                         text,
                         range,
@@ -184,14 +201,19 @@ fn collect_type_member_list(node: &TsTypeMemberList) -> Vec<(TokenText, TextRang
             }
         }
     }
+
     methods
 }
 
 fn collect_class(node: &JsClassDeclaration) -> Vec<(TokenText, TextRange)> {
     let mut methods: Vec<(TokenText, TextRange)> = Vec::new();
+
     let mut seen_methods = FxHashSet::default();
+
     let mut last_method = None;
+
     let members = node.members();
+
     for member in members {
         if let Some(method_class) = member
             .as_js_method_class_member()
@@ -200,6 +222,7 @@ fn collect_class(node: &JsClassDeclaration) -> Vec<(TokenText, TextRange)> {
             if let Ok(method_member) = method_class.name() {
                 if let Some(text) = method_member.name() {
                     let range = method_member.range();
+
                     check_method(
                         text,
                         range,
@@ -213,6 +236,7 @@ fn collect_class(node: &JsClassDeclaration) -> Vec<(TokenText, TextRange)> {
             if let Ok(method_member) = method_class.name() {
                 if let Some(text) = method_member.name() {
                     let range = method_member.range();
+
                     check_method(
                         text,
                         range,
@@ -224,13 +248,17 @@ fn collect_class(node: &JsClassDeclaration) -> Vec<(TokenText, TextRange)> {
             }
         }
     }
+
     methods
 }
 
 fn collect_function(node: &JsFunctionDeclaration) -> Vec<(TokenText, TextRange)> {
     let mut methods: Vec<(TokenText, TextRange)> = Vec::new();
+
     let mut seen_methods = FxHashSet::default();
+
     let mut last_method = None;
+
     if let Some(return_type_annotation) = node.return_type_annotation() {
         if let Some(ty) = return_type_annotation
             .ty()
@@ -239,6 +267,7 @@ fn collect_function(node: &JsFunctionDeclaration) -> Vec<(TokenText, TextRange)>
         {
             if let Some(ts_object) = ty.as_ts_object_type() {
                 let members = ts_object.members();
+
                 for member in members {
                     if let Some(method_member) = member
                         .as_ts_method_signature_type_member()
@@ -246,6 +275,7 @@ fn collect_function(node: &JsFunctionDeclaration) -> Vec<(TokenText, TextRange)>
                     {
                         if let Some(text) = method_member.name() {
                             let range = method_member.range();
+
                             check_method(
                                 text,
                                 range,
@@ -259,13 +289,17 @@ fn collect_function(node: &JsFunctionDeclaration) -> Vec<(TokenText, TextRange)>
             }
         }
     }
+
     methods
 }
 
 fn collect_exports(items: &JsModuleItemList) -> Vec<(TokenText, TextRange)> {
     let mut methods: Vec<(TokenText, TextRange)> = Vec::new();
+
     let mut seen_methods = FxHashSet::default();
+
     let mut last_method = None;
+
     for item in items {
         if let AnyJsModuleItem::JsExport(node) = item {
             if let Ok(export) = node.export_clause() {
@@ -278,7 +312,9 @@ fn collect_exports(items: &JsModuleItemList) -> Vec<(TokenText, TextRange)> {
                                 .and_then(|id| id.name_token().ok())
                         }) {
                             let text = name_token.token_text_trimmed();
+
                             let range = name_token.text_range();
+
                             check_method(
                                 text,
                                 range,
@@ -292,6 +328,7 @@ fn collect_exports(items: &JsModuleItemList) -> Vec<(TokenText, TextRange)> {
             }
         }
     }
+
     methods
 }
 

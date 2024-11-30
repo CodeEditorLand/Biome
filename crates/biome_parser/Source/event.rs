@@ -51,6 +51,7 @@ pub fn process<K: SyntaxKind + PartialEq>(
     errors: Vec<ParseDiagnostic>,
 ) {
     sink.errors(errors);
+
     let mut forward_parents = Vec::new();
 
     for i in 0..events.len() {
@@ -70,8 +71,11 @@ pub fn process<K: SyntaxKind + PartialEq>(
 
                 // append `A` into parents.
                 forward_parents.push(*kind);
+
                 let mut idx = i;
+
                 let mut fp = *forward_parent;
+
                 while let Some(fwd) = fp {
                     idx += u32::from(fwd) as usize;
                     // append `A`'s forward_parent `B`
@@ -84,8 +88,10 @@ pub fn process<K: SyntaxKind + PartialEq>(
                             if kind != K::TOMBSTONE {
                                 forward_parents.push(kind);
                             }
+
                             forward_parent
                         }
+
                         _ => unreachable!(),
                     };
                     // append `B`'s forward_parent `C` in the next stage.
@@ -95,6 +101,7 @@ pub fn process<K: SyntaxKind + PartialEq>(
                     sink.start_node(kind);
                 }
             }
+
             Event::Finish { .. } => sink.finish_node(),
             Event::Token { kind, end } => {
                 sink.token(*kind, *end);

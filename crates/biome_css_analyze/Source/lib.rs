@@ -20,7 +20,9 @@ use std::sync::LazyLock;
 
 pub static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
     let mut metadata = MetadataRegistry::default();
+
     visit_registry(&mut metadata);
+
     metadata
 });
 
@@ -69,10 +71,13 @@ where
                     if comment.is_legacy {
                         result.push(Ok(SuppressionKind::Deprecated));
                     }
+
                     comment.categories
                 }
+
                 Err(err) => {
                     result.push(Err(err));
+
                     continue;
                 }
             };
@@ -86,6 +91,7 @@ where
                     }
                 } else {
                     let category = key.name();
+
                     if let Some(rule) = category.strip_prefix("lint/") {
                         result.push(Ok(SuppressionKind::Rule(rule)));
                     }
@@ -97,6 +103,7 @@ where
     }
 
     let mut registry = RuleRegistry::builder(&filter, root);
+
     visit_registry(&mut registry);
 
     let (registry, services, diagnostics, visitors) = registry.build();
@@ -132,12 +139,19 @@ where
 #[cfg(test)]
 mod tests {
     use biome_analyze::{AnalyzerOptions, Never, RuleFilter};
+
     use biome_console::fmt::{Formatter, Termcolor};
+
     use biome_console::{markup, Markup};
+
     use biome_css_parser::{parse_css, CssParserOptions};
+
     use biome_css_syntax::TextRange;
+
     use biome_diagnostics::termcolor::NoColor;
+
     use biome_diagnostics::{Diagnostic, DiagnosticExt, PrintDiagnostic, Severity};
+
     use std::slice;
 
     use crate::{analyze, AnalysisFilter, ControlFlow};
@@ -147,8 +161,11 @@ mod tests {
     fn quick_test() {
         fn markup_to_string(markup: Markup) -> String {
             let mut buffer = Vec::new();
+
             let mut write = Termcolor(NoColor::new(&mut buffer));
+
             let mut fmt = Formatter::new(&mut write);
+
             fmt.write_markup(markup).unwrap();
 
             String::from_utf8(buffer).unwrap()
@@ -158,7 +175,9 @@ mod tests {
         /* valid */
         a:hover {}
         :not(p) {}
+
         a:before { }
+
         input:not([type='submit'])
         :root { }
         :--heading { }
@@ -168,7 +187,9 @@ mod tests {
 
         /* invalid */
         a:unknown { }
+
         a:pseudo-class { }
+
         body:not(div):noot(span) {}
         :first { }
         @page :blank:unknown { }
@@ -177,8 +198,11 @@ mod tests {
         let parsed = parse_css(SOURCE, CssParserOptions::default());
 
         let mut error_ranges: Vec<TextRange> = Vec::new();
+
         let rule_filter = RuleFilter::Rule("nursery", "noUnknownPseudoClass");
+
         let options = AnalyzerOptions::default();
+
         analyze(
             &parsed.tree(),
             AnalysisFilter {
@@ -189,18 +213,22 @@ mod tests {
             |signal| {
                 if let Some(diag) = signal.diagnostic() {
                     error_ranges.push(diag.location().span.unwrap());
+
                     let error = diag
                         .with_severity(Severity::Warning)
                         .with_file_path("ahahah")
                         .with_file_source_code(SOURCE);
+
                     let text = markup_to_string(markup! {
                         {PrintDiagnostic::verbose(&error)}
                     });
+
                     eprintln!("{text}");
                 }
 
                 for action in signal.actions() {
                     let new_code = action.mutation.commit();
+
                     eprintln!("{new_code}");
                 }
 

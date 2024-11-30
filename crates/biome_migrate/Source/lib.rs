@@ -22,7 +22,9 @@ use std::sync::{Arc, LazyLock};
 /// Return the static [MetadataRegistry] for the JS analyzer rules
 static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
     let mut metadata = MetadataRegistry::default();
+
     visit_migration_registry(&mut metadata);
+
     metadata
 });
 
@@ -45,11 +47,14 @@ where
     B: 'a,
 {
     let filter = AnalysisFilter::default();
+
     let options = AnalyzerOptions {
         file_path: PathBuf::from(configuration_file_path),
         ..AnalyzerOptions::default()
     };
+
     let mut registry = RuleRegistry::builder(&filter, root);
+
     visit_migration_registry(&mut registry);
 
     let (migration_registry, mut services, diagnostics, visitors) = registry.build();
@@ -58,7 +63,9 @@ where
     if !diagnostics.is_empty() {
         return (None, diagnostics);
     }
+
     struct TestAction;
+
     impl SuppressionAction for TestAction {
         type Language = JsonLanguage;
 
@@ -79,6 +86,7 @@ where
             unreachable!("")
         }
     }
+
     let mut analyzer = Analyzer::new(
         METADATA.deref(),
         InspectMatcher::new(migration_registry, inspect_matcher),
@@ -122,18 +130,28 @@ pub(crate) type MigrationAction = RuleAction<JsonLanguage>;
 #[cfg(test)]
 mod test {
     use crate::migrate_configuration;
+
     use biome_analyze::{ControlFlow, Never};
+
     use biome_console::fmt::{Formatter, Termcolor};
+
     use biome_console::{markup, Markup};
+
     use biome_diagnostics::termcolor::NoColor;
+
     use biome_diagnostics::{DiagnosticExt, PrintDiagnostic, Severity};
+
     use biome_json_parser::{parse_json, JsonParserOptions};
+
     use std::path::Path;
 
     fn markup_to_string(markup: Markup) -> String {
         let mut buffer = Vec::new();
+
         let mut write = Termcolor(NoColor::new(&mut buffer));
+
         let mut fmt = Formatter::new(&mut write);
+
         fmt.write_markup(markup).unwrap();
 
         String::from_utf8(buffer).unwrap()
@@ -176,14 +194,17 @@ mod test {
                         .with_severity(Severity::Warning)
                         .with_file_path("dummyFile")
                         .with_file_source_code(source);
+
                     let text = markup_to_string(markup! {
                         {PrintDiagnostic::verbose(&error)}
                     });
+
                     eprintln!("{text}");
                 }
 
                 for action in signal.actions() {
                     let new_code = action.mutation.commit();
+
                     eprintln!("{new_code}");
                 }
 

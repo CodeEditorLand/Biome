@@ -180,6 +180,7 @@ impl AnyJsBindingDeclaration {
             | AnyJsBindingDeclaration::JsObjectBindingPatternShorthandProperty(_) => {
                 parent_binding_pattern_declaration(self.syntax())
             }
+
             _ => None,
         }
     }
@@ -213,6 +214,7 @@ impl AnyJsBindingDeclaration {
                 return parent_binding_pattern_declaration(self.syntax())
                     .and_then(|decl| decl.export());
             }
+
             Self::JsVariableDeclarator(_) => self.syntax().ancestors().nth(4),
             Self::JsFunctionDeclaration(_)
             | Self::JsClassDeclaration(_)
@@ -227,12 +229,14 @@ impl AnyJsBindingDeclaration {
                     .skip(1)
                     .find(|x| x.kind() != JsSyntaxKind::JS_EXPORT_DEFAULT_DECLARATION_CLAUSE)
             }
+
             Self::JsClassExportDefaultDeclaration(_)
             | Self::JsFunctionExportDefaultDeclaration(_)
             | Self::TsDeclareFunctionDeclaration(_)
             | Self::TsDeclareFunctionExportDefaultDeclaration(_) => self.syntax().grand_parent(),
             _ => None,
         };
+
         maybe_export.and_then(JsExport::cast)
     }
 }
@@ -249,6 +253,7 @@ fn declaration(node: JsSyntaxNode) -> Option<AnyJsBindingDeclaration> {
                 None => Some(AnyJsBindingDeclaration::JsFormalParameter(parameter)),
             }
         }
+
         declaration => Some(declaration),
     }
 }
@@ -265,11 +270,13 @@ fn parent_binding_pattern_declaration(node: &JsSyntaxNode) -> Option<AnyJsBindin
                 | JsSyntaxKind::JS_OBJECT_BINDING_PATTERN_PROPERTY_LIST
         )
     })?;
+
     declaration(possible_declarator)
 }
 
 fn is_under_pattern_binding(node: &JsSyntaxNode) -> Option<bool> {
     use JsSyntaxKind::*;
+
     Some(matches!(
         node.parent()?.kind(),
         JS_ARRAY_BINDING_PATTERN_ELEMENT
@@ -286,7 +293,9 @@ fn is_under_pattern_binding(node: &JsSyntaxNode) -> Option<bool> {
 
 fn is_under_array_pattern_binding(node: &JsSyntaxNode) -> Option<bool> {
     use JsSyntaxKind::*;
+
     let parent = node.parent()?;
+
     match parent.kind() {
         JS_ARRAY_BINDING_PATTERN
         | JS_ARRAY_BINDING_PATTERN_ELEMENT_LIST
@@ -298,7 +307,9 @@ fn is_under_array_pattern_binding(node: &JsSyntaxNode) -> Option<bool> {
 
 fn is_under_object_pattern_binding(node: &JsSyntaxNode) -> Option<bool> {
     use JsSyntaxKind::*;
+
     let parent = node.parent()?;
+
     match parent.kind() {
         JS_OBJECT_BINDING_PATTERN
         | JS_OBJECT_BINDING_PATTERN_REST
@@ -343,6 +354,7 @@ impl AnyJsIdentifierBinding {
                 if let Some(specifier) = binding.parent::<AnyJsNamedImportSpecifier>() {
                     return specifier.imports_only_types();
                 }
+
                 if let Some(clause) = binding
                     .syntax()
                     .grand_parent()
@@ -351,12 +363,15 @@ impl AnyJsIdentifierBinding {
                     return clause.type_token().is_some();
                 }
             }
+
             Self::TsIdentifierBinding(binding) => {
                 // ignore TypeScript namespaces
                 return binding.parent::<TsModuleDeclaration>().is_none();
             }
+
             Self::TsTypeParameterName(_) | Self::TsLiteralEnumMemberName(_) => {}
         }
+
         false
     }
 
@@ -365,12 +380,15 @@ impl AnyJsIdentifierBinding {
             Self::JsIdentifierBinding(binding) => {
                 Self::JsIdentifierBinding(binding.with_name_token(name_token))
             }
+
             Self::TsIdentifierBinding(binding) => {
                 Self::TsIdentifierBinding(binding.with_name_token(name_token))
             }
+
             Self::TsTypeParameterName(binding) => {
                 Self::TsTypeParameterName(binding.with_ident_token(name_token))
             }
+
             Self::TsLiteralEnumMemberName(binding) => {
                 Self::TsLiteralEnumMemberName(binding.with_value_token(name_token))
             }
@@ -454,16 +472,22 @@ fn parent_function(node: &JsSyntaxNode) -> Option<AnyJsParameterParentFunction> 
         JsSyntaxKind::JS_PARAMETER_LIST => {
             // SAFETY: kind check above
             let parameters = JsParameterList::unwrap_cast(parent).parent::<JsParameters>()?;
+
             let parent = parameters.syntax.parent()?;
+
             AnyJsParameterParentFunction::cast(parent)
         }
+
         JsSyntaxKind::JS_CONSTRUCTOR_PARAMETER_LIST => {
             // SAFETY: kind check above
             let parameters = JsConstructorParameterList::unwrap_cast(parent)
                 .parent::<JsConstructorParameters>()?;
+
             let parent = parameters.syntax().parent()?;
+
             AnyJsParameterParentFunction::cast(parent)
         }
+
         _ => AnyJsParameterParentFunction::cast(parent),
     }
 }

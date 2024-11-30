@@ -587,6 +587,7 @@ impl BiomeCommand {
                 // Normal behaviors
                 cli_options.colors.as_ref()
             }
+
             None => None,
         }
     }
@@ -634,6 +635,7 @@ pub(crate) fn validate_configuration_diagnostics(
     {
         if file_path == "rome.json" {
             let diagnostic = DeprecatedConfigurationFile::new(file_path);
+
             if diagnostic.tags().is_verbose() && verbose {
                 console.error(markup! {{PrintDiagnostic::verbose(&diagnostic)}})
             } else {
@@ -641,7 +643,9 @@ pub(crate) fn validate_configuration_diagnostics(
             }
         }
     }
+
     let diagnostics = loaded_configuration.as_diagnostics_iter();
+
     for diagnostic in diagnostics {
         if diagnostic.tags().is_verbose() && verbose {
             console.error(markup! {{PrintDiagnostic::verbose(diagnostic)}})
@@ -689,6 +693,7 @@ fn get_files_to_process_with_cli_options(
         if !changed {
             return Err(CliDiagnostic::incompatible_arguments("since", "changed"));
         }
+
         if staged {
             return Err(CliDiagnostic::incompatible_arguments("since", "staged"));
         }
@@ -698,6 +703,7 @@ fn get_files_to_process_with_cli_options(
         if staged {
             return Err(CliDiagnostic::incompatible_arguments("changed", "staged"));
         }
+
         Ok(Some(get_changed_files(fs, configuration, since)?))
     } else if staged {
         Ok(Some(get_staged_files(fs)?))
@@ -740,15 +746,18 @@ pub(crate) fn determine_fix_file_mode(
         } else {
             ("--apply-unsafe", "--write --unsafe")
         };
+
         let diagnostic = DeprecatedArgument::new(markup! {
             "The argument "<Emphasis>{deprecated}</Emphasis>" is deprecated, it will be removed in the next major release. Use "<Emphasis>{alternative}</Emphasis>" instead."
         });
+
         console.error(markup! {{PrintDiagnostic::simple(&diagnostic)}});
     }
 
     check_fix_incompatible_arguments(options)?;
 
     let safe_fixes = apply || write || fix;
+
     let unsafe_fixes = apply_unsafe || ((write || safe_fixes) && unsafe_);
 
     if unsafe_fixes {
@@ -773,6 +782,7 @@ fn check_fix_incompatible_arguments(options: FixFileModeOptions) -> Result<(), C
         fix,
         unsafe_,
     } = options;
+
     if apply && apply_unsafe {
         return Err(CliDiagnostic::incompatible_arguments(
             "--apply",
@@ -808,6 +818,7 @@ fn check_fix_incompatible_arguments(options: FixFileModeOptions) -> Result<(), C
             "`--reason` is only valid when `--suppress` is used.",
         ));
     };
+
     Ok(())
 }
 
@@ -829,11 +840,17 @@ pub(crate) trait CommandRunner: Sized {
     /// The main command to use.
     fn run(&mut self, session: CliSession, cli_options: &CliOptions) -> Result<(), CliDiagnostic> {
         setup_cli_subscriber(cli_options.log_level, cli_options.log_kind);
+
         let fs = &session.app.fs;
+
         let console = &mut *session.app.console;
+
         let workspace = &*session.app.workspace;
+
         self.check_incompatible_arguments()?;
+
         let (execution, paths) = self.configure_workspace(fs, console, workspace, cli_options)?;
+
         execute_mode(execution, session, cli_options, paths)
     }
 
@@ -853,6 +870,7 @@ pub(crate) trait CommandRunner: Sized {
     ) -> Result<(Execution, Vec<OsString>), CliDiagnostic> {
         let loaded_configuration =
             load_configuration(fs, cli_options.as_configuration_path_hint())?;
+
         if self.should_validate_configuration_diagnostics() {
             validate_configuration_diagnostics(
                 &loaded_configuration,
@@ -860,12 +878,18 @@ pub(crate) trait CommandRunner: Sized {
                 cli_options.verbose,
             )?;
         }
+
         let configuration_path = loaded_configuration.directory_path.clone();
+
         let configuration = self.merge_configuration(loaded_configuration, fs, console)?;
+
         let vcs_base_path = configuration_path.or(fs.working_directory());
+
         let (vcs_base_path, gitignore_matches) =
             configuration.retrieve_gitignore_matches(fs, vcs_base_path.as_deref())?;
+
         let paths = self.get_files_to_process(fs, &configuration)?;
+
         workspace.register_project_folder(RegisterProjectFolderParams {
             path: fs.working_directory(),
             set_as_current_workspace: true,
@@ -876,6 +900,7 @@ pub(crate) trait CommandRunner: Sized {
         if let Some(manifest_data) = manifest_data {
             workspace.set_manifest_for_project(manifest_data.into())?;
         }
+
         workspace.update_settings(UpdateSettingsParams {
             workspace_directory: fs.working_directory(),
             configuration,
@@ -884,6 +909,7 @@ pub(crate) trait CommandRunner: Sized {
         })?;
 
         let execution = self.get_execution(cli_options, console, workspace)?;
+
         Ok((execution, paths))
     }
 
@@ -894,8 +920,10 @@ pub(crate) trait CommandRunner: Sized {
     fn get_stdin(&self, console: &mut dyn Console) -> Result<Option<Stdin>, CliDiagnostic> {
         let stdin = if let Some(stdin_file_path) = self.get_stdin_file_path() {
             let input_code = console.read();
+
             if let Some(input_code) = input_code {
                 let path = PathBuf::from(stdin_file_path);
+
                 Some((path, input_code).into())
             } else {
                 // we provided the argument without a piped stdin, we bail
@@ -973,13 +1001,16 @@ pub trait LoadEditorConfig: CommandRunner {
                 let search_path = configuration_path
                     .clone()
                     .unwrap_or_else(|| fs.working_directory().unwrap_or_default());
+
                 load_editorconfig(fs, search_path)?
             };
+
             for diagnostic in editorconfig_diagnostics {
                 console.error(markup! {
                     {PrintDiagnostic::simple(&diagnostic)}
                 })
             }
+
             editorconfig.unwrap_or_default()
         } else {
             Default::default()
@@ -1079,6 +1110,7 @@ mod tests {
 
         let (apply, apply_unsafe, write, suppress, suppression_reason, fix, unsafe_) =
             (false, false, false, false, None, false, false);
+
         assert_eq!(
             determine_fix_file_mode(
                 FixFileModeOptions {

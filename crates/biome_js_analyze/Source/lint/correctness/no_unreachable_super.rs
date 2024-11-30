@@ -91,12 +91,16 @@ struct BlockContext {
 
 impl Rule for NoUnreachableSuper {
     type Query = ControlFlowGraph;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let cfg = ctx.query();
+
         if !JsConstructorClassMember::can_cast(cfg.node.kind()) {
             // Ignore non-constructor functions
             return None;
@@ -110,7 +114,9 @@ impl Rule for NoUnreachableSuper {
 
         // Do not run the rule if the class has no extends clause or is extending a literal expression
         let extends_clause = class.extends_clause()?;
+
         let super_class = extends_clause.super_class().ok()?;
+
         if matches!(super_class, AnyJsExpression::AnyJsLiteralExpression(_)) {
             return None;
         }
@@ -130,38 +136,48 @@ impl Rule for NoUnreachableSuper {
         }];
         // Set of couples (block_id, was_visited_with_super_call)
         let mut visited_block_contexts = FxHashSet::from_iter([(ROOT_BLOCK_ID, false)]);
+
         while let Some(BlockContext {
             block_id,
             super_call: mut super_,
         }) = block_context_stack.pop()
         {
             let had_super = super_.is_some();
+
             let block = cfg.get(block_id);
+
             for instruction in block.instructions.iter() {
                 if let Some(NodeOrToken::Node(ref block_node)) = instruction.node {
                     let mut iter = block_node.preorder();
+
                     while let Some(event) = iter.next() {
                         let WalkEvent::Enter(node) = event else {
                             continue;
                         };
+
                         match node.kind() {
                             JsSyntaxKind::JS_SUPER_EXPRESSION => {
                                 let Some(parent) = node.parent() else {
                                     continue;
                                 };
+
                                 if !JsCallExpression::can_cast(parent.kind()) {
                                     // Ignore `super.method()` calls
                                     continue;
                                 }
+
                                 let range = node.text_trimmed_range();
+
                                 if let Some(first) = super_ {
                                     return Some(RuleState::DuplicateSuper {
                                         first,
                                         second: range,
                                     });
                                 }
+
                                 super_ = Some(range);
                             }
+
                             JsSyntaxKind::JS_THIS_EXPRESSION => {
                                 if super_.is_none() {
                                     return Some(RuleState::ThisWithoutSuper {
@@ -169,15 +185,19 @@ impl Rule for NoUnreachableSuper {
                                     });
                                 }
                             }
+
                             _ if AnyJsControlFlowRoot::can_cast(node.kind()) => {
                                 iter.skip_subtree();
                             }
+
                             _ => {}
                         }
                     }
                 }
+
                 match instruction.kind {
                     InstructionKind::Statement => {}
+
                     InstructionKind::Jump {
                         block: jump_block_id,
                         conditional,
@@ -190,11 +210,13 @@ impl Rule for NoUnreachableSuper {
                                 super_call: super_,
                             });
                         }
+
                         if !conditional {
                             // The next instructions are unreachable.
                             break;
                         }
                     }
+
                     InstructionKind::Return => {
                         if super_.is_none() {
                             let return_ = instruction.node.as_ref();
@@ -202,7 +224,9 @@ impl Rule for NoUnreachableSuper {
                             if return_.is_some_and(|node| JsThrowStatement::can_cast(node.kind())) {
                                 break;
                             }
+
                             let return_ = return_.map(|node| node.text_trimmed_range());
+
                             return Some(RuleState::ReturnWithoutSuper {
                                 return_statement: return_,
                             });
@@ -212,6 +236,7 @@ impl Rule for NoUnreachableSuper {
                     }
                 }
             }
+
             for exception_handler in block.exception_handlers.iter() {
                 // Ignore finally handler: they are already in the Control Flow Graph.
                 if matches!(exception_handler.kind, ExceptionHandlerKind::Catch) {
@@ -236,6 +261,7 @@ impl Rule for NoUnreachableSuper {
                 }
             }
         }
+
         None
     }
 

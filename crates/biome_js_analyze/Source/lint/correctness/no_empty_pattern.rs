@@ -45,12 +45,16 @@ declare_lint_rule! {
 
 impl Rule for NoEmptyPattern {
     type Query = Ast<JsAnyBindPatternLike>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         use JsAnyBindPatternLike::*;
+
         match ctx.query() {
             JsArrayBindingPattern(array) => {
                 if array.elements().len() == 0 {
@@ -59,6 +63,7 @@ impl Rule for NoEmptyPattern {
                     None
                 }
             }
+
             JsObjectBindingPattern(object) => {
                 if object.properties().len() == 0 {
                     Some(())
@@ -71,6 +76,7 @@ impl Rule for NoEmptyPattern {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let node_type = match node {
             JsAnyBindPatternLike::JsArrayBindingPattern(_) => "array",
             JsAnyBindPatternLike::JsObjectBindingPattern(_) => "object",

@@ -48,8 +48,11 @@ const FUNCTION_NAMES: [&str; 4] = ["skip", "xdescribe", "xit", "xtest"];
 
 impl Rule for NoSkippedTests {
     type Query = Ast<JsCallExpression>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -57,6 +60,7 @@ impl Rule for NoSkippedTests {
 
         if node.is_test_call_expression().ok()? {
             let callee = node.callee().ok()?;
+
             if callee.contains_a_test_pattern().ok()? {
                 let function_name = callee.get_callee_member_name()?;
 
@@ -85,8 +89,11 @@ impl Rule for NoSkippedTests {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let callee = node.callee().ok()?;
+
         let function_name = callee.get_callee_member_name()?;
+
         let replaced_function;
 
         let mut mutation = ctx.root().begin();
@@ -94,23 +101,31 @@ impl Rule for NoSkippedTests {
         match function_name.text_trimmed() {
             "skip" => {
                 let member = callee.as_js_static_member_expression()?;
+
                 let member_name = member.member().ok()?;
+
                 let operator_token = member.operator_token().ok()?;
+
                 mutation.remove_element(member_name.into());
+
                 mutation.remove_element(operator_token.into());
             }
             "xdescribe" => {
                 replaced_function = make::js_reference_identifier(make::ident("describe"));
+
                 mutation.replace_element(function_name.into(), replaced_function.into());
             }
             "xit" => {
                 replaced_function = make::js_reference_identifier(make::ident("it"));
+
                 mutation.replace_element(function_name.into(), replaced_function.into());
             }
             "xtest" => {
                 replaced_function = make::js_reference_identifier(make::ident("test"));
+
                 mutation.replace_element(function_name.into(), replaced_function.into());
             }
+
             _ => {}
         };
 

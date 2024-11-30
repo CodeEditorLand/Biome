@@ -131,8 +131,11 @@ impl_has_static_modifiers!(TsSetterSignatureClassMember);
 
 impl Rule for NoStaticOnlyClass {
     type Query = Ast<AnyJsClass>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -172,10 +175,12 @@ impl Rule for NoStaticOnlyClass {
                 AnyJsClassMember::TsInitializedPropertySignatureClassMember(m) => {
                     Some(m.has_static_modifier())
                 }
+
                 AnyJsClassMember::TsMethodSignatureClassMember(m) => Some(m.has_static_modifier()),
                 AnyJsClassMember::TsPropertySignatureClassMember(m) => {
                     Some(m.has_static_modifier())
                 }
+
                 AnyJsClassMember::TsSetterSignatureClassMember(m) => Some(m.has_static_modifier()),
             })
             .all(|is_static| is_static);

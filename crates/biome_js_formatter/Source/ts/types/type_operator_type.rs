@@ -23,6 +23,7 @@ impl FormatNodeRule<TsTypeOperatorType> for FormatTsTypeOperatorType {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::TsTypeOperatorType;
 
     #[test]
@@ -30,12 +31,15 @@ mod tests {
         assert_needs_parentheses!("let s: (unique symbol)[] = symbol();", TsTypeOperatorType);
 
         assert_needs_parentheses!("let s: unique (unique symbol);", TsTypeOperatorType[1]);
+
         assert_not_needs_parentheses!("let s: unique (unique symbol);", TsTypeOperatorType[0]);
 
         assert_needs_parentheses!("let s: [number, ...(unique symbol)]", TsTypeOperatorType);
+
         assert_needs_parentheses!("let s: [(unique symbol)?]", TsTypeOperatorType);
 
         assert_needs_parentheses!("let s: (unique symbol)[a]", TsTypeOperatorType);
+
         assert_not_needs_parentheses!("let s: a[(unique symbol)]", TsTypeOperatorType);
     }
 }

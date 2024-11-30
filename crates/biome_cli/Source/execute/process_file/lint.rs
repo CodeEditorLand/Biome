@@ -18,6 +18,7 @@ pub(crate) fn lint<'ctx>(
     suppression_reason: Option<&str>,
 ) -> FileResult {
     let mut workspace_file = WorkspaceFile::new(ctx, path)?;
+
     lint_with_guard(ctx, &mut workspace_file, suppress, suppression_reason)
 }
 
@@ -30,13 +31,16 @@ pub(crate) fn lint_with_guard<'ctx>(
     tracing::info_span!("Processes linting", path =? workspace_file.path.display()).in_scope(
         move || {
             let mut input = workspace_file.input()?;
+
             let mut changed = false;
+
             let (only, skip) =
                 if let TraversalMode::Lint { only, skip, .. } = ctx.execution.traversal_mode() {
                     (only.clone(), skip.clone())
                 } else {
                     (Vec::new(), Vec::new())
                 };
+
             if let Some(fix_mode) = ctx.execution.as_fix_file_mode() {
                 let suppression_explanation = if suppress && suppression_reason.is_none() {
                     "ignored using `--suppress`"
@@ -72,22 +76,29 @@ pub(crate) fn lint_with_guard<'ctx>(
                     Some(b"astro") => {
                         output = AstroFileHandler::output(input.as_str(), output.as_str());
                     }
+
                     Some(b"vue") => {
                         output = VueFileHandler::output(input.as_str(), output.as_str());
                     }
+
                     Some(b"svelte") => {
                         output = SvelteFileHandler::output(input.as_str(), output.as_str());
                     }
+
                     _ => {}
                 }
+
                 if output != input {
                     changed = true;
+
                     workspace_file.update_file(output)?;
+
                     input = workspace_file.input()?;
                 }
             }
 
             let max_diagnostics = ctx.remaining_diagnostics.load(Ordering::Relaxed);
+
             let pull_diagnostics_result = workspace_file
                 .guard()
                 .pull_diagnostics(

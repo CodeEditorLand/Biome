@@ -16,7 +16,9 @@ impl FormatNodeRule<JsUnaryExpression> for FormatJsUnaryExpression {
         } = node.as_fields();
 
         let operation = node.operator()?;
+
         let operator_token = operator_token?;
+
         let argument = argument?;
 
         write!(f, [operator_token.format()])?;
@@ -55,6 +57,7 @@ impl FormatNodeRule<JsUnaryExpression> for FormatJsUnaryExpression {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsUnaryExpression;
 
     #[test]
@@ -62,22 +65,29 @@ mod tests {
         assert_needs_parentheses!("class A extends (!B) {}", JsUnaryExpression);
 
         assert_needs_parentheses!("(!foo) instanceof Bar", JsUnaryExpression);
+
         assert_needs_parentheses!("(!foo) instanceof Bar", JsUnaryExpression);
+
         assert_needs_parentheses!("(~foo) in bar", JsUnaryExpression);
+
         assert_needs_parentheses!("(~foo) in bar", JsUnaryExpression);
 
         assert_needs_parentheses!("(+a).b", JsUnaryExpression);
+
         assert_needs_parentheses!("(+a)[b]", JsUnaryExpression);
+
         assert_not_needs_parentheses!("a[+b]", JsUnaryExpression);
 
         assert_needs_parentheses!("(+a)`template`", JsUnaryExpression);
 
         assert_needs_parentheses!("(+a)()", JsUnaryExpression);
+
         assert_needs_parentheses!("new (+a)()", JsUnaryExpression);
 
         assert_needs_parentheses!("(+a)!", JsUnaryExpression);
 
         assert_needs_parentheses!("(+a) ** 3", JsUnaryExpression);
+
         assert_not_needs_parentheses!("(+a) + 3", JsUnaryExpression);
     }
 }

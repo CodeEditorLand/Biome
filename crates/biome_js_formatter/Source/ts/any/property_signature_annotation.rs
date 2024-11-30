@@ -6,6 +6,7 @@ use biome_js_syntax::AnyTsPropertySignatureAnnotation;
 pub(crate) struct FormatAnyTsPropertySignatureAnnotation;
 impl FormatRule<AnyTsPropertySignatureAnnotation> for FormatAnyTsPropertySignatureAnnotation {
     type Context = JsFormatContext;
+
     fn fmt(
         &self,
         node: &AnyTsPropertySignatureAnnotation,
@@ -15,6 +16,7 @@ impl FormatRule<AnyTsPropertySignatureAnnotation> for FormatAnyTsPropertySignatu
             AnyTsPropertySignatureAnnotation::TsOptionalPropertyAnnotation(node) => {
                 node.format().fmt(f)
             }
+
             AnyTsPropertySignatureAnnotation::TsTypeAnnotation(node) => node.format().fmt(f),
         }
     }

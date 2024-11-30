@@ -30,16 +30,20 @@ impl StripPlaceholders {
         input_code: &mut String,
     ) -> (Option<usize>, Option<usize>, Option<usize>) {
         let mut cursor_index = None;
+
         let mut range_start_index = None;
+
         let mut range_end_index = None;
 
         if let Some(index) = input_code.find(&self.cursor) {
             input_code.replace_range(index..index + self.cursor.len(), "");
+
             cursor_index = Some(index);
         }
 
         if let Some(index) = input_code.find(&self.range_start_placeholder) {
             input_code.replace_range(index..index + self.range_start_placeholder.len(), "");
+
             range_start_index = Some(index);
 
             if let Some(cursor) = &mut cursor_index {
@@ -51,6 +55,7 @@ impl StripPlaceholders {
 
         if let Some(index) = input_code.find(&self.range_end_placeholder) {
             input_code.replace_range(index..index + self.range_end_placeholder.len(), "");
+
             range_end_index = Some(index);
 
             if let Some(cursor) = &mut cursor_index {
@@ -58,6 +63,7 @@ impl StripPlaceholders {
                     *cursor -= self.range_end_placeholder.len();
                 }
             }
+
             if let Some(cursor) = &mut range_start_index {
                 // Prettier has tests for reversed ranges
                 if *cursor > index {
@@ -136,6 +142,7 @@ pub fn get_prettier_diff(
 
             let new_snapshot_file_name =
                 input_file.with_extension(format!("{input_extension}.snap.new"));
+
             if new_snapshot_file_name.exists() && new_snapshot_file_name.is_file() {
                 remove_file(new_snapshot_file_name).ok(); // not the end of the world if it fails
             }

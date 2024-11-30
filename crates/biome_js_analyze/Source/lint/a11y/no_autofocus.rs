@@ -88,8 +88,10 @@ fn find_kept_autofocus_mark(element: &AnyJsxElement) -> bool {
     let is_dialog_element = match element.name_value_token() {
         Ok(syntax_token) => {
             let tag_name = String::from(syntax_token.text_trimmed());
+
             tag_name.to_lowercase_cow() == "dialog"
         }
+
         Err(_) => false,
     };
 
@@ -128,11 +130,13 @@ impl Visitor for ValidAutofocusVisitor {
                             self.stack.push((element.clone(), true));
                         } else {
                             let next_hold = find_kept_autofocus_mark(&element);
+
                             self.stack.push((element.clone(), next_hold));
                         }
 
                         ctx.match_query(ValidAutofocus(element));
                     }
+
                     JsSyntaxKind::JSX_SELF_CLOSING_ELEMENT => {
                         let element = AnyJsxElement::unwrap_cast(node.clone());
 
@@ -145,12 +149,15 @@ impl Visitor for ValidAutofocusVisitor {
                             ctx.match_query(ValidAutofocus(element));
                         }
                     }
+
                     JsSyntaxKind::JSX_CLOSING_ELEMENT => {
                         self.stack.pop();
                     }
+
                     _ => {}
                 }
             }
+
             WalkEvent::Leave(_) => {}
         };
     }
@@ -187,15 +194,20 @@ impl Queryable for ValidAutofocus {
 
 impl Rule for NoAutofocus {
     type Query = ValidAutofocus;
+
     type State = JsxAttribute;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.is_custom_component() {
             return None;
         }
+
         node.find_attribute_by_name("autoFocus")
     }
 
@@ -211,13 +223,18 @@ impl Rule for NoAutofocus {
 
     fn action(ctx: &RuleContext<Self>, attr: &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         if attr.syntax().has_trailing_comments() {
             let prev_token = attr.syntax().first_token()?.prev_token()?;
+
             let new_token =
                 prev_token.append_trivia_pieces(attr.syntax().last_trailing_trivia()?.pieces());
+
             mutation.replace_token_discard_trivia(prev_token, new_token);
         }
+
         mutation.remove_node(attr.clone());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

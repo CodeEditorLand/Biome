@@ -31,7 +31,9 @@ pub(crate) fn parse_variable_declaration_clause(p: &mut JsParser) -> ParsedSynta
 
     parse_variable_declaration(p, VariableDeclarationParent::Clause).map(|declaration| {
         let m = declaration.precede(p);
+
         semi(p, TextRange::new(start, p.cur_range().end()));
+
         m.complete(p, JS_VARIABLE_DECLARATION_CLAUSE)
     })
 }
@@ -94,18 +96,22 @@ pub(crate) fn parse_declaration_clause(p: &mut JsParser, stmt_start_pos: TextSiz
                     // export @first @second abstract class Foo {
                     //     constructor() {}
                     // }
+
                     parse_class_declaration(p, decorator_list, StatementContext::StatementList)
                 }
+
                 _ => {
                     // test_err js decorator_export_class_clause
                     // @decorator
                     // export let a;
                     // @decorator1 @decorator2
                     // export function Foo() { }
+
                     decorator_list
                         .add_diagnostic_if_present(p, decorators_not_allowed)
                         .map(|mut marker| {
                             marker.change_kind(p, JS_BOGUS_STATEMENT);
+
                             marker
                         });
 
@@ -113,45 +119,57 @@ pub(crate) fn parse_declaration_clause(p: &mut JsParser, stmt_start_pos: TextSiz
                 }
             }
         }
+
         T![class] | T![abstract] => {
             parse_class_declaration(p, Absent, StatementContext::StatementList)
         }
+
         T![const] => {
             if p.nth_at(1, T![enum]) {
                 parse_ts_enum_declaration(p)
             } else {
                 // test ts ts_ambient_const_variable_statement
                 // declare const a, b, c, d = "test";
+
                 parse_variable_declaration_clause(p)
             }
         }
         // test ts ts_ambient_var_statement
         // declare var a, b, c;
+
         T![var] => parse_variable_declaration_clause(p),
         T![enum] => {
             // test ts ts_ambient_enum_statement
             // declare enum A { X, Y, Z }
             // declare const enum B { X, Y, Z }
+
             parse_ts_enum_declaration(p)
         }
+
         T![import] => parse_import_or_import_equals_declaration(p),
         T![async] => parse_function_declaration(p, StatementContext::StatementList),
         T![type] => {
             // test ts ts_declare_type_alias
             // declare type A = string;
             // declare type B = string | number & { a: string, b: number }
+
             parse_ts_type_alias_declaration(p)
         }
+
         T![interface] => {
             // test ts ts_ambient_interface
             // declare interface A { b: string, c: number }
+
             parse_ts_interface_declaration(p)
         }
+
         T![let] => {
             // test ts ts_ambient_let_variable_statement
             // declare let a, b, c, d;
+
             parse_variable_declaration_clause(p)
         }
+
         T![namespace] | T![global] | T![module] => {
             parse_any_ts_namespace_declaration_clause(p, stmt_start_pos)
         }

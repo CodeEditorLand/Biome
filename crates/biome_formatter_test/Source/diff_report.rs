@@ -61,6 +61,7 @@ impl DiffReport {
         // Use an atomic Once to register an exit callback the first time any
         // testing thread requests an instance of the Reporter
         static ONCE: Once = Once::new();
+
         ONCE.call_once(|| {
             // Import the atexit function from libc
             extern "C" {
@@ -98,6 +99,7 @@ impl DiffReport {
                     });
                 }
             }
+
             _ => {}
         }
     }
@@ -291,6 +293,7 @@ impl DiffReport {
                     Ok(value) => ReportType::from_str(&value).unwrap(),
                     _ => ReportType::Markdown,
                 };
+
                 let incompatible_only =
                     matches!(env::var("INCOMPATIBLE_ONLY"), Ok(value) if value == "1");
 
@@ -304,6 +307,7 @@ impl DiffReport {
                                 "report.json".to_string()
                             }
                         }
+
                         ReportType::Markdown => {
                             if incompatible_only {
                                 "report_incompatible.md".to_string()
@@ -313,8 +317,10 @@ impl DiffReport {
                         }
                     },
                 };
+
                 self.report_prettier(report_type, report_filename, incompatible_only);
             }
+
             _ => {}
         }
     }
@@ -326,12 +332,17 @@ impl DiffReport {
         incompatible_only: bool,
     ) {
         let mut state = self.state.lock().unwrap();
+
         state.sort_by_key(|DiffReportItem { file_name, .. }| *file_name);
 
         let mut report_metric_data = PrettierCompatibilityMetricData::default();
+
         let mut file_ratio_sum = 0_f64;
+
         let mut total_lines = 0;
+
         let mut total_matched_lines = 0;
+
         let mut file_count = 0;
 
         for DiffReportItem {
@@ -343,6 +354,7 @@ impl DiffReport {
             file_count += 1;
 
             let biome_lines = biome_formatted_result.lines().count();
+
             let prettier_lines = prettier_formatted_result.lines().count();
 
             let (matched_lines, ratio, diff) =
@@ -350,6 +362,7 @@ impl DiffReport {
                     (biome_lines, 1f64, None)
                 } else {
                     let mut matched_lines = 0;
+
                     let mut diff = String::new();
 
                     for (tag, line) in diff_lines(
@@ -362,6 +375,7 @@ impl DiffReport {
                         }
 
                         let line = line.strip_suffix('\n').unwrap_or(line);
+
                         writeln!(diff, "{tag}{line}").unwrap();
                     }
 
@@ -371,7 +385,9 @@ impl DiffReport {
                 };
 
             total_lines += biome_lines.max(prettier_lines);
+
             total_matched_lines += matched_lines;
+
             file_ratio_sum += ratio;
 
             let single_file_metric_data = SingleFileMetricData {
@@ -390,6 +406,7 @@ impl DiffReport {
 
         report_metric_data.file_based_average_prettier_similarity =
             file_ratio_sum / f64::from(file_count);
+
         report_metric_data.line_based_average_prettier_similarity =
             total_matched_lines as f64 / total_lines as f64;
 
@@ -416,17 +433,23 @@ impl DiffReport {
 
             if let Some(diff) = diff {
                 writeln!(report, "```diff").unwrap();
+
                 writeln!(report, "{diff}").unwrap();
+
                 writeln!(report, "```").unwrap()
             }
+
             writeln!(report).unwrap();
+
             writeln!(
                 report,
                 "**Prettier Similarity**: {:.2}%",
                 single_file_compatibility * 100_f64
             )
             .unwrap();
+
             writeln!(report).unwrap();
+
             writeln!(report).unwrap();
         }
 
@@ -472,6 +495,7 @@ impl DiffReport {
             );
 
         let report = format!("{header}\n\n{report}");
+
         write(report_filename, report).unwrap();
     }
 
@@ -481,6 +505,7 @@ impl DiffReport {
         report_metric_data: PrettierCompatibilityMetricData,
     ) {
         let json_content = serde_json::to_string(&report_metric_data).unwrap();
+
         write(report_filename, json_content).unwrap();
     }
 }

@@ -235,6 +235,7 @@ impl AnyJsParameterList {
             AnyJsParameterList::JsParameterList(parameters) => {
                 parameters.first()?.map(|parameter| parameter.into())
             }
+
             AnyJsParameterList::JsConstructorParameterList(parameters) => {
                 parameters.first()?.map(|parameter| parameter.into())
             }
@@ -286,6 +287,7 @@ impl AnyJsParameterList {
             AnyJsParameterList::JsParameterList(list) => {
                 AnyJsParameterListNodeIter::JsParameterList(list.iter())
             }
+
             AnyJsParameterList::JsConstructorParameterList(list) => {
                 AnyJsParameterListNodeIter::JsConstructorParameterList(list.iter())
             }
@@ -338,6 +340,7 @@ impl AnyJsParameterList {
             AnyJsParameterList::JsParameterList(parameters) => {
                 parameters.last()?.map(|parameter| parameter.into())
             }
+
             AnyJsParameterList::JsConstructorParameterList(parameters) => {
                 parameters.last()?.map(|parameter| parameter.into())
             }
@@ -437,6 +440,7 @@ impl Iterator for AnyJsParameterListNodeIter {
             AnyJsParameterListNodeIter::JsParameterList(inner) => {
                 inner.next()?.map(AnyParameter::from)
             }
+
             AnyJsParameterListNodeIter::JsConstructorParameterList(inner) => {
                 inner.next()?.map(AnyParameter::from)
             }
@@ -458,6 +462,7 @@ impl AnyParameter {
                 AnyJsConstructorParameter::AnyJsFormalParameter(parameter) => {
                     parameter.as_js_formal_parameter()?.binding().ok()
                 }
+
                 AnyJsConstructorParameter::JsRestParameter(parameter) => parameter.binding().ok(),
                 AnyJsConstructorParameter::TsPropertyParameter(parameter) => parameter
                     .formal_parameter()
@@ -470,6 +475,7 @@ impl AnyParameter {
                 AnyJsParameter::AnyJsFormalParameter(parameter) => {
                     parameter.as_js_formal_parameter()?.binding().ok()
                 }
+
                 AnyJsParameter::JsRestParameter(parameter) => parameter.binding().ok(),
                 AnyJsParameter::TsThisParameter(_) => None,
             },
@@ -508,6 +514,7 @@ impl AnyJsConstructorParameter {
             AnyJsConstructorParameter::AnyJsFormalParameter(parameter) => {
                 parameter.type_annotation()
             }
+
             AnyJsConstructorParameter::JsRestParameter(parameter) => parameter.type_annotation(),
             AnyJsConstructorParameter::TsPropertyParameter(parameter) => {
                 parameter.formal_parameter().ok()?.type_annotation()
@@ -540,6 +547,7 @@ impl AnyJsFormalParameter {
             AnyJsFormalParameter::JsBogusParameter(_) | AnyJsFormalParameter::JsMetavariable(_) => {
                 None
             }
+
             AnyJsFormalParameter::JsFormalParameter(parameter) => Some(parameter.decorators()),
         }
     }
@@ -550,6 +558,7 @@ impl AnyJsFormalParameter {
             AnyJsFormalParameter::JsBogusParameter(_) | AnyJsFormalParameter::JsMetavariable(_) => {
                 None
             }
+
             AnyJsFormalParameter::JsFormalParameter(parameter) => parameter.type_annotation(),
         }
     }

@@ -11,6 +11,7 @@ impl FormatNodeRule<CssUnicodeRangeInterval> for FormatCssUnicodeRangeInterval {
             minus_token,
             end,
         } = node.as_fields();
+
         write!(f, [start.format(), minus_token.format(), end.format()])
     }
 }

@@ -7,21 +7,26 @@ use quote::{format_ident, quote};
 
 pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> Result<String> {
     let syntax_kind = language_kind.syntax_kind();
+
     let punctuation_values = grammar.punct.iter().map(|(token, _name)| {
         // These tokens, when parsed to proc_macro2::TokenStream, generates a stream of bytes
         // that can't be recognized by [quote].
         // Hence, they need to be thread differently
         if "{}[]()`".contains(token) {
             let c = token.chars().next().unwrap();
+
             quote! { #c }
         } else if matches!(*token, "$=" | "$_") {
             let token = Literal::string(token);
+
             quote! { #token }
         } else {
             let cs = token.chars().map(|c| Punct::new(c, Spacing::Joint));
+
             quote! { #(#cs)* }
         }
     });
+
     let punctuation_strings = grammar.punct.iter().map(|(token, _name)| token);
 
     let punctuation = grammar
@@ -34,6 +39,7 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
     let all_keywords = &grammar.keywords;
     // color-profile => "color-profile"
     let all_keyword_strings = all_keywords.iter().map(|name| (*name).to_string());
+
     let all_keyword_to_strings = all_keywords.iter().map(|name| (*name).to_string()).clone();
     // we need to replace "-" with "_" for the keywords
     // e.g. we have `color-profile` in css but it's an invalid ident in rust code
@@ -44,6 +50,7 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
         .iter()
         .map(|kw| {
             let kw = kw.replace('-', "_");
+
             if kw.chars().all(|c| c.is_uppercase()) {
                 "UPPER_".to_string() + kw.as_str()
             } else {
@@ -103,10 +110,12 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
                         JS_STRING_LITERAL => "string literal",
                         _ => return None,
                     };
+
                     Some(tok)
                 }
             }
         }
+
         LanguageKind::Css => {
             quote! {
                 pub const fn to_string(&self) -> Option<&'static str> {
@@ -116,10 +125,12 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
                         CSS_STRING_LITERAL => "string literal",
                         _ => return None,
                     };
+
                     Some(tok)
                 }
             }
         }
+
         LanguageKind::Json => {
             quote! {
                 pub const fn to_string(&self) -> Option<&'static str> {
@@ -129,10 +140,12 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
                         JSON_STRING_LITERAL => "string literal",
                         _ => return None,
                     };
+
                     Some(tok)
                 }
             }
         }
+
         LanguageKind::Markdown => {
             quote! {
                 pub const fn to_string(&self) -> Option<&'static str> {
@@ -141,10 +154,12 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
                         #(#full_keywords => #all_keyword_to_strings,)*
                         _ => return None,
                     };
+
                     Some(tok)
                 }
             }
         }
+
         LanguageKind::Grit => {
             quote! {
                 pub const fn to_string(&self) -> Option<&'static str> {
@@ -154,10 +169,12 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
                         GRIT_STRING_LITERAL => "string literal",
                         _ => return None,
                     };
+
                     Some(tok)
                 }
             }
         }
+
         LanguageKind::Html => {
             quote! {
                 pub const fn to_string(&self) -> Option<&'static str> {
@@ -167,10 +184,12 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
                         HTML_STRING_LITERAL => "string literal",
                         _ => return None,
                     };
+
                     Some(tok)
                 }
             }
         }
+
         LanguageKind::Graphql => {
             quote! {
                 pub const fn to_string(&self) -> Option<&'static str> {
@@ -180,10 +199,12 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
                         GRAPHQL_STRING_LITERAL => "string literal",
                         _ => return None,
                     };
+
                     Some(tok)
                 }
             }
         }
+
         LanguageKind::Yaml => {
             quote! {
                 pub const fn to_string(&self) -> Option<&'static str> {
@@ -193,6 +214,7 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
                         YAML_STRING_VALUE => "string value",
                         _ => return None,
                     };
+
                     Some(tok)
                 }
             }
@@ -225,6 +247,7 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
             #[doc(hidden)]
             __LAST,
         }
+
         use self::#syntax_kind::*;
 
         impl #syntax_kind {
@@ -254,6 +277,7 @@ pub fn generate_syntax_kinds(grammar: KindsSrc, language_kind: LanguageKind) -> 
                     #(#all_keyword_strings => #full_keywords,)*
                     _ => return None,
                 };
+
                 Some(kw)
             }
 

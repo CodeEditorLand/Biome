@@ -20,7 +20,9 @@ pub(crate) fn is_imported(node: &JsSyntaxNode) -> bool {
 /// exported
 pub trait CanBeImportedExported: AstNode<Language = JsLanguage> {
     type Result;
+
     fn is_exported(&self, model: &SemanticModel) -> Self::Result;
+
     fn is_imported(&self, model: &SemanticModel) -> Self::Result;
 }
 
@@ -29,6 +31,7 @@ impl CanBeImportedExported for JsIdentifierBinding {
 
     fn is_exported(&self, model: &SemanticModel) -> Self::Result {
         let range = self.syntax().text_trimmed_range();
+
         model.data.is_exported(range)
     }
 
@@ -42,6 +45,7 @@ impl CanBeImportedExported for TsIdentifierBinding {
 
     fn is_exported(&self, model: &SemanticModel) -> Self::Result {
         let range = self.syntax().text_trimmed_range();
+
         model.data.is_exported(range)
     }
 
@@ -55,6 +59,7 @@ impl CanBeImportedExported for AnyJsIdentifierBinding {
 
     fn is_exported(&self, model: &SemanticModel) -> Self::Result {
         let range = self.syntax().text_trimmed_range();
+
         model.data.is_exported(range)
     }
 
@@ -68,12 +73,15 @@ impl<T: HasDeclarationAstNode> CanBeImportedExported for T {
 
     fn is_exported(&self, model: &SemanticModel) -> Self::Result {
         let range = self.binding(model)?.syntax().text_trimmed_range();
+
         Some(model.data.is_exported(range))
     }
 
     fn is_imported(&self, model: &SemanticModel) -> Self::Result {
         let binding = self.binding(model)?;
+
         let node = binding.syntax();
+
         Some(is_imported(node))
     }
 }

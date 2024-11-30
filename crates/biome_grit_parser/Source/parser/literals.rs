@@ -32,7 +32,9 @@ fn parse_backtick_snippet_literal(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(GRIT_BACKTICK_SNIPPET);
+
     Present(m.complete(p, GRIT_BACKTICK_SNIPPET_LITERAL))
 }
 
@@ -43,7 +45,9 @@ pub(crate) fn parse_boolean_literal(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump_ts(BOOLEAN_VALUE_SET);
+
     Present(m.complete(p, GRIT_BOOLEAN_LITERAL))
 }
 
@@ -65,6 +69,7 @@ fn parse_code_snippet(p: &mut GritParser) -> ParsedSyntax {
         Present(_) => Present(m.complete(p, GRIT_CODE_SNIPPET)),
         Absent => {
             m.abandon(p);
+
             Absent
         }
     }
@@ -77,8 +82,11 @@ fn parse_dotdotdot(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(DOT3);
+
     parse_maybe_curly_pattern(p).ok();
+
     Present(m.complete(p, GRIT_DOTDOTDOT))
 }
 
@@ -89,7 +97,9 @@ pub(crate) fn parse_double_literal(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(GRIT_DOUBLE);
+
     Present(m.complete(p, GRIT_DOUBLE_LITERAL))
 }
 
@@ -100,7 +110,9 @@ pub(crate) fn parse_int_literal(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(GRIT_INT);
+
     Present(m.complete(p, GRIT_INT_LITERAL))
 }
 
@@ -114,7 +126,9 @@ fn parse_language_specific_snippet(p: &mut GritParser) -> ParsedSyntax {
 
     {
         let m = p.start();
+
         p.bump_ts(SUPPORTED_LANGUAGE_SET);
+
         m.complete(p, GRIT_LANGUAGE_NAME);
     }
 
@@ -130,6 +144,7 @@ pub(crate) fn parse_list(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     parse_name(p).ok();
 
     p.expect(T!['[']);
@@ -137,6 +152,7 @@ pub(crate) fn parse_list(p: &mut GritParser) -> ParsedSyntax {
     ListPatternList.parse_list(p);
 
     p.expect(T![']']);
+
     Present(m.complete(p, GRIT_LIST))
 }
 
@@ -144,6 +160,7 @@ struct ListPatternList;
 
 impl ParseSeparatedList for ListPatternList {
     type Kind = GritSyntaxKind;
+
     type Parser<'source> = GritParser<'source>;
 
     const LIST_KIND: Self::Kind = GRIT_LIST_PATTERN_LIST;
@@ -193,11 +210,13 @@ pub(crate) fn parse_map(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['{']);
 
     MapElementList.parse_list(p);
 
     p.eat(T!['}']);
+
     Present(m.complete(p, GRIT_MAP))
 }
 
@@ -205,6 +224,7 @@ struct MapElementList;
 
 impl ParseSeparatedList for MapElementList {
     type Kind = GritSyntaxKind;
+
     type Parser<'source> = GritParser<'source>;
 
     const LIST_KIND: Self::Kind = GRIT_MAP_ELEMENT_LIST;
@@ -245,8 +265,11 @@ fn parse_map_element(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     parse_name(p).ok();
+
     p.expect(T![:]);
+
     parse_pattern(p)
         .or_recover_with_token_set(
             p,
@@ -265,7 +288,9 @@ pub(crate) fn parse_negative_int_literal(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(GRIT_NEGATIVE_INT);
+
     Present(m.complete(p, GRIT_NEGATIVE_INT_LITERAL))
 }
 
@@ -276,7 +301,9 @@ fn parse_raw_backtick_snippet_literal(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(GRIT_RAW_BACKTICK_SNIPPET);
+
     Present(m.complete(p, GRIT_RAW_BACKTICK_SNIPPET_LITERAL))
 }
 
@@ -287,7 +314,9 @@ fn parse_string_literal(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(GRIT_STRING);
+
     Present(m.complete(p, GRIT_STRING_LITERAL))
 }
 
@@ -298,6 +327,8 @@ fn parse_undefined_literal(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(UNDEFINED_KW);
+
     Present(m.complete(p, GRIT_UNDEFINED_LITERAL))
 }

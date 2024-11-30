@@ -12,7 +12,9 @@ use biome_rowan::{
 
 pub(crate) fn run(root: &JsModule) -> Option<ImportGroups> {
     let mut groups = Vec::new();
+
     let mut first_node = None;
+
     let mut nodes = BTreeMap::new();
 
     for item in root.items() {
@@ -24,6 +26,7 @@ pub(crate) fn run(root: &JsModule) -> Option<ImportGroups> {
                     nodes: std::mem::take(&mut nodes),
                 });
             }
+
             continue;
         };
 
@@ -31,6 +34,7 @@ pub(crate) fn run(root: &JsModule) -> Option<ImportGroups> {
             import.import_clause(),
             Ok(AnyJsImportClause::JsImportBareClause(_))
         );
+
         if is_side_effect_import {
             if let Some(first_node) = first_node.take() {
                 groups.push(ImportGroup {
@@ -40,14 +44,17 @@ pub(crate) fn run(root: &JsModule) -> Option<ImportGroups> {
             }
             // A side effect import creates its own import group
             let mut nodes = BTreeMap::new();
+
             nodes.insert(
                 ImportKey(import.source_text().ok()?),
                 vec![ImportNode::from(import.clone())],
             );
+
             groups.push(ImportGroup {
                 first_node: import.clone(),
                 nodes,
             });
+
             continue;
         }
 
@@ -90,12 +97,15 @@ pub(crate) fn action(
     mutation: &mut BatchMutation<JsLanguage>,
 ) -> Option<()> {
     let mut groups_iter = groups.groups.iter();
+
     let mut next_group = groups_iter.next().expect("state is empty");
 
     let old_list = root.items();
+
     let mut new_list = Vec::new();
 
     let mut items_iter = old_list.iter();
+
     let mut iter = (&mut items_iter).enumerate();
 
     // Iterate other the nodes of the old list
@@ -104,6 +114,7 @@ pub(crate) fn action(
         // of the new group, append the old node to the new list
         if item_slot < next_group.first_node.syntax().index() {
             new_list.push(item);
+
             continue;
         }
 
@@ -115,9 +126,11 @@ pub(crate) fn action(
         // created from all the newline and whitespace pieces on the first
         // token before the first comment or skipped piece.
         let group_first_token = next_group.first_node.import_token().ok()?;
+
         let group_leading_trivia = group_first_token.leading_trivia();
 
         let mut prev_newline = None;
+
         let mut group_leading_trivia: Vec<_> = group_leading_trivia
             .pieces()
             .enumerate()
@@ -128,11 +141,13 @@ pub(crate) fn action(
                 }
 
                 let is_newline = piece.is_newline();
+
                 if let Some(first_newline) = prev_newline.filter(|_| is_newline) {
                     return Some(first_newline + 1);
                 }
 
                 prev_newline = is_newline.then_some(index);
+
                 None
             })
             .map_or_else(
@@ -146,6 +161,7 @@ pub(crate) fn action(
             );
 
         let mut saved_leading_trivia = Vec::new();
+
         let group_leading_pieces = group_leading_trivia.len();
 
         let nodes_iter = next_group
@@ -164,6 +180,7 @@ pub(crate) fn action(
             }
 
             let first_token = import_node.node.import_token().ok()?;
+
             let mut node = import_node.build_sorted_node();
 
             if node_index == 0 && group_first_token != first_token {
@@ -171,6 +188,7 @@ pub(crate) fn action(
                 // but is being moved there, replace its leading whitespace
                 // with the group's leading trivia
                 let group_leading_trivia = group_leading_trivia.drain(..);
+
                 let mut token_leading_trivia = first_token.leading_trivia().pieces().peekable();
 
                 // Save off the leading whitespace of the token to be
@@ -187,6 +205,7 @@ pub(crate) fn action(
                 // got moved, remove the group leading trivia from its
                 // first token
                 let saved_leading_trivia = saved_leading_trivia.drain(..);
+
                 let token_leading_trivia = first_token
                     .leading_trivia()
                     .pieces()
@@ -241,15 +260,21 @@ impl ImportGroup {
         // (sorted in natural order) is higher than the previous item in
         // the sequence
         let mut iter = self.nodes.values().flat_map(|nodes| nodes.iter());
+
         let Some(import_node) = iter.next() else {
             return true;
         };
+
         let mut previous_start = import_node.node.syntax().text_range().end();
+
         import_node.is_sorted()
             && iter.all(|import_node| {
                 let start = import_node.node.syntax().text_range().end();
+
                 let is_sorted = previous_start < start && import_node.is_sorted();
+
                 previous_start = start;
+
                 is_sorted
             })
     }
@@ -271,18 +296,23 @@ impl From<JsImport> for ImportNode {
         let import_clause = node.import_clause().ok();
 
         let mut separator_count = 0;
+
         let specifiers = import_clause.and_then(|import_clause| {
             let AnyJsImportClause::JsImportNamedClause(import_named_clause) = import_clause else {
                 return None;
             };
+
             let named_import_specifiers = import_named_clause.named_specifiers().ok()?;
+
             let mut result = BTreeMap::new();
 
             for element in named_import_specifiers.specifiers().elements() {
                 let node = element.node.ok()?;
+
                 let key = node.imported_name()?.token_text_trimmed();
 
                 let trailing_separator = element.trailing_separator.ok()?;
+
                 separator_count += usize::from(trailing_separator.is_some());
 
                 result.insert(ImportKey(key), (node, trailing_separator));
@@ -306,10 +336,14 @@ impl ImportNode {
             .specifiers
             .values()
             .map(|(node, _)| node.syntax().text_range().start());
+
         let mut previous_start = iter.next().unwrap_or_default();
+
         iter.all(|start| {
             let is_sorted = previous_start < start;
+
             previous_start = start;
+
             is_sorted
         })
     }
@@ -319,16 +353,21 @@ impl ImportNode {
         let import = self.node.clone().detach();
 
         let import_clause = import.import_clause();
+
         let Ok(AnyJsImportClause::JsImportNamedClause(import_named_clause)) = import_clause else {
             return import;
         };
+
         let Ok(old_specifiers) = import_named_clause.named_specifiers() else {
             return import;
         };
 
         let element_count = self.specifiers.len();
+
         let last_element = element_count.saturating_sub(1);
+
         let separator_count = self.separator_count.max(last_element);
+
         let needs_newline: Cell<Option<Option<JsSyntaxToken>>> = Cell::new(None);
 
         let items = self
@@ -339,6 +378,7 @@ impl ImportNode {
                 let is_last = index == last_element;
 
                 let mut node = node.clone().detach();
+
                 let Some(prev_token) = node.syntax().last_token() else {
                     return node;
                 };
@@ -358,6 +398,7 @@ impl ImportNode {
                     // If the node has no separator and this is not the last item,
                     // remove the trailing trivia since it will get cloned on the inserted separator
                     let next_token = prev_token.with_trailing_trivia([]);
+
                     node = node
                         .replace_token_discard_trivia(prev_token, next_token)
                         .expect("prev_token should be a child of node");
@@ -401,6 +442,7 @@ impl ImportNode {
                         Some(trivia) if !trivia.is_empty() => trivia,
                         _ => {
                             let sep = make::token(T![,]);
+
                             return if node.syntax().has_leading_newline() {
                                 sep
                             } else {
@@ -413,12 +455,16 @@ impl ImportNode {
                     // (the items iterator should have already filtered this trivia when it previously
                     // emitted the node)
                     let mut text = String::from(",");
+
                     let mut trailing = Vec::with_capacity(last_trailing_trivia.pieces().len());
 
                     let mut will_need_newline = false;
+
                     for piece in last_trailing_trivia.pieces() {
                         text.push_str(piece.text());
+
                         trailing.push(TriviaPiece::new(piece.kind(), piece.text_len()));
+
                         will_need_newline =
                             matches!(piece.kind(), TriviaPieceKind::SingleLineComment);
                     }
@@ -472,6 +518,7 @@ fn prepend_leading_newline(
     // Check if this node already starts with a newline,
     // if it does we don't need to prepend anything
     let leading_trivia = prev_token.leading_trivia();
+
     let has_leading_newline = leading_trivia
         .first()
         .map_or(false, |piece| piece.is_newline());
@@ -483,9 +530,11 @@ fn prepend_leading_newline(
     // Extract the leading newline from the `newline_source` token
     let leading_newline = newline_source.and_then(|newline_source| {
         let leading_piece = newline_source.leading_trivia().first()?;
+
         if !leading_piece.is_newline() {
             return None;
         }
+
         Some(leading_piece)
     });
 
@@ -498,6 +547,7 @@ fn prepend_leading_newline(
     };
 
     let piece_count = 1 + leading_trivia.pieces().len();
+
     let mut iter = iter::once(leading_newline).chain(leading_trivia_iter(prev_token));
 
     Some(prev_token.with_leading_trivia((0..piece_count).map(|_| iter.next().unwrap())))
@@ -511,13 +561,18 @@ fn leading_trivia_iter(
     token: &JsSyntaxToken,
 ) -> impl ExactSizeIterator<Item = (TriviaPieceKind, &str)> {
     let token_text = token.text();
+
     let token_range = token.text_range();
+
     let trivia = token.leading_trivia();
+
     trivia.pieces().map(move |piece| {
         let piece_range = piece.text_range();
+
         let range = TextRange::at(piece_range.start() - token_range.start(), piece_range.len());
 
         let text = &token_text[range];
+
         assert_eq!(text, piece.text());
 
         (piece.kind(), text)
@@ -530,7 +585,9 @@ struct ImportKey(TokenText);
 impl Ord for ImportKey {
     fn cmp(&self, other: &Self) -> Ordering {
         let own_category = ImportCategory::from(self.0.text());
+
         let other_category = ImportCategory::from(other.0.text());
+
         if own_category != other_category {
             return own_category.cmp(&other_category);
         }
@@ -620,12 +677,15 @@ fn is_ascii_whitespace(piece: &SyntaxTriviaPiece<JsLanguage>) -> bool {
 /// Returns true if the provided trivia contains an empty line (two consecutive newline pieces, ignoring whitespace)
 fn has_empty_line(trivia: &JsSyntaxTrivia) -> bool {
     let mut was_newline = false;
+
     trivia
         .pieces()
         .filter(|piece| !piece.is_whitespace())
         .any(|piece| {
             let prev_newline = was_newline;
+
             was_newline = piece.is_newline();
+
             prev_newline && was_newline
         })
 }

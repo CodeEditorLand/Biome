@@ -20,6 +20,7 @@ impl FormatRule<JsCallArgumentList> for FormatJsCallArgumentList {
                 let separated = node
                     .format_separated(",")
                     .with_trailing_separator(TrailingSeparator::Omit);
+
                 write_arguments_multi_line(separated, f)
             })))]
         )

@@ -69,17 +69,22 @@ pub struct RestrictedGlobalsOptions {
 
 impl Rule for NoRestrictedGlobals {
     type Query = SemanticServices;
+
     type State = (TextRange, Box<str>);
+
     type Signals = Box<[Self::State]>;
+
     type Options = Box<RestrictedGlobalsOptions>;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let model = ctx.model();
+
         let options = ctx.options();
 
         let unresolved_reference_nodes = model
             .all_unresolved_references()
             .map(|reference| reference.syntax().clone());
+
         let global_references_nodes = model
             .all_global_references()
             .map(|reference| reference.syntax().clone());
@@ -88,21 +93,28 @@ impl Rule for NoRestrictedGlobals {
             .chain(global_references_nodes)
             .filter_map(|node| {
                 let node = AnyJsIdentifierUsage::unwrap_cast(node);
+
                 let (token, binding) = match node {
                     AnyJsIdentifierUsage::JsReferenceIdentifier(node) => {
                         (node.value_token(), node.binding(model))
                     }
+
                     AnyJsIdentifierUsage::JsxReferenceIdentifier(node) => {
                         (node.value_token(), node.binding(model))
                     }
+
                     AnyJsIdentifierUsage::JsIdentifierAssignment(node) => {
                         (node.name_token(), node.binding(model))
                     }
                 };
+
                 let token = token.ok()?;
+
                 let text = token.text_trimmed();
+
                 let denied_globals: Vec<_> =
                     options.denied_globals.iter().map(AsRef::as_ref).collect();
+
                 is_restricted(text, &binding, denied_globals.as_slice())
                     .map(|text| (token.text_trimmed_range(), text.into_boxed_str()))
             })

@@ -72,12 +72,16 @@ declare_node_union! {
 
 impl Rule for NoUselessRename {
     type Query = Ast<JsRenaming>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let renaming = ctx.query();
+
         let (old_name, new_name) = match renaming {
             JsRenaming::JsExportNamedFromSpecifier(x) => (
                 x.source_name().ok()?.value().ok()?,
@@ -110,6 +114,7 @@ impl Rule for NoUselessRename {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let renaming = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             renaming.syntax().text_trimmed_range(),
@@ -121,41 +126,56 @@ impl Rule for NoUselessRename {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let renaming = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         match renaming {
             JsRenaming::JsExportNamedFromSpecifier(x) => {
                 let last_token = x.source_name().ok()?.value().ok()?;
+
                 let export_as = x.export_as()?;
+
                 let export_as_last_token = export_as.exported_name().ok()?.value().ok()?;
+
                 let replacing_token = last_token.append_trivia_pieces(trim_leading_trivia_pieces(
                     export_as_last_token.trailing_trivia().pieces(),
                 ));
+
                 mutation.remove_node(export_as);
+
                 mutation.replace_token_discard_trivia(last_token, replacing_token);
             }
+
             JsRenaming::JsExportNamedSpecifier(x) => {
                 let replacing =
                     make::js_export_named_shorthand_specifier(x.local_name().ok()?).build();
+
                 mutation.replace_node(AnyJsExportNamedSpecifier::from(x.clone()), replacing.into());
             }
+
             JsRenaming::JsNamedImportSpecifier(x) => {
                 let replacing =
                     make::js_shorthand_named_import_specifier(x.local_name().ok()?).build();
+
                 mutation.replace_node(AnyJsNamedImportSpecifier::from(x.clone()), replacing.into());
             }
+
             JsRenaming::JsObjectBindingPatternProperty(x) => {
                 let mut replacing_builder = make::js_object_binding_pattern_shorthand_property(
                     x.pattern().ok()?.as_any_js_binding()?.clone(),
                 );
+
                 if let Some(init) = x.init() {
                     replacing_builder = replacing_builder.with_init(init);
                 }
+
                 mutation.replace_node(
                     AnyJsObjectBindingPatternMember::from(x.clone()),
                     replacing_builder.build().into(),
                 );
             }
         }
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

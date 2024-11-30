@@ -30,6 +30,7 @@ impl FormatRule<SourceComment<JsonLanguage>> for FormatJsonLeadingComment {
 
             // SAFETY: Safe, `is_alignable_comment` only returns `true` for multiline comments
             let first_line = lines.next().unwrap();
+
             write!(f, [dynamic_text(first_line.trim_end(), source_offset)])?;
 
             source_offset += first_line.text_len();
@@ -107,6 +108,7 @@ fn handle_empty_list_comment(
             return CommentPlacement::dangling(comment.enclosing_node().clone(), comment);
         }
     }
+
     if let Some(object) = JsonObjectValue::cast_ref(comment.enclosing_node()) {
         if object.json_member_list().is_empty() {
             return CommentPlacement::dangling(comment.enclosing_node().clone(), comment);

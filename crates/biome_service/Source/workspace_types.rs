@@ -56,20 +56,25 @@ fn instance_type<'a>(
         // If the instance type is an object, generate a TS object type with the corresponding properties
         InstanceType::Object => {
             let object = schema.object.as_deref().unwrap();
+
             AnyTsType::from(make::ts_object_type(
                 make::token(T!['{']),
                 make::ts_type_member_list(object.properties.iter().map(|(property, schema)| {
                     let (ts_type, optional, description) = schema_type(queue, root_schema, schema);
+
                     assert!(!optional, "optional nested types are not supported");
 
                     let mut property = make::ident(property);
+
                     if let Some(description) = description {
                         let comment = format!("/**\n\t* {description} \n\t */");
+
                         let trivia = vec![
                             (TriviaPieceKind::Newline, "\n"),
                             (TriviaPieceKind::MultiLineComment, comment.as_str()),
                             (TriviaPieceKind::Newline, "\n"),
                         ];
+
                         property = property.with_leading_trivia(trivia);
                     }
 
@@ -87,10 +92,13 @@ fn instance_type<'a>(
         // If the instance type is an array, generate a TS array type with the corresponding item type
         InstanceType::Array => {
             let array = schema.array.as_deref().unwrap();
+
             let items = array.items.as_ref().unwrap();
+
             match items {
                 SingleOrVec::Single(schema) => {
                     let (ts_type, optional, _) = schema_type(queue, root_schema, schema);
+
                     assert!(!optional, "optional nested types are not supported");
 
                     AnyTsType::from(make::ts_array_type(
@@ -99,12 +107,15 @@ fn instance_type<'a>(
                         make::token(T![']']),
                     ))
                 }
+
                 SingleOrVec::Vec(items) => AnyTsType::from(make::ts_tuple_type(
                     make::token(T!['[']),
                     make::ts_tuple_type_element_list(
                         items.iter().map(|schema| {
                             let (ts_type, optional, _) = schema_type(queue, root_schema, schema);
+
                             assert!(!optional, "optional nested types are not supported");
+
                             AnyTsTupleTypeElement::AnyTsType(ts_type)
                         }),
                         items.iter().map(|_| make::token(T![,])),
@@ -132,12 +143,14 @@ fn value_type(value: &Value) -> AnyTsType {
         Value::Bool(false) => {
             AnyTsType::from(make::ts_boolean_literal_type(make::token(T![false])))
         }
+
         Value::Number(value) => AnyTsType::from(
             make::ts_number_literal_type(make::js_number_literal(value.as_f64().unwrap())).build(),
         ),
         Value::String(value) => {
             AnyTsType::from(make::ts_string_literal_type(make::js_string_literal(value)))
         }
+
         Value::Array(_) => unimplemented!(),
         Value::Object(_) => unimplemented!(),
     }
@@ -159,6 +172,7 @@ fn make_union_type(items: impl IntoIterator<Item = AnyTsType>) -> AnyTsType {
     }
 
     let separators = (0..result.len().saturating_sub(1)).map(|_| make::token(T![|]));
+
     AnyTsType::from(
         make::ts_union_type(make::ts_union_type_variant_list(result, separators)).build(),
     )
@@ -178,6 +192,7 @@ fn schema_object_type<'a>(
         .metadata
         .as_ref()
         .and_then(|s| s.description.as_ref());
+
     let ts_type = schema
         .enum_values
         .as_deref()
@@ -198,7 +213,9 @@ fn schema_object_type<'a>(
         // a TS reference type and add the corresponding type to the queue
         .or_else(|| {
             let reference = schema.reference.as_deref()?;
+
             let key = reference.trim_start_matches("#/components/schemas/");
+
             match root_schema.definitions.get(key) {
                 Some(Schema::Bool(_)) => unimplemented!(),
                 Some(Schema::Object(schema)) => queue.push_back((key, schema)),
@@ -225,7 +242,9 @@ fn schema_object_type<'a>(
                         make::ts_intersection_type(make::ts_intersection_type_element_list(
                             all_of.iter().map(|ty| {
                                 let (ts_type, optional, _) = schema_type(queue, root_schema, ty);
+
                                 assert!(!optional, "optional nested types are not supported");
+
                                 ts_type
                             }),
                             (0..all_of.len().saturating_sub(1)).map(|_| make::token(T![&])),
@@ -243,7 +262,9 @@ fn schema_object_type<'a>(
 
                     Some(make_union_type(any_of.iter().map(|ty| {
                         let (ts_type, optional, _) = schema_type(queue, root_schema, ty);
+
                         assert!(!optional, "optional nested types are not supported");
+
                         ts_type
                     })))
                 })
@@ -256,6 +277,7 @@ fn schema_object_type<'a>(
     // Types are considered "optional" in the serialization protocol if they
     // have the `nullable` OpenAPI extension property, or if they have a default value
     let is_nullable = matches!(schema.extensions.get("nullable"), Some(Value::Bool(true)));
+
     let has_defaults = schema
         .metadata
         .as_ref()
@@ -336,17 +358,21 @@ pub fn generate_type<'a>(
             // Create a property signature member in the interface for each
             // property of the corresponding schema object
             let object = schema.object.as_deref().unwrap();
+
             for (property, schema) in &object.properties {
                 let (ts_type, optional, description) = schema_type(queue, root_schema, schema);
 
                 let mut property = make::ident(property);
+
                 if let Some(description) = description {
                     let comment = format!("/**\n\t* {description} \n\t */");
+
                     let trivia = vec![
                         (TriviaPieceKind::Newline, "\n"),
                         (TriviaPieceKind::MultiLineComment, comment.as_str()),
                         (TriviaPieceKind::Newline, "\n"),
                     ];
+
                     property = property.with_leading_trivia(trivia);
                 }
 
@@ -366,6 +392,7 @@ pub fn generate_type<'a>(
                 .metadata
                 .as_ref()
                 .and_then(|s| s.description.as_ref());
+
             let current_module = AnyJsDeclaration::from(
                 make::ts_interface_declaration(
                     make::token(T![interface]),
@@ -376,6 +403,7 @@ pub fn generate_type<'a>(
                 )
                 .build(),
             );
+
             module.push((current_module, description));
         } else {
             // If the schema for this type is not an object, emit it as a type alias
@@ -392,6 +420,7 @@ pub fn generate_type<'a>(
                 )
                 .build(),
             );
+
             module.push((current_module, description));
         }
     }
@@ -422,7 +451,9 @@ impl WorkspaceMethod {
         R: JsonSchema,
     {
         let params = SchemaGenerator::from(SchemaSettings::openapi3()).root_schema_for::<P>();
+
         let result = SchemaGenerator::from(SchemaSettings::openapi3()).root_schema_for::<R>();
+
         Self {
             name,
             params,

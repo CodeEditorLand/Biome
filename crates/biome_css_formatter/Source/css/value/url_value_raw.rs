@@ -7,8 +7,11 @@ pub(crate) struct FormatCssUrlValueRaw;
 impl FormatNodeRule<CssUrlValueRaw> for FormatCssUrlValueRaw {
     fn fmt_fields(&self, node: &CssUrlValueRaw, f: &mut CssFormatter) -> FormatResult<()> {
         let CssUrlValueRawFields { value_token } = node.as_fields();
+
         let value_token = value_token?;
+
         let text = value_token.token_text();
+
         write!(
             f,
             [format_replaced(

@@ -39,10 +39,13 @@ impl TestCase for SymbolsMicrosoftTestCase {
 
     fn run(&self) -> TestRunOutcome {
         let options = JsParserOptions::default().with_parse_class_parameter_decorators();
+
         let symbols = check_file_encoding(&self.path).unwrap();
+
         let expected = load_symbols_file(&symbols);
 
         let mut full_path = PathBuf::from_str(BASE_PATH).unwrap();
+
         full_path.push(expected.code_file);
 
         // Some .symbols files point to .ts files that do no exist.
@@ -50,14 +53,17 @@ impl TestCase for SymbolsMicrosoftTestCase {
         // the .symbol file itself.
         let code = if !full_path.exists() {
             tracing::warn!("Not Found: {full_path:?}");
+
             symbols.lines().fold(String::new(), |mut s, line| {
                 if !line.starts_with('>')
                     && !line.starts_with("=== ")
                     && !line.starts_with("///<reference ")
                 {
                     s.push_str(line);
+
                     s.push('\n');
                 }
+
                 s
             })
         } else {
@@ -85,7 +91,9 @@ impl TestCase for SymbolsMicrosoftTestCase {
         );
 
         let mut prev_starts: HashSet<TextSize> = HashSet::default();
+
         let r = biome_js_parser::parse(&code, JsFileSource::tsx(), options);
+
         let mut actual: Vec<_> = biome_js_semantic::semantic_events(r.syntax())
             .into_iter()
             .filter(|x| {
@@ -104,21 +112,26 @@ impl TestCase for SymbolsMicrosoftTestCase {
                         // Ignore the current event if one was already processed for the same range.
                         prev_starts.insert(range.start())
                     }
+
                     SemanticEvent::ScopeStarted { .. }
                     | SemanticEvent::ScopeEnded { .. }
                     | SemanticEvent::Export { .. } => false,
                 }
             })
             .collect();
+
         actual.sort_by_key(|x| x.range().start());
 
         // Print to debug! detailed information
         // on symbols that are different from the
         // expected
         let mut expecteds = expected.symbols.iter();
+
         let mut actuals = actual.iter();
+
         loop {
             let expected = expecteds.next();
+
             let actual = actuals.next();
 
             if expected.is_none() && actual.is_none() {
@@ -137,6 +150,7 @@ impl TestCase for SymbolsMicrosoftTestCase {
 
             if let Some(actual) = actual {
                 let name = &code[actual.range()].trim();
+
                 write!(debug_text, "[{name}]").unwrap();
             }
 
@@ -144,6 +158,7 @@ impl TestCase for SymbolsMicrosoftTestCase {
                 (Some(expected), Some(actual)) if expected.name != code[actual.range()].trim() => {
                     debug_text.push_str(" <<<<<<<<<<<<<<<<<<<< Diff here");
                 }
+
                 _ => {}
             }
 
@@ -158,6 +173,7 @@ impl TestCase for SymbolsMicrosoftTestCase {
         } else {
             for (expected, actual) in expected.symbols.iter().zip(actual) {
                 let are_names_eq = expected.name == code[actual.range()].trim();
+
                 if !are_names_eq {
                     return TestRunOutcome::IncorrectlyErrored {
                         files: t,
@@ -188,27 +204,35 @@ impl TestSuite for SymbolsMicrosoftTestSuite {
             Some(ext) if ext == "symbols" => {
                 // only accepts if there is no *.errors.txt file
                 let fullpath = path.with_extension("errors.txt");
+
                 std::fs::metadata(fullpath).is_err()
             }
+
             _ => false,
         }
     }
 
     fn checkout(&self) -> io::Result<()> {
         let base_path = project_root().join(BASE_PATH);
+
         let mut command = Command::new("git");
+
         command
             .arg("clone")
             .arg("https://github.com/microsoft/Typescript.git")
             .arg("--depth")
             .arg("1")
             .arg(base_path.display().to_string());
+
         command.output()?;
+
         let mut command = Command::new("git");
+
         command
             .arg("reset")
             .arg("--hard")
             .arg("61a96b1641abe24c4adc3633eb936df89eb991f2");
+
         command.output()?;
 
         Ok(())
@@ -256,20 +280,32 @@ struct SymbolsFile {
 /// see xtask\coverage\Typescript\src\harness\typeWriter.ts
 fn parse_symbol(input: &str) -> Option<Symbol> {
     let (input, _) = parse_str(input, ">")?;
+
     let (input, name) = parse_until_chr(input, |x| x.is_whitespace() || x == ':')?;
+
     if name.contains('.') || name.contains('[') || name.contains('\"') || name.contains('\'') {
         return None;
     }
+
     let (input, _) = parse_whitespace0(input);
+
     let (input, _) = parse_str(input, ":")?;
+
     let (input, _) = parse_whitespace0(input);
+
     let (input, _) = parse_str(input, "Symbol")?;
+
     let (input, _) = parse_whitespace0(input);
+
     let (input, _) = parse_str(input, "(")?;
+
     let (input, path) = parse_until_chr(input, |x| x.is_whitespace() || x == ',' || x == ')')?;
+
     let (input, _) = parse_whitespace0(input);
+
     let decls = if !input.starts_with(')') {
         let (input, _) = parse_str(input, ",")?;
+
         let (input, _) = parse_whitespace0(input);
 
         let (_, decls) = parse_separated_list(
@@ -278,6 +314,7 @@ fn parse_symbol(input: &str) -> Option<Symbol> {
             |s| parse_str(s, ",").map_or(s, |x| x.0),
             |s| parse_whitespace0(s).0,
         );
+
         decls
     } else {
         vec![]
@@ -292,20 +329,35 @@ fn parse_symbol(input: &str) -> Option<Symbol> {
 
 fn parse_decl(input: &str) -> Option<(&str, Decl)> {
     let (input, _) = parse_str(input, "Decl")?;
+
     let (input, _) = parse_whitespace0(input);
+
     let (input, _) = parse_str(input, "(")?;
+
     let (input, _) = parse_whitespace0(input);
+
     let (input, file) = parse_until_chr(input, |x| x.is_whitespace() || x == ',')?;
+
     let (input, _) = parse_whitespace0(input);
+
     let (input, _) = parse_str(input, ",")?;
+
     let (input, _) = parse_whitespace0(input);
+
     let (input, row_start) = parse_until_chr(input, |x| x.is_whitespace() || x == ',')?;
+
     let (input, _) = parse_whitespace0(input);
+
     let (input, _) = parse_str(input, ",")?;
+
     let (input, _) = parse_whitespace0(input);
+
     let (input, col_start) = parse_until_chr(input, |x| x.is_whitespace() || x == ')')?;
+
     let (input, _) = parse_whitespace0(input);
+
     let (input, _) = parse_str(input, ")")?;
+
     Some((
         input,
         Decl {

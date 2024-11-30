@@ -20,6 +20,7 @@ impl FormatNodeRule<JsInExpression> for FormatJsInExpression {
 #[cfg(test)]
 mod tests {
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::{JsFileSource, JsInExpression};
 
     #[test]
@@ -27,22 +28,33 @@ mod tests {
         assert_needs_parentheses!("class X extends (a in b) {}", JsInExpression);
 
         assert_needs_parentheses!("(a in b) as number", JsInExpression);
+
         assert_needs_parentheses!("<number>(a in b)", JsInExpression);
+
         assert_needs_parentheses!("!(a in b)", JsInExpression);
+
         assert_needs_parentheses!("await (a in b)", JsInExpression);
+
         assert_needs_parentheses!("(a in b)!", JsInExpression);
 
         assert_needs_parentheses!("(a in b)()", JsInExpression);
+
         assert_needs_parentheses!("(a in b)?.()", JsInExpression);
+
         assert_needs_parentheses!("new (a in b)()", JsInExpression);
+
         assert_needs_parentheses!("(a in b)`template`", JsInExpression);
+
         assert_needs_parentheses!("[...(a in b)]", JsInExpression);
+
         assert_needs_parentheses!("({...(a in b)})", JsInExpression);
+
         assert_needs_parentheses!(
             "<test {...(a in b)} />",
             JsInExpression,
             JsFileSource::tsx()
         );
+
         assert_needs_parentheses!(
             "<test>{...(a in b)}</test>",
             JsInExpression,
@@ -50,28 +62,37 @@ mod tests {
         );
 
         assert_needs_parentheses!("(a in b).member", JsInExpression);
+
         assert_needs_parentheses!("(a in b)[member]", JsInExpression);
+
         assert_not_needs_parentheses!("object[a in b]", JsInExpression);
 
         assert_needs_parentheses!("(a in b) + c", JsInExpression);
 
         assert_not_needs_parentheses!("a in b > c", JsInExpression);
+
         assert_not_needs_parentheses!("a in b instanceof C", JsInExpression);
+
         assert_not_needs_parentheses!("a in b in c", JsInExpression[0]);
+
         assert_not_needs_parentheses!("a in b in c", JsInExpression[1]);
     }
 
     #[test]
     fn for_in_needs_parentheses() {
         assert_needs_parentheses!("for (let a = (b in c);;);", JsInExpression);
+
         assert_needs_parentheses!("for (a && (b in c);;);", JsInExpression);
+
         assert_needs_parentheses!("for (a => (b in c);;);", JsInExpression);
+
         assert_needs_parentheses!(
             "function* g() {
   for (yield (a in b);;);
 }",
             JsInExpression
         );
+
         assert_needs_parentheses!(
             "async function f() {
   for (await (a in b);;);
@@ -80,7 +101,9 @@ mod tests {
         );
 
         assert_not_needs_parentheses!("for (;a in b;);", JsInExpression);
+
         assert_not_needs_parentheses!("for (;;a in b);", JsInExpression);
+
         assert_not_needs_parentheses!(
             r#"
         for (function () { a in b }();;);

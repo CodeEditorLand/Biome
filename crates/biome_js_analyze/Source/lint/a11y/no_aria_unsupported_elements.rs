@@ -70,20 +70,25 @@ pub struct RuleState {
 
 impl Rule for NoAriaUnsupportedElements {
     type Query = Ast<AnyJsxElement>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
 
         let element_name = node.name().ok()?.as_jsx_name()?.value_token().ok()?;
+
         let element_name = element_name.text_trimmed();
 
         if ARIA_UNSUPPORTED_ELEMENTS.contains(&element_name) {
             // Check if the unsupported element has `role` or `aria-*` attribute
             let report = node.attributes().iter().find_map(|attribute| {
                 let attribute = attribute.as_jsx_attribute()?;
+
                 let attribute_name = attribute.name().ok()?.as_jsx_name()?.value_token().ok()?;
 
                 if attribute_name.text_trimmed().starts_with("aria-")
@@ -99,8 +104,10 @@ impl Rule for NoAriaUnsupportedElements {
                         attribute_kind: AttributeKind::Role,
                     });
                 }
+
                 None
             });
+
             return report;
         }
 
@@ -109,6 +116,7 @@ impl Rule for NoAriaUnsupportedElements {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let attribute_kind = state.attribute_kind.as_str();
 
         Some(
@@ -127,21 +135,25 @@ impl Rule for NoAriaUnsupportedElements {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let element = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let attribute = element.attributes().into_iter().find_map(|attribute| {
             let jsx_attribute = attribute.as_jsx_attribute()?;
+
             let attribute_name = jsx_attribute
                 .name()
                 .ok()?
                 .as_jsx_name()?
                 .value_token()
                 .ok()?;
+
             let attribute_name = attribute_name.text_trimmed();
             (attribute_name.starts_with("aria-") || attribute_name == "role").then_some(attribute)
         })?;
 
         let removed_attribute = attribute.to_string();
+
         mutation.remove_node(attribute);
 
         Some(JsRuleAction::new(

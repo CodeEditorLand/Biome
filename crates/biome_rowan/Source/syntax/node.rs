@@ -52,6 +52,7 @@ impl<L: Language> SyntaxNode<L> {
 
     pub fn key(&self) -> SyntaxElementKey {
         let (node_data, offset) = self.raw.key();
+
         SyntaxElementKey::new(node_data, offset)
     }
 
@@ -294,6 +295,7 @@ impl<L: Language> SyntaxNode<L> {
     pub fn first_child(&self) -> Option<SyntaxNode<L>> {
         self.raw.first_child().map(Self::from)
     }
+
     pub fn last_child(&self) -> Option<SyntaxNode<L>> {
         self.raw.last_child().map(Self::from)
     }
@@ -301,6 +303,7 @@ impl<L: Language> SyntaxNode<L> {
     pub fn first_child_or_token(&self) -> Option<SyntaxElement<L>> {
         self.raw.first_child_or_token().map(NodeOrToken::from)
     }
+
     pub fn last_child_or_token(&self) -> Option<SyntaxElement<L>> {
         self.raw.last_child_or_token().map(NodeOrToken::from)
     }
@@ -308,6 +311,7 @@ impl<L: Language> SyntaxNode<L> {
     pub fn next_sibling(&self) -> Option<SyntaxNode<L>> {
         self.raw.next_sibling().map(Self::from)
     }
+
     pub fn prev_sibling(&self) -> Option<SyntaxNode<L>> {
         self.raw.prev_sibling().map(Self::from)
     }
@@ -315,6 +319,7 @@ impl<L: Language> SyntaxNode<L> {
     pub fn next_sibling_or_token(&self) -> Option<SyntaxElement<L>> {
         self.raw.next_sibling_or_token().map(NodeOrToken::from)
     }
+
     pub fn prev_sibling_or_token(&self) -> Option<SyntaxElement<L>> {
         self.raw.prev_sibling_or_token().map(NodeOrToken::from)
     }
@@ -463,7 +468,9 @@ impl<L: Language> SyntaxNode<L> {
         I::IntoIter: ExactSizeIterator,
     {
         let first_token = self.first_token()?;
+
         let new_first_token = first_token.with_leading_trivia_pieces(trivia);
+
         self.replace_child(first_token.into(), new_first_token.into())
     }
 
@@ -475,7 +482,9 @@ impl<L: Language> SyntaxNode<L> {
         I::IntoIter: ExactSizeIterator,
     {
         let last_token = self.last_token()?;
+
         let new_last_token = last_token.with_trailing_trivia_pieces(trivia);
+
         self.replace_child(last_token.into(), new_last_token.into())
     }
 
@@ -517,7 +526,9 @@ impl<L: Language> SyntaxNode<L> {
         I::IntoIter: ExactSizeIterator,
     {
         let first_token = self.first_token()?;
+
         let new_first_token = first_token.prepend_trivia_pieces(trivia);
+
         self.replace_child(first_token.into(), new_first_token.into())
     }
 
@@ -559,7 +570,9 @@ impl<L: Language> SyntaxNode<L> {
         I::IntoIter: ExactSizeIterator,
     {
         let last_token = self.last_token()?;
+
         let new_last_token = last_token.append_trivia_pieces(trivia);
+
         self.replace_child(last_token.into(), new_last_token.into())
     }
 
@@ -633,7 +646,9 @@ impl<L: Language> SyntaxNode<L> {
     #[must_use = "syntax elements are immutable, the result of update methods must be propagated to have any effect"]
     pub fn trim_leading_trivia(self) -> Option<Self> {
         let first_token = self.first_token()?;
+
         let new_first_token = first_token.trim_leading_trivia();
+
         self.replace_child(first_token.into(), new_first_token.into())
     }
 
@@ -671,7 +686,9 @@ impl<L: Language> SyntaxNode<L> {
     #[must_use = "syntax elements are immutable, the result of update methods must be propagated to have any effect"]
     pub fn trim_trailing_trivia(self) -> Option<Self> {
         let last_token = self.last_token()?;
+
         let new_last_token = last_token.trim_trailing_trivia();
+
         self.replace_child(last_token.into(), new_last_token.into())
     }
 
@@ -753,16 +770,19 @@ impl<L: Language> fmt::Debug for SyntaxNode<L> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         if f.alternate() {
             let mut level = 0;
+
             for event in self.raw.preorder_slots() {
                 match event {
                     WalkEvent::Enter(element) => {
                         for _ in 0..level {
                             write!(f, "  ")?;
                         }
+
                         match element {
                             cursor::SyntaxSlot::Node(node) => {
                                 writeln!(f, "{}: {:?}", node.index(), SyntaxNode::<L>::from(node))?
                             }
+
                             cursor::SyntaxSlot::Token(token) => writeln!(
                                 f,
                                 "{}: {:?}",
@@ -773,12 +793,16 @@ impl<L: Language> fmt::Debug for SyntaxNode<L> {
                                 writeln!(f, "{index}: (empty)")?
                             }
                         }
+
                         level += 1;
                     }
+
                     WalkEvent::Leave(_) => level -= 1,
                 }
             }
+
             assert_eq!(level, 0);
+
             Ok(())
         } else {
             write!(f, "{:?}@{:?}", self.kind(), self.text_range())
@@ -840,6 +864,7 @@ pub struct SyntaxNodeChildren<L: Language> {
 
 impl<L: Language> Iterator for SyntaxNodeChildren<L> {
     type Item = SyntaxNode<L>;
+
     fn next(&mut self) -> Option<Self::Item> {
         self.raw.next().map(SyntaxNode::from)
     }
@@ -868,6 +893,7 @@ impl<L: Language> Default for SyntaxElementChildren<L> {
 
 impl<L: Language> Iterator for SyntaxElementChildren<L> {
     type Item = SyntaxElement<L>;
+
     fn next(&mut self) -> Option<Self::Item> {
         self.raw.next().map(NodeOrToken::from)
     }
@@ -886,6 +912,7 @@ impl<L: Language> Preorder<L> {
 
 impl<L: Language> Iterator for Preorder<L> {
     type Item = WalkEvent<SyntaxNode<L>>;
+
     fn next(&mut self) -> Option<Self::Item> {
         self.raw.next().map(|it| it.map(SyntaxNode::from))
     }
@@ -904,6 +931,7 @@ impl<L: Language> PreorderWithTokens<L> {
 
 impl<L: Language> Iterator for PreorderWithTokens<L> {
     type Item = WalkEvent<SyntaxElement<L>>;
+
     fn next(&mut self) -> Option<Self::Item> {
         self.raw.next().map(|it| it.map(SyntaxElement::from))
     }

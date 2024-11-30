@@ -55,6 +55,7 @@ impl PrintedTokens {
         let PrintedTokensSnapshot { len, disabled } = snapshot;
 
         self.offsets.truncate(len);
+
         self.disabled = disabled
     }
 

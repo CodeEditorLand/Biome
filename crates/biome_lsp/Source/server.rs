@@ -66,6 +66,7 @@ impl LSPServer {
         );
 
         let url = params.text_document.uri;
+
         requests::syntax_tree::syntax_tree(&self.session, &url).map_err(into_lsp_error)
     }
 
@@ -181,6 +182,7 @@ impl LSPServer {
                 CapabilityStatus::Enable(None)
             },
         );
+
         capabilities.add_capability(
             "biome_range_formatting",
             "textDocument/rangeFormatting",
@@ -190,6 +192,7 @@ impl LSPServer {
                 CapabilityStatus::Enable(None)
             },
         );
+
         capabilities.add_capability(
             "biome_on_type_formatting",
             "textDocument/onTypeFormatting",
@@ -206,6 +209,7 @@ impl LSPServer {
 
         let rename = {
             let config = self.session.extension_settings.read().ok();
+
             config.is_some_and(|x| x.rename_enabled())
         };
 
@@ -254,9 +258,11 @@ impl LanguageServer for LSPServer {
     )]
     async fn initialize(&self, params: InitializeParams) -> LspResult<InitializeResult> {
         info!("Starting Biome Language Server...");
+
         self.is_initialized.store(true, Ordering::Relaxed);
 
         let server_capabilities = server_capabilities(&params.capabilities);
+
         if params.root_path.is_some() {
             warn!("The Biome Server was initialized with the deprecated `root_path` parameter: this is not supported, use `root_uri` instead");
         }
@@ -296,6 +302,7 @@ impl LanguageServer for LSPServer {
         );
 
         let msg = format!("Server initialized with PID: {}", std::process::id());
+
         self.session
             .client
             .log_message(MessageType::INFO, msg)
@@ -314,9 +321,13 @@ impl LanguageServer for LSPServer {
     #[tracing::instrument(level = "trace", skip(self))]
     async fn did_change_configuration(&self, params: DidChangeConfigurationParams) {
         let _ = params;
+
         self.session.load_workspace_settings().await;
+
         self.session.load_extension_settings().await;
+
         self.setup_capabilities().await;
+
         self.session.update_all_diagnostics().await;
     }
 
@@ -326,12 +337,15 @@ impl LanguageServer for LSPServer {
             .changes
             .iter()
             .map(|change| change.uri.to_file_path());
+
         for file_path in file_paths {
             match file_path {
                 Ok(file_path) => {
                     let base_path = self.session.base_path();
+
                     if let Some(base_path) = base_path {
                         let possible_rome_json = file_path.strip_prefix(&base_path);
+
                         if let Ok(watched_file) = possible_rome_json {
                             if watched_file.display().to_string() == ROME_JSON
                                 || ConfigName::file_names()
@@ -339,8 +353,11 @@ impl LanguageServer for LSPServer {
                                 || watched_file.ends_with(".editorconfig")
                             {
                                 self.session.load_workspace_settings().await;
+
                                 self.session.load_manifest().await;
+
                                 self.setup_capabilities().await;
+
                                 self.session.update_all_diagnostics().await;
                                 // for now we are only interested to the configuration file,
                                 // so it's OK to exist the loop
@@ -349,8 +366,10 @@ impl LanguageServer for LSPServer {
                         }
                     }
                 }
+
                 Err(_) => {
                     error!("The Workspace root URI {file_path:?} could not be parsed as a filesystem path");
+
                     continue;
                 }
             }
@@ -386,6 +405,7 @@ impl LanguageServer for LSPServer {
 
                 if let Err(err) = result {
                     error!("Failed to remove project from the workspace: {}", err);
+
                     self.session
                         .client
                         .log_message(MessageType::ERROR, err)
@@ -407,6 +427,7 @@ impl LanguageServer for LSPServer {
 
                 if let Err(err) = result {
                     error!("Failed to add project to the workspace: {}", err);
+
                     self.session
                         .client
                         .log_message(MessageType::ERROR, err)
@@ -441,6 +462,7 @@ impl LanguageServer for LSPServer {
         let result = biome_diagnostics::panic::catch_unwind(move || {
             handlers::formatting::format_range(&self.session, params)
         });
+
         self.map_op_error(result).await
     }
 
@@ -479,6 +501,7 @@ impl Drop for LSPServer {
     fn drop(&mut self) {
         if let Ok(mut sessions) = self.sessions.lock() {
             let _removed = sessions.remove(&self.session.key);
+
             debug_assert!(_removed.is_some(), "Session did not exist.");
 
             if self.stop_on_disconnect
@@ -504,8 +527,10 @@ macro_rules! workspace_method {
                 let span = tracing::trace_span!(concat!("biome/", stringify!($method)), params = ?params).or_current();
 
                 let workspace = server.session.workspace.clone();
+
                 let result = spawn_blocking(move || {
                     let _guard = span.entered();
+
                     workspace.$method(params)
                 });
 
@@ -592,12 +617,15 @@ impl ServerFactory {
                 self.cancellation.clone(),
                 fs,
             );
+
             if let Some(path) = config_path {
                 session.set_config_path(path);
             }
+
             let handle = Arc::new(session);
 
             let mut sessions = self.sessions.lock().unwrap();
+
             sessions.insert(session_key, handle.clone());
 
             LSPServer::new(
@@ -613,35 +641,58 @@ impl ServerFactory {
         // "shutdown" is not part of the Workspace API
         builder = builder.custom_method("biome/shutdown", |server: &LSPServer, (): ()| {
             info!("Sending shutdown signal");
+
             server.session.broadcast_shutdown();
+
             ready(Ok(Some(())))
         });
 
         builder = builder.custom_method("biome/rage", LSPServer::rage);
 
         workspace_method!(builder, file_features);
+
         workspace_method!(builder, is_path_ignored);
+
         workspace_method!(builder, update_settings);
+
         workspace_method!(builder, register_project_folder);
+
         workspace_method!(builder, unregister_project_folder);
+
         workspace_method!(builder, open_file);
+
         workspace_method!(builder, set_manifest_for_project);
+
         workspace_method!(builder, get_syntax_tree);
+
         workspace_method!(builder, get_control_flow_graph);
+
         workspace_method!(builder, get_formatter_ir);
+
         workspace_method!(builder, change_file);
+
         workspace_method!(builder, get_file_content);
+
         workspace_method!(builder, close_file);
+
         workspace_method!(builder, pull_diagnostics);
+
         workspace_method!(builder, pull_actions);
+
         workspace_method!(builder, format_file);
+
         workspace_method!(builder, format_range);
+
         workspace_method!(builder, format_on_type);
+
         workspace_method!(builder, fix_file);
+
         workspace_method!(builder, rename);
+
         workspace_method!(builder, organize_imports);
 
         let (service, socket) = builder.finish();
+
         ServerConnection { socket, service }
     }
 

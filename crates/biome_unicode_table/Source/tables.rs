@@ -5,6 +5,7 @@
 #![allow(missing_docs, non_upper_case_globals, non_snake_case)]
 fn bsearch_range_table(c: char, r: &[(char, char)]) -> bool {
     use core::cmp::Ordering::{Equal, Greater, Less};
+
     r.binary_search_by(|&(lo, hi)| {
         if lo > c {
             Greater
@@ -812,9 +813,11 @@ pub mod derived_property {
         ('𱍐', '𲎯'),
         ('\u{e0100}', '\u{e01ef}'),
     ];
+
     pub fn ID_Continue(c: char) -> bool {
         super::bsearch_range_table(c, ID_Continue_table)
     }
+
     pub const ID_Start_table: &[(char, char)] = &[
         ('A', 'Z'),
         ('a', 'z'),
@@ -1494,6 +1497,7 @@ pub mod derived_property {
         ('𰀀', '𱍊'),
         ('𱍐', '𲎯'),
     ];
+
     pub fn ID_Start(c: char) -> bool {
         super::bsearch_range_table(c, ID_Start_table)
     }

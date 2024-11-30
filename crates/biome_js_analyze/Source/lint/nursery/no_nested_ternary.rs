@@ -51,13 +51,18 @@ declare_lint_rule! {
 
 impl Rule for NoNestedTernary {
     type Query = Ast<JsConditionalExpression>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let alternate = node.alternate().ok()?;
+
         let consequent = node.consequent().ok()?;
 
         if let AnyJsExpression::JsConditionalExpression(expr) = consequent {

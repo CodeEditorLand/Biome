@@ -20,7 +20,9 @@ use std::sync::Once;
 pub fn scripts_from_json(extension: &OsStr, input_code: &str) -> Option<Vec<String>> {
     if extension == "json" || extension == "jsonc" {
         let input_code = StripComments::new(input_code.as_bytes());
+
         let scripts: Vec<String> = serde_json::from_reader(input_code).ok()?;
+
         Some(scripts)
     } else {
         None
@@ -44,13 +46,16 @@ pub fn create_analyzer_options(
         preferred_quote: PreferredQuote::Double,
         jsx_runtime: Some(JsxRuntime::Transparent),
     };
+
     let options_file = input_file.with_extension("options.json");
+
     if let Ok(json) = std::fs::read_to_string(options_file.clone()) {
         let deserialized = biome_deserialize::json::deserialize_from_json_str::<PartialConfiguration>(
             json.as_str(),
             JsonParserOptions::default(),
             "",
         );
+
         if deserialized.has_errors() {
             diagnostics.extend(
                 deserialized
@@ -67,7 +72,9 @@ pub fn create_analyzer_options(
             );
         } else {
             let configuration = deserialized.into_deserialized().unwrap_or_default();
+
             let mut settings = Settings::default();
+
             analyzer_configuration.preferred_quote = configuration
                 .javascript
                 .as_ref()
@@ -84,6 +91,7 @@ pub fn create_analyzer_options(
                 .unwrap_or_default();
 
             use biome_configuration::javascript::JsxRuntime::*;
+
             analyzer_configuration.jsx_runtime = match configuration
                 .javascript
                 .as_ref()
@@ -93,6 +101,7 @@ pub fn create_analyzer_options(
                 ReactClassic => Some(JsxRuntime::ReactClassic),
                 Transparent => Some(JsxRuntime::Transparent),
             };
+
             analyzer_configuration.globals = configuration
                 .javascript
                 .as_ref()
@@ -106,6 +115,7 @@ pub fn create_analyzer_options(
             settings
                 .merge_with_configuration(configuration, None, None, &[])
                 .unwrap();
+
             analyzer_configuration.rules = to_analyzer_rules(&settings, input_file);
         }
     }
@@ -118,12 +128,14 @@ pub fn create_analyzer_options(
 
 pub fn load_manifest(input_file: &Path, diagnostics: &mut Vec<String>) -> Option<PackageJson> {
     let options_file = input_file.with_extension("package.json");
+
     if let Ok(json) = std::fs::read_to_string(options_file.clone()) {
         let deserialized = biome_deserialize::json::deserialize_from_json_str::<PackageJson>(
             json.as_str(),
             JsonParserOptions::default(),
             "",
         );
+
         if deserialized.has_errors() {
             diagnostics.extend(
                 deserialized
@@ -142,11 +154,13 @@ pub fn load_manifest(input_file: &Path, diagnostics: &mut Vec<String>) -> Option
             return deserialized.into_deserialized();
         }
     }
+
     None
 }
 
 pub fn diagnostic_to_string(name: &str, source: &str, diag: Error) -> String {
     let error = diag.with_file_path(name).with_file_source_code(source);
+
     let text = markup_to_string(biome_console::markup! {
         {PrintDiagnostic::verbose(&error)}
     });
@@ -156,9 +170,12 @@ pub fn diagnostic_to_string(name: &str, source: &str, diag: Error) -> String {
 
 fn markup_to_string(markup: biome_console::Markup) -> String {
     let mut buffer = Vec::new();
+
     let mut write =
         biome_console::fmt::Termcolor(biome_diagnostics::termcolor::NoColor::new(&mut buffer));
+
     let mut fmt = Formatter::new(&mut write);
+
     fmt.write_markup(markup).unwrap();
 
     String::from_utf8(buffer).unwrap()
@@ -179,8 +196,10 @@ pub fn register_leak_checker() {
     // Use an atomic Once to register the check_leaks function to be called
     // when the process exits
     static ONCE: Once = Once::new();
+
     ONCE.call_once(|| unsafe {
         countme::enable(true);
+
         atexit(check_leaks);
     });
 }
@@ -193,6 +212,7 @@ pub fn code_fix_to_string<L: ServiceLanguage>(source: &str, action: AnalyzerActi
     let diff = TextDiff::from_lines(source, &output);
 
     let mut diff = diff.unified_diff();
+
     diff.context_radius(3);
 
     diff.to_string()
@@ -205,6 +225,7 @@ pub fn code_fix_to_string<L: ServiceLanguage>(source: &str, action: AnalyzerActi
 /// will be analyzed with just the `style/useWhile` rule.
 pub fn parse_test_path(file: &Path) -> (&str, &str) {
     let mut group_name = "";
+
     let mut rule_name = "";
 
     for component in file.iter().rev() {
@@ -213,6 +234,7 @@ pub fn parse_test_path(file: &Path) -> (&str, &str) {
         }
 
         rule_name = group_name;
+
         group_name = component.to_str().unwrap_or_default();
     }
 
@@ -225,6 +247,7 @@ pub fn parse_test_path(file: &Path) -> (&str, &str) {
 pub fn has_bogus_nodes_or_empty_slots<L: biome_rowan::Language>(node: &SyntaxNode<L>) -> bool {
     node.descendants().any(|descendant| {
         let kind = descendant.kind();
+
         if kind.is_bogus() {
             return true;
         }
@@ -248,6 +271,7 @@ pub fn assert_errors_are_absent<L: ServiceLanguage>(
     path: &Path,
 ) {
     let debug_tree = format!("{program:?}");
+
     let has_missing_children = debug_tree.contains("missing (required)");
 
     if diagnostics.is_empty() && !has_bogus_nodes_or_empty_slots(program) && !has_missing_children {
@@ -255,11 +279,13 @@ pub fn assert_errors_are_absent<L: ServiceLanguage>(
     }
 
     let mut buffer = Buffer::no_color();
+
     for diagnostic in diagnostics {
         let error = diagnostic
             .clone()
             .with_file_path(path.to_str().unwrap())
             .with_file_source_code(program.to_string());
+
         Formatter::new(&mut Termcolor(&mut buffer))
             .write_markup(markup! {
                 {PrintDiagnostic::verbose(&error)}
@@ -283,27 +309,39 @@ pub fn write_analyzer_snapshot(
     markdown_language: &str,
 ) {
     writeln!(snapshot, "# Input").unwrap();
+
     writeln!(snapshot, "```{markdown_language}").unwrap();
+
     writeln!(snapshot, "{input_code}").unwrap();
+
     writeln!(snapshot, "```").unwrap();
+
     writeln!(snapshot).unwrap();
 
     if !diagnostics.is_empty() {
         writeln!(snapshot, "# Diagnostics").unwrap();
+
         for diagnostic in diagnostics {
             writeln!(snapshot, "```").unwrap();
+
             writeln!(snapshot, "{diagnostic}").unwrap();
+
             writeln!(snapshot, "```").unwrap();
+
             writeln!(snapshot).unwrap();
         }
     }
 
     if !code_fixes.is_empty() {
         writeln!(snapshot, "# Actions").unwrap();
+
         for action in code_fixes {
             writeln!(snapshot, "```diff").unwrap();
+
             writeln!(snapshot, "{action}").unwrap();
+
             writeln!(snapshot, "```").unwrap();
+
             writeln!(snapshot).unwrap();
         }
     }
@@ -316,17 +354,25 @@ pub fn write_transformation_snapshot(
     extension: &str,
 ) {
     writeln!(snapshot, "# Input").unwrap();
+
     writeln!(snapshot, "```{extension}").unwrap();
+
     writeln!(snapshot, "{input_code}").unwrap();
+
     writeln!(snapshot, "```").unwrap();
+
     writeln!(snapshot).unwrap();
 
     if !transformations.is_empty() {
         writeln!(snapshot, "# Transformations").unwrap();
+
         for transformation in transformations {
             writeln!(snapshot, "```{extension}").unwrap();
+
             writeln!(snapshot, "{transformation}").unwrap();
+
             writeln!(snapshot, "```").unwrap();
+
             writeln!(snapshot).unwrap();
         }
     }

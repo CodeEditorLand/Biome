@@ -55,10 +55,13 @@ where
         let RawSyntaxKind(kind) = kind;
 
         let index = kind as usize / u128::BITS as usize;
+
         let shift = kind % u128::BITS as u16;
+
         let mask = 1 << shift;
 
         let mut bits = [0; 4];
+
         bits[index] = mask;
 
         Self(bits, PhantomData)
@@ -82,7 +85,9 @@ where
         let RawSyntaxKind(kind) = kind.to_raw();
 
         let index = kind as usize / u128::BITS as usize;
+
         let shift = kind % u128::BITS as u16;
+
         let mask = 1 << shift;
 
         self.0[index] & mask != 0
@@ -95,7 +100,9 @@ where
             (0..u128::BITS).filter_map(move |bit| {
                 if (item & (1 << bit)) != 0 {
                     let raw = index + bit as u16;
+
                     let raw = RawSyntaxKind(raw);
+
                     Some(<L::Kind as SyntaxKind>::from_raw(raw))
                 } else {
                     None
@@ -199,6 +206,7 @@ pub trait AstNode: Clone {
         Self: Sized,
     {
         let kind = syntax.kind();
+
         Self::cast(syntax).unwrap_or_else(|| {
             panic!(
                 "Tried to cast node with kind {:?} as `{:?}` but was unable to cast",
@@ -351,6 +359,7 @@ pub trait AstNodeSlotMap<const N: usize> {
     /// concrete source have usable values.
     fn concrete_order_slot_map(&self) -> [u8; N] {
         let mut inverted = [u8::MAX; N];
+
         for (declared_slot, concrete_slot) in self.slot_map().iter().enumerate() {
             if *concrete_slot != u8::MAX {
                 inverted[*concrete_slot as usize] = declared_slot as u8;
@@ -379,6 +388,7 @@ impl<L: Language> SyntaxNodeCast<L> for SyntaxNode<L> {
 /// List of homogenous nodes
 pub trait AstNodeList {
     type Language: Language;
+
     type Node: AstNode<Language = Self::Language>;
 
     /// Returns the underlying syntax list
@@ -510,11 +520,14 @@ impl<L: Language, N: Debug> Debug for AstSeparatedElement<L, N> {
             Ok(node) => N::fmt(node, f)?,
             Err(_) => f.write_str("missing element")?,
         };
+
         match &self.trailing_separator {
             Ok(Some(separator)) => {
                 f.write_str(",\n")?;
+
                 Debug::fmt(&separator, f)
             }
+
             Err(_) => f.write_str(",\nmissing separator"),
             Ok(None) => Ok(()),
         }
@@ -529,6 +542,7 @@ impl<L: Language, N: Debug> Debug for AstSeparatedElement<L, N> {
 /// the list for `, b,` must have the slots `Empty, Token(,), Node(b), Token(,)`.
 pub trait AstSeparatedList {
     type Language: Language;
+
     type Node: AstNode<Language = Self::Language>;
 
     /// Returns the underlying syntax list
@@ -692,6 +706,7 @@ impl<L: Language, N: AstNode<Language = L>> DoubleEndedIterator
                     trailing_separator: Ok(None),
                 });
             }
+
             SyntaxSlot::Token(token) => Ok(Some(token)),
             SyntaxSlot::Empty { .. } => Ok(None),
         };
@@ -719,6 +734,7 @@ pub struct AstSeparatedListNodesIterator<L: Language, N> {
 
 impl<L: Language, N: AstNode<Language = L>> Iterator for AstSeparatedListNodesIterator<L, N> {
     type Item = SyntaxResult<N>;
+
     fn next(&mut self) -> Option<Self::Item> {
         self.inner.next().map(|element| element.node)
     }
@@ -762,8 +778,11 @@ pub mod support {
     use super::{AstNode, SyntaxNode, SyntaxToken};
 
     use super::{Language, SyntaxError, SyntaxResult};
+
     use crate::syntax::SyntaxSlot;
+
     use crate::SyntaxElementChildren;
+
     use std::fmt::{Debug, Formatter};
 
     pub fn node<L: Language, N: AstNode<Language = L>>(
@@ -849,6 +868,7 @@ mod tests {
         LiteralExpression, RawLanguage, RawLanguageKind, RawSyntaxTreeBuilder,
         SeparatedExpressionList,
     };
+
     use crate::{AstNode, AstSeparatedElement, AstSeparatedList, SyntaxResult};
 
     /// Creates a ast separated list over a sequence of numbers separated by ",".
@@ -863,7 +883,9 @@ mod tests {
         for (node, separator) in elements {
             if let Some(node) = node {
                 builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
                 builder.token(RawLanguageKind::NUMBER_TOKEN, node.to_string().as_str());
+
                 builder.finish_node();
             }
 
@@ -891,6 +913,7 @@ mod tests {
         } else {
             actual.collect()
         };
+
         let actual = actual
             .into_iter()
             .map(|element| {
@@ -948,12 +971,17 @@ mod tests {
         let list = build_list(vec![]);
 
         assert_eq!(list.len(), 0);
+
         assert!(list.is_empty());
+
         assert_eq!(list.separators().count(), 0);
 
         assert_nodes(list.iter(), vec![]);
+
         assert_elements(list.elements(), vec![]);
+
         assert_rev_elements(list.elements(), vec![]);
+
         assert_eq!(list.trailing_separator(), None);
     }
 
@@ -967,10 +995,13 @@ mod tests {
         ]);
 
         assert_eq!(list.len(), 4);
+
         assert!(!list.is_empty());
+
         assert_eq!(list.separators().count(), 3);
 
         assert_nodes(list.iter(), vec![1., 2., 3., 4.]);
+
         assert_elements(
             list.elements(),
             vec![
@@ -980,6 +1011,7 @@ mod tests {
                 (Some(4.), None),
             ],
         );
+
         assert_rev_elements(
             list.elements(),
             vec![
@@ -989,6 +1021,7 @@ mod tests {
                 (Some(1.), Some(",")),
             ],
         );
+
         assert_eq!(list.trailing_separator(), None);
     }
 
@@ -1004,16 +1037,23 @@ mod tests {
         let mut iter = list.elements();
 
         let element = iter.next().unwrap();
+
         assert_eq!(element.node().unwrap().text(), "1");
+
         let element = iter.next_back().unwrap();
+
         assert_eq!(element.node().unwrap().text(), "4");
 
         let element = iter.next().unwrap();
+
         assert_eq!(element.node().unwrap().text(), "2");
+
         let element = iter.next_back().unwrap();
+
         assert_eq!(element.node().unwrap().text(), "3");
 
         assert!(iter.next().is_none());
+
         assert!(iter.next_back().is_none());
     }
 
@@ -1028,8 +1068,11 @@ mod tests {
         ]);
 
         assert_eq!(list.len(), 4);
+
         assert!(!list.is_empty());
+
         assert_nodes(list.iter(), vec![1., 2., 3., 4.]);
+
         assert_eq!(list.separators().count(), 4);
 
         assert_elements(
@@ -1041,6 +1084,7 @@ mod tests {
                 (Some(4.), Some(",")),
             ],
         );
+
         assert_rev_elements(
             list.elements(),
             vec![
@@ -1050,6 +1094,7 @@ mod tests {
                 (Some(1.), Some(",")),
             ],
         );
+
         assert!(list.trailing_separator().is_some());
     }
 
@@ -1059,7 +1104,9 @@ mod tests {
         let list = build_list(vec![(Some(1), Some(",")), (None, Some(","))]);
 
         assert_eq!(list.len(), 2);
+
         assert!(!list.is_empty());
+
         assert_eq!(list.separators().count(), 2);
 
         assert_elements(
@@ -1079,7 +1126,9 @@ mod tests {
         let list = build_list(vec![(None, Some(",")), (Some(3), None)]);
 
         assert_eq!(list.len(), 2);
+
         assert!(!list.is_empty());
+
         assert_eq!(list.separators().count(), 1);
 
         assert_elements(
@@ -1107,7 +1156,9 @@ mod tests {
         let list = build_list(vec![(Some(1), None), (Some(2), Some(","))]);
 
         assert_eq!(list.len(), 2);
+
         assert!(!list.is_empty());
+
         assert_eq!(list.separators().count(), 2);
 
         assert_elements(
@@ -1124,7 +1175,9 @@ mod tests {
     #[test]
     fn ok_typed_parent_navigation() {
         use crate::ast::SyntaxNodeCast;
+
         use crate::raw_language::{RawLanguage, RawLanguageKind, RawSyntaxTreeBuilder};
+
         use crate::*;
 
         // This test creates the following tree
@@ -1137,14 +1190,19 @@ mod tests {
 
         let tree = RawSyntaxTreeBuilder::wrap_with_node(RawLanguageKind::ROOT, |builder| {
             builder.start_node(RawLanguageKind::CONDITION);
+
             builder.token(RawLanguageKind::LET_TOKEN, "let");
+
             builder.finish_node();
         });
+
         let typed = tree.first_child().unwrap().cast::<RawRoot>().unwrap();
+
         let _ = typed.parent::<RawRoot>().unwrap();
 
         #[derive(Clone)]
         struct RawRoot(SyntaxNode<RawLanguage>);
+
         impl AstNode for RawRoot {
             type Language = RawLanguage;
 

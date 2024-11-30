@@ -89,15 +89,20 @@ fn is_function_that_is_ok_parameter_not_be_used(
 
 impl Rule for NoUnusedFunctionParameters {
     type Query = Semantic<JsIdentifierBinding>;
+
     type State = SuggestedFix;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let binding = ctx.query();
+
         let declaration = binding.declaration()?;
 
         let name = binding.name_token().ok()?;
+
         let name = name.text_trimmed();
 
         if name.starts_with('_') {
@@ -122,6 +127,7 @@ impl Rule for NoUnusedFunctionParameters {
                 return None;
             }
         }
+
         let parent_function = match declaration
             .parent_binding_pattern_declaration()
             .unwrap_or(declaration)
@@ -131,15 +137,20 @@ impl Rule for NoUnusedFunctionParameters {
             AnyJsBindingDeclaration::JsBogusParameter(_) => {
                 return Some(SuggestedFix::NoSuggestion)
             }
+
             _ => return None,
         };
+
         if is_function_that_is_ok_parameter_not_be_used(&parent_function) {
             return None;
         }
+
         let model = ctx.model();
+
         if binding.all_references(model).next().is_some() {
             return None;
         }
+
         Some(if binding.is_under_object_pattern_binding()? {
             SuggestedFix::NoSuggestion
         } else {
@@ -149,6 +160,7 @@ impl Rule for NoUnusedFunctionParameters {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let binding = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -168,13 +180,17 @@ impl Rule for NoUnusedFunctionParameters {
             SuggestedFix::NoSuggestion => None,
             SuggestedFix::PrefixUnderscore => {
                 let binding = ctx.query();
+
                 let mut mutation = ctx.root().begin();
 
                 let name = binding.name_token().ok()?;
+
                 let name_trimmed = name.text_trimmed();
+
                 let new_name = format!("_{name_trimmed}");
 
                 let model = ctx.model();
+
                 mutation.rename_node_declaration(model, binding, &new_name);
 
                 Some(JsRuleAction::new(

@@ -52,22 +52,28 @@ declare_lint_rule! {
 
 impl Rule for NoSuspiciousSemicolonInJsx {
     type Query = Ast<AnyJsxTag>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if let Some(children) = match node {
             AnyJsxTag::JsxElement(element) => Some(element.children()),
             AnyJsxTag::JsxFragment(fragment) => Some(fragment.children()),
             _ => None,
         } {
             let has_semicolon = has_suspicious_semicolon(&children);
+
             if let Some(incorrect_semicolon) = has_semicolon {
                 return Some(incorrect_semicolon);
             }
         }
+
         None
     }
 
@@ -85,6 +91,7 @@ impl Rule for NoSuspiciousSemicolonInJsx {
         .note(markup! {
             "Remove the "<Emphasis>"semicolon"</Emphasis>", or move it inside a JSX element."
         });
+
         Some(diagnostic)
     }
 }
@@ -92,6 +99,7 @@ impl Rule for NoSuspiciousSemicolonInJsx {
 fn has_suspicious_semicolon(node: &JsxChildList) -> Option<TextRange> {
     node.iter().find_map(|c| {
         let jsx_text = c.as_jsx_text()?;
+
         let jsx_text_value = jsx_text.value_token().ok()?;
         // We should also check for \r and \r\n
         if jsx_text_value.text().starts_with(";\n")

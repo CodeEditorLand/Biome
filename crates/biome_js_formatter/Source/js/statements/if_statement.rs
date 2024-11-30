@@ -22,7 +22,9 @@ impl FormatNodeRule<JsIfStatement> for FormatJsIfStatement {
         } = node.as_fields();
 
         let l_paren_token = l_paren_token?;
+
         let r_paren_token = r_paren_token?;
+
         let consequent = consequent?;
 
         write!(
@@ -39,10 +41,13 @@ impl FormatNodeRule<JsIfStatement> for FormatJsIfStatement {
 
         if let Some(else_clause) = else_clause {
             let comments = f.context().comments();
+
             let dangling_comments = comments.dangling_comments(node.syntax());
+
             let dangling_line_comment = dangling_comments
                 .last()
                 .map_or(false, |comment| comment.kind().is_line());
+
             let has_dangling_comments = !dangling_comments.is_empty();
 
             let trailing_line_comment = comments

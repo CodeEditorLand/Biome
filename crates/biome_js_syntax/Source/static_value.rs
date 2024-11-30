@@ -58,6 +58,7 @@ impl StaticValue {
             | StaticValue::BigInt(token) => token.text_trimmed(),
             StaticValue::String(token) => {
                 let text = token.text_trimmed();
+
                 if matches!(
                     token.kind(),
                     JsSyntaxKind::JS_STRING_LITERAL | JsSyntaxKind::JSX_STRING_LITERAL
@@ -65,8 +66,10 @@ impl StaticValue {
                     // SAFETY: string literal token have a delimiters at the start and the end of the string
                     return &text[1..text.len() - 1];
                 }
+
                 text
             }
+
             StaticValue::EmptyString(_) => "",
         }
     }

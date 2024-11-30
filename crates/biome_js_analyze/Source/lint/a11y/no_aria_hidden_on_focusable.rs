@@ -57,15 +57,21 @@ declare_lint_rule! {
 
 impl Rule for NoAriaHiddenOnFocusable {
     type Query = Aria<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.is_element() {
             let aria_hidden_attr = node.find_attribute_by_name("aria-hidden")?;
+
             let attr_static_val = aria_hidden_attr.as_static_value()?;
+
             let attr_text = attr_static_val.text();
 
             if attr_text == "false" {
@@ -78,26 +84,32 @@ impl Rule for NoAriaHiddenOnFocusable {
                 match tabindex_val {
                     AnyJsxAttributeValue::AnyJsxTag(jsx_tag) => {
                         let value = jsx_tag.text().parse::<i32>();
+
                         if let Ok(num) = value {
                             return (num >= 0).then_some(());
                         }
                     }
+
                     AnyJsxAttributeValue::JsxString(jsx_string) => {
                         let value = jsx_string
                             .inner_string_text()
                             .ok()?
                             .to_string()
                             .parse::<i32>();
+
                         if let Ok(num) = value {
                             return (num >= 0).then_some(());
                         }
                     }
+
                     AnyJsxAttributeValue::JsxExpressionAttributeValue(value) => {
                         let expression = value.expression().ok()?;
+
                         let expression_value =
                             AnyNumberLikeExpression::cast(expression.into_syntax())?
                                 .value()?
                                 .parse::<i32>();
+
                         if let Ok(num) = expression_value {
                             return (num >= 0).then_some(());
                         }
@@ -109,11 +121,13 @@ impl Rule for NoAriaHiddenOnFocusable {
                 return Some(());
             }
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -130,9 +144,13 @@ impl Rule for NoAriaHiddenOnFocusable {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let aria_hidden_attr = node.find_attribute_by_name("aria-hidden")?;
+
         mutation.remove_node(aria_hidden_attr);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

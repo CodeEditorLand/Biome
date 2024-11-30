@@ -22,6 +22,7 @@ pub(crate) type CssLosslessTreeSink<'source> =
 
 pub fn parse_css(source: &str, options: CssParserOptions) -> CssParse {
     let mut cache = NodeCache::default();
+
     parse_css_with_cache(source, &mut cache, options)
 }
 
@@ -39,7 +40,9 @@ pub fn parse_css_with_cache(
         let (events, diagnostics, trivia) = parser.finish();
 
         let mut tree_sink = CssLosslessTreeSink::with_cache(source, &trivia, cache);
+
         biome_parser::event::process(&mut tree_sink, events, diagnostics);
+
         let (green, diagnostics) = tree_sink.finish();
 
         CssParse::new(green, diagnostics)
@@ -110,7 +113,9 @@ impl CssParse {
 impl From<CssParse> for AnyParse {
     fn from(parse: CssParse) -> Self {
         let root = parse.syntax();
+
         let diagnostics = parse.into_diagnostics();
+
         Self::new(
             // SAFETY: the parser should always return a root node
             root.as_send().unwrap(),

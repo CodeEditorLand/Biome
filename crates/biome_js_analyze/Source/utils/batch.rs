@@ -60,11 +60,13 @@ fn remove_js_formal_parameter_from_js_parameter_list(
     list: JsSyntaxNode,
 ) -> Option<bool> {
     let list = JsParameterList::cast(list)?;
+
     let mut elements = list.elements();
 
     // Find the parameter we want to remove
     // remove its trailing comma, if there is one
     let mut previous_element = None;
+
     for element in elements.by_ref() {
         if let Ok(node) = element.node() {
             match node {
@@ -72,14 +74,18 @@ fn remove_js_formal_parameter_from_js_parameter_list(
                     node,
                 )) if node == parameter => {
                     batch.remove_node(node.clone());
+
                     if let Ok(Some(comma)) = element.trailing_separator() {
                         batch.remove_token(comma.clone());
                     }
+
                     break;
                 }
+
                 _ => {}
             }
         }
+
         previous_element = Some(element);
     }
 
@@ -102,11 +108,13 @@ fn remove_js_formal_parameter_from_js_constructor_parameter_list(
     list: JsSyntaxNode,
 ) -> Option<bool> {
     let list = JsConstructorParameterList::cast(list)?;
+
     let mut elements = list.elements();
 
     // Find the parameter we want to remove
     // remove its trailing comma, if there is one
     let mut previous_element = None;
+
     for element in elements.by_ref() {
         if let Ok(node) = element.node() {
             match node {
@@ -114,14 +122,18 @@ fn remove_js_formal_parameter_from_js_constructor_parameter_list(
                     AnyJsFormalParameter::JsFormalParameter(node),
                 ) if node == parameter => {
                     batch.remove_node(node.clone());
+
                     if let Ok(Some(comma)) = element.trailing_separator() {
                         batch.remove_token(comma.clone());
                     }
+
                     break;
                 }
+
                 _ => {}
             }
         }
+
         previous_element = Some(element);
     }
 
@@ -147,6 +159,7 @@ impl JsBatchMutation for BatchMutation<JsLanguage> {
 
                 if list.syntax_list().len() == 1 {
                     let statement = declaration.parent::<JsVariableStatement>()?;
+
                     self.remove_node(statement);
                 } else {
                     let mut elements = list.elements();
@@ -154,16 +167,20 @@ impl JsBatchMutation for BatchMutation<JsLanguage> {
                     // Find the declarator we want to remove
                     // remove its trailing comma, if there is one
                     let mut previous_element = None;
+
                     for element in elements.by_ref() {
                         if let Ok(node) = element.node() {
                             if node == declarator {
                                 self.remove_node(node.clone());
+
                                 if let Ok(Some(comma)) = element.trailing_separator() {
                                     self.remove_token(comma.clone());
                                 }
+
                                 break;
                             }
                         }
+
                         previous_element = Some(element);
                     }
 
@@ -197,11 +214,13 @@ impl JsBatchMutation for BatchMutation<JsLanguage> {
                 JsSyntaxKind::JS_PARAMETER_LIST => {
                     remove_js_formal_parameter_from_js_parameter_list(self, parameter, parent)
                 }
+
                 JsSyntaxKind::JS_CONSTRUCTOR_PARAMETER_LIST => {
                     remove_js_formal_parameter_from_js_constructor_parameter_list(
                         self, parameter, parent,
                     )
                 }
+
                 _ => None,
             })
             .unwrap_or(false)
@@ -211,15 +230,19 @@ impl JsBatchMutation for BatchMutation<JsLanguage> {
         let Some(parent) = member.parent::<JsObjectMemberList>() else {
             return false;
         };
+
         for element in parent.elements() {
             if element.node() == Ok(&member) {
                 self.remove_node(member);
+
                 if let Ok(Some(comma)) = element.trailing_separator() {
                     self.remove_token(comma.clone());
                 }
+
                 return true;
             }
         }
+
         false
     }
 
@@ -227,6 +250,7 @@ impl JsBatchMutation for BatchMutation<JsLanguage> {
         let Some(parent) = node.syntax().parent() else {
             return;
         };
+
         if JsStatementList::can_cast(parent.kind()) || JsModuleItemList::can_cast(parent.kind()) {
             self.remove_node(node);
         } else {
@@ -243,27 +267,32 @@ impl JsBatchMutation for BatchMutation<JsLanguage> {
         I: IntoIterator<Item = AnyJsxChild>,
     {
         let old_list = after_element.parent::<JsxChildList>();
+
         if let Some(old_list) = &old_list {
             let jsx_child_list = {
                 let mut new_items = vec![];
+
                 let mut old_elements = old_list.into_iter();
 
                 for old_element in old_elements.by_ref() {
                     let is_needle = old_element == *after_element;
 
                     new_items.push(old_element.clone());
+
                     if is_needle {
                         break;
                     }
                 }
 
                 new_items.extend(new_elements);
+
                 new_items.extend(old_elements);
 
                 jsx_child_list(new_items)
             };
 
             self.replace_node_discard_trivia(old_list.clone(), jsx_child_list);
+
             true
         } else {
             false
@@ -282,26 +311,32 @@ impl JsBatchMutation for BatchMutation<JsLanguage> {
             .syntax()
             .parent()
             .and_then(JsxChildList::cast);
+
         if let Some(old_list) = &old_list {
             let jsx_child_list = {
                 let mut new_items = vec![];
+
                 let mut old_elements = old_list.into_iter().peekable();
 
                 while let Some(next_element) = old_elements.peek() {
                     if next_element == before_element {
                         break;
                     }
+
                     new_items.push(next_element.clone());
+
                     old_elements.next();
                 }
 
                 new_items.extend(new_elements);
+
                 new_items.extend(old_elements);
 
                 jsx_child_list(new_items)
             };
 
             self.replace_node_discard_trivia(old_list.clone(), jsx_child_list);
+
             true
         } else {
             false
@@ -312,6 +347,7 @@ impl JsBatchMutation for BatchMutation<JsLanguage> {
         let Some(pieces) = node.first_leading_trivia().map(|trivia| trivia.pieces()) else {
             return;
         };
+
         let (sibling, new_sibling) = if let Some(next_sibling) =
             node.last_token().and_then(|x| x.next_token())
         {
@@ -328,6 +364,7 @@ impl JsBatchMutation for BatchMutation<JsLanguage> {
         } else {
             return;
         };
+
         self.replace_token_discard_trivia(sibling, new_sibling);
     }
 }
@@ -335,6 +372,7 @@ impl JsBatchMutation for BatchMutation<JsLanguage> {
 #[cfg(test)]
 mod tests {
     use crate::assert_remove_ok;
+
     use biome_js_syntax::{AnyJsObjectMember, JsFormalParameter, JsVariableDeclarator};
 
     // Remove JsVariableDeclarator

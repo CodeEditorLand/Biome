@@ -17,9 +17,12 @@ fn losslessness(string: String) -> bool {
     // using an mpsc channel allows us to spawn a thread and spawn the lexer there, then if
     // it takes more than 2 seconds we panic because it is 100% infinite recursion
     let cloned = string.clone();
+
     let (sender, receiver) = channel();
+
     thread::spawn(move || {
         let mut lexer = HtmlLexer::from_str(&cloned);
+
         let mut tokens = vec![];
 
         while lexer.next_token(HtmlLexContext::default()) != EOF {
@@ -30,15 +33,18 @@ fn losslessness(string: String) -> bool {
             .send(tokens)
             .expect("Could not send tokens to receiver");
     });
+
     let token_ranges = receiver
         .recv_timeout(Duration::from_secs(2))
         .unwrap_or_else(|_| panic!("Lexer is infinitely recursing with this code: ->{string}<-"));
 
     let mut new_str = String::with_capacity(string.len());
+
     let mut idx = TextSize::from(0);
 
     for range in token_ranges {
         new_str.push_str(&string[range]);
+
         idx += range.len();
     }
 
@@ -50,10 +56,13 @@ fn losslessness(string: String) -> bool {
 macro_rules! assert_lex {
     ($context:expr, $src:expr, $($kind:ident:$len:expr $(,)?)*) => {{
         let mut lexer = HtmlLexer::from_str($src);
+
         let mut idx = 0;
+
         let mut tok_idx = TextSize::default();
 
         let mut new_str = String::with_capacity($src.len());
+
         let mut tokens = vec![];
 
         while lexer.next_token($context) != EOF {
@@ -79,6 +88,7 @@ macro_rules! assert_lex {
             );
 
             new_str.push_str(&$src[tokens[idx].1]);
+
             tok_idx += tokens[idx].1.len();
 
             idx += 1;

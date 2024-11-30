@@ -49,6 +49,7 @@ impl FormatRuleWithOptions<TsUnionTypeVariantList> for FormatTsUnionTypeVariantL
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.should_hug = options;
+
         self
     }
 }
@@ -102,6 +103,7 @@ impl Format<JsFormatContext> for FormatTypeVariant<'_> {
                     AnyTsType::TsBooleanLiteralType(ty) => {
                         FormatTsBooleanLiteralType.fmt_node(ty, f)
                     }
+
                     AnyTsType::TsBooleanType(ty) => FormatTsBooleanType.fmt_node(ty, f),
                     AnyTsType::TsConditionalType(ty) => FormatTsConditionalType.fmt_node(ty, f),
                     AnyTsType::TsConstructorType(ty) => FormatTsConstructorType.fmt_node(ty, f),
@@ -125,6 +127,7 @@ impl Format<JsFormatContext> for FormatTypeVariant<'_> {
                     AnyTsType::TsTemplateLiteralType(ty) => {
                         FormatTsTemplateLiteralType.fmt_node(ty, f)
                     }
+
                     AnyTsType::TsThisType(ty) => FormatTsThisType.fmt_node(ty, f),
                     AnyTsType::TsTupleType(ty) => FormatTsTupleType.fmt_node(ty, f),
                     AnyTsType::TsTypeOperatorType(ty) => FormatTsTypeOperatorType.fmt_node(ty, f),
@@ -201,6 +204,7 @@ impl Format<JsFormatContext> for FormatTypeVariant<'_> {
                 } else {
                     write!(f, [soft_line_break_or_space()])?;
                 }
+
                 write![f, [token.format()]]?;
             }
         }

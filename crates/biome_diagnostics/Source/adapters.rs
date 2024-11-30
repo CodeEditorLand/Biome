@@ -98,14 +98,17 @@ impl Diagnostic for BpafError {
         if let bpaf::ParseFailure::Stderr(reason) = &self.error {
             write!(fmt, "{reason}")?;
         }
+
         Ok(())
     }
 
     fn message(&self, fmt: &mut fmt::Formatter<'_>) -> io::Result<()> {
         if let bpaf::ParseFailure::Stderr(reason) = &self.error {
             let error = reason.to_string();
+
             fmt.write_str(&error)?;
         }
+
         Ok(())
     }
 }

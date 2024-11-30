@@ -48,6 +48,7 @@ use biome_rowan::{AstNode, RawSyntaxKind, SyntaxKind, SyntaxResult};
 impl From<u16> for JsSyntaxKind {
     fn from(d: u16) -> JsSyntaxKind {
         assert!(d <= (JsSyntaxKind::__LAST as u16));
+
         unsafe { std::mem::transmute::<u16, JsSyntaxKind>(d) }
     }
 }
@@ -97,6 +98,7 @@ impl JsSyntaxKind {
 
 impl biome_rowan::SyntaxKind for JsSyntaxKind {
     const TOMBSTONE: Self = TOMBSTONE;
+
     const EOF: Self = EOF;
 
     fn is_bogus(&self) -> bool {
@@ -123,6 +125,7 @@ impl biome_rowan::SyntaxKind for JsSyntaxKind {
             kind if AnyJsClassMember::can_cast(*kind) || AnyJsObjectMember::can_cast(*kind) => {
                 JS_BOGUS_MEMBER
             }
+
             kind if AnyJsAssignment::can_cast(*kind) => JS_BOGUS_ASSIGNMENT,
             kind if AnyJsNamedImportSpecifier::can_cast(*kind) => JS_BOGUS_NAMED_IMPORT_SPECIFIER,
             kind if AnyJsImportAssertionEntry::can_cast(*kind) => JS_BOGUS_IMPORT_ASSERTION_ENTRY,
@@ -251,6 +254,7 @@ impl OperatorPrecedence {
             T![<] | T![>] | T![<=] | T![>=] | T![instanceof] | T![in] | T![as] | T![satisfies] => {
                 OperatorPrecedence::Relational
             }
+
             T![<<] | T![>>] | T![>>>] => OperatorPrecedence::Shift,
             T![+] | T![-] => OperatorPrecedence::Additive,
             T![*] | T![/] | T![%] => OperatorPrecedence::Multiplicative,
@@ -310,6 +314,7 @@ impl OperatorPrecedence {
 /// ```
 pub fn inner_string_text(token: &JsSyntaxToken) -> TokenText {
     let mut text = token.token_text_trimmed();
+
     if matches!(
         token.kind(),
         JsSyntaxKind::JS_STRING_LITERAL | JsSyntaxKind::JSX_STRING_LITERAL
@@ -317,8 +322,10 @@ pub fn inner_string_text(token: &JsSyntaxToken) -> TokenText {
         // remove string delimiters
         // SAFETY: string literal token have a delimiters at the start and the end of the string
         let range = TextRange::new(1.into(), text.len() - TextSize::from(1));
+
         text = text.slice(range);
     }
+
     text
 }
 

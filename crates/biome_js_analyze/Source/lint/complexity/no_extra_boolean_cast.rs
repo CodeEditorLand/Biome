@@ -83,17 +83,22 @@ pub fn is_boolean_constructor_call(node: &JsSyntaxNode) -> Option<JsNewExpressio
 /// ```
 fn is_boolean_call(node: &JsSyntaxNode) -> Option<bool> {
     let expr = JsCallExpression::cast_ref(node)?;
+
     Some(expr.has_callee("Boolean"))
 }
 
 impl Rule for NoExtraBooleanCast {
     type Query = Ast<AnyJsExpression>;
+
     type State = (AnyJsExpression, ExtraBooleanCastType);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let n = ctx.query();
+
         let parent = n.syntax().parent()?;
 
         // Check if parent `SyntaxNode` in any boolean `Type Coercion` context,
@@ -114,7 +119,9 @@ impl Rule for NoExtraBooleanCast {
             if let Some(expr) = JsCallExpression::cast_ref(n.syntax()) {
                 if expr.has_callee("Boolean") {
                     let arguments = expr.arguments().ok()?;
+
                     let len = arguments.args().len();
+
                     if len == 1 {
                         return arguments
                             .args()
@@ -126,6 +133,7 @@ impl Rule for NoExtraBooleanCast {
                             .map(|expr| (expr, ExtraBooleanCastType::BooleanCall));
                     }
                 }
+
                 return None;
             }
 
@@ -134,7 +142,9 @@ impl Rule for NoExtraBooleanCast {
             return JsNewExpression::cast_ref(n.syntax()).and_then(|expr| {
                 if expr.has_callee("Boolean") {
                     let arguments = expr.arguments()?;
+
                     let len = arguments.args().len();
+
                     if len == 1 {
                         return arguments
                             .args()
@@ -146,19 +156,24 @@ impl Rule for NoExtraBooleanCast {
                             .map(|expr| (expr, ExtraBooleanCastType::BooleanCall));
                     }
                 }
+
                 None
             });
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let (_, extra_boolean_cast_type) = state;
+
         let (title, note) = match extra_boolean_cast_type {
 			ExtraBooleanCastType::DoubleNegation => ("Avoid redundant double-negation.", "It is not necessary to use double-negation when a value will already be coerced to a boolean."),
 			ExtraBooleanCastType::BooleanCall => ("Avoid redundant `Boolean` call", "It is not necessary to use `Boolean` call when a value will already be coerced to a boolean."),
 		};
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -173,12 +188,16 @@ impl Rule for NoExtraBooleanCast {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let (node_to_replace, extra_boolean_cast_type) = state;
+
         let message = match extra_boolean_cast_type {
             ExtraBooleanCastType::DoubleNegation => "Remove redundant double-negation",
             ExtraBooleanCastType::BooleanCall => "Remove redundant `Boolean` call",
         };
+
         mutation.replace_node(node.clone(), node_to_replace.clone());
 
         Some(JsRuleAction::new(
@@ -201,6 +220,7 @@ fn is_double_negation_ignore_parenthesis(
 ) -> Option<(AnyJsExpression, ExtraBooleanCastType)> {
     if let Some(negation_expr) = is_negation(syntax) {
         let argument = negation_expr.argument().ok()?;
+
         match argument {
             AnyJsExpression::JsUnaryExpression(expr)
                 if expr.operator().ok()? == JsUnaryOperator::LogicalNot =>
@@ -220,6 +240,7 @@ fn is_double_negation_ignore_parenthesis(
                     })
                 })
             }
+
             _ => None,
         }
     } else {

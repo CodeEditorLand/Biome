@@ -107,8 +107,11 @@ declare_lint_rule! {
 
 impl Rule for NoSvgWithoutTitle {
     type Query = Ast<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -121,6 +124,7 @@ impl Rule for NoSvgWithoutTitle {
         if let Some(aria_hidden_attr) = node.find_attribute_by_name("aria-hidden") {
             if let Some(attr_static_val) = aria_hidden_attr.as_static_value() {
                 let attr_text = attr_static_val.text();
+
                 if attr_text == "true" {
                     return None;
                 }
@@ -129,8 +133,10 @@ impl Rule for NoSvgWithoutTitle {
 
         // Checks if a `svg` element has a valid `title` element is in a childlist
         let jsx_element = node.parent::<JsxElement>()?;
+
         if let AnyJsxElement::JsxOpeningElement(_) = node {
             let has_valid_title = has_valid_title_element(&jsx_element.children());
+
             if has_valid_title.map_or(false, |bool| bool) {
                 return None;
             }
@@ -142,6 +148,7 @@ impl Rule for NoSvgWithoutTitle {
         };
 
         let role_attribute_value = role_attribute.initializer()?.value().ok()?;
+
         let Some(role_attribute_text) = role_attribute_value
             .as_jsx_string()?
             .inner_string_text()
@@ -155,12 +162,15 @@ impl Rule for NoSvgWithoutTitle {
                 let [aria_label, aria_labelledby] = node
                     .attributes()
                     .find_by_names(["aria-label", "aria-labelledby"]);
+
                 let is_valid_a11y_attribute = aria_label.is_some()
                     || is_valid_attribute_value(aria_labelledby, &jsx_element.children())
                         .unwrap_or(false);
+
                 if is_valid_a11y_attribute {
                     return None;
                 }
+
                 Some(())
             }
             // if role attribute is empty, the svg element should have title element
@@ -171,6 +181,7 @@ impl Rule for NoSvgWithoutTitle {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let diagnostic = RuleDiagnostic::new(
                 rule_category!(),
                 node.syntax().text_trimmed_range(),
@@ -181,6 +192,7 @@ impl Rule for NoSvgWithoutTitle {
             .note(markup! {
                 "For accessibility purposes, "<Emphasis>"SVGs"</Emphasis>" should have an alternative text, provided via "<Emphasis>"title"</Emphasis>" element. If the svg element has role=\"img\", you should add the "<Emphasis>"aria-label"</Emphasis>" or "<Emphasis>"aria-labelledby"</Emphasis>" attribute."
             });
+
         Some(diagnostic)
     }
 }
@@ -191,18 +203,25 @@ fn is_valid_attribute_value(
     jsx_child_list: &JsxChildList,
 ) -> Option<bool> {
     let attribute_value = attribute?.initializer()?.value().ok()?;
+
     let is_used_attribute = jsx_child_list
         .iter()
         .filter_map(|child| {
             let jsx_element = child.as_jsx_element()?;
+
             let opening_element = jsx_element.opening_element().ok()?;
+
             let maybe_attribute = opening_element.find_attribute_by_name("id");
+
             let child_attribute_value = maybe_attribute?.initializer()?.value().ok()?;
+
             let is_valid = attribute_value.as_static_value()?.text()
                 == child_attribute_value.as_static_value()?.text();
+
             Some(is_valid)
         })
         .any(|x| x);
+
     Some(is_used_attribute)
 }
 
@@ -210,14 +229,21 @@ fn is_valid_attribute_value(
 fn has_valid_title_element(jsx_child_list: &JsxChildList) -> Option<bool> {
     jsx_child_list.iter().find_map(|child| {
         let jsx_element = child.as_jsx_element()?;
+
         let opening_element = jsx_element.opening_element().ok()?;
+
         let name = opening_element.name().ok()?;
+
         let name = name.as_jsx_name()?.value_token().ok()?;
+
         let has_title_name = name.text_trimmed() == "title";
+
         if !has_title_name {
             return has_valid_title_element(&jsx_element.children());
         }
+
         let is_empty_child = jsx_element.children().is_empty();
+
         Some(has_title_name && !is_empty_child)
     })
 }

@@ -6,6 +6,7 @@ use biome_js_syntax::AnyTsIdentifierBinding;
 pub(crate) struct FormatAnyTsIdentifierBinding;
 impl FormatRule<AnyTsIdentifierBinding> for FormatAnyTsIdentifierBinding {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyTsIdentifierBinding, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyTsIdentifierBinding::JsMetavariable(node) => node.format().fmt(f),

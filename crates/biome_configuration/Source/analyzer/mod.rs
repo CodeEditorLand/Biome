@@ -38,15 +38,18 @@ impl<T: Default> RuleConfiguration<T> {
     pub fn is_disabled(&self) -> bool {
         matches!(self.level(), RulePlainConfiguration::Off)
     }
+
     pub fn is_enabled(&self) -> bool {
         !self.is_disabled()
     }
+
     pub fn level(&self) -> RulePlainConfiguration {
         match self {
             Self::Plain(plain) => *plain,
             Self::WithOptions(options) => options.level,
         }
     }
+
     pub fn set_level(&mut self, level: RulePlainConfiguration) {
         match self {
             Self::Plain(plain) => *plain = level,
@@ -64,6 +67,7 @@ impl<T: Clone + Default> Merge for RuleConfiguration<T> {
                 Self::Plain(level) => {
                     this.level = level;
                 }
+
                 Self::WithOptions(other) => {
                     this.merge_with(other);
                 }
@@ -115,15 +119,18 @@ impl<T: Default> RuleFixConfiguration<T> {
     pub fn is_disabled(&self) -> bool {
         matches!(self.level(), RulePlainConfiguration::Off)
     }
+
     pub fn is_enabled(&self) -> bool {
         !self.is_disabled()
     }
+
     pub fn level(&self) -> RulePlainConfiguration {
         match self {
             Self::Plain(plain) => *plain,
             Self::WithOptions(options) => options.level,
         }
     }
+
     pub fn set_level(&mut self, level: RulePlainConfiguration) {
         match self {
             Self::Plain(plain) => *plain = level,
@@ -141,6 +148,7 @@ impl<T: Clone + Default> Merge for RuleFixConfiguration<T> {
                 Self::Plain(level) => {
                     this.level = level;
                 }
+
                 Self::WithOptions(other) => {
                     this.merge_with(other);
                 }
@@ -228,15 +236,18 @@ impl<T: Default> RuleAssistConfiguration<T> {
     pub fn is_disabled(&self) -> bool {
         matches!(self.level(), RuleAssistPlainConfiguration::Off)
     }
+
     pub fn is_enabled(&self) -> bool {
         !self.is_disabled()
     }
+
     pub fn level(&self) -> RuleAssistPlainConfiguration {
         match self {
             Self::Plain(plain) => *plain,
             Self::WithOptions(options) => options.level,
         }
     }
+
     pub fn set_level(&mut self, level: RuleAssistPlainConfiguration) {
         match self {
             Self::Plain(plain) => *plain = level,
@@ -254,6 +265,7 @@ impl<T: Clone + Default> Merge for RuleAssistConfiguration<T> {
                 Self::Plain(level) => {
                     this.level = level;
                 }
+
                 Self::WithOptions(other) => {
                     this.merge_with(other);
                 }
@@ -310,6 +322,7 @@ pub struct RuleAssistWithOptions<T: Default> {
 impl<T: Default> Merge for RuleAssistWithOptions<T> {
     fn merge_with(&mut self, other: Self) {
         self.level = other.level;
+
         self.options = other.options;
     }
 }
@@ -326,6 +339,7 @@ pub struct RuleWithOptions<T: Default> {
 impl<T: Default> Merge for RuleWithOptions<T> {
     fn merge_with(&mut self, other: Self) {
         self.level = other.level;
+
         self.options = other.options;
     }
 }
@@ -346,7 +360,9 @@ pub struct RuleWithFixOptions<T: Default> {
 impl<T: Default> Merge for RuleWithFixOptions<T> {
     fn merge_with(&mut self, other: Self) {
         self.level = other.level;
+
         self.fix = other.fix.or(self.fix);
+
         self.options = other.options;
     }
 }
@@ -377,10 +393,13 @@ impl<'a> From<&'a RuleSelector> for RuleFilter<'static> {
 
 impl FromStr for RuleSelector {
     type Err = &'static str;
+
     fn from_str(selector: &str) -> Result<Self, Self::Err> {
         let selector = selector.strip_prefix("lint/").unwrap_or(selector);
+
         if let Some((group_name, rule_name)) = selector.split_once('/') {
             let group = linter::RuleGroup::from_str(group_name)?;
+
             if let Some(rule_name) = Rules::has_rule(group, rule_name) {
                 Ok(RuleSelector::Rule(group, rule_name))
             } else {
@@ -403,6 +422,7 @@ impl serde::Serialize for RuleSelector {
             RuleSelector::Group(group) => serializer.serialize_str(group.as_str()),
             RuleSelector::Rule(group, rule_name) => {
                 let group_name = group.as_str();
+
                 serializer.serialize_str(&format!("{group_name}/{rule_name}"))
             }
         }
@@ -412,11 +432,14 @@ impl serde::Serialize for RuleSelector {
 impl<'de> serde::Deserialize<'de> for RuleSelector {
     fn deserialize<D: serde::Deserializer<'de>>(deserializer: D) -> Result<Self, D::Error> {
         struct Visitor;
+
         impl<'de> serde::de::Visitor<'de> for Visitor {
             type Value = RuleSelector;
+
             fn expecting(&self, formatter: &mut std::fmt::Formatter) -> std::fmt::Result {
                 formatter.write_str("<group>/<ruyle_name>")
             }
+
             fn visit_str<E: serde::de::Error>(self, v: &str) -> Result<Self::Value, E> {
                 match RuleSelector::from_str(v) {
                     Ok(result) => Ok(result),
@@ -424,6 +447,7 @@ impl<'de> serde::Deserialize<'de> for RuleSelector {
                 }
             }
         }
+
         deserializer.deserialize_str(Visitor)
     }
 }
@@ -433,6 +457,7 @@ impl schemars::JsonSchema for RuleSelector {
     fn schema_name() -> String {
         "RuleCode".to_string()
     }
+
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
         String::json_schema(gen)
     }

@@ -14,6 +14,7 @@ impl WhereCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Where<GritQueryContext>, CompileError> {
         let pattern = PatternCompiler::from_node(&node.pattern()?, context)?;
+
         let side_condition = PredicateCompiler::from_node(&node.side_condition()?, context)?;
 
         Ok(Where::new(pattern, side_condition))

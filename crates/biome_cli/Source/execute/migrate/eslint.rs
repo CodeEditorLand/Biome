@@ -80,6 +80,7 @@ pub(crate) fn read_eslint_config(
 ) -> Result<Config, CliDiagnostic> {
     for config_path_str in FLAT_CONFIG_FILES {
         let path = Path::new(config_path_str);
+
         if fs.path_exists(path) {
             return load_flat_config_data(path, console).map(|data| Config {
                 path: config_path_str,
@@ -87,8 +88,10 @@ pub(crate) fn read_eslint_config(
             });
         }
     }
+
     for config_path_str in LEGACY_CONFIG_FILES {
         let path = Path::new(config_path_str);
+
         if fs.path_exists(path) {
             return load_legacy_config_data(fs, path, console).map(|data| Config {
                 path: config_path_str,
@@ -103,6 +106,7 @@ pub(crate) fn read_eslint_config(
             data: data.into(),
         });
     }
+
     Err(CliDiagnostic::MigrateError(MigrationDiagnostic { reason: "The default ESLint configuration file `.eslintrc[.*]` was not found in the working directory.".to_string()}))
 }
 
@@ -121,13 +125,16 @@ fn load_flat_config_data(
     console: &mut dyn Console,
 ) -> Result<eslint_eslint::FlatConfigData, CliDiagnostic> {
     let node::Resolution { content, .. } = node::load_config(&path.to_string_lossy())?;
+
     let (deserialized, diagnostics) = deserialize_from_json_str::<eslint_eslint::FlatConfigData>(
         &content,
         JsonParserOptions::default(),
         "",
     )
     .consume();
+
     let path_str = path.to_string_lossy();
+
     for diagnostic in diagnostics.into_iter().filter(|diag| {
         matches!(
             diag.severity(),
@@ -137,8 +144,10 @@ fn load_flat_config_data(
         )
     }) {
         let diagnostic = diagnostic.with_file_path(path_str.to_string());
+
         console.error(markup! {{PrintDiagnostic::simple(&diagnostic)}});
     }
+
     if let Some(result) = deserialized {
         Ok(result)
     } else {
@@ -158,8 +167,11 @@ fn load_legacy_config_data(
     let (deserialized, diagnostics) = match path.extension().and_then(OsStr::to_str) {
         None | Some("json") => {
             let mut file = fs.open_with_options(path, OpenOptions::default().read(true))?;
+
             let mut content = String::new();
+
             file.read_to_string(&mut content)?;
+
             if path.file_name().is_some_and(|name| name == PACKAGE_JSON) {
                 let (deserialized, diagnostics) =
                     deserialize_from_json_str::<eslint_eslint::EslintPackageJson>(
@@ -177,6 +189,7 @@ fn load_legacy_config_data(
                                 .ignore_patterns
                                 .extend(packagejson.eslint_ignore);
                         }
+
                         packagejson.eslint_config
                     }),
                     diagnostics,
@@ -192,8 +205,10 @@ fn load_legacy_config_data(
                 .consume()
             }
         }
+
         Some("js" | "cjs") => {
             let node::Resolution { content, .. } = node::load_config(&path.to_string_lossy())?;
+
             deserialize_from_json_str::<eslint_eslint::LegacyConfigData>(
                 &content,
                 JsonParserOptions::default(),
@@ -201,6 +216,7 @@ fn load_legacy_config_data(
             )
             .consume()
         }
+
         Some(ext) => {
             return Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
                 reason: format!(
@@ -209,7 +225,9 @@ fn load_legacy_config_data(
             }))
         }
     };
+
     let path_str = path.to_string_lossy();
+
     for diagnostic in diagnostics.into_iter().filter(|diag| {
         matches!(
             diag.severity(),
@@ -219,13 +237,16 @@ fn load_legacy_config_data(
         )
     }) {
         let diagnostic = diagnostic.with_file_path(path_str.to_string());
+
         console.error(markup! {{PrintDiagnostic::simple(&diagnostic)}});
     }
+
     if let Some(mut result) = deserialized {
         // recursively resolve the `extends` field.
         while !result.extends.is_empty() {
             resolve_extends(&mut result, console);
         }
+
         Ok(result)
     } else {
         Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
@@ -265,11 +286,15 @@ fn load_eslint_extends_config(
                         ),
                     }));
                 };
+
                 let rest = rest.trim_end_matches(config_name);
+
                 let module_name = rest.trim_end_matches('/');
+
                 let module_name = EslintPackage::Plugin.resolve_name(module_name);
                 (module_name, config_name)
             }
+
             name => {
                 return Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
                     reason: format!(
@@ -283,14 +308,17 @@ fn load_eslint_extends_config(
             content,
             resolved_path,
         } = node::load_config(&module_name)?;
+
         let deserialized = deserialize_from_json_str::<eslint_eslint::PluginExport>(
             &content,
             JsonParserOptions::default(),
             "",
         )
         .into_deserialized();
+
         if let Some(mut deserialized) = deserialized {
             let deserialized = deserialized.configs.remove(config_name);
+
             if deserialized.is_none() {
                 return Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
                     reason: format!("The ESLint configuration '{config_name}' cannot be extracted from the module '{module_name}'. Make sure that '{config_name}' is a valid configuration name.")
@@ -319,6 +347,7 @@ fn load_eslint_extends_config(
                 Err(err)
             }
         })?;
+
         let deserialized = deserialize_from_json_str::<eslint_eslint::LegacyConfigData>(
             &content,
             JsonParserOptions::default(),
@@ -327,6 +356,7 @@ fn load_eslint_extends_config(
         .into_deserialized();
         (module_name, resolved_path, deserialized)
     };
+
     let Some(mut deserialized) = deserialized else {
         return Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
             reason: format!("The ESLint configuration of the module '{specifier}' cannot be extracted. This is likely an internal error.")
@@ -338,12 +368,16 @@ fn load_eslint_extends_config(
             let Some(resolved_path) = Path::new(&resolved_path).parent() else {
                 return;
             };
+
             let mut path = PathBuf::new();
+
             path.push(resolved_path);
+
             path.push(Path::new(&extends_item));
             *extends_item = path.to_string_lossy().to_string();
         }
     });
+
     Ok(deserialized)
 }
 
@@ -359,11 +393,14 @@ fn resolve_extends(config: &mut eslint_eslint::LegacyConfigData, console: &mut d
             Ok(config) => Some(config),
             Err(diag) => {
                 console.error(markup! {{PrintDiagnostic::simple(&diag)}});
+
                 None
             }
         })
         .collect();
+
     config.extends.clear();
+
     for ext in extensions {
         config.merge_with(ext);
     }
@@ -383,10 +420,12 @@ impl EslintPackage {
             EslintPackage::Config => "eslint-config-",
             EslintPackage::Plugin => "eslint-plugin-",
         };
+
         if name.starts_with('@') {
             // handle scoped package
             if let Some((scope, rest)) = name.split_once('/') {
                 let package = rest.split('/').next().unwrap_or(rest);
+
                 if rest.starts_with(artifact) || package == artifact.trim_end_matches('-') {
                     Cow::Borrowed(name)
                 } else {
@@ -394,6 +433,7 @@ impl EslintPackage {
                 }
             } else {
                 let artifact = artifact.trim_end_matches('-');
+
                 Cow::Owned(format!("{name}/{artifact}"))
             }
         } else if name.starts_with(artifact) {
@@ -414,10 +454,12 @@ mod tests {
             EslintPackage::Config.resolve_name("@scope/package"),
             "@scope/eslint-config-package"
         );
+
         assert_eq!(
             EslintPackage::Config.resolve_name("@scope/eslint-config-package"),
             "@scope/eslint-config-package"
         );
+
         assert_eq!(
             EslintPackage::Config.resolve_name("@scope/eslint-config"),
             "@scope/eslint-config"
@@ -427,10 +469,12 @@ mod tests {
             EslintPackage::Config.resolve_name("@scope/package/path"),
             "@scope/eslint-config-package/path"
         );
+
         assert_eq!(
             EslintPackage::Config.resolve_name("@scope/eslint-config-package/path"),
             "@scope/eslint-config-package/path"
         );
+
         assert_eq!(
             EslintPackage::Config.resolve_name("@scope/eslint-config/path"),
             "@scope/eslint-config/path"
@@ -440,6 +484,7 @@ mod tests {
             EslintPackage::Config.resolve_name("package"),
             "eslint-config-package"
         );
+
         assert_eq!(
             EslintPackage::Config.resolve_name("eslint-config-package"),
             "eslint-config-package"

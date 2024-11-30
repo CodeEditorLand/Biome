@@ -37,15 +37,21 @@ pub(crate) fn format_as_or_satisfies_assignment(
 mod tests {
 
     use crate::assert_needs_parentheses;
+
     use biome_js_syntax::TsAsAssignment;
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("a as number = 'test'", TsAsAssignment);
+
         assert_needs_parentheses!("(a as number)! = 'test'", TsAsAssignment);
+
         assert_needs_parentheses!("(<number>(a as number)) = 'test'", TsAsAssignment);
+
         assert_needs_parentheses!("++(a as number)", TsAsAssignment);
+
         assert_needs_parentheses!("(a as number)--", TsAsAssignment);
+
         assert_needs_parentheses!("({ a: a as number } = { a: 5 })", TsAsAssignment);
     }
 }

@@ -75,7 +75,9 @@ where
     W: WriteColor,
 {
     let mut color = ColorSpec::new();
+
     let mut link = None;
+
     let mut inverse = false;
 
     state.for_each(&mut |elements| {
@@ -84,9 +86,11 @@ where
                 MarkupElement::Inverse => {
                     inverse = !inverse;
                 }
+
                 MarkupElement::Hyperlink { href } => {
                     link = Some(href);
                 }
+
                 _ => {
                     element.update_color(&mut color);
                 }
@@ -98,17 +102,22 @@ where
 
     if inverse {
         let fg = color.fg().map_or(Color::White, |c| *c);
+
         let bg = color.bg().map_or(Color::Black, |c| *c);
+
         color.set_bg(Some(fg));
+
         color.set_fg(Some(bg));
     }
 
     if let Err(err) = writer.set_color(&color) {
         writer.reset()?;
+
         return Err(err);
     }
 
     let mut reset_link = false;
+
     if let Some(href) = link {
         // `is_synchronous` is used to check if the underlying writer
         // is using the Windows Console API, that does not support ANSI
@@ -117,6 +126,7 @@ where
         // clients like the Windows Terminal ANSI is used instead
         if writer.supports_color() && !writer.is_synchronous() {
             write!(writer, "\x1b]8;;{href}\x1b\\")?;
+
             reset_link = true;
         }
     }
@@ -128,6 +138,7 @@ where
     }
 
     writer.reset()?;
+
     result
 }
 
@@ -148,14 +159,17 @@ where
 
         for grapheme in content.graphemes(true) {
             let width = UnicodeWidthStr::width(grapheme);
+
             let is_whitespace = grapheme_is_whitespace(grapheme);
 
             if !is_whitespace && width == 0 {
                 let char_to_write = char::REPLACEMENT_CHARACTER;
+
                 char_to_write.encode_utf8(&mut buffer);
 
                 if let Err(err) = self.writer.write_all(&buffer[..char_to_write.len_utf8()]) {
                     self.error = Err(err);
+
                     return Err(fmt::Error);
                 }
 
@@ -174,6 +188,7 @@ where
 
                     if let Err(err) = self.writer.write_all(&buffer[..replacement.len_utf8()]) {
                         self.error = Err(err);
+
                         return Err(fmt::Error);
                     }
 
@@ -186,6 +201,7 @@ where
 
                 if let Err(err) = self.writer.write_all(&buffer[..char.len_utf8()]) {
                     self.error = Err(err);
+
                     return Err(fmt::Error);
                 }
             }
@@ -218,9 +234,11 @@ mod tests {
     use std::{fmt::Write, str::from_utf8};
 
     use biome_markup::markup;
+
     use termcolor::Ansi;
 
     use crate as biome_console;
+
     use crate::fmt::Formatter;
 
     use super::{SanitizeAdapter, Termcolor};
@@ -232,18 +250,21 @@ mod tests {
         // redact zero-width characters (RTL override, null character, bell,
         // zero-width space, ...)
         const INPUT: &str = "t\tes t\r\n\u{202D}t\0es\x07t\u{202E}\nt\u{200B}es🐛t";
+
         const OUTPUT: &str = "t\tes t\r\n\u{FFFD}t\u{FFFD}es\u{FFFD}t\u{FFFD}\nt\u{FFFD}es🐛t";
 
         let mut buffer = Vec::new();
 
         {
             let writer = termcolor::Ansi::new(&mut buffer);
+
             let mut adapter = SanitizeAdapter {
                 writer,
                 error: Ok(()),
             };
 
             adapter.write_str(INPUT).unwrap();
+
             adapter.error.unwrap();
         }
 
@@ -255,7 +276,9 @@ mod tests {
         const OUTPUT: &str = "\x1b[0m\x1b]8;;https://biomejs.dev/\x1b\\link\x1b]8;;\x1b\\\x1b[0m";
 
         let mut buffer = Vec::new();
+
         let mut writer = Termcolor(Ansi::new(&mut buffer));
+
         let mut formatter = Formatter::new(&mut writer);
 
         formatter
@@ -270,19 +293,23 @@ mod tests {
     #[test]
     fn test_printing_complex_emojis() {
         const INPUT: &str = "⚠️1️⃣ℹ️";
+
         const OUTPUT: &str = "⚠️1️⃣ℹ️";
+
         const WINDOWS_OUTPUT: &str = "!1i";
 
         let mut buffer = Vec::new();
 
         {
             let writer = termcolor::Ansi::new(&mut buffer);
+
             let mut adapter = SanitizeAdapter {
                 writer,
                 error: Ok(()),
             };
 
             adapter.write_str(INPUT).unwrap();
+
             adapter.error.unwrap();
         }
 

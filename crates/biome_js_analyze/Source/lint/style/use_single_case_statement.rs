@@ -45,17 +45,22 @@ declare_lint_rule! {
 
 impl Rule for UseSingleCaseStatement {
     type Query = Ast<AnyJsSwitchClause>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let switch_clause = ctx.query();
+
         let count = switch_clause
             .consequent()
             .iter()
             .filter(|stmt| !matches!(stmt, AnyJsStatement::JsBreakStatement(_)))
             .count();
+
         if count > 1 {
             Some(())
         } else {
@@ -65,6 +70,7 @@ impl Rule for UseSingleCaseStatement {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let switch_clause = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             switch_clause.consequent().range(),
@@ -76,10 +82,15 @@ impl Rule for UseSingleCaseStatement {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let switch_clause = ctx.query();
+
         let clause_token = switch_clause.clause_token().ok()?;
+
         let colon_token = switch_clause.colon_token().ok()?;
+
         let consequent = switch_clause.consequent();
+
         let new_colon_token = colon_token.with_trailing_trivia([]);
+
         let new_consequent = make::js_statement_list(Some(AnyJsStatement::JsBlockStatement(
             make::js_block_statement(
                 make::token(T!['{'])
@@ -90,9 +101,13 @@ impl Rule for UseSingleCaseStatement {
                     .with_leading_trivia_pieces(clause_token.indentation_trivia_pieces()),
             ),
         )));
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_token_discard_trivia(colon_token, new_colon_token);
+
         mutation.replace_node_discard_trivia(consequent, new_consequent);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

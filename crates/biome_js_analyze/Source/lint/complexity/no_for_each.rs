@@ -74,14 +74,19 @@ declare_lint_rule! {
 
 impl Rule for NoForEach {
     type Query = Ast<JsCallExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let member_expression =
             AnyJsMemberExpression::cast(node.callee().ok()?.omit_parentheses().into_syntax())?;
+
         if member_expression.member_name()?.text() != "forEach" {
             return None;
         }
@@ -95,9 +100,11 @@ impl Rule for NoForEach {
             AnyJsExpression::JsArrowFunctionExpression(function) => {
                 function.parameters().ok()?.len()
             }
+
             AnyJsExpression::JsFunctionExpression(function) => {
                 function.parameters().ok()?.items().len()
             }
+
             _ => return None,
         };
         (parameter_count <= 1).then_some(())
@@ -105,6 +112,7 @@ impl Rule for NoForEach {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.syntax().text_trimmed_range(),

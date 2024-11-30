@@ -6,6 +6,7 @@ use biome_grit_syntax::AnyGritPattern;
 pub(crate) struct FormatAnyGritPattern;
 impl FormatRule<AnyGritPattern> for FormatAnyGritPattern {
     type Context = GritFormatContext;
+
     fn fmt(&self, node: &AnyGritPattern, f: &mut GritFormatter) -> FormatResult<()> {
         match node {
             AnyGritPattern::AnyGritLiteral(node) => node.format().fmt(f),

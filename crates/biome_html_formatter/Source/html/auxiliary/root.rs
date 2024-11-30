@@ -8,6 +8,7 @@ impl FormatNodeRule<HtmlRoot> for FormatHtmlRoot {
         if let Some(bom) = node.bom_token() {
             bom.format().fmt(f)?;
         }
+
         if let Some(directive) = node.directive() {
             directive.format().fmt(f)?;
         }
@@ -17,6 +18,7 @@ impl FormatNodeRule<HtmlRoot> for FormatHtmlRoot {
         if let Ok(eof) = node.eof_token() {
             eof.format().fmt(f)?;
         }
+
         write!(f, [hard_line_break()])?;
 
         Ok(())

@@ -11,6 +11,7 @@ impl FormatNodeRule<GritBacktickSnippetLiteral> for FormatGritBacktickSnippetLit
         f: &mut GritFormatter,
     ) -> FormatResult<()> {
         let GritBacktickSnippetLiteralFields { value_token } = node.as_fields();
+
         write!(f, [value_token.format()])
     }
 }

@@ -54,14 +54,18 @@ declare_lint_rule! {
 
 impl Rule for NoEnum {
     type Query = Ast<TsEnumDeclaration>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let enum_decl = ctx.query();
 
         let source_type = ctx.source_type::<JsFileSource>().language();
+
         let is_declaration = source_type.is_definition_file();
 
         if is_declaration {

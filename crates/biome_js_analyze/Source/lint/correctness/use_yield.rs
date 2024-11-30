@@ -77,6 +77,7 @@ impl Visitor for MissingYieldVisitor {
                     }
                 }
             }
+
             WalkEvent::Leave(node) => {
                 // When the visitor exits a function, if it matches the node of the top-most
                 // entry of the stack and the `has_yield` flag is `false`, emit a query match
@@ -105,8 +106,11 @@ impl QueryMatch for MissingYield {
 
 impl Queryable for MissingYield {
     type Input = Self;
+
     type Language = JsLanguage;
+
     type Output = AnyFunctionLike;
+
     type Services = ();
 
     fn build_visitor(
@@ -123,8 +127,11 @@ impl Queryable for MissingYield {
 
 impl Rule for UseYield {
     type Query = MissingYield;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -133,6 +140,7 @@ impl Rule for UseYield {
         if query.statements()?.is_empty() {
             return None;
         }
+
         Some(())
     }
 

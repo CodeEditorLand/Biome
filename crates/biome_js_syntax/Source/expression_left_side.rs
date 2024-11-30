@@ -17,11 +17,13 @@ impl AnyJsExpressionLeftSide {
     /// expression, and finally resolves to the test condition of the conditional expression.
     pub fn leftmost(expression: AnyJsExpression) -> Self {
         let mut current: Self = expression.into();
+
         loop {
             match current.left_expression() {
                 None => {
                     break current;
                 }
+
                 Some(left) => {
                     current = left;
                 }
@@ -48,11 +50,13 @@ impl AnyJsExpressionLeftSide {
                     AnyJsExpression::JsAssignmentExpression(expr) => {
                         return expr.left().ok().map(Self::from)
                     }
+
                     AnyJsExpression::JsPostUpdateExpression(expr) => {
                         return expr.operand().ok().map(|assignment| {
                             Self::from(AnyJsAssignmentPattern::AnyJsAssignment(assignment))
                         })
                     }
+
                     expr => {
                         return AnyJsBinaryLikeExpression::cast_ref(expr.syntax()).and_then(
                             |binary_like| match binary_like.left().ok() {
@@ -62,30 +66,37 @@ impl AnyJsExpressionLeftSide {
                                 Some(AnyJsBinaryLikeLeftExpression::JsPrivateName(name)) => {
                                     Some(Self::from(name))
                                 }
+
                                 None => None,
                             },
                         );
                     }
                 };
+
                 left_expression.map(Self::from)
             }
+
             Self::AnyJsAssignmentPattern(pattern) => {
                 let left = match pattern {
                     AnyJsAssignmentPattern::AnyJsAssignment(assignment) => match assignment {
                         AnyJsAssignment::JsComputedMemberAssignment(computed) => {
                             return computed.object().ok().map(Self::from)
                         }
+
                         AnyJsAssignment::JsStaticMemberAssignment(member) => {
                             return member.object().ok().map(Self::from)
                         }
+
                         AnyJsAssignment::TsAsAssignment(parent) => parent.assignment().ok(),
                         AnyJsAssignment::TsSatisfiesAssignment(parent) => parent.assignment().ok(),
                         AnyJsAssignment::TsNonNullAssertionAssignment(parent) => {
                             parent.assignment().ok()
                         }
+
                         AnyJsAssignment::TsTypeAssertionAssignment(parent) => {
                             parent.assignment().ok()
                         }
+
                         AnyJsAssignment::JsParenthesizedAssignment(_)
                         | AnyJsAssignment::JsIdentifierAssignment(_)
                         | AnyJsAssignment::JsBogusAssignment(_) => None,
@@ -93,10 +104,12 @@ impl AnyJsExpressionLeftSide {
                     AnyJsAssignmentPattern::JsArrayAssignmentPattern(_)
                     | AnyJsAssignmentPattern::JsObjectAssignmentPattern(_) => None,
                 };
+
                 left.map(|assignment| {
                     Self::from(AnyJsAssignmentPattern::AnyJsAssignment(assignment))
                 })
             }
+
             Self::JsPrivateName(_) => None,
         }
     }

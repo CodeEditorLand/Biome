@@ -47,8 +47,10 @@ pub fn is_css_variable(value: &str) -> bool {
 /// Get the font-families within a `font` shorthand property value.
 pub fn find_font_family(value: CssGenericComponentValueList) -> Vec<AnyCssValue> {
     let mut font_families: Vec<AnyCssValue> = Vec::new();
+
     for v in value {
         let value = v.text();
+
         let lower_case_value = value.to_ascii_lowercase_cow();
 
         // Ignore CSS variables
@@ -104,10 +106,12 @@ pub fn find_font_family(value: CssGenericComponentValueList) -> Vec<AnyCssValue>
                 AnyCssValue::CssIdentifier(_) | AnyCssValue::CssString(_) => {
                     font_families.push(css_value)
                 }
+
                 _ => continue,
             },
         }
     }
+
     font_families
 }
 
@@ -193,17 +197,23 @@ pub fn vendor_prefixed(props: &str) -> bool {
 /// Check if the input string is a media feature name.
 pub fn is_media_feature_name(prop: &str) -> bool {
     let input = prop.to_ascii_lowercase_cow();
+
     let count = MEDIA_FEATURE_NAMES.binary_search(&input.as_ref());
+
     if count.is_ok() {
         return true;
     }
+
     let mut has_vendor_prefix = false;
+
     for prefix in VENDOR_PREFIXES.iter() {
         if input.starts_with(prefix) {
             has_vendor_prefix = true;
+
             break;
         }
     }
+
     if has_vendor_prefix {
         for feature_name in MEDIA_FEATURE_NAMES.iter() {
             if input.ends_with(feature_name) {
@@ -211,6 +221,7 @@ pub fn is_media_feature_name(prop: &str) -> bool {
             }
         }
     }
+
     false
 }
 
@@ -237,6 +248,7 @@ fn is_custom_element(prop: &str) -> bool {
 /// Check if the input string is a known type selector.
 pub fn is_known_type_selector(prop: &str) -> bool {
     let input = prop.to_ascii_lowercase_cow();
+
     HTML_TAGS.binary_search(&input.as_ref()).is_ok()
         || SVG_TAGS.binary_search(&prop).is_ok()
         || MATH_ML_TAGS.binary_search(&input.as_ref()).is_ok()

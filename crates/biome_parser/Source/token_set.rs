@@ -20,7 +20,9 @@ impl<K: SyntaxKind> TokenSet<K> {
 
     pub fn contains(&self, kind: K) -> bool {
         let kind = kind.to_raw().0;
+
         let num = kind as usize;
+
         match num {
             0..=127 => self.0[0] & mask(kind)[0] != 0,
             _ => self.0[1] & mask(kind)[1] != 0,
@@ -41,6 +43,7 @@ impl<K: SyntaxKind> TokenSet<K> {
 
 const fn mask(kind: u16) -> [u128; 2] {
     let num = kind as usize;
+
     match num {
         0..=127 => [1u128 << num, 0],
         _ => [0, 1u128 << (num - 127)],
@@ -52,6 +55,7 @@ const fn mask(kind: u16) -> [u128; 2] {
 macro_rules! token_set {
     ($($t:expr),*) => {{
             use $crate::TokenSet;
+
             TokenSet::EMPTY$(.union(unsafe { TokenSet::from_raw($t as u16) }))*
         }};
     ($($t:expr),* ,) => { token_set!($($t),*) };

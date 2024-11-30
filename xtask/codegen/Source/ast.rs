@@ -40,17 +40,21 @@ pub fn generate_ast(mode: Mode, language_kind_list: Vec<String>) -> Result<()> {
                 Ok(kind) => Some(kind),
                 Err(err) => {
                     println_string_with_fg_color(err, Color::Red);
+
                     None
                 }
             })
             .collect::<Vec<_>>()
     };
+
     for kind in codegen_language_kinds {
         println_string_with_fg_color(
             format!("-------------------Generating Grammar for {kind}-------------------"),
             Color::Green,
         );
+
         let ast = load_ast(kind);
+
         generate_syntax(ast, &mode, kind)?;
     }
 
@@ -59,12 +63,17 @@ pub fn generate_ast(mode: Mode, language_kind_list: Vec<String>) -> Result<()> {
 
 pub(crate) fn load_ast(language: LanguageKind) -> AstSrc {
     let grammar_src = language.load_grammar();
+
     let grammar: Grammar = grammar_src.parse().unwrap();
+
     let mut ast: AstSrc = make_ast(&grammar);
+
     if language == LanguageKind::Js {
         check_unions(&ast.unions);
     }
+
     ast.sort();
+
     ast
 }
 
@@ -73,10 +82,12 @@ pub(crate) fn generate_syntax(ast: AstSrc, mode: &Mode, language_kind: LanguageK
         .join("crates")
         .join(language_kind.syntax_crate_name())
         .join("src/generated");
+
     let factory_generated_path = project_root()
         .join("crates")
         .join(language_kind.factory_crate_name())
         .join("src/generated");
+
     let target_language_path = project_root()
         .join("crates/biome_grit_patterns/src/grit_target_language")
         .join(language_kind.grit_target_language_module_name());
@@ -84,32 +95,46 @@ pub(crate) fn generate_syntax(ast: AstSrc, mode: &Mode, language_kind: LanguageK
     let kind_src = language_kind.kinds();
 
     let ast_nodes_file = syntax_generated_path.join("nodes.rs");
+
     let contents = generate_nodes(&ast, language_kind)?;
+
     update(ast_nodes_file.as_path(), &contents, mode)?;
 
     let ast_nodes_mut_file = syntax_generated_path.join("nodes_mut.rs");
+
     let contents = generate_nodes_mut(&ast, language_kind)?;
+
     update(ast_nodes_mut_file.as_path(), &contents, mode)?;
 
     let syntax_kinds_file = syntax_generated_path.join("kind.rs");
+
     let contents = generate_syntax_kinds(kind_src, language_kind)?;
+
     update(syntax_kinds_file.as_path(), &contents, mode)?;
 
     let syntax_factory_file = factory_generated_path.join("syntax_factory.rs");
+
     let contents = generate_syntax_factory(&ast, language_kind)?;
+
     update(syntax_factory_file.as_path(), &contents, mode)?;
 
     let node_factory_file = factory_generated_path.join("node_factory.rs");
+
     let contents = generate_node_factory(&ast, language_kind)?;
+
     update(node_factory_file.as_path(), &contents, mode)?;
 
     let ast_macros_file = syntax_generated_path.join("macros.rs");
+
     let contents = generate_macros(&ast, language_kind)?;
+
     update(ast_macros_file.as_path(), &contents, mode)?;
 
     if language_kind.supports_grit() {
         let target_language_constants_file = target_language_path.join("constants.rs");
+
         let contents = generate_target_language_constants(&ast, language_kind)?;
+
         update(target_language_constants_file.as_path(), &contents, mode)?;
     }
 
@@ -126,7 +151,9 @@ fn check_unions(unions: &[AstEnumSrc]) {
             "\n******** START ERROR STACK ********\nChecking {}, variants : {:?}",
             union.name, union.variants
         );
+
         let mut union_set: HashSet<_> = HashSet::from([&union.name]);
+
         let mut union_queue: VecDeque<_> = VecDeque::new();
 
         // Init queue for BFS
@@ -138,6 +165,7 @@ fn check_unions(unions: &[AstEnumSrc]) {
                 // The variant is a compound variant
                 // Get the struct from the map
                 let current_union = union_map[variant];
+
                 write!(
                     stack_string,
                     "\nSUB-ENUM CHECK : {}, variants : {:?}",
@@ -151,15 +179,19 @@ fn check_unions(unions: &[AstEnumSrc]) {
                 } else {
                     // We either have a circular dependency or 2 variants referencing the same type
                     println!("{stack_string}");
+
                     panic!("Variant '{variant}' used twice or circular dependency");
                 }
             } else {
                 // The variant isn't another enum
                 // stack_string.push_str(&format!());
+
                 write!(stack_string, "\nBASE-VAR CHECK : {variant}").unwrap();
+
                 if !union_set.insert(variant) {
                     // The variant already used
                     println!("{stack_string}");
+
                     panic!("Variant '{variant}' used twice");
                 }
             }
@@ -169,15 +201,19 @@ fn check_unions(unions: &[AstEnumSrc]) {
 
 pub(crate) fn append_css_property_value_implied_alternatives(variants: Vec<String>) -> Vec<String> {
     let mut cloned = variants.clone();
+
     if !cloned.iter().any(|v| v == "CssWideKeyword") {
         cloned.push(String::from("CssWideKeyword"));
     }
+
     if !cloned.iter().any(|v| v == "CssUnknownPropertyValue") {
         cloned.push(String::from("CssUnknownPropertyValue"));
     }
+
     if !cloned.iter().any(|v| v == "CssBogusPropertyValue") {
         cloned.push(String::from("CssBogusPropertyValue"));
     }
+
     cloned
 }
 
@@ -186,6 +222,7 @@ fn make_ast(grammar: &Grammar) -> AstSrc {
 
     for node in grammar.iter() {
         let name = grammar[node].name.clone();
+
         if name == SYNTAX_ELEMENT_TYPE {
             continue;
         }
@@ -210,10 +247,14 @@ fn make_ast(grammar: &Grammar) -> AstSrc {
                     variants,
                 })
             }
+
             NodeRuleClassification::Node => {
                 let mut fields = vec![];
+
                 handle_rule(&mut fields, grammar, rule, None, false, false);
+
                 let is_dynamic = fields.iter().any(|field| field.is_unordered());
+
                 ast.nodes.push(AstNodeSrc {
                     documentation: vec![],
                     name,
@@ -221,9 +262,12 @@ fn make_ast(grammar: &Grammar) -> AstSrc {
                     dynamic: is_dynamic,
                 })
             }
+
             NodeRuleClassification::DynamicNode => {
                 let mut fields = vec![];
+
                 handle_rule(&mut fields, grammar, rule, None, false, true);
+
                 ast.nodes.push(AstNodeSrc {
                     documentation: vec![],
                     name,
@@ -231,6 +275,7 @@ fn make_ast(grammar: &Grammar) -> AstSrc {
                     dynamic: true,
                 })
             }
+
             NodeRuleClassification::Bogus => ast.bogus.push(name),
             NodeRuleClassification::List {
                 separator,
@@ -282,6 +327,7 @@ fn classify_node_rule(grammar: &Grammar, rule: &Rule, name: &str) -> NodeRuleCla
         // this is for enums
         Rule::Alt(alternatives) => {
             let mut all_alternatives = vec![];
+
             for alternative in alternatives {
                 match alternative {
                     Rule::Node(it) => all_alternatives.push(grammar[*it].name.clone()),
@@ -289,6 +335,7 @@ fn classify_node_rule(grammar: &Grammar, rule: &Rule, name: &str) -> NodeRuleCla
                     _ => return NodeRuleClassification::Node,
                 }
             }
+
             NodeRuleClassification::Union(all_alternatives)
         }
         // A*
@@ -309,6 +356,7 @@ fn classify_node_rule(grammar: &Grammar, rule: &Rule, name: &str) -> NodeRuleCla
                 }
             }
         }
+
         Rule::Seq(rules) => {
             // (T (',' T)* ','?)
             // (T (',' T)*)
@@ -324,6 +372,7 @@ fn classify_node_rule(grammar: &Grammar, rule: &Rule, name: &str) -> NodeRuleCla
                 NodeRuleClassification::Node
             }
         }
+
         Rule::UnorderedAll(_) | Rule::UnorderedSome(_) => NodeRuleClassification::DynamicNode,
         Rule::Node(node) if name.starts_with("AnyCss") && name.ends_with("PropertyValue") => {
             // TODO: This is CSS-specific and would be better handled with a per-language
@@ -334,6 +383,7 @@ fn classify_node_rule(grammar: &Grammar, rule: &Rule, name: &str) -> NodeRuleCla
             // the node, then it won't be a `Rule::Alt`, and needs to be handled
             NodeRuleClassification::Union(vec![grammar[*node].name.clone()])
         }
+
         _ => NodeRuleClassification::Node,
     }
 }
@@ -347,6 +397,7 @@ fn clean_token_name(grammar: &Grammar, token: &Token) -> String {
     if "[]{}()`".contains(&name) {
         name = format!("'{name}'");
     }
+
     name
 }
 
@@ -369,17 +420,22 @@ fn handle_rule(
 
             handle_rule(fields, grammar, rule, Some(label), optional, unordered)
         }
+
         Rule::Node(node) => {
             let ty = grammar[*node].name.clone();
+
             let name = label.map_or_else(|| Case::Snake.convert(&ty), String::from);
+
             let field = Field::Node {
                 name,
                 ty,
                 optional,
                 unordered,
             };
+
             fields.push(field);
         }
+
         Rule::Token(token) => {
             let name = clean_token_name(grammar, token);
 
@@ -394,15 +450,18 @@ fn handle_rule(
                 optional,
                 unordered,
             };
+
             fields.push(field);
         }
 
         Rule::Rep(_) => {
             panic!("Create a list node for *many* children {label:?}");
         }
+
         Rule::Opt(rule) => {
             handle_rule(fields, grammar, rule, label, true, false);
         }
+
         Rule::Alt(rules) => {
             // Alts must be required. We don't support alternated rules nested
             // within an Opt, like `(A | B)?`. For those, make a new Rule.
@@ -411,10 +470,12 @@ fn handle_rule(
                     "Alternates cannot be nested within an optional Rule. Use a new Node to contain the alternate {label:?}"
                 );
             }
+
             for rule in rules {
                 handle_rule(fields, grammar, rule, label, false, false);
             }
         }
+
         Rule::Seq(rules) => {
             for rule in rules {
                 // Sequences can be optional if they are wrapped by an Opt rule, so
@@ -422,6 +483,7 @@ fn handle_rule(
                 handle_rule(fields, grammar, rule, label, optional, false);
             }
         }
+
         Rule::UnorderedAll(rules) => {
             for rule in rules {
                 // UnorderedAll only implies each contained rule is unordered, while
@@ -429,6 +491,7 @@ fn handle_rule(
                 handle_rule(fields, grammar, rule, label, optional, true);
             }
         }
+
         Rule::UnorderedSome(rules) => {
             for rule in rules {
                 // UnorderedSome implies each contained rule is unordered _and_ optional.
@@ -478,6 +541,7 @@ fn handle_comma_list<'a>(grammar: &'a Grammar, rules: &[Rule]) -> Option<CommaLi
 
             comma
         }
+
         _ => return None,
     };
 
@@ -513,6 +577,7 @@ fn handle_tokens_in_unions(
     };
 
     let mut token_kinds = vec![];
+
     for rule in rule.iter() {
         match rule {
             Rule::Token(token) => token_kinds.push(clean_token_name(grammar, token)),
@@ -526,6 +591,8 @@ fn handle_tokens_in_unions(
         optional,
         unordered,
     };
+
     fields.push(field);
+
     true
 }

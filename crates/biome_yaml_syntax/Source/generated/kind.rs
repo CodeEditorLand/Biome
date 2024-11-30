@@ -72,6 +72,7 @@ impl YamlSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_literal(self) -> bool {
         match self {
             YAML_STRING_VALUE | YAML_NUMBER_VALUE | YAML_BOOLEAN_VALUE | YAML_NULL_VALUE
@@ -79,6 +80,7 @@ impl YamlSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_list(self) -> bool {
         match self {
             YAML_DOCUMENT_LIST
@@ -88,13 +90,16 @@ impl YamlSyntaxKind {
             _ => false,
         }
     }
+
     pub fn from_keyword(ident: &str) -> Option<YamlSyntaxKind> {
         let kw = match ident {
             "null" => NULL_KW,
             _ => return None,
         };
+
         Some(kw)
     }
+
     pub const fn to_string(&self) -> Option<&'static str> {
         let tok = match self {
             COLON => ":",
@@ -121,6 +126,7 @@ impl YamlSyntaxKind {
             YAML_STRING_VALUE => "string value",
             _ => return None,
         };
+
         Some(tok)
     }
 }

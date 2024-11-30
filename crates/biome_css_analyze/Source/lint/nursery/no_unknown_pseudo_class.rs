@@ -82,11 +82,14 @@ declare_node_union! {
 
 fn is_webkit_pseudo_class(node: &AnyPseudoLike) -> bool {
     let mut prev_element = node.syntax().parent().and_then(|p| p.prev_sibling());
+
     while let Some(prev) = &prev_element {
         let maybe_selector = CssPseudoElementSelector::cast_ref(prev);
+
         if let Some(selector) = maybe_selector.as_ref() {
             return WEBKIT_SCROLLBAR_PSEUDO_ELEMENTS.contains(&selector.text().trim_matches(':'));
         };
+
         prev_element = prev.prev_sibling();
     }
 
@@ -108,52 +111,75 @@ pub struct NoUnknownPseudoClassSelectorState {
 
 impl Rule for NoUnknownPseudoClass {
     type Query = Ast<AnyPseudoLike>;
+
     type State = NoUnknownPseudoClassSelectorState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let pseudo_class = ctx.query();
+
         let (name, span) = match pseudo_class {
             AnyPseudoLike::CssBogusPseudoClass(class) => Some((class.text(), class.range())),
             AnyPseudoLike::CssPseudoClassFunctionCompoundSelector(selector) => {
                 let name = selector.name().ok()?;
+
                 Some((name.text().to_string(), name.text_range()))
             }
+
             AnyPseudoLike::CssPseudoClassFunctionCompoundSelectorList(selector_list) => {
                 let name = selector_list.name().ok()?;
+
                 Some((name.text().to_string(), name.text_range()))
             }
+
             AnyPseudoLike::CssPseudoClassFunctionIdentifier(ident) => {
                 let name = ident.name_token().ok()?;
+
                 Some((name.text().to_string(), name.text_range()))
             }
+
             AnyPseudoLike::CssPseudoClassFunctionNth(func_nth) => {
                 let name = func_nth.name().ok()?;
+
                 Some((name.text().to_string(), name.text_range()))
             }
+
             AnyPseudoLike::CssPseudoClassFunctionRelativeSelectorList(selector_list) => {
                 let name = selector_list.name_token().ok()?;
+
                 Some((name.token_text_trimmed().to_string(), name.text_range()))
             }
+
             AnyPseudoLike::CssPseudoClassFunctionSelector(selector) => {
                 let name = selector.name().ok()?;
+
                 Some((name.text().to_string(), name.text_range()))
             }
+
             AnyPseudoLike::CssPseudoClassFunctionSelectorList(selector_list) => {
                 let name = selector_list.name().ok()?;
+
                 Some((name.text().to_string(), name.text_range()))
             }
+
             AnyPseudoLike::CssPseudoClassFunctionValueList(func_value_list) => {
                 let name = func_value_list.name_token().ok()?;
+
                 Some((name.text().to_string(), name.text_range()))
             }
+
             AnyPseudoLike::CssPseudoClassIdentifier(ident) => {
                 let name = ident.name().ok()?;
+
                 Some((name.text().to_string(), name.range()))
             }
+
             AnyPseudoLike::CssPageSelectorPseudo(page_pseudo) => {
                 let name = page_pseudo.selector().ok()?;
+
                 Some((name.token_text_trimmed().to_string(), name.text_range()))
             }
         }?;
@@ -170,6 +196,7 @@ impl Rule for NoUnknownPseudoClass {
         };
 
         let lower_name = name.to_ascii_lowercase_cow();
+
         let lower_name = lower_name.as_ref();
 
         let is_valid_class = match pseudo_type {
@@ -178,6 +205,7 @@ impl Rule for NoUnknownPseudoClass {
                 WEBKIT_SCROLLBAR_PSEUDO_CLASSES.contains(&lower_name)
                     || is_known_pseudo_class(lower_name)
             }
+
             PseudoClassType::Other => {
                 is_custom_selector(lower_name)
                     || vendor_prefixed(lower_name)
@@ -202,6 +230,7 @@ impl Rule for NoUnknownPseudoClass {
             span,
             class_type,
         } = state;
+
         let mut diag = RuleDiagnostic::new(
             rule_category!(),
             span,
@@ -209,23 +238,27 @@ impl Rule for NoUnknownPseudoClass {
                 "Unexpected unknown pseudo-class "<Emphasis>{ class_name }</Emphasis>" "
             },
         );
+
         match class_type {
             PseudoClassType::PagePseudoClass => {
                 diag = diag.note(markup! {
                     "See "<Hyperlink href="https://developer.mozilla.org/en-US/docs/Web/CSS/@page">"MDN web docs"</Hyperlink>" for more details."
                 });
             }
+
             PseudoClassType::WebkitScrollbarPseudoClass => {
                 diag = diag.note(markup! {
                     "See "<Hyperlink href="https://developer.mozilla.org/en-US/docs/Web/CSS/::-webkit-scrollbar">"MDN web docs"</Hyperlink>" for more details."
                 });
             }
+
             PseudoClassType::Other => {
                 diag = diag.note(markup! {
                     "See "<Hyperlink href="https://developer.mozilla.org/en-US/docs/Web/CSS/Pseudo-classes">"MDN web docs"</Hyperlink>" for more details."
             });
             }
         };
+
         Some(diag)
     }
 }

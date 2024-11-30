@@ -42,8 +42,11 @@ declare_lint_rule! {
 
 impl Rule for NoParameterProperties {
     type Query = Ast<TsPropertyParameter>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(_: &RuleContext<Self>) -> Self::Signals {
@@ -52,6 +55,7 @@ impl Rule for NoParameterProperties {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let param_prop = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             param_prop.range(),

@@ -23,9 +23,13 @@ declare_node_union! {
 impl Format<JsFormatContext> for AnyJsxOpeningElement {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         let layout = self.compute_layout(f.context().comments())?;
+
         let l_angle_token = self.l_angle_token()?;
+
         let name = self.name()?;
+
         let type_arguments = self.type_arguments();
+
         let attributes = self.attributes();
 
         let format_close = format_with(|f| {
@@ -49,12 +53,14 @@ impl Format<JsFormatContext> for AnyJsxOpeningElement {
                     ]
                 )
             }
+
             OpeningElementLayout::SingleStringAttribute => {
                 let attribute_spacing = if self.is_self_closing() {
                     Some(space())
                 } else {
                     None
                 };
+
                 write!(
                     f,
                     [
@@ -68,6 +74,7 @@ impl Format<JsFormatContext> for AnyJsxOpeningElement {
                     ]
                 )
             }
+
             OpeningElementLayout::IndentAttributes {
                 name_has_comments,
                 last_attribute_has_comments,
@@ -84,6 +91,7 @@ impl Format<JsFormatContext> for AnyJsxOpeningElement {
                     )?;
 
                     let force_bracket_same_line = f.options().bracket_same_line().value();
+
                     let wants_bracket_same_line = attributes.is_empty() && !name_has_comments;
 
                     if self.is_self_closing() {
@@ -100,6 +108,7 @@ impl Format<JsFormatContext> for AnyJsxOpeningElement {
                 let has_multiline_string_attribute = attributes
                     .iter()
                     .any(|attribute| is_multiline_string_literal_attribute(&attribute));
+
                 write![
                     f,
                     [group(&format_inner).should_expand(has_multiline_string_attribute)]
@@ -151,6 +160,7 @@ impl AnyJsxOpeningElement {
 
     fn compute_layout(&self, comments: &JsComments) -> SyntaxResult<OpeningElementLayout> {
         let attributes = self.attributes();
+
         let name = self.name()?;
 
         let name_has_comments = comments.has_comments(name.syntax())
@@ -234,6 +244,7 @@ fn is_multiline_string_literal_attribute(attribute: &AnyJsxAttribute) -> bool {
 /// Returns [None] otherwise.
 fn as_string_literal_attribute_value(attribute: &AnyJsxAttribute) -> Option<JsxString> {
     use AnyJsxAttribute::*;
+
     use AnyJsxAttributeValue::*;
 
     match attribute {
@@ -246,6 +257,7 @@ fn as_string_literal_attribute_value(attribute: &AnyJsxAttribute) -> Option<JsxS
                     _ => None,
                 })
         }
+
         JsxSpreadAttribute(_) => None,
     }
 }

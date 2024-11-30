@@ -29,6 +29,7 @@ impl FormatNodeRule<JsImportAssertionEntry> for FormatJsImportAssertionEntry {
                     ),]
                 )?;
             }
+
             _ => {
                 write![f, [key.format()]]?;
             }

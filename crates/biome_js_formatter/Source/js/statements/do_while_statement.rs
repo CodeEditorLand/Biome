@@ -21,7 +21,9 @@ impl FormatNodeRule<JsDoWhileStatement> for FormatJsDoWhileStatement {
         } = node.as_fields();
 
         let body = body?;
+
         let l_paren_token = l_paren_token?;
+
         let r_paren_token = r_paren_token?;
 
         write!(

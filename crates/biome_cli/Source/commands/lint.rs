@@ -68,6 +68,7 @@ impl CommandRunner for LintCommandPayload {
                     // Don't overwrite rules from the CLI configuration.
                     linter.rules = None;
                 }
+
                 self.linter_configuration.clone()
             },
             files: self.files_configuration.clone(),
@@ -77,6 +78,7 @@ impl CommandRunner for LintCommandPayload {
 
         if self.css_linter.is_some() {
             let css = fs_configuration.css.get_or_insert_with(Default::default);
+
             css.linter.merge_with(self.css_linter.clone());
         }
 
@@ -84,16 +86,21 @@ impl CommandRunner for LintCommandPayload {
             let graphql = fs_configuration
                 .graphql
                 .get_or_insert_with(Default::default);
+
             graphql.linter.merge_with(self.graphql_linter.clone());
         }
+
         if self.javascript_linter.is_some() {
             let javascript = fs_configuration
                 .javascript
                 .get_or_insert_with(Default::default);
+
             javascript.linter.merge_with(self.javascript_linter.clone());
         }
+
         if self.json_linter.is_some() {
             let json = fs_configuration.json.get_or_insert_with(Default::default);
+
             json.linter.merge_with(self.json_linter.clone());
         }
 
@@ -143,6 +150,7 @@ impl CommandRunner for LintCommandPayload {
             },
             console,
         )?;
+
         Ok(Execution::new(TraversalMode::Lint {
             fix_file_mode,
             stdin: self.get_stdin(console)?,

@@ -4,8 +4,10 @@ use biome_css_syntax::CssDocumentMatcherList;
 pub(crate) struct FormatCssDocumentMatcherList;
 impl FormatRule<CssDocumentMatcherList> for FormatCssDocumentMatcherList {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &CssDocumentMatcherList, f: &mut CssFormatter) -> FormatResult<()> {
         let separator = space();
+
         let mut joiner = f.join_with(&separator);
 
         for formatted in node.format_separated(",") {

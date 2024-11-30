@@ -36,6 +36,7 @@ where
         jsx_runtime: Option<JsxRuntime>,
     ) -> Result<Self, Error> {
         let rule_key = RuleKey::rule::<R>();
+
         Ok(Self {
             query_result,
             root,

@@ -94,13 +94,16 @@ pub trait FileSystem: Send + Sync + RefUnwindSafe {
         should_error_if_file_not_found: bool,
     ) -> AutoSearchResultAlias {
         let mut curret_search_dir = search_dir.to_path_buf();
+
         let mut is_searching_in_parent_dir = false;
+
         loop {
             let mut errors: Vec<FileSystemDiagnostic> = vec![];
 
             // Iterate all possible file names
             for file_name in file_names {
                 let file_path = curret_search_dir.join(file_name);
+
                 match self.read_file_from_path(&file_path) {
                     Ok(content) => {
                         if is_searching_in_parent_dir {
@@ -109,8 +112,10 @@ pub trait FileSystem: Send + Sync + RefUnwindSafe {
                                 curret_search_dir.display()
                             );
                         }
+
                         return Ok(Some(AutoSearchResult { content, file_path }));
                     }
+
                     Err(error) => {
                         // We don't return the error immediately because
                         // there're multiple valid file names to search for
@@ -130,6 +135,7 @@ pub trait FileSystem: Send + Sync + RefUnwindSafe {
 
             if let Some(parent_search_dir) = curret_search_dir.parent() {
                 curret_search_dir = PathBuf::from(parent_search_dir);
+
                 is_searching_in_parent_dir = true;
             } else {
                 break;
@@ -151,6 +157,7 @@ pub trait FileSystem: Send + Sync + RefUnwindSafe {
         match self.open_with_options(file_path, OpenOptions::default().read(true)) {
             Ok(mut file) => {
                 let mut content = String::new();
+
                 match file.read_to_string(&mut content) {
                     Ok(_) => Ok(content),
                     Err(err) => {
@@ -158,6 +165,7 @@ pub trait FileSystem: Send + Sync + RefUnwindSafe {
                             "Biome couldn't read the file {:?}, reason:\n{:?}",
                             file_path, err
                         );
+
                         Err(FileSystemDiagnostic {
                             path: file_path.display().to_string(),
                             severity: Severity::Error,
@@ -166,11 +174,13 @@ pub trait FileSystem: Send + Sync + RefUnwindSafe {
                     }
                 }
             }
+
             Err(err) => {
                 error!(
                     "Biome couldn't open the file {:?}, reason:\n{:?}",
                     file_path, err
                 );
+
                 Err(FileSystemDiagnostic {
                     path: file_path.display().to_string(),
                     severity: Severity::Error,
@@ -228,22 +238,31 @@ pub struct OpenOptions {
 impl OpenOptions {
     pub fn read(mut self, read: bool) -> Self {
         self.read = read;
+
         self
     }
+
     pub fn write(mut self, write: bool) -> Self {
         self.write = write;
+
         self
     }
+
     pub fn truncate(mut self, truncate: bool) -> Self {
         self.truncate = truncate;
+
         self
     }
+
     pub fn create(mut self, create: bool) -> Self {
         self.create = create;
+
         self
     }
+
     pub fn create_new(mut self, create_new: bool) -> Self {
         self.create_new = create_new;
+
         self
     }
 

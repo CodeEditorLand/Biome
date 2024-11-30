@@ -159,6 +159,7 @@ where
                         Some(prev_leading_trivia) => {
                             token.with_leading_trivia_pieces(prev_leading_trivia.pieces())
                         }
+
                         None => token.with_leading_trivia_pieces(empty()),
                     };
 
@@ -170,6 +171,7 @@ where
                         Some(prev_trailing_trivia) => {
                             token.with_trailing_trivia_pieces(prev_trailing_trivia.pieces())
                         }
+
                         None => token.with_trailing_trivia_pieces([]),
                     };
 
@@ -178,11 +180,13 @@ where
 
                 SyntaxElement::Node(node)
             }
+
             SyntaxElement::Token(token) => {
                 let new_token = match prev_leading_trivia {
                     Some(prev_leading_trivia) => {
                         token.with_leading_trivia_pieces(prev_leading_trivia.pieces())
                     }
+
                     None => token.with_leading_trivia_pieces([]),
                 };
 
@@ -190,8 +194,10 @@ where
                     Some(prev_trailing_trivia) => {
                         new_token.with_trailing_trivia_pieces(prev_trailing_trivia.pieces())
                     }
+
                     None => new_token.with_trailing_trivia_pieces([]),
                 };
+
                 SyntaxElement::Token(new_token)
             }
         };
@@ -243,6 +249,7 @@ where
             prev_token.trailing_trivia().pieces(),
             next_token.trailing_trivia().pieces(),
         );
+
         let new_token = next_token
             .with_leading_trivia_pieces(leading_trivia)
             .with_trailing_trivia_pieces(trailing_trivia);
@@ -291,14 +298,18 @@ where
         next_element: Option<SyntaxElement<L>>,
     ) {
         let new_node_slot = prev_element.index();
+
         let parent = prev_element.parent();
+
         let parent_range: Option<(u32, u32)> = parent.as_ref().map(|p| {
             let range = p.text_range();
             (range.start().into(), range.end().into())
         });
+
         let parent_depth = parent.as_ref().map(|p| p.ancestors().count()).unwrap_or(0);
 
         debug!("pushing change...");
+
         self.changes.push(CommitChange {
             parent_depth,
             parent,
@@ -382,10 +393,12 @@ where
                 // This must be done before the detachment below
                 // because we need nodes that are still valid in the old tree
                 let curr_grand_parent = curr_parent.parent();
+
                 let curr_grand_parent_range = curr_grand_parent.as_ref().map(|g| {
                     let range = g.text_range();
                     (range.start().into(), range.end().into())
                 });
+
                 let curr_parent_slot = curr_parent.index();
 
                 // Aggregate all modifications to the current parent
@@ -425,14 +438,17 @@ where
                         if !is_from_action {
                             continue;
                         }
+
                         let deleted_text_range = match curr_parent.slots().nth(*new_node_slot) {
                             Some(SyntaxSlot::Node(node)) => node.text_range(),
                             Some(SyntaxSlot::Token(token)) => token.text_range(),
                             Some(SyntaxSlot::Empty { index }) => {
                                 TextRange::new(index.into(), index.into())
                             }
+
                             None => continue,
                         };
+
                         let optional_inserted_text = new_node.as_ref().map(|n| n.to_string());
 
                         // We use binary search to keep the text mutations in order
@@ -454,7 +470,9 @@ where
                 // Now we detach the current parent, commit all the modifications
                 // and push a pending change to its parent
                 let mut current_parent = curr_parent.detach();
+
                 let is_list = current_parent.kind().is_list();
+
                 for (new_node_slot, new_node, ..) in modifications {
                     current_parent = if is_list && new_node.is_none() {
                         current_parent.splice_slots(new_node_slot..=new_node_slot, empty())
@@ -479,6 +497,7 @@ where
                     // the document root in some rule actions,
                     // so we need to find the actual document root
                     let mut document_root = root;
+
                     while let Some(parent) = document_root.parent() {
                         document_root = parent;
                     }
@@ -496,21 +515,26 @@ where
 
                     // Build text range and text edit from the text mutation list
                     let root_string = document_root.to_string();
+
                     let mut text_range = TextRange::default();
+
                     let mut text_edit_builder = TextEditBuilder::default();
 
                     let mut pointer: usize = 0;
+
                     for (deleted_text_range, optional_inserted_text) in text_mutation_list {
                         if let (Ok(range_start), Ok(range_end)) = (
                             usize::try_from(u32::from(deleted_text_range.start())),
                             usize::try_from(u32::from(deleted_text_range.end())),
                         ) {
                             text_range = text_range.cover(deleted_text_range);
+
                             if range_start > pointer {
                                 text_edit_builder.equal(&root_string[pointer..range_start]);
                             }
 
                             let old = &root_string[range_start..range_end];
+
                             let new = &optional_inserted_text.map_or(String::new(), |t| t);
 
                             text_edit_builder.with_unicode_words_diff(old, new);
@@ -518,7 +542,9 @@ where
                             pointer = range_end;
                         }
                     }
+
                     let end_pos = root_string.len();
+
                     if end_pos > pointer {
                         text_edit_builder.equal(&root_string[pointer..end_pos]);
                     }
@@ -568,13 +594,16 @@ pub mod test {
     /// ```
     fn tree_one(a: &str) -> (RawLanguageRoot, String) {
         let mut builder = RawSyntaxTreeBuilder::new();
+
         builder
             .start_node(RawLanguageKind::ROOT)
             .start_node(RawLanguageKind::LITERAL_EXPRESSION)
             .token(RawLanguageKind::STRING_TOKEN, a)
             .finish_node()
             .finish_node();
+
         let root = builder.finish().cast::<RawLanguageRoot>().unwrap();
+
         let s = format!("{:#?}", root.syntax());
         (root, s)
     }
@@ -588,6 +617,7 @@ pub mod test {
     /// ```
     fn tree_two(a: &str, b: &str) -> (RawLanguageRoot, String) {
         let mut builder = RawSyntaxTreeBuilder::new();
+
         builder
             .start_node(RawLanguageKind::ROOT)
             .start_node(RawLanguageKind::LITERAL_EXPRESSION)
@@ -597,7 +627,9 @@ pub mod test {
             .token(RawLanguageKind::STRING_TOKEN, b)
             .finish_node()
             .finish_node();
+
         let root = builder.finish().cast::<RawLanguageRoot>().unwrap();
+
         let s = format!("{:#?}", root.syntax());
         (root, s)
     }
@@ -626,6 +658,7 @@ pub mod test {
         let (before, before_debug) = tree_one("a");
 
         let batch = before.begin();
+
         let after = batch.commit();
 
         assert_eq!(before_debug, format!("{after:#?}"));
@@ -634,13 +667,17 @@ pub mod test {
     #[test]
     pub fn ok_batch_mutation_one_change() {
         let (before, _) = tree_one("a");
+
         let (expected, expected_debug) = tree_one("b");
 
         let a = find(&before, "a");
+
         let b = clone_detach(&expected, "b");
 
         let mut batch = before.begin();
+
         batch.replace_node(a, b);
+
         let root = batch.commit();
 
         assert_eq!(expected_debug, format!("{root:#?}"));
@@ -649,16 +686,23 @@ pub mod test {
     #[test]
     pub fn ok_batch_mutation_multiple_changes_different_branches() {
         let (before, _) = tree_two("a", "b");
+
         let (expected, expected_debug) = tree_two("c", "d");
 
         let a = find(&before, "a");
+
         let b = find(&before, "b");
+
         let c = clone_detach(&expected, "c");
+
         let d = clone_detach(&expected, "d");
 
         let mut batch = before.begin();
+
         batch.replace_node(a, c);
+
         batch.replace_node(b, d);
+
         let after = batch.commit();
 
         assert_eq!(expected_debug, format!("{after:#?}"));

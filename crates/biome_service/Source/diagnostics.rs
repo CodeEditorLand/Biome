@@ -390,6 +390,7 @@ impl Diagnostic for QueryDiagnostic {
 
 pub fn extension_error(path: &BiomePath) -> WorkspaceError {
     let file_source = DocumentFileSource::from_path(path);
+
     WorkspaceError::source_file_not_supported(
         file_source,
         path.clone().display().to_string(),
@@ -437,6 +438,7 @@ impl Diagnostic for TransportError {
             TransportError::Timeout => {
                 fmt.write_str("the request to the remote workspace timed out")
             }
+
             TransportError::RPCError(err) => fmt.write_str(err),
         }
     }
@@ -450,9 +452,11 @@ impl Diagnostic for TransportError {
             TransportError::Timeout => {
                 fmt.write_str("the request to the remote workspace timed out")
             }
+
             TransportError::RPCError(err) => fmt.write_str(err),
         }
     }
+
     fn tags(&self) -> DiagnosticTags {
         DiagnosticTags::INTERNAL
     }
@@ -541,11 +545,17 @@ mod test {
         CantReadDirectory, CantReadFile, DirtyWorkspace, FileIgnored, FileTooLarge, NotFound,
         SourceFileNotSupported,
     };
+
     use crate::file_handlers::DocumentFileSource;
+
     use crate::{TransportError, WorkspaceError};
+
     use biome_diagnostics::{print_diagnostic_to_string, DiagnosticExt, Error};
+
     use biome_formatter::FormatError;
+
     use biome_fs::BiomePath;
+
     use std::ffi::OsStr;
 
     fn snap_diagnostic(test_name: &str, diagnostic: Error) {
@@ -616,6 +626,7 @@ mod test {
     #[test]
     fn source_file_not_supported() {
         let path = BiomePath::new("not_supported.toml");
+
         snap_diagnostic(
             "source_file_not_supported",
             WorkspaceError::SourceFileNotSupported(SourceFileNotSupported {

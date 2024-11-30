@@ -12,17 +12,22 @@
 /// included in the segments, as they are considered delimiters.
 fn split_at_indexes<'a>(s: &'a str, indexes: &[usize]) -> Vec<&'a str> {
     let mut segments = Vec::new();
+
     let mut start_offset = 0;
+
     let mut start = 0;
 
     for &index in indexes {
         if index > s.len() {
             break; // Avoid panicking on out-of-bounds indexes
         }
+
         if index > start {
             segments.push(&s[start + start_offset..index]);
         }
+
         start_offset = 1;
+
         start = index;
     }
 
@@ -43,14 +48,20 @@ mod tests {
             split_at_indexes("foo:bar:baz", &[3, 7]),
             vec!["foo", "bar", "baz"]
         );
+
         assert_eq!(split_at_indexes("foobar:baz", &[6]), vec!["foobar", "baz"]);
+
         assert_eq!(split_at_indexes("foobarbaz", &[]), vec!["foobarbaz"]);
+
         assert_eq!(
             split_at_indexes("foo_bar_baz", &[3, 7]),
             vec!["foo", "bar", "baz"]
         );
+
         assert_eq!(split_at_indexes(":", &[0]), Vec::<&str>::new());
+
         assert_eq!(split_at_indexes(":::", &[0]), vec!["::"]);
+
         assert_eq!(split_at_indexes(":::", &[1]), vec![":", ":"]);
     }
 }
@@ -99,25 +110,33 @@ pub struct ClassStructure {
 pub fn tokenize_class(class_name: &str) -> Option<ClassStructure> {
     // TODO: add custom separator argument (currently hardcoded to `:`).
     let mut arbitrary_block_depth = 0;
+
     let mut at_arbitrary_block_start = false;
+
     let mut quoted_arbitrary_block_type: Option<Quote> = None;
+
     let mut last_char = CharKind::Other;
+
     let mut delimiter_indexes: Vec<usize> = Vec::new();
 
     for (index, byte) in class_name.bytes().enumerate() {
         let mut next_last_char = CharKind::Other;
+
         let mut is_start_of_arbitrary_block = false;
 
         match byte {
             b'[' => {
                 if arbitrary_block_depth == 0 {
                     arbitrary_block_depth = 1;
+
                     at_arbitrary_block_start = true;
+
                     is_start_of_arbitrary_block = true;
                 } else if quoted_arbitrary_block_type.is_none() {
                     arbitrary_block_depth += 1;
                 }
             }
+
             b'\'' | b'"' | b'`' => {
                 if at_arbitrary_block_start {
                     quoted_arbitrary_block_type = Quote::from_char(byte as char);
@@ -125,9 +144,11 @@ pub fn tokenize_class(class_name: &str) -> Option<ClassStructure> {
                     // Escaped, ignore.
                 } else {
                     let quote = Quote::from_char(byte as char)?;
+
                     next_last_char = CharKind::Quote(quote);
                 }
             }
+
             b'\\' => {
                 if let CharKind::Backslash = last_char {
                     // Consider escaped backslashes as other characters.
@@ -135,6 +156,7 @@ pub fn tokenize_class(class_name: &str) -> Option<ClassStructure> {
                     next_last_char = CharKind::Backslash;
                 }
             }
+
             b']' => {
                 if arbitrary_block_depth > 0 {
                     match &quoted_arbitrary_block_type {
@@ -146,12 +168,15 @@ pub fn tokenize_class(class_name: &str) -> Option<ClassStructure> {
                                 if quote_type == last_quote {
                                     // then we are no longer in an arbitrary block.
                                     arbitrary_block_depth = 0;
+
                                     quoted_arbitrary_block_type = None;
                                 }
                             }
                         }
+
                         None => {
                             arbitrary_block_depth -= 1;
+
                             quoted_arbitrary_block_type = None;
                         }
                     }
@@ -159,18 +184,23 @@ pub fn tokenize_class(class_name: &str) -> Option<ClassStructure> {
                     return None;
                 }
             }
+
             b':' => {
                 if arbitrary_block_depth == 0 {
                     delimiter_indexes.push(index);
                 }
             }
+
             _ => {}
         };
+
         if at_arbitrary_block_start && !is_start_of_arbitrary_block {
             at_arbitrary_block_start = false;
         };
+
         last_char = next_last_char;
     }
+
     let mut variants: Vec<ClassSegmentStructure> = split_at_indexes(class_name, &delimiter_indexes)
         .iter()
         .map(|&s| ClassSegmentStructure {
@@ -178,6 +208,7 @@ pub fn tokenize_class(class_name: &str) -> Option<ClassStructure> {
             text: s.to_string(),
         })
         .collect();
+
     let utility = variants.pop()?;
 
     Some(ClassStructure { variants, utility })
@@ -199,6 +230,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("hover:px-2"),
             Some(ClassStructure {
@@ -212,6 +244,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("sm:hover:px-2"),
             Some(ClassStructure {
@@ -231,6 +264,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("hover:[mask:circle]"),
             Some(ClassStructure {
@@ -244,6 +278,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("[&:nth-child(3)]:px-2"),
             Some(ClassStructure {
@@ -257,6 +292,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("hover:[mask:circle]"),
             Some(ClassStructure {
@@ -270,6 +306,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("has-[:checked]:bg-red-500"),
             Some(ClassStructure {
@@ -283,6 +320,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("[&:nth-child(3)]:[mask:circle]"),
             Some(ClassStructure {
@@ -296,6 +334,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("font-[Roboto]:[mask:circle]"),
             Some(ClassStructure {
@@ -309,6 +348,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("font-['Roboto']:[mask:circle]"),
             Some(ClassStructure {
@@ -322,6 +362,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("quotes-['Ro'b\"`oto']:block"),
             Some(ClassStructure {
@@ -335,6 +376,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("quotes-[']']:block"),
             Some(ClassStructure {
@@ -348,6 +390,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("quotes-[\"]\"]"),
             Some(ClassStructure {
@@ -358,6 +401,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("quotes-[`]`]"),
             Some(ClassStructure {
@@ -368,7 +412,9 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(tokenize_class("no-quotes-[]]:block"), None);
+
         assert_eq!(
             tokenize_class("escaped-quotes-[']\\']:block"),
             Some(ClassStructure {
@@ -379,6 +425,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("double-escaped-quotes-[']\\\\']:block"),
             Some(ClassStructure {
@@ -392,6 +439,7 @@ mod tests_tokenize_class {
                 },
             })
         );
+
         assert_eq!(
             tokenize_class("triple-escaped-quotes-[']\\\\\\']:block"),
             Some(ClassStructure {

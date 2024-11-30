@@ -14,6 +14,7 @@ impl FormatNodeRule<TsPredicateReturnType> for FormatTsPredicateReturnType {
             is_token,
             ty,
         } = node.as_fields();
+
         write![
             f,
             [

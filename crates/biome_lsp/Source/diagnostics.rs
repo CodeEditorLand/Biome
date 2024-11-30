@@ -36,9 +36,11 @@ impl Display for LspError {
             LspError::WorkspaceError(err) => {
                 write!(f, "{err}")
             }
+
             LspError::Anyhow(err) => {
                 write!(f, "{err}")
             }
+
             LspError::Error(err) => err.description(f),
         }
     }
@@ -58,20 +60,26 @@ pub(crate) async fn handle_lsp_error<T>(
             | WorkspaceError::FileIgnored(_)
             | WorkspaceError::FileTooLarge(_) => {
                 let message = format!("{err}");
+
                 client.log_message(MessageType::WARNING, message).await;
+
                 Ok(None)
             }
 
             _ => {
                 let message = format!("{err}");
+
                 client.log_message(MessageType::ERROR, message).await;
+
                 Ok(None)
             }
         },
         LspError::Anyhow(err) => Err(into_lsp_error(err)),
         LspError::Error(err) => {
             let message = print_diagnostic_to_string(&err);
+
             client.log_message(MessageType::ERROR, message).await;
+
             Ok(None)
         }
     }

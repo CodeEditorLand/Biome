@@ -66,16 +66,22 @@ declare_lint_rule! {
 
 impl Rule for NoDelete {
     type Query = Ast<JsUnaryExpression>;
+
     type State = AnyJsExpression;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let op = node.operator().ok()?;
+
         if op != JsUnaryOperator::Delete {
             return None;
         }
+
         let argument = node.argument().ok()?;
 
         let should_report = if let Some(computed) = argument.as_js_computed_member_expression() {
@@ -87,16 +93,20 @@ impl Rule for NoDelete {
                 .is_some()
         } else {
             let static_member_expression = argument.as_js_static_member_expression();
+
             if let Some(static_member_expression) = static_member_expression {
                 if let AnyJsExpression::JsStaticMemberExpression(static_expression) =
                     static_member_expression.object().ok()?
                 {
                     let name = static_expression.member().ok()?;
+
                     let name = name.as_js_name()?;
+
                     if name.text() == "dataset" {
                         return None;
                     }
                 }
+
                 true
             } else {
                 // if `argument` is not a computed or static member,
@@ -105,11 +115,13 @@ impl Rule for NoDelete {
                 false
             }
         };
+
         should_report.then_some(argument)
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),
@@ -121,8 +133,11 @@ impl Rule for NoDelete {
 
     fn action(ctx: &RuleContext<Self>, argument: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let assignment = to_assignment(argument).ok()?;
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(
             AnyJsExpression::from(node.clone()),
             AnyJsExpression::from(make::js_assignment_expression(
@@ -133,6 +148,7 @@ impl Rule for NoDelete {
                 )),
             )),
         );
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -150,12 +166,14 @@ fn to_assignment(expr: &AnyJsExpression) -> Result<AnyJsAssignment, ()> {
                 operator_token,
                 member,
             } = expr.as_fields();
+
             Ok(AnyJsAssignment::from(make::js_static_member_assignment(
                 object.map_err(drop)?,
                 operator_token.map_err(drop)?,
                 member.map_err(drop)?,
             )))
         }
+
         AnyJsExpression::JsComputedMemberExpression(expr) if !expr.is_optional_chain() => {
             let JsComputedMemberExpressionFields {
                 object,
@@ -164,6 +182,7 @@ fn to_assignment(expr: &AnyJsExpression) -> Result<AnyJsAssignment, ()> {
                 member,
                 r_brack_token,
             } = expr.as_fields();
+
             Ok(AnyJsAssignment::from(make::js_computed_member_assignment(
                 object.map_err(drop)?,
                 l_brack_token.map_err(drop)?,
@@ -171,6 +190,7 @@ fn to_assignment(expr: &AnyJsExpression) -> Result<AnyJsAssignment, ()> {
                 r_brack_token.map_err(drop)?,
             )))
         }
+
         _ => Err(()),
     }
 }

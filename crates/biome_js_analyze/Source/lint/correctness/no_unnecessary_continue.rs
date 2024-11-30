@@ -80,17 +80,22 @@ declare_lint_rule! {
 
 impl Rule for NoUnnecessaryContinue {
     type Query = Ast<JsContinueStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         is_continue_un_necessary(node)?.then_some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),
@@ -102,8 +107,11 @@ impl Rule for NoUnnecessaryContinue {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         mutation.remove_statement(node.clone().into());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -115,7 +123,9 @@ impl Rule for NoUnnecessaryContinue {
 
 fn is_continue_un_necessary(node: &JsContinueStatement) -> Option<bool> {
     use biome_js_syntax::JsSyntaxKind::*;
+
     let syntax = node.syntax();
+
     let ancestors: Vec<_> = syntax
         .ancestors()
         .skip(1)
@@ -130,12 +140,15 @@ fn is_continue_un_necessary(node: &JsContinueStatement) -> Option<bool> {
             )
         })
         .collect();
+
     let in_switch = ancestors
         .iter()
         .any(|ancestor| ancestor.kind() == JS_SWITCH_STATEMENT);
+
     if ancestors.is_empty() {
         return Some(true);
     }
+
     let loop_stmt = ancestors.last()?.parent()?;
 
     Some(
@@ -157,9 +170,12 @@ fn is_continue_last_statement(parent: &JsSyntaxNode, syntax: &JsSyntaxNode) -> O
 /// return true if continue label is undefined or equal to its parent's looplabel
 fn contains_parent_loop_label(node: &JsSyntaxNode, loop_stmt: &JsSyntaxNode) -> Option<bool> {
     let continue_stmt = JsContinueStatement::cast_ref(node)?;
+
     let continue_stmt_label = continue_stmt.label_token();
+
     if let Some(label) = continue_stmt_label {
         let label_stmt = JsLabeledStatement::cast(loop_stmt.parent()?)?;
+
         Some(label_stmt.label_token().ok()?.text_trimmed() == label.text_trimmed())
     } else {
         Some(true)
@@ -171,16 +187,22 @@ fn is_continue_inside_last_ancestors(
     syntax: &JsSyntaxNode,
 ) -> Option<bool> {
     let len = ancestors.len();
+
     for ancestor_window in ancestors.windows(2).rev() {
         let parent = &ancestor_window[1];
+
         let child = &ancestor_window[0];
+
         if parent.kind() == JsSyntaxKind::JS_STATEMENT_LIST {
             let body = parent.children();
+
             let last_body_node = body.last()?;
+
             if !((len == 1 && &last_body_node == syntax) || (len > 1 && &last_body_node == child)) {
                 return Some(false);
             }
         }
     }
+
     Some(true)
 }

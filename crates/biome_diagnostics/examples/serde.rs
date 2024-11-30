@@ -22,13 +22,16 @@ impl SerdeDiagnostic {
         let line_starts = LineIndexBuf::from_source_text(input);
 
         let line_index = error.line().checked_sub(1);
+
         let span = line_index.and_then(|line_index| {
             let line_start = line_starts.get(line_index)?;
 
             let column_index = error.column().checked_sub(1)?;
+
             let column_offset = TextSize::try_from(column_index).ok()?;
 
             let span_start = line_start + column_offset;
+
             Some(TextRange::at(span_start, TextSize::from(0)))
         });
 

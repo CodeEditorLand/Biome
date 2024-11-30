@@ -63,8 +63,11 @@ declare_lint_rule! {
 
 impl Rule for NoImgElement {
     type Query = Ast<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -80,12 +83,15 @@ impl Rule for NoImgElement {
             let Some(parent) = jsx.parent::<JsxChildList>() else {
                 return Some(());
             };
+
             let Some(parent) = parent.parent::<JsxElement>() else {
                 return Some(());
             };
+
             let Some(opening_element) = parent.opening_element().ok() else {
                 return Some(());
             };
+
             let name = opening_element.name().ok()?.name_value_token().ok()?;
 
             if name.text_trimmed() == "picture" {

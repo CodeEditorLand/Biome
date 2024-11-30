@@ -13,7 +13,9 @@ struct DirectiveListParseRecovery;
 
 impl ParseRecovery for DirectiveListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_DIRECTIVE;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -26,6 +28,7 @@ pub(crate) struct DirectiveList;
 
 impl ParseNodeList for DirectiveList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_DIRECTIVE_LIST;
@@ -54,7 +57,9 @@ pub(crate) fn parse_directive(p: &mut GraphqlParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![@]);
+
     parse_reference(p).or_add_diagnostic(p, expected_name);
 
     // arguments are optional

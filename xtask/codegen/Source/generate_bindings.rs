@@ -15,15 +15,20 @@ use xtask_codegen::update;
 
 pub(crate) fn generate_workspace_bindings(mode: Mode) -> Result<()> {
     let bindings_path = project_root().join("packages/@biomejs/backend-jsonrpc/src/workspace.ts");
+
     let methods = methods();
 
     let mut declarations = Vec::new();
+
     let mut member_definitions = Vec::with_capacity(methods.len());
+
     let mut member_declarations = Vec::with_capacity(methods.len());
+
     let mut queue = ModuleQueue::default();
 
     for method in &methods {
         let params = generate_type(&mut declarations, &mut queue, &method.params);
+
         let result = generate_type(&mut declarations, &mut queue, &method.result);
 
         let camel_case = Case::Camel.convert(method.name);
@@ -194,15 +199,19 @@ pub(crate) fn generate_workspace_bindings(mode: Mode) -> Result<()> {
 
     items.extend(declarations.into_iter().map(|(decl, description)| {
         let mut export = make::token(T![export]);
+
         if let Some(description) = description {
             let comment = format!("/**\n\t* {} \n\t */\n", description);
+
             let trivia = vec![
                 (TriviaPieceKind::Newline, "\n"),
                 (TriviaPieceKind::MultiLineComment, comment.as_str()),
                 (TriviaPieceKind::Newline, "\n"),
             ];
+
             export = export.with_leading_trivia(trivia);
         }
+
         AnyJsModuleItem::JsExport(make::js_export(
             make::js_decorator_list([]),
             export,
@@ -210,35 +219,45 @@ pub(crate) fn generate_workspace_bindings(mode: Mode) -> Result<()> {
                 AnyJsDeclaration::JsClassDeclaration(decl) => {
                     AnyJsDeclarationClause::JsClassDeclaration(decl)
                 }
+
                 AnyJsDeclaration::JsFunctionDeclaration(decl) => {
                     AnyJsDeclarationClause::JsFunctionDeclaration(decl)
                 }
+
                 AnyJsDeclaration::JsVariableDeclaration(decl) => {
                     AnyJsDeclarationClause::JsVariableDeclarationClause(
                         make::js_variable_declaration_clause(decl).build(),
                     )
                 }
+
                 AnyJsDeclaration::TsDeclareFunctionDeclaration(decl) => {
                     AnyJsDeclarationClause::TsDeclareFunctionDeclaration(decl)
                 }
+
                 AnyJsDeclaration::TsEnumDeclaration(decl) => {
                     AnyJsDeclarationClause::TsEnumDeclaration(decl)
                 }
+
                 AnyJsDeclaration::TsExternalModuleDeclaration(decl) => {
                     AnyJsDeclarationClause::TsExternalModuleDeclaration(decl)
                 }
+
                 AnyJsDeclaration::TsGlobalDeclaration(decl) => {
                     AnyJsDeclarationClause::TsGlobalDeclaration(decl)
                 }
+
                 AnyJsDeclaration::TsImportEqualsDeclaration(decl) => {
                     AnyJsDeclarationClause::TsImportEqualsDeclaration(decl)
                 }
+
                 AnyJsDeclaration::TsInterfaceDeclaration(decl) => {
                     AnyJsDeclarationClause::TsInterfaceDeclaration(decl)
                 }
+
                 AnyJsDeclaration::TsModuleDeclaration(decl) => {
                     AnyJsDeclarationClause::TsModuleDeclaration(decl)
                 }
+
                 AnyJsDeclaration::TsTypeAliasDeclaration(decl) => {
                     AnyJsDeclarationClause::TsTypeAliasDeclaration(decl)
                 }
@@ -425,7 +444,9 @@ pub(crate) fn generate_workspace_bindings(mode: Mode) -> Result<()> {
     .build();
 
     let formatted = format_node(JsFormatOptions::new(JsFileSource::ts()), module.syntax()).unwrap();
+
     let printed = formatted.print().unwrap();
+
     let code = printed.into_code();
 
     update(&bindings_path, &code, &mode)?;

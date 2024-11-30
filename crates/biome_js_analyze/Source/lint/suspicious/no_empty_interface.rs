@@ -58,18 +58,23 @@ declare_lint_rule! {
 
 impl Rule for NoEmptyInterface {
     type Query = Ast<TsInterfaceDeclaration>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let is_in_ambient_module = node.syntax().ancestors().skip(1).any(|ancestor| {
             matches!(
                 ancestor.kind(),
                 JsSyntaxKind::TS_GLOBAL_DECLARATION | JsSyntaxKind::TS_EXTERNAL_MODULE_DECLARATION
             )
         });
+
         if is_in_ambient_module {
             return None;
         }
@@ -86,7 +91,9 @@ impl Rule for NoEmptyInterface {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let node = ctx.query();
+
         let new_node = make_type_alias_from_interface(
             node,
             AnyTsType::from(make::ts_object_type(
@@ -96,10 +103,12 @@ impl Rule for NoEmptyInterface {
             )),
         )
         .ok()?;
+
         mutation.replace_node(
             AnyJsDeclarationClause::from(node.clone()),
             AnyJsDeclarationClause::from(new_node),
         );
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -120,10 +129,12 @@ fn make_type_alias_from_interface(
         make::token(T![=]).with_trailing_trivia([(TriviaPieceKind::Whitespace, " ")]),
         ts_type,
     );
+
     let new_node = if let Some(type_params) = node.type_parameters() {
         new_node.with_type_parameters(type_params)
     } else {
         new_node
     };
+
     Ok(new_node.build())
 }

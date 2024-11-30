@@ -47,6 +47,7 @@ impl Diagnostic for AnalyzerDiagnostic {
             DiagnosticKind::Raw(error) => error.category(),
         }
     }
+
     fn description(&self, fmt: &mut Formatter<'_>) -> std::fmt::Result {
         match &self.kind {
             DiagnosticKind::Rule(rule_diagnostic) => Debug::fmt(&rule_diagnostic.message, fmt),
@@ -59,6 +60,7 @@ impl Diagnostic for AnalyzerDiagnostic {
             DiagnosticKind::Rule(rule_diagnostic) => {
                 biome_console::fmt::Display::fmt(&rule_diagnostic.message, fmt)
             }
+
             DiagnosticKind::Raw(error) => error.message(fmt),
         }
     }
@@ -82,6 +84,7 @@ impl Diagnostic for AnalyzerDiagnostic {
             DiagnosticKind::Rule(rule_diagnostic) => {
                 Location::builder().span(&rule_diagnostic.span).build()
             }
+
             DiagnosticKind::Raw(error) => error.location(),
         }
     }
@@ -123,14 +126,17 @@ impl AnalyzerDiagnostic {
         self.kind = match self.kind {
             DiagnosticKind::Rule(mut rule_diagnostic) => {
                 rule_diagnostic.tags = DiagnosticTags::FIXABLE;
+
                 DiagnosticKind::Rule(rule_diagnostic)
             }
+
             DiagnosticKind::Raw(error) => {
                 DiagnosticKind::Raw(error.with_tags(DiagnosticTags::FIXABLE))
             }
         };
 
         self.code_suggestion_list.push(suggestion);
+
         self
     }
 
@@ -169,6 +175,7 @@ impl SuppressionDiagnostic {
 
     pub(crate) fn with_tags(mut self, tags: DiagnosticTags) -> Self {
         self.tags |= tags;
+
         self
     }
 }
@@ -197,6 +204,7 @@ impl std::fmt::Display for RuleError {
                     "the rule '{group}/{rule}' replaced the root of the file with a non-root node."
                 )
             }
+
             RuleError::ReplacedRootWithNonRootError { rule_name: None } => {
                 std::write!(
                     fmt,
@@ -218,6 +226,7 @@ impl biome_console::fmt::Display for RuleError {
                     "the rule '{group}/{rule}' replaced the root of the file with a non-root node."
                 )
             }
+
             RuleError::ReplacedRootWithNonRootError { rule_name: None } => {
                 std::write!(
                     fmt,

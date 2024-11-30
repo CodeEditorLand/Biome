@@ -37,13 +37,18 @@ declare_lint_rule! {
 
 impl Rule for NoInvalidPositionAtImportRule {
     type Query = Ast<CssRuleList>;
+
     type State = TextRange;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let mut is_invalid_position = false;
+
         let mut invalid_import_list = Vec::new();
 
         for rule in node {
@@ -57,11 +62,13 @@ impl Rule for NoInvalidPositionAtImportRule {
                 if any_css_at_rule.as_css_charset_at_rule().is_some() {
                     continue;
                 }
+
                 if any_css_at_rule.as_css_layer_at_rule().is_some() {
                     continue;
                 }
 
                 let import_rule = any_css_at_rule.as_css_import_at_rule();
+
                 if let Some(import_rule) = import_rule {
                     if is_invalid_position {
                         invalid_import_list.push(import_rule.range());
@@ -73,6 +80,7 @@ impl Rule for NoInvalidPositionAtImportRule {
                 is_invalid_position = true;
             }
         }
+
         invalid_import_list.into_boxed_slice()
     }
 

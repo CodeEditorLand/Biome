@@ -79,6 +79,7 @@ fn parse_composes_property(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
     // remap the `composes` keyword to a regular identifier
     parse_regular_identifier(p).ok();
+
     p.bump(T![:]);
 
     {
@@ -93,6 +94,7 @@ fn parse_composes_property(p: &mut CssParser) -> ParsedSyntax {
 
         if p.at(T![from]) {
             let m = p.start();
+
             p.bump(T![from]);
 
             if is_at_identifier(p) {
@@ -105,6 +107,7 @@ fn parse_composes_property(p: &mut CssParser) -> ParsedSyntax {
 
             m.complete(p, CSS_COMPOSES_IMPORT_SPECIFIER);
         }
+
         m.complete(p, CSS_COMPOSES_PROPERTY_VALUE);
     }
 
@@ -116,7 +119,9 @@ struct ComposesClassList;
 
 impl ParseNodeList for ComposesClassList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_COMPOSES_CLASS_LIST;
 
     /// Parses an individual element in the `composes` class list.
@@ -145,7 +150,9 @@ struct ComposesClassListParseRecovery;
 
 impl ParseRecovery for ComposesClassListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -188,7 +195,9 @@ struct GenericComponentValueList;
 
 impl ParseNodeList for GenericComponentValueList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_GENERIC_COMPONENT_VALUE_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -243,6 +252,8 @@ fn parse_generic_delimiter(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump_ts(GENERIC_DELIMITER_SET);
+
     Present(m.complete(p, CSS_GENERIC_DELIMITER))
 }

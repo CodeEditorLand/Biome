@@ -18,7 +18,9 @@ use std::vec::IntoIter;
 /// emits a diagnostic, a code action, or both
 pub trait AnalyzerSignal<L: Language> {
     fn diagnostic(&self) -> Option<AnalyzerDiagnostic>;
+
     fn actions(&self) -> AnalyzerActionIter<L>;
+
     fn transformations(&self) -> AnalyzerTransformationIter<L>;
 }
 
@@ -78,7 +80,9 @@ where
 {
     fn diagnostic(&self) -> Option<AnalyzerDiagnostic> {
         let diag = (self.diagnostic)();
+
         let error = Error::from(diag);
+
         Some(AnalyzerDiagnostic::from_error(error))
     }
 
@@ -134,6 +138,7 @@ impl<L: Language> Default for AnalyzerActionIter<L> {
 impl<L: Language> From<AnalyzerAction<L>> for CodeSuggestionAdvice<MarkupBuf> {
     fn from(action: AnalyzerAction<L>) -> Self {
         let (_, suggestion) = action.mutation.as_text_range_and_edit().unwrap_or_default();
+
         CodeSuggestionAdvice {
             applicability: action.applicability,
             msg: action.message,
@@ -200,6 +205,7 @@ impl<L: Language> Iterator for CodeSuggestionAdviceIter<L> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let action = self.iter.next()?;
+
         Some(action.into())
     }
 }
@@ -227,6 +233,7 @@ impl<L: Language> Iterator for CodeActionIter<L> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let action = self.iter.next()?;
+
         Some(action.into())
     }
 }
@@ -345,8 +352,11 @@ where
 {
     fn diagnostic(&self) -> Option<AnalyzerDiagnostic> {
         let globals = self.options.globals();
+
         let preferred_quote = self.options.preferred_quote();
+
         let options = self.options.rule_options::<R>().unwrap_or_default();
+
         let ctx = RuleContext::new(
             &self.query_result,
             self.root,
@@ -371,13 +381,16 @@ where
                     // The action is disabled
                     return AnalyzerActionIter::new(vec![]);
                 }
+
                 crate::FixKind::Safe => Some(Applicability::Always),
                 crate::FixKind::Unsafe => Some(Applicability::MaybeIncorrect),
             }
         } else {
             None
         };
+
         let options = self.options.rule_options::<R>().unwrap_or_default();
+
         let ctx = RuleContext::new(
             &self.query_result,
             self.root,
@@ -389,8 +402,10 @@ where
             self.options.jsx_runtime(),
         )
         .ok();
+
         if let Some(ctx) = ctx {
             let mut actions = Vec::new();
+
             if let Some(action) = R::action(&ctx, &self.state) {
                 actions.push(AnalyzerAction {
                     rule_name: Some((<R::Group as RuleGroup>::NAME, R::METADATA.name)),
@@ -400,6 +415,7 @@ where
                     message: action.message,
                 });
             };
+
             if let Some(text_range) = R::text_range(&ctx, &self.state) {
                 if let Some(suppression_action) = R::suppress(
                     &ctx,
@@ -414,6 +430,7 @@ where
                         mutation: suppression_action.mutation,
                         message: suppression_action.message,
                     };
+
                     actions.push(action);
                 }
             }
@@ -426,7 +443,9 @@ where
 
     fn transformations(&self) -> AnalyzerTransformationIter<RuleLanguage<R>> {
         let globals = self.options.globals();
+
         let options = self.options.rule_options::<R>().unwrap_or_default();
+
         let ctx = RuleContext::new(
             &self.query_result,
             self.root,
@@ -438,13 +457,18 @@ where
             self.options.jsx_runtime(),
         )
         .ok();
+
         if let Some(ctx) = ctx {
             let mut transformations = Vec::new();
+
             let mutation = R::transform(&ctx, &self.state);
+
             if let Some(mutation) = mutation {
                 let transformation = AnalyzerTransformation { mutation };
+
                 transformations.push(transformation)
             }
+
             AnalyzerTransformationIter::new(transformations)
         } else {
             AnalyzerTransformationIter::new(vec![])

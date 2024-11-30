@@ -5,6 +5,7 @@ use biome_grit_syntax::GritLanguageFlavorList;
 pub(crate) struct FormatGritLanguageFlavorList;
 impl FormatRule<GritLanguageFlavorList> for FormatGritLanguageFlavorList {
     type Context = GritFormatContext;
+
     fn fmt(&self, node: &GritLanguageFlavorList, f: &mut GritFormatter) -> FormatResult<()> {
         f.join_with(&space())
             .entries(

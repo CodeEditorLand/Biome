@@ -58,8 +58,11 @@ declare_lint_rule! {
 
 impl Rule for UseGoogleFontPreconnect {
     type Query = Ast<AnyJsxElement>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -70,6 +73,7 @@ impl Rule for UseGoogleFontPreconnect {
         }
 
         let href = node.get_attribute_inner_string_text("href")?;
+
         let rel = node.get_attribute_inner_string_text("rel");
 
         if href.starts_with("https://fonts.gstatic.com")
@@ -104,6 +108,7 @@ impl Rule for UseGoogleFontPreconnect {
         }
 
         let mut mutation = ctx.root().begin();
+
         let mut attributes: Vec<_> = node.attributes().iter().collect();
 
         let last_attr_token = match attributes.last()? {
@@ -113,6 +118,7 @@ impl Rule for UseGoogleFontPreconnect {
 
         let rel = if last_attr_token.has_leading_whitespace_or_newline() {
             let pieces = last_attr_token.leading_trivia().pieces();
+
             make::jsx_ident("rel").with_leading_trivia_pieces(pieces)
         } else {
             make::jsx_ident("rel").with_leading_trivia([(TriviaPieceKind::Whitespace, " ")])
@@ -130,6 +136,7 @@ impl Rule for UseGoogleFontPreconnect {
         );
 
         attributes.push(new_attribute);
+
         mutation.replace_node(node.attributes(), make::jsx_attribute_list(attributes));
 
         Some(JsRuleAction::new(

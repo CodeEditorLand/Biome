@@ -25,6 +25,7 @@ impl FormatNodeRule<TsUnionType> for FormatTsUnionType {
         // ```
         // should be inlined and not be printed in the multi-line variant
         let should_hug = should_hug_type(&node.clone().into(), f);
+
         if should_hug {
             return write!(
                 f,
@@ -48,7 +49,9 @@ impl FormatNodeRule<TsUnionType> for FormatTsUnionType {
         // if we encounter a leading comment when navigating up the chain,
         // we consider the current union type as having leading comments
         let mut has_leading_comments = f.comments().has_leading_comments(node.syntax());
+
         let mut union_type_at_top = node.clone();
+
         while let Some(grand_parent) = union_type_at_top
             .syntax()
             .grand_parent()
@@ -58,6 +61,7 @@ impl FormatNodeRule<TsUnionType> for FormatTsUnionType {
                 if f.comments().has_leading_comments(grand_parent.syntax()) {
                     has_leading_comments = true;
                 }
+
                 union_type_at_top = grand_parent;
             } else {
                 break;
@@ -167,15 +171,19 @@ impl Format<JsFormatContext> for FormatTypeSetLeadingSeparator<'_> {
                     if self.leading_soft_line_break_or_space {
                         write!(f, [soft_line_break_or_space()])?;
                     }
+
                     write!(f, [token.format(), space()])
                 });
+
                 format_only_if_breaks(token, &content).fmt(f)
             }
+
             None => {
                 let content = format_with(|f| {
                     if self.leading_soft_line_break_or_space {
                         write!(f, [soft_line_break_or_space()])?;
                     }
+
                     write!(f, [text(self.separator), space()])
                 });
 

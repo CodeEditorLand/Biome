@@ -14,8 +14,11 @@ impl SequentialCompiler {
             .into_iter()
             .map(|pattern| {
                 let step = StepCompiler::from_node(&pattern?, context)?;
+
                 let some = Pattern::Some(Box::new(Some::new(step.pattern)));
+
                 let files = Pattern::Files(Box::new(Files::new(some)));
+
                 Ok(Step { pattern: files })
             })
             .collect::<Result<Vec<_>, CompileError>>()

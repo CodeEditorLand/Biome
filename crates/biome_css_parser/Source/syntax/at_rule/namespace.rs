@@ -56,6 +56,7 @@ pub(crate) fn parse_namespace_at_rule(p: &mut CssParser) -> ParsedSyntax {
                 CSS_NAMESPACE_AT_RULE
             }
         }
+
         Err(_) => CSS_BOGUS_AT_RULE,
     };
 
@@ -68,7 +69,9 @@ struct NamespaceUrlParseRecovery;
 
 impl ParseRecovery for NamespaceUrlParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {

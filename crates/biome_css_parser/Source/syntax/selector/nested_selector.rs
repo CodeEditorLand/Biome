@@ -11,6 +11,7 @@ use biome_parser::Parser;
 pub(crate) struct NestedSelectorList;
 impl ParseNodeList for NestedSelectorList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
 
     const LIST_KIND: CssSyntaxKind = CSS_NESTED_SELECTOR_LIST;
@@ -48,7 +49,10 @@ fn parse_nested_selector(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     let context = selector_lex_context(p);
+
     p.bump_with_context(T![&], context);
+
     Present(m.complete(p, CSS_NESTED_SELECTOR))
 }

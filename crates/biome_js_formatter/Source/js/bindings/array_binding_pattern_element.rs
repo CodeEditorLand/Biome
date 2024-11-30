@@ -16,6 +16,7 @@ impl FormatNodeRule<JsArrayBindingPatternElement> for FormatJsArrayBindingPatter
         let JsArrayBindingPatternElementFields { pattern, init } = node.as_fields();
 
         write!(f, [pattern.format()])?;
+
         if let Some(init) = init {
             write!(f, [space(), init.format()])?;
         }

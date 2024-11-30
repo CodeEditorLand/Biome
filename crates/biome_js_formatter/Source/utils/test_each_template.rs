@@ -79,10 +79,12 @@ impl EachTemplateTableBuilder {
                     self.current_row.column_widths.push(column.width);
                 }
             }
+
             EachTemplateElement::LineBreak => {
                 self.next_row();
             }
         }
+
         self.elements.push(element);
     }
 
@@ -91,6 +93,7 @@ impl EachTemplateTableBuilder {
     fn next_row(&mut self) {
         if !self.current_row.has_line_break_column {
             let table_column_width_iter = self.columns_width.iter_mut();
+
             let mut row_column_width_iter = self.current_row.column_widths.iter();
 
             // find the maximum length between the table and the current row
@@ -154,6 +157,7 @@ impl EachTemplateCurrentRow {
     /// Reset the state of the current row when moving to the next line.
     fn reset(&mut self) {
         self.column_widths.clear();
+
         self.has_line_break_column = false;
     }
 }
@@ -200,6 +204,7 @@ impl EachTemplateTable {
         // split the header to get columns
         for column in header.text_trimmed().split_terminator('|') {
             let text = column.trim().to_string();
+
             let range = header.text_range();
 
             let column = EachTemplateColumn::new(text, range, false);
@@ -224,6 +229,7 @@ impl EachTemplateTable {
                         .template_chunk_token()?
                         .text_trimmed()
                         .contains('\n');
+
                     let is_last = iter.peek().is_none();
 
                     // go to the next line if the current element contains a line break
@@ -231,6 +237,7 @@ impl EachTemplateTable {
                         builder.entry(EachTemplateElement::LineBreak);
                     }
                 }
+
                 AnyJsTemplateElement::JsTemplateElement(element) => {
                     let mut vec_buffer = VecBuffer::new(f.state_mut());
 
@@ -247,6 +254,7 @@ impl EachTemplateTable {
 
                     // print the current column with infinite print width
                     write!(recording, [element.format().with_options(options)])?;
+
                     let recorded = recording.stop();
 
                     // whether there was a line break when formatting the column
@@ -255,8 +263,11 @@ impl EachTemplateTable {
                     let root = Document::from(vec_buffer.into_vec());
 
                     let range = element.range();
+
                     let print_options = f.options().as_print_options();
+
                     let printed = Printer::new(print_options).print(&root)?;
+
                     let text = printed.into_code();
 
                     let column = EachTemplateColumn::new(text, range, will_break);
@@ -276,6 +287,7 @@ impl Format<JsFormatContext> for EachTemplateTable {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         let table_content = format_with(|f| {
             let mut current_column: usize = 0;
+
             let mut current_row: usize = 0;
 
             let mut iter = self.elements.iter().peekable();
@@ -284,7 +296,9 @@ impl Format<JsFormatContext> for EachTemplateTable {
 
             while let Some(element) = iter.next() {
                 let next_item = iter.peek();
+
                 let is_last = next_item.is_none();
+
                 let is_last_in_row =
                     matches!(next_item, Some(EachTemplateElement::LineBreak)) || is_last;
 
@@ -326,8 +340,10 @@ impl Format<JsFormatContext> for EachTemplateTable {
 
                         current_column += 1;
                     }
+
                     EachTemplateElement::LineBreak => {
                         current_column = 0;
+
                         current_row += 1;
 
                         if !is_last {
@@ -336,6 +352,7 @@ impl Format<JsFormatContext> for EachTemplateTable {
                     }
                 }
             }
+
             Ok(())
         });
 

@@ -64,13 +64,16 @@ impl<'src> HtmlLexer<'src> {
             _ if is_identifier_byte(current) || is_attribute_name_byte(current) => {
                 self.consume_identifier(current, false)
             }
+
             _ => {
                 if self.position == 0 {
                     if let Some((bom, bom_size)) = self.consume_potential_bom(UNICODE_BOM) {
                         self.unicode_bom_length = bom_size;
+
                         return bom;
                     }
                 }
+
                 self.consume_unexpected_character()
             }
         }
@@ -107,6 +110,7 @@ impl<'src> HtmlLexer<'src> {
             _ if is_identifier_byte(current) || is_attribute_name_byte(current) => {
                 self.consume_identifier(current, true)
             }
+
             _ => self.consume_unexpected_character(),
         }
     }
@@ -118,13 +122,16 @@ impl<'src> HtmlLexer<'src> {
         lang: HtmlEmbededLanguage,
     ) -> HtmlSyntaxKind {
         let start = self.text_position();
+
         let end_tag = lang.end_tag();
+
         while self.current_byte().is_some() {
             if self.source[self.position..(self.position + end_tag.len())]
                 .eq_ignore_ascii_case(end_tag)
             {
                 break;
             }
+
             self.advance(1);
         }
 
@@ -148,8 +155,10 @@ impl<'src> HtmlLexer<'src> {
                         // eat -->
                         break;
                     }
+
                     self.advance_byte_or_char(char);
                 }
+
                 HTML_LITERAL
             }
         }
@@ -159,6 +168,7 @@ impl<'src> HtmlLexer<'src> {
     #[inline]
     fn consume_byte(&mut self, tok: HtmlSyntaxKind) -> HtmlSyntaxKind {
         self.advance(1);
+
         tok
     }
 
@@ -166,11 +176,14 @@ impl<'src> HtmlLexer<'src> {
         self.assert_at_char_boundary();
 
         let char = self.current_char_unchecked();
+
         let err = ParseDiagnostic::new(
             format!("Unexpected character `{char}`"),
             self.text_position()..self.text_position() + char.text_len(),
         );
+
         self.diagnostics.push(err);
+
         self.advance(char.len_utf8());
 
         ERROR_TOKEN
@@ -186,8 +199,11 @@ impl<'src> HtmlLexer<'src> {
         self.assert_current_char_boundary();
 
         const BUFFER_SIZE: usize = 14;
+
         let mut buffer = [0u8; BUFFER_SIZE];
+
         buffer[0] = first;
+
         let mut len = 1;
 
         self.advance_byte_or_char(first);
@@ -196,6 +212,7 @@ impl<'src> HtmlLexer<'src> {
             if is_identifier_byte(byte) || is_attribute_name_byte(byte) {
                 if len < BUFFER_SIZE {
                     buffer[len] = byte;
+
                     len += 1;
                 }
 
@@ -214,6 +231,7 @@ impl<'src> HtmlLexer<'src> {
 
     fn consume_string_literal(&mut self, quote: u8) -> HtmlSyntaxKind {
         self.assert_current_char_boundary();
+
         let start = self.text_position();
 
         self.advance(1); // Skip over the quote
@@ -225,10 +243,12 @@ impl<'src> HtmlLexer<'src> {
             match dispatch {
                 QOT if quote == chr => {
                     self.advance(1);
+
                     state = match state {
                         LexStringState::InString => LexStringState::Terminated,
                         state => state,
                     };
+
                     break;
                 }
                 // '\t' etc
@@ -252,6 +272,7 @@ impl<'src> HtmlLexer<'src> {
                             (Ok(_), _) => {}
                             (Err(err), LexStringState::InString) => {
                                 self.diagnostics.push(err);
+
                                 state = LexStringState::InvalidEscapeSequence;
                             }
                             (Err(_), _) => {}
@@ -280,10 +301,12 @@ impl<'src> HtmlLexer<'src> {
                             self.source.text_len()..self.source.text_len(),
                             "file ends here",
                         );
+
                 self.diagnostics.push(unterminated);
 
                 ERROR_TOKEN
             }
+
             LexStringState::InvalidEscapeSequence => ERROR_TOKEN,
         }
     }
@@ -293,7 +316,9 @@ impl<'src> HtmlLexer<'src> {
     /// See: https://html.spec.whatwg.org/#attributes-2 under "Unquoted attribute value syntax"
     fn consume_unquoted_string_literal(&mut self) -> HtmlSyntaxKind {
         let mut content_started = false;
+
         let mut encountered_invalid = false;
+
         while let Some(current) = self.current_byte() {
             match current {
                 // these characters safely terminate an unquoted attribute value
@@ -301,12 +326,16 @@ impl<'src> HtmlLexer<'src> {
                 // these characters are absolutely invalid in an unquoted attribute value
                 b'?' | b'\'' | b'"' | b'=' | b'<' | b'`' => {
                     encountered_invalid = true;
+
                     break;
                 }
+
                 _ if current.is_ascii() => {
                     self.advance(1);
+
                     content_started = true;
                 }
+
                 _ => break,
             }
         }
@@ -315,10 +344,12 @@ impl<'src> HtmlLexer<'src> {
             HTML_STRING_LITERAL
         } else {
             let char = self.current_char_unchecked();
+
             self.push_diagnostic(ParseDiagnostic::new(
                 "Unexpected character in unquoted attribute value",
                 self.text_position()..self.text_position() + char.text_len(),
             ));
+
             self.consume_unexpected_character()
         }
     }
@@ -350,6 +381,7 @@ impl<'src> HtmlLexer<'src> {
         debug_assert!(self.at_start_comment());
 
         self.advance(4);
+
         T![<!--]
     }
 
@@ -357,6 +389,7 @@ impl<'src> HtmlLexer<'src> {
         debug_assert!(self.at_end_comment());
 
         self.advance(3);
+
         T![-->]
     }
 
@@ -365,6 +398,7 @@ impl<'src> HtmlLexer<'src> {
     /// A unicode escape sequence must consist of 4 hex characters.
     fn consume_unicode_escape(&mut self) -> Result<(), ParseDiagnostic> {
         self.assert_byte(b'u');
+
         self.assert_current_char_boundary();
 
         let start = self.text_position();
@@ -390,6 +424,7 @@ impl<'src> HtmlLexer<'src> {
                         .with_detail(self.text_position()..self.text_position().add(char.text_len()), "Non hexadecimal number")
                         .with_hint("A unicode escape sequence must consist of 4 hexadecimal numbers: `\\uXXXX`, e.g. `\\u002F' for '/'."));
                 }
+
                 None => {
                     // Reached the end of the file before processing 4 hex digits
                     return Err(ParseDiagnostic::new(
@@ -418,22 +453,29 @@ impl<'src> HtmlLexer<'src> {
     /// See: https://infra.spec.whatwg.org/#strip-leading-and-trailing-ascii-whitespace
     fn consume_html_text(&mut self) -> HtmlSyntaxKind {
         let mut saw_space = false;
+
         while let Some(current) = self.current_byte() {
             match current {
                 b'<' => break,
                 b'\n' | b'\r' => {
                     self.after_newline = true;
+
                     break;
                 }
+
                 b' ' => {
                     if saw_space {
                         break;
                     }
+
                     self.advance(1);
+
                     saw_space = true;
                 }
+
                 _ => {
                     self.advance(1);
+
                     saw_space = false;
                 }
             }
@@ -445,9 +487,13 @@ impl<'src> HtmlLexer<'src> {
 
 impl<'src> Lexer<'src> for HtmlLexer<'src> {
     const NEWLINE: Self::Kind = NEWLINE;
+
     const WHITESPACE: Self::Kind = WHITESPACE;
+
     type Kind = HtmlSyntaxKind;
+
     type LexContext = HtmlLexContext;
+
     type ReLexContext = ();
 
     fn source(&self) -> &'src str {
@@ -464,6 +510,7 @@ impl<'src> Lexer<'src> for HtmlLexer<'src> {
 
     fn next_token(&mut self, context: Self::LexContext) -> Self::Kind {
         self.current_start = TextSize::from(self.position as u32);
+
         self.current_flags = TokenFlags::empty();
 
         let kind = if self.is_eof() {
@@ -478,6 +525,7 @@ impl<'src> Lexer<'src> for HtmlLexer<'src> {
                     HtmlLexContext::EmbeddedLanguage(lang) => {
                         self.consume_token_embedded_language(current, lang)
                     }
+
                     HtmlLexContext::Comment => self.consume_inside_comment(current),
                 },
                 None => EOF,
@@ -486,6 +534,7 @@ impl<'src> Lexer<'src> for HtmlLexer<'src> {
 
         self.current_flags
             .set(TokenFlags::PRECEDING_LINE_BREAK, self.after_newline);
+
         self.current_kind = kind;
 
         if !kind.is_trivia() {
@@ -494,6 +543,7 @@ impl<'src> Lexer<'src> for HtmlLexer<'src> {
 
         kind
     }
+
     fn has_preceding_line_break(&self) -> bool {
         self.preceding_line_break
     }
@@ -516,11 +566,17 @@ impl<'src> Lexer<'src> for HtmlLexer<'src> {
         let new_pos = u32::from(position) as usize;
 
         self.position = new_pos;
+
         self.current_kind = current_kind;
+
         self.current_start = current_start;
+
         self.current_flags = current_flags;
+
         self.after_newline = after_line_break;
+
         self.unicode_bom_length = unicode_bom_length;
+
         self.diagnostics.truncate(diagnostics_pos as usize);
     }
 
@@ -538,6 +594,7 @@ impl<'src> Lexer<'src> for HtmlLexer<'src> {
 
     fn advance_char_unchecked(&mut self) {
         let c = self.current_char_unchecked();
+
         self.position += c.len_utf8();
     }
 

@@ -180,6 +180,7 @@ fn suggested_fix_if_unused(binding: &AnyJsIdentifierBinding) -> Option<Suggested
         AnyJsBindingDeclaration::JsArrowFunctionExpression(_) => {
             suggestion_for_binding(binding)
         }
+
         AnyJsBindingDeclaration::TsPropertyParameter(_) => None,
         AnyJsBindingDeclaration::JsFormalParameter(parameter) => {
             if is_function_that_is_ok_parameter_not_be_used(&parameter.parent_function()) {
@@ -188,6 +189,7 @@ fn suggested_fix_if_unused(binding: &AnyJsIdentifierBinding) -> Option<Suggested
                 suggestion_for_binding(binding)
             }
         }
+
         AnyJsBindingDeclaration::JsRestParameter(parameter) => {
             if is_function_that_is_ok_parameter_not_be_used(&parameter.parent_function()) {
                 None
@@ -203,6 +205,7 @@ fn suggested_fix_if_unused(binding: &AnyJsIdentifierBinding) -> Option<Suggested
         | AnyJsBindingDeclaration::JsObjectBindingPatternShorthandProperty(_) => {
             None
         }
+
         node @ AnyJsBindingDeclaration::JsVariableDeclarator(_) => {
             if is_in_ambient_context(node.syntax()) {
                 None
@@ -210,6 +213,7 @@ fn suggested_fix_if_unused(binding: &AnyJsIdentifierBinding) -> Option<Suggested
                 suggestion_for_binding(binding)
             }
         }
+
         node @ (AnyJsBindingDeclaration::TsTypeAliasDeclaration(_)
         | AnyJsBindingDeclaration::JsClassDeclaration(_)
         | AnyJsBindingDeclaration::JsFunctionDeclaration(_)
@@ -230,8 +234,11 @@ fn suggested_fix_if_unused(binding: &AnyJsIdentifierBinding) -> Option<Suggested
 
         AnyJsBindingDeclaration::TsInferType(_) => {
             let binding_name_token = binding.name_token().ok()?;
+
             let binding_name = binding_name_token.text_trimmed();
+
             let conditional_type = binding.syntax().ancestors().find_map(TsConditionalType::cast)?;
+
             let last_binding_name_token = conditional_type.extends_type().ok()?.syntax()
                 .descendants()
                 .filter_map(TsInferType::cast)
@@ -270,17 +277,23 @@ fn suggested_fix_if_unused(binding: &AnyJsIdentifierBinding) -> Option<Suggested
 
 impl Rule for NoUnusedVariables {
     type Query = Semantic<AnyJsIdentifierBinding>;
+
     type State = SuggestedFix;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let binding = ctx.query();
+
         let model = ctx.model();
+
         let is_declaration_file = ctx
             .source_type::<JsFileSource>()
             .language()
             .is_definition_file();
+
         if is_declaration_file {
             if let Some(items) = binding
                 .syntax()
@@ -292,6 +305,7 @@ impl Rule for NoUnusedVariables {
                 // All top-level types and variiables are available in every files of the project.
                 // Thus, it is ok if top-level types are not used locally.
                 let is_top_level = items.parent::<TsDeclarationModule>().is_some();
+
                 if is_top_level && items.into_iter().all(|x| x.as_any_js_statement().is_some()) {
                     return None;
                 }
@@ -322,11 +336,14 @@ impl Rule for NoUnusedVariables {
 
         // We need to check if all uses of this binding are somehow recursive or unused
         let declaration = binding.declaration()?;
+
         let declaration = declaration.syntax();
+
         binding
             .all_references(model)
             .filter_map(|reference| {
                 let ref_parent = reference.syntax().parent()?;
+
                 if reference.is_write() {
                     // Skip self assignment such as `a += 1` and `a++`.
                     // Ensure that the assignment is not used in an used expression.
@@ -342,6 +359,7 @@ impl Rule for NoUnusedVariables {
                         })
                         .and_then(|x| is_unused_expression(&x).ok())
                         .unwrap_or(false);
+
                     if is_statement_like {
                         return None;
                     }
@@ -351,6 +369,7 @@ impl Rule for NoUnusedVariables {
                     // The reference is in an unused expression
                     return None;
                 }
+
                 Some(ref_parent)
             })
             .all(|ref_parent| {
@@ -362,17 +381,21 @@ impl Rule for NoUnusedVariables {
                     // Type parameters declared in mapped types are only used in the mapped type.
                     return false;
                 }
+
                 let mut is_unused = true;
+
                 for ancestor in ref_parent.ancestors() {
                     if &ancestor == declaration {
                         // inside the declaration
                         return is_unused;
                     }
+
                     match ancestor.kind() {
                             JsSyntaxKind::JS_FUNCTION_BODY => {
                                 // reset because we are inside a function
                                 is_unused = true;
                             }
+
                             JsSyntaxKind::JS_ASSIGNMENT_EXPRESSION
                             | JsSyntaxKind::JS_CALL_EXPRESSION
                             | JsSyntaxKind::JS_NEW_EXPRESSION
@@ -382,6 +405,7 @@ impl Rule for NoUnusedVariables {
                                 // The ref can be leaked or code can be executed
                                 is_unused = false;
                             }
+
                             _ => {}
                         }
                 }
@@ -424,26 +448,33 @@ impl Rule for NoUnusedVariables {
             SuggestedFix::NoSuggestion => None,
             SuggestedFix::PrefixUnderscore => {
                 let binding = ctx.query();
+
                 let mut mutation = ctx.root().begin();
 
                 let name = match binding {
                     AnyJsIdentifierBinding::JsIdentifierBinding(binding) => {
                         binding.name_token().ok()?
                     }
+
                     AnyJsIdentifierBinding::TsIdentifierBinding(binding) => {
                         binding.name_token().ok()?
                     }
+
                     AnyJsIdentifierBinding::TsTypeParameterName(binding) => {
                         binding.ident_token().ok()?
                     }
+
                     AnyJsIdentifierBinding::TsLiteralEnumMemberName(_) => {
                         return None;
                     }
                 };
+
                 let name_trimmed = name.text_trimmed();
+
                 let new_name = format!("_{name_trimmed}");
 
                 let model = ctx.model();
+
                 mutation.rename_node_declaration(model, binding, &new_name);
 
                 Some(JsRuleAction::new(
@@ -463,31 +494,41 @@ fn is_unused_expression(expr: &JsSyntaxNode) -> SyntaxResult<bool> {
     debug_assert!(AnyJsExpression::can_cast(expr.kind()));
     // We use range as a way to identify nodes without owning them.
     let mut previous = expr.text_trimmed_range();
+
     for parent in expr.ancestors().skip(1) {
         match parent.kind() {
             JsSyntaxKind::JS_EXPRESSION_STATEMENT => return Ok(true),
             JsSyntaxKind::JS_PARENTHESIZED_EXPRESSION => {
                 previous = parent.text_trimmed_range();
+
                 continue;
             }
+
             JsSyntaxKind::JS_SEQUENCE_EXPRESSION => {
                 let seq_expr = JsSequenceExpression::unwrap_cast(parent);
                 // If the expression is not the rightmost node in a comma sequence
                 if seq_expr.left()?.range() == previous {
                     return Ok(true);
                 }
+
                 previous = seq_expr.range();
+
                 continue;
             }
+
             JsSyntaxKind::JS_FOR_STATEMENT => {
                 let for_stmt = JsForStatement::unwrap_cast(parent);
+
                 if let Some(for_test) = for_stmt.test() {
                     return Ok(for_test.range() != previous);
                 }
+
                 return Ok(true);
             }
+
             _ => break,
         }
     }
+
     Ok(false)
 }

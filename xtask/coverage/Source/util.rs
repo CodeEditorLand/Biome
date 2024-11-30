@@ -13,14 +13,18 @@ pub(crate) fn decode_maybe_utf16_string(mut content: &[u8]) -> Result<Cow<str>, 
 
     // Read the BOM if present and skip it
     let bom = content.get(0..3);
+
     if let Some(&[0xef, 0xbb, 0xbf]) = bom {
         content = &content[3..];
+
         encoding = FileEncoding::Utf8;
     } else if let Some(&[0xfe, 0xff, _]) = bom {
         content = &content[2..];
+
         encoding = FileEncoding::Utf16Be;
     } else if let Some(&[0xff, 0xfe, _]) = bom {
         content = &content[2..];
+
         encoding = FileEncoding::Utf16Le;
     }
 

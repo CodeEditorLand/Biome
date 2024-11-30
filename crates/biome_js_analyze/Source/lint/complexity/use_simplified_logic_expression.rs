@@ -58,13 +58,18 @@ impl Rule for UseSimplifiedLogicExpression {
     type Query = Ast<JsLogicalExpression>;
     /// First element of tuple is if the expression is simplified by [De Morgan's Law](https://en.wikipedia.org/wiki/De_Morgan%27s_laws) rule, the second element is the expression to replace.
     type State = (bool, AnyJsExpression);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let left = node.left().ok()?;
+
         let right = node.right().ok()?;
+
         match node.operator().ok()? {
             biome_js_syntax::JsLogicalOperator::NullishCoalescing
                 if matches!(
@@ -76,6 +81,7 @@ impl Rule for UseSimplifiedLogicExpression {
             {
                 return Some((false, right));
             }
+
             biome_js_syntax::JsLogicalOperator::LogicalOr => {
                 if let AnyJsExpression::AnyJsLiteralExpression(
                     AnyJsLiteralExpression::JsBooleanLiteralExpression(literal),
@@ -96,6 +102,7 @@ impl Rule for UseSimplifiedLogicExpression {
                         .map(|expr| (true, AnyJsExpression::JsUnaryExpression(expr)));
                 }
             }
+
             biome_js_syntax::JsLogicalOperator::LogicalAnd => {
                 if let AnyJsExpression::AnyJsLiteralExpression(
                     AnyJsLiteralExpression::JsBooleanLiteralExpression(literal),
@@ -116,6 +123,7 @@ impl Rule for UseSimplifiedLogicExpression {
                         .map(|expr| (true, AnyJsExpression::JsUnaryExpression(expr)));
                 }
             }
+
             _ => return None,
         }
 
@@ -136,6 +144,7 @@ impl Rule for UseSimplifiedLogicExpression {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let (is_simplified_by_de_morgan, expr) = state;
@@ -163,7 +172,9 @@ impl Rule for UseSimplifiedLogicExpression {
 /// https://en.wikipedia.org/wiki/De_Morgan%27s_laws
 fn could_apply_de_morgan(node: &JsLogicalExpression) -> Option<bool> {
     let left = node.left().ok()?;
+
     let right = node.right().ok()?;
+
     match (left, right) {
         (AnyJsExpression::JsUnaryExpression(left), AnyJsExpression::JsUnaryExpression(right)) => {
             Some(
@@ -176,6 +187,7 @@ fn could_apply_de_morgan(node: &JsLogicalExpression) -> Option<bool> {
                     ),
             )
         }
+
         _ => Some(false),
     }
 }
@@ -204,6 +216,7 @@ fn keep_expression_if_literal(
         T![false] => false,
         _ => return None,
     };
+
     if eval_value == expected_value {
         Some(expression)
     } else {
@@ -215,8 +228,11 @@ fn keep_expression_if_literal(
 
 fn simplify_de_morgan(node: &JsLogicalExpression) -> Option<JsUnaryExpression> {
     let left = node.left().ok()?;
+
     let right = node.right().ok()?;
+
     let operator_token = node.operator_token().ok()?;
+
     match (left, right) {
         (AnyJsExpression::JsUnaryExpression(left), AnyJsExpression::JsUnaryExpression(right)) => {
             let mut next_logic_expression = match operator_token.kind() {
@@ -228,8 +244,11 @@ fn simplify_de_morgan(node: &JsLogicalExpression) -> Option<JsUnaryExpression> {
                     .replace_token(operator_token, make::token(T![||])),
                 _ => return None,
             }?;
+
             next_logic_expression = next_logic_expression.with_left(left.argument().ok()?);
+
             next_logic_expression = next_logic_expression.with_right(right.argument().ok()?);
+
             Some(make::js_unary_expression(
                 make::token(T![!]),
                 AnyJsExpression::JsParenthesizedExpression(make::parenthesized(
@@ -237,6 +256,7 @@ fn simplify_de_morgan(node: &JsLogicalExpression) -> Option<JsUnaryExpression> {
                 )),
             ))
         }
+
         _ => None,
     }
 }

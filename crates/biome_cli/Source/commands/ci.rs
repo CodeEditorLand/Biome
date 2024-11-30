@@ -92,6 +92,7 @@ impl CommandRunner for CiCommandPayload {
                 // configuration.
                 linter.rules = None;
             }
+
             fs_configuration.merge_with(configuration);
         }
 
@@ -134,9 +135,11 @@ impl CommandRunner for CiCommandPayload {
         {
             return Err(CliDiagnostic::incompatible_end_configuration("Formatter, linter and organize imports are disabled, can't perform the command. At least one feature needs to be enabled. This is probably and error."));
         }
+
         if self.since.is_some() && !self.changed {
             return Err(CliDiagnostic::incompatible_arguments("since", "changed"));
         }
+
         Ok(())
     }
 }

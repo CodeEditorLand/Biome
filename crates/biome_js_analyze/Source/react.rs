@@ -55,6 +55,7 @@ impl ReactCreateElementCall {
         model: &SemanticModel,
     ) -> Option<Self> {
         let callee = call_expression.callee().ok()?.omit_parentheses();
+
         let is_react_create_element =
             is_react_call_api(&callee, model, ReactLibrary::React, "createElement");
 
@@ -63,11 +64,13 @@ impl ReactCreateElementCall {
             // React.createElement() should not be processed
             if !arguments.is_empty() {
                 let mut iter = arguments.iter();
+
                 let first_argument = if let Some(first_argument) = iter.next() {
                     first_argument.ok()?
                 } else {
                     return None;
                 };
+
                 let second_argument =
                     iter.next()
                         .and_then(|argument| argument.ok())
@@ -77,6 +80,7 @@ impl ReactCreateElementCall {
                                 .as_js_object_expression()
                                 .cloned()
                         });
+
                 let third_argument = iter
                     .next()
                     .and_then(|argument| argument.ok())
@@ -101,6 +105,7 @@ impl ReactApiCall for ReactCreateElementCall {
     fn find_prop_by_name(&self, prop_name: &str) -> Option<JsPropertyObjectMember> {
         self.props.as_ref().and_then(|props| {
             let members = props.members();
+
             members.iter().find_map(|member| {
                 let AnyJsObjectMember::JsPropertyObjectMember(property) = member.ok()? else {
                     return None;
@@ -190,15 +195,19 @@ pub(crate) fn is_react_call_api(
         let Some(object) = callee.object().ok() else {
             return false;
         };
+
         let Some(reference) = object.omit_parentheses().as_js_reference_identifier() else {
             return false;
         };
+
         let Some(member_name) = callee.member_name() else {
             return false;
         };
+
         if member_name.text() != api_name {
             return false;
         }
+
         return match model.binding(&reference) {
             Some(decl) => is_react_export(&decl, lib),
             None => reference.has_name(lib.global_name()),
@@ -226,7 +235,9 @@ pub(crate) fn jsx_member_name_is_react_fragment(
     model: &SemanticModel,
 ) -> Option<bool> {
     let object = member_name.object().ok()?;
+
     let member = member_name.member().ok()?;
+
     let object = object.as_jsx_reference_identifier()?;
 
     if member.value_token().ok()?.text_trimmed() != "Fragment" {
@@ -234,6 +245,7 @@ pub(crate) fn jsx_member_name_is_react_fragment(
     }
 
     let lib = ReactLibrary::React;
+
     match model.binding(object) {
         Some(declaration) => Some(is_react_export(&declaration, lib)),
         None => Some(object.value_token().ok()?.text_trimmed() == lib.global_name()),
@@ -254,7 +266,9 @@ pub(crate) fn jsx_reference_identifier_is_fragment(
         Some(reference) => is_named_react_export(&reference, ReactLibrary::React, "Fragment"),
         None => {
             let value_token = name.value_token().ok()?;
+
             let is_fragment = value_token.text_trimmed() == "Fragment";
+
             Some(is_fragment)
         }
     }
@@ -270,11 +284,14 @@ fn is_react_export(binding: &Binding, lib: ReactLibrary) -> bool {
 
 fn is_named_react_export(binding: &Binding, lib: ReactLibrary, name: &str) -> Option<bool> {
     let ident = JsIdentifierBinding::cast_ref(binding.syntax())?;
+
     let import_specifier = ident.parent::<AnyJsNamedImportSpecifier>()?;
+
     let name_token = match &import_specifier {
         AnyJsNamedImportSpecifier::JsNamedImportSpecifier(named_import) => {
             named_import.name().ok()?.value().ok()?
         }
+
         AnyJsNamedImportSpecifier::JsShorthandNamedImportSpecifier(_) => ident.name_token().ok()?,
         AnyJsNamedImportSpecifier::JsBogusNamedImportSpecifier(_) => {
             return Some(false);
@@ -286,6 +303,7 @@ fn is_named_react_export(binding: &Binding, lib: ReactLibrary, name: &str) -> Op
     }
 
     let import = import_specifier.import_clause()?.parent::<JsImport>()?;
+
     import
         .source_text()
         .ok()
@@ -300,6 +318,7 @@ pub(crate) fn is_global_react_import(binding: &JsIdentifierBinding, lib: ReactLi
     {
         return false;
     };
+
     let Some(decl) = binding.declaration() else {
         return false;
     };
@@ -309,8 +328,10 @@ pub(crate) fn is_global_react_import(binding: &JsIdentifierBinding, lib: ReactLi
             if !specifier.name().is_ok_and(|name| name.is_default()) {
                 return false;
             }
+
             specifier.into_syntax()
         }
+
         AnyJsBindingDeclaration::JsDefaultImportSpecifier(specifier) => specifier.into_syntax(),
         AnyJsBindingDeclaration::JsNamespaceImportSpecifier(specifier) => specifier.into_syntax(),
         _ => {

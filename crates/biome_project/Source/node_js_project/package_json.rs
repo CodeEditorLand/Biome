@@ -88,10 +88,12 @@ impl DeserializationVisitor for PackageJsonVisitor {
         diagnostics: &mut Vec<DeserializationDiagnostic>,
     ) -> Option<Self::Output> {
         let mut result = Self::Output::default();
+
         for (key, value) in members.flatten() {
             let Some(key_text) = Text::deserialize(&key, "", diagnostics) else {
                 continue;
             };
+
             match key_text.text() {
                 "version" => {
                     result.version = Deserializable::deserialize(&value, &key_text, diagnostics);
@@ -136,12 +138,14 @@ impl DeserializationVisitor for PackageJsonVisitor {
                 "type" => {
                     result.r#type = Deserializable::deserialize(&value, &key_text, diagnostics);
                 }
+
                 _ => {
                     // each package can add their own field, so we should ignore any extraneous key
                     // and only deserialize the ones that Biome deems important
                 }
             }
         }
+
         Some(result)
     }
 }
@@ -153,6 +157,7 @@ impl Deserializable for Version {
         diagnostics: &mut Vec<DeserializationDiagnostic>,
     ) -> Option<Self> {
         let value = Text::deserialize(value, name, diagnostics)?;
+
         match value.text().parse() {
             Ok(version) => Some(Version::SemVer(version)),
             Err(_) => Some(Version::Literal(value.text().to_string())),

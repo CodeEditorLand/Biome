@@ -66,8 +66,11 @@ impl<'src> Lexer<'src> for MarkdownLexer<'src> {
     const NEWLINE: Self::Kind = NEWLINE;
 
     const WHITESPACE: Self::Kind = WHITESPACE;
+
     type Kind = MarkdownSyntaxKind;
+
     type LexContext = MarkdownLexContext;
+
     type ReLexContext = MarkdownReLexContext;
 
     fn source(&self) -> &'src str {
@@ -92,6 +95,7 @@ impl<'src> Lexer<'src> for MarkdownLexer<'src> {
 
     fn next_token(&mut self, _context: Self::LexContext) -> Self::Kind {
         self.current_start = self.text_position();
+
         self.current_flags = TokenFlags::empty();
 
         let kind = match self.current_byte() {
@@ -101,6 +105,7 @@ impl<'src> Lexer<'src> for MarkdownLexer<'src> {
 
         self.current_flags
             .set(TokenFlags::PRECEDING_LINE_BREAK, self.after_newline);
+
         self.current_kind = kind;
 
         if !kind.is_trivia() {
@@ -132,11 +137,17 @@ impl<'src> Lexer<'src> for MarkdownLexer<'src> {
         let new_pos = u32::from(position) as usize;
 
         self.position = new_pos;
+
         self.current_kind = current_kind;
+
         self.current_start = current_start;
+
         self.current_flags = current_flags;
+
         self.after_newline = after_line_break;
+
         self.unicode_bom_length = unicode_bom_length;
+
         self.diagnostics.truncate(diagnostics_pos as usize);
     }
 
@@ -151,6 +162,7 @@ impl<'src> Lexer<'src> for MarkdownLexer<'src> {
     #[inline]
     fn advance_char_unchecked(&mut self) {
         let c = self.current_char_unchecked();
+
         self.position += c.len_utf8();
     }
 
@@ -178,6 +190,7 @@ impl<'src> MarkdownLexer<'src> {
 
     pub(crate) fn consume_token(&mut self, current: u8) -> MarkdownSyntaxKind {
         let dispatched = lookup_byte(current);
+
         match dispatched {
             WHS => self.consume_newline_or_whitespace(),
             MUL | MIN | IDT => self.consume_thematic_break_literal(),
@@ -193,6 +206,7 @@ impl<'src> MarkdownLexer<'src> {
     #[allow(dead_code)]
     fn eat_byte(&mut self, tok: MarkdownSyntaxKind) -> MarkdownSyntaxKind {
         self.advance(1);
+
         tok
     }
     /// Returns the byte at position `self.position + offset` or `None` if it is out of bounds.
@@ -234,6 +248,7 @@ impl<'src> MarkdownLexer<'src> {
             Some(b'\n') => {
                 self.advance(1);
             }
+
             Some(b'\r') => {
                 if self.peek_byte() == Some(b'\n') {
                     self.advance(2)
@@ -241,9 +256,12 @@ impl<'src> MarkdownLexer<'src> {
                     self.advance(1)
                 }
             }
+
             _ => unreachable!(),
         }
+
         self.after_newline = true;
+
         NEWLINE
     }
 
@@ -253,6 +271,7 @@ impl<'src> MarkdownLexer<'src> {
     /// Must be called at a valid UT8 char boundary
     fn consume_whitespace(&mut self) -> MarkdownSyntaxKind {
         self.assert_at_char_boundary();
+
         while let Some(b' ') = self.current_byte() {
             self.advance(1);
         }
@@ -266,6 +285,7 @@ impl<'src> MarkdownLexer<'src> {
         if matches!(self.current_byte(), Some(b'\t')) {
             self.advance(1)
         }
+
         TAB
     }
 
@@ -280,10 +300,13 @@ impl<'src> MarkdownLexer<'src> {
         };
 
         let mut count = 0;
+
         loop {
             self.consume_whitespace();
+
             if matches!(self.current_byte(), Some(ch) if ch == start_char) {
                 self.advance(1);
+
                 count += 1;
             } else {
                 break;
@@ -293,6 +316,7 @@ impl<'src> MarkdownLexer<'src> {
         if matches!(self.current_byte(), Some(b'\n' | b'\r') | None) && count >= 3 {
             return MD_THEMATIC_BREAK_LITERAL;
         }
+
         ERROR_TOKEN
     }
 
@@ -303,12 +327,14 @@ impl<'src> MarkdownLexer<'src> {
     fn current_char_unchecked(&self) -> char {
         // Precautionary measure for making sure the unsafe code below does not read over memory boundary
         debug_assert!(!self.is_eof());
+
         self.assert_at_char_boundary();
 
         // Safety: We know this is safe because we require the input to the lexer to be valid utf8 and we always call this when we are at a char
         let string = unsafe {
             std::str::from_utf8_unchecked(self.source.as_bytes().get_unchecked(self.position..))
         };
+
         let chr = if let Some(chr) = string.chars().next() {
             chr
         } else {
@@ -357,6 +383,7 @@ impl<'src> MarkdownLexer<'src> {
         self.assert_at_char_boundary();
 
         let char = self.current_char_unchecked();
+
         self.advance(char.len_utf8());
 
         MD_TEXTUAL_LITERAL
@@ -366,6 +393,7 @@ impl<'src> MarkdownLexer<'src> {
     #[expect(dead_code)]
     fn consume_byte(&mut self, tok: MarkdownSyntaxKind) -> MarkdownSyntaxKind {
         self.advance(1);
+
         tok
     }
 }
@@ -373,6 +401,7 @@ impl<'src> MarkdownLexer<'src> {
 impl<'src> ReLexer<'src> for MarkdownLexer<'src> {
     fn re_lex(&mut self, context: Self::ReLexContext) -> Self::Kind {
         let old_position = self.position;
+
         self.position = u32::from(self.current_start) as usize;
 
         let re_lexed_kind = match self.current_byte() {

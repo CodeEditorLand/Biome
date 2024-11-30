@@ -25,6 +25,7 @@ impl FormatNodeRule<JsxElement> for FormatJsxElement {
             !f.comments().has_leading_comments(node.syntax()),
             "JsxElement can not have comments."
         );
+
         Ok(())
     }
 
@@ -33,6 +34,7 @@ impl FormatNodeRule<JsxElement> for FormatJsxElement {
             !f.comments().has_dangling_comments(node.syntax()),
             "JsxElement can not have comments."
         );
+
         Ok(())
     }
 
@@ -41,6 +43,7 @@ impl FormatNodeRule<JsxElement> for FormatJsxElement {
             !f.comments().has_trailing_comments(node.syntax()),
             "JsxElement can not have comments."
         );
+
         Ok(())
     }
 }
@@ -52,6 +55,7 @@ declare_node_union! {
 impl Format<JsFormatContext> for AnyJsxTagWithChildren {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         let format_opening = format_with(|f| self.fmt_opening(f));
+
         let format_closing = format_with(|f| self.fmt_closing(f));
 
         let layout = self.layout(f)?;
@@ -67,12 +71,14 @@ impl Format<JsFormatContext> for AnyJsxTagWithChildren {
 
             ElementLayout::Default => {
                 let mut format_opening = format_opening.memoized();
+
                 let opening_breaks = format_opening.inspect(f)?.will_break();
 
                 let multiple_attributes = match self {
                     AnyJsxTagWithChildren::JsxElement(element) => {
                         element.opening_element()?.attributes().len() > 1
                     }
+
                     AnyJsxTagWithChildren::JsxFragment(_) => false,
                 };
 
@@ -83,6 +89,7 @@ impl Format<JsFormatContext> for AnyJsxTagWithChildren {
                 };
 
                 let children = self.children();
+
                 let format_children = FormatJsxChildList::default()
                     .with_options(list_layout)
                     .fmt_children(&children, f)?;
@@ -91,11 +98,13 @@ impl Format<JsFormatContext> for AnyJsxTagWithChildren {
                     FormatChildrenResult::ForceMultiline(multiline) => {
                         write!(f, [format_opening, multiline, format_closing])
                     }
+
                     FormatChildrenResult::BestFitting {
                         flat_children,
                         expanded_children,
                     } => {
                         let format_closing = format_closing.memoized();
+
                         write!(
                             f,
                             [best_fitting![
@@ -116,6 +125,7 @@ impl AnyJsxTagWithChildren {
             AnyJsxTagWithChildren::JsxElement(element) => {
                 write!(f, [element.opening_element().format()])
             }
+
             AnyJsxTagWithChildren::JsxFragment(fragment) => {
                 write!(f, [fragment.opening_fragment().format()])
             }
@@ -127,6 +137,7 @@ impl AnyJsxTagWithChildren {
             AnyJsxTagWithChildren::JsxElement(element) => {
                 write!(f, [element.closing_element().format()])
             }
+
             AnyJsxTagWithChildren::JsxFragment(fragment) => {
                 write!(f, [fragment.closing_fragment().format()])
             }
@@ -142,6 +153,7 @@ impl AnyJsxTagWithChildren {
 
     fn layout(&self, f: &mut JsFormatter) -> SyntaxResult<ElementLayout> {
         use AnyJsExpression::*;
+
         use AnyJsxChild::*;
 
         let children = self.children();
@@ -155,6 +167,7 @@ impl AnyJsxTagWithChildren {
                 match child {
                     JsxText(text) => {
                         let value_token = text.value_token()?;
+
                         if !is_meaningful_jsx_text(value_token.text()) {
                             // Text nodes can't have suppressions
                             f.context_mut()
@@ -168,6 +181,7 @@ impl AnyJsxTagWithChildren {
                             ElementLayout::Default
                         }
                     }
+
                     JsxExpressionChild(expression) => match expression.expression() {
                         Some(JsTemplateExpression(_)) => ElementLayout::Template(expression),
                         _ => ElementLayout::Default,
@@ -175,6 +189,7 @@ impl AnyJsxTagWithChildren {
                     _ => ElementLayout::Default,
                 }
             }
+
             _ => ElementLayout::Default,
         };
 

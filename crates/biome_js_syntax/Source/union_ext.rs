@@ -117,6 +117,7 @@ impl AnyJsClassMember {
             AnyJsClassMember::TsInitializedPropertySignatureClassMember(property) => {
                 property.name().map(Some)
             }
+
             AnyJsClassMember::TsSetterSignatureClassMember(setter) => setter.name().map(Some),
         }
     }
@@ -127,6 +128,7 @@ impl AnyJsClassMember {
             Some(AnyJsClassMemberName::JsLiteralMemberName(literal)) => {
                 Ok(literal.value()?.text_trimmed() == name)
             }
+
             _ => Ok(false),
         }
     }
@@ -163,6 +165,7 @@ impl AnyJsFunction {
                 let parent = self
                     .parent::<JsInitializerClause>()?
                     .parent::<JsVariableDeclarator>()?;
+
                 parent.id().ok()?.as_any_js_binding().cloned()
             }
         }
@@ -179,6 +182,7 @@ impl AnyJsFunction {
             AnyJsFunction::JsFunctionDeclaration(declaration) => {
                 declaration.function_token().map(Some)
             }
+
             AnyJsFunction::JsFunctionExportDefaultDeclaration(declaration) => {
                 declaration.function_token().map(Some)
             }
@@ -242,6 +246,7 @@ impl AnyJsFunction {
             AnyJsFunction::JsFunctionDeclaration(declaration) => {
                 declaration.return_type_annotation()
             }
+
             AnyJsFunction::JsFunctionExportDefaultDeclaration(declaration) => {
                 declaration.return_type_annotation()
             }
@@ -254,9 +259,11 @@ impl AnyJsFunction {
             AnyJsFunction::JsFunctionExpression(expr) => {
                 expr.body().map(AnyJsFunctionBody::JsFunctionBody)
             }
+
             AnyJsFunction::JsFunctionDeclaration(declaration) => {
                 declaration.body().map(AnyJsFunctionBody::JsFunctionBody)
             }
+
             AnyJsFunction::JsFunctionExportDefaultDeclaration(declaration) => {
                 declaration.body().map(AnyJsFunctionBody::JsFunctionBody)
             }
@@ -270,6 +277,7 @@ impl AnyTsVariableAnnotation {
             AnyTsVariableAnnotation::TsDefiniteVariableAnnotation(definite) => {
                 definite.type_annotation().map(Some)
             }
+
             AnyTsVariableAnnotation::TsTypeAnnotation(type_annotation) => {
                 Ok(Some(type_annotation.clone()))
             }
@@ -283,9 +291,11 @@ impl AnyTsPropertyAnnotation {
             AnyTsPropertyAnnotation::TsDefinitePropertyAnnotation(definite) => {
                 definite.type_annotation().map(Some)
             }
+
             AnyTsPropertyAnnotation::TsOptionalPropertyAnnotation(optional) => {
                 Ok(optional.type_annotation())
             }
+
             AnyTsPropertyAnnotation::TsTypeAnnotation(type_annotation) => {
                 Ok(Some(type_annotation.clone()))
             }

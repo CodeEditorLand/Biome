@@ -44,6 +44,7 @@ impl From<(&str, &str)> for UtilityMatch {
             if utility_text == &target[..target.len() - 1] {
                 return UtilityMatch::Exact;
             }
+
             return UtilityMatch::None;
         }
         // Check if the utility starts with the (partial) target.
@@ -64,16 +65,24 @@ mod utility_match_tests {
         assert_eq!(UtilityMatch::from(("px-2$", "px-2")), UtilityMatch::Exact);
         // TODO: support negative values
         // assert_eq!(UtilityMatch::from(("px-2$", "-px-2")), UtilityMatch::Exact);
+
         assert_eq!(
             UtilityMatch::from(("px-2$", "not-px-2")),
             UtilityMatch::None
         );
+
         assert_eq!(UtilityMatch::from(("px-2$", "px-2-")), UtilityMatch::None);
+
         assert_eq!(UtilityMatch::from(("px-2$", "px-4")), UtilityMatch::None);
+
         assert_eq!(UtilityMatch::from(("px-2$", "px-2$")), UtilityMatch::None);
+
         assert_eq!(UtilityMatch::from(("px-2$", "px-2-")), UtilityMatch::None);
+
         assert_eq!(UtilityMatch::from(("px-2$", "px-2.5")), UtilityMatch::None);
+
         assert_eq!(UtilityMatch::from(("px-2$", "px-2.5$")), UtilityMatch::None);
+
         assert_eq!(UtilityMatch::from(("px-2$", "px-2.5-")), UtilityMatch::None);
     }
 
@@ -82,18 +91,23 @@ mod utility_match_tests {
         assert_eq!(UtilityMatch::from(("px-", "px-2")), UtilityMatch::Partial);
         // TODO: support negative values
         // assert_eq!(UtilityMatch::from(("px-", "-px-2")), UtilityMatch::Partial);
+
         assert_eq!(UtilityMatch::from(("px-", "px-2.5")), UtilityMatch::Partial);
+
         assert_eq!(
             UtilityMatch::from(("px-", "px-anything")),
             UtilityMatch::Partial
         );
+
         assert_eq!(
             UtilityMatch::from(("px-", "px-%$>?+=-")),
             UtilityMatch::Partial
         );
+
         assert_eq!(UtilityMatch::from(("px-", "px-")), UtilityMatch::None);
         // TODO: support negative values
         // assert_eq!(UtilityMatch::from(("px-", "-px-")), UtilityMatch::None);
+
         assert_eq!(UtilityMatch::from(("px-", "not-px-2")), UtilityMatch::None);
     }
 }
@@ -124,8 +138,11 @@ fn get_utility_info(
     }
 
     let utility_text = utility_data.text.as_str();
+
     let mut layer: Option<&str> = None;
+
     let mut match_index: usize = 0;
+
     let mut last_size: usize = 0;
 
     // Iterate over each layer, looking for a match.
@@ -140,6 +157,7 @@ fn get_utility_info(
                         index,
                     });
                 }
+
                 UtilityMatch::Partial => {
                     // Multiple partial matches can occur, so we need to keep looking to find
                     // the longest target that matches. For example, if the utility text is
@@ -147,28 +165,35 @@ fn get_utility_info(
                     // make sure that the `gap-x-` target is matched as it is more specific,
                     // regardless of the order in which the targets are defined.
                     let target_size = target.len();
+
                     if target_size > last_size {
                         layer = Some(layer_data.name);
+
                         match_index = index;
+
                         last_size = target_size;
                     }
                 }
+
                 UtilityMatch::None => {}
             }
         }
     }
+
     if let Some(layer_match) = layer {
         return Some(UtilityInfo {
             layer: layer_match,
             index: match_index,
         });
     }
+
     None
 }
 
 #[cfg(test)]
 mod get_utility_info_tests {
     use super::*;
+
     use crate::lint::nursery::use_sorted_classes::sort_config::UtilityLayer;
 
     #[test]
@@ -177,10 +202,12 @@ mod get_utility_info_tests {
             name: "layer",
             classes: &["px-2$"],
         }];
+
         let utility_data = ClassSegmentStructure {
             text: "px-2".to_string(),
             arbitrary: false,
         };
+
         assert_eq!(
             get_utility_info(utility_config.as_slice(), &utility_data),
             Some(UtilityInfo {
@@ -188,10 +215,12 @@ mod get_utility_info_tests {
                 index: 0,
             })
         );
+
         let utility_data = ClassSegmentStructure {
             text: "px-4".to_string(),
             arbitrary: false,
         };
+
         assert_eq!(
             get_utility_info(utility_config.as_slice(), &utility_data),
             None
@@ -204,10 +233,12 @@ mod get_utility_info_tests {
             name: "layer",
             classes: &["px-"],
         }];
+
         let utility_data = ClassSegmentStructure {
             text: "px-2".to_string(),
             arbitrary: false,
         };
+
         assert_eq!(
             get_utility_info(utility_config.as_slice(), &utility_data),
             Some(UtilityInfo {
@@ -215,10 +246,12 @@ mod get_utility_info_tests {
                 index: 0,
             })
         );
+
         let utility_data = ClassSegmentStructure {
             text: "not-px-2".to_string(),
             arbitrary: false,
         };
+
         assert_eq!(
             get_utility_info(utility_config.as_slice(), &utility_data),
             None
@@ -231,10 +264,12 @@ mod get_utility_info_tests {
             name: "layer",
             classes: &["border-", "border-t-"],
         }];
+
         let utility_data = ClassSegmentStructure {
             text: "border-t-2".to_string(),
             arbitrary: false,
         };
+
         assert_eq!(
             get_utility_info(utility_config.as_slice(), &utility_data),
             Some(UtilityInfo {
@@ -250,10 +285,12 @@ mod get_utility_info_tests {
             name: "layer",
             classes: &["border-t-", "border-"],
         }];
+
         let utility_data = ClassSegmentStructure {
             text: "border-t-2".to_string(),
             arbitrary: false,
         };
+
         assert_eq!(
             get_utility_info(utility_config.as_slice(), &utility_data),
             Some(UtilityInfo {
@@ -269,10 +306,12 @@ mod get_utility_info_tests {
             name: "layer",
             classes: &["border-t-", "border-"],
         }];
+
         let utility_data = ClassSegmentStructure {
             text: "[arbitrary:css]".to_string(),
             arbitrary: true,
         };
+
         assert_eq!(
             get_utility_info(utility_config.as_slice(), &utility_data),
             Some(UtilityInfo {
@@ -306,8 +345,11 @@ impl From<(&str, &str)> for VariantMatch {
         };
 
         let mut target_chars = target.bytes();
+
         let mut target_found = true;
+
         let mut dash_found = false;
+
         let mut bracket_found = false;
         // Checks if variant text has a custom value thus it starts with the target and it's followed by "-["
         for byte in variant_text.bytes() {
@@ -315,6 +357,7 @@ impl From<(&str, &str)> for VariantMatch {
                 (_, Some(target_byte)) => {
                     if target_byte != byte {
                         target_found = false;
+
                         break;
                     }
                 }
@@ -354,19 +397,24 @@ mod variant_match_tests {
     #[test]
     fn test_exact_match() {
         assert_eq!(VariantMatch::from(("hover", "hover")), VariantMatch::Exact);
+
         assert_eq!(VariantMatch::from(("focus", "focus")), VariantMatch::Exact);
+
         assert_eq!(
             VariantMatch::from(("group", "group-[.is-published]")),
             VariantMatch::Exact
         );
+
         assert_eq!(
             VariantMatch::from(("has", "has-[:checked]")),
             VariantMatch::Exact
         );
+
         assert_eq!(
             VariantMatch::from(("group-has", "group-has-[.custom-class]")),
             VariantMatch::Exact
         );
+
         assert_eq!(
             VariantMatch::from(("group-aria-disabled", "group-aria-disabled")),
             VariantMatch::Exact
@@ -379,6 +427,7 @@ mod variant_match_tests {
             VariantMatch::from(("group", "group-has-[.custom-class]")),
             VariantMatch::Partial
         );
+
         assert_eq!(
             VariantMatch::from(("peer", "peer-has-[:checked]")),
             VariantMatch::Partial
@@ -388,6 +437,7 @@ mod variant_match_tests {
     #[test]
     fn test_no_match() {
         assert_eq!(VariantMatch::from(("group", "hover")), VariantMatch::None);
+
         assert_eq!(
             VariantMatch::from(("group-aria-busy", "group-aria-disabled")),
             VariantMatch::None
@@ -397,7 +447,9 @@ mod variant_match_tests {
 
 fn find_variant_position(config_variants: VariantsConfig, variant_text: &str) -> Option<usize> {
     let mut variant: Option<&str> = None;
+
     let mut match_index: usize = 0;
+
     let mut last_size: usize = 0;
 
     // Iterate over each variant looking for a match.
@@ -407,6 +459,7 @@ fn find_variant_position(config_variants: VariantsConfig, variant_text: &str) ->
                 // Exact matches can be returned immediately.
                 return Some(index);
             }
+
             VariantMatch::Partial => {
                 // Multiple partial matches can occur, so we need to keep looking to find
                 // the longest target that matches. For example, if the variant text is
@@ -414,18 +467,24 @@ fn find_variant_position(config_variants: VariantsConfig, variant_text: &str) ->
                 // make sure that the `group-aria` target is matched as it is more specific,
                 // so when the target is `group` a Partial match will occur.
                 let target_size = target.len();
+
                 if target_size > last_size {
                     variant = Some(target);
+
                     match_index = index;
+
                     last_size = target_size;
                 }
             }
+
             VariantMatch::None => {}
         }
     }
+
     if variant.is_some() {
         return Some(match_index);
     };
+
     None
 }
 
@@ -440,8 +499,10 @@ pub fn compute_variants_weight(
     // If it is then compute weights for each variant on the fly by using index as size
     // TODO: Cache the weights for next run?
     let mut variants_map: HashMap<&str, BitVec<u8, Lsb0>> = HashMap::new();
+
     for current_variant in current_variants.iter() {
         let variant_name = current_variant.text.as_ref();
+
         let Some(variant_index) = find_variant_position(config_variants, variant_name) else {
             continue;
         };
@@ -461,8 +522,11 @@ pub fn compute_variants_weight(
         .iter()
         .fold(BitVec::<u8, Lsb0>::new(), |acc, (_, val)| {
             let mut accumulator = acc.clone();
+
             let mut current_weight = val.clone();
+
             let acc_len = accumulator.len();
+
             let current_weight_len = current_weight.len();
 
             match acc_len.cmp(&current_weight_len) {
@@ -499,6 +563,7 @@ pub struct ClassInfo {
 /// it is considered a custom class instead and `None` is returned.
 pub fn get_class_info(class_name: &str, sort_config: &SortConfig) -> Option<ClassInfo> {
     let utility_data = tokenize_class(class_name)?;
+
     let utility_info = get_utility_info(sort_config.utilities, &utility_data.utility);
 
     // Split up variants into arbitrary and known variants.
@@ -534,6 +599,7 @@ mod get_class_info_tests {
     use bitvec::bitvec;
 
     use super::*;
+
     use crate::lint::nursery::use_sorted_classes::{
         presets::ConfigPreset, sort_config::UtilityLayer,
     };
@@ -550,6 +616,7 @@ mod get_class_info_tests {
                 classes: &["mx-", "my-", "inline$"],
             },
         ];
+
         let variants: &'static [&'static str; 4] = &["hover", "focus", "focus-visible", "active"];
 
         let sort_config = SortConfig::new(&ConfigPreset {
@@ -567,6 +634,7 @@ mod get_class_info_tests {
                 arbitrary_variants: None
             })
         );
+
         assert_eq!(
             get_class_info("py-2", &sort_config),
             Some(ClassInfo {
@@ -577,6 +645,7 @@ mod get_class_info_tests {
                 arbitrary_variants: None,
             })
         );
+
         assert_eq!(
             get_class_info("block", &sort_config),
             Some(ClassInfo {
@@ -587,6 +656,7 @@ mod get_class_info_tests {
                 arbitrary_variants: None
             })
         );
+
         assert_eq!(
             get_class_info("mx-2", &sort_config),
             Some(ClassInfo {
@@ -597,6 +667,7 @@ mod get_class_info_tests {
                 arbitrary_variants: None
             })
         );
+
         assert_eq!(
             get_class_info("my-2", &sort_config),
             Some(ClassInfo {
@@ -607,6 +678,7 @@ mod get_class_info_tests {
                 arbitrary_variants: None
             })
         );
+
         assert_eq!(
             get_class_info("inline", &sort_config),
             Some(ClassInfo {
@@ -617,6 +689,7 @@ mod get_class_info_tests {
                 arbitrary_variants: None
             })
         );
+
         assert_eq!(
             get_class_info("[arbitrary:css]", &sort_config),
             Some(ClassInfo {
@@ -627,6 +700,7 @@ mod get_class_info_tests {
                 arbitrary_variants: None
             })
         );
+
         assert_eq!(
             get_class_info("hover:bg-red-500", &sort_config),
             Some(ClassInfo {
@@ -637,6 +711,7 @@ mod get_class_info_tests {
                 arbitrary_variants: None
             })
         );
+
         assert_eq!(
             get_class_info("hover:focus:bg-yellow-600", &sort_config),
             Some(ClassInfo {
@@ -647,6 +722,7 @@ mod get_class_info_tests {
                 arbitrary_variants: None
             })
         );
+
         assert_eq!(
             get_class_info("[&nth-child(2)]:bg-yellow-300", &sort_config),
             Some(ClassInfo {
@@ -657,6 +733,7 @@ mod get_class_info_tests {
                 arbitrary_variants: Some(vec!["[&nth-child(2)]".to_string()])
             })
         );
+
         assert_eq!(
             get_class_info("[&nth-child(1)]:focus:bg-yellow-300", &sort_config),
             Some(ClassInfo {
@@ -667,6 +744,7 @@ mod get_class_info_tests {
                 arbitrary_variants: Some(vec!["[&nth-child(1)]".to_string()])
             })
         );
+
         assert_eq!(get_class_info("unknown", &sort_config), None);
     }
 }

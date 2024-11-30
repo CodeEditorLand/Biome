@@ -34,19 +34,26 @@ declare_lint_rule! {
 
 impl Rule for UseNodeAssertStrict {
     type Query = Ast<AnyJsImportLike>;
+
     type State = JsSyntaxToken;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.is_in_ts_module_declaration() {
             return None;
         }
+
         let module_name = node.module_name_token()?;
+
         if inner_string_text(&module_name) == "node:assert" {
             return Some(module_name);
         }
+
         None
     }
 
@@ -72,8 +79,11 @@ impl Rule for UseNodeAssertStrict {
             [],
             [],
         );
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_token(module_name.clone(), new_module_name);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

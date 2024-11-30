@@ -9,6 +9,7 @@ pub(crate) struct FormatJsonArrayElementList;
 
 impl FormatRule<JsonArrayElementList> for FormatJsonArrayElementList {
     type Context = JsonFormatContext;
+
     fn fmt(&self, node: &JsonArrayElementList, f: &mut JsonFormatter) -> FormatResult<()> {
         let layout = if can_concisely_print_array_list(node) {
             ArrayLayout::Fill
@@ -19,6 +20,7 @@ impl FormatRule<JsonArrayElementList> for FormatJsonArrayElementList {
         match layout {
             ArrayLayout::Fill => {
                 let trailing_separator = f.options().to_trailing_separator();
+
                 let mut filler = f.fill();
 
                 for (element, formatted) in node
@@ -42,6 +44,7 @@ impl FormatRule<JsonArrayElementList> for FormatJsonArrayElementList {
 
             ArrayLayout::OnePerLine => {
                 let trailing_separator = f.options().to_trailing_separator();
+
                 let mut join = f.join_nodes_with_soft_line();
 
                 for (element, formatted) in node

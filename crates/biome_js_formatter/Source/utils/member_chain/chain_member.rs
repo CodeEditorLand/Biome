@@ -62,6 +62,7 @@ impl ChainMember {
                 JsImportCallExpression::can_cast(node.kind())
                     | JsCallExpression::can_cast(node.kind())
             }
+
             _ => false,
         }
     }
@@ -149,6 +150,7 @@ impl Format<JsFormatContext> for ChainMember {
                             ]
                         )
                     }
+
                     CallExpressionPosition::End => {
                         write!(
                             f,
@@ -161,6 +163,7 @@ impl Format<JsFormatContext> for ChainMember {
                     }
                 }
             }
+
             ChainMember::ComputedMember { expression } => {
                 write!(
                     f,
@@ -171,6 +174,7 @@ impl Format<JsFormatContext> for ChainMember {
                     ]
                 )
             }
+
             ChainMember::Node(node) => {
                 write!(f, [node.format()])
             }

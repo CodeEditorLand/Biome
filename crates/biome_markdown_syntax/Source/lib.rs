@@ -9,6 +9,7 @@ pub use syntax_node::*;
 impl From<u16> for MarkdownSyntaxKind {
     fn from(d: u16) -> MarkdownSyntaxKind {
         assert!(d <= (MarkdownSyntaxKind::__LAST as u16));
+
         unsafe { std::mem::transmute::<u16, MarkdownSyntaxKind>(d) }
     }
 }

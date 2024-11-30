@@ -13,7 +13,9 @@ pub(crate) struct VariableCompiler;
 impl VariableCompiler {
     pub(crate) fn from_node(node: &GritVariable, context: &mut NodeCompilationContext) -> Variable {
         let name = node.syntax().text_trimmed().to_string();
+
         let range = node.range().to_byte_range();
+
         context.register_variable(name, range)
     }
 }
@@ -67,6 +69,7 @@ impl<'a> NodeCompilationContext<'a> {
                     locations.insert(range);
                 }
             }
+
             return Variable::new(*scope_index, *i);
         }
 
@@ -80,15 +83,20 @@ impl<'a> NodeCompilationContext<'a> {
                     }
                 }
             }
+
             return Variable::new(GLOBAL_VARS_SCOPE_INDEX.into(), *i);
         }
+
         let (name_map, scope_index) = if name.starts_with("$GLOBAL_") {
             (global_vars, GLOBAL_VARS_SCOPE_INDEX.into())
         } else {
             (vars, *scope_index)
         };
+
         let scope = &mut vars_array[scope_index];
+
         let index = scope.len();
+
         name_map.insert(name.clone(), index);
 
         let (locations, path) = if let Some(FileLocation { path, range }) = location {
@@ -106,6 +114,7 @@ impl<'a> NodeCompilationContext<'a> {
                 .unwrap_or_default(),
             locations,
         });
+
         Variable::new(scope_index, index)
     }
 }

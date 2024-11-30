@@ -37,11 +37,13 @@ impl MdBulletListItem {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdBulletListItemFields {
         MdBulletListItemFields {
             md_bullet_list: self.md_bullet_list(),
         }
     }
+
     pub fn md_bullet_list(&self) -> MdBulletList {
         support::list(&self.syntax, 0usize)
     }
@@ -72,6 +74,7 @@ impl MdDocument {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdDocumentFields {
         MdDocumentFields {
             bom_token: self.bom_token(),
@@ -79,12 +82,15 @@ impl MdDocument {
             eof_token: self.eof_token(),
         }
     }
+
     pub fn bom_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> MdBlockList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn eof_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -117,11 +123,13 @@ impl MdFencedCodeBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdFencedCodeBlockFields {
         MdFencedCodeBlockFields {
             md_textual: self.md_textual(),
         }
     }
+
     pub fn md_textual(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -152,11 +160,13 @@ impl MdHardLine {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdHardLineFields {
         MdHardLineFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -187,11 +197,13 @@ impl MdHash {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdHashFields {
         MdHashFields {
             hash_token: self.hash_token(),
         }
     }
+
     pub fn hash_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -222,6 +234,7 @@ impl MdHeader {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdHeaderFields {
         MdHeaderFields {
             before: self.before(),
@@ -229,12 +242,15 @@ impl MdHeader {
             after: self.after(),
         }
     }
+
     pub fn before(&self) -> MdHashList {
         support::list(&self.syntax, 0usize)
     }
+
     pub fn md_paragraph(&self) -> Option<MdParagraph> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn after(&self) -> MdHashList {
         support::list(&self.syntax, 2usize)
     }
@@ -267,11 +283,13 @@ impl MdHtmlBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdHtmlBlockFields {
         MdHtmlBlockFields {
             md_textual: self.md_textual(),
         }
     }
+
     pub fn md_textual(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -302,11 +320,13 @@ impl MdIndent {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdIndentFields {
         MdIndentFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -337,11 +357,13 @@ impl MdIndentCodeBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdIndentCodeBlockFields {
         MdIndentCodeBlockFields {
             md_textual: self.md_textual(),
         }
     }
+
     pub fn md_textual(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -372,11 +394,13 @@ impl MdInlineCode {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdInlineCodeFields {
         MdInlineCodeFields {
             md_textual: self.md_textual(),
         }
     }
+
     pub fn md_textual(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -407,11 +431,13 @@ impl MdInlineEmphasis {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdInlineEmphasisFields {
         MdInlineEmphasisFields {
             md_textual: self.md_textual(),
         }
     }
+
     pub fn md_textual(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -442,6 +468,7 @@ impl MdInlineImage {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdInlineImageFields {
         MdInlineImageFields {
             alt: self.alt(),
@@ -449,12 +476,15 @@ impl MdInlineImage {
             title: self.title(),
         }
     }
+
     pub fn alt(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn src(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn title(&self) -> Option<MdTextual> {
         support::node(&self.syntax, 2usize)
     }
@@ -487,6 +517,7 @@ impl MdInlineLink {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdInlineLinkFields {
         MdInlineLinkFields {
             label: self.label(),
@@ -494,12 +525,15 @@ impl MdInlineLink {
             title: self.title(),
         }
     }
+
     pub fn label(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn url(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn title(&self) -> Option<MdTextual> {
         support::node(&self.syntax, 2usize)
     }
@@ -532,6 +566,7 @@ impl MdLinkBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdLinkBlockFields {
         MdLinkBlockFields {
             label: self.label(),
@@ -539,12 +574,15 @@ impl MdLinkBlock {
             title: self.title(),
         }
     }
+
     pub fn label(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn url(&self) -> SyntaxResult<MdTextual> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn title(&self) -> Option<MdTextual> {
         support::node(&self.syntax, 2usize)
     }
@@ -577,11 +615,13 @@ impl MdOrderListItem {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdOrderListItemFields {
         MdOrderListItemFields {
             md_bullet_list: self.md_bullet_list(),
         }
     }
+
     pub fn md_bullet_list(&self) -> MdBulletList {
         support::list(&self.syntax, 0usize)
     }
@@ -612,11 +652,13 @@ impl MdParagraph {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdParagraphFields {
         MdParagraphFields {
             md_paragraph_item_list: self.md_paragraph_item_list(),
         }
     }
+
     pub fn md_paragraph_item_list(&self) -> MdParagraphItemList {
         support::list(&self.syntax, 0usize)
     }
@@ -647,11 +689,13 @@ impl MdQuote {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdQuoteFields {
         MdQuoteFields {
             any_md_block: self.any_md_block(),
         }
     }
+
     pub fn any_md_block(&self) -> SyntaxResult<AnyMdBlock> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -682,11 +726,13 @@ impl MdSetextHeader {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdSetextHeaderFields {
         MdSetextHeaderFields {
             md_paragraph: self.md_paragraph(),
         }
     }
+
     pub fn md_paragraph(&self) -> SyntaxResult<MdParagraph> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -717,11 +763,13 @@ impl MdSoftBreak {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdSoftBreakFields {
         MdSoftBreakFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -752,11 +800,13 @@ impl MdTextual {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdTextualFields {
         MdTextualFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -787,11 +837,13 @@ impl MdThematicBreakBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> MdThematicBreakBlockFields {
         MdThematicBreakBlockFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -820,6 +872,7 @@ impl AnyCodeBlock {
             _ => None,
         }
     }
+
     pub fn as_md_indent_code_block(&self) -> Option<&MdIndentCodeBlock> {
         match &self {
             AnyCodeBlock::MdIndentCodeBlock(item) => Some(item),
@@ -840,12 +893,14 @@ impl AnyContainerBlock {
             _ => None,
         }
     }
+
     pub fn as_md_order_list_item(&self) -> Option<&MdOrderListItem> {
         match &self {
             AnyContainerBlock::MdOrderListItem(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_quote(&self) -> Option<&MdQuote> {
         match &self {
             AnyContainerBlock::MdQuote(item) => Some(item),
@@ -870,36 +925,42 @@ impl AnyLeafBlock {
             _ => None,
         }
     }
+
     pub fn as_md_header(&self) -> Option<&MdHeader> {
         match &self {
             AnyLeafBlock::MdHeader(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_html_block(&self) -> Option<&MdHtmlBlock> {
         match &self {
             AnyLeafBlock::MdHtmlBlock(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_link_block(&self) -> Option<&MdLinkBlock> {
         match &self {
             AnyLeafBlock::MdLinkBlock(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_paragraph(&self) -> Option<&MdParagraph> {
         match &self {
             AnyLeafBlock::MdParagraph(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_setext_header(&self) -> Option<&MdSetextHeader> {
         match &self {
             AnyLeafBlock::MdSetextHeader(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_thematic_break_block(&self) -> Option<&MdThematicBreakBlock> {
         match &self {
             AnyLeafBlock::MdThematicBreakBlock(item) => Some(item),
@@ -919,6 +980,7 @@ impl AnyMdBlock {
             _ => None,
         }
     }
+
     pub fn as_any_leaf_block(&self) -> Option<&AnyLeafBlock> {
         match &self {
             AnyMdBlock::AnyLeafBlock(item) => Some(item),
@@ -944,42 +1006,49 @@ impl AnyMdInline {
             _ => None,
         }
     }
+
     pub fn as_md_html_block(&self) -> Option<&MdHtmlBlock> {
         match &self {
             AnyMdInline::MdHtmlBlock(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_inline_code(&self) -> Option<&MdInlineCode> {
         match &self {
             AnyMdInline::MdInlineCode(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_inline_emphasis(&self) -> Option<&MdInlineEmphasis> {
         match &self {
             AnyMdInline::MdInlineEmphasis(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_inline_image(&self) -> Option<&MdInlineImage> {
         match &self {
             AnyMdInline::MdInlineImage(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_inline_link(&self) -> Option<&MdInlineLink> {
         match &self {
             AnyMdInline::MdInlineLink(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_soft_break(&self) -> Option<&MdSoftBreak> {
         match &self {
             AnyMdInline::MdSoftBreak(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_md_textual(&self) -> Option<&MdTextual> {
         match &self {
             AnyMdInline::MdTextual(item) => Some(item),
@@ -989,11 +1058,14 @@ impl AnyMdInline {
 }
 impl AstNode for MdBulletListItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_BULLET_LIST_ITEM as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_BULLET_LIST_ITEM
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1001,9 +1073,11 @@ impl AstNode for MdBulletListItem {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1027,11 +1101,14 @@ impl From<MdBulletListItem> for SyntaxElement {
 }
 impl AstNode for MdDocument {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_DOCUMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_DOCUMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1039,9 +1116,11 @@ impl AstNode for MdDocument {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1070,11 +1149,14 @@ impl From<MdDocument> for SyntaxElement {
 }
 impl AstNode for MdFencedCodeBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_FENCED_CODE_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_FENCED_CODE_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1082,9 +1164,11 @@ impl AstNode for MdFencedCodeBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1108,11 +1192,14 @@ impl From<MdFencedCodeBlock> for SyntaxElement {
 }
 impl AstNode for MdHardLine {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_HARD_LINE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_HARD_LINE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1120,9 +1207,11 @@ impl AstNode for MdHardLine {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1149,11 +1238,14 @@ impl From<MdHardLine> for SyntaxElement {
 }
 impl AstNode for MdHash {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_HASH as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_HASH
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1161,9 +1253,11 @@ impl AstNode for MdHash {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1187,11 +1281,14 @@ impl From<MdHash> for SyntaxElement {
 }
 impl AstNode for MdHeader {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_HEADER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_HEADER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1199,9 +1296,11 @@ impl AstNode for MdHeader {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1230,11 +1329,14 @@ impl From<MdHeader> for SyntaxElement {
 }
 impl AstNode for MdHtmlBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_HTML_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_HTML_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1242,9 +1344,11 @@ impl AstNode for MdHtmlBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1268,11 +1372,14 @@ impl From<MdHtmlBlock> for SyntaxElement {
 }
 impl AstNode for MdIndent {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_INDENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_INDENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1280,9 +1387,11 @@ impl AstNode for MdIndent {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1309,11 +1418,14 @@ impl From<MdIndent> for SyntaxElement {
 }
 impl AstNode for MdIndentCodeBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_INDENT_CODE_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_INDENT_CODE_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1321,9 +1433,11 @@ impl AstNode for MdIndentCodeBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1347,11 +1461,14 @@ impl From<MdIndentCodeBlock> for SyntaxElement {
 }
 impl AstNode for MdInlineCode {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_INLINE_CODE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_INLINE_CODE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1359,9 +1476,11 @@ impl AstNode for MdInlineCode {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1385,11 +1504,14 @@ impl From<MdInlineCode> for SyntaxElement {
 }
 impl AstNode for MdInlineEmphasis {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_INLINE_EMPHASIS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_INLINE_EMPHASIS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1397,9 +1519,11 @@ impl AstNode for MdInlineEmphasis {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1423,11 +1547,14 @@ impl From<MdInlineEmphasis> for SyntaxElement {
 }
 impl AstNode for MdInlineImage {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_INLINE_IMAGE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_INLINE_IMAGE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1435,9 +1562,11 @@ impl AstNode for MdInlineImage {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1463,11 +1592,14 @@ impl From<MdInlineImage> for SyntaxElement {
 }
 impl AstNode for MdInlineLink {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_INLINE_LINK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_INLINE_LINK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1475,9 +1607,11 @@ impl AstNode for MdInlineLink {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1503,11 +1637,14 @@ impl From<MdInlineLink> for SyntaxElement {
 }
 impl AstNode for MdLinkBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_LINK_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_LINK_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1515,9 +1652,11 @@ impl AstNode for MdLinkBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1543,11 +1682,14 @@ impl From<MdLinkBlock> for SyntaxElement {
 }
 impl AstNode for MdOrderListItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_ORDER_LIST_ITEM as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_ORDER_LIST_ITEM
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1555,9 +1697,11 @@ impl AstNode for MdOrderListItem {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1581,11 +1725,14 @@ impl From<MdOrderListItem> for SyntaxElement {
 }
 impl AstNode for MdParagraph {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_PARAGRAPH as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_PARAGRAPH
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1593,9 +1740,11 @@ impl AstNode for MdParagraph {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1619,11 +1768,14 @@ impl From<MdParagraph> for SyntaxElement {
 }
 impl AstNode for MdQuote {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_QUOTE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_QUOTE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1631,9 +1783,11 @@ impl AstNode for MdQuote {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1660,11 +1814,14 @@ impl From<MdQuote> for SyntaxElement {
 }
 impl AstNode for MdSetextHeader {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_SETEXT_HEADER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_SETEXT_HEADER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1672,9 +1829,11 @@ impl AstNode for MdSetextHeader {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1701,11 +1860,14 @@ impl From<MdSetextHeader> for SyntaxElement {
 }
 impl AstNode for MdSoftBreak {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_SOFT_BREAK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_SOFT_BREAK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1713,9 +1875,11 @@ impl AstNode for MdSoftBreak {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1742,11 +1906,14 @@ impl From<MdSoftBreak> for SyntaxElement {
 }
 impl AstNode for MdTextual {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_TEXTUAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_TEXTUAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1754,9 +1921,11 @@ impl AstNode for MdTextual {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1783,11 +1952,14 @@ impl From<MdTextual> for SyntaxElement {
 }
 impl AstNode for MdThematicBreakBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_THEMATIC_BREAK_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_THEMATIC_BREAK_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1795,9 +1967,11 @@ impl AstNode for MdThematicBreakBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1834,25 +2008,31 @@ impl From<MdIndentCodeBlock> for AnyCodeBlock {
 }
 impl AstNode for AnyCodeBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         MdFencedCodeBlock::KIND_SET.union(MdIndentCodeBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, MD_FENCED_CODE_BLOCK | MD_INDENT_CODE_BLOCK)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             MD_FENCED_CODE_BLOCK => AnyCodeBlock::MdFencedCodeBlock(MdFencedCodeBlock { syntax }),
             MD_INDENT_CODE_BLOCK => AnyCodeBlock::MdIndentCodeBlock(MdIndentCodeBlock { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCodeBlock::MdFencedCodeBlock(it) => &it.syntax,
             AnyCodeBlock::MdIndentCodeBlock(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCodeBlock::MdFencedCodeBlock(it) => it.syntax,
@@ -1879,6 +2059,7 @@ impl From<AnyCodeBlock> for SyntaxNode {
 impl From<AnyCodeBlock> for SyntaxElement {
     fn from(n: AnyCodeBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -1899,12 +2080,15 @@ impl From<MdQuote> for AnyContainerBlock {
 }
 impl AstNode for AnyContainerBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = MdBulletListItem::KIND_SET
         .union(MdOrderListItem::KIND_SET)
         .union(MdQuote::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, MD_BULLET_LIST_ITEM | MD_ORDER_LIST_ITEM | MD_QUOTE)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             MD_BULLET_LIST_ITEM => AnyContainerBlock::MdBulletListItem(MdBulletListItem { syntax }),
@@ -1912,8 +2096,10 @@ impl AstNode for AnyContainerBlock {
             MD_QUOTE => AnyContainerBlock::MdQuote(MdQuote { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyContainerBlock::MdBulletListItem(it) => &it.syntax,
@@ -1921,6 +2107,7 @@ impl AstNode for AnyContainerBlock {
             AnyContainerBlock::MdQuote(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyContainerBlock::MdBulletListItem(it) => it.syntax,
@@ -1950,6 +2137,7 @@ impl From<AnyContainerBlock> for SyntaxNode {
 impl From<AnyContainerBlock> for SyntaxElement {
     fn from(n: AnyContainerBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -1985,6 +2173,7 @@ impl From<MdThematicBreakBlock> for AnyLeafBlock {
 }
 impl AstNode for AnyLeafBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCodeBlock::KIND_SET
         .union(MdHeader::KIND_SET)
         .union(MdHtmlBlock::KIND_SET)
@@ -1992,6 +2181,7 @@ impl AstNode for AnyLeafBlock {
         .union(MdParagraph::KIND_SET)
         .union(MdSetextHeader::KIND_SET)
         .union(MdThematicBreakBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             MD_HEADER
@@ -2004,6 +2194,7 @@ impl AstNode for AnyLeafBlock {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             MD_HEADER => AnyLeafBlock::MdHeader(MdHeader { syntax }),
@@ -2014,15 +2205,19 @@ impl AstNode for AnyLeafBlock {
             MD_THEMATIC_BREAK_BLOCK => {
                 AnyLeafBlock::MdThematicBreakBlock(MdThematicBreakBlock { syntax })
             }
+
             _ => {
                 if let Some(any_code_block) = AnyCodeBlock::cast(syntax) {
                     return Some(AnyLeafBlock::AnyCodeBlock(any_code_block));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyLeafBlock::MdHeader(it) => &it.syntax,
@@ -2034,6 +2229,7 @@ impl AstNode for AnyLeafBlock {
             AnyLeafBlock::AnyCodeBlock(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyLeafBlock::MdHeader(it) => it.syntax,
@@ -2075,13 +2271,16 @@ impl From<AnyLeafBlock> for SyntaxNode {
 impl From<AnyLeafBlock> for SyntaxElement {
     fn from(n: AnyLeafBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
 impl AstNode for AnyMdBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyContainerBlock::KIND_SET.union(AnyLeafBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             k if AnyContainerBlock::can_cast(k) => true,
@@ -2089,24 +2288,30 @@ impl AstNode for AnyMdBlock {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let syntax = match AnyContainerBlock::try_cast(syntax) {
             Ok(any_container_block) => {
                 return Some(AnyMdBlock::AnyContainerBlock(any_container_block));
             }
+
             Err(syntax) => syntax,
         };
+
         if let Some(any_leaf_block) = AnyLeafBlock::cast(syntax) {
             return Some(AnyMdBlock::AnyLeafBlock(any_leaf_block));
         }
+
         None
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyMdBlock::AnyContainerBlock(it) => it.syntax(),
             AnyMdBlock::AnyLeafBlock(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyMdBlock::AnyContainerBlock(it) => it.into_syntax(),
@@ -2133,6 +2338,7 @@ impl From<AnyMdBlock> for SyntaxNode {
 impl From<AnyMdBlock> for SyntaxElement {
     fn from(n: AnyMdBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -2178,6 +2384,7 @@ impl From<MdTextual> for AnyMdInline {
 }
 impl AstNode for AnyMdInline {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = MdHardLine::KIND_SET
         .union(MdHtmlBlock::KIND_SET)
         .union(MdInlineCode::KIND_SET)
@@ -2186,6 +2393,7 @@ impl AstNode for AnyMdInline {
         .union(MdInlineLink::KIND_SET)
         .union(MdSoftBreak::KIND_SET)
         .union(MdTextual::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -2199,6 +2407,7 @@ impl AstNode for AnyMdInline {
                 | MD_TEXTUAL
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             MD_HARD_LINE => AnyMdInline::MdHardLine(MdHardLine { syntax }),
@@ -2211,8 +2420,10 @@ impl AstNode for AnyMdInline {
             MD_TEXTUAL => AnyMdInline::MdTextual(MdTextual { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyMdInline::MdHardLine(it) => &it.syntax,
@@ -2225,6 +2436,7 @@ impl AstNode for AnyMdInline {
             AnyMdInline::MdTextual(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyMdInline::MdHardLine(it) => it.syntax,
@@ -2269,6 +2481,7 @@ impl From<AnyMdInline> for SyntaxNode {
 impl From<AnyMdInline> for SyntaxElement {
     fn from(n: AnyMdInline) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -2416,17 +2629,21 @@ impl MdBogus {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for MdBogus {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_BOGUS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_BOGUS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -2434,9 +2651,11 @@ impl AstNode for MdBogus {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -2477,11 +2696,14 @@ impl MdBlockList {
 }
 impl AstNode for MdBlockList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_BLOCK_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_BLOCK_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<MdBlockList> {
         if Self::can_cast(syntax.kind()) {
             Some(MdBlockList {
@@ -2491,9 +2713,11 @@ impl AstNode for MdBlockList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -2504,18 +2728,23 @@ impl Serialize for MdBlockList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for MdBlockList {
     type Language = Language;
+
     type Node = AnyMdBlock;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -2523,19 +2752,24 @@ impl AstNodeList for MdBlockList {
 impl Debug for MdBlockList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("MdBlockList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &MdBlockList {
     type Item = AnyMdBlock;
+
     type IntoIter = AstNodeListIterator<Language, AnyMdBlock>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for MdBlockList {
     type Item = AnyMdBlock;
+
     type IntoIter = AstNodeListIterator<Language, AnyMdBlock>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -2559,11 +2793,14 @@ impl MdBulletList {
 }
 impl AstNode for MdBulletList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_BULLET_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_BULLET_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<MdBulletList> {
         if Self::can_cast(syntax.kind()) {
             Some(MdBulletList {
@@ -2573,9 +2810,11 @@ impl AstNode for MdBulletList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -2586,18 +2825,23 @@ impl Serialize for MdBulletList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for MdBulletList {
     type Language = Language;
+
     type Node = AnyCodeBlock;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -2605,19 +2849,24 @@ impl AstNodeList for MdBulletList {
 impl Debug for MdBulletList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("MdBulletList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &MdBulletList {
     type Item = AnyCodeBlock;
+
     type IntoIter = AstNodeListIterator<Language, AnyCodeBlock>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for MdBulletList {
     type Item = AnyCodeBlock;
+
     type IntoIter = AstNodeListIterator<Language, AnyCodeBlock>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -2641,11 +2890,14 @@ impl MdHashList {
 }
 impl AstNode for MdHashList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_HASH_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_HASH_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<MdHashList> {
         if Self::can_cast(syntax.kind()) {
             Some(MdHashList {
@@ -2655,9 +2907,11 @@ impl AstNode for MdHashList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -2668,18 +2922,23 @@ impl Serialize for MdHashList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for MdHashList {
     type Language = Language;
+
     type Node = MdHash;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -2687,19 +2946,24 @@ impl AstNodeList for MdHashList {
 impl Debug for MdHashList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("MdHashList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &MdHashList {
     type Item = MdHash;
+
     type IntoIter = AstNodeListIterator<Language, MdHash>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for MdHashList {
     type Item = MdHash;
+
     type IntoIter = AstNodeListIterator<Language, MdHash>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -2723,11 +2987,14 @@ impl MdOrderList {
 }
 impl AstNode for MdOrderList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_ORDER_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_ORDER_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<MdOrderList> {
         if Self::can_cast(syntax.kind()) {
             Some(MdOrderList {
@@ -2737,9 +3004,11 @@ impl AstNode for MdOrderList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -2750,18 +3019,23 @@ impl Serialize for MdOrderList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for MdOrderList {
     type Language = Language;
+
     type Node = AnyCodeBlock;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -2769,19 +3043,24 @@ impl AstNodeList for MdOrderList {
 impl Debug for MdOrderList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("MdOrderList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &MdOrderList {
     type Item = AnyCodeBlock;
+
     type IntoIter = AstNodeListIterator<Language, AnyCodeBlock>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for MdOrderList {
     type Item = AnyCodeBlock;
+
     type IntoIter = AstNodeListIterator<Language, AnyCodeBlock>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -2805,11 +3084,14 @@ impl MdParagraphItemList {
 }
 impl AstNode for MdParagraphItemList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(MD_PARAGRAPH_ITEM_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == MD_PARAGRAPH_ITEM_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<MdParagraphItemList> {
         if Self::can_cast(syntax.kind()) {
             Some(MdParagraphItemList {
@@ -2819,9 +3101,11 @@ impl AstNode for MdParagraphItemList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -2832,18 +3116,23 @@ impl Serialize for MdParagraphItemList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for MdParagraphItemList {
     type Language = Language;
+
     type Node = AnyMdInline;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -2851,19 +3140,24 @@ impl AstNodeList for MdParagraphItemList {
 impl Debug for MdParagraphItemList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("MdParagraphItemList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &MdParagraphItemList {
     type Item = AnyMdInline;
+
     type IntoIter = AstNodeListIterator<Language, AnyMdInline>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for MdParagraphItemList {
     type Item = AnyMdInline;
+
     type IntoIter = AstNodeListIterator<Language, AnyMdInline>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -2884,6 +3178,7 @@ impl Debug for DebugSyntaxElement {
             SyntaxElement::Node(node) => {
                 map_syntax_node ! (node . clone () , node => std :: fmt :: Debug :: fmt (& node , f))
             }
+
             SyntaxElement::Token(token) => Debug::fmt(token, f),
         }
     }

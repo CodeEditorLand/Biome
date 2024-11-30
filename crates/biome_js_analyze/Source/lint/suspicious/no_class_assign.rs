@@ -76,12 +76,16 @@ declare_lint_rule! {
 
 impl Rule for NoClassAssign {
     type Query = Semantic<AnyJsClass>;
+
     type State = Reference;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
 
         if let Some(id) = node.id() {
@@ -103,6 +107,7 @@ impl Rule for NoClassAssign {
             .as_js_identifier_binding()?
             .name_token()
             .ok()?;
+
         let class_name = binding.text_trimmed();
 
         Some(

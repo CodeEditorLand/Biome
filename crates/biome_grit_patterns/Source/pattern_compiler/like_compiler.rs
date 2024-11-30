@@ -11,6 +11,7 @@ impl LikeCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Like<GritQueryContext>, CompileError> {
         let like = PatternCompiler::from_node(&node.example()?, context)?;
+
         let threshold = node
             .threshold()
             .map(|node| PatternCompiler::from_node(&node.threshold()?, context))

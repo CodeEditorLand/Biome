@@ -18,7 +18,9 @@ where
     N: AstNode<Language = JsonLanguage> + AsFormat<JsonFormatContext> + 'static,
 {
     type Context = JsonFormatContext;
+
     type FormatNode<'a> = N::Format<'a>;
+
     type FormatSeparator<'a> = FormatRefWithRule<'a, JsonSyntaxToken, FormatJsonSyntaxToken>;
 
     fn format_node<'a>(&self, node: &'a N) -> Self::FormatNode<'a> {

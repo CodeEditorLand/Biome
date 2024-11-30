@@ -64,23 +64,34 @@ declare_lint_rule! {
 
 impl Rule for UseExponentiationOperator {
     type Query = Semantic<JsCallExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let callee = node.callee().ok()?.omit_parentheses();
+
         let member_expr = AnyJsMemberExpression::cast(callee.into_syntax())?;
+
         if member_expr.member_name()?.text() != "pow" {
             return None;
         }
+
         let object = member_expr.object().ok()?.omit_parentheses();
+
         let (reference, name) = global_identifier(&object)?;
+
         if name.text() != "Math" {
             return None;
         }
+
         model.binding(&reference).is_none().then_some(())
     }
 
@@ -94,26 +105,35 @@ impl Rule for UseExponentiationOperator {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let args = node.arguments().ok()?;
+
         let [Some(AnyJsCallArgument::AnyJsExpression(base)), Some(AnyJsCallArgument::AnyJsExpression(exponent)), None] =
             node.arguments().ok()?.get_arguments_by_index([0, 1, 2])
         else {
             return None;
         };
+
         let base = if does_base_need_parens(&base).ok()? {
             make::parenthesized(base).into()
         } else {
             base
         };
+
         let exponent = if does_exponent_need_parens(&exponent).ok()? {
             make::parenthesized(exponent).into()
         } else {
             exponent
         };
+
         let l_paren = args.l_paren_token().ok()?;
+
         let mut separators = args.args().separators();
+
         let separator = separators.next()?.ok()?;
+
         let trailing_separator = separators.next();
+
         let r_paren = args.r_paren_token().ok()?;
         // Transfer comments before and after `base` and `exponent`
         // which are associated with the comma or a paren.
@@ -126,6 +146,7 @@ impl Rule for UseExponentiationOperator {
                 separator.leading_trivia().pieces(),
                 separator.leading_trivia().pieces(),
             ))?;
+
         let exponent = if let Some(Ok(trailing_separator)) = trailing_separator {
             exponent.append_trivia_pieces(chain_trivia_pieces(
                 trailing_separator.leading_trivia().pieces(),
@@ -134,23 +155,28 @@ impl Rule for UseExponentiationOperator {
         } else {
             exponent
         };
+
         let exponent = exponent
             .prepend_trivia_pieces(trim_leading_trivia_pieces(
                 separator.trailing_trivia().pieces(),
             ))?
             .append_trivia_pieces(r_paren.leading_trivia().pieces())?;
+
         let mut mutation = ctx.root().begin();
+
         let new_node = AnyJsExpression::from(make::js_binary_expression(
             base,
             make::token_decorated_with_space(T![**]),
             exponent,
         ));
+
         let new_node = if let Some((needs_parens, parent)) =
             does_exponentiation_expression_need_parens(node)
         {
             if needs_parens && parent.is_some() {
                 mutation.replace_node(parent.clone()?, make::parenthesized(parent?).into());
             }
+
             make::parenthesized(new_node).into()
         } else {
             new_node
@@ -159,7 +185,9 @@ impl Rule for UseExponentiationOperator {
         let new_node = new_node
             .prepend_trivia_pieces(node.syntax().first_leading_trivia()?.pieces())?
             .append_trivia_pieces(node.syntax().last_trailing_trivia()?.pieces())?;
+
         mutation.replace_node_discard_trivia(AnyJsExpression::from(node.clone()), new_node);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -181,13 +209,16 @@ fn does_exponentiation_expression_need_parens(
         if extends_clause.parent::<JsClassDeclaration>().is_some() {
             return Some((true, None));
         }
+
         if let Some(class_expr) = extends_clause.parent::<JsClassExpression>() {
             let class_expr = AnyJsExpression::from(class_expr);
+
             if does_expression_need_parens(node, &class_expr)? {
                 return Some((true, Some(class_expr)));
             }
         }
     }
+
     None
 }
 
@@ -203,12 +234,16 @@ fn does_expression_need_parens(
             if bin_expr.parent::<JsInExpression>().is_some() {
                 return Some(true);
             }
+
             let binding = bin_expr.right().ok()?;
+
             let call_expr = binding.as_js_call_expression();
+
             bin_expr.operator().ok()? != JsBinaryOperator::Exponent
                 || call_expr.is_none()
                 || call_expr? != node
         }
+
         AnyJsExpression::JsCallExpression(call_expr) => call_expr
             .arguments()
             .ok()?
@@ -228,9 +263,12 @@ fn does_expression_need_parens(
             .is_none(),
         AnyJsExpression::JsComputedMemberExpression(member_expr) => {
             let binding = member_expr.member().ok()?;
+
             let call_expr = binding.as_js_call_expression();
+
             call_expr.is_none() || call_expr? != node
         }
+
         AnyJsExpression::JsInExpression(_) => return Some(true),
         AnyJsExpression::JsClassExpression(_)
         | AnyJsExpression::JsStaticMemberExpression(_)
@@ -238,6 +276,7 @@ fn does_expression_need_parens(
         | AnyJsExpression::JsTemplateExpression(_) => true,
         _ => false,
     };
+
     Some(needs_parentheses && expression.precedence().ok()? >= OperatorPrecedence::Exponential)
 }
 

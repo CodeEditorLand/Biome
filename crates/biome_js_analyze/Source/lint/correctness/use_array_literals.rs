@@ -58,17 +58,24 @@ declare_lint_rule! {
 
 impl Rule for UseArrayLiterals {
     type Query = Semantic<JsNewOrCallExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let callee = node.callee().ok()?.omit_parentheses();
+
         let (reference, name) = global_identifier(&callee)?;
+
         if name.text() != "Array" || ctx.model().binding(&reference).is_some() {
             return None;
         }
+
         if callee.syntax() != reference.syntax()
             && !reference
                 .value_token()
@@ -76,6 +83,7 @@ impl Rule for UseArrayLiterals {
         {
             return None;
         }
+
         let Some(arguments) = node.arguments() else {
             return if matches!(node, JsNewOrCallExpression::JsNewExpression(_)) {
                 // Report `new Array`
@@ -85,7 +93,9 @@ impl Rule for UseArrayLiterals {
                 None
             };
         };
+
         let [arg1, arg2] = arguments.get_arguments_by_index([0, 1]);
+
         if arg1.is_some() && arg2.is_none() && !matches!(arg1?, AnyJsCallArgument::JsSpread(_)) {
             // Ignore `Array(length)`
             return None;
@@ -96,6 +106,7 @@ impl Rule for UseArrayLiterals {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -112,6 +123,7 @@ impl Rule for UseArrayLiterals {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         if node
             .syntax()
             .parent()
@@ -121,17 +133,24 @@ impl Rule for UseArrayLiterals {
             // This avoids issues with missing semicolons.
             return None;
         }
+
         let mut mutation = ctx.root().begin();
+
         let new_node = if let Some(args) = node.arguments() {
             let l_paren_trailing_trivia = args.l_paren_token().ok()?.trailing_trivia().pieces();
+
             let r_paren_leading_trivia = args.r_paren_token().ok()?.leading_trivia().pieces();
+
             let args = args.args();
+
             let items = args
                 .elements()
                 .flat_map(|item| item.into_node())
                 .map(|item| item.into())
                 .collect::<Vec<_>>();
+
             let separators = args.separators().flatten().collect::<Vec<_>>();
+
             make::js_array_expression(
                 make::token(T!['[']).append_trivia_pieces(l_paren_trailing_trivia),
                 make::js_array_element_list(items, separators),
@@ -145,7 +164,9 @@ impl Rule for UseArrayLiterals {
                 make::token(T![']']),
             )
         };
+
         mutation.replace_node::<AnyJsExpression>(node.clone().into(), new_node.into());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

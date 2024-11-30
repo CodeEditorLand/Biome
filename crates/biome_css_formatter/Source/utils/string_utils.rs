@@ -30,6 +30,7 @@ impl From<SyntaxToken<CssLanguage>> for FormatTokenAsLowercase {
 impl Format<CssFormatContext> for FormatTokenAsLowercase {
     fn fmt(&self, f: &mut CssFormatter) -> FormatResult<()> {
         let original = self.token.text_trimmed();
+
         match original.to_ascii_lowercase_cow() {
             Cow::Borrowed(_) => write!(f, [self.token.format()]),
             Cow::Owned(lowercase) => write!(
@@ -74,6 +75,7 @@ impl<'token> FormatLiteralStringToken<'token> {
 
     pub fn clean_text(&self, options: &CssFormatOptions) -> CleanedStringLiteralText {
         let token = self.token();
+
         debug_assert!(
             matches!(
                 token.kind(),
@@ -84,6 +86,7 @@ impl<'token> FormatLiteralStringToken<'token> {
         );
 
         let chosen_quote_style = options.quote_style();
+
         let mut string_cleaner = LiteralStringNormaliser::new(self, chosen_quote_style);
 
         let content = string_cleaner.normalise_text();
@@ -167,11 +170,15 @@ impl FormatLiteralStringToken<'_> {
         }
 
         let literal = self.token().text_trimmed();
+
         let alternate_quote = chosen_quote.other();
+
         let chosen_quote_byte = chosen_quote.as_byte();
+
         let alternate_quote_byte = alternate_quote.as_byte();
 
         let quoteless = &literal[1..literal.len() - 1];
+
         let (chosen_quote_count, alternate_quote_count) = quoteless.bytes().fold(
             (0u32, 0u32),
             |(chosen_quote_count, alternate_quote_count), current_character| {
@@ -221,8 +228,10 @@ impl<'token> LiteralStringNormaliser<'token> {
                 let string_information = StringInformation {
                     preferred_quote: QuoteStyle::Double,
                 };
+
                 self.normalise_tokens(string_information)
             }
+
             StringLiteralParentKind::Others => {
                 let string_information = self
                     .token
@@ -246,6 +255,7 @@ impl<'token> LiteralStringNormaliser<'token> {
 
     fn normalise_tokens(&self, string_information: StringInformation) -> Cow<'token, str> {
         let preferred_quote = string_information.preferred_quote;
+
         let polished_raw_content = self.normalize_string(&string_information);
 
         match polished_raw_content {
@@ -254,7 +264,9 @@ impl<'token> LiteralStringNormaliser<'token> {
                 // content is owned, meaning we allocated a new string,
                 // so we force replacing quotes, regardless
                 s.insert(0, preferred_quote.as_char());
+
                 s.push(preferred_quote.as_char());
+
                 Cow::Owned(s)
             }
         }
@@ -268,11 +280,13 @@ impl<'token> LiteralStringNormaliser<'token> {
 
     fn raw_content(&self) -> &'token str {
         let token = self.get_token();
+
         match token.kind() {
             CSS_STRING_LITERAL => {
                 let content = token.text_trimmed();
                 &content[1..content.len() - 1]
             }
+
             _ => token.text_trimmed(),
         }
     }
@@ -283,6 +297,7 @@ impl<'token> LiteralStringNormaliser<'token> {
         string_information: &StringInformation,
     ) -> Cow<'token, str> {
         let preferred_quote = string_information.preferred_quote.as_char();
+
         let original = self.get_token().text_trimmed();
 
         if original.starts_with(preferred_quote) {

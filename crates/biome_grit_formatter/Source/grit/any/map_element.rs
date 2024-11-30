@@ -6,6 +6,7 @@ use biome_grit_syntax::AnyGritMapElement;
 pub(crate) struct FormatAnyGritMapElement;
 impl FormatRule<AnyGritMapElement> for FormatAnyGritMapElement {
     type Context = GritFormatContext;
+
     fn fmt(&self, node: &AnyGritMapElement, f: &mut GritFormatter) -> FormatResult<()> {
         match node {
             AnyGritMapElement::GritBogusMapElement(node) => node.format().fmt(f),

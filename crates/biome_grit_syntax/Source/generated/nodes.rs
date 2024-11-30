@@ -36,6 +36,7 @@ impl GritAddOperation {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritAddOperationFields {
         GritAddOperationFields {
             left: self.left(),
@@ -43,12 +44,15 @@ impl GritAddOperation {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn plus_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -81,11 +85,13 @@ impl GritAnnotation {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritAnnotationFields {
         GritAnnotationFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -116,6 +122,7 @@ impl GritAssignmentAsPattern {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritAssignmentAsPatternFields {
         GritAssignmentAsPatternFields {
             container: self.container(),
@@ -123,12 +130,15 @@ impl GritAssignmentAsPattern {
             pattern: self.pattern(),
         }
     }
+
     pub fn container(&self) -> SyntaxResult<AnyGritContainer> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn eq_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -161,11 +171,13 @@ impl GritBacktickSnippetLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritBacktickSnippetLiteralFields {
         GritBacktickSnippetLiteralFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -196,11 +208,13 @@ impl GritBooleanLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritBooleanLiteralFields {
         GritBooleanLiteralFields {
             value: self.value(),
         }
     }
+
     pub fn value(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -231,6 +245,7 @@ impl GritBracketedPattern {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritBracketedPatternFields {
         GritBracketedPatternFields {
             l_paren_token: self.l_paren_token(),
@@ -238,12 +253,15 @@ impl GritBracketedPattern {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -276,6 +294,7 @@ impl GritBracketedPredicate {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritBracketedPredicateFields {
         GritBracketedPredicateFields {
             l_paren_token: self.l_paren_token(),
@@ -283,12 +302,15 @@ impl GritBracketedPredicate {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn predicate(&self) -> SyntaxResult<AnyGritPredicate> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -321,6 +343,7 @@ impl GritBubble {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritBubbleFields {
         GritBubbleFields {
             bubble_token: self.bubble_token(),
@@ -328,12 +351,15 @@ impl GritBubble {
             pattern: self.pattern(),
         }
     }
+
     pub fn bubble_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn scope(&self) -> Option<GritBubbleScope> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritMaybeCurlyPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -366,6 +392,7 @@ impl GritBubbleScope {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritBubbleScopeFields {
         GritBubbleScopeFields {
             l_paren_token: self.l_paren_token(),
@@ -373,12 +400,15 @@ impl GritBubbleScope {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn variables(&self) -> GritVariableList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -411,11 +441,13 @@ impl GritCodeSnippet {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritCodeSnippetFields {
         GritCodeSnippetFields {
             source: self.source(),
         }
     }
+
     pub fn source(&self) -> SyntaxResult<AnyGritCodeSnippetSource> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -446,6 +478,7 @@ impl GritCurlyPattern {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritCurlyPatternFields {
         GritCurlyPatternFields {
             l_curly_token: self.l_curly_token(),
@@ -453,12 +486,15 @@ impl GritCurlyPattern {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -491,6 +527,7 @@ impl GritDivOperation {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritDivOperationFields {
         GritDivOperationFields {
             left: self.left(),
@@ -498,12 +535,15 @@ impl GritDivOperation {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn slash_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -536,11 +576,13 @@ impl GritDot {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritDotFields {
         GritDotFields {
             dot_token: self.dot_token(),
         }
     }
+
     pub fn dot_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -571,15 +613,18 @@ impl GritDotdotdot {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritDotdotdotFields {
         GritDotdotdotFields {
             dotdotdot_token: self.dotdotdot_token(),
             pattern: self.pattern(),
         }
     }
+
     pub fn dotdotdot_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> Option<AnyGritMaybeCurlyPattern> {
         support::node(&self.syntax, 1usize)
     }
@@ -611,11 +656,13 @@ impl GritDoubleLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritDoubleLiteralFields {
         GritDoubleLiteralFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -646,15 +693,18 @@ impl GritEvery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritEveryFields {
         GritEveryFields {
             every_token: self.every_token(),
             pattern: self.pattern(),
         }
     }
+
     pub fn every_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritMaybeCurlyPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -686,6 +736,7 @@ impl GritFiles {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritFilesFields {
         GritFilesFields {
             multifile_token: self.multifile_token(),
@@ -694,15 +745,19 @@ impl GritFiles {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn multifile_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn files(&self) -> GritPatternList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -736,6 +791,7 @@ impl GritFunctionDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritFunctionDefinitionFields {
         GritFunctionDefinitionFields {
             function_token: self.function_token(),
@@ -746,21 +802,27 @@ impl GritFunctionDefinition {
             body: self.body(),
         }
     }
+
     pub fn function_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GritName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
+
     pub fn args(&self) -> GritVariableList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 4usize)
     }
+
     pub fn body(&self) -> SyntaxResult<GritPredicateCurly> {
         support::required_node(&self.syntax, 5usize)
     }
@@ -796,11 +858,13 @@ impl GritIntLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritIntLiteralFields {
         GritIntLiteralFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -831,6 +895,7 @@ impl GritLanguageDeclaration {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritLanguageDeclarationFields {
         GritLanguageDeclarationFields {
             language_token: self.language_token(),
@@ -839,15 +904,19 @@ impl GritLanguageDeclaration {
             semicolon_token: self.semicolon_token(),
         }
     }
+
     pub fn language_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GritLanguageName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn flavor(&self) -> Option<GritLanguageFlavor> {
         support::node(&self.syntax, 2usize)
     }
+
     pub fn semicolon_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 3usize)
     }
@@ -881,6 +950,7 @@ impl GritLanguageFlavor {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritLanguageFlavorFields {
         GritLanguageFlavorFields {
             l_paren_token: self.l_paren_token(),
@@ -888,12 +958,15 @@ impl GritLanguageFlavor {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn flavors(&self) -> GritLanguageFlavorList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -926,11 +999,13 @@ impl GritLanguageFlavorKind {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritLanguageFlavorKindFields {
         GritLanguageFlavorKindFields {
             flavor_kind: self.flavor_kind(),
         }
     }
+
     pub fn flavor_kind(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -961,11 +1036,13 @@ impl GritLanguageName {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritLanguageNameFields {
         GritLanguageNameFields {
             language_kind: self.language_kind(),
         }
     }
+
     pub fn language_kind(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -996,15 +1073,18 @@ impl GritLanguageSpecificSnippet {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritLanguageSpecificSnippetFields {
         GritLanguageSpecificSnippetFields {
             language: self.language(),
             snippet_token: self.snippet_token(),
         }
     }
+
     pub fn language(&self) -> SyntaxResult<GritLanguageName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn snippet_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -1036,6 +1116,7 @@ impl GritLike {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritLikeFields {
         GritLikeFields {
             like_token: self.like_token(),
@@ -1045,18 +1126,23 @@ impl GritLike {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn like_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn threshold(&self) -> Option<GritLikeThreshold> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
+
     pub fn example(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 3usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 4usize)
     }
@@ -1091,6 +1177,7 @@ impl GritLikeThreshold {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritLikeThresholdFields {
         GritLikeThresholdFields {
             l_paren_token: self.l_paren_token(),
@@ -1098,12 +1185,15 @@ impl GritLikeThreshold {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn threshold(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1136,6 +1226,7 @@ impl GritList {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritListFields {
         GritListFields {
             name: self.name(),
@@ -1144,15 +1235,19 @@ impl GritList {
             r_brack_token: self.r_brack_token(),
         }
     }
+
     pub fn name(&self) -> Option<GritName> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn l_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn patterns(&self) -> GritListPatternList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -1186,6 +1281,7 @@ impl GritListAccessor {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritListAccessorFields {
         GritListAccessorFields {
             list: self.list(),
@@ -1194,15 +1290,19 @@ impl GritListAccessor {
             r_brack_token: self.r_brack_token(),
         }
     }
+
     pub fn list(&self) -> SyntaxResult<AnyGritListAccessorSubject> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn l_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn index(&self) -> SyntaxResult<AnyGritListIndex> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -1236,6 +1336,7 @@ impl GritMap {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritMapFields {
         GritMapFields {
             l_curly_token: self.l_curly_token(),
@@ -1243,12 +1344,15 @@ impl GritMap {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn elements(&self) -> GritMapElementList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1281,6 +1385,7 @@ impl GritMapAccessor {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritMapAccessorFields {
         GritMapAccessorFields {
             map: self.map(),
@@ -1288,12 +1393,15 @@ impl GritMapAccessor {
             key: self.key(),
         }
     }
+
     pub fn map(&self) -> SyntaxResult<AnyGritMapAccessorSubject> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn dot_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn key(&self) -> SyntaxResult<AnyGritMapKey> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1326,6 +1434,7 @@ impl GritMapElement {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritMapElementFields {
         GritMapElementFields {
             key: self.key(),
@@ -1333,12 +1442,15 @@ impl GritMapElement {
             value: self.value(),
         }
     }
+
     pub fn key(&self) -> SyntaxResult<GritName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn value(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1371,6 +1483,7 @@ impl GritModOperation {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritModOperationFields {
         GritModOperationFields {
             left: self.left(),
@@ -1378,12 +1491,15 @@ impl GritModOperation {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn remainder_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1416,6 +1532,7 @@ impl GritMulOperation {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritMulOperationFields {
         GritMulOperationFields {
             left: self.left(),
@@ -1423,12 +1540,15 @@ impl GritMulOperation {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn star_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1461,11 +1581,13 @@ impl GritName {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritNameFields {
         GritNameFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1496,6 +1618,7 @@ impl GritNamedArg {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritNamedArgFields {
         GritNamedArgFields {
             name: self.name(),
@@ -1503,12 +1626,15 @@ impl GritNamedArg {
             pattern: self.pattern(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<GritName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn eq_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1541,11 +1667,13 @@ impl GritNegativeIntLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritNegativeIntLiteralFields {
         GritNegativeIntLiteralFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1576,6 +1704,7 @@ impl GritNodeLike {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritNodeLikeFields {
         GritNodeLikeFields {
             name: self.name(),
@@ -1584,15 +1713,19 @@ impl GritNodeLike {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<GritName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn named_args(&self) -> GritNamedArgList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -1626,11 +1759,13 @@ impl GritNot {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritNotFields {
         GritNotFields {
             token: self.token(),
         }
     }
+
     pub fn token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1661,6 +1796,7 @@ impl GritPatternAccumulate {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternAccumulateFields {
         GritPatternAccumulateFields {
             left: self.left(),
@@ -1668,12 +1804,15 @@ impl GritPatternAccumulate {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn add_assign_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1706,15 +1845,18 @@ impl GritPatternAfter {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternAfterFields {
         GritPatternAfterFields {
             after_token: self.after_token(),
             pattern: self.pattern(),
         }
     }
+
     pub fn after_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -1746,6 +1888,7 @@ impl GritPatternAnd {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternAndFields {
         GritPatternAndFields {
             and_token: self.and_token(),
@@ -1754,15 +1897,19 @@ impl GritPatternAnd {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn and_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn patterns(&self) -> GritPatternList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -1796,6 +1943,7 @@ impl GritPatternAny {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternAnyFields {
         GritPatternAnyFields {
             any_token: self.any_token(),
@@ -1804,15 +1952,19 @@ impl GritPatternAny {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn any_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn patterns(&self) -> GritPatternList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -1846,6 +1998,7 @@ impl GritPatternAs {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternAsFields {
         GritPatternAsFields {
             pattern: self.pattern(),
@@ -1853,12 +2006,15 @@ impl GritPatternAs {
             variable: self.variable(),
         }
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn as_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn variable(&self) -> SyntaxResult<GritVariable> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1891,15 +2047,18 @@ impl GritPatternBefore {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternBeforeFields {
         GritPatternBeforeFields {
             before_token: self.before_token(),
             pattern: self.pattern(),
         }
     }
+
     pub fn before_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -1931,6 +2090,7 @@ impl GritPatternContains {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternContainsFields {
         GritPatternContainsFields {
             contains_token: self.contains_token(),
@@ -1938,12 +2098,15 @@ impl GritPatternContains {
             until_clause: self.until_clause(),
         }
     }
+
     pub fn contains_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn contains(&self) -> SyntaxResult<AnyGritMaybeCurlyPattern> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn until_clause(&self) -> Option<GritPatternContainsUntilClause> {
         support::node(&self.syntax, 2usize)
     }
@@ -1976,15 +2139,18 @@ impl GritPatternContainsUntilClause {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternContainsUntilClauseFields {
         GritPatternContainsUntilClauseFields {
             until_token: self.until_token(),
             until: self.until(),
         }
     }
+
     pub fn until_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn until(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2016,6 +2182,7 @@ impl GritPatternDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternDefinitionFields {
         GritPatternDefinitionFields {
             visibility_token: self.visibility_token(),
@@ -2028,27 +2195,35 @@ impl GritPatternDefinition {
             body: self.body(),
         }
     }
+
     pub fn visibility_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn pattern_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GritName> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
+
     pub fn args(&self) -> GritVariableList {
         support::list(&self.syntax, 4usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 5usize)
     }
+
     pub fn language(&self) -> Option<GritLanguageDeclaration> {
         support::node(&self.syntax, 6usize)
     }
+
     pub fn body(&self) -> SyntaxResult<GritPatternDefinitionBody> {
         support::required_node(&self.syntax, 7usize)
     }
@@ -2086,6 +2261,7 @@ impl GritPatternDefinitionBody {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternDefinitionBodyFields {
         GritPatternDefinitionBodyFields {
             l_curly_token: self.l_curly_token(),
@@ -2093,12 +2269,15 @@ impl GritPatternDefinitionBody {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn patterns(&self) -> GritPatternList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -2131,15 +2310,18 @@ impl GritPatternElseClause {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternElseClauseFields {
         GritPatternElseClauseFields {
             else_token: self.else_token(),
             else_pattern: self.else_pattern(),
         }
     }
+
     pub fn else_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn else_pattern(&self) -> SyntaxResult<AnyGritMaybeCurlyPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2171,6 +2353,7 @@ impl GritPatternIfElse {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternIfElseFields {
         GritPatternIfElseFields {
             if_token: self.if_token(),
@@ -2181,21 +2364,27 @@ impl GritPatternIfElse {
             else_clause: self.else_clause(),
         }
     }
+
     pub fn if_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn if_predicate(&self) -> SyntaxResult<AnyGritPredicate> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
+
     pub fn then_pattern(&self) -> SyntaxResult<AnyGritMaybeCurlyPattern> {
         support::required_node(&self.syntax, 4usize)
     }
+
     pub fn else_clause(&self) -> Option<GritPatternElseClause> {
         support::node(&self.syntax, 5usize)
     }
@@ -2231,15 +2420,18 @@ impl GritPatternIncludes {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternIncludesFields {
         GritPatternIncludesFields {
             includes_token: self.includes_token(),
             includes: self.includes(),
         }
     }
+
     pub fn includes_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn includes(&self) -> SyntaxResult<AnyGritMaybeCurlyPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2271,6 +2463,7 @@ impl GritPatternLimit {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternLimitFields {
         GritPatternLimitFields {
             pattern: self.pattern(),
@@ -2278,12 +2471,15 @@ impl GritPatternLimit {
             limit: self.limit(),
         }
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn limit_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn limit(&self) -> SyntaxResult<GritIntLiteral> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -2316,15 +2512,18 @@ impl GritPatternMaybe {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternMaybeFields {
         GritPatternMaybeFields {
             maybe_token: self.maybe_token(),
             pattern: self.pattern(),
         }
     }
+
     pub fn maybe_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritMaybeCurlyPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2356,15 +2555,18 @@ impl GritPatternNot {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternNotFields {
         GritPatternNotFields {
             not: self.not(),
             pattern: self.pattern(),
         }
     }
+
     pub fn not(&self) -> SyntaxResult<GritNot> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2396,6 +2598,7 @@ impl GritPatternOr {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternOrFields {
         GritPatternOrFields {
             or_token: self.or_token(),
@@ -2404,15 +2607,19 @@ impl GritPatternOr {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn or_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn patterns(&self) -> GritPatternList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -2446,6 +2653,7 @@ impl GritPatternOrElse {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternOrElseFields {
         GritPatternOrElseFields {
             orelse_token: self.orelse_token(),
@@ -2454,15 +2662,19 @@ impl GritPatternOrElse {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn orelse_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn patterns(&self) -> GritPatternList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -2496,6 +2708,7 @@ impl GritPatternWhere {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPatternWhereFields {
         GritPatternWhereFields {
             pattern: self.pattern(),
@@ -2503,12 +2716,15 @@ impl GritPatternWhere {
             side_condition: self.side_condition(),
         }
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn where_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn side_condition(&self) -> SyntaxResult<AnyGritPredicate> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -2541,6 +2757,7 @@ impl GritPredicateAccumulate {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateAccumulateFields {
         GritPredicateAccumulateFields {
             left: self.left(),
@@ -2548,12 +2765,15 @@ impl GritPredicateAccumulate {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<GritVariable> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn add_assign_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -2586,6 +2806,7 @@ impl GritPredicateAnd {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateAndFields {
         GritPredicateAndFields {
             and_token: self.and_token(),
@@ -2594,15 +2815,19 @@ impl GritPredicateAnd {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn and_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn predicates(&self) -> GritPredicateList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -2636,6 +2861,7 @@ impl GritPredicateAny {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateAnyFields {
         GritPredicateAnyFields {
             any_token: self.any_token(),
@@ -2644,15 +2870,19 @@ impl GritPredicateAny {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn any_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn predicates(&self) -> GritPredicateList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -2686,6 +2916,7 @@ impl GritPredicateAssignment {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateAssignmentFields {
         GritPredicateAssignmentFields {
             container: self.container(),
@@ -2693,12 +2924,15 @@ impl GritPredicateAssignment {
             pattern: self.pattern(),
         }
     }
+
     pub fn container(&self) -> SyntaxResult<AnyGritContainer> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn eq_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -2731,6 +2965,7 @@ impl GritPredicateCall {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateCallFields {
         GritPredicateCallFields {
             name: self.name(),
@@ -2739,15 +2974,19 @@ impl GritPredicateCall {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<GritName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn named_args(&self) -> GritNamedArgList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -2781,6 +3020,7 @@ impl GritPredicateCurly {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateCurlyFields {
         GritPredicateCurlyFields {
             l_curly_token: self.l_curly_token(),
@@ -2788,12 +3028,15 @@ impl GritPredicateCurly {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn predicates(&self) -> GritPredicateList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -2826,6 +3069,7 @@ impl GritPredicateDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateDefinitionFields {
         GritPredicateDefinitionFields {
             predicate_token: self.predicate_token(),
@@ -2836,21 +3080,27 @@ impl GritPredicateDefinition {
             body: self.body(),
         }
     }
+
     pub fn predicate_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<GritName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
+
     pub fn args(&self) -> GritVariableList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 4usize)
     }
+
     pub fn body(&self) -> SyntaxResult<GritPredicateCurly> {
         support::required_node(&self.syntax, 5usize)
     }
@@ -2886,15 +3136,18 @@ impl GritPredicateElseClause {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateElseClauseFields {
         GritPredicateElseClauseFields {
             else_token: self.else_token(),
             else_predicate: self.else_predicate(),
         }
     }
+
     pub fn else_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn else_predicate(&self) -> SyntaxResult<AnyGritPredicate> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2926,6 +3179,7 @@ impl GritPredicateEqual {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateEqualFields {
         GritPredicateEqualFields {
             left: self.left(),
@@ -2933,12 +3187,15 @@ impl GritPredicateEqual {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<GritVariable> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn equality_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -2971,6 +3228,7 @@ impl GritPredicateGreater {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateGreaterFields {
         GritPredicateGreaterFields {
             left: self.left(),
@@ -2978,12 +3236,15 @@ impl GritPredicateGreater {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<GritVariable> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn r_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3016,6 +3277,7 @@ impl GritPredicateGreaterEqual {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateGreaterEqualFields {
         GritPredicateGreaterEqualFields {
             left: self.left(),
@@ -3023,12 +3285,15 @@ impl GritPredicateGreaterEqual {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<GritVariable> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn greater_than_equal_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3061,6 +3326,7 @@ impl GritPredicateIfElse {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateIfElseFields {
         GritPredicateIfElseFields {
             if_token: self.if_token(),
@@ -3071,21 +3337,27 @@ impl GritPredicateIfElse {
             else_clause: self.else_clause(),
         }
     }
+
     pub fn if_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn if_predicate(&self) -> SyntaxResult<AnyGritPredicate> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
+
     pub fn then_predicate(&self) -> SyntaxResult<AnyGritPredicate> {
         support::required_node(&self.syntax, 4usize)
     }
+
     pub fn else_clause(&self) -> Option<GritPredicateElseClause> {
         support::node(&self.syntax, 5usize)
     }
@@ -3121,6 +3393,7 @@ impl GritPredicateLess {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateLessFields {
         GritPredicateLessFields {
             left: self.left(),
@@ -3128,12 +3401,15 @@ impl GritPredicateLess {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<GritVariable> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn l_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3166,6 +3442,7 @@ impl GritPredicateLessEqual {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateLessEqualFields {
         GritPredicateLessEqualFields {
             left: self.left(),
@@ -3173,12 +3450,15 @@ impl GritPredicateLessEqual {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<GritVariable> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn less_than_equal_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3211,6 +3491,7 @@ impl GritPredicateMatch {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateMatchFields {
         GritPredicateMatchFields {
             left: self.left(),
@@ -3218,12 +3499,15 @@ impl GritPredicateMatch {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyGritPredicateMatchSubject> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn match_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3256,15 +3540,18 @@ impl GritPredicateMaybe {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateMaybeFields {
         GritPredicateMaybeFields {
             maybe_token: self.maybe_token(),
             predicate: self.predicate(),
         }
     }
+
     pub fn maybe_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn predicate(&self) -> SyntaxResult<AnyGritPredicate> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -3296,15 +3583,18 @@ impl GritPredicateNot {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateNotFields {
         GritPredicateNotFields {
             not: self.not(),
             predicate: self.predicate(),
         }
     }
+
     pub fn not(&self) -> SyntaxResult<GritNot> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn predicate(&self) -> SyntaxResult<AnyGritPredicate> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -3336,6 +3626,7 @@ impl GritPredicateNotEqual {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateNotEqualFields {
         GritPredicateNotEqualFields {
             left: self.left(),
@@ -3343,12 +3634,15 @@ impl GritPredicateNotEqual {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<GritVariable> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn inequality_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3381,6 +3675,7 @@ impl GritPredicateOr {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateOrFields {
         GritPredicateOrFields {
             or_token: self.or_token(),
@@ -3389,15 +3684,19 @@ impl GritPredicateOr {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn or_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn predicates(&self) -> GritPredicateList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -3431,15 +3730,18 @@ impl GritPredicateReturn {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateReturnFields {
         GritPredicateReturnFields {
             return_token: self.return_token(),
             pattern: self.pattern(),
         }
     }
+
     pub fn return_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -3471,6 +3773,7 @@ impl GritPredicateRewrite {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritPredicateRewriteFields {
         GritPredicateRewriteFields {
             left: self.left(),
@@ -3479,15 +3782,19 @@ impl GritPredicateRewrite {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<GritVariable> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn annotation(&self) -> Option<GritAnnotation> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn fat_arrow_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 3usize)
     }
@@ -3521,11 +3828,13 @@ impl GritRawBacktickSnippetLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritRawBacktickSnippetLiteralFields {
         GritRawBacktickSnippetLiteralFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -3556,11 +3865,13 @@ impl GritRegexLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritRegexLiteralFields {
         GritRegexLiteralFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -3591,15 +3902,18 @@ impl GritRegexPattern {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritRegexPatternFields {
         GritRegexPatternFields {
             regex: self.regex(),
             variables: self.variables(),
         }
     }
+
     pub fn regex(&self) -> SyntaxResult<AnyGritRegex> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn variables(&self) -> Option<GritRegexPatternVariables> {
         support::node(&self.syntax, 1usize)
     }
@@ -3631,6 +3945,7 @@ impl GritRegexPatternVariables {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritRegexPatternVariablesFields {
         GritRegexPatternVariablesFields {
             l_paren_token: self.l_paren_token(),
@@ -3638,12 +3953,15 @@ impl GritRegexPatternVariables {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn args(&self) -> GritVariableList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -3676,6 +3994,7 @@ impl GritRewrite {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritRewriteFields {
         GritRewriteFields {
             left: self.left(),
@@ -3684,15 +4003,19 @@ impl GritRewrite {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn annotation(&self) -> Option<GritAnnotation> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn fat_arrow_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 3usize)
     }
@@ -3726,6 +4049,7 @@ impl GritRoot {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritRootFields {
         GritRootFields {
             bom_token: self.bom_token(),
@@ -3735,18 +4059,23 @@ impl GritRoot {
             eof_token: self.eof_token(),
         }
     }
+
     pub fn bom_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn version(&self) -> Option<AnyGritVersion> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn language(&self) -> Option<AnyGritLanguageDeclaration> {
         support::node(&self.syntax, 2usize)
     }
+
     pub fn definitions(&self) -> GritDefinitionList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn eof_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 4usize)
     }
@@ -3781,6 +4110,7 @@ impl GritSequential {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritSequentialFields {
         GritSequentialFields {
             sequential_token: self.sequential_token(),
@@ -3789,15 +4119,19 @@ impl GritSequential {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn sequential_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn sequential(&self) -> GritPatternList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -3831,11 +4165,13 @@ impl GritSnippetRegexLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritSnippetRegexLiteralFields {
         GritSnippetRegexLiteralFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -3866,15 +4202,18 @@ impl GritSome {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritSomeFields {
         GritSomeFields {
             some_token: self.some_token(),
             pattern: self.pattern(),
         }
     }
+
     pub fn some_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritMaybeCurlyPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -3906,11 +4245,13 @@ impl GritStringLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritStringLiteralFields {
         GritStringLiteralFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -3941,6 +4282,7 @@ impl GritSubOperation {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritSubOperationFields {
         GritSubOperationFields {
             left: self.left(),
@@ -3948,12 +4290,15 @@ impl GritSubOperation {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn minus_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyGritPattern> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3986,11 +4331,13 @@ impl GritUndefinedLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritUndefinedLiteralFields {
         GritUndefinedLiteralFields {
             token_token: self.token_token(),
         }
     }
+
     pub fn token_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -4021,11 +4368,13 @@ impl GritUnderscore {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritUnderscoreFields {
         GritUnderscoreFields {
             token_token: self.token_token(),
         }
     }
+
     pub fn token_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -4056,11 +4405,13 @@ impl GritVariable {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritVariableFields {
         GritVariableFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -4091,6 +4442,7 @@ impl GritVersion {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritVersionFields {
         GritVersionFields {
             engine_token: self.engine_token(),
@@ -4100,18 +4452,23 @@ impl GritVersion {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn engine_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn biome_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
+
     pub fn version(&self) -> SyntaxResult<GritDoubleLiteral> {
         support::required_node(&self.syntax, 3usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 4usize)
     }
@@ -4146,15 +4503,18 @@ impl GritWithin {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> GritWithinFields {
         GritWithinFields {
             within_token: self.within_token(),
             pattern: self.pattern(),
         }
     }
+
     pub fn within_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn pattern(&self) -> SyntaxResult<AnyGritMaybeCurlyPattern> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -4185,12 +4545,14 @@ impl AnyGritCodeSnippetSource {
             _ => None,
         }
     }
+
     pub fn as_grit_language_specific_snippet(&self) -> Option<&GritLanguageSpecificSnippet> {
         match &self {
             AnyGritCodeSnippetSource::GritLanguageSpecificSnippet(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_raw_backtick_snippet_literal(&self) -> Option<&GritRawBacktickSnippetLiteral> {
         match &self {
             AnyGritCodeSnippetSource::GritRawBacktickSnippetLiteral(item) => Some(item),
@@ -4212,18 +4574,21 @@ impl AnyGritContainer {
             _ => None,
         }
     }
+
     pub fn as_grit_list_accessor(&self) -> Option<&GritListAccessor> {
         match &self {
             AnyGritContainer::GritListAccessor(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_map_accessor(&self) -> Option<&GritMapAccessor> {
         match &self {
             AnyGritContainer::GritMapAccessor(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_variable(&self) -> Option<&GritVariable> {
         match &self {
             AnyGritContainer::GritVariable(item) => Some(item),
@@ -4246,24 +4611,28 @@ impl AnyGritDefinition {
             _ => None,
         }
     }
+
     pub fn as_grit_bogus_definition(&self) -> Option<&GritBogusDefinition> {
         match &self {
             AnyGritDefinition::GritBogusDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_function_definition(&self) -> Option<&GritFunctionDefinition> {
         match &self {
             AnyGritDefinition::GritFunctionDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_definition(&self) -> Option<&GritPatternDefinition> {
         match &self {
             AnyGritDefinition::GritPatternDefinition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_definition(&self) -> Option<&GritPredicateDefinition> {
         match &self {
             AnyGritDefinition::GritPredicateDefinition(item) => Some(item),
@@ -4283,6 +4652,7 @@ impl AnyGritLanguageDeclaration {
             _ => None,
         }
     }
+
     pub fn as_grit_language_declaration(&self) -> Option<&GritLanguageDeclaration> {
         match &self {
             AnyGritLanguageDeclaration::GritLanguageDeclaration(item) => Some(item),
@@ -4302,6 +4672,7 @@ impl AnyGritLanguageFlavorKind {
             _ => None,
         }
     }
+
     pub fn as_grit_language_flavor_kind(&self) -> Option<&GritLanguageFlavorKind> {
         match &self {
             AnyGritLanguageFlavorKind::GritLanguageFlavorKind(item) => Some(item),
@@ -4321,6 +4692,7 @@ impl AnyGritListAccessorSubject {
             _ => None,
         }
     }
+
     pub fn as_grit_list(&self) -> Option<&GritList> {
         match &self {
             AnyGritListAccessorSubject::GritList(item) => Some(item),
@@ -4341,12 +4713,14 @@ impl AnyGritListIndex {
             _ => None,
         }
     }
+
     pub fn as_grit_int_literal(&self) -> Option<&GritIntLiteral> {
         match &self {
             AnyGritListIndex::GritIntLiteral(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_negative_int_literal(&self) -> Option<&GritNegativeIntLiteral> {
         match &self {
             AnyGritListIndex::GritNegativeIntLiteral(item) => Some(item),
@@ -4366,6 +4740,7 @@ impl AnyGritListPattern {
             _ => None,
         }
     }
+
     pub fn as_grit_dotdotdot(&self) -> Option<&GritDotdotdot> {
         match &self {
             AnyGritListPattern::GritDotdotdot(item) => Some(item),
@@ -4392,48 +4767,56 @@ impl AnyGritLiteral {
             _ => None,
         }
     }
+
     pub fn as_grit_boolean_literal(&self) -> Option<&GritBooleanLiteral> {
         match &self {
             AnyGritLiteral::GritBooleanLiteral(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_code_snippet(&self) -> Option<&GritCodeSnippet> {
         match &self {
             AnyGritLiteral::GritCodeSnippet(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_double_literal(&self) -> Option<&GritDoubleLiteral> {
         match &self {
             AnyGritLiteral::GritDoubleLiteral(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_int_literal(&self) -> Option<&GritIntLiteral> {
         match &self {
             AnyGritLiteral::GritIntLiteral(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_list(&self) -> Option<&GritList> {
         match &self {
             AnyGritLiteral::GritList(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_map(&self) -> Option<&GritMap> {
         match &self {
             AnyGritLiteral::GritMap(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_string_literal(&self) -> Option<&GritStringLiteral> {
         match &self {
             AnyGritLiteral::GritStringLiteral(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_undefined_literal(&self) -> Option<&GritUndefinedLiteral> {
         match &self {
             AnyGritLiteral::GritUndefinedLiteral(item) => Some(item),
@@ -4453,6 +4836,7 @@ impl AnyGritMapAccessorSubject {
             _ => None,
         }
     }
+
     pub fn as_grit_map(&self) -> Option<&GritMap> {
         match &self {
             AnyGritMapAccessorSubject::GritMap(item) => Some(item),
@@ -4472,6 +4856,7 @@ impl AnyGritMapElement {
             _ => None,
         }
     }
+
     pub fn as_grit_map_element(&self) -> Option<&GritMapElement> {
         match &self {
             AnyGritMapElement::GritMapElement(item) => Some(item),
@@ -4491,6 +4876,7 @@ impl AnyGritMapKey {
             _ => None,
         }
     }
+
     pub fn as_grit_variable(&self) -> Option<&GritVariable> {
         match &self {
             AnyGritMapKey::GritVariable(item) => Some(item),
@@ -4510,6 +4896,7 @@ impl AnyGritMaybeCurlyPattern {
             _ => None,
         }
     }
+
     pub fn as_grit_curly_pattern(&self) -> Option<&GritCurlyPattern> {
         match &self {
             AnyGritMaybeCurlyPattern::GritCurlyPattern(item) => Some(item),
@@ -4530,12 +4917,14 @@ impl AnyGritMaybeNamedArg {
             _ => None,
         }
     }
+
     pub fn as_grit_bogus_named_arg(&self) -> Option<&GritBogusNamedArg> {
         match &self {
             AnyGritMaybeNamedArg::GritBogusNamedArg(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_named_arg(&self) -> Option<&GritNamedArg> {
         match &self {
             AnyGritMaybeNamedArg::GritNamedArg(item) => Some(item),
@@ -4592,228 +4981,266 @@ impl AnyGritPattern {
             _ => None,
         }
     }
+
     pub fn as_grit_add_operation(&self) -> Option<&GritAddOperation> {
         match &self {
             AnyGritPattern::GritAddOperation(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_assignment_as_pattern(&self) -> Option<&GritAssignmentAsPattern> {
         match &self {
             AnyGritPattern::GritAssignmentAsPattern(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_bogus_pattern(&self) -> Option<&GritBogusPattern> {
         match &self {
             AnyGritPattern::GritBogusPattern(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_bracketed_pattern(&self) -> Option<&GritBracketedPattern> {
         match &self {
             AnyGritPattern::GritBracketedPattern(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_bubble(&self) -> Option<&GritBubble> {
         match &self {
             AnyGritPattern::GritBubble(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_div_operation(&self) -> Option<&GritDivOperation> {
         match &self {
             AnyGritPattern::GritDivOperation(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_dot(&self) -> Option<&GritDot> {
         match &self {
             AnyGritPattern::GritDot(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_every(&self) -> Option<&GritEvery> {
         match &self {
             AnyGritPattern::GritEvery(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_files(&self) -> Option<&GritFiles> {
         match &self {
             AnyGritPattern::GritFiles(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_like(&self) -> Option<&GritLike> {
         match &self {
             AnyGritPattern::GritLike(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_list_accessor(&self) -> Option<&GritListAccessor> {
         match &self {
             AnyGritPattern::GritListAccessor(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_map_accessor(&self) -> Option<&GritMapAccessor> {
         match &self {
             AnyGritPattern::GritMapAccessor(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_mod_operation(&self) -> Option<&GritModOperation> {
         match &self {
             AnyGritPattern::GritModOperation(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_mul_operation(&self) -> Option<&GritMulOperation> {
         match &self {
             AnyGritPattern::GritMulOperation(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_node_like(&self) -> Option<&GritNodeLike> {
         match &self {
             AnyGritPattern::GritNodeLike(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_accumulate(&self) -> Option<&GritPatternAccumulate> {
         match &self {
             AnyGritPattern::GritPatternAccumulate(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_after(&self) -> Option<&GritPatternAfter> {
         match &self {
             AnyGritPattern::GritPatternAfter(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_and(&self) -> Option<&GritPatternAnd> {
         match &self {
             AnyGritPattern::GritPatternAnd(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_any(&self) -> Option<&GritPatternAny> {
         match &self {
             AnyGritPattern::GritPatternAny(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_as(&self) -> Option<&GritPatternAs> {
         match &self {
             AnyGritPattern::GritPatternAs(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_before(&self) -> Option<&GritPatternBefore> {
         match &self {
             AnyGritPattern::GritPatternBefore(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_contains(&self) -> Option<&GritPatternContains> {
         match &self {
             AnyGritPattern::GritPatternContains(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_if_else(&self) -> Option<&GritPatternIfElse> {
         match &self {
             AnyGritPattern::GritPatternIfElse(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_includes(&self) -> Option<&GritPatternIncludes> {
         match &self {
             AnyGritPattern::GritPatternIncludes(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_limit(&self) -> Option<&GritPatternLimit> {
         match &self {
             AnyGritPattern::GritPatternLimit(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_maybe(&self) -> Option<&GritPatternMaybe> {
         match &self {
             AnyGritPattern::GritPatternMaybe(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_not(&self) -> Option<&GritPatternNot> {
         match &self {
             AnyGritPattern::GritPatternNot(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_or(&self) -> Option<&GritPatternOr> {
         match &self {
             AnyGritPattern::GritPatternOr(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_or_else(&self) -> Option<&GritPatternOrElse> {
         match &self {
             AnyGritPattern::GritPatternOrElse(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_pattern_where(&self) -> Option<&GritPatternWhere> {
         match &self {
             AnyGritPattern::GritPatternWhere(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_regex_pattern(&self) -> Option<&GritRegexPattern> {
         match &self {
             AnyGritPattern::GritRegexPattern(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_rewrite(&self) -> Option<&GritRewrite> {
         match &self {
             AnyGritPattern::GritRewrite(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_sequential(&self) -> Option<&GritSequential> {
         match &self {
             AnyGritPattern::GritSequential(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_some(&self) -> Option<&GritSome> {
         match &self {
             AnyGritPattern::GritSome(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_sub_operation(&self) -> Option<&GritSubOperation> {
         match &self {
             AnyGritPattern::GritSubOperation(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_underscore(&self) -> Option<&GritUnderscore> {
         match &self {
             AnyGritPattern::GritUnderscore(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_variable(&self) -> Option<&GritVariable> {
         match &self {
             AnyGritPattern::GritVariable(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_within(&self) -> Option<&GritWithin> {
         match &self {
             AnyGritPattern::GritWithin(item) => Some(item),
@@ -4852,120 +5279,140 @@ impl AnyGritPredicate {
             _ => None,
         }
     }
+
     pub fn as_grit_boolean_literal(&self) -> Option<&GritBooleanLiteral> {
         match &self {
             AnyGritPredicate::GritBooleanLiteral(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_bracketed_predicate(&self) -> Option<&GritBracketedPredicate> {
         match &self {
             AnyGritPredicate::GritBracketedPredicate(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_accumulate(&self) -> Option<&GritPredicateAccumulate> {
         match &self {
             AnyGritPredicate::GritPredicateAccumulate(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_and(&self) -> Option<&GritPredicateAnd> {
         match &self {
             AnyGritPredicate::GritPredicateAnd(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_any(&self) -> Option<&GritPredicateAny> {
         match &self {
             AnyGritPredicate::GritPredicateAny(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_assignment(&self) -> Option<&GritPredicateAssignment> {
         match &self {
             AnyGritPredicate::GritPredicateAssignment(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_call(&self) -> Option<&GritPredicateCall> {
         match &self {
             AnyGritPredicate::GritPredicateCall(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_equal(&self) -> Option<&GritPredicateEqual> {
         match &self {
             AnyGritPredicate::GritPredicateEqual(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_greater(&self) -> Option<&GritPredicateGreater> {
         match &self {
             AnyGritPredicate::GritPredicateGreater(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_greater_equal(&self) -> Option<&GritPredicateGreaterEqual> {
         match &self {
             AnyGritPredicate::GritPredicateGreaterEqual(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_if_else(&self) -> Option<&GritPredicateIfElse> {
         match &self {
             AnyGritPredicate::GritPredicateIfElse(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_less(&self) -> Option<&GritPredicateLess> {
         match &self {
             AnyGritPredicate::GritPredicateLess(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_less_equal(&self) -> Option<&GritPredicateLessEqual> {
         match &self {
             AnyGritPredicate::GritPredicateLessEqual(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_match(&self) -> Option<&GritPredicateMatch> {
         match &self {
             AnyGritPredicate::GritPredicateMatch(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_maybe(&self) -> Option<&GritPredicateMaybe> {
         match &self {
             AnyGritPredicate::GritPredicateMaybe(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_not(&self) -> Option<&GritPredicateNot> {
         match &self {
             AnyGritPredicate::GritPredicateNot(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_not_equal(&self) -> Option<&GritPredicateNotEqual> {
         match &self {
             AnyGritPredicate::GritPredicateNotEqual(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_or(&self) -> Option<&GritPredicateOr> {
         match &self {
             AnyGritPredicate::GritPredicateOr(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_return(&self) -> Option<&GritPredicateReturn> {
         match &self {
             AnyGritPredicate::GritPredicateReturn(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_grit_predicate_rewrite(&self) -> Option<&GritPredicateRewrite> {
         match &self {
             AnyGritPredicate::GritPredicateRewrite(item) => Some(item),
@@ -4985,6 +5432,7 @@ impl AnyGritPredicateMatchSubject {
             _ => None,
         }
     }
+
     pub fn as_any_grit_literal(&self) -> Option<&AnyGritLiteral> {
         match &self {
             AnyGritPredicateMatchSubject::AnyGritLiteral(item) => Some(item),
@@ -5004,6 +5452,7 @@ impl AnyGritRegex {
             _ => None,
         }
     }
+
     pub fn as_grit_snippet_regex_literal(&self) -> Option<&GritSnippetRegexLiteral> {
         match &self {
             AnyGritRegex::GritSnippetRegexLiteral(item) => Some(item),
@@ -5023,6 +5472,7 @@ impl AnyGritVersion {
             _ => None,
         }
     }
+
     pub fn as_grit_version(&self) -> Option<&GritVersion> {
         match &self {
             AnyGritVersion::GritVersion(item) => Some(item),
@@ -5032,11 +5482,14 @@ impl AnyGritVersion {
 }
 impl AstNode for GritAddOperation {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_ADD_OPERATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_ADD_OPERATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5044,9 +5497,11 @@ impl AstNode for GritAddOperation {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5072,11 +5527,14 @@ impl From<GritAddOperation> for SyntaxElement {
 }
 impl AstNode for GritAnnotation {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_ANNOTATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_ANNOTATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5084,9 +5542,11 @@ impl AstNode for GritAnnotation {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5113,11 +5573,14 @@ impl From<GritAnnotation> for SyntaxElement {
 }
 impl AstNode for GritAssignmentAsPattern {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_ASSIGNMENT_AS_PATTERN as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_ASSIGNMENT_AS_PATTERN
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5125,9 +5588,11 @@ impl AstNode for GritAssignmentAsPattern {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5153,11 +5618,14 @@ impl From<GritAssignmentAsPattern> for SyntaxElement {
 }
 impl AstNode for GritBacktickSnippetLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BACKTICK_SNIPPET_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BACKTICK_SNIPPET_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5165,9 +5633,11 @@ impl AstNode for GritBacktickSnippetLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5194,11 +5664,14 @@ impl From<GritBacktickSnippetLiteral> for SyntaxElement {
 }
 impl AstNode for GritBooleanLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOOLEAN_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOOLEAN_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5206,9 +5679,11 @@ impl AstNode for GritBooleanLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5232,11 +5707,14 @@ impl From<GritBooleanLiteral> for SyntaxElement {
 }
 impl AstNode for GritBracketedPattern {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BRACKETED_PATTERN as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BRACKETED_PATTERN
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5244,9 +5722,11 @@ impl AstNode for GritBracketedPattern {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5278,11 +5758,14 @@ impl From<GritBracketedPattern> for SyntaxElement {
 }
 impl AstNode for GritBracketedPredicate {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BRACKETED_PREDICATE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BRACKETED_PREDICATE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5290,9 +5773,11 @@ impl AstNode for GritBracketedPredicate {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5324,11 +5809,14 @@ impl From<GritBracketedPredicate> for SyntaxElement {
 }
 impl AstNode for GritBubble {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BUBBLE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BUBBLE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5336,9 +5824,11 @@ impl AstNode for GritBubble {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5367,11 +5857,14 @@ impl From<GritBubble> for SyntaxElement {
 }
 impl AstNode for GritBubbleScope {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BUBBLE_SCOPE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BUBBLE_SCOPE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5379,9 +5872,11 @@ impl AstNode for GritBubbleScope {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5413,11 +5908,14 @@ impl From<GritBubbleScope> for SyntaxElement {
 }
 impl AstNode for GritCodeSnippet {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_CODE_SNIPPET as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_CODE_SNIPPET
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5425,9 +5923,11 @@ impl AstNode for GritCodeSnippet {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5451,11 +5951,14 @@ impl From<GritCodeSnippet> for SyntaxElement {
 }
 impl AstNode for GritCurlyPattern {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_CURLY_PATTERN as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_CURLY_PATTERN
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5463,9 +5966,11 @@ impl AstNode for GritCurlyPattern {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5497,11 +6002,14 @@ impl From<GritCurlyPattern> for SyntaxElement {
 }
 impl AstNode for GritDivOperation {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_DIV_OPERATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_DIV_OPERATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5509,9 +6017,11 @@ impl AstNode for GritDivOperation {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5540,11 +6050,14 @@ impl From<GritDivOperation> for SyntaxElement {
 }
 impl AstNode for GritDot {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_DOT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_DOT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5552,9 +6065,11 @@ impl AstNode for GritDot {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5578,11 +6093,14 @@ impl From<GritDot> for SyntaxElement {
 }
 impl AstNode for GritDotdotdot {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_DOTDOTDOT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_DOTDOTDOT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5590,9 +6108,11 @@ impl AstNode for GritDotdotdot {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5620,11 +6140,14 @@ impl From<GritDotdotdot> for SyntaxElement {
 }
 impl AstNode for GritDoubleLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_DOUBLE_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_DOUBLE_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5632,9 +6155,11 @@ impl AstNode for GritDoubleLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5661,11 +6186,14 @@ impl From<GritDoubleLiteral> for SyntaxElement {
 }
 impl AstNode for GritEvery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_EVERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_EVERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5673,9 +6201,11 @@ impl AstNode for GritEvery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5703,11 +6233,14 @@ impl From<GritEvery> for SyntaxElement {
 }
 impl AstNode for GritFiles {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_FILES as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_FILES
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5715,9 +6248,11 @@ impl AstNode for GritFiles {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5753,11 +6288,14 @@ impl From<GritFiles> for SyntaxElement {
 }
 impl AstNode for GritFunctionDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_FUNCTION_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_FUNCTION_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5765,9 +6303,11 @@ impl AstNode for GritFunctionDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5805,11 +6345,14 @@ impl From<GritFunctionDefinition> for SyntaxElement {
 }
 impl AstNode for GritIntLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_INT_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_INT_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5817,9 +6360,11 @@ impl AstNode for GritIntLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5846,11 +6391,14 @@ impl From<GritIntLiteral> for SyntaxElement {
 }
 impl AstNode for GritLanguageDeclaration {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LANGUAGE_DECLARATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LANGUAGE_DECLARATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5858,9 +6406,11 @@ impl AstNode for GritLanguageDeclaration {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5893,11 +6443,14 @@ impl From<GritLanguageDeclaration> for SyntaxElement {
 }
 impl AstNode for GritLanguageFlavor {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LANGUAGE_FLAVOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LANGUAGE_FLAVOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5905,9 +6458,11 @@ impl AstNode for GritLanguageFlavor {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5939,11 +6494,14 @@ impl From<GritLanguageFlavor> for SyntaxElement {
 }
 impl AstNode for GritLanguageFlavorKind {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LANGUAGE_FLAVOR_KIND as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LANGUAGE_FLAVOR_KIND
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5951,9 +6509,11 @@ impl AstNode for GritLanguageFlavorKind {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -5980,11 +6540,14 @@ impl From<GritLanguageFlavorKind> for SyntaxElement {
 }
 impl AstNode for GritLanguageName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LANGUAGE_NAME as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LANGUAGE_NAME
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -5992,9 +6555,11 @@ impl AstNode for GritLanguageName {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6021,11 +6586,14 @@ impl From<GritLanguageName> for SyntaxElement {
 }
 impl AstNode for GritLanguageSpecificSnippet {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LANGUAGE_SPECIFIC_SNIPPET as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LANGUAGE_SPECIFIC_SNIPPET
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6033,9 +6601,11 @@ impl AstNode for GritLanguageSpecificSnippet {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6063,11 +6633,14 @@ impl From<GritLanguageSpecificSnippet> for SyntaxElement {
 }
 impl AstNode for GritLike {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LIKE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LIKE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6075,9 +6648,11 @@ impl AstNode for GritLike {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6114,11 +6689,14 @@ impl From<GritLike> for SyntaxElement {
 }
 impl AstNode for GritLikeThreshold {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LIKE_THRESHOLD as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LIKE_THRESHOLD
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6126,9 +6704,11 @@ impl AstNode for GritLikeThreshold {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6160,11 +6740,14 @@ impl From<GritLikeThreshold> for SyntaxElement {
 }
 impl AstNode for GritList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6172,9 +6755,11 @@ impl AstNode for GritList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6207,11 +6792,14 @@ impl From<GritList> for SyntaxElement {
 }
 impl AstNode for GritListAccessor {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LIST_ACCESSOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LIST_ACCESSOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6219,9 +6807,11 @@ impl AstNode for GritListAccessor {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6254,11 +6844,14 @@ impl From<GritListAccessor> for SyntaxElement {
 }
 impl AstNode for GritMap {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_MAP as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_MAP
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6266,9 +6859,11 @@ impl AstNode for GritMap {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6300,11 +6895,14 @@ impl From<GritMap> for SyntaxElement {
 }
 impl AstNode for GritMapAccessor {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_MAP_ACCESSOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_MAP_ACCESSOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6312,9 +6910,11 @@ impl AstNode for GritMapAccessor {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6340,11 +6940,14 @@ impl From<GritMapAccessor> for SyntaxElement {
 }
 impl AstNode for GritMapElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_MAP_ELEMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_MAP_ELEMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6352,9 +6955,11 @@ impl AstNode for GritMapElement {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6383,11 +6988,14 @@ impl From<GritMapElement> for SyntaxElement {
 }
 impl AstNode for GritModOperation {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_MOD_OPERATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_MOD_OPERATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6395,9 +7003,11 @@ impl AstNode for GritModOperation {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6426,11 +7036,14 @@ impl From<GritModOperation> for SyntaxElement {
 }
 impl AstNode for GritMulOperation {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_MUL_OPERATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_MUL_OPERATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6438,9 +7051,11 @@ impl AstNode for GritMulOperation {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6466,11 +7081,14 @@ impl From<GritMulOperation> for SyntaxElement {
 }
 impl AstNode for GritName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_NAME as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_NAME
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6478,9 +7096,11 @@ impl AstNode for GritName {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6507,11 +7127,14 @@ impl From<GritName> for SyntaxElement {
 }
 impl AstNode for GritNamedArg {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_NAMED_ARG as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_NAMED_ARG
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6519,9 +7142,11 @@ impl AstNode for GritNamedArg {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6547,11 +7172,14 @@ impl From<GritNamedArg> for SyntaxElement {
 }
 impl AstNode for GritNegativeIntLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_NEGATIVE_INT_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_NEGATIVE_INT_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6559,9 +7187,11 @@ impl AstNode for GritNegativeIntLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6588,11 +7218,14 @@ impl From<GritNegativeIntLiteral> for SyntaxElement {
 }
 impl AstNode for GritNodeLike {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_NODE_LIKE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_NODE_LIKE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6600,9 +7233,11 @@ impl AstNode for GritNodeLike {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6635,11 +7270,14 @@ impl From<GritNodeLike> for SyntaxElement {
 }
 impl AstNode for GritNot {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_NOT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_NOT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6647,9 +7285,11 @@ impl AstNode for GritNot {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6673,11 +7313,14 @@ impl From<GritNot> for SyntaxElement {
 }
 impl AstNode for GritPatternAccumulate {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_ACCUMULATE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_ACCUMULATE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6685,9 +7328,11 @@ impl AstNode for GritPatternAccumulate {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6716,11 +7361,14 @@ impl From<GritPatternAccumulate> for SyntaxElement {
 }
 impl AstNode for GritPatternAfter {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_AFTER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_AFTER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6728,9 +7376,11 @@ impl AstNode for GritPatternAfter {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6758,11 +7408,14 @@ impl From<GritPatternAfter> for SyntaxElement {
 }
 impl AstNode for GritPatternAnd {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_AND as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_AND
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6770,9 +7423,11 @@ impl AstNode for GritPatternAnd {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6805,11 +7460,14 @@ impl From<GritPatternAnd> for SyntaxElement {
 }
 impl AstNode for GritPatternAny {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_ANY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_ANY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6817,9 +7475,11 @@ impl AstNode for GritPatternAny {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6852,11 +7512,14 @@ impl From<GritPatternAny> for SyntaxElement {
 }
 impl AstNode for GritPatternAs {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_AS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_AS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6864,9 +7527,11 @@ impl AstNode for GritPatternAs {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6892,11 +7557,14 @@ impl From<GritPatternAs> for SyntaxElement {
 }
 impl AstNode for GritPatternBefore {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_BEFORE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_BEFORE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6904,9 +7572,11 @@ impl AstNode for GritPatternBefore {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6934,11 +7604,14 @@ impl From<GritPatternBefore> for SyntaxElement {
 }
 impl AstNode for GritPatternContains {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_CONTAINS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_CONTAINS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6946,9 +7619,11 @@ impl AstNode for GritPatternContains {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -6980,11 +7655,14 @@ impl From<GritPatternContains> for SyntaxElement {
 }
 impl AstNode for GritPatternContainsUntilClause {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_CONTAINS_UNTIL_CLAUSE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_CONTAINS_UNTIL_CLAUSE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -6992,9 +7670,11 @@ impl AstNode for GritPatternContainsUntilClause {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7022,11 +7702,14 @@ impl From<GritPatternContainsUntilClause> for SyntaxElement {
 }
 impl AstNode for GritPatternDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7034,9 +7717,11 @@ impl AstNode for GritPatternDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7079,11 +7764,14 @@ impl From<GritPatternDefinition> for SyntaxElement {
 }
 impl AstNode for GritPatternDefinitionBody {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_DEFINITION_BODY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_DEFINITION_BODY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7091,9 +7779,11 @@ impl AstNode for GritPatternDefinitionBody {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7125,11 +7815,14 @@ impl From<GritPatternDefinitionBody> for SyntaxElement {
 }
 impl AstNode for GritPatternElseClause {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_ELSE_CLAUSE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_ELSE_CLAUSE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7137,9 +7830,11 @@ impl AstNode for GritPatternElseClause {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7167,11 +7862,14 @@ impl From<GritPatternElseClause> for SyntaxElement {
 }
 impl AstNode for GritPatternIfElse {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_IF_ELSE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_IF_ELSE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7179,9 +7877,11 @@ impl AstNode for GritPatternIfElse {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7225,11 +7925,14 @@ impl From<GritPatternIfElse> for SyntaxElement {
 }
 impl AstNode for GritPatternIncludes {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_INCLUDES as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_INCLUDES
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7237,9 +7940,11 @@ impl AstNode for GritPatternIncludes {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7267,11 +7972,14 @@ impl From<GritPatternIncludes> for SyntaxElement {
 }
 impl AstNode for GritPatternLimit {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_LIMIT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_LIMIT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7279,9 +7987,11 @@ impl AstNode for GritPatternLimit {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7310,11 +8020,14 @@ impl From<GritPatternLimit> for SyntaxElement {
 }
 impl AstNode for GritPatternMaybe {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_MAYBE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_MAYBE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7322,9 +8035,11 @@ impl AstNode for GritPatternMaybe {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7352,11 +8067,14 @@ impl From<GritPatternMaybe> for SyntaxElement {
 }
 impl AstNode for GritPatternNot {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_NOT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_NOT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7364,9 +8082,11 @@ impl AstNode for GritPatternNot {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7391,11 +8111,14 @@ impl From<GritPatternNot> for SyntaxElement {
 }
 impl AstNode for GritPatternOr {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_OR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_OR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7403,9 +8126,11 @@ impl AstNode for GritPatternOr {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7438,11 +8163,14 @@ impl From<GritPatternOr> for SyntaxElement {
 }
 impl AstNode for GritPatternOrElse {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_OR_ELSE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_OR_ELSE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7450,9 +8178,11 @@ impl AstNode for GritPatternOrElse {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7488,11 +8218,14 @@ impl From<GritPatternOrElse> for SyntaxElement {
 }
 impl AstNode for GritPatternWhere {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_WHERE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_WHERE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7500,9 +8233,11 @@ impl AstNode for GritPatternWhere {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7534,11 +8269,14 @@ impl From<GritPatternWhere> for SyntaxElement {
 }
 impl AstNode for GritPredicateAccumulate {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_ACCUMULATE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_ACCUMULATE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7546,9 +8284,11 @@ impl AstNode for GritPredicateAccumulate {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7577,11 +8317,14 @@ impl From<GritPredicateAccumulate> for SyntaxElement {
 }
 impl AstNode for GritPredicateAnd {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_AND as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_AND
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7589,9 +8332,11 @@ impl AstNode for GritPredicateAnd {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7627,11 +8372,14 @@ impl From<GritPredicateAnd> for SyntaxElement {
 }
 impl AstNode for GritPredicateAny {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_ANY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_ANY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7639,9 +8387,11 @@ impl AstNode for GritPredicateAny {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7674,11 +8424,14 @@ impl From<GritPredicateAny> for SyntaxElement {
 }
 impl AstNode for GritPredicateAssignment {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_ASSIGNMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_ASSIGNMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7686,9 +8439,11 @@ impl AstNode for GritPredicateAssignment {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7714,11 +8469,14 @@ impl From<GritPredicateAssignment> for SyntaxElement {
 }
 impl AstNode for GritPredicateCall {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_CALL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_CALL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7726,9 +8484,11 @@ impl AstNode for GritPredicateCall {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7761,11 +8521,14 @@ impl From<GritPredicateCall> for SyntaxElement {
 }
 impl AstNode for GritPredicateCurly {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_CURLY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_CURLY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7773,9 +8536,11 @@ impl AstNode for GritPredicateCurly {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7807,11 +8572,14 @@ impl From<GritPredicateCurly> for SyntaxElement {
 }
 impl AstNode for GritPredicateDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7819,9 +8587,11 @@ impl AstNode for GritPredicateDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7859,11 +8629,14 @@ impl From<GritPredicateDefinition> for SyntaxElement {
 }
 impl AstNode for GritPredicateElseClause {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_ELSE_CLAUSE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_ELSE_CLAUSE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7871,9 +8644,11 @@ impl AstNode for GritPredicateElseClause {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7901,11 +8676,14 @@ impl From<GritPredicateElseClause> for SyntaxElement {
 }
 impl AstNode for GritPredicateEqual {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_EQUAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_EQUAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7913,9 +8691,11 @@ impl AstNode for GritPredicateEqual {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7944,11 +8724,14 @@ impl From<GritPredicateEqual> for SyntaxElement {
 }
 impl AstNode for GritPredicateGreater {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_GREATER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_GREATER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7956,9 +8739,11 @@ impl AstNode for GritPredicateGreater {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -7987,11 +8772,14 @@ impl From<GritPredicateGreater> for SyntaxElement {
 }
 impl AstNode for GritPredicateGreaterEqual {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_GREATER_EQUAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_GREATER_EQUAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -7999,9 +8787,11 @@ impl AstNode for GritPredicateGreaterEqual {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8030,11 +8820,14 @@ impl From<GritPredicateGreaterEqual> for SyntaxElement {
 }
 impl AstNode for GritPredicateIfElse {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_IF_ELSE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_IF_ELSE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8042,9 +8835,11 @@ impl AstNode for GritPredicateIfElse {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8088,11 +8883,14 @@ impl From<GritPredicateIfElse> for SyntaxElement {
 }
 impl AstNode for GritPredicateLess {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_LESS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_LESS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8100,9 +8898,11 @@ impl AstNode for GritPredicateLess {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8131,11 +8931,14 @@ impl From<GritPredicateLess> for SyntaxElement {
 }
 impl AstNode for GritPredicateLessEqual {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_LESS_EQUAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_LESS_EQUAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8143,9 +8946,11 @@ impl AstNode for GritPredicateLessEqual {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8174,11 +8979,14 @@ impl From<GritPredicateLessEqual> for SyntaxElement {
 }
 impl AstNode for GritPredicateMatch {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_MATCH as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_MATCH
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8186,9 +8994,11 @@ impl AstNode for GritPredicateMatch {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8217,11 +9027,14 @@ impl From<GritPredicateMatch> for SyntaxElement {
 }
 impl AstNode for GritPredicateMaybe {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_MAYBE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_MAYBE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8229,9 +9042,11 @@ impl AstNode for GritPredicateMaybe {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8259,11 +9074,14 @@ impl From<GritPredicateMaybe> for SyntaxElement {
 }
 impl AstNode for GritPredicateNot {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_NOT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_NOT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8271,9 +9089,11 @@ impl AstNode for GritPredicateNot {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8298,11 +9118,14 @@ impl From<GritPredicateNot> for SyntaxElement {
 }
 impl AstNode for GritPredicateNotEqual {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_NOT_EQUAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_NOT_EQUAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8310,9 +9133,11 @@ impl AstNode for GritPredicateNotEqual {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8341,11 +9166,14 @@ impl From<GritPredicateNotEqual> for SyntaxElement {
 }
 impl AstNode for GritPredicateOr {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_OR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_OR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8353,9 +9181,11 @@ impl AstNode for GritPredicateOr {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8388,11 +9218,14 @@ impl From<GritPredicateOr> for SyntaxElement {
 }
 impl AstNode for GritPredicateReturn {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_RETURN as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_RETURN
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8400,9 +9233,11 @@ impl AstNode for GritPredicateReturn {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8430,11 +9265,14 @@ impl From<GritPredicateReturn> for SyntaxElement {
 }
 impl AstNode for GritPredicateRewrite {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_REWRITE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_REWRITE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8442,9 +9280,11 @@ impl AstNode for GritPredicateRewrite {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8477,11 +9317,14 @@ impl From<GritPredicateRewrite> for SyntaxElement {
 }
 impl AstNode for GritRawBacktickSnippetLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_RAW_BACKTICK_SNIPPET_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_RAW_BACKTICK_SNIPPET_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8489,9 +9332,11 @@ impl AstNode for GritRawBacktickSnippetLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8518,11 +9363,14 @@ impl From<GritRawBacktickSnippetLiteral> for SyntaxElement {
 }
 impl AstNode for GritRegexLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_REGEX_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_REGEX_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8530,9 +9378,11 @@ impl AstNode for GritRegexLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8559,11 +9409,14 @@ impl From<GritRegexLiteral> for SyntaxElement {
 }
 impl AstNode for GritRegexPattern {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_REGEX_PATTERN as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_REGEX_PATTERN
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8571,9 +9424,11 @@ impl AstNode for GritRegexPattern {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8601,11 +9456,14 @@ impl From<GritRegexPattern> for SyntaxElement {
 }
 impl AstNode for GritRegexPatternVariables {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_REGEX_PATTERN_VARIABLES as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_REGEX_PATTERN_VARIABLES
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8613,9 +9471,11 @@ impl AstNode for GritRegexPatternVariables {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8647,11 +9507,14 @@ impl From<GritRegexPatternVariables> for SyntaxElement {
 }
 impl AstNode for GritRewrite {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_REWRITE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_REWRITE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8659,9 +9522,11 @@ impl AstNode for GritRewrite {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8694,11 +9559,14 @@ impl From<GritRewrite> for SyntaxElement {
 }
 impl AstNode for GritRoot {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_ROOT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_ROOT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8706,9 +9574,11 @@ impl AstNode for GritRoot {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8739,11 +9609,14 @@ impl From<GritRoot> for SyntaxElement {
 }
 impl AstNode for GritSequential {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_SEQUENTIAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_SEQUENTIAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8751,9 +9624,11 @@ impl AstNode for GritSequential {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8789,11 +9664,14 @@ impl From<GritSequential> for SyntaxElement {
 }
 impl AstNode for GritSnippetRegexLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_SNIPPET_REGEX_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_SNIPPET_REGEX_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8801,9 +9679,11 @@ impl AstNode for GritSnippetRegexLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8830,11 +9710,14 @@ impl From<GritSnippetRegexLiteral> for SyntaxElement {
 }
 impl AstNode for GritSome {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_SOME as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_SOME
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8842,9 +9725,11 @@ impl AstNode for GritSome {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8869,11 +9754,14 @@ impl From<GritSome> for SyntaxElement {
 }
 impl AstNode for GritStringLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_STRING_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_STRING_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8881,9 +9769,11 @@ impl AstNode for GritStringLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8910,11 +9800,14 @@ impl From<GritStringLiteral> for SyntaxElement {
 }
 impl AstNode for GritSubOperation {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_SUB_OPERATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_SUB_OPERATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8922,9 +9815,11 @@ impl AstNode for GritSubOperation {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8953,11 +9848,14 @@ impl From<GritSubOperation> for SyntaxElement {
 }
 impl AstNode for GritUndefinedLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_UNDEFINED_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_UNDEFINED_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8965,9 +9863,11 @@ impl AstNode for GritUndefinedLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8994,11 +9894,14 @@ impl From<GritUndefinedLiteral> for SyntaxElement {
 }
 impl AstNode for GritUnderscore {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_UNDERSCORE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_UNDERSCORE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9006,9 +9909,11 @@ impl AstNode for GritUnderscore {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9035,11 +9940,14 @@ impl From<GritUnderscore> for SyntaxElement {
 }
 impl AstNode for GritVariable {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_VARIABLE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_VARIABLE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9047,9 +9955,11 @@ impl AstNode for GritVariable {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9076,11 +9986,14 @@ impl From<GritVariable> for SyntaxElement {
 }
 impl AstNode for GritVersion {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_VERSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_VERSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9088,9 +10001,11 @@ impl AstNode for GritVersion {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9130,11 +10045,14 @@ impl From<GritVersion> for SyntaxElement {
 }
 impl AstNode for GritWithin {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_WITHIN as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_WITHIN
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9142,9 +10060,11 @@ impl AstNode for GritWithin {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9187,9 +10107,11 @@ impl From<GritRawBacktickSnippetLiteral> for AnyGritCodeSnippetSource {
 }
 impl AstNode for AnyGritCodeSnippetSource {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = GritBacktickSnippetLiteral::KIND_SET
         .union(GritLanguageSpecificSnippet::KIND_SET)
         .union(GritRawBacktickSnippetLiteral::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -9198,6 +10120,7 @@ impl AstNode for AnyGritCodeSnippetSource {
                 | GRIT_RAW_BACKTICK_SNIPPET_LITERAL
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_BACKTICK_SNIPPET_LITERAL => {
@@ -9205,20 +10128,25 @@ impl AstNode for AnyGritCodeSnippetSource {
                     syntax,
                 })
             }
+
             GRIT_LANGUAGE_SPECIFIC_SNIPPET => {
                 AnyGritCodeSnippetSource::GritLanguageSpecificSnippet(GritLanguageSpecificSnippet {
                     syntax,
                 })
             }
+
             GRIT_RAW_BACKTICK_SNIPPET_LITERAL => {
                 AnyGritCodeSnippetSource::GritRawBacktickSnippetLiteral(
                     GritRawBacktickSnippetLiteral { syntax },
                 )
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritCodeSnippetSource::GritBacktickSnippetLiteral(it) => &it.syntax,
@@ -9226,6 +10154,7 @@ impl AstNode for AnyGritCodeSnippetSource {
             AnyGritCodeSnippetSource::GritRawBacktickSnippetLiteral(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritCodeSnippetSource::GritBacktickSnippetLiteral(it) => it.syntax,
@@ -9241,6 +10170,7 @@ impl std::fmt::Debug for AnyGritCodeSnippetSource {
             AnyGritCodeSnippetSource::GritLanguageSpecificSnippet(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyGritCodeSnippetSource::GritRawBacktickSnippetLiteral(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -9259,6 +10189,7 @@ impl From<AnyGritCodeSnippetSource> for SyntaxNode {
 impl From<AnyGritCodeSnippetSource> for SyntaxElement {
     fn from(n: AnyGritCodeSnippetSource) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -9284,28 +10215,34 @@ impl From<GritVariable> for AnyGritContainer {
 }
 impl AstNode for AnyGritContainer {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = GritBogusContainer::KIND_SET
         .union(GritListAccessor::KIND_SET)
         .union(GritMapAccessor::KIND_SET)
         .union(GritVariable::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             GRIT_BOGUS_CONTAINER | GRIT_LIST_ACCESSOR | GRIT_MAP_ACCESSOR | GRIT_VARIABLE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_BOGUS_CONTAINER => {
                 AnyGritContainer::GritBogusContainer(GritBogusContainer { syntax })
             }
+
             GRIT_LIST_ACCESSOR => AnyGritContainer::GritListAccessor(GritListAccessor { syntax }),
             GRIT_MAP_ACCESSOR => AnyGritContainer::GritMapAccessor(GritMapAccessor { syntax }),
             GRIT_VARIABLE => AnyGritContainer::GritVariable(GritVariable { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritContainer::GritBogusContainer(it) => &it.syntax,
@@ -9314,6 +10251,7 @@ impl AstNode for AnyGritContainer {
             AnyGritContainer::GritVariable(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritContainer::GritBogusContainer(it) => it.syntax,
@@ -9346,6 +10284,7 @@ impl From<AnyGritContainer> for SyntaxNode {
 impl From<AnyGritContainer> for SyntaxElement {
     fn from(n: AnyGritContainer) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -9371,11 +10310,13 @@ impl From<GritPredicateDefinition> for AnyGritDefinition {
 }
 impl AstNode for AnyGritDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyGritPattern::KIND_SET
         .union(GritBogusDefinition::KIND_SET)
         .union(GritFunctionDefinition::KIND_SET)
         .union(GritPatternDefinition::KIND_SET)
         .union(GritPredicateDefinition::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             GRIT_BOGUS_DEFINITION
@@ -9386,29 +10327,37 @@ impl AstNode for AnyGritDefinition {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_BOGUS_DEFINITION => {
                 AnyGritDefinition::GritBogusDefinition(GritBogusDefinition { syntax })
             }
+
             GRIT_FUNCTION_DEFINITION => {
                 AnyGritDefinition::GritFunctionDefinition(GritFunctionDefinition { syntax })
             }
+
             GRIT_PATTERN_DEFINITION => {
                 AnyGritDefinition::GritPatternDefinition(GritPatternDefinition { syntax })
             }
+
             GRIT_PREDICATE_DEFINITION => {
                 AnyGritDefinition::GritPredicateDefinition(GritPredicateDefinition { syntax })
             }
+
             _ => {
                 if let Some(any_grit_pattern) = AnyGritPattern::cast(syntax) {
                     return Some(AnyGritDefinition::AnyGritPattern(any_grit_pattern));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritDefinition::GritBogusDefinition(it) => &it.syntax,
@@ -9418,6 +10367,7 @@ impl AstNode for AnyGritDefinition {
             AnyGritDefinition::AnyGritPattern(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritDefinition::GritBogusDefinition(it) => it.syntax,
@@ -9453,6 +10403,7 @@ impl From<AnyGritDefinition> for SyntaxNode {
 impl From<AnyGritDefinition> for SyntaxElement {
     fn from(n: AnyGritDefinition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -9468,14 +10419,17 @@ impl From<GritLanguageDeclaration> for AnyGritLanguageDeclaration {
 }
 impl AstNode for AnyGritLanguageDeclaration {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         GritBogusLanguageDeclaration::KIND_SET.union(GritLanguageDeclaration::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             GRIT_BOGUS_LANGUAGE_DECLARATION | GRIT_LANGUAGE_DECLARATION
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_BOGUS_LANGUAGE_DECLARATION => {
@@ -9483,21 +10437,26 @@ impl AstNode for AnyGritLanguageDeclaration {
                     GritBogusLanguageDeclaration { syntax },
                 )
             }
+
             GRIT_LANGUAGE_DECLARATION => {
                 AnyGritLanguageDeclaration::GritLanguageDeclaration(GritLanguageDeclaration {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritLanguageDeclaration::GritBogusLanguageDeclaration(it) => &it.syntax,
             AnyGritLanguageDeclaration::GritLanguageDeclaration(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritLanguageDeclaration::GritBogusLanguageDeclaration(it) => it.syntax,
@@ -9511,6 +10470,7 @@ impl std::fmt::Debug for AnyGritLanguageDeclaration {
             AnyGritLanguageDeclaration::GritBogusLanguageDeclaration(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyGritLanguageDeclaration::GritLanguageDeclaration(it) => std::fmt::Debug::fmt(it, f),
         }
     }
@@ -9526,6 +10486,7 @@ impl From<AnyGritLanguageDeclaration> for SyntaxNode {
 impl From<AnyGritLanguageDeclaration> for SyntaxElement {
     fn from(n: AnyGritLanguageDeclaration) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -9541,14 +10502,17 @@ impl From<GritLanguageFlavorKind> for AnyGritLanguageFlavorKind {
 }
 impl AstNode for AnyGritLanguageFlavorKind {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         GritBogusLanguageFlavorKind::KIND_SET.union(GritLanguageFlavorKind::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             GRIT_BOGUS_LANGUAGE_FLAVOR_KIND | GRIT_LANGUAGE_FLAVOR_KIND
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_BOGUS_LANGUAGE_FLAVOR_KIND => {
@@ -9556,19 +10520,24 @@ impl AstNode for AnyGritLanguageFlavorKind {
                     GritBogusLanguageFlavorKind { syntax },
                 )
             }
+
             GRIT_LANGUAGE_FLAVOR_KIND => {
                 AnyGritLanguageFlavorKind::GritLanguageFlavorKind(GritLanguageFlavorKind { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritLanguageFlavorKind::GritBogusLanguageFlavorKind(it) => &it.syntax,
             AnyGritLanguageFlavorKind::GritLanguageFlavorKind(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritLanguageFlavorKind::GritBogusLanguageFlavorKind(it) => it.syntax,
@@ -9582,6 +10551,7 @@ impl std::fmt::Debug for AnyGritLanguageFlavorKind {
             AnyGritLanguageFlavorKind::GritBogusLanguageFlavorKind(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyGritLanguageFlavorKind::GritLanguageFlavorKind(it) => std::fmt::Debug::fmt(it, f),
         }
     }
@@ -9597,6 +10567,7 @@ impl From<AnyGritLanguageFlavorKind> for SyntaxNode {
 impl From<AnyGritLanguageFlavorKind> for SyntaxElement {
     fn from(n: AnyGritLanguageFlavorKind) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -9607,7 +10578,9 @@ impl From<GritList> for AnyGritListAccessorSubject {
 }
 impl AstNode for AnyGritListAccessorSubject {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyGritContainer::KIND_SET.union(GritList::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             GRIT_LIST => true,
@@ -9615,6 +10588,7 @@ impl AstNode for AnyGritListAccessorSubject {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_LIST => AnyGritListAccessorSubject::GritList(GritList { syntax }),
@@ -9624,17 +10598,21 @@ impl AstNode for AnyGritListAccessorSubject {
                         any_grit_container,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritListAccessorSubject::GritList(it) => &it.syntax,
             AnyGritListAccessorSubject::AnyGritContainer(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritListAccessorSubject::GritList(it) => it.syntax,
@@ -9661,6 +10639,7 @@ impl From<AnyGritListAccessorSubject> for SyntaxNode {
 impl From<AnyGritListAccessorSubject> for SyntaxElement {
     fn from(n: AnyGritListAccessorSubject) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -9676,9 +10655,11 @@ impl From<GritNegativeIntLiteral> for AnyGritListIndex {
 }
 impl AstNode for AnyGritListIndex {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyGritContainer::KIND_SET
         .union(GritIntLiteral::KIND_SET)
         .union(GritNegativeIntLiteral::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             GRIT_INT_LITERAL | GRIT_NEGATIVE_INT_LITERAL => true,
@@ -9686,21 +10667,26 @@ impl AstNode for AnyGritListIndex {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_INT_LITERAL => AnyGritListIndex::GritIntLiteral(GritIntLiteral { syntax }),
             GRIT_NEGATIVE_INT_LITERAL => {
                 AnyGritListIndex::GritNegativeIntLiteral(GritNegativeIntLiteral { syntax })
             }
+
             _ => {
                 if let Some(any_grit_container) = AnyGritContainer::cast(syntax) {
                     return Some(AnyGritListIndex::AnyGritContainer(any_grit_container));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritListIndex::GritIntLiteral(it) => &it.syntax,
@@ -9708,6 +10694,7 @@ impl AstNode for AnyGritListIndex {
             AnyGritListIndex::AnyGritContainer(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritListIndex::GritIntLiteral(it) => it.syntax,
@@ -9737,6 +10724,7 @@ impl From<AnyGritListIndex> for SyntaxNode {
 impl From<AnyGritListIndex> for SyntaxElement {
     fn from(n: AnyGritListIndex) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -9747,8 +10735,10 @@ impl From<GritDotdotdot> for AnyGritListPattern {
 }
 impl AstNode for AnyGritListPattern {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyGritPattern::KIND_SET.union(GritDotdotdot::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             GRIT_DOTDOTDOT => true,
@@ -9756,6 +10746,7 @@ impl AstNode for AnyGritListPattern {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_DOTDOTDOT => AnyGritListPattern::GritDotdotdot(GritDotdotdot { syntax }),
@@ -9763,17 +10754,21 @@ impl AstNode for AnyGritListPattern {
                 if let Some(any_grit_pattern) = AnyGritPattern::cast(syntax) {
                     return Some(AnyGritListPattern::AnyGritPattern(any_grit_pattern));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritListPattern::GritDotdotdot(it) => &it.syntax,
             AnyGritListPattern::AnyGritPattern(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritListPattern::GritDotdotdot(it) => it.syntax,
@@ -9800,6 +10795,7 @@ impl From<AnyGritListPattern> for SyntaxNode {
 impl From<AnyGritListPattern> for SyntaxElement {
     fn from(n: AnyGritListPattern) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -9850,6 +10846,7 @@ impl From<GritUndefinedLiteral> for AnyGritLiteral {
 }
 impl AstNode for AnyGritLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = GritBogusLiteral::KIND_SET
         .union(GritBooleanLiteral::KIND_SET)
         .union(GritCodeSnippet::KIND_SET)
@@ -9859,6 +10856,7 @@ impl AstNode for AnyGritLiteral {
         .union(GritMap::KIND_SET)
         .union(GritStringLiteral::KIND_SET)
         .union(GritUndefinedLiteral::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -9873,12 +10871,14 @@ impl AstNode for AnyGritLiteral {
                 | GRIT_UNDEFINED_LITERAL
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_BOGUS_LITERAL => AnyGritLiteral::GritBogusLiteral(GritBogusLiteral { syntax }),
             GRIT_BOOLEAN_LITERAL => {
                 AnyGritLiteral::GritBooleanLiteral(GritBooleanLiteral { syntax })
             }
+
             GRIT_CODE_SNIPPET => AnyGritLiteral::GritCodeSnippet(GritCodeSnippet { syntax }),
             GRIT_DOUBLE_LITERAL => AnyGritLiteral::GritDoubleLiteral(GritDoubleLiteral { syntax }),
             GRIT_INT_LITERAL => AnyGritLiteral::GritIntLiteral(GritIntLiteral { syntax }),
@@ -9888,10 +10888,13 @@ impl AstNode for AnyGritLiteral {
             GRIT_UNDEFINED_LITERAL => {
                 AnyGritLiteral::GritUndefinedLiteral(GritUndefinedLiteral { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritLiteral::GritBogusLiteral(it) => &it.syntax,
@@ -9905,6 +10908,7 @@ impl AstNode for AnyGritLiteral {
             AnyGritLiteral::GritUndefinedLiteral(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritLiteral::GritBogusLiteral(it) => it.syntax,
@@ -9952,6 +10956,7 @@ impl From<AnyGritLiteral> for SyntaxNode {
 impl From<AnyGritLiteral> for SyntaxElement {
     fn from(n: AnyGritLiteral) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -9962,7 +10967,9 @@ impl From<GritMap> for AnyGritMapAccessorSubject {
 }
 impl AstNode for AnyGritMapAccessorSubject {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyGritContainer::KIND_SET.union(GritMap::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             GRIT_MAP => true,
@@ -9970,6 +10977,7 @@ impl AstNode for AnyGritMapAccessorSubject {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_MAP => AnyGritMapAccessorSubject::GritMap(GritMap { syntax }),
@@ -9979,17 +10987,21 @@ impl AstNode for AnyGritMapAccessorSubject {
                         any_grit_container,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritMapAccessorSubject::GritMap(it) => &it.syntax,
             AnyGritMapAccessorSubject::AnyGritContainer(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritMapAccessorSubject::GritMap(it) => it.syntax,
@@ -10016,6 +11028,7 @@ impl From<AnyGritMapAccessorSubject> for SyntaxNode {
 impl From<AnyGritMapAccessorSubject> for SyntaxElement {
     fn from(n: AnyGritMapAccessorSubject) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -10031,27 +11044,34 @@ impl From<GritMapElement> for AnyGritMapElement {
 }
 impl AstNode for AnyGritMapElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         GritBogusMapElement::KIND_SET.union(GritMapElement::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, GRIT_BOGUS_MAP_ELEMENT | GRIT_MAP_ELEMENT)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_BOGUS_MAP_ELEMENT => {
                 AnyGritMapElement::GritBogusMapElement(GritBogusMapElement { syntax })
             }
+
             GRIT_MAP_ELEMENT => AnyGritMapElement::GritMapElement(GritMapElement { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritMapElement::GritBogusMapElement(it) => &it.syntax,
             AnyGritMapElement::GritMapElement(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritMapElement::GritBogusMapElement(it) => it.syntax,
@@ -10078,6 +11098,7 @@ impl From<AnyGritMapElement> for SyntaxNode {
 impl From<AnyGritMapElement> for SyntaxElement {
     fn from(n: AnyGritMapElement) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -10093,24 +11114,30 @@ impl From<GritVariable> for AnyGritMapKey {
 }
 impl AstNode for AnyGritMapKey {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = GritName::KIND_SET.union(GritVariable::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, GRIT_NAME | GRIT_VARIABLE)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_NAME => AnyGritMapKey::GritName(GritName { syntax }),
             GRIT_VARIABLE => AnyGritMapKey::GritVariable(GritVariable { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritMapKey::GritName(it) => &it.syntax,
             AnyGritMapKey::GritVariable(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritMapKey::GritName(it) => it.syntax,
@@ -10137,6 +11164,7 @@ impl From<AnyGritMapKey> for SyntaxNode {
 impl From<AnyGritMapKey> for SyntaxElement {
     fn from(n: AnyGritMapKey) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -10147,8 +11175,10 @@ impl From<GritCurlyPattern> for AnyGritMaybeCurlyPattern {
 }
 impl AstNode for AnyGritMaybeCurlyPattern {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyGritPattern::KIND_SET.union(GritCurlyPattern::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             GRIT_CURLY_PATTERN => true,
@@ -10156,26 +11186,32 @@ impl AstNode for AnyGritMaybeCurlyPattern {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_CURLY_PATTERN => {
                 AnyGritMaybeCurlyPattern::GritCurlyPattern(GritCurlyPattern { syntax })
             }
+
             _ => {
                 if let Some(any_grit_pattern) = AnyGritPattern::cast(syntax) {
                     return Some(AnyGritMaybeCurlyPattern::AnyGritPattern(any_grit_pattern));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritMaybeCurlyPattern::GritCurlyPattern(it) => &it.syntax,
             AnyGritMaybeCurlyPattern::AnyGritPattern(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritMaybeCurlyPattern::GritCurlyPattern(it) => it.syntax,
@@ -10202,6 +11238,7 @@ impl From<AnyGritMaybeCurlyPattern> for SyntaxNode {
 impl From<AnyGritMaybeCurlyPattern> for SyntaxElement {
     fn from(n: AnyGritMaybeCurlyPattern) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -10217,9 +11254,11 @@ impl From<GritNamedArg> for AnyGritMaybeNamedArg {
 }
 impl AstNode for AnyGritMaybeNamedArg {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyGritPattern::KIND_SET
         .union(GritBogusNamedArg::KIND_SET)
         .union(GritNamedArg::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             GRIT_BOGUS_NAMED_ARG | GRIT_NAMED_ARG => true,
@@ -10227,21 +11266,26 @@ impl AstNode for AnyGritMaybeNamedArg {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_BOGUS_NAMED_ARG => {
                 AnyGritMaybeNamedArg::GritBogusNamedArg(GritBogusNamedArg { syntax })
             }
+
             GRIT_NAMED_ARG => AnyGritMaybeNamedArg::GritNamedArg(GritNamedArg { syntax }),
             _ => {
                 if let Some(any_grit_pattern) = AnyGritPattern::cast(syntax) {
                     return Some(AnyGritMaybeNamedArg::AnyGritPattern(any_grit_pattern));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritMaybeNamedArg::GritBogusNamedArg(it) => &it.syntax,
@@ -10249,6 +11293,7 @@ impl AstNode for AnyGritMaybeNamedArg {
             AnyGritMaybeNamedArg::AnyGritPattern(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritMaybeNamedArg::GritBogusNamedArg(it) => it.syntax,
@@ -10278,6 +11323,7 @@ impl From<AnyGritMaybeNamedArg> for SyntaxNode {
 impl From<AnyGritMaybeNamedArg> for SyntaxElement {
     fn from(n: AnyGritMaybeNamedArg) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -10473,6 +11519,7 @@ impl From<GritWithin> for AnyGritPattern {
 }
 impl AstNode for AnyGritPattern {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyGritLiteral::KIND_SET
         .union(GritAddOperation::KIND_SET)
         .union(GritAssignmentAsPattern::KIND_SET)
@@ -10512,6 +11559,7 @@ impl AstNode for AnyGritPattern {
         .union(GritUnderscore::KIND_SET)
         .union(GritVariable::KIND_SET)
         .union(GritWithin::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             GRIT_ADD_OPERATION
@@ -10556,16 +11604,19 @@ impl AstNode for AnyGritPattern {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_ADD_OPERATION => AnyGritPattern::GritAddOperation(GritAddOperation { syntax }),
             GRIT_ASSIGNMENT_AS_PATTERN => {
                 AnyGritPattern::GritAssignmentAsPattern(GritAssignmentAsPattern { syntax })
             }
+
             GRIT_BOGUS_PATTERN => AnyGritPattern::GritBogusPattern(GritBogusPattern { syntax }),
             GRIT_BRACKETED_PATTERN => {
                 AnyGritPattern::GritBracketedPattern(GritBracketedPattern { syntax })
             }
+
             GRIT_BUBBLE => AnyGritPattern::GritBubble(GritBubble { syntax }),
             GRIT_DIV_OPERATION => AnyGritPattern::GritDivOperation(GritDivOperation { syntax }),
             GRIT_DOT => AnyGritPattern::GritDot(GritDot { syntax }),
@@ -10580,6 +11631,7 @@ impl AstNode for AnyGritPattern {
             GRIT_PATTERN_ACCUMULATE => {
                 AnyGritPattern::GritPatternAccumulate(GritPatternAccumulate { syntax })
             }
+
             GRIT_PATTERN_AFTER => AnyGritPattern::GritPatternAfter(GritPatternAfter { syntax }),
             GRIT_PATTERN_AND => AnyGritPattern::GritPatternAnd(GritPatternAnd { syntax }),
             GRIT_PATTERN_ANY => AnyGritPattern::GritPatternAny(GritPatternAny { syntax }),
@@ -10588,10 +11640,12 @@ impl AstNode for AnyGritPattern {
             GRIT_PATTERN_CONTAINS => {
                 AnyGritPattern::GritPatternContains(GritPatternContains { syntax })
             }
+
             GRIT_PATTERN_IF_ELSE => AnyGritPattern::GritPatternIfElse(GritPatternIfElse { syntax }),
             GRIT_PATTERN_INCLUDES => {
                 AnyGritPattern::GritPatternIncludes(GritPatternIncludes { syntax })
             }
+
             GRIT_PATTERN_LIMIT => AnyGritPattern::GritPatternLimit(GritPatternLimit { syntax }),
             GRIT_PATTERN_MAYBE => AnyGritPattern::GritPatternMaybe(GritPatternMaybe { syntax }),
             GRIT_PATTERN_NOT => AnyGritPattern::GritPatternNot(GritPatternNot { syntax }),
@@ -10610,11 +11664,14 @@ impl AstNode for AnyGritPattern {
                 if let Some(any_grit_literal) = AnyGritLiteral::cast(syntax) {
                     return Some(AnyGritPattern::AnyGritLiteral(any_grit_literal));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritPattern::GritAddOperation(it) => &it.syntax,
@@ -10658,6 +11715,7 @@ impl AstNode for AnyGritPattern {
             AnyGritPattern::AnyGritLiteral(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritPattern::GritAddOperation(it) => it.syntax,
@@ -10795,6 +11853,7 @@ impl From<AnyGritPattern> for SyntaxNode {
 impl From<AnyGritPattern> for SyntaxElement {
     fn from(n: AnyGritPattern) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -10905,6 +11964,7 @@ impl From<GritPredicateRewrite> for AnyGritPredicate {
 }
 impl AstNode for AnyGritPredicate {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = GritBogusPredicate::KIND_SET
         .union(GritBooleanLiteral::KIND_SET)
         .union(GritBracketedPredicate::KIND_SET)
@@ -10926,6 +11986,7 @@ impl AstNode for AnyGritPredicate {
         .union(GritPredicateOr::KIND_SET)
         .union(GritPredicateReturn::KIND_SET)
         .union(GritPredicateRewrite::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -10952,67 +12013,87 @@ impl AstNode for AnyGritPredicate {
                 | GRIT_PREDICATE_REWRITE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_BOGUS_PREDICATE => {
                 AnyGritPredicate::GritBogusPredicate(GritBogusPredicate { syntax })
             }
+
             GRIT_BOOLEAN_LITERAL => {
                 AnyGritPredicate::GritBooleanLiteral(GritBooleanLiteral { syntax })
             }
+
             GRIT_BRACKETED_PREDICATE => {
                 AnyGritPredicate::GritBracketedPredicate(GritBracketedPredicate { syntax })
             }
+
             GRIT_PREDICATE_ACCUMULATE => {
                 AnyGritPredicate::GritPredicateAccumulate(GritPredicateAccumulate { syntax })
             }
+
             GRIT_PREDICATE_AND => AnyGritPredicate::GritPredicateAnd(GritPredicateAnd { syntax }),
             GRIT_PREDICATE_ANY => AnyGritPredicate::GritPredicateAny(GritPredicateAny { syntax }),
             GRIT_PREDICATE_ASSIGNMENT => {
                 AnyGritPredicate::GritPredicateAssignment(GritPredicateAssignment { syntax })
             }
+
             GRIT_PREDICATE_CALL => {
                 AnyGritPredicate::GritPredicateCall(GritPredicateCall { syntax })
             }
+
             GRIT_PREDICATE_EQUAL => {
                 AnyGritPredicate::GritPredicateEqual(GritPredicateEqual { syntax })
             }
+
             GRIT_PREDICATE_GREATER => {
                 AnyGritPredicate::GritPredicateGreater(GritPredicateGreater { syntax })
             }
+
             GRIT_PREDICATE_GREATER_EQUAL => {
                 AnyGritPredicate::GritPredicateGreaterEqual(GritPredicateGreaterEqual { syntax })
             }
+
             GRIT_PREDICATE_IF_ELSE => {
                 AnyGritPredicate::GritPredicateIfElse(GritPredicateIfElse { syntax })
             }
+
             GRIT_PREDICATE_LESS => {
                 AnyGritPredicate::GritPredicateLess(GritPredicateLess { syntax })
             }
+
             GRIT_PREDICATE_LESS_EQUAL => {
                 AnyGritPredicate::GritPredicateLessEqual(GritPredicateLessEqual { syntax })
             }
+
             GRIT_PREDICATE_MATCH => {
                 AnyGritPredicate::GritPredicateMatch(GritPredicateMatch { syntax })
             }
+
             GRIT_PREDICATE_MAYBE => {
                 AnyGritPredicate::GritPredicateMaybe(GritPredicateMaybe { syntax })
             }
+
             GRIT_PREDICATE_NOT => AnyGritPredicate::GritPredicateNot(GritPredicateNot { syntax }),
             GRIT_PREDICATE_NOT_EQUAL => {
                 AnyGritPredicate::GritPredicateNotEqual(GritPredicateNotEqual { syntax })
             }
+
             GRIT_PREDICATE_OR => AnyGritPredicate::GritPredicateOr(GritPredicateOr { syntax }),
             GRIT_PREDICATE_RETURN => {
                 AnyGritPredicate::GritPredicateReturn(GritPredicateReturn { syntax })
             }
+
             GRIT_PREDICATE_REWRITE => {
                 AnyGritPredicate::GritPredicateRewrite(GritPredicateRewrite { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritPredicate::GritBogusPredicate(it) => &it.syntax,
@@ -11038,6 +12119,7 @@ impl AstNode for AnyGritPredicate {
             AnyGritPredicate::GritPredicateRewrite(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritPredicate::GritBogusPredicate(it) => it.syntax,
@@ -11121,13 +12203,16 @@ impl From<AnyGritPredicate> for SyntaxNode {
 impl From<AnyGritPredicate> for SyntaxElement {
     fn from(n: AnyGritPredicate) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
 impl AstNode for AnyGritPredicateMatchSubject {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyGritContainer::KIND_SET.union(AnyGritLiteral::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             k if AnyGritContainer::can_cast(k) => true,
@@ -11135,6 +12220,7 @@ impl AstNode for AnyGritPredicateMatchSubject {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let syntax = match AnyGritContainer::try_cast(syntax) {
             Ok(any_grit_container) => {
@@ -11142,21 +12228,26 @@ impl AstNode for AnyGritPredicateMatchSubject {
                     any_grit_container,
                 ));
             }
+
             Err(syntax) => syntax,
         };
+
         if let Some(any_grit_literal) = AnyGritLiteral::cast(syntax) {
             return Some(AnyGritPredicateMatchSubject::AnyGritLiteral(
                 any_grit_literal,
             ));
         }
+
         None
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritPredicateMatchSubject::AnyGritContainer(it) => it.syntax(),
             AnyGritPredicateMatchSubject::AnyGritLiteral(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritPredicateMatchSubject::AnyGritContainer(it) => it.into_syntax(),
@@ -11183,6 +12274,7 @@ impl From<AnyGritPredicateMatchSubject> for SyntaxNode {
 impl From<AnyGritPredicateMatchSubject> for SyntaxElement {
     fn from(n: AnyGritPredicateMatchSubject) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -11198,27 +12290,34 @@ impl From<GritSnippetRegexLiteral> for AnyGritRegex {
 }
 impl AstNode for AnyGritRegex {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         GritRegexLiteral::KIND_SET.union(GritSnippetRegexLiteral::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, GRIT_REGEX_LITERAL | GRIT_SNIPPET_REGEX_LITERAL)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_REGEX_LITERAL => AnyGritRegex::GritRegexLiteral(GritRegexLiteral { syntax }),
             GRIT_SNIPPET_REGEX_LITERAL => {
                 AnyGritRegex::GritSnippetRegexLiteral(GritSnippetRegexLiteral { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritRegex::GritRegexLiteral(it) => &it.syntax,
             AnyGritRegex::GritSnippetRegexLiteral(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritRegex::GritRegexLiteral(it) => it.syntax,
@@ -11245,6 +12344,7 @@ impl From<AnyGritRegex> for SyntaxNode {
 impl From<AnyGritRegex> for SyntaxElement {
     fn from(n: AnyGritRegex) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -11260,25 +12360,31 @@ impl From<GritVersion> for AnyGritVersion {
 }
 impl AstNode for AnyGritVersion {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         GritBogusVersion::KIND_SET.union(GritVersion::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, GRIT_BOGUS_VERSION | GRIT_VERSION)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             GRIT_BOGUS_VERSION => AnyGritVersion::GritBogusVersion(GritBogusVersion { syntax }),
             GRIT_VERSION => AnyGritVersion::GritVersion(GritVersion { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyGritVersion::GritBogusVersion(it) => &it.syntax,
             AnyGritVersion::GritVersion(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyGritVersion::GritBogusVersion(it) => it.syntax,
@@ -11305,6 +12411,7 @@ impl From<AnyGritVersion> for SyntaxNode {
 impl From<AnyGritVersion> for SyntaxElement {
     fn from(n: AnyGritVersion) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -11887,17 +12994,21 @@ impl GritBogus {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogus {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11905,9 +13016,11 @@ impl AstNode for GritBogus {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11943,17 +13056,21 @@ impl GritBogusContainer {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogusContainer {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS_CONTAINER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS_CONTAINER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11961,9 +13078,11 @@ impl AstNode for GritBogusContainer {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11999,17 +13118,21 @@ impl GritBogusDefinition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogusDefinition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS_DEFINITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS_DEFINITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12017,9 +13140,11 @@ impl AstNode for GritBogusDefinition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12055,17 +13180,21 @@ impl GritBogusLanguageDeclaration {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogusLanguageDeclaration {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS_LANGUAGE_DECLARATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS_LANGUAGE_DECLARATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12073,9 +13202,11 @@ impl AstNode for GritBogusLanguageDeclaration {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12111,17 +13242,21 @@ impl GritBogusLanguageFlavorKind {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogusLanguageFlavorKind {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS_LANGUAGE_FLAVOR_KIND as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS_LANGUAGE_FLAVOR_KIND
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12129,9 +13264,11 @@ impl AstNode for GritBogusLanguageFlavorKind {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12167,17 +13304,21 @@ impl GritBogusLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogusLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12185,9 +13326,11 @@ impl AstNode for GritBogusLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12223,17 +13366,21 @@ impl GritBogusMapElement {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogusMapElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS_MAP_ELEMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS_MAP_ELEMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12241,9 +13388,11 @@ impl AstNode for GritBogusMapElement {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12279,17 +13428,21 @@ impl GritBogusNamedArg {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogusNamedArg {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS_NAMED_ARG as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS_NAMED_ARG
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12297,9 +13450,11 @@ impl AstNode for GritBogusNamedArg {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12335,17 +13490,21 @@ impl GritBogusPattern {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogusPattern {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS_PATTERN as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS_PATTERN
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12353,9 +13512,11 @@ impl AstNode for GritBogusPattern {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12391,17 +13552,21 @@ impl GritBogusPredicate {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogusPredicate {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS_PREDICATE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS_PREDICATE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12409,9 +13574,11 @@ impl AstNode for GritBogusPredicate {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12447,17 +13614,21 @@ impl GritBogusVersion {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for GritBogusVersion {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_BOGUS_VERSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_BOGUS_VERSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12465,9 +13636,11 @@ impl AstNode for GritBogusVersion {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12508,11 +13681,14 @@ impl GritDefinitionList {
 }
 impl AstNode for GritDefinitionList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_DEFINITION_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_DEFINITION_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GritDefinitionList> {
         if Self::can_cast(syntax.kind()) {
             Some(GritDefinitionList {
@@ -12522,9 +13698,11 @@ impl AstNode for GritDefinitionList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -12535,18 +13713,23 @@ impl Serialize for GritDefinitionList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GritDefinitionList {
     type Language = Language;
+
     type Node = AnyGritDefinition;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -12554,19 +13737,24 @@ impl AstSeparatedList for GritDefinitionList {
 impl Debug for GritDefinitionList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GritDefinitionList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GritDefinitionList {
     type Item = SyntaxResult<AnyGritDefinition>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GritDefinitionList {
     type Item = SyntaxResult<AnyGritDefinition>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritDefinition>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -12590,11 +13778,14 @@ impl GritLanguageFlavorList {
 }
 impl AstNode for GritLanguageFlavorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LANGUAGE_FLAVOR_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LANGUAGE_FLAVOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GritLanguageFlavorList> {
         if Self::can_cast(syntax.kind()) {
             Some(GritLanguageFlavorList {
@@ -12604,9 +13795,11 @@ impl AstNode for GritLanguageFlavorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -12617,18 +13810,23 @@ impl Serialize for GritLanguageFlavorList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GritLanguageFlavorList {
     type Language = Language;
+
     type Node = AnyGritLanguageFlavorKind;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -12636,19 +13834,24 @@ impl AstSeparatedList for GritLanguageFlavorList {
 impl Debug for GritLanguageFlavorList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GritLanguageFlavorList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GritLanguageFlavorList {
     type Item = SyntaxResult<AnyGritLanguageFlavorKind>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritLanguageFlavorKind>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GritLanguageFlavorList {
     type Item = SyntaxResult<AnyGritLanguageFlavorKind>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritLanguageFlavorKind>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -12672,11 +13875,14 @@ impl GritListPatternList {
 }
 impl AstNode for GritListPatternList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_LIST_PATTERN_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_LIST_PATTERN_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GritListPatternList> {
         if Self::can_cast(syntax.kind()) {
             Some(GritListPatternList {
@@ -12686,9 +13892,11 @@ impl AstNode for GritListPatternList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -12699,18 +13907,23 @@ impl Serialize for GritListPatternList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GritListPatternList {
     type Language = Language;
+
     type Node = AnyGritListPattern;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -12718,19 +13931,24 @@ impl AstSeparatedList for GritListPatternList {
 impl Debug for GritListPatternList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GritListPatternList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GritListPatternList {
     type Item = SyntaxResult<AnyGritListPattern>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritListPattern>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GritListPatternList {
     type Item = SyntaxResult<AnyGritListPattern>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritListPattern>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -12754,11 +13972,14 @@ impl GritMapElementList {
 }
 impl AstNode for GritMapElementList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_MAP_ELEMENT_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_MAP_ELEMENT_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GritMapElementList> {
         if Self::can_cast(syntax.kind()) {
             Some(GritMapElementList {
@@ -12768,9 +13989,11 @@ impl AstNode for GritMapElementList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -12781,18 +14004,23 @@ impl Serialize for GritMapElementList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GritMapElementList {
     type Language = Language;
+
     type Node = AnyGritMapElement;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -12800,19 +14028,24 @@ impl AstSeparatedList for GritMapElementList {
 impl Debug for GritMapElementList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GritMapElementList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GritMapElementList {
     type Item = SyntaxResult<AnyGritMapElement>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritMapElement>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GritMapElementList {
     type Item = SyntaxResult<AnyGritMapElement>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritMapElement>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -12836,11 +14069,14 @@ impl GritNamedArgList {
 }
 impl AstNode for GritNamedArgList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_NAMED_ARG_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_NAMED_ARG_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GritNamedArgList> {
         if Self::can_cast(syntax.kind()) {
             Some(GritNamedArgList {
@@ -12850,9 +14086,11 @@ impl AstNode for GritNamedArgList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -12863,18 +14101,23 @@ impl Serialize for GritNamedArgList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GritNamedArgList {
     type Language = Language;
+
     type Node = AnyGritMaybeNamedArg;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -12882,19 +14125,24 @@ impl AstSeparatedList for GritNamedArgList {
 impl Debug for GritNamedArgList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GritNamedArgList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GritNamedArgList {
     type Item = SyntaxResult<AnyGritMaybeNamedArg>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritMaybeNamedArg>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GritNamedArgList {
     type Item = SyntaxResult<AnyGritMaybeNamedArg>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritMaybeNamedArg>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -12918,11 +14166,14 @@ impl GritPatternList {
 }
 impl AstNode for GritPatternList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PATTERN_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PATTERN_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GritPatternList> {
         if Self::can_cast(syntax.kind()) {
             Some(GritPatternList {
@@ -12932,9 +14183,11 @@ impl AstNode for GritPatternList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -12945,18 +14198,23 @@ impl Serialize for GritPatternList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GritPatternList {
     type Language = Language;
+
     type Node = AnyGritPattern;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -12964,19 +14222,24 @@ impl AstSeparatedList for GritPatternList {
 impl Debug for GritPatternList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GritPatternList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GritPatternList {
     type Item = SyntaxResult<AnyGritPattern>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritPattern>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GritPatternList {
     type Item = SyntaxResult<AnyGritPattern>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritPattern>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -13000,11 +14263,14 @@ impl GritPredicateList {
 }
 impl AstNode for GritPredicateList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_PREDICATE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_PREDICATE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GritPredicateList> {
         if Self::can_cast(syntax.kind()) {
             Some(GritPredicateList {
@@ -13014,9 +14280,11 @@ impl AstNode for GritPredicateList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -13027,18 +14295,23 @@ impl Serialize for GritPredicateList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GritPredicateList {
     type Language = Language;
+
     type Node = AnyGritPredicate;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -13046,19 +14319,24 @@ impl AstSeparatedList for GritPredicateList {
 impl Debug for GritPredicateList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GritPredicateList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GritPredicateList {
     type Item = SyntaxResult<AnyGritPredicate>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritPredicate>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GritPredicateList {
     type Item = SyntaxResult<AnyGritPredicate>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyGritPredicate>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -13082,11 +14360,14 @@ impl GritVariableList {
 }
 impl AstNode for GritVariableList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(GRIT_VARIABLE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == GRIT_VARIABLE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<GritVariableList> {
         if Self::can_cast(syntax.kind()) {
             Some(GritVariableList {
@@ -13096,9 +14377,11 @@ impl AstNode for GritVariableList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -13109,18 +14392,23 @@ impl Serialize for GritVariableList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for GritVariableList {
     type Language = Language;
+
     type Node = GritVariable;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -13128,19 +14416,24 @@ impl AstSeparatedList for GritVariableList {
 impl Debug for GritVariableList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("GritVariableList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for GritVariableList {
     type Item = SyntaxResult<GritVariable>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, GritVariable>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &GritVariableList {
     type Item = SyntaxResult<GritVariable>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, GritVariable>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -13161,6 +14454,7 @@ impl Debug for DebugSyntaxElement {
             SyntaxElement::Node(node) => {
                 map_syntax_node ! (node . clone () , node => std :: fmt :: Debug :: fmt (& node , f))
             }
+
             SyntaxElement::Token(token) => Debug::fmt(token, f),
         }
     }

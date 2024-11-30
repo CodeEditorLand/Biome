@@ -79,9 +79,11 @@ where
     N: AstNode<Language = JsLanguage> + 'static,
 {
     type Input = JsSyntaxNode;
+
     type Output = N;
 
     type Language = JsLanguage;
+
     type Services = ManifestServices;
 
     fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, _: &AnyJsRoot) {

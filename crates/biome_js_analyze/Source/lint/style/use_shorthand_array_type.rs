@@ -65,12 +65,16 @@ enum TsArrayKind {
 
 impl Rule for UseShorthandArrayType {
     type Query = Ast<TsReferenceType>;
+
     type State = AnyTsType;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let array_kind = get_array_kind_by_reference(node)?;
 
         // Ignore `Array` in the `extends` and `implements` clauses.
@@ -79,6 +83,7 @@ impl Rule for UseShorthandArrayType {
             .ancestors()
             .skip(1)
             .find(|ancestor| ancestor.kind() != JsSyntaxKind::JS_PARENTHESIZED_EXPRESSION);
+
         if parent.kind() == Some(JsSyntaxKind::TS_TYPE_LIST) {
             return None;
         }
@@ -88,6 +93,7 @@ impl Rule for UseShorthandArrayType {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         if let Some(kind) = get_array_kind_by_reference(node) {
             return Some(RuleDiagnostic::new(
                 rule_category!(),
@@ -96,17 +102,20 @@ impl Rule for UseShorthandArrayType {
                     TsArrayKind::Simple => {
                         markup! {"Use "<Emphasis>"shorthand T[] syntax"</Emphasis>" instead of "<Emphasis>"Array<T> syntax."</Emphasis>}
                     }
+
                     TsArrayKind::Readonly => {
                         markup! {"Use "<Emphasis>"shorthand readonly T[] syntax"</Emphasis>" instead of "<Emphasis>"ReadonlyArray<T> syntax."</Emphasis>}
                     }
                 },
             ));
         };
+
         None
     }
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         mutation.replace_node(AnyTsType::TsReferenceType(node.clone()), state.clone());
@@ -117,11 +126,13 @@ impl Rule for UseShorthandArrayType {
                     markup! { "Use "<Emphasis>"shorthand T[] syntax"</Emphasis>" to replace" }
                         .to_owned()
                 }
+
                 TsArrayKind::Readonly => {
                     markup! { "Use "<Emphasis>"shorthand readonly T[] syntax"</Emphasis>" to replace" }
                         .to_owned()
                 }
             };
+
             return Some(JsRuleAction::new(
                 ctx.metadata().action_category(ctx.category(), ctx.group()),
                 ctx.metadata().applicability(),
@@ -129,14 +140,17 @@ impl Rule for UseShorthandArrayType {
                 mutation,
             ));
         };
+
         None
     }
 }
 
 fn get_array_kind_by_reference(ty: &TsReferenceType) -> Option<TsArrayKind> {
     let name = ty.name().ok()?;
+
     name.as_js_reference_identifier().and_then(|identifier| {
         let name = identifier.value_token().ok()?;
+
         match name.text_trimmed() {
             "Array" => Some(TsArrayKind::Simple),
             "ReadonlyArray" => Some(TsArrayKind::Readonly),
@@ -155,6 +169,7 @@ fn convert_to_array_type(
             .into_iter()
             .filter_map(|param| {
                 let param = param.ok()?;
+
                 let element_type = match &param {
                     // Intersection or higher types
                     AnyTsType::TsUnionType(_)
@@ -175,10 +190,12 @@ fn convert_to_array_type(
                                 Some(param)
                             }
                         }
+
                         None => Some(param),
                     },
                     _ => Some(param),
                 };
+
                 element_type.map(|element_type| match array_kind {
                     TsArrayKind::Simple => AnyTsType::TsArrayType(make::ts_array_type(
                         element_type,
@@ -233,19 +250,24 @@ fn convert_to_array_type(
 
         match types_array.len() {
             0 => {}
+
             1 => {
                 // SAFETY: We know that `length` of `array_types` is 1, so unwrap the first element should be safe.
                 let first_type = types_array.into_iter().next()?;
+
                 return Some(first_type);
             }
+
             length => {
                 let ts_union_type_builder = make::ts_union_type(make::ts_union_type_variant_list(
                     types_array,
                     (0..length - 1).map(|_| make::token_decorated_with_space(T![|])),
                 ));
+
                 return Some(AnyTsType::TsUnionType(ts_union_type_builder.build()));
             }
         }
     }
+
     None
 }

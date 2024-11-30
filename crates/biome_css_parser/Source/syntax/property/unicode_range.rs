@@ -13,10 +13,13 @@ use biome_parser::{token_set, Parser, TokenSet};
 
 const UNICODE: TokenSet<CssSyntaxKind> = token_set![
     // u+;
+
     T![+],
     // u+000;
+
     CSS_NUMBER_LITERAL,
     // u+00ff?;
+
     CSS_DIMENSION_VALUE,
 ];
 
@@ -81,6 +84,7 @@ pub(crate) fn parse_unicode_range(p: &mut CssParser) -> ParsedSyntax {
     // A range interval is identified by a hyphen (`-`) followed by another Unicode codepoint.
     if p.at(T![-]) {
         let range = codepoint.precede(p);
+
         p.bump_with_context(T![-], CssLexContext::UnicodeRange);
 
         // Abandon the range if the parser is not positioned to parse a Unicode codepoint.
@@ -94,7 +98,9 @@ pub(crate) fn parse_unicode_range(p: &mut CssParser) -> ParsedSyntax {
                 // If the parser is not positioned to parse a Unicode codepoint, add a diagnostic.
                 p.error(expected_codepoint(p, p.cur_range()));
             }
+
             range.abandon(p);
+
             return Present(m.complete(p, CSS_BOGUS_UNICODE_RANGE_VALUE));
         }
 

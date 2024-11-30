@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssRelativeSelector;
 pub(crate) struct FormatAnyCssRelativeSelector;
 impl FormatRule<AnyCssRelativeSelector> for FormatAnyCssRelativeSelector {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssRelativeSelector, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssRelativeSelector::CssBogusSelector(node) => node.format().fmt(f),

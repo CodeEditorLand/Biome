@@ -50,6 +50,7 @@ impl SemanticModelBuilder {
     #[inline]
     pub fn push_node(&mut self, node: &JsSyntaxNode) {
         use JsSyntaxKind::*;
+
         match node.kind() {
             // Accessible from bindings and references
             JS_IDENTIFIER_BINDING
@@ -107,10 +108,12 @@ impl SemanticModelBuilder {
                 self.scope_node_by_range
                     .insert(node.text_trimmed_range(), node.clone());
             }
+
             _ => {
                 if let Some(conditional_type) = TsConditionalType::cast_ref(node) {
                     if let Ok(conditional_true_type) = conditional_type.true_type() {
                         let syntax = conditional_true_type.into_syntax();
+
                         self.scope_node_by_range
                             .insert(syntax.text_trimmed_range(), syntax);
                     }
@@ -127,6 +130,7 @@ impl SemanticModelBuilder {
     #[inline]
     pub fn push_event(&mut self, e: SemanticEvent) {
         use SemanticEvent::*;
+
         match e {
             ScopeStarted {
                 range,
@@ -152,6 +156,7 @@ impl SemanticModelBuilder {
                 }
 
                 let start = range.start();
+
                 self.scope_range_by_start
                     .entry(start)
                     .or_default()
@@ -161,7 +166,9 @@ impl SemanticModelBuilder {
                         val: scope_id,
                     });
             }
+
             ScopeEnded { .. } => {}
+
             DeclarationFound {
                 range,
                 scope_id,
@@ -174,11 +181,13 @@ impl SemanticModelBuilder {
                 debug_assert!((binding_scope_id.index()) < self.scopes.len());
 
                 let binding_id = BindingId::new(self.bindings.len());
+
                 self.bindings.push(SemanticModelBindingData {
                     range,
                     references: Vec::new(),
                     export_by_start: smallvec::SmallVec::new(),
                 });
+
                 self.bindings_by_start.insert(range.start(), binding_id);
 
                 let scope = &mut self.scopes[binding_scope_id.index()];
@@ -189,6 +198,7 @@ impl SemanticModelBuilder {
                     if let Some(node) = JsIdentifierBinding::cast_ref(node) {
                         if let Ok(name_token) = node.name_token() {
                             let name = name_token.token_text_trimmed();
+
                             scope.bindings_by_name.insert(name, binding_id);
                         }
                     }
@@ -199,78 +209,99 @@ impl SemanticModelBuilder {
                         .insert(range.start(), hoisted_scope_id);
                 }
             }
+
             Read {
                 range,
                 declaration_at,
                 scope_id,
             } => {
                 let binding_id = self.bindings_by_start[&declaration_at];
+
                 let binding = &mut self.bindings[binding_id.index()];
+
                 let reference_id = ReferenceId::new(binding_id, binding.references.len());
+
                 binding.references.push(SemanticModelReference {
                     range_start: range.start(),
                     ty: SemanticModelReferenceType::Read { hoisted: false },
                 });
 
                 let scope = &mut self.scopes[scope_id.index()];
+
                 scope.read_references.push(reference_id);
 
                 self.declared_at_by_start.insert(range.start(), binding_id);
             }
+
             HoistedRead {
                 range,
                 declaration_at,
                 scope_id,
             } => {
                 let binding_id = self.bindings_by_start[&declaration_at];
+
                 let binding = &mut self.bindings[binding_id.index()];
+
                 let reference_id = ReferenceId::new(binding_id, binding.references.len());
+
                 binding.references.push(SemanticModelReference {
                     range_start: range.start(),
                     ty: SemanticModelReferenceType::Read { hoisted: true },
                 });
 
                 let scope = &mut self.scopes[scope_id.index()];
+
                 scope.read_references.push(reference_id);
 
                 self.declared_at_by_start.insert(range.start(), binding_id);
             }
+
             Write {
                 range,
                 declaration_at,
                 scope_id,
             } => {
                 let binding_id = self.bindings_by_start[&declaration_at];
+
                 let binding = &mut self.bindings[binding_id.index()];
+
                 let reference_id = ReferenceId::new(binding_id, binding.references.len());
+
                 binding.references.push(SemanticModelReference {
                     range_start: range.start(),
                     ty: SemanticModelReferenceType::Write { hoisted: false },
                 });
 
                 let scope = &mut self.scopes[scope_id.index()];
+
                 scope.read_references.push(reference_id);
 
                 self.declared_at_by_start.insert(range.start(), binding_id);
             }
+
             HoistedWrite {
                 range,
                 declaration_at,
                 scope_id,
             } => {
                 let binding_id = self.bindings_by_start[&declaration_at];
+
                 let binding = &mut self.bindings[binding_id.index()];
+
                 let reference_id = ReferenceId::new(binding_id, binding.references.len());
+
                 binding.references.push(SemanticModelReference {
                     range_start: range.start(),
                     ty: SemanticModelReferenceType::Write { hoisted: true },
                 });
 
                 let scope = &mut self.scopes[scope_id.index()];
+
                 scope.read_references.push(reference_id);
 
                 self.declared_at_by_start.insert(range.start(), binding_id);
             }
+
             UnresolvedReference { is_read, range } => {
                 let ty = if is_read {
                     SemanticModelReferenceType::Read { hoisted: false }
@@ -279,11 +310,13 @@ impl SemanticModelBuilder {
                 };
 
                 let node = &self.binding_node_by_start[&range.start()];
+
                 let name = node.text_trimmed().to_string();
 
                 match self.globals_by_name.entry(name) {
                     Entry::Occupied(mut entry) => {
                         let entry = entry.get_mut();
+
                         match entry {
                             Some(index) => {
                                 self.globals[(*index) as usize].references.push(
@@ -293,8 +326,10 @@ impl SemanticModelBuilder {
                                     },
                                 );
                             }
+
                             None => {
                                 let id = self.globals.len() as u32;
+
                                 self.globals.push(SemanticModelGlobalBindingData {
                                     references: vec![SemanticModelGlobalReferenceData {
                                         range_start: range.start(),
@@ -305,11 +340,13 @@ impl SemanticModelBuilder {
                             }
                         }
                     }
+
                     Entry::Vacant(_) => self
                         .unresolved_references
                         .push(SemanticModelUnresolvedReference { range }),
                 }
             }
+
             Export {
                 declaration_at,
                 range,
@@ -317,7 +354,9 @@ impl SemanticModelBuilder {
                 self.exported.insert(declaration_at);
 
                 let binding_id = self.bindings_by_start[&declaration_at];
+
                 let binding = &mut self.bindings[binding_id.index()];
+
                 binding.export_by_start.push(range.start());
             }
         }
@@ -345,6 +384,7 @@ impl SemanticModelBuilder {
             unresolved_references: self.unresolved_references,
             globals: self.globals,
         };
+
         SemanticModel::new(data)
     }
 }

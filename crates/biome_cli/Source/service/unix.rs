@@ -28,10 +28,13 @@ pub(crate) fn enumerate_pipes() -> io::Result<impl Iterator<Item = String>> {
     fs::read_dir(biome_fs::ensure_cache_dir()).map(|iter| {
         iter.filter_map(|entry| {
             let entry = entry.ok()?.path();
+
             let file_name = entry.file_name()?;
+
             let file_name = file_name.to_str()?;
 
             let version = file_name.strip_prefix("biome-socket")?;
+
             if version.is_empty() {
                 Some(String::new())
             } else {
@@ -44,11 +47,15 @@ pub(crate) fn enumerate_pipes() -> io::Result<impl Iterator<Item = String>> {
 /// Try to connect to the global socket and wait for the connection to become ready
 async fn try_connect() -> io::Result<UnixStream> {
     let socket_name = get_socket_name();
+
     info!("Trying to connect to socket {}", socket_name.display());
+
     let stream = UnixStream::connect(socket_name).await?;
+
     stream
         .ready(Interest::READABLE | Interest::WRITABLE)
         .await?;
+
     Ok(stream)
 }
 
@@ -62,15 +69,19 @@ fn spawn_daemon(
     let binary = env::current_exe()?;
 
     let mut cmd = Command::new(binary);
+
     debug!("command {:?}", &cmd);
+
     cmd.arg("__run_server");
 
     if stop_on_disconnect {
         cmd.arg("--stop-on-disconnect");
     }
+
     if let Some(config_path) = config_path {
         cmd.arg(format!("--config-path={}", config_path.display()));
     }
+
     if let Some(log_path) = log_path {
         cmd.arg(format!("--log-path={}", log_path.display()));
     }
@@ -93,11 +104,13 @@ fn spawn_daemon(
     unsafe {
         cmd.pre_exec(|| {
             libc::setsid();
+
             Ok(())
         });
     }
 
     let child = cmd.spawn()?;
+
     Ok(child)
 }
 
@@ -116,6 +129,7 @@ pub(crate) async fn open_socket() -> io::Result<Option<(OwnedReadHalf, OwnedWrit
         {
             Ok(None)
         }
+
         Err(err) => Err(err),
     }
 }
@@ -131,6 +145,7 @@ pub(crate) async fn ensure_daemon(
     log_file_name_prefix: Option<String>,
 ) -> io::Result<bool> {
     let mut current_child: Option<Child> = None;
+
     let mut last_error = None;
 
     // Try to initialize the connection a few times
@@ -157,11 +172,13 @@ pub(crate) async fn ensure_daemon(
                     tokio::select! {
                         result = current_child.wait() => {
                             let _status = result?;
+
                             return Err(io::Error::new(
                                 io::ErrorKind::ConnectionReset,
                                 "the server process exited before the connection could be established",
                             ));
                         }
+
                         _ = time::sleep(Duration::from_millis(50)) => {}
                     }
                 } else {
@@ -173,6 +190,7 @@ pub(crate) async fn ensure_daemon(
                         log_path.clone(),
                         log_file_name_prefix.clone(),
                     )?);
+
                     time::sleep(Duration::from_millis(50)).await;
                 }
             }
@@ -195,7 +213,9 @@ pub(crate) async fn ensure_daemon(
 /// print the global socket name in the standard output
 pub(crate) async fn print_socket() -> io::Result<()> {
     ensure_daemon(true, None, None, None).await?;
+
     println!("{}", get_socket_name().display());
+
     Ok(())
 }
 
@@ -212,6 +232,7 @@ pub(crate) async fn run_daemon(
     // Try to remove the socket file if it already exists
     if path.exists() {
         info!("Remove socket folder {}", path.display());
+
         fs::remove_file(&path)?;
     }
 
@@ -219,8 +240,11 @@ pub(crate) async fn run_daemon(
 
     loop {
         let (stream, _) = listener.accept().await?;
+
         let connection = factory.create(config_path.clone());
+
         let span = tracing::trace_span!("run_server");
+
         tokio::spawn(run_server(connection, stream).instrument(span.or_current()));
     }
 }
@@ -228,5 +252,6 @@ pub(crate) async fn run_daemon(
 /// Async task driving a single client connection
 async fn run_server(connection: ServerConnection, stream: UnixStream) {
     let (read, write) = stream.into_split();
+
     connection.accept(read, write).await;
 }

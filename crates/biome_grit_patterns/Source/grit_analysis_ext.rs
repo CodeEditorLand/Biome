@@ -14,6 +14,7 @@ where
 {
     fn to_log(&self, path: Option<&Path>) -> AnalysisLog {
         let location = self.location();
+
         let source = location.source_code.map(SourceFile::new);
 
         let range = match (location.span, source) {

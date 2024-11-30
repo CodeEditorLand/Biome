@@ -11,6 +11,7 @@ impl FormatNodeRule<GraphqlNameReference> for FormatGraphqlNameReference {
         f: &mut GraphqlFormatter,
     ) -> FormatResult<()> {
         let GraphqlNameReferenceFields { value_token } = node.as_fields();
+
         write!(f, [value_token.format()])
     }
 }

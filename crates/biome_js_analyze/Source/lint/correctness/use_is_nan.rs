@@ -95,12 +95,16 @@ impl Message {
 
 impl Rule for UseIsNan {
     type Query = Semantic<UseIsNanQuery>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
 
         match node {
@@ -115,9 +119,12 @@ impl Rule for UseIsNan {
                     });
                 }
             }
+
             UseIsNanQuery::JsCaseClause(case_clause) => {
                 let test = case_clause.test().ok()?;
+
                 let range = test.range();
+
                 if has_nan(test, model) {
                     return Some(RuleState {
                         message_id: Message::CaseClause,
@@ -125,9 +132,12 @@ impl Rule for UseIsNan {
                     });
                 }
             }
+
             UseIsNanQuery::JsSwitchStatement(switch_stmt) => {
                 let discriminant = switch_stmt.discriminant().ok()?;
+
                 let range = discriminant.range();
+
                 if has_nan(discriminant, model) {
                     return Some(RuleState {
                         message_id: Message::SwitchCase,
@@ -136,6 +146,7 @@ impl Rule for UseIsNan {
                 }
             }
         }
+
         None
     }
 
@@ -149,7 +160,9 @@ impl Rule for UseIsNan {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let query = ctx.query();
+
         let model = ctx.model();
+
         let mut mutation = ctx.root().begin();
 
         match query {
@@ -163,11 +176,14 @@ impl Rule for UseIsNan {
                 }
 
                 let (literal, nan) = get_literal(binary_expression, model)?;
+
                 let with_inequality = contains_inequality(binary_expression).unwrap_or(false);
+
                 let is_nan_expression: AnyJsExpression = create_is_nan_expression(nan)
                     .and_then(|result| create_unary_expression(with_inequality, result))?;
 
                 let arg = AnyJsCallArgument::AnyJsExpression(literal);
+
                 let args = make::js_call_arguments(
                     make::token(T!['(']),
                     make::js_call_argument_list([arg], []),
@@ -191,6 +207,7 @@ impl Rule for UseIsNan {
                     mutation,
                 ));
             }
+
             UseIsNanQuery::JsCaseClause(_) => None,
             UseIsNanQuery::JsSwitchStatement(_) => None,
         }
@@ -203,6 +220,7 @@ fn create_unary_expression(
 ) -> Option<AnyJsExpression> {
     if with_inequality {
         let unary = make::js_unary_expression(make::token(T![!]), nan_expression);
+
         return Some(unary.into());
     }
 
@@ -224,11 +242,15 @@ fn create_is_nan_expression(nan: AnyJsExpression) -> Option<AnyJsExpression> {
 
             Some(is_nan_expression.into())
         }
+
         AnyJsExpression::JsStaticMemberExpression(member_expression) => {
             let is_nan_expression =
                 member_expression.with_member(make::js_name(make::ident("isNaN")).into());
+
             let member_object = is_nan_expression.object().ok()?.omit_parentheses();
+
             let (reference, _) = global_identifier(&member_object)?;
+
             let number_identifier_exists = is_nan_expression
                 .object()
                 .ok()?
@@ -253,6 +275,7 @@ fn create_is_nan_expression(nan: AnyJsExpression) -> Option<AnyJsExpression> {
                     .into(),
             )
         }
+
         _ => None,
     }
 }
@@ -269,12 +292,15 @@ fn get_literal(
     model: &SemanticModel,
 ) -> Option<(AnyJsExpression, AnyJsExpression)> {
     let left_expression = bin_expr.left().ok()?;
+
     let right_expression = bin_expr.right().ok()?;
+
     let is_nan_on_left = has_nan(left_expression.clone(), model);
 
     let left = left_expression
         .with_leading_trivia_pieces([])?
         .with_trailing_trivia_pieces([])?;
+
     let right = right_expression
         .with_leading_trivia_pieces([])?
         .with_trailing_trivia_pieces([])?;
@@ -290,23 +316,31 @@ fn get_literal(
 fn has_nan(expr: AnyJsExpression, model: &SemanticModel) -> bool {
     (|| {
         let expr = expr.omit_parentheses();
+
         let reference = if let Some((reference, name)) = global_identifier(&expr) {
             if name.text() != "NaN" {
                 return None;
             }
+
             reference
         } else {
             let member_expr = AnyJsMemberExpression::cast(expr.into_syntax())?;
+
             if member_expr.member_name()?.text() != "NaN" {
                 return None;
             }
+
             let member_object = member_expr.object().ok()?.omit_parentheses();
+
             let (reference, name) = global_identifier(&member_object.omit_parentheses())?;
+
             if name.text() != "Number" {
                 return None;
             }
+
             reference
         };
+
         model.binding(&reference).is_none().then_some(())
     })()
     .is_some()

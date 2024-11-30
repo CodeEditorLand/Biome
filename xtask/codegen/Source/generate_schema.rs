@@ -13,7 +13,9 @@ pub(crate) fn generate_configuration_schema(mode: Mode) -> Result<()> {
     let schema = rename_partial_references_in_schema(schema_for!(PartialConfiguration));
 
     let json_schema = to_string(&schema)?;
+
     let parsed = parse_json(&json_schema, JsonParserOptions::default());
+
     let formatted =
         biome_json_formatter::format_node(JsonFormatOptions::default(), &parsed.syntax())
             .unwrap()
@@ -74,9 +76,11 @@ fn rename_partial_references_in_schema(mut schema: RootSchema) -> RootSchema {
                 } else {
                     "RuleWithFixNoOptions".to_string()
                 };
+
                 if let Schema::Object(schema_object) = &mut schema {
                     if let Some(object) = &mut schema_object.object {
                         object.required.remove("options");
+
                         object.properties.remove("options");
                     }
                 }
@@ -86,6 +90,7 @@ fn rename_partial_references_in_schema(mut schema: RootSchema) -> RootSchema {
                 key = "RuleFixConfiguration".to_string();
             } else if let Some(stripped) = key.strip_prefix("RuleWithOptions_for_") {
                 key = format!("RuleWith{stripped}");
+
                 if let Schema::Object(schema_object) = &mut schema {
                     if let Some(object) = &mut schema_object.object {
                         object.required.remove("options");
@@ -93,6 +98,7 @@ fn rename_partial_references_in_schema(mut schema: RootSchema) -> RootSchema {
                 }
             } else if let Some(stripped) = key.strip_prefix("RuleWithFixOptions_for_") {
                 key = format!("RuleWith{stripped}");
+
                 if let Schema::Object(schema_object) = &mut schema {
                     if let Some(object) = &mut schema_object.object {
                         object.required.remove("options");
@@ -163,12 +169,17 @@ fn rename_partial_references_in_schema_object(object: &mut SchemaObject) {
 
     if let Some(subschemas) = &mut object.subschemas {
         rename_partial_references_in_optional_schema_vec(&mut subschemas.all_of);
+
         rename_partial_references_in_optional_schema_vec(&mut subschemas.any_of);
+
         rename_partial_references_in_optional_schema_vec(&mut subschemas.one_of);
 
         rename_partial_references_in_optional_schema_box(&mut subschemas.not);
+
         rename_partial_references_in_optional_schema_box(&mut subschemas.if_schema);
+
         rename_partial_references_in_optional_schema_box(&mut subschemas.then_schema);
+
         rename_partial_references_in_optional_schema_box(&mut subschemas.else_schema);
     }
 }

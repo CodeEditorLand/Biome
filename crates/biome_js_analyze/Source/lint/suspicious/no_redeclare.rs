@@ -79,15 +79,20 @@ pub struct Redeclaration {
 
 impl Rule for NoRedeclare {
     type Query = SemanticServices;
+
     type State = Redeclaration;
+
     type Signals = Box<[Redeclaration]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let mut redeclarations = Vec::default();
+
         for scope in ctx.query().scopes() {
             check_redeclarations_in_single_scope(&scope, &mut redeclarations);
         }
+
         redeclarations.into_boxed_slice()
     }
 
@@ -97,6 +102,7 @@ impl Rule for NoRedeclare {
             declaration,
             redeclaration,
         } = state;
+
         let diag = RuleDiagnostic::new(
             rule_category!(),
             redeclaration,
@@ -110,12 +116,14 @@ impl Rule for NoRedeclare {
                "'"{ name.as_ref() }"' is defined here:"
             },
         );
+
         Some(diag)
     }
 }
 
 fn check_redeclarations_in_single_scope(scope: &Scope, redeclarations: &mut Vec<Redeclaration>) {
     let mut declarations = FxHashMap::<String, (TextRange, AnyJsBindingDeclaration)>::default();
+
     if scope.syntax().kind() == JsSyntaxKind::JS_FUNCTION_BODY {
         // Handle cases where a variable/type redeclares a parameter or type parameter.
         // For example:
@@ -140,16 +148,19 @@ fn check_redeclarations_in_single_scope(scope: &Scope, redeclarations: &mut Vec<
         if let Some(function_scope) = scope.parent() {
             for binding in function_scope.bindings() {
                 let id_binding = binding.tree();
+
                 if let Some(decl) = id_binding.declaration() {
                     // Ignore the function itself.
                     if !matches!(decl, AnyJsBindingDeclaration::JsFunctionExpression(_)) {
                         let name = id_binding.text();
+
                         declarations.insert(name, (id_binding.syntax().text_trimmed_range(), decl));
                     }
                 }
             }
         }
     }
+
     for binding in scope.bindings() {
         let id_binding = binding.tree();
 
@@ -157,6 +168,7 @@ fn check_redeclarations_in_single_scope(scope: &Scope, redeclarations: &mut Vec<
         // This allows to skip function parameters, methods, ...
         if let Some(decl) = id_binding.declaration() {
             let name = id_binding.text();
+
             if let Some((first_text_range, first_decl)) = declarations.get(&name) {
                 // Do not report:
                 // - mergeable declarations.

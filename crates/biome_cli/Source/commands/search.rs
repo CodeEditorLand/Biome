@@ -32,9 +32,11 @@ impl CommandRunner for SearchCommandPayload {
         let LoadedConfiguration {
             mut configuration, ..
         } = loaded_configuration;
+
         configuration
             .files
             .merge_with(self.files_configuration.clone());
+
         configuration.vcs.merge_with(self.vcs_configuration.clone());
 
         Ok(configuration)
@@ -67,6 +69,7 @@ impl CommandRunner for SearchCommandPayload {
                 pattern: self.pattern.clone(),
             })?
             .pattern_id;
+
         Ok(Execution::new(TraversalMode::Search {
             pattern,
             stdin: self.get_stdin(_console)?,

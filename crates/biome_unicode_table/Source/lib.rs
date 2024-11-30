@@ -82,6 +82,7 @@ pub fn is_js_ident(s: &str) -> bool {
     if s.is_empty() {
         return false;
     }
+
     s.chars().enumerate().all(|(index, c)| {
         if index == 0 {
             is_js_id_start(c)

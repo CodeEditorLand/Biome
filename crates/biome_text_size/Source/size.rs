@@ -106,6 +106,7 @@ macro_rules! ops {
                 TextSize { raw: self.raw $op other.raw }
             }
         }
+
         impl $Op<&TextSize> for TextSize {
             type Output = TextSize;
             #[inline]
@@ -113,6 +114,7 @@ macro_rules! ops {
                 self $op *other
             }
         }
+
         impl<T> $Op<T> for &TextSize
         where
             TextSize: $Op<T, Output=TextSize>,

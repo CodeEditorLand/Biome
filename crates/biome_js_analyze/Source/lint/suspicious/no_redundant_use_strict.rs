@@ -105,18 +105,26 @@ declare_node_union! { pub AnyJsStrictModeNode = AnyJsClass | JsModule | JsDirect
 
 impl Rule for NoRedundantUseStrict {
     type Query = Ast<JsDirective>;
+
     type State = AnyJsStrictModeNode;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.inner_string_text().ok()? != "use strict" {
             return None;
         }
+
         let file_source = ctx.source_type::<JsFileSource>();
+
         let mut outer_most: Option<AnyJsStrictModeNode> = None;
+
         let root = ctx.root();
+
         match root {
             biome_js_syntax::AnyJsRoot::JsModule(js_module) => outer_most = Some(js_module.into()),
             _ => {
@@ -124,6 +132,7 @@ impl Rule for NoRedundantUseStrict {
                     match AnyNodeWithDirectives::try_cast(n) {
                         Ok(parent) => {
                             let directives_len = parent.directives().len();
+
                             for (index, directive) in parent.directives().into_iter().enumerate() {
                                 let directive_text = directive.inner_string_text().ok()?;
 
@@ -136,11 +145,14 @@ impl Rule for NoRedundantUseStrict {
                                     {
                                         break;
                                     }
+
                                     outer_most = Some(directive.into());
+
                                     break; // continue with next parent
                                 }
                             }
                         }
+
                         Err(n) => {
                             if let Some(module_or_class) = AnyJsClass::cast(n) {
                                 outer_most = Some(module_or_class.into());
@@ -156,11 +168,13 @@ impl Rule for NoRedundantUseStrict {
             if outer_most.syntax() == node.syntax() {
                 return None;
             }
+
             return Some(outer_most);
         }
 
         None
     }
+
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let mut diag = RuleDiagnostic::new(
             rule_category!(),
@@ -189,10 +203,12 @@ impl Rule for NoRedundantUseStrict {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
         // This will also remove the trivia of the node
         // which is intended
         mutation.remove_node(node.clone());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

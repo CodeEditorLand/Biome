@@ -59,14 +59,18 @@ declare_lint_rule! {
 
 impl Rule for NoUselessUndefinedInitialization {
     type Query = Ast<JsVariableStatement>;
+
     type State = (Box<str>, TextRange);
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let statement = ctx.query();
 
         let mut signals = vec![];
+
         let Ok(node) = statement.declaration() else {
             return signals.into_boxed_slice();
         };
@@ -94,9 +98,11 @@ impl Rule for NoUselessUndefinedInitialization {
 
             if keyword.is_undefined() {
                 let decl_range = initializer.range();
+
                 let Some(binding_name) = decl.id().ok().map(|id| id.text()) else {
                     continue;
                 };
+
                 signals.push((binding_name.into(), decl_range));
             }
         }
@@ -116,9 +122,11 @@ impl Rule for NoUselessUndefinedInitialization {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let assignment_statement = node.clone();
 
         let current_declaration_statement = node.clone().declaration().ok()?;
+
         let declarators = current_declaration_statement.declarators();
 
         let current_declaration = declarators
@@ -156,9 +164,11 @@ impl Rule for NoUselessUndefinedInitialization {
 
         // Save the separators too
         let separators_syntax = declarators.clone().into_syntax();
+
         let separators: Vec<JsSyntaxToken> = separators_syntax.tokens().collect();
 
         let new_declaration = current_declaration.clone().with_initializer(None);
+
         let new_declarators: Vec<JsVariableDeclarator> = declarators
             .clone()
             .into_iter()
@@ -188,6 +198,7 @@ impl Rule for NoUselessUndefinedInitialization {
             .append_trivia_pieces(chained_comments)?;
 
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node_discard_trivia(assignment_statement, new_node);
 
         Some(JsRuleAction::new(

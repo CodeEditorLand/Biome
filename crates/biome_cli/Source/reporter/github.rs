@@ -11,6 +11,7 @@ pub(crate) struct GithubReporter {
 impl Reporter for GithubReporter {
     fn write(self, visitor: &mut dyn ReporterVisitor) -> io::Result<()> {
         visitor.report_diagnostics(&self.execution, self.diagnostics_payload)?;
+
         Ok(())
     }
 }

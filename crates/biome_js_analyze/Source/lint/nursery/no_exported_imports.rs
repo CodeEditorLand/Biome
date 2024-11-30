@@ -52,14 +52,20 @@ declare_lint_rule! {
 
 impl Rule for NoExportedImports {
     type Query = Semantic<AnyJsImportSpecifier>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let specifier = ctx.query();
+
         let local_name = specifier.local_name().ok()?;
+
         let local_name = local_name.as_js_identifier_binding()?;
+
         if local_name.is_exported(ctx.model()) {
             Some(())
         } else {
@@ -69,6 +75,7 @@ impl Rule for NoExportedImports {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let specifier = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

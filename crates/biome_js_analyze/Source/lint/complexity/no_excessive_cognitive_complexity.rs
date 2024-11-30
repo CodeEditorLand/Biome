@@ -79,8 +79,11 @@ declare_lint_rule! {
 
 impl Rule for NoExcessiveCognitiveComplexity {
     type Query = CognitiveComplexity;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ComplexityOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -151,8 +154,11 @@ impl QueryMatch for CognitiveComplexity {
 
 impl Queryable for CognitiveComplexity {
     type Input = Self;
+
     type Language = JsLanguage;
+
     type Output = Self;
+
     type Services = ();
 
     fn build_visitor(
@@ -202,6 +208,7 @@ impl Visitor for CognitiveComplexityVisitor {
 impl CognitiveComplexityVisitor {
     fn on_enter(&mut self, node: &JsSyntaxNode) {
         let parent = self.stack.last();
+
         if parent.is_some_and(|parent| parent.score == MAX_SCORE) {
             return; // No need for further processing if we're already at the max.
         }
@@ -236,12 +243,14 @@ impl CognitiveComplexityVisitor {
 
             if increases_nesting(node) {
                 state.last_seen_operator = None;
+
                 state.nesting_level = state.nesting_level.saturating_add(1);
             } else if let Some(operator) = JsLogicalExpression::cast_ref(node)
                 .and_then(|expression| expression.operator().ok())
             {
                 if state.last_seen_operator != Some(operator) {
                     state.score = state.score.saturating_add(1);
+
                     state.last_seen_operator = Some(operator);
                 }
             } else if let Some(alternate) =
@@ -302,6 +311,7 @@ impl CognitiveComplexityVisitor {
 /// control flow.
 fn increases_nesting(node: &JsSyntaxNode) -> bool {
     use biome_js_syntax::JsSyntaxKind::*;
+
     is_loop_node(node)
         || matches!(
             node.kind(),
@@ -311,6 +321,7 @@ fn increases_nesting(node: &JsSyntaxNode) -> bool {
 
 fn is_loop_node(node: &JsSyntaxNode) -> bool {
     use biome_js_syntax::JsSyntaxKind::*;
+
     matches!(
         node.kind(),
         JS_DO_WHILE_STATEMENT
@@ -338,6 +349,7 @@ fn is_loop_node(node: &JsSyntaxNode) -> bool {
 /// inclusion here is a personal judgement call.
 fn receives_structural_penalty(node: &JsSyntaxNode) -> bool {
     use biome_js_syntax::JsSyntaxKind::*;
+
     receives_nesting_penalty(node)
         || matches!(node.kind(), JS_FINALLY_CLAUSE | JS_WITH_STATEMENT)
         || JsBreakStatement::cast_ref(node)
@@ -354,6 +366,7 @@ fn receives_structural_penalty(node: &JsSyntaxNode) -> bool {
 /// Note: This is a strict subset of the nodes that receive a structural penalty.
 fn receives_nesting_penalty(node: &JsSyntaxNode) -> bool {
     use biome_js_syntax::JsSyntaxKind::*;
+
     is_loop_node(node)
         || matches!(
             node.kind(),

@@ -45,7 +45,9 @@ fn is_at_declaration_or_rule_item(p: &mut CssParser) -> bool {
 struct DeclarationOrRuleListParseRecovery;
 impl ParseRecovery for DeclarationOrRuleListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -56,7 +58,9 @@ impl ParseRecovery for DeclarationOrRuleListParseRecovery {
 struct DeclarationOrRuleList;
 impl ParseNodeList for DeclarationOrRuleList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_DECLARATION_OR_RULE_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {

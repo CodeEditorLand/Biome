@@ -11,6 +11,7 @@ impl LimitCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Limit<GritQueryContext>, CompileError> {
         let body = PatternCompiler::from_node(&node.pattern()?, context)?;
+
         let limit = node
             .limit()?
             .value_token()?

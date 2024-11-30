@@ -26,6 +26,7 @@ impl NodeVisitor for WhileVisitor {
     ) -> SyntaxResult<Self> {
         // Create the continue and break blocks
         let continue_block = builder.append_block();
+
         let break_block = builder.append_block();
 
         // Unconditionally jump to the continue block
@@ -33,6 +34,7 @@ impl NodeVisitor for WhileVisitor {
 
         // Create the loop block and fill it with the loop body statement
         let loop_block = builder.append_block();
+
         builder.set_cursor(loop_block);
 
         let label = node
@@ -65,6 +67,7 @@ impl NodeVisitor for WhileVisitor {
 
         // Write the continue block
         builder.set_cursor(continue_block);
+
         builder
             .append_jump(true, loop_block)
             .with_node(node.test()?.into_syntax());

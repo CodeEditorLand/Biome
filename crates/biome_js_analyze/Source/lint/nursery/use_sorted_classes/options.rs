@@ -25,11 +25,13 @@ pub struct UtilityClassSortingOptions {
 impl UtilityClassSortingOptions {
     pub(crate) fn has_function(&self, name: &str) -> bool {
         let iter = self.functions.iter().flatten();
+
         for v in iter {
             if v.as_ref() == name {
                 return true;
             }
         }
+
         false
     }
 
@@ -67,10 +69,12 @@ impl DeserializationVisitor for UtilityClassSortingOptionsVisitor {
         let mut result = UtilityClassSortingOptions::default();
 
         let mut attributes = Vec::new();
+
         for (key, value) in members.flatten() {
             let Some(key_text) = Text::deserialize(&key, "", diagnostics) else {
                 continue;
             };
+
             match key_text.text() {
                 "attributes" => {
                     if let Some(attributes_option) =
@@ -82,6 +86,7 @@ impl DeserializationVisitor for UtilityClassSortingOptionsVisitor {
                 "functions" => {
                     result.functions = Deserializable::deserialize(&value, &key_text, diagnostics)
                 }
+
                 unknown_key => diagnostics.push(DeserializationDiagnostic::new_unknown_key(
                     unknown_key,
                     key.range(),
@@ -89,11 +94,13 @@ impl DeserializationVisitor for UtilityClassSortingOptionsVisitor {
                 )),
             }
         }
+
         result.attributes = if attributes.is_empty() {
             None
         } else {
             Some(attributes.into_boxed_slice())
         };
+
         Some(result)
     }
 }

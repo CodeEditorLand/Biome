@@ -24,6 +24,7 @@ impl FormatNodeRule<JsInstanceofExpression> for FormatJsInstanceofExpression {
 #[cfg(test)]
 mod tests {
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::{JsFileSource, JsInstanceofExpression};
 
     #[test]
@@ -34,22 +35,33 @@ mod tests {
         );
 
         assert_needs_parentheses!("(a instanceof B) as number", JsInstanceofExpression);
+
         assert_needs_parentheses!("<number>(a instanceof B)", JsInstanceofExpression);
+
         assert_needs_parentheses!("!(a instanceof B)", JsInstanceofExpression);
+
         assert_needs_parentheses!("await (a instanceof B)", JsInstanceofExpression);
+
         assert_needs_parentheses!("(a instanceof B)!", JsInstanceofExpression);
 
         assert_needs_parentheses!("(a instanceof B)()", JsInstanceofExpression);
+
         assert_needs_parentheses!("(a instanceof B)?.()", JsInstanceofExpression);
+
         assert_needs_parentheses!("new (a instanceof B)()", JsInstanceofExpression);
+
         assert_needs_parentheses!("(a instanceof B)`template`", JsInstanceofExpression);
+
         assert_needs_parentheses!("[...(a instanceof B)]", JsInstanceofExpression);
+
         assert_needs_parentheses!("({...(a instanceof B)})", JsInstanceofExpression);
+
         assert_needs_parentheses!(
             "<test {...(a instanceof B)} />",
             JsInstanceofExpression,
             JsFileSource::tsx()
         );
+
         assert_needs_parentheses!(
             "<test>{...(a instanceof B)}</test>",
             JsInstanceofExpression,
@@ -57,14 +69,19 @@ mod tests {
         );
 
         assert_needs_parentheses!("(a instanceof B).member", JsInstanceofExpression);
+
         assert_needs_parentheses!("(a instanceof B)[member]", JsInstanceofExpression);
+
         assert_not_needs_parentheses!("object[a instanceof B]", JsInstanceofExpression);
 
         assert_needs_parentheses!("(a instanceof B) + c", JsInstanceofExpression);
 
         assert_not_needs_parentheses!("a instanceof B > c", JsInstanceofExpression);
+
         assert_not_needs_parentheses!("a instanceof B in c", JsInstanceofExpression);
+
         assert_not_needs_parentheses!("a instanceof B instanceof c", JsInstanceofExpression[0]);
+
         assert_not_needs_parentheses!("a instanceof B instanceof c", JsInstanceofExpression[1]);
     }
 }

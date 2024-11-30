@@ -32,6 +32,7 @@ pub(crate) enum UnknownFields {
 }
 impl FromStr for UnknownFields {
     type Err = &'static str;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "warn" => Ok(Self::Warn),
@@ -47,6 +48,7 @@ impl TryFrom<&Vec<Attribute>> for ContainerAttrs {
 
     fn try_from(attrs: &Vec<Attribute>) -> Result<Self, Self::Error> {
         let mut opts = Self::default();
+
         for attr in attrs {
             if attr.path.is_ident("deserializable") {
                 parse_meta_list(&attr.parse_meta()?, |meta| {
@@ -54,6 +56,7 @@ impl TryFrom<&Vec<Attribute>> for ContainerAttrs {
                         Meta::Path(path) if path.is_ident("with_validator") => {
                             opts.with_validator = true
                         }
+
                         Meta::NameValue(MetaNameValue {
                             path,
                             lit: Lit::Str(s),
@@ -74,20 +77,24 @@ impl TryFrom<&Vec<Attribute>> for ContainerAttrs {
                                 Err(error) => return Err(Error::new(meta.span(), error)),
                             }
                         }
+
                         _ => {
                             let meta_str = meta.to_token_stream().to_string();
+
                             return Err(Error::new(
                                 meta.span(),
                                 format_args!("Unexpected attribute: {meta_str}"),
                             ));
                         }
                     }
+
                     if opts.from.is_some() && opts.try_from.is_some() {
                         return Err(Error::new(
                             meta.span(),
                             "You cannot specify both `from` and `try_from`",
                         ));
                     }
+
                     Ok(())
                 })?;
             } else if attr.path.is_ident("serde") {
@@ -98,6 +105,7 @@ impl TryFrom<&Vec<Attribute>> for ContainerAttrs {
                                 opts.unknown_fields = Some(UnknownFields::Deny);
                             }
                         }
+
                         Meta::NameValue(MetaNameValue {
                             path,
                             lit: Lit::Str(s),
@@ -111,15 +119,18 @@ impl TryFrom<&Vec<Attribute>> for ContainerAttrs {
                                 // Don't fail on unrecognized Serde attrs
                             }
                         }
+
                         _ => {
                             // Don't fail on unrecognized Serde attrs
                         }
                     }
+
                     Ok(())
                 })
                 .ok();
             }
         }
+
         Ok(opts)
     }
 }

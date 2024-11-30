@@ -77,6 +77,7 @@ where
         // Lookup the first token of `prev_node` and `next_node`, and transfer the leading
         // trivia of the former to the later
         let prev_first = prev_node.syntax().first_token();
+
         let next_first = next_node.syntax().first_token();
 
         if let (Some(prev_first), Some(next_first)) = (prev_first, next_first) {
@@ -92,6 +93,7 @@ where
         // Lookup the last token of `prev_node` and `next_node`, and transfer the trailing
         // trivia of the former to the later
         let prev_last = prev_node.syntax().last_token();
+
         let next_last = next_node.syntax().last_token();
 
         if let (Some(prev_last), Some(next_last)) = (prev_last, next_last) {
@@ -128,6 +130,7 @@ where
         Self: Sized,
     {
         let leading_trivia = prev_token.leading_trivia().pieces();
+
         let trailing_trivia = prev_token.trailing_trivia().pieces();
 
         self.replace_token_discard_trivia(
@@ -210,6 +213,7 @@ where
             ops::Bound::Excluded(index) => ops::Bound::Excluded(*index * 2),
             ops::Bound::Unbounded => ops::Bound::Unbounded,
         };
+
         let end_bound = match range.end_bound() {
             ops::Bound::Included(index) => ops::Bound::Included(*index * 2),
             ops::Bound::Excluded(index) => ops::Bound::Excluded(*index * 2),

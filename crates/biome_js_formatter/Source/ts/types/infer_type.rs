@@ -33,6 +33,7 @@ impl FormatNodeRule<TsInferType> for FormatTsInferType {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::TsInferType;
 
     #[test]
@@ -41,6 +42,7 @@ mod tests {
             "type A<T> = T extends (infer string)[] ? string : never",
             TsInferType
         );
+
         assert_needs_parentheses!(
             "type A<T> = T extends unique (infer string) ? string : never",
             TsInferType
@@ -50,10 +52,12 @@ mod tests {
             "type A<T> = T extends [number, ...infer string] ? string : never",
             TsInferType
         );
+
         assert_needs_parentheses!(
             "type A = T extends [(infer string)?] ? string : never",
             TsInferType
         );
+
         assert_needs_parentheses!(
             "type A<T> = [T] extends [(infer S extends string) | undefined] ? S : T",
             TsInferType
@@ -63,10 +67,12 @@ mod tests {
             "type A<T> = T extends (infer string)[a] ? string : never",
             TsInferType
         );
+
         assert_not_needs_parentheses!(
             "type A<T> = T extends a[(infer string)] ? string : never",
             TsInferType
         );
+
         assert_not_needs_parentheses!(
             "type A = T extends () => infer R | B ? R : never",
             TsInferType

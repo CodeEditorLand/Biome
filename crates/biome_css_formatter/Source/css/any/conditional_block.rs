@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssConditionalBlock;
 pub(crate) struct FormatAnyCssConditionalBlock;
 impl FormatRule<AnyCssConditionalBlock> for FormatAnyCssConditionalBlock {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssConditionalBlock, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssConditionalBlock::CssBogusBlock(node) => node.format().fmt(f),

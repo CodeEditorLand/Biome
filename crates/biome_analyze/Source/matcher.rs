@@ -192,6 +192,7 @@ where
 {
     fn match_query(&mut self, params: MatchQueryParams<L>) {
         (self.func)(&params);
+
         self.inner.match_query(params);
     }
 }
@@ -199,18 +200,24 @@ where
 #[cfg(test)]
 mod tests {
     use super::MatchQueryParams;
+
     use crate::{
         signals::DiagnosticSignal, Analyzer, AnalyzerContext, AnalyzerSignal, ApplySuppression,
         ControlFlow, MetadataRegistry, Never, Phases, QueryMatcher, RuleKey, ServiceBag,
         SignalEntry, SuppressionAction, SyntaxVisitor,
     };
+
     use crate::{AnalyzerOptions, SuppressionKind};
+
     use biome_diagnostics::{category, DiagnosticExt};
+
     use biome_diagnostics::{Diagnostic, Severity};
+
     use biome_rowan::{
         raw_language::{RawLanguage, RawLanguageKind, RawLanguageRoot, RawSyntaxTreeBuilder},
         AstNode, BatchMutation, SyntaxNode, SyntaxToken, TextRange, TextSize, TriviaPiece,
     };
+
     use std::convert::Infallible;
 
     struct SuppressionMatcher;
@@ -232,6 +239,7 @@ mod tests {
             }
 
             let span = node.text_trimmed_range();
+
             params.signal_queue.push(SignalEntry {
                 signal: Box::new(DiagnosticSignal::new(move || TestDiagnostic { span })),
                 rule: RuleKey::new("group", "rule"),
@@ -247,15 +255,18 @@ mod tests {
             let mut builder = RawSyntaxTreeBuilder::new();
 
             builder.start_node(RawLanguageKind::ROOT);
+
             builder.start_node(RawLanguageKind::SEPARATED_EXPRESSION_LIST);
 
             builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
             builder.token_with_trivia(
                 RawLanguageKind::STRING_TOKEN,
                 "//group\n\"warn_here\"",
                 &[TriviaPiece::single_line_comment(7), TriviaPiece::newline(1)],
                 &[],
             );
+
             builder.finish_node();
 
             builder.token_with_trivia(
@@ -266,6 +277,7 @@ mod tests {
             );
 
             builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
             builder.token_with_trivia(
                 RawLanguageKind::STRING_TOKEN,
                 "//group/rule\n\"warn_here\"",
@@ -275,6 +287,7 @@ mod tests {
                 ],
                 &[],
             );
+
             builder.finish_node();
 
             builder.token_with_trivia(
@@ -285,6 +298,7 @@ mod tests {
             );
 
             builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
             builder.token_with_trivia(
                 RawLanguageKind::STRING_TOKEN,
                 "//unknown_group\n\"warn_here\"",
@@ -294,6 +308,7 @@ mod tests {
                 ],
                 &[],
             );
+
             builder.finish_node();
 
             builder.token_with_trivia(
@@ -304,6 +319,7 @@ mod tests {
             );
 
             builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
             builder.token_with_trivia(
                 RawLanguageKind::STRING_TOKEN,
                 "//group/unknown_rule\n\"warn_here\"",
@@ -313,6 +329,7 @@ mod tests {
                 ],
                 &[],
             );
+
             builder.finish_node();
 
             builder.token_with_trivia(
@@ -333,19 +350,25 @@ mod tests {
             );
 
             builder.finish_node();
+
             builder.finish_node();
 
             RawLanguageRoot::unwrap_cast(builder.finish())
         };
 
         let mut diagnostics = Vec::new();
+
         let mut emit_signal = |signal: &dyn AnalyzerSignal<RawLanguage>| -> ControlFlow<Never> {
             let diag = signal.diagnostic().expect("diagnostic");
+
             let range = diag.get_span().expect("range");
+
             let error = diag.with_severity(Severity::Warning);
+
             let code = error.category().expect("code");
 
             diagnostics.push((code, range));
+
             ControlFlow::Continue(())
         };
 
@@ -361,6 +384,7 @@ mod tests {
         }
 
         let mut metadata = MetadataRegistry::default();
+
         metadata.insert_rule("group", "rule");
 
         struct TestAction;
@@ -404,6 +428,7 @@ mod tests {
         };
 
         let result: Option<Never> = analyzer.run(ctx);
+
         assert!(result.is_none());
 
         assert_eq!(

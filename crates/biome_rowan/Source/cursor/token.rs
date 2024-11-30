@@ -85,10 +85,13 @@ impl SyntaxToken {
     #[inline]
     pub fn text_trimmed_range(&self) -> TextRange {
         let green_token = self.green();
+
         let leading_len = green_token.leading_trivia().text_len();
+
         let trailing_len = green_token.trailing_trivia().text_len();
 
         let range = self.text_range();
+
         TextRange::new(range.start() + leading_len, range.end() - trailing_len)
     }
 
@@ -110,8 +113,11 @@ impl SyntaxToken {
     #[inline]
     pub fn token_text_trimmed(&self) -> TokenText {
         let green = self.green().to_owned();
+
         let mut range = self.text_trimmed_range();
+
         range -= self.data().offset;
+
         TokenText::with_range(green, range)
     }
 
@@ -133,6 +139,7 @@ impl SyntaxToken {
     pub fn next_sibling_or_token(&self) -> Option<SyntaxElement> {
         self.data().next_sibling_or_token()
     }
+
     pub fn prev_sibling_or_token(&self) -> Option<SyntaxElement> {
         self.data().prev_sibling_or_token()
     }
@@ -202,6 +209,7 @@ impl SyntaxToken {
                                     Some(node) => {
                                         current_element = SyntaxElement::Node(node);
                                     }
+
                                     None => {
                                         return None; // Reached root, no token found
                                     }

@@ -50,6 +50,7 @@ pub(crate) fn parse_document_at_rule(p: &mut CssParser) -> ParsedSyntax {
     p.bump(T![document]);
 
     DocumentMatcherList.parse_list(p);
+
     parse_rule_block(p);
 
     Present(m.complete(p, CSS_DOCUMENT_AT_RULE))
@@ -59,7 +60,9 @@ struct DocumentMatcherListParseRecovery;
 
 impl ParseRecovery for DocumentMatcherListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_DOCUMENT_MATCHER;
     /// Determines if the parser has reached a point where it can recover from an error
     /// while parsing a document matcher list.
@@ -88,7 +91,9 @@ pub(crate) struct DocumentMatcherList;
 
 impl ParseSeparatedList for DocumentMatcherList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_DOCUMENT_MATCHER_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -190,15 +195,22 @@ pub(crate) fn parse_document_custom_matcher(p: &mut CssParser) -> ParsedSyntax {
 
     if is_at_url_prefix(p) {
         p.bump_ts(URL_PREFIX_SET);
+
         p.bump_with_context(T!['('], CssLexContext::UrlRawValue);
+
         parse_url_value(p).ok();
+
         p.expect(T![')']);
+
         return Present(m.complete(p, CSS_DOCUMENT_CUSTOM_MATCHER));
     }
 
     p.bump_ts(DOCUMENT_CUSTOM_MATCHER_SET);
+
     p.bump(T!['(']);
+
     parse_string(p).or_add_diagnostic(p, expected_string);
+
     p.expect(T![')']);
 
     Present(m.complete(p, CSS_DOCUMENT_CUSTOM_MATCHER))

@@ -15,8 +15,10 @@ impl FormatNodeRule<JsImportAssertion> for FormatJsImportAssertion {
             r_curly_token,
             assertion_kind,
         } = node.as_fields();
+
         if assertions.is_empty() {
             let has_dangling = f.comments().has_dangling_comments(node.syntax());
+
             write!(
                 f,
                 [
@@ -29,6 +31,7 @@ impl FormatNodeRule<JsImportAssertion> for FormatJsImportAssertion {
             )
         } else {
             let should_insert_space_around_brackets = f.options().bracket_spacing().value();
+
             write!(
                 f,
                 [

@@ -171,8 +171,11 @@ where
         }
 
         self.fmt_leading_comments(node, f)?;
+
         self.fmt_fields(node, f)?;
+
         self.fmt_dangling_comments(node, f)?;
+
         self.fmt_trailing_comments(node, f)
     }
 
@@ -255,7 +258,9 @@ impl GraphqlFormatLanguage {
 
 impl FormatLanguage for GraphqlFormatLanguage {
     type SyntaxLanguage = GraphqlLanguage;
+
     type Context = GraphqlFormatContext;
+
     type FormatRule = FormatGraphqlSyntaxNode;
 
     fn is_range_formatting_node(&self, _node: &SyntaxNode<Self::SyntaxLanguage>) -> bool {
@@ -273,6 +278,7 @@ impl FormatLanguage for GraphqlFormatLanguage {
         source_map: Option<TransformSourceMap>,
     ) -> Self::Context {
         let comments = Comments::from_node(root, &GraphqlCommentStyle, source_map.as_ref());
+
         GraphqlFormatContext::new(self.options, comments).with_source_map(source_map)
     }
 }
@@ -326,15 +332,21 @@ pub fn format_sub_tree(
 #[cfg(test)]
 mod tests {
     use crate::context::GraphqlFormatOptions;
+
     use crate::format_node;
+
     use biome_graphql_parser::parse_graphql;
 
     #[test]
     fn smoke_test() {
         let src = r#"query {}"#;
+
         let parse = parse_graphql(src);
+
         let options = GraphqlFormatOptions::default();
+
         let formatted = format_node(options, &parse.syntax()).unwrap();
+
         assert_eq!(formatted.print().unwrap().as_code(), "query {}\n");
     }
 }

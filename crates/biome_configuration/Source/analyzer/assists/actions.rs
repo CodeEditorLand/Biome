@@ -36,6 +36,7 @@ impl RuleGroup {
 }
 impl std::str::FromStr for RuleGroup {
     type Err = &'static str;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             Source::GROUP_NAME => Ok(Self::Source),
@@ -67,11 +68,17 @@ impl Actions {
     #[doc = r" If not, the function returns [None]."]
     pub fn get_severity_from_code(&self, category: &Category) -> Option<Severity> {
         let mut split_code = category.name().split('/');
+
         let _lint = split_code.next();
+
         debug_assert_eq!(_lint, Some("assists"));
+
         let group = <RuleGroup as std::str::FromStr>::from_str(split_code.next()?).ok()?;
+
         let rule_name = split_code.next()?;
+
         let rule_name = Self::has_rule(group, rule_name)?;
+
         match group {
             RuleGroup::Source => self
                 .source
@@ -86,9 +93,11 @@ impl Actions {
     #[doc = r" The enabled rules are calculated from the difference with the disabled rules."]
     pub fn as_enabled_rules(&self) -> FxHashSet<RuleFilter<'static>> {
         let mut enabled_rules = FxHashSet::default();
+
         if let Some(group) = self.source.as_ref() {
             enabled_rules.extend(&group.get_enabled_rules());
         }
+
         enabled_rules
     }
 }
@@ -112,31 +121,38 @@ pub struct Source {
 }
 impl Source {
     const GROUP_NAME: &'static str = "source";
+
     pub(crate) const GROUP_RULES: &'static [&'static str] =
         &["organizeImports", "useSortedAttributes", "useSortedKeys"];
+
     pub(crate) fn get_enabled_rules(&self) -> FxHashSet<RuleFilter<'static>> {
         let mut index_set = FxHashSet::default();
+
         if let Some(rule) = self.organize_imports.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[0]));
             }
         }
+
         if let Some(rule) = self.use_sorted_attributes.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[1]));
             }
         }
+
         if let Some(rule) = self.use_sorted_keys.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[2]));
             }
         }
+
         index_set
     }
     #[doc = r" Checks if, given a rule name, matches one of the rules contained in this category"]
     pub(crate) fn has_rule(rule_name: &str) -> Option<&'static str> {
         Some(Self::GROUP_RULES[Self::GROUP_RULES.binary_search(&rule_name).ok()?])
     }
+
     pub(crate) fn get_rule_configuration(
         &self,
         rule_name: &str,

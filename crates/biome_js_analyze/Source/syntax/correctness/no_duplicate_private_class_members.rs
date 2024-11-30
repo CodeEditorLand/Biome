@@ -30,13 +30,18 @@ enum MemberType {
 
 impl Rule for NoDuplicatePrivateClassMembers {
     type Query = Ast<JsClassMemberList>;
+
     type State = (Box<str>, TextRange);
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let mut defined_members: FxHashMap<Box<str>, FxHashSet<MemberType>> = FxHashMap::default();
+
         let node = ctx.query();
+
         node.into_iter()
             .filter_map(|member| {
                 let member_name = member
@@ -48,6 +53,7 @@ impl Rule for NoDuplicatePrivateClassMembers {
                     .text_trimmed()
                     .to_string()
                     .into_boxed_str();
+
                 let member_type = match member {
                     AnyJsClassMember::JsGetterClassMember(_) => MemberType::Getter,
                     AnyJsClassMember::JsMethodClassMember(_) => MemberType::Normal,
@@ -80,6 +86,7 @@ impl Rule for NoDuplicatePrivateClassMembers {
 
     fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let (member_name, range) = state;
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             range,

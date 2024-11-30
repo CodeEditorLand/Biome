@@ -26,9 +26,11 @@ impl AnyJsParenthesized {
             Self::JsParenthesizedExpression(expression) => {
                 expression.expression().map(AstNode::into_syntax)
             }
+
             Self::JsParenthesizedAssignment(assignment) => {
                 assignment.assignment().map(AstNode::into_syntax)
             }
+
             Self::TsParenthesizedType(ty) => ty.ty().map(AstNode::into_syntax),
         }
     }

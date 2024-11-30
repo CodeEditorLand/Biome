@@ -77,20 +77,28 @@ pub struct RuleState {
 
 impl Rule for NoNonoctalDecimalEscape {
     type Query = Ast<JsStringLiteralExpression>;
+
     type State = RuleState;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let mut result = Vec::new();
+
         let Some(token) = node.value_token().ok() else {
             return result.into_boxed_slice();
         };
+
         let text = token.text();
+
         if !is_octal_escape_sequence(text) {
             return result.into_boxed_slice();
         }
+
         let matches = lex_escape_sequences(text);
 
         for EscapeSequence {
@@ -100,8 +108,11 @@ impl Rule for NoNonoctalDecimalEscape {
         } in matches.iter()
         {
             let text_range_start = usize::from(node.range().start());
+
             let decimal_escape_range_start = text_range_start + decimal_escape_string_start;
+
             let decimal_escape_range_end = decimal_escape_range_start + decimal_escape.len();
+
             let Some(decimal_escape_range) =
                 TextRange::try_from((decimal_escape_range_start, decimal_escape_range_end)).ok()
             else {
@@ -120,6 +131,7 @@ impl Rule for NoNonoctalDecimalEscape {
                         let Some(previous_escape_range_start) = text.find(previous_escape) else {
                             continue;
                         };
+
                         let Some(unicode_escape_text_range) = TextRange::try_from((
                             text_range_start + previous_escape_range_start,
                             decimal_escape_range_end,
@@ -167,7 +179,9 @@ impl Rule for NoNonoctalDecimalEscape {
         }
 
         let mut seen = FxHashSet::default();
+
         result.retain(|rule_state| seen.insert(rule_state.diagnostics_text_range));
+
         result.into_boxed_slice()
     }
 
@@ -202,8 +216,11 @@ impl Rule for NoNonoctalDecimalEscape {
         }: &Self::State,
     ) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let node = ctx.query();
+
         let prev_token = node.value_token().ok()?;
+
         let replaced = safe_replace_by_range(
             prev_token.text().to_string(),
             replace_string_range.clone(),
@@ -233,18 +250,23 @@ fn safe_replace_by_range(
     replace_with: &str,
 ) -> Option<String> {
     debug_assert!(target.len() >= range.end, "Range out of bounds");
+
     debug_assert!(
         target.is_char_boundary(range.start) && target.is_char_boundary(range.end),
         "Range does not fall on char boundary"
     );
+
     target.replace_range(range, replace_with);
+
     Some(target)
 }
 
 /// Returns true if input is octal decimal escape sequence and is not in JavaScript regular expression
 fn is_octal_escape_sequence(input: &str) -> bool {
     let mut in_regex = false;
+
     let mut prev_char_was_escape = false;
+
     for ch in input.chars() {
         match ch {
             '/' if !prev_char_was_escape => in_regex = !in_regex,
@@ -253,6 +275,7 @@ fn is_octal_escape_sequence(input: &str) -> bool {
             _ => prev_char_was_escape = false,
         }
     }
+
     false
 }
 
@@ -267,8 +290,11 @@ struct EscapeSequence {
 /// Returns a list of escape sequences in the given string literal
 fn lex_escape_sequences(input: &str) -> Vec<EscapeSequence> {
     let mut result = Vec::new();
+
     let mut previous_escape = None;
+
     let mut decimal_escape_start = None;
+
     let mut chars = input.char_indices().peekable();
 
     while let Some((i, ch)) = chars.next() {
@@ -279,9 +305,11 @@ fn lex_escape_sequences(input: &str) -> Vec<EscapeSequence> {
                     // Consume '0'
                     let _ = chars.next();
                 }
+
                 Some((_, '8'..='9')) => {
                     decimal_escape_start = Some(i);
                 }
+
                 _ => (),
             },
             '8' | '9' if decimal_escape_start.is_some() => {
@@ -295,11 +323,14 @@ fn lex_escape_sequences(input: &str) -> Vec<EscapeSequence> {
                     // SAFETY: We tested `decimal_escape_start.is_some()`
                     decimal_escape_range: (decimal_escape_start.unwrap(), i + ch.len_utf8()),
                 });
+
                 decimal_escape_start = None;
             }
+
             _ => previous_escape = Some(ch.to_string()),
         }
     }
+
     result
 }
 
@@ -315,21 +346,32 @@ mod tests {
     #[test]
     fn test_is_octal_escape_sequence() {
         assert!(!is_octal_escape_sequence(""));
+
         assert!(!is_octal_escape_sequence("Hello World!"));
+
         assert!(!is_octal_escape_sequence("\\0"));
+
         assert!(!is_octal_escape_sequence("\\7"));
+
         assert!(is_octal_escape_sequence("\\8"));
+
         assert!(is_octal_escape_sequence("\\9"));
+
         assert!(!is_octal_escape_sequence("/\\8/"));
+
         assert!(!is_octal_escape_sequence("/\\9/"));
+
         assert!(is_octal_escape_sequence("\\0\\8"));
+
         assert!(is_octal_escape_sequence("\\7\\9"));
     }
 
     #[test]
     fn test_get_unicode_escape() {
         assert_eq!(get_unicode_escape('\0'), Some("\\u0000".to_string()));
+
         assert_eq!(get_unicode_escape('a'), Some("\\u0061".to_string()));
+
         assert_eq!(get_unicode_escape('👍'), Some("\\u1f44d".to_string()));
     }
 
@@ -350,6 +392,7 @@ mod tests {
                 }
             ]
         );
+
         assert_eq!(
             lex_escape_sequences("\\0\\8"),
             vec![EscapeSequence {
@@ -358,6 +401,7 @@ mod tests {
                 decimal_escape_range: (2, 4)
             },]
         );
+
         assert_eq!(
             lex_escape_sequences("👍\\8\\9"),
             vec![
@@ -373,6 +417,7 @@ mod tests {
                 }
             ]
         );
+
         assert_eq!(
             lex_escape_sequences("\\\\ \\8"),
             vec![EscapeSequence {

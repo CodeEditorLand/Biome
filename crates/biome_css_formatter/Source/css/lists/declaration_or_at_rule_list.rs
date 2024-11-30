@@ -5,6 +5,7 @@ use biome_css_syntax::CssDeclarationOrAtRuleList;
 pub(crate) struct FormatCssDeclarationOrAtRuleList;
 impl FormatRule<CssDeclarationOrAtRuleList> for FormatCssDeclarationOrAtRuleList {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &CssDeclarationOrAtRuleList, f: &mut CssFormatter) -> FormatResult<()> {
         // This is one of the few cases where we _do_ want to respect empty
         // lines from the input, so we can use `join_nodes_with_hardline`.

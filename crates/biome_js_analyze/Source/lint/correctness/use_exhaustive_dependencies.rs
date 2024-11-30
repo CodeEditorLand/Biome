@@ -368,8 +368,10 @@ impl DeserializableValidator for Hook {
                 );
 
                 self.closure_index = None;
+
                 self.dependencies_index = None;
             }
+
             _ => {}
         }
 
@@ -380,6 +382,7 @@ impl DeserializableValidator for Hook {
 impl HookConfigMaps {
     pub fn new(hooks: &UseExhaustiveDependenciesOptions) -> Self {
         let mut result = HookConfigMaps::default();
+
         for hook in &hooks.hooks {
             if let Some(stable_result) = &hook.stable_result {
                 if *stable_result != StableHookResult::None {
@@ -390,6 +393,7 @@ impl HookConfigMaps {
                     });
                 }
             }
+
             if let (Some(closure_index), Some(dependencies_index)) =
                 (hook.closure_index, hook.dependencies_index)
             {
@@ -488,9 +492,11 @@ fn capture_needs_to_be_in_the_dependency_list(
     if binding.is_imported() {
         return false;
     }
+
     let Some(decl) = binding.tree().declaration() else {
         return false;
     };
+
     match decl.parent_binding_pattern_declaration().unwrap_or(decl) {
         // These declarations are always stable
         AnyJsBindingDeclaration::JsClassDeclaration(_)
@@ -542,6 +548,7 @@ fn capture_needs_to_be_in_the_dependency_list(
             else {
                 return false;
             };
+
             let declaration_range = declaration.syntax().text_range();
 
             // ... they are declared outside of the component function
@@ -654,34 +661,42 @@ fn determine_unstable_dependency(
     let identifier_name = dependency.as_js_identifier_expression()?.name().ok()?;
 
     let declaration = model.binding(&identifier_name)?.tree().declaration()?;
+
     match declaration {
         AnyJsBindingDeclaration::JsArrowFunctionExpression(_)
         | AnyJsBindingDeclaration::JsFunctionDeclaration(_) => {
             Some(UnstableDependencyKind::Function)
         }
+
         AnyJsBindingDeclaration::JsArrayBindingPatternRestElement(_)
         | AnyJsBindingDeclaration::JsObjectBindingPatternRest(_) => {
             Some(UnstableDependencyKind::ObjectLiteral)
         }
+
         AnyJsBindingDeclaration::JsVariableDeclarator(declaration) => {
             let initializer = declaration.initializer()?;
+
             match initializer.expression().ok()? {
                 AnyJsExpression::JsArrowFunctionExpression(_)
                 | AnyJsExpression::JsFunctionExpression(_) => {
                     Some(UnstableDependencyKind::Function)
                 }
+
                 AnyJsExpression::JsArrayExpression(_) | AnyJsExpression::JsObjectExpression(_) => {
                     Some(UnstableDependencyKind::ObjectLiteral)
                 }
+
                 _ => None,
             }
         }
+
         _ => None,
     }
 }
 
 fn into_member_iter(node: &JsSyntaxNode) -> impl Iterator<Item = String> {
     let mut vec = vec![];
+
     let mut next = Some(node.clone());
 
     while let Some(node) = next {
@@ -690,13 +705,17 @@ fn into_member_iter(node: &JsSyntaxNode) -> impl Iterator<Item = String> {
                 let member_name = member_expr
                     .member_name()
                     .and_then(|it| it.as_string_constant().map(|it| it.to_owned()));
+
                 if let Some(member_name) = member_name {
                     vec.push(member_name);
                 }
+
                 next = member_expr.object().ok().map(AstNode::into_syntax);
             }
+
             Err(node) => {
                 vec.push(node.text_trimmed().to_string());
+
                 break;
             }
         }
@@ -708,10 +727,12 @@ fn into_member_iter(node: &JsSyntaxNode) -> impl Iterator<Item = String> {
 
 fn compare_member_depth(a: &JsSyntaxNode, b: &JsSyntaxNode) -> (bool, bool) {
     let mut a_member_iter = into_member_iter(a);
+
     let mut b_member_iter = into_member_iter(b);
 
     loop {
         let a_member = a_member_iter.next();
+
         let b_member = b_member_iter.next();
 
         match (a_member, b_member) {
@@ -729,17 +750,22 @@ fn compare_member_depth(a: &JsSyntaxNode, b: &JsSyntaxNode) -> (bool, bool) {
 
 impl Rule for UseExhaustiveDependencies {
     type Query = Semantic<JsCallExpression>;
+
     type State = Fix;
+
     type Signals = Box<[Self::State]>;
+
     type Options = Box<UseExhaustiveDependenciesOptions>;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let options = ctx.options();
+
         let hook_config_maps = HookConfigMaps::new(options);
 
         let mut signals = Vec::new();
 
         let call = ctx.query();
+
         let model = ctx.model();
 
         if let Some(result) =
@@ -791,6 +817,7 @@ impl Rule for UseExhaustiveDependencies {
                 .collect();
 
             let deps: Vec<_> = result.all_dependencies().collect();
+
             let dependencies_len = deps.len();
 
             let mut add_deps: BTreeMap<Box<str>, Vec<TextRange>> = BTreeMap::new();
@@ -798,7 +825,9 @@ impl Rule for UseExhaustiveDependencies {
             // Evaluate all the captures
             for (capture_text, capture_range, capture_path) in captures.iter() {
                 let mut suggested_fix = None;
+
                 let mut is_captured_covered = false;
+
                 for dep in deps.iter() {
                     let (capture_contains_dep, dep_contains_capture) =
                         compare_member_depth(capture_path, dep.syntax());
@@ -807,7 +836,9 @@ impl Rule for UseExhaustiveDependencies {
                         // capture == dependency
                         (true, true) => {
                             suggested_fix = None;
+
                             is_captured_covered = true;
+
                             break;
                         }
                         // example
@@ -834,6 +865,7 @@ impl Rule for UseExhaustiveDependencies {
                                 dependency_text: dep.syntax().text_trimmed().to_string().into(),
                             });
                         }
+
                         _ => {}
                     }
                 }
@@ -844,6 +876,7 @@ impl Rule for UseExhaustiveDependencies {
 
                 if !is_captured_covered {
                     let captures = add_deps.entry(capture_text.clone().into()).or_default();
+
                     captures.push(*capture_range);
                 }
             }
@@ -854,6 +887,7 @@ impl Rule for UseExhaustiveDependencies {
                     captures.iter().any(|(_, _, capture_path)| {
                         let (capture_contains_dep, dep_contains_capture) =
                             compare_member_depth(capture_path, dep.syntax());
+
                         capture_contains_dep || dep_contains_capture
                     })
                 });
@@ -861,16 +895,20 @@ impl Rule for UseExhaustiveDependencies {
             // Find duplicated deps from specified ones
             {
                 let mut dep_list: BTreeMap<String, AnyJsExpression> = BTreeMap::new();
+
                 for dep in correct_deps.iter() {
                     let expression_name = dep.to_string();
+
                     if dep_list.contains_key(&expression_name) {
                         signals.push(Fix::RemoveDependency {
                             function_name_range: result.function_name_range,
                             component_function: component_function.clone(),
                             dependencies: vec![dep.clone()].into_boxed_slice(),
                         });
+
                         continue;
                     }
+
                     dep_list.insert(expression_name, dep.clone());
                 }
             }
@@ -941,12 +979,14 @@ impl Rule for UseExhaustiveDependencies {
                     markup! {"This hook does not have a dependencies array"},
                 ))
             }
+
             Fix::AddDependency {
                 function_name_range,
                 captures,
                 dependencies_len,
             } => {
                 let (capture_text, captures_range) = captures;
+
                 let mut diag = RuleDiagnostic::new(
                     rule_category!(),
                     function_name_range,
@@ -970,6 +1010,7 @@ impl Rule for UseExhaustiveDependencies {
 
                 Some(diag)
             }
+
             Fix::RemoveDependency {
                 function_name_range,
                 dependencies,
@@ -980,6 +1021,7 @@ impl Rule for UseExhaustiveDependencies {
                     .map(|dep| dep.syntax().text_trimmed().to_string())
                     .collect::<Vec<String>>()
                     .join(", ");
+
                 let mut diag = RuleDiagnostic::new(
                     rule_category!(),
                     function_name_range,
@@ -989,6 +1031,7 @@ impl Rule for UseExhaustiveDependencies {
                 );
 
                 let model = ctx.model();
+
                 for dep in dependencies {
                     if is_out_of_function_scope(dep, component_function, model).unwrap_or(false) {
                         diag = diag.detail(
@@ -1006,6 +1049,7 @@ impl Rule for UseExhaustiveDependencies {
 
                 Some(diag)
             }
+
             Fix::DependencyTooUnstable {
                 dependency_name,
                 dependency_range,
@@ -1015,6 +1059,7 @@ impl Rule for UseExhaustiveDependencies {
                     UnstableDependencyKind::Function => "useCallback()",
                     UnstableDependencyKind::ObjectLiteral => "useMemo()",
                 };
+
                 let diag = RuleDiagnostic::new(
                     rule_category!(),
                     dependency_range,
@@ -1025,8 +1070,10 @@ impl Rule for UseExhaustiveDependencies {
                 .note(markup! {
                     "To fix this, wrap the definition of "<Emphasis>{dependency_name.as_ref()}</Emphasis>" in its own "<Emphasis>{suggested_hook}</Emphasis>" hook."
                 });
+
                 Some(diag)
             }
+
             Fix::DependencyTooDeep {
                 function_name_range,
                 capture_range,
@@ -1042,6 +1089,7 @@ impl Rule for UseExhaustiveDependencies {
                 )
                 .detail(capture_range, "This capture is more generic than...")
                 .detail(dependency_range, "...this dependency.");
+
                 Some(diag)
             }
         }

@@ -87,18 +87,24 @@ declare_lint_rule! {
 
 impl Rule for NoUselessTypeConstraint {
     type Query = Ast<TsTypeConstraintClause>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let ty = node.ty().ok()?;
+
         matches!(ty, AnyTsType::TsAnyType(_) | AnyTsType::TsUnknownType(_)).then_some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -115,6 +121,7 @@ impl Rule for NoUselessTypeConstraint {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
         // If the parent is a type param without default type
         if let Some(type_param) = node
@@ -122,6 +129,7 @@ impl Rule for NoUselessTypeConstraint {
             .filter(|type_param| type_param.default().is_none())
         {
             let type_params = type_param.parent::<TsTypeParameterList>()?;
+
             if type_params.len() == 1
                 && type_params.trailing_separator().is_none()
                 && !ctx.source_type::<JsFileSource>().variant().is_standard()
@@ -129,13 +137,17 @@ impl Rule for NoUselessTypeConstraint {
                     == Some(JsSyntaxKind::JS_ARROW_FUNCTION_EXPRESSION)
             {
                 let name = type_param.name().ok()?;
+
                 let trailing_pieces = name.syntax().last_trailing_trivia()?.pieces();
+
                 let new_name =
                     name.with_trailing_trivia_pieces(trim_leading_trivia_pieces(trailing_pieces))?;
+
                 let new_type_param = type_param.with_name(new_name).with_constraint(None);
                 // Add a trailing comma to disambiguate JSX and arrow functions
                 let new_type_params =
                     make::ts_type_parameter_list([new_type_param], [make::token(T![,])]);
+
                 mutation.replace_node(type_params, new_type_params);
             } else {
                 let prev = node.syntax().prev_sibling()?;
@@ -144,11 +156,13 @@ impl Rule for NoUselessTypeConstraint {
                     prev.clone().into(),
                     prev.trim_trailing_trivia()?.into(),
                 );
+
                 mutation.remove_node(node.clone());
             }
         } else {
             mutation.remove_node(node.clone());
         }
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

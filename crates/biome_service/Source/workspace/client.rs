@@ -85,6 +85,7 @@ where
         R: DeserializeOwned,
     {
         let id = self.request_id.fetch_add(1, Ordering::Relaxed);
+
         let request = TransportRequest { id, method, params };
 
         let response = self.transport.request(request)?;
@@ -107,9 +108,11 @@ where
     ) -> Result<FileFeaturesResult, WorkspaceError> {
         self.request("biome/file_features", params)
     }
+
     fn is_path_ignored(&self, params: IsPathIgnoredParams) -> Result<bool, WorkspaceError> {
         self.request("biome/is_path_ignored", params)
     }
+
     fn update_settings(&self, params: UpdateSettingsParams) -> Result<(), WorkspaceError> {
         self.request("biome/update_settings", params)
     }

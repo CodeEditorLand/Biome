@@ -60,26 +60,33 @@ declare_lint_rule! {
 
 impl Rule for NoUnknownTypeSelector {
     type Query = Ast<CssTypeSelector>;
+
     type State = CssTypeSelector;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let css_type_selector = ctx.query();
+
         let type_selector = css_type_selector
             .ident()
             .ok()?
             .value_token()
             .ok()?
             .token_text_trimmed();
+
         if !is_known_type_selector(&type_selector) {
             return Some(css_type_selector.clone());
         }
+
         None
     }
 
     fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
         let span = node.range();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

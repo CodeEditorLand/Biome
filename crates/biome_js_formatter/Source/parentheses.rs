@@ -1,9 +1,13 @@
 #[cfg(test)]
 pub(crate) mod tests {
     use crate::transform;
+
     use biome_js_parser::JsParserOptions;
+
     use biome_js_syntax::parentheses::NeedsParentheses;
+
     use biome_js_syntax::{JsFileSource, JsLanguage};
+
     use biome_rowan::AstNode;
 
     pub(crate) fn assert_needs_parentheses_impl<
@@ -16,13 +20,16 @@ pub(crate) mod tests {
         let parse = biome_js_parser::parse(input, source_type, JsParserOptions::default());
 
         let diagnostics = parse.diagnostics();
+
         assert!(
             diagnostics.is_empty(),
             "Expected input program to not have syntax errors but had {diagnostics:?}"
         );
 
         let root = parse.syntax();
+
         let (transformed, _) = transform(root);
+
         let matching_nodes: Vec<_> = transformed.descendants().filter_map(T::cast).collect();
 
         let node = if let Some(index) = index {
@@ -37,6 +44,7 @@ pub(crate) mod tests {
                         core::any::type_name::<T>(),
                     )
                 }
+
                 1 => matching_nodes.first().unwrap(),
                 _ => {
                     panic!("Expected to find a single node matching '{}' in '{input}' but found multiple ones:\n {matching_nodes:#?}", core::any::type_name::<T>());
@@ -57,13 +65,16 @@ pub(crate) mod tests {
         let parse = biome_js_parser::parse(input, source_type, JsParserOptions::default());
 
         let diagnostics = parse.diagnostics();
+
         assert!(
             diagnostics.is_empty(),
             "Expected input program to not have syntax errors but had {diagnostics:?}"
         );
 
         let root = parse.syntax();
+
         let (transformed, _) = transform(root);
+
         let matching_nodes: Vec<_> = transformed.descendants().filter_map(T::cast).collect();
 
         let node = if let Some(index) = index {
@@ -78,6 +89,7 @@ pub(crate) mod tests {
                         core::any::type_name::<T>(),
                     )
                 }
+
                 1 => matching_nodes.first().unwrap(),
                 _ => {
                     panic!("Expected to find a single node matching '{}' in '{input}' but found multiple ones:\n {matching_nodes:#?}", core::any::type_name::<T>());

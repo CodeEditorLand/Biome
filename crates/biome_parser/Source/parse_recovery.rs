@@ -69,6 +69,7 @@ impl<K: SyntaxKind> ParseRecoveryTokenSet<K> {
     /// Enable recovery on line breaks
     pub fn enable_recovery_on_line_break(mut self) -> Self {
         self.line_break = true;
+
         self
     }
 
@@ -117,6 +118,7 @@ impl<K: SyntaxKind> ParseRecoveryTokenSet<K> {
 /// the caller knows how to proceed parsing. The recovery wraps all the skipped tokens inside a `Bogus` node.
 pub trait ParseRecovery {
     type Kind: SyntaxKind;
+
     type Parser<'source>: Parser<Kind = Self::Kind>;
 
     /// The kind of the recovered node

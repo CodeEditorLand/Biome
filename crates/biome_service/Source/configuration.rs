@@ -91,7 +91,9 @@ impl<'a> Iterator for ConfigurationDiagnosticsIter<'a> {
         }
 
         let item = self.errors.get(self.index);
+
         self.index += 1;
+
         item
     }
 }
@@ -112,6 +114,7 @@ impl LoadedConfiguration {
             configuration_file_path,
             deserialized,
         } = value;
+
         let (partial_configuration, mut diagnostics) = deserialized.consume();
 
         Ok(Self {
@@ -123,9 +126,12 @@ impl LoadedConfiguration {
                         &external_resolution_base_path,
                         &mut diagnostics,
                     )?;
+
                     partial_configuration.migrate_deprecated_fields();
+
                     partial_configuration
                 }
+
                 None => PartialConfiguration::default(),
             },
             diagnostics: diagnostics
@@ -146,6 +152,7 @@ pub fn load_configuration(
     config_path: ConfigurationPathHint,
 ) -> Result<LoadedConfiguration, WorkspaceError> {
     let config = load_config(fs, config_path)?;
+
     LoadedConfiguration::try_from_payload(config, fs)
 }
 
@@ -190,14 +197,17 @@ fn load_config(
     if let ConfigurationPathHint::FromUser(ref config_file_path) = base_path {
         if file_system.path_is_file(config_file_path) {
             let content = file_system.read_file_from_path(config_file_path)?;
+
             let parser_options = match config_file_path.extension().map(OsStr::as_encoded_bytes) {
                 Some(b"json") => JsonParserOptions::default(),
                 _ => JsonParserOptions::default()
                     .with_allow_comments()
                     .with_allow_trailing_commas(),
             };
+
             let deserialized =
                 deserialize_from_json_str::<PartialConfiguration>(&content, parser_options, "");
+
             return Ok(Some(ConfigurationPayload {
                 deserialized,
                 configuration_file_path: PathBuf::from(config_file_path),
@@ -209,6 +219,7 @@ fn load_config(
     // If the configuration path hint is not a file path
     // we'll auto search for the configuration file
     let should_error = base_path.is_from_user();
+
     let configuration_directory = match base_path {
         ConfigurationPathHint::FromLsp(path) => path,
         ConfigurationPathHint::FromUser(path) => path,
@@ -279,7 +290,9 @@ pub fn load_editorconfig(
             content,
             file_path: path,
         } = auto_search_result;
+
         let editorconfig = biome_configuration::editorconfig::parse_str(&content)?;
+
         let config = editorconfig.to_biome();
 
         // test the patterns to see if they are parsable so we can emit a better diagnostic
@@ -319,6 +332,7 @@ pub fn create_config(
     emit_jsonc: bool,
 ) -> Result<(), WorkspaceError> {
     let json_path = PathBuf::from(ConfigName::biome_json());
+
     let jsonc_path = PathBuf::from(ConfigName::biome_jsonc());
 
     if fs.path_exists(&json_path) || fs.path_exists(&jsonc_path) {
@@ -340,7 +354,9 @@ pub fn create_config(
     // we now check if biome is installed inside `node_modules` and if so, we
     if VERSION == "0.0.0" {
         let schema_path = Path::new("./node_modules/@biomejs/biome/configuration_schema.json");
+
         let options = OpenOptions::default().read(true);
+
         if fs.open_with_options(schema_path, options).is_ok() {
             configuration.schema = schema_path.to_str().map(String::from);
         }
@@ -352,6 +368,7 @@ pub fn create_config(
         .map_err(|_| BiomeDiagnostic::new_serialization_error())?;
 
     let parsed = parse_json(&contents, JsonParserOptions::default());
+
     let formatted =
         biome_json_formatter::format_node(JsonFormatOptions::default(), &parsed.syntax())?
             .print()
@@ -367,19 +384,29 @@ pub fn create_config(
 /// Returns the rules applied to a specific [Path], given the [Settings]
 pub fn to_analyzer_rules(settings: &Settings, path: &Path) -> AnalyzerRules {
     let mut analyzer_rules = AnalyzerRules::default();
+
     if let Some(rules) = settings.linter.rules.as_ref() {
         push_to_analyzer_rules(rules, js_lint_metadata.deref(), &mut analyzer_rules);
+
         push_to_analyzer_rules(rules, css_lint_metadata.deref(), &mut analyzer_rules);
+
         push_to_analyzer_rules(rules, json_lint_metadata.deref(), &mut analyzer_rules);
+
         push_to_analyzer_rules(rules, graphql_lint_metadata.deref(), &mut analyzer_rules);
     }
+
     if let Some(rules) = settings.assists.actions.as_ref() {
         push_to_analyzer_assists(rules, js_lint_metadata.deref(), &mut analyzer_rules);
+
         push_to_analyzer_assists(rules, css_lint_metadata.deref(), &mut analyzer_rules);
+
         push_to_analyzer_assists(rules, json_lint_metadata.deref(), &mut analyzer_rules);
+
         push_to_analyzer_assists(rules, graphql_lint_metadata.deref(), &mut analyzer_rules);
     }
+
     let overrides = &settings.override_settings;
+
     overrides.override_analyzer_rules(path, analyzer_rules)
 }
 
@@ -427,6 +454,7 @@ impl PartialConfigurationExt for PartialConfiguration {
             file_path.parent().expect("file path should have a parent"),
             external_resolution_base_path,
         )?;
+
         let (configurations, errors): (Vec<_>, Vec<_>) = deserialized
             .into_iter()
             .map(|d| d.consume())
@@ -436,12 +464,15 @@ impl PartialConfigurationExt for PartialConfiguration {
         let extended_configuration = configurations.into_iter().reduce(
             |mut previous_configuration, current_configuration| {
                 previous_configuration.merge_with(current_configuration);
+
                 previous_configuration
             },
         );
+
         if let Some(mut extended_configuration) = extended_configuration {
             // We swap them to avoid having to clone `self.configuration` to merge it.
             std::mem::swap(self, &mut extended_configuration);
+
             self.merge_with(extended_configuration)
         }
 
@@ -468,6 +499,7 @@ impl PartialConfigurationExt for PartialConfiguration {
         };
 
         let mut deserialized_configurations = vec![];
+
         for extend_entry in extends.iter() {
             let extend_entry_as_path = Path::new(extend_entry);
 
@@ -509,6 +541,7 @@ impl PartialConfigurationExt for PartialConfiguration {
                 })?;
 
             let mut content = String::new();
+
             file.read_to_string(&mut content).map_err(|err| {
                 CantLoadExtendFile::new(extend_configuration_file_path.display().to_string(), err.to_string()).with_verbose_advice(
                     markup!{
@@ -517,6 +550,7 @@ impl PartialConfigurationExt for PartialConfiguration {
                 )
 
             })?;
+
             let deserialized = deserialize_from_json_str::<PartialConfiguration>(
                 content.as_str(),
                 match extend_configuration_file_path
@@ -530,8 +564,10 @@ impl PartialConfigurationExt for PartialConfiguration {
                 },
                 "",
             );
+
             deserialized_configurations.push(deserialized)
         }
+
         Ok(deserialized_configurations)
     }
 
@@ -582,6 +618,7 @@ impl PartialConfigurationExt for PartialConfiguration {
         let Some(vcs) = &self.vcs else {
             return Ok((None, vec![]));
         };
+
         if vcs.is_enabled() {
             let vcs_base_path = match (vcs_base_path, &vcs.root) {
                 (Some(vcs_base_path), Some(root)) => vcs_base_path.join(root),
@@ -589,6 +626,7 @@ impl PartialConfigurationExt for PartialConfiguration {
                 (Some(vcs_base_path), None) => PathBuf::from(vcs_base_path),
                 (None, None) => return Err(WorkspaceError::vcs_disabled()),
             };
+
             if let Some(client_kind) = &vcs.client_kind {
                 if !vcs.ignore_file_disabled() {
                     let result = file_system
@@ -608,6 +646,7 @@ impl PartialConfigurationExt for PartialConfiguration {
                 }
             }
         }
+
         Ok((None, vec![]))
     }
 }

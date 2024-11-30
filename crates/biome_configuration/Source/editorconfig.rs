@@ -48,7 +48,9 @@ impl EditorConfig {
             formatter: self.options.remove("*").map(|o| o.to_biome()),
             ..Default::default()
         };
+
         let mut errors = vec![];
+
         let overrides: Vec<_> = self
             .options
             .into_iter()
@@ -57,6 +59,7 @@ impl EditorConfig {
                     Ok(patterns) => patterns.into_iter().map(hack_convert_double_star).collect(),
                     Err(err) => {
                         errors.push(err);
+
                         vec![k]
                     }
                 };
@@ -68,6 +71,7 @@ impl EditorConfig {
                 }
             })
             .collect();
+
         config.overrides = Some(Overrides(overrides));
 
         (Some(config), diagnostics)
@@ -126,6 +130,7 @@ impl EditorConfigOptions {
                 "Biome always inserts a final newline. Set this option to true.",
             ));
         }
+
         errors
     }
 }
@@ -160,6 +165,7 @@ where
     D: Deserializer<'de>,
 {
     let s = String::deserialize(deserializer)?;
+
     match s.as_str() {
         "false" => Ok(false),
         "true" => Ok(true),
@@ -183,6 +189,7 @@ where
     T::Err: std::fmt::Display,
 {
     let s = String::deserialize(deserializer)?;
+
     match s.as_str() {
         "unset" | "off" => Ok(EditorconfigValue::Default),
         _ => T::from_str(s.as_str())
@@ -214,20 +221,24 @@ fn expand_unknown_glob_patterns(pattern: &str) -> Result<Vec<String>, EditorConf
 
         fn parse_to_variants(&mut self, s: &str) -> Result<(), EditorConfigDiagnostic> {
             let s = s.trim_start_matches('{').trim_end_matches('}');
+
             if s.contains("..") {
                 let mut parts = s.split("..");
+
                 let start = parts.next().ok_or_else(|| {
                     EditorConfigDiagnostic::invalid_glob_pattern(
                         s,
                         "Range pattern must have exactly two parts",
                     )
                 })?;
+
                 let end = parts.next().ok_or_else(|| {
                     EditorConfigDiagnostic::invalid_glob_pattern(
                         s,
                         "Range pattern must have exactly two parts",
                     )
                 })?;
+
                 if parts.next().is_some() {
                     return Err(EditorConfigDiagnostic::invalid_glob_pattern(
                         s,
@@ -241,12 +252,14 @@ fn expand_unknown_glob_patterns(pattern: &str) -> Result<Vec<String>, EditorConf
                         format!("Error parsing the start of the range: {err}"),
                     )
                 })?;
+
                 let end = end.parse().map_err(|err| {
                     EditorConfigDiagnostic::invalid_glob_pattern(
                         s,
                         format!("Error parsing the end of the range: {err}"),
                     )
                 })?;
+
                 self.variants = Some(VariantType::Range((start, end)));
             } else {
                 self.variants = Some(VariantType::List(
@@ -262,11 +275,14 @@ fn expand_unknown_glob_patterns(pattern: &str) -> Result<Vec<String>, EditorConf
                 Some(VariantType::List(ref list)) => list.clone(),
                 Some(VariantType::Range((start, end))) => {
                     let mut variants = vec![];
+
                     for i in *start..=*end {
                         variants.push(i.to_string());
                     }
+
                     variants
                 }
+
                 None => vec![],
             }
         }
@@ -278,7 +294,9 @@ fn expand_unknown_glob_patterns(pattern: &str) -> Result<Vec<String>, EditorConf
     }
 
     let mut all_variants = vec![];
+
     let mut current_variants = None;
+
     for (index, byte) in pattern.bytes().enumerate() {
         match byte {
             b'{' => {
@@ -288,13 +306,17 @@ fn expand_unknown_glob_patterns(pattern: &str) -> Result<Vec<String>, EditorConf
                     // TODO: error, recursive brace expansion is not supported
                 }
             }
+
             b'}' => {
                 if let Some(mut v) = current_variants.take() {
                     v.end = index;
+
                     v.parse_to_variants(&pattern[v.start..=v.end])?;
+
                     all_variants.push(v);
                 }
             }
+
             _ => {}
         }
     }
@@ -304,22 +326,29 @@ fn expand_unknown_glob_patterns(pattern: &str) -> Result<Vec<String>, EditorConf
     }
 
     let mut expanded_patterns = vec![];
+
     for variants in all_variants.iter().rev() {
         if expanded_patterns.is_empty() {
             for variant in &variants.variants() {
                 let mut pattern = pattern.to_string();
+
                 pattern.replace_range(variants.start..=variants.end, variant);
+
                 expanded_patterns.push(pattern);
             }
         } else {
             let mut new_patterns = vec![];
+
             for existing in &expanded_patterns {
                 for variant in &variants.variants() {
                     let mut pattern = existing.clone();
+
                     pattern.replace_range(variants.start..=variants.end, variant);
+
                     new_patterns.push(pattern);
                 }
             }
+
             expanded_patterns = new_patterns;
         }
     }
@@ -389,6 +418,7 @@ indent_size = 2
 "#;
 
         let conf = parse_str(input).expect("Failed to parse editorconfig");
+
         assert!(conf.root);
     }
 
@@ -406,12 +436,19 @@ max_line_length = 80
 "#;
 
         let conf = parse_str(input).expect("Failed to parse editorconfig");
+
         let (conf, _) = conf.to_biome();
+
         let conf = conf.expect("Failed to convert editorconfig to biome");
+
         let formatter = conf.formatter.expect("Formatter not set");
+
         assert_eq!(formatter.indent_style, Some(IndentStyle::Space));
+
         assert_eq!(formatter.indent_width.unwrap().value(), 4);
+
         assert_eq!(formatter.line_ending, Some(LineEnding::Crlf));
+
         assert_eq!(formatter.line_width.map(|v| v.value()), Some(80));
     }
 
@@ -425,8 +462,11 @@ insert_final_newline = false
 "#;
 
         let conf = parse_str(input).expect("Failed to parse editorconfig");
+
         let (_, errors) = conf.to_biome();
+
         assert_eq!(errors.len(), 1);
+
         assert!(matches!(errors[0], EditorConfigDiagnostic::Incompatible(_)));
     }
 
@@ -443,18 +483,22 @@ max_line_length = unset
 "#;
 
         let conf = parse_str(input).expect("Failed to parse editorconfig");
+
         assert!(matches!(
             conf.options["*"].indent_style,
             EditorconfigValue::Default
         ));
+
         assert!(matches!(
             conf.options["*"].indent_size,
             EditorconfigValue::Default
         ));
+
         assert!(matches!(
             conf.options["*"].end_of_line,
             EditorconfigValue::Default
         ));
+
         assert!(matches!(
             conf.options["*"].max_line_length,
             EditorconfigValue::Default
@@ -471,6 +515,7 @@ max_line_length = off
 "#;
 
         let conf = parse_str(input).expect("Failed to parse editorconfig");
+
         assert!(matches!(
             conf.options["*"].max_line_length,
             EditorconfigValue::Default,
@@ -480,24 +525,33 @@ max_line_length = off
     #[test]
     fn should_expand_glob_pattern_list() {
         let pattern = "package.json";
+
         let mut expanded =
             expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
+
         expanded.sort();
+
         assert_eq!(expanded, vec!["package.json"]);
 
         let pattern = "{package.json,.travis.yml}";
+
         let mut expanded =
             expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
+
         expanded.sort();
+
         assert_eq!(expanded, vec![".travis.yml", "package.json"]);
     }
 
     #[test]
     fn should_expand_glob_pattern_list_2() {
         let pattern = "**/{foo,bar}.{test,spec}.js";
+
         let mut expanded =
             expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
+
         expanded.sort();
+
         assert_eq!(
             expanded,
             vec![
@@ -512,9 +566,12 @@ max_line_length = off
     #[test]
     fn should_expand_glob_pattern_range() {
         let pattern = "**/bar.{1..4}.js";
+
         let mut expanded =
             expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
+
         expanded.sort();
+
         assert_eq!(
             expanded,
             vec!["**/bar.1.js", "**/bar.2.js", "**/bar.3.js", "**/bar.4.js",]
@@ -524,11 +581,15 @@ max_line_length = off
     #[test]
     fn should_correct_double_star() {
         let pattern = "**.yml";
+
         let corrected = hack_convert_double_star(pattern);
+
         assert_eq!(corrected, "**/*.yml",);
 
         let pattern = "**/*.yml";
+
         let corrected = hack_convert_double_star(pattern);
+
         assert_eq!(corrected, "**/*.yml",);
     }
 }

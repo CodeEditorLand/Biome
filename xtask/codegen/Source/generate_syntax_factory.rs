@@ -8,11 +8,14 @@ use xtask::Result;
 
 pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Result<String> {
     let syntax_crate = language_kind.syntax_crate_ident();
+
     let syntax_kind = language_kind.syntax_kind();
+
     let factory_kind = language_kind.syntax_factory();
 
     let normal_node_arms = ast.nodes.iter().map(|node| {
         let kind = format_ident!("{}", Case::Constant.convert(&node.name));
+
         let expected_len = node.fields.len();
 
         let fields = if node.dynamic {
@@ -29,18 +32,22 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
                         // they can just check the kind and move on if there's no match.
                         1 => {
                             let field = group[0];
+
                             let field_predicate = get_field_predicate(field, language_kind);
 
                             quote! {
                                 if let Some(element) = &current_element {
                                     if #field_predicate {
                                         slots.mark_present();
+
                                         current_element = elements.next();
                                     }
                                 }
+
                                 slots.next_slot();
                             }
                         }
+
                         _ => {
                             let variants = group.iter().enumerate().map(|(index, field)| {
                                 let field_predicate = get_field_predicate(field, language_kind);
@@ -62,7 +69,9 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
 
                             quote! {
                                 let mut unmatched_count = #group_length;
+
                                 let mut group_slot_map = [false; #group_length];
+
                                 for _ in 0usize..#group_length {
                                     let Some(element) = &current_element else {
                                         break;
@@ -73,9 +82,13 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
                                         // are allowed to match, so move on to the next group.
                                         break;
                                     }
+
                                     unmatched_count -= 1;
+
                                     slots.mark_present();
+
                                     slots.next_slot();
+
                                     current_element = elements.next();
                                 }
                                 // Advanced past all of the expected slots for the group so that
@@ -93,13 +106,16 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
                 .iter()
                 .map(|field| {
                     let field_predicate = get_field_predicate(field, language_kind);
+
                     quote! {
                         if let Some(element) = &current_element {
                             if #field_predicate {
                                 slots.mark_present();
+
                                 current_element = elements.next();
                             }
                         }
+
                         slots.next_slot();
                     }
                 })
@@ -109,7 +125,9 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
         quote! {
             #kind => {
                 let mut elements = (&children).into_iter();
+
                 let mut slots: RawNodeSlots<#expected_len> = RawNodeSlots::default();
+
                 let mut current_element = elements.next();
 
                 #(#fields)*
@@ -129,10 +147,14 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
 
     let lists = ast.lists().map(|(name, data)| {
         let element_type = format_ident!("{}", data.element_name);
+
         let kind = format_ident!("{}", Case::Constant.convert(name));
+
         if let Some(separator) = &data.separator {
             let allow_trailing = separator.allow_trailing;
+
             let separator_kind = token_kind_to_code(&separator.separator_token, language_kind);
+
             quote! {
                 #kind => Self::make_separated_list_syntax(kind, children, #element_type::can_cast, #separator_kind, #allow_trailing)
             }
@@ -150,6 +172,7 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
 
     let output = quote! {
         use #syntax_crate::{*, #syntax_kind, #syntax_kind::*, T};
+
         use biome_rowan::{AstNode, ParsedChildren, RawNodeSlots, RawSyntaxNode, SyntaxFactory, SyntaxKind};
 
         #[derive(Debug)]
@@ -177,5 +200,6 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
     };
 
     let pretty = xtask::reformat(output)?;
+
     Ok(pretty)
 }

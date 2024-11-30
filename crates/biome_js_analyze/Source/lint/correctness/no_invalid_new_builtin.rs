@@ -58,13 +58,18 @@ declare_lint_rule! {
 
 impl Rule for NoInvalidNewBuiltin {
     type Query = Semantic<JsNewExpression>;
+
     type State = StaticValue;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let callee = ctx.query().callee().ok()?;
+
         let (reference, name) = global_identifier(&callee)?;
+
         match name.text() {
             "Symbol" | "BigInt" => ctx.model().binding(&reference).is_none().then_some(name),
             _ => None,
@@ -73,6 +78,7 @@ impl Rule for NoInvalidNewBuiltin {
 
     fn diagnostic(ctx: &RuleContext<Self>, builtin_name: &Self::State) -> Option<RuleDiagnostic> {
         let builtin_name = builtin_name.text();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             ctx.query().range(),
@@ -86,12 +92,16 @@ impl Rule for NoInvalidNewBuiltin {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let call_expression = convert_new_expression_to_call_expression(node)?;
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node_discard_trivia::<AnyJsExpression>(
             node.clone().into(),
             call_expression.into(),
         );
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -103,12 +113,15 @@ impl Rule for NoInvalidNewBuiltin {
 
 fn convert_new_expression_to_call_expression(expr: &JsNewExpression) -> Option<JsCallExpression> {
     let new_token = expr.new_token().ok()?;
+
     let mut callee = expr.callee().ok()?;
+
     if new_token.has_leading_comments() || new_token.has_trailing_comments() {
         callee = callee.prepend_trivia_pieces(chain_trivia_pieces(
             new_token.leading_trivia().pieces(),
             new_token.trailing_trivia().pieces(),
         ))?;
     }
+
     Some(make::js_call_expression(callee, expr.arguments()?).build())
 }

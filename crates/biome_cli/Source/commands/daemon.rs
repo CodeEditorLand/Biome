@@ -26,6 +26,7 @@ pub(crate) fn start(
     log_file_name_prefix: Option<String>,
 ) -> Result<(), CliDiagnostic> {
     let rt = Runtime::new()?;
+
     let did_spawn = rt.block_on(ensure_daemon(
         false,
         config_path,
@@ -51,10 +52,12 @@ pub(crate) fn stop(session: CliSession) -> Result<(), CliDiagnostic> {
 
     if let Some(transport) = open_transport(rt)? {
         let client = WorkspaceClient::new(transport)?;
+
         match client.shutdown() {
             // The `ChannelClosed` error is expected since the server can
             // shutdown before sending a response
             Ok(()) | Err(WorkspaceError::TransportError(TransportError::ChannelClosed)) => {}
+
             Err(err) => return Err(CliDiagnostic::from(err)),
         };
 
@@ -79,8 +82,11 @@ pub(crate) fn run_server(
     setup_tracing_subscriber(log_path, log_file_name_prefix);
 
     let rt = Runtime::new()?;
+
     let factory = ServerFactory::new(stop_on_disconnect);
+
     let cancellation = factory.cancellation();
+
     let span = debug_span!("Running Server", pid = std::process::id());
 
     rt.block_on(async move {
@@ -91,8 +97,10 @@ pub(crate) fn run_server(
                     Err(err) => Err(err.into()),
                 }
             }
+
             _ = cancellation.notified() => {
                 tracing::info!("Received shutdown signal");
+
                 Ok(())
             }
         }
@@ -101,7 +109,9 @@ pub(crate) fn run_server(
 
 pub(crate) fn print_socket() -> Result<(), CliDiagnostic> {
     let rt = Runtime::new()?;
+
     rt.block_on(service::print_socket())?;
+
     Ok(())
 }
 
@@ -111,6 +121,7 @@ pub(crate) fn lsp_proxy(
     log_file_name_prefix: Option<String>,
 ) -> Result<(), CliDiagnostic> {
     let rt = Runtime::new()?;
+
     rt.block_on(start_lsp_proxy(
         &rt,
         config_path,
@@ -136,6 +147,7 @@ async fn start_lsp_proxy(
         Some((mut owned_read_half, mut owned_write_half)) => {
             // forward stdin to socket
             let mut stdin = io::stdin();
+
             let input_handle = rt.spawn(async move {
                 loop {
                     match io::copy(&mut stdin, &mut owned_write_half).await {
@@ -144,6 +156,7 @@ async fn start_lsp_proxy(
                                 return Ok(());
                             }
                         }
+
                         Err(err) => return Err(err),
                     };
                 }
@@ -151,6 +164,7 @@ async fn start_lsp_proxy(
 
             // receive socket response to stdout
             let mut stdout = io::stdout();
+
             let out_put_handle = rt.spawn(async move {
                 loop {
                     match io::copy(&mut owned_read_half, &mut stdout).await {
@@ -159,15 +173,19 @@ async fn start_lsp_proxy(
                                 return Ok(());
                             }
                         }
+
                         Err(err) => return Err(err),
                     };
                 }
             });
 
             let _ = input_handle.await;
+
             let _ = out_put_handle.await;
+
             Ok(())
         }
+
         None => Ok(()),
     }
 }
@@ -207,7 +225,9 @@ pub(crate) fn read_most_recent_log_file(
 /// directory)
 fn setup_tracing_subscriber(log_path: Option<PathBuf>, log_file_name_prefix: Option<String>) {
     let biome_log_path = log_path.unwrap_or(biome_fs::ensure_cache_dir().join("biome-logs"));
+
     let appender_builder = tracing_appender::rolling::RollingFileAppender::builder();
+
     let file_appender = appender_builder
         .filename_prefix(log_file_name_prefix.unwrap_or(String::from("server.log")))
         .max_log_files(7)

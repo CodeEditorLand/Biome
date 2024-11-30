@@ -48,8 +48,10 @@ impl Format<GraphqlFormatContext> for FormatTypeLeadingSeparator<'_> {
                 let content = format_with(|f| {
                     write!(f, [soft_line_break_or_space(), token.format(), space()])
                 });
+
                 write!(f, [format_only_if_breaks(token, &content)])
             }
+
             None => {
                 let content = format_with(|f| {
                     write!(

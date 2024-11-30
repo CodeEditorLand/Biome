@@ -11,6 +11,7 @@ impl ModuloCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Modulo<GritQueryContext>, CompileError> {
         let left = PatternCompiler::from_node(&node.left()?, context)?;
+
         let right = PatternCompiler::from_node(&node.right()?, context)?;
 
         Ok(Modulo::new(left, right))

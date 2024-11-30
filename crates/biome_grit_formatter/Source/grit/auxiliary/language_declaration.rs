@@ -15,6 +15,7 @@ impl FormatNodeRule<GritLanguageDeclaration> for FormatGritLanguageDeclaration {
             flavor,
             semicolon_token,
         } = node.as_fields();
+
         write!(
             f,
             [

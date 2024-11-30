@@ -54,6 +54,7 @@ impl<L: Language> SyntaxToken<L> {
 
     pub fn key(&self) -> SyntaxElementKey {
         let (node_data, offset) = self.raw.key();
+
         SyntaxElementKey::new(node_data, offset)
     }
 
@@ -159,6 +160,7 @@ impl<L: Language> SyntaxToken<L> {
     pub fn next_sibling_or_token(&self) -> Option<SyntaxElement<L>> {
         self.raw.next_sibling_or_token().map(NodeOrToken::from)
     }
+
     pub fn prev_sibling_or_token(&self) -> Option<SyntaxElement<L>> {
         self.raw.prev_sibling_or_token().map(NodeOrToken::from)
     }
@@ -198,8 +200,10 @@ impl<L: Language> SyntaxToken<L> {
         I::IntoIter: ExactSizeIterator,
     {
         let mut token_text = String::new();
+
         let trivia = trivia.into_iter().map(|(kind, text)| {
             token_text.push_str(text);
+
             TriviaPiece::new(kind, TextSize::of(text))
         });
 
@@ -207,6 +211,7 @@ impl<L: Language> SyntaxToken<L> {
 
         // Copy over token text and trailing trivia
         let leading_len = self.raw.green().leading_trivia().text_len();
+
         token_text.push_str(&self.text()[usize::from(leading_len)..]);
 
         Self {
@@ -228,8 +233,10 @@ impl<L: Language> SyntaxToken<L> {
         I::IntoIter: ExactSizeIterator,
     {
         let mut token_text = String::new();
+
         let trivia = trivia.into_iter().map(|piece| {
             token_text.push_str(piece.text());
+
             piece.into_raw_piece()
         });
 
@@ -237,6 +244,7 @@ impl<L: Language> SyntaxToken<L> {
 
         // Copy over token text and trailing trivia
         let leading_len = self.raw.green().leading_trivia().text_len();
+
         token_text.push_str(&self.text()[usize::from(leading_len)..]);
 
         Self {
@@ -261,10 +269,12 @@ impl<L: Language> SyntaxToken<L> {
 
         // copy over leading trivia and token text
         let trailing_len = self.green_token().trailing_trivia().text_len();
+
         token_text.push_str(&self.text()[..usize::from(self.text().text_len() - trailing_len)]);
 
         let trivia = trivia.into_iter().map(|(kind, text)| {
             token_text.push_str(text);
+
             TriviaPiece::new(kind, TextSize::of(text))
         });
 
@@ -292,10 +302,12 @@ impl<L: Language> SyntaxToken<L> {
 
         // copy over leading trivia and token text
         let trailing_len = self.green_token().trailing_trivia().text_len();
+
         token_text.push_str(&self.text()[..usize::from(self.text().text_len() - trailing_len)]);
 
         let trivia = trivia.into_iter().map(|piece| {
             token_text.push_str(piece.text());
+
             piece.into_raw_piece()
         });
 
@@ -435,12 +447,14 @@ impl<L: Language> SyntaxToken<L> {
     /// Return whitespace that juxtapose the token until the first non-whitespace item.
     pub fn indentation_trivia_pieces(&self) -> impl ExactSizeIterator<Item = SyntaxTriviaPiece<L>> {
         let leading_trivia = self.leading_trivia().pieces();
+
         let skip_count = leading_trivia.len()
             - leading_trivia
                 .rev()
                 .position(|x| !x.is_whitespace())
                 .map(|pos| pos + 1)
                 .unwrap_or(0);
+
         self.leading_trivia().pieces().skip(skip_count)
     }
 
@@ -539,7 +553,9 @@ impl<L: Language> fmt::Debug for SyntaxToken<L> {
         )?;
 
         self.leading_trivia().fmt(f)?;
+
         write!(f, " ")?;
+
         self.trailing_trivia().fmt(f)
     }
 }

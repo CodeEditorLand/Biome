@@ -25,9 +25,12 @@ pub fn fuzz_js_parser_with_source_type(data: &[u8], source: JsFileSource) -> Cor
     };
 
     let parse1 = parse(code1, source);
+
     if !parse1.has_errors() {
         let syntax1 = parse1.syntax();
+
         let code2 = syntax1.to_string();
+
         assert_eq!(code1, code2, "unparse output differed");
     }
 
@@ -72,19 +75,27 @@ pub fn fuzz_js_formatter_with_source_type(data: &[u8], source: JsFileSource) -> 
                 ..Default::default()
             })
         };
+
         let rules = rules.as_enabled_rules().into_iter().collect::<Vec<_>>();
+
         unsafe {
             ANALYSIS_RULE_FILTERS = Some(rules);
+
             ANALYSIS_RULE_FILTERS.as_ref().unwrap_unchecked()
         }
     };
+
     let options = unsafe { ANALYSIS_OPTIONS.get_or_insert_with(AnalyzerOptions::default) };
 
     let parse1 = parse(code1, source);
+
     if !parse1.has_errors() {
         let language = JsFormatLanguage::new(JsFormatOptions::new(source));
+
         let tree1 = parse1.tree();
+
         let mut linter_errors = Vec::new();
+
         let _ = analyze(
             &tree1,
             AnalysisFilter::from_enabled_rules(Some(rule_filters)),
@@ -99,11 +110,15 @@ pub fn fuzz_js_formatter_with_source_type(data: &[u8], source: JsFileSource) -> 
                 ControlFlow::Continue(())
             },
         );
+
         let syntax1 = parse1.syntax();
+
         if let Ok(formatted1) = format_node(&syntax1, language.clone()) {
             if let Ok(printed1) = formatted1.print() {
                 let code2 = printed1.as_code();
+
                 let parse2 = parse(code2, source);
+
                 assert!(
                     !parse2.has_errors(),
                     "formatter introduced errors:\n{}",
@@ -111,7 +126,9 @@ pub fn fuzz_js_formatter_with_source_type(data: &[u8], source: JsFileSource) -> 
                         .unified_diff()
                         .header("original code", "formatted")
                 );
+
                 let tree2 = parse2.tree();
+
                 let (maybe_diagnostic, _) = analyze(
                     &tree2,
                     AnalysisFilter::from_enabled_rules(Some(rule_filters)),
@@ -121,6 +138,7 @@ pub fn fuzz_js_formatter_with_source_type(data: &[u8], source: JsFileSource) -> 
                         if let Some(diagnostic) = e.diagnostic() {
                             let new_error =
                                 DiagnosticDescriptionExtractor::new(&diagnostic).to_string();
+
                             if let Some(idx) = linter_errors.iter().position(|e| *e == new_error) {
                                 linter_errors.remove(idx);
                             } else {
@@ -131,6 +149,7 @@ pub fn fuzz_js_formatter_with_source_type(data: &[u8], source: JsFileSource) -> 
                         ControlFlow::Continue(())
                     },
                 );
+
                 if let Some(diagnostic) = maybe_diagnostic {
                     panic!(
                         "formatter introduced linter failure: {} (expected one of: {})\n{}",
@@ -141,13 +160,18 @@ pub fn fuzz_js_formatter_with_source_type(data: &[u8], source: JsFileSource) -> 
                             .header("original code", "formatted")
                     );
                 }
+
                 let syntax2 = parse2.syntax();
+
                 let formatted2 = format_node(&syntax2, language)
                     .expect("formatted code could not be reformatted");
+
                 let printed2 = formatted2
                     .print()
                     .expect("reformatted code could not be printed");
+
                 let code3 = printed2.as_code();
+
                 assert_eq!(
                     code2,
                     code3,
@@ -169,9 +193,12 @@ pub fn fuzz_json_parser(data: &[u8]) -> Corpus {
     };
 
     let parse1 = parse_json(code1);
+
     if !parse1.has_errors() {
         let syntax1 = parse1.syntax();
+
         let code2 = syntax1.to_string();
+
         assert_eq!(code1, code2, "unparse output differed");
     }
 
@@ -184,13 +211,18 @@ pub fn fuzz_json_formatter(data: &[u8]) -> Corpus {
     };
 
     let parse1 = parse_json(code1);
+
     if !parse1.has_errors() {
         let language = JsonFormatLanguage::new(JsonFormatOptions::default());
+
         let syntax1 = parse1.syntax();
+
         if let Ok(formatted1) = format_node(&syntax1, language.clone()) {
             if let Ok(printed1) = formatted1.print() {
                 let code2 = printed1.as_code();
+
                 let parse2 = parse_json(code2);
+
                 assert!(
                     !parse2.has_errors(),
                     "formatter introduced errors:\n{}",
@@ -198,12 +230,16 @@ pub fn fuzz_json_formatter(data: &[u8]) -> Corpus {
                         .unified_diff()
                         .header("original code", "formatted")
                 );
+
                 let syntax2 = parse2.syntax();
+
                 let formatted2 = format_node(&syntax2, language)
                     .expect("formatted code could not be reformatted");
+
                 let printed2 = formatted2
                     .print()
                     .expect("reformatted code could not be printed");
+
                 assert_eq!(
                     code2,
                     printed2.as_code(),

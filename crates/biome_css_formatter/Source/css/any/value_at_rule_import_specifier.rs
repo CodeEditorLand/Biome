@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssValueAtRuleImportSpecifier;
 pub(crate) struct FormatAnyCssValueAtRuleImportSpecifier;
 impl FormatRule<AnyCssValueAtRuleImportSpecifier> for FormatAnyCssValueAtRuleImportSpecifier {
     type Context = CssFormatContext;
+
     fn fmt(
         &self,
         node: &AnyCssValueAtRuleImportSpecifier,
@@ -15,6 +16,7 @@ impl FormatRule<AnyCssValueAtRuleImportSpecifier> for FormatAnyCssValueAtRuleImp
             AnyCssValueAtRuleImportSpecifier::CssValueAtRuleImportSpecifier(node) => {
                 node.format().fmt(f)
             }
+
             AnyCssValueAtRuleImportSpecifier::CssValueAtRuleNamedImportSpecifier(node) => {
                 node.format().fmt(f)
             }

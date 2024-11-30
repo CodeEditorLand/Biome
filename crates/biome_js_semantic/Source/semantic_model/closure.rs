@@ -130,9 +130,12 @@ impl Iterator for AllCapturesIter {
         'references: loop {
             while let Some(reference) = self.references.pop() {
                 let binding_id = reference.binding_id();
+
                 let binding = &self.data.binding(binding_id);
+
                 if !self.closure_range.contains(binding.range.start()) {
                     let reference = &binding.references[reference.index()];
+
                     return Some(Capture {
                         data: self.data.clone(),
                         node: self.data.binding_node_by_start[&reference.range_start].clone(), // TODO change node to store the range
@@ -148,12 +151,17 @@ impl Iterator for AllCapturesIter {
                 if scope.is_closure {
                     continue 'scopes;
                 }
+
                 self.references.clear();
+
                 self.references
                     .extend(scope.read_references.iter().copied());
+
                 self.references
                     .extend(scope.write_references.iter().copied());
+
                 self.scopes.extend(scope.children.iter());
+
                 continue 'references;
             }
 
@@ -176,6 +184,7 @@ impl Iterator for ChildrenIter {
     fn next(&mut self) -> Option<Self::Item> {
         while let Some(scope_id) = self.scopes.pop() {
             let scope = &self.data.scopes[scope_id.index()];
+
             if scope.is_closure {
                 return Some(Closure {
                     data: self.data.clone(),
@@ -204,7 +213,9 @@ impl Iterator for DescendentsIter {
     fn next(&mut self) -> Option<Self::Item> {
         while let Some(scope_id) = self.scopes.pop() {
             let scope = &self.data.scopes[scope_id.index()];
+
             self.scopes.extend(scope.children.iter());
+
             if scope.is_closure {
                 return Some(Closure {
                     data: self.data.clone(),
@@ -229,6 +240,7 @@ pub struct Closure {
 impl Closure {
     pub(super) fn from_node(data: Rc<SemanticModelData>, node: &impl HasClosureAstNode) -> Closure {
         let closure_range = node.node_text_range();
+
         let scope_id = data.scope(closure_range);
 
         Closure { data, scope_id }
@@ -236,6 +248,7 @@ impl Closure {
 
     pub(super) fn from_scope(data: Rc<SemanticModelData>, scope_id: ScopeId) -> Option<Closure> {
         let node = &data.scope_node_by_range[&data.scopes[scope_id.index()].range];
+
         match node.kind() {
             JsSyntaxKind::JS_FUNCTION_DECLARATION
             | JsSyntaxKind::JS_FUNCTION_EXPRESSION
@@ -268,6 +281,7 @@ impl Closure {
         let scopes = scope.children.clone();
 
         let mut references = scope.read_references.clone();
+
         references.extend(scope.write_references.iter().copied());
 
         AllCapturesIter {
@@ -294,6 +308,7 @@ impl Closure {
     /// ```
     pub fn children(&self) -> impl Iterator<Item = Closure> {
         let scope = &self.data.scopes[self.scope_id.index()];
+
         ChildrenIter {
             data: self.data.clone(),
             scopes: scope.children.clone(),
@@ -317,6 +332,7 @@ impl Closure {
     /// ```
     pub fn descendents(&self) -> impl Iterator<Item = Closure> {
         let scopes = vec![self.scope_id];
+
         DescendentsIter {
             data: self.data.clone(),
             scopes,
@@ -338,12 +354,16 @@ impl<T: HasClosureAstNode> ClosureExtensions for T {}
 #[cfg(test)]
 mod test {
     use super::*;
+
     use biome_js_parser::JsParserOptions;
+
     use biome_js_syntax::{JsArrowFunctionExpression, JsFileSource, JsSyntaxKind};
+
     use biome_rowan::SyntaxNodeCast;
 
     fn assert_closure(code: &str, name: &str, captures: &[&str]) {
         let r = biome_js_parser::parse(code, JsFileSource::tsx(), JsParserOptions::default());
+
         let model = semantic_model(&r.tree(), SemanticModelOptions::default());
 
         let closure = if name != "ARROWFUNCTION" {
@@ -353,10 +373,12 @@ mod test {
                 .filter(|x| x.text_trimmed() == name)
                 .last()
                 .unwrap();
+
             let node = node
                 .parent()
                 .and_then(|node| AnyHasClosureNode::from_node(&node))
                 .unwrap();
+
             model.closure(&node)
         } else {
             let node = r
@@ -367,6 +389,7 @@ mod test {
                 .unwrap()
                 .cast::<JsArrowFunctionExpression>()
                 .unwrap();
+
             model.closure(&node)
         };
 
@@ -379,14 +402,17 @@ mod test {
             .collect();
 
         let intersection = expected_captures.intersection(&all_captures);
+
         let intersection_count = intersection.count();
 
         assert_eq!(intersection_count, expected_captures.len());
+
         assert_eq!(intersection_count, all_captures.len());
     }
 
     fn get_closure_children(code: &str, name: &str) -> Vec<Closure> {
         let r = biome_js_parser::parse(code, JsFileSource::tsx(), JsParserOptions::default());
+
         let model = semantic_model(&r.tree(), SemanticModelOptions::default());
 
         let closure = if name != "ARROWFUNCTION" {
@@ -396,10 +422,12 @@ mod test {
                 .filter(|x| x.text_trimmed() == name)
                 .last()
                 .unwrap();
+
             let node = node
                 .parent()
                 .and_then(|node| AnyHasClosureNode::from_node(&node))
                 .unwrap();
+
             model.closure(&node)
         } else {
             let node = r
@@ -410,6 +438,7 @@ mod test {
                 .unwrap()
                 .cast::<JsArrowFunctionExpression>()
                 .unwrap();
+
             model.closure(&node)
         };
 
@@ -421,62 +450,90 @@ mod test {
         assert_closure("function f() {}", "f", &[]);
 
         let two_captures = "let a, b; function f(c) {console.log(a, b, c)}";
+
         assert_closure(two_captures, "f", &["a", "b"]);
+
         assert_eq!(get_closure_children(two_captures, "f").len(), 0);
 
         let inner_function = "let a, b;
+
         function f(c) {
             console.log(a);
+
             function g() {
                 console.log(b, c);
             }
         }";
+
         assert_closure(inner_function, "f", &["a"]);
+
         assert_closure(inner_function, "g", &["b", "c"]);
+
         assert_eq!(get_closure_children(inner_function, "f").len(), 1);
+
         assert_eq!(get_closure_children(inner_function, "g").len(), 0);
 
         let arrow_function = "let a, b;
+
         function f(c) {
             console.log(a);
+
             c.map(x => x + b + c);
         }";
+
         assert_closure(arrow_function, "f", &["a"]);
+
         assert_closure(arrow_function, "ARROWFUNCTION", &["b", "c"]);
+
         assert_eq!(get_closure_children(arrow_function, "f").len(), 1);
+
         assert_eq!(
             get_closure_children(arrow_function, "ARROWFUNCTION").len(),
             0
         );
 
         let writes = "let a;
+
         function f(c) {
             a = 1
         }";
+
         assert_closure(writes, "f", &["a"]);
 
         let class_callables = "let a;
+
         class A {
             constructor() { console.log(a); }
+
             f() { console.log(a); }
 
             get getValue() { console.log(a); }
+
             set setValue(v) { console.log(a); }
         }";
+
         assert_closure(class_callables, "constructor", &["a"]);
+
         assert_closure(class_callables, "f", &["a"]);
+
         assert_closure(class_callables, "getValue", &["a"]);
+
         assert_closure(class_callables, "setValue", &["a"]);
 
         let object_callables = "let a;
+
         let a = {
             f() { console.log(a); }
 
             get getValue() { console.log(a); }
+
             set setValue(v) { console.log(a); }
         }";
+
         assert_closure(object_callables, "f", &["a"]);
+
         assert_closure(object_callables, "getValue", &["a"]);
+
         assert_closure(object_callables, "setValue", &["a"]);
     }
 }

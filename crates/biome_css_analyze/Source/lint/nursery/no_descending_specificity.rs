@@ -97,14 +97,18 @@ fn find_tail_selector(selector: &AnyCssSelector) -> Option<String> {
             let simple = s
                 .simple_selector()
                 .map_or(String::new(), |s| s.syntax().text_trimmed().to_string());
+
             let sub = s.sub_selectors().syntax().text_trimmed().to_string();
 
             let last_selector = [simple, sub].join("");
+
             Some(last_selector)
         }
+
         AnyCssSelector::CssComplexSelector(s) => {
             s.right().as_ref().ok().and_then(find_tail_selector)
         }
+
         _ => None,
     }
 }
@@ -162,15 +166,22 @@ fn find_descending_selector(
 
 impl Rule for NoDescendingSpecificity {
     type Query = Semantic<CssRoot>;
+
     type State = DescendingSelector;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let model = ctx.model();
+
         let mut visited_rules = FxHashSet::default();
+
         let mut visited_selectors = FxHashMap::default();
+
         let mut descending_selectors = Vec::new();
+
         for rule in model.rules() {
             find_descending_selector(
                 rule,
@@ -180,6 +191,7 @@ impl Rule for NoDescendingSpecificity {
                 &mut descending_selectors,
             );
         }
+
         descending_selectors.into_boxed_slice()
     }
 

@@ -47,13 +47,18 @@ pub struct State {
 
 impl Rule for NoShadowRestrictedNames {
     type Query = Ast<JsIdentifierBinding>;
+
     type State = State;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let binding = ctx.query();
+
         let name = binding.name_token().ok()?;
+
         let name = name.text_trimmed();
 
         if ES_BUILTIN.contains(&name) {

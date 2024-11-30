@@ -25,13 +25,17 @@ pub(crate) fn has_live() -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     use crate::green::trivia::GreenTrivia;
 
     #[test]
     fn assert_send_sync() {
         fn f<T: Send + Sync>() {}
+
         f::<GreenNode>();
+
         f::<GreenToken>();
+
         f::<GreenElement>();
     }
 
@@ -40,8 +44,11 @@ mod tests {
         use std::mem::size_of;
 
         assert_eq!(8, size_of::<GreenNode>());
+
         assert_eq!(8, size_of::<GreenToken>());
+
         assert_eq!(8, size_of::<GreenTrivia>());
+
         assert_eq!(16, size_of::<GreenElement>());
     }
 }

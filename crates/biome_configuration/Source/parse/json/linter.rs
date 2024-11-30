@@ -33,11 +33,14 @@ impl DeserializationVisitor for LinterConfigurationVisitor {
         diagnostics: &mut Vec<DeserializationDiagnostic>,
     ) -> Option<Self::Output> {
         const ALLOWED_KEYS: &[&str] = &["enabled", "rules", "include", "ignore"];
+
         let mut result = Self::Output::default();
+
         for (key, value) in members.flatten() {
             let Some(key_text) = Text::deserialize(&key, "", diagnostics) else {
                 continue;
             };
+
             match key_text.text() {
                 "ignore" => {
                     result.ignore = Deserializable::deserialize(&value, &key_text, diagnostics);
@@ -51,6 +54,7 @@ impl DeserializationVisitor for LinterConfigurationVisitor {
                 "rules" => {
                     result.rules = Deserializable::deserialize(&value, &key_text, diagnostics);
                 }
+
                 unknown_key => diagnostics.push(DeserializationDiagnostic::new_unknown_key(
                     unknown_key,
                     key.range(),
@@ -58,6 +62,7 @@ impl DeserializationVisitor for LinterConfigurationVisitor {
                 )),
             }
         }
+
         Some(result)
     }
 }
@@ -102,11 +107,14 @@ impl<T: Deserializable + Default> DeserializationVisitor for RuleConfigurationVi
         diagnostics: &mut Vec<DeserializationDiagnostic>,
     ) -> Option<Self::Output> {
         const ALLOWED_KEYS: &[&str] = &["level", "options"];
+
         let mut result = RuleWithOptions::default();
+
         for (key, value) in members.flatten() {
             let Some(key_text) = Text::deserialize(&key, "", diagnostics) else {
                 continue;
             };
+
             match key_text.text() {
                 "level" => {
                     result.level = Deserializable::deserialize(&value, &key_text, diagnostics)?;
@@ -118,6 +126,7 @@ impl<T: Deserializable + Default> DeserializationVisitor for RuleConfigurationVi
                         result.options = options;
                     }
                 }
+
                 unknown_key => diagnostics.push(DeserializationDiagnostic::new_unknown_key(
                     unknown_key,
                     key.range(),
@@ -125,6 +134,7 @@ impl<T: Deserializable + Default> DeserializationVisitor for RuleConfigurationVi
                 )),
             }
         }
+
         Some(RuleConfiguration::WithOptions(result))
     }
 }
@@ -136,6 +146,7 @@ impl RulePlainConfiguration {
         diagnostics: &mut Vec<DeserializationDiagnostic>,
     ) -> Option<Self> {
         const ALLOWED_VARIANTS: &[&str] = &["error", "warn", "off"];
+
         if let Ok(value) = value.text().parse::<Self>() {
             Some(value)
         } else {
@@ -144,6 +155,7 @@ impl RulePlainConfiguration {
                 range,
                 ALLOWED_VARIANTS,
             ));
+
             None
         }
     }
@@ -156,6 +168,7 @@ impl Deserializable for RulePlainConfiguration {
         diagnostics: &mut Vec<DeserializationDiagnostic>,
     ) -> Option<Self> {
         let value_text = Text::deserialize(value, name, diagnostics)?;
+
         Self::deserialize_from_str(value_text, value.range(), diagnostics)
     }
 }

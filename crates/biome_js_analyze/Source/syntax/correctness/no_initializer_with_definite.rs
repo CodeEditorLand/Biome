@@ -19,12 +19,16 @@ declare_syntax_rule! {
 
 impl Rule for NoInitializerWithDefinite {
     type Query = Ast<TsDefiniteVariableAnnotation>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         node.parent::<JsVariableDeclarator>()
             .and_then(|var_declarator| var_declarator.initializer())
             .map(|init| init.into_syntax().text_range())
@@ -36,6 +40,7 @@ impl Rule for NoInitializerWithDefinite {
             state,
             "Declarations with initializers cannot also have definite assignment assertions.",
         );
+
         Some(diagnostic)
     }
 }

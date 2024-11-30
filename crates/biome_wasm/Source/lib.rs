@@ -43,7 +43,9 @@ impl Workspace {
     ) -> Result<IFileFeaturesResult, Error> {
         let params: SupportsFeatureParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self.inner.file_features(params).map_err(into_error)?;
+
         to_value(&result)
             .map(IFileFeaturesResult::from)
             .map_err(into_error)
@@ -53,6 +55,7 @@ impl Workspace {
     pub fn update_settings(&self, params: IUpdateSettingsParams) -> Result<(), Error> {
         let params: UpdateSettingsParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         self.inner.update_settings(params).map_err(into_error)
     }
 
@@ -63,6 +66,7 @@ impl Workspace {
     ) -> Result<IProjectKey, Error> {
         let params: RegisterProjectFolderParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self
             .inner
             .register_project_folder(params)
@@ -75,6 +79,7 @@ impl Workspace {
     pub fn open_file(&self, params: IOpenFileParams) -> Result<(), Error> {
         let params: OpenFileParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         self.inner.open_file(params).map_err(into_error)
     }
 
@@ -82,6 +87,7 @@ impl Workspace {
     pub fn get_file_content(&self, params: IGetFileContentParams) -> Result<String, Error> {
         let params: GetFileContentParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         self.inner.get_file_content(params).map_err(into_error)
     }
 
@@ -92,7 +98,9 @@ impl Workspace {
     ) -> Result<IGetSyntaxTreeResult, Error> {
         let params: GetSyntaxTreeParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self.inner.get_syntax_tree(params).map_err(into_error)?;
+
         to_value(&result)
             .map(IGetSyntaxTreeResult::from)
             .map_err(into_error)
@@ -105,6 +113,7 @@ impl Workspace {
     ) -> Result<String, Error> {
         let params: GetControlFlowGraphParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         self.inner
             .get_control_flow_graph(params)
             .map_err(into_error)
@@ -114,6 +123,7 @@ impl Workspace {
     pub fn get_formatter_ir(&self, params: IGetFormatterIRParams) -> Result<String, Error> {
         let params: GetFormatterIRParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         self.inner.get_formatter_ir(params).map_err(into_error)
     }
 
@@ -121,6 +131,7 @@ impl Workspace {
     pub fn change_file(&self, params: IChangeFileParams) -> Result<(), Error> {
         let params: ChangeFileParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         self.inner.change_file(params).map_err(into_error)
     }
 
@@ -128,6 +139,7 @@ impl Workspace {
     pub fn close_file(&self, params: ICloseFileParams) -> Result<(), Error> {
         let params: CloseFileParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         self.inner.close_file(params).map_err(into_error)
     }
 
@@ -138,7 +150,9 @@ impl Workspace {
     ) -> Result<IPullDiagnosticsResult, Error> {
         let params: PullDiagnosticsParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self.inner.pull_diagnostics(params).map_err(into_error)?;
+
         to_value(&result)
             .map(IPullDiagnosticsResult::from)
             .map_err(into_error)
@@ -148,7 +162,9 @@ impl Workspace {
     pub fn pull_actions(&self, params: IPullActionsParams) -> Result<IPullActionsResult, Error> {
         let params: PullActionsParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self.inner.pull_actions(params).map_err(into_error)?;
+
         to_value(&result)
             .map(IPullActionsResult::from)
             .map_err(into_error)
@@ -158,7 +174,9 @@ impl Workspace {
     pub fn format_file(&self, params: IFormatFileParams) -> Result<JsValue, Error> {
         let params: FormatFileParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self.inner.format_file(params).map_err(into_error)?;
+
         to_value(&result).map_err(into_error)
     }
 
@@ -166,7 +184,9 @@ impl Workspace {
     pub fn format_range(&self, params: IFormatRangeParams) -> Result<JsValue, Error> {
         let params: FormatRangeParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self.inner.format_range(params).map_err(into_error)?;
+
         to_value(&result).map_err(into_error)
     }
 
@@ -174,7 +194,9 @@ impl Workspace {
     pub fn format_on_type(&self, params: IFormatOnTypeParams) -> Result<JsValue, Error> {
         let params: FormatOnTypeParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self.inner.format_on_type(params).map_err(into_error)?;
+
         to_value(&result).map_err(into_error)
     }
 
@@ -182,7 +204,9 @@ impl Workspace {
     pub fn fix_file(&self, params: IFixFileParams) -> Result<IFixFileResult, Error> {
         let params: FixFileParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self.inner.fix_file(params).map_err(into_error)?;
+
         to_value(&result)
             .map(IFixFileResult::from)
             .map_err(into_error)
@@ -195,7 +219,9 @@ impl Workspace {
     ) -> Result<IOrganizeImportsResult, Error> {
         let params: OrganizeImportsParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self.inner.organize_imports(params).map_err(into_error)?;
+
         to_value(&result)
             .map(IOrganizeImportsResult::from)
             .map_err(into_error)
@@ -204,7 +230,9 @@ impl Workspace {
     pub fn rename(&self, params: IRenameParams) -> Result<IRenameResult, Error> {
         let params: RenameParams =
             serde_wasm_bindgen::from_value(params.into()).map_err(into_error)?;
+
         let result = self.inner.rename(params).map_err(into_error)?;
+
         to_value(&result)
             .map(IRenameResult::from)
             .map_err(into_error)

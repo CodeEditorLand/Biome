@@ -52,6 +52,7 @@ where
                     .clone()
                     .with_file_path(self.file_name)
                     .with_file_source_code(self.text.to_string());
+
                 Formatter::new(&mut Termcolor(&mut buffer))
                     .write_markup(markup! {
                         {PrintDiagnostic::verbose(&error)}
@@ -82,7 +83,9 @@ where
                 .language
                 .format_node(self.format_language.clone(), self.root)
                 .unwrap();
+
             let pretty_reformat_ir = format!("{}", re_formatted.into_document());
+
             let pretty_input_ir = format!("{}", input_format_element.into_document());
 
             // Print a diff of the Formatter IR emitted for the input and the output
@@ -92,6 +95,7 @@ where
                 "input",
                 "output",
             );
+
             println!("{diff}");
 
             similar_asserts::assert_eq!(
@@ -99,6 +103,7 @@ where
                 self.text,
                 "left is the re-formatted"
             );
+
             similar_asserts::assert_eq!(
                 pretty_reformat_ir,
                 pretty_input_ir,

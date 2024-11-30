@@ -75,21 +75,27 @@ pub enum VoidTypeContext {
 
 impl Rule for NoConfusingVoidType {
     type Query = Ast<TsVoidType>;
+
     type State = VoidTypeContext;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         decide_void_type_context(node.syntax())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let message = match state {
             VoidTypeContext::Union => "inside a union type.",
             VoidTypeContext::Unknown => "outside a return type or a type parameter.",
         };
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),
@@ -100,11 +106,14 @@ impl Rule for NoConfusingVoidType {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(
             AnyTsType::from(node.clone()),
             AnyTsType::from(make::ts_undefined_type(make::token(T![undefined]))),
         );
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             Applicability::MaybeIncorrect,
@@ -124,6 +133,7 @@ fn decide_void_type_context(node: &JsSyntaxNode) -> Option<VoidTypeContext> {
                         let found_void_type = child
                             .descendants()
                             .any(|descendant| descendant.kind() == JsSyntaxKind::TS_VOID_TYPE);
+
                         if found_void_type {
                             return None;
                         }
@@ -135,6 +145,7 @@ fn decide_void_type_context(node: &JsSyntaxNode) -> Option<VoidTypeContext> {
             // string & void
             // arg: void
             // fn<T = void>() {}
+
             JsSyntaxKind::TS_PARENTHESIZED_TYPE
             | JsSyntaxKind::TS_INTERSECTION_TYPE_ELEMENT_LIST
             | JsSyntaxKind::TS_TYPE_ANNOTATION
@@ -149,11 +160,13 @@ fn decide_void_type_context(node: &JsSyntaxNode) -> Option<VoidTypeContext> {
             // type Conditional<T> = T extends void ? Record<string, never> : T
             JsSyntaxKind::TS_CONDITIONAL_TYPE => {
                 let conditional = TsConditionalType::unwrap_cast(parent.clone());
+
                 let is_extends_type = conditional
                     .extends_type()
                     .map(AstNode::into_syntax)
                     .as_ref()
                     == Ok(node);
+
                 if is_extends_type {
                     return None;
                 }

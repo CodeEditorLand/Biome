@@ -28,6 +28,7 @@ impl FromServices for VersionServices {
         let version: &Arc<TheVersion> = services
             .get_service()
             .ok_or_else(|| MissingServicesDiagnostic::new(rule_key.rule_name(), &["TheVersion"]))?;
+
         Ok(Self {
             version: version.clone(),
         })
@@ -49,9 +50,11 @@ where
     N: AstNode<Language = JsonLanguage> + 'static,
 {
     type Input = JsonSyntaxNode;
+
     type Output = N;
 
     type Language = JsonLanguage;
+
     type Services = VersionServices;
 
     fn build_visitor(analyzer: &mut impl AddVisitor<JsonLanguage>, _: &JsonRoot) {

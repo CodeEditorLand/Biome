@@ -80,15 +80,18 @@ impl Display for BiomeEnv {
             None => {
                 KeyValuePair(self.biome_log_path.name, markup! { <Dim>"unset"</Dim> }).fmt(fmt)?;
             }
+
             Some(value) => {
                 KeyValuePair(self.biome_log_path.name, markup! {{DebugDisplay(value)}}).fmt(fmt)?;
             }
         };
+
         match self.biome_log_prefix.value() {
             None => {
                 KeyValuePair(self.biome_log_prefix.name, markup! { <Dim>"unset"</Dim> })
                     .fmt(fmt)?;
             }
+
             Some(value) => {
                 KeyValuePair(self.biome_log_prefix.name, markup! {{DebugDisplay(value)}})
                     .fmt(fmt)?;
@@ -100,6 +103,7 @@ impl Display for BiomeEnv {
                 KeyValuePair(self.biome_config_path.name, markup! { <Dim>"unset"</Dim> })
                     .fmt(fmt)?;
             }
+
             Some(value) => {
                 KeyValuePair(self.biome_config_path.name, markup! {{DebugDisplay(value)}})
                     .fmt(fmt)?;

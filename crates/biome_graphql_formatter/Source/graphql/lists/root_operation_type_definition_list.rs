@@ -6,6 +6,7 @@ impl FormatRule<GraphqlRootOperationTypeDefinitionList>
     for FormatGraphqlRootOperationTypeDefinitionList
 {
     type Context = GraphqlFormatContext;
+
     fn fmt(
         &self,
         node: &GraphqlRootOperationTypeDefinitionList,

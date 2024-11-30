@@ -103,11 +103,14 @@ impl Rule for NoBlankTarget {
     /// 1. The attribute `target=`
     /// 2. The attribute `rel=`, if present
     type State = (JsxAttribute, Option<JsxAttribute>);
+
     type Signals = Option<Self::State>;
+
     type Options = AllowDomainOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.name_value_token().ok()?.text_trimmed() != "a"
             || node.find_attribute_by_name("href").is_none()
         {
@@ -115,19 +118,23 @@ impl Rule for NoBlankTarget {
         }
 
         let target_attribute = node.find_attribute_by_name("target")?;
+
         let rel_attribute = node.find_attribute_by_name("rel");
 
         if target_attribute.as_static_value()?.text() == "_blank" {
             if !ctx.options().allow_domains.is_empty() {
                 let href_attribute = node.find_attribute_by_name("href")?;
+
                 if let Some(href_value) = href_attribute.as_static_value() {
                     let href = href_value.text();
+
                     let allow_domains: Vec<&str> = ctx
                         .options()
                         .allow_domains
                         .iter()
                         .map(AsRef::as_ref)
                         .collect();
+
                     if is_allowed_domain(href, &allow_domains) {
                         return None;
                     }
@@ -140,6 +147,7 @@ impl Rule for NoBlankTarget {
                         return Some((target_attribute, None));
                     }
                 }
+
                 Some(rel_attribute) => {
                     if rel_attribute.initializer().is_none()
                         || (!rel_attribute
@@ -164,13 +172,17 @@ impl Rule for NoBlankTarget {
         (target_attribute, rel_attribute): &Self::State,
     ) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let message = if let Some(rel_attribute) = rel_attribute {
             let prev_jsx_attribute = rel_attribute.initializer()?.value().ok()?;
+
             let prev_jsx_string = prev_jsx_attribute.as_jsx_string()?;
+
             let new_text = format!(
                 "noreferrer {}",
                 prev_jsx_string.inner_string_text().ok()?.text()
             );
+
             mutation.replace_node(
                 prev_jsx_string.clone(),
                 jsx_string(jsx_string_literal(new_text.trim_end())),
@@ -185,7 +197,9 @@ impl Rule for NoBlankTarget {
                 .syntax()
                 .ancestors()
                 .find_map(JsxAttributeList::cast)?;
+
             let mut new_attribute_list: Vec<_> = old_attribute_list.iter().collect();
+
             let new_attribute = jsx_attribute(AnyJsxAttributeName::JsxName(jsx_name(
                 jsx_ident("rel").with_leading_trivia([(TriviaPieceKind::Whitespace, " ")]),
             )))

@@ -9,6 +9,7 @@ pub trait SourceFileExt {
 impl<'d> SourceFileExt for SourceFile<'d> {
     fn to_grit_range(&self, range: TextRange) -> Option<Range> {
         let start = self.location(range.start()).ok()?;
+
         let end = self.location(range.end()).ok()?;
 
         Some(Range {

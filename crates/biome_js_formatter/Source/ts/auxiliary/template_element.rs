@@ -16,6 +16,7 @@ impl FormatRuleWithOptions<TsTemplateElement> for FormatTsTemplateElement {
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.options = options;
+
         self
     }
 }
@@ -27,6 +28,7 @@ impl FormatNodeRule<TsTemplateElement> for FormatTsTemplateElement {
         formatter: &mut JsFormatter,
     ) -> FormatResult<()> {
         let element = AnyTemplateElement::from(node.clone());
+
         FormatTemplateElement::new(element, self.options).fmt(formatter)
     }
 }

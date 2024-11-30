@@ -5,6 +5,7 @@ use biome_grit_syntax::GritVariableList;
 pub(crate) struct FormatGritVariableList;
 impl FormatRule<GritVariableList> for FormatGritVariableList {
     type Context = GritFormatContext;
+
     fn fmt(&self, node: &GritVariableList, f: &mut GritFormatter) -> FormatResult<()> {
         f.join_with(&space())
             .entries(

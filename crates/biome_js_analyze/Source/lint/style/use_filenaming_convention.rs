@@ -151,31 +151,43 @@ declare_lint_rule! {
 
 impl Rule for UseFilenamingConvention {
     type Query = SemanticServices;
+
     type State = FileNamingConventionState;
+
     type Signals = Option<Self::State>;
+
     type Options = Box<FilenamingConventionOptions>;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let file_name = ctx.file_path().file_name()?.to_str()?;
+
         let options = ctx.options();
+
         if options.require_ascii && !file_name.is_ascii() {
             return Some(FileNamingConventionState::Ascii);
         }
+
         let first_char = file_name.bytes().next()?;
+
         let (name, mut extensions) = if let Some(matching) = &options.matching {
             let Some(captures) = matching.captures(file_name) else {
                 return Some(FileNamingConventionState::Match);
             };
+
             let mut captures = captures.iter().skip(1).flatten();
+
             let Some(first_capture) = captures.next() else {
                 // Match without any capture implies a valid case
                 return None;
             };
+
             let name = first_capture.as_str();
+
             if name.is_empty() {
                 // Empty string are always valid.
                 return None;
             }
+
             let split = captures.next().map_or("", |x| x.as_str()).split('.');
             (name, split)
         } else if matches!(first_char, b'(' | b'[') {
@@ -191,15 +203,19 @@ impl Rule for UseFilenamingConvention {
             // - `[...slug].js`
             // - `[[...slug]].js`
             let count = if file_name.starts_with("[[") { 2 } else { 1 };
+
             let to_split = if first_char != b'(' && file_name[count..].starts_with("...") {
                 &file_name[count + 3..]
             } else {
                 &file_name[count..]
             };
+
             let mut split = to_split.split('.');
+
             let Some(name) = split.next() else {
                 return Some(FileNamingConventionState::Filename);
             };
+
             let ends = if count == 2 {
                 "]]"
             } else if first_char == b'[' {
@@ -207,6 +223,7 @@ impl Rule for UseFilenamingConvention {
             } else {
                 ")"
             };
+
             if !name.ends_with(ends)
                 || !name[..name.len() - count]
                     .bytes()
@@ -225,13 +242,17 @@ impl Rule for UseFilenamingConvention {
             } else {
                 file_name
             };
+
             let mut split = file_name.split('.');
+
             let Some(name) = split.next().filter(|name| !name.is_empty()) else {
                 return Some(FileNamingConventionState::Filename);
             };
             (name, split)
         };
+
         let allowed_cases = options.filename_cases.cases;
+
         let allowed_extension_cases = allowed_cases | Case::Lower;
         // Check extension case
         if extensions.any(|extension| {
@@ -239,17 +260,21 @@ impl Rule for UseFilenamingConvention {
         }) {
             return Some(FileNamingConventionState::Extension);
         }
+
         if name.is_empty() {
             return None;
         }
         // Check filename case
         if !allowed_cases.is_empty() {
             let trimmed_name = name.trim_matches('_');
+
             let case = Case::identify(trimmed_name, options.strict_case);
+
             if (allowed_cases | Case::Uni).contains(case) {
                 return None;
             }
         }
+
         if options.filename_cases.allow_export {
             // If no exported binding has the file name, then reports the filename
             ctx.model()
@@ -274,7 +299,9 @@ impl Rule for UseFilenamingConvention {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let file_name = ctx.file_path().file_name()?.to_str()?;
+
         let options = ctx.options();
+
         match state {
             FileNamingConventionState::Ascii => {
                 Some(RuleDiagnostic::new(
@@ -289,7 +316,9 @@ impl Rule for UseFilenamingConvention {
             },
             FileNamingConventionState::Filename => {
                 let allowed_cases = options.filename_cases.cases;
+
                 let allowed_case_names = allowed_cases.into_iter().map(|case| case.to_string());
+
                 let allowed_case_names = if options.filename_cases.allow_export {
                     allowed_case_names
                         .chain(["equal to the name of an export".to_string()])
@@ -300,8 +329,11 @@ impl Rule for UseFilenamingConvention {
                         .collect::<SmallVec<[_; 4]>>()
                         .join(" or ")
                 };
+
                 let mut split = file_name.split('.');
+
                 let name = split.next()?;
+
                 let name = if name.is_empty() {
                     // The filename starts with a dot
                     split.next()?
@@ -310,15 +342,20 @@ impl Rule for UseFilenamingConvention {
                 } else {
                     name
                 };
+
                 let trimmed_name = name.trim_matches('_');
+
                 let trimmed_info = if name != trimmed_name {
                     markup! {" trimmed as `"{trimmed_name}"`"}.to_owned()
                 } else {
                     markup! {""}.to_owned()
                 };
+
                 if options.strict_case && options.filename_cases.cases.contains(Case::Camel) {
                     let case_type = Case::identify(trimmed_name, false);
+
                     let case_strict = Case::identify(trimmed_name, true);
+
                     if case_type == Case::Camel && case_strict == Case::Unknown {
                         return Some(RuleDiagnostic::new(
                             rule_category!(),
@@ -331,6 +368,7 @@ impl Rule for UseFilenamingConvention {
                         }));
                     }
                 }
+
                 let mut suggested_filenames = allowed_cases
                     .into_iter()
                     .map(|case| case.convert(trimmed_name).into_boxed_str())
@@ -338,11 +376,15 @@ impl Rule for UseFilenamingConvention {
                     .collect::<SmallVec<[_; 4]>>();
                 // We sort and deduplicate the suggested names
                 suggested_filenames.sort();
+
                 suggested_filenames.dedup();
+
                 for i in 0..suggested_filenames.len() {
                     suggested_filenames[i] = file_name.replacen(trimmed_name, &suggested_filenames[i], 1).into_boxed_str();
                 }
+
                 let suggested_filenames = suggested_filenames.join("\n");
+
                 let diagnostic = RuleDiagnostic::new(
                     rule_category!(),
                     None as Option<TextRange>,
@@ -350,17 +392,22 @@ impl Rule for UseFilenamingConvention {
                         "The filename"{trimmed_info}" should be in "<Emphasis>{allowed_case_names}</Emphasis>"."
                     },
                 );
+
                 if suggested_filenames.is_empty() {
                     return Some(diagnostic);
                 }
+
                 Some(diagnostic.note(markup! {
                     "The filename could be renamed to one of the following names:\n"{suggested_filenames}
                 }))
             },
             FileNamingConventionState::Extension => {
                 let allowed_cases = options.filename_cases.cases | Case::Lower;
+
                 let allowed_case_names = allowed_cases.into_iter().map(|case| case.to_string());
+
                 let allowed_case_names = allowed_case_names.collect::<SmallVec<[_; 4]>>().join(" or ");
+
                 Some(RuleDiagnostic::new(
                     rule_category!(),
                     None as Option<TextRange>,
@@ -371,6 +418,7 @@ impl Rule for UseFilenamingConvention {
             },
             FileNamingConventionState::Match => {
                 let matching = options.matching.as_ref()?.as_str();
+
                 Some(RuleDiagnostic::new(
                     rule_category!(),
                     None as Option<TextRange>,
@@ -461,6 +509,7 @@ impl FromIterator<FilenameCase> for FilenameCases {
             cases: Cases::empty(),
             allow_export: false,
         };
+
         for filename_case in values {
             if let Ok(case) = Case::try_from(filename_case) {
                 result.cases |= case;
@@ -468,6 +517,7 @@ impl FromIterator<FilenameCase> for FilenameCases {
                 result.allow_export = true;
             }
         }
+
         result
     }
 }
@@ -478,6 +528,7 @@ impl From<FilenameCases> for SmallVec<[FilenameCase; 5]> {
         } else {
             &[]
         };
+
         value
             .cases
             .into_iter()
@@ -491,6 +542,7 @@ impl schemars::JsonSchema for FilenameCases {
     fn schema_name() -> String {
         "FilenameCases".to_string()
     }
+
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
         <std::collections::HashSet<FilenameCase>>::json_schema(gen)
     }
@@ -517,6 +569,7 @@ impl DeserializableValidator for FilenameCases {
                 })
                 .with_range(range),
             );
+
             false
         } else {
             true

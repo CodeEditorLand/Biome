@@ -60,6 +60,7 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
             Self::Node(node) => {
                 if node.is_list() {
                     let mut children = node.named_children();
+
                     match (children.next(), children.next()) {
                         (Some(only_child), None) => Some(only_child),
                         _ => None,
@@ -68,6 +69,7 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
                     Some(node.clone())
                 }
             }
+
             Self::File(..) | Self::Range(..) | Self::Empty(..) | Self::Constant(..) => None,
         }
     }
@@ -92,15 +94,19 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
                     text: node.source(),
                     line_starts: None,
                 });
+
                 source.to_grit_range(node.text_trimmed_range())
             }
+
             Self::Range(range, source) => {
                 let source = SourceFile::new(SourceCode {
                     text: source,
                     line_starts: None,
                 });
+
                 source.to_grit_range(*range)
             }
+
             Self::File(..) | Self::Empty(..) | Self::Constant(_) => None,
         }
     }
@@ -174,6 +180,7 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
             Self::Range(range, source) => {
                 Ok((&source[range.start().into()..range.end().into()]).into())
             }
+
             Self::Empty(_, _) => Ok("".into()),
             Self::Constant(constant) => Ok(constant.to_string().into()),
         }
@@ -241,6 +248,7 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
                     true
                 }
             }
+
             Self::Range(..) => true,
             Self::Empty(..) => false,
             Self::Constant(c) => c.is_truthy(),
@@ -254,6 +262,7 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
     ) -> GritResult<()> {
         if let Self::Empty(node, slot) = self {
             let range = Range::from_byte_range(node.source(), &node.byte_range());
+
             let log = AnalysisLogBuilder::default()
                 .level(441_u16)
                 .source(node.source())
@@ -265,6 +274,7 @@ impl<'a> Binding<'a, GritQueryContext> for GritBinding<'a> {
                 ))
                 .build()
                 .map_err(|error| GritPatternError::Builder(error.to_string()))?;
+
             logs.push(log);
         }
 
@@ -303,7 +313,9 @@ fn are_equivalent(node1: &GritTargetNode, node2: &GritTargetNode) -> bool {
         return if node1.is_list() {
             if node2.is_list() {
                 let mut children1 = node1.named_children();
+
                 let mut children2 = node2.named_children();
+
                 loop {
                     match (children1.next(), children2.next()) {
                         (Some(child1), Some(child2)) => {
@@ -317,6 +329,7 @@ fn are_equivalent(node1: &GritTargetNode, node2: &GritTargetNode) -> bool {
                 }
             } else {
                 let mut children1 = node1.named_children();
+
                 match (children1.next(), children1.next()) {
                     (Some(only_child), None) => are_equivalent(&only_child, node2),
                     _ => false,
@@ -324,6 +337,7 @@ fn are_equivalent(node1: &GritTargetNode, node2: &GritTargetNode) -> bool {
             }
         } else if node2.is_list() {
             let mut children2 = node2.named_children();
+
             match (children2.next(), children2.next()) {
                 (Some(only_child), None) => are_equivalent(node1, &only_child),
                 _ => false,
@@ -335,6 +349,7 @@ fn are_equivalent(node1: &GritTargetNode, node2: &GritTargetNode) -> bool {
 
     // If the node kinds are the same, then we need to check the named fields.
     let named_fields1 = node1.named_children();
+
     let mut named_fields2 = node2.named_children();
 
     // If there are no children, this is effectively a leaf node. If two leaf
@@ -352,6 +367,7 @@ fn are_equivalent(node1: &GritTargetNode, node2: &GritTargetNode) -> bool {
                     return false;
                 }
             }
+
             None => return false,
         }
     }

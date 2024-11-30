@@ -23,12 +23,14 @@ const VALUE_RECOVERY_SET: TokenSet<JsonSyntaxKind> =
 
 pub(crate) fn parse_root(p: &mut JsonParser) {
     let m = p.start();
+
     p.eat(UNICODE_BOM);
 
     let value = match parse_value(p) {
         Present(value) => Present(value),
         Absent => {
             p.error(expected_value(p, p.cur_range()));
+
             match ParseRecoveryTokenSet::new(JSON_BOGUS_VALUE, VALUE_START).recover(p) {
                 Ok(value) => Present(value),
                 Err(_) => Absent,
@@ -48,25 +50,33 @@ fn parse_value(p: &mut JsonParser) -> ParsedSyntax {
     match p.cur() {
         T![null] => {
             let m = p.start();
+
             p.bump(T![null]);
+
             Present(m.complete(p, JSON_NULL_VALUE))
         }
 
         JSON_STRING_LITERAL => {
             let m = p.start();
+
             p.bump(JSON_STRING_LITERAL);
+
             Present(m.complete(p, JSON_STRING_VALUE))
         }
 
         TRUE_KW | FALSE_KW => {
             let m = p.start();
+
             p.bump(p.cur());
+
             Present(m.complete(p, JSON_BOOLEAN_VALUE))
         }
 
         JSON_NUMBER_LITERAL => {
             let m = p.start();
+
             p.bump(JSON_NUMBER_LITERAL);
+
             Present(m.complete(p, JSON_NUMBER_VALUE))
         }
 
@@ -75,15 +85,20 @@ fn parse_value(p: &mut JsonParser) -> ParsedSyntax {
 
         IDENT => {
             let m = p.start();
+
             p.error(p.err_builder("String values must be double quoted.", p.cur_range()));
+
             p.bump(IDENT);
+
             Present(m.complete(p, JSON_BOGUS_VALUE))
         }
 
         ERROR_TOKEN => {
             // An error is already emitted by the lexer.
             let m = p.start();
+
             p.bump(ERROR_TOKEN);
+
             Present(m.complete(p, JSON_BOGUS_VALUE))
         }
 
@@ -158,6 +173,7 @@ impl Sequence {
 
 fn parse_sequence(p: &mut JsonParser, root_kind: SequenceKind) -> ParsedSyntax {
     let mut stack = Vec::new();
+
     let mut current = start_sequence(p, root_kind);
 
     'sequence: loop {
@@ -172,6 +188,7 @@ fn parse_sequence(p: &mut JsonParser, root_kind: SequenceKind) -> ParsedSyntax {
                 }
 
                 current.state = SequenceState::Processing;
+
                 false
             }
         };
@@ -212,6 +229,7 @@ fn parse_sequence(p: &mut JsonParser, root_kind: SequenceKind) -> ParsedSyntax {
 
                     p.error(expected_value(p, range));
                 }
+
                 SequenceItem::Parsed(Present(_)) => {
                     // continue with next item
                 }
@@ -219,15 +237,20 @@ fn parse_sequence(p: &mut JsonParser, root_kind: SequenceKind) -> ParsedSyntax {
                 // Nested Array or object expression
                 SequenceItem::Recurse(kind, marker) => {
                     current.state = SequenceState::Suspended(marker);
+
                     stack.push(current);
+
                     current = start_sequence(p, kind);
+
                     continue 'sequence;
                 }
             }
         }
 
         current.list.complete(p, current.kind.list_kind());
+
         p.expect(current.kind.close_paren());
+
         let node = current.node.complete(p, current.kind.node_kind());
 
         match stack.pop() {
@@ -243,6 +266,7 @@ fn start_sequence(p: &mut JsonParser, kind: SequenceKind) -> Sequence {
     p.expect(kind.open_paren());
 
     let list = p.start();
+
     Sequence {
         kind,
         node,
@@ -267,6 +291,7 @@ fn parse_object_member(p: &mut JsonParser) -> SequenceItem {
 
         if !p.at(T![:]) && !p.at_ts(VALUE_START) {
             m.abandon(p);
+
             return SequenceItem::Parsed(Absent);
         }
     }
@@ -276,8 +301,10 @@ fn parse_object_member(p: &mut JsonParser) -> SequenceItem {
     match parse_sequence_value(p) {
         Ok(value) => {
             value.or_add_diagnostic(p, expected_value);
+
             SequenceItem::Parsed(Present(m.complete(p, JSON_MEMBER)))
         }
+
         Err(kind) => SequenceItem::Recurse(kind, Some(m)),
     }
 }
@@ -286,15 +313,22 @@ fn parse_member_name(p: &mut JsonParser) -> ParsedSyntax {
     match p.cur() {
         JSON_STRING_LITERAL => {
             let m = p.start();
+
             p.bump(JSON_STRING_LITERAL);
+
             Present(m.complete(p, JSON_MEMBER_NAME))
         }
+
         IDENT | T![null] | T![true] | T![false] => {
             let m = p.start();
+
             p.error(p.err_builder("Property key must be double quoted", p.cur_range()));
+
             p.bump_remap(IDENT);
+
             Present(m.complete(p, JSON_MEMBER_NAME))
         }
+
         _ => Absent,
     }
 }

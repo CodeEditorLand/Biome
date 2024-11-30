@@ -16,10 +16,13 @@ const MAX_PATCH_LINES: usize = 150;
 pub(super) fn print_diff(fmt: &mut fmt::Formatter<'_>, diff: &TextEdit) -> io::Result<()> {
     // Before printing, we need to preprocess the list of DiffOps it's made of to classify them by line
     let mut modified_lines = BTreeSet::new();
+
     let mut inserted_lines = BTreeMap::new();
+
     let mut before_line_to_after = BTreeMap::new();
 
     let mut before_line = OneIndexed::MIN;
+
     let mut after_line = OneIndexed::MIN;
 
     process_diff_ops(
@@ -34,6 +37,7 @@ pub(super) fn print_diff(fmt: &mut fmt::Formatter<'_>, diff: &TextEdit) -> io::R
     );
 
     let before_line_count = before_line;
+
     let after_line_count = after_line;
 
     // If only a single line was modified, print a "short diff"
@@ -79,6 +83,7 @@ pub(super) fn print_diff(fmt: &mut fmt::Formatter<'_>, diff: &TextEdit) -> io::R
     // Otherwise if multiple lines were modified we need to perform more preprocessing,
     // to merge identical line numbers and calculate how many context lines need to be rendered
     let mut diffs_by_line = Vec::new();
+
     let mut shown_line_indexes = BTreeSet::new();
 
     process_diff_lines(
@@ -121,6 +126,7 @@ fn process_diff_ops<'diff>(
             CompressedOp::DiffOp(op) => op,
             CompressedOp::EqualLines { line_count } => {
                 let is_first_op = op_index == 0;
+
                 for line_index in 0..=line_count.get() {
                     // Don't increment the first line if we are the first tuple marking the beginning of the file
                     if !(is_first_op && line_index == 0) {
@@ -138,6 +144,7 @@ fn process_diff_ops<'diff>(
         };
 
         let tag = op.tag();
+
         let text = op.text(diff);
 
         // Get all the lines
@@ -162,6 +169,7 @@ fn process_diff_ops<'diff>(
                 ChangeTag::Delete => {
                     *before_line = before_line.saturating_add(1);
                 }
+
                 ChangeTag::Insert => {
                     *after_line = after_line.saturating_add(1);
                 }
@@ -251,18 +259,23 @@ fn push_to_line<'b>(
     match tag {
         ChangeTag::Insert => {
             GroupDiffsLine::insert(inserted_lines, LineKey::after(after_line), tag, text);
+
             modified_lines.insert(LineKey::after(after_line));
         }
+
         ChangeTag::Delete => {
             GroupDiffsLine::insert(inserted_lines, LineKey::before(before_line), tag, text);
+
             modified_lines.insert(LineKey::before(before_line));
         }
+
         ChangeTag::Equal => {
             if before_line == OneIndexed::MIN && after_line == OneIndexed::MIN {
                 before_line_to_after.insert(before_line, after_line);
             }
 
             GroupDiffsLine::insert(inserted_lines, LineKey::after(after_line), tag, text);
+
             GroupDiffsLine::insert(inserted_lines, LineKey::before(before_line), tag, text);
         }
     }
@@ -284,6 +297,7 @@ fn process_diff_lines<'lines, 'diff>(
         };
 
         let inserted_before_line = inserted_lines.get(&LineKey::before(before_line));
+
         let inserted_after_line = inserted_lines.get(&LineKey::after(after_line));
 
         if let (Some(inserted_before_line), Some(inserted_after_line)) =
@@ -368,11 +382,14 @@ fn push_displayed_line<'input, 'group>(
     line: &'group GroupDiffsLine<'input>,
 ) {
     let i = diffs_by_line.len();
+
     diffs_by_line.push(line);
 
     if line.before_line.is_none() || line.after_line.is_none() {
         let first = i.saturating_sub(CODE_FRAME_CONTEXT_LINES.get());
+
         let last = i + CODE_FRAME_CONTEXT_LINES.get();
+
         shown_line_indexes.extend(first..=last);
     }
 }
@@ -388,6 +405,7 @@ fn catch_up_after<'input, 'lines>(
 
     for i in iter {
         let key = LineKey::after(i);
+
         if let Some(line) = inserted_lines.get(&key) {
             push_displayed_line(diffs_by_line, shown_line_indexes, line);
         }
@@ -413,10 +431,12 @@ fn print_short_diff(
     })?;
 
     let mut at_line_start = true;
+
     let last_index = entry.diffs.len().saturating_sub(1);
 
     for (i, (tag, text)) in entry.diffs.iter().enumerate() {
         let is_changed = *tag != ChangeTag::Equal;
+
         let options = PrintInvisiblesOptions {
             ignore_leading_tabs: false,
             ignore_lone_spaces: false,
@@ -433,7 +453,9 @@ fn print_short_diff(
 
         let has_non_whitespace = if let Some(element) = element {
             let mut slot = None;
+
             let mut fmt = ElementWrapper::wrap(fmt, &mut slot, element);
+
             print_invisibles(&mut fmt, text, options)?
         } else {
             print_invisibles(fmt, text, options)?
@@ -447,6 +469,7 @@ fn print_short_diff(
     fmt.write_str("\n")?;
 
     let no_length = calculate_print_width(index);
+
     fmt.write_markup(markup! {
         <Emphasis>
             {format_args!("  {: >1$} \u{2502} ", "", no_length.get())}
@@ -477,14 +500,18 @@ fn print_full_diff(
 ) -> io::Result<()> {
     // Calculate width of line no column
     let before_no_length = calculate_print_width(before_line_count);
+
     let after_no_length = calculate_print_width(after_line_count);
+
     let line_no_length = before_no_length.get() + 1 + after_no_length.get();
 
     // Skip displaying the gutter if the file only has a single line
     let single_line = before_line_count == OneIndexed::MIN && after_line_count == OneIndexed::MIN;
 
     let mut displayed_lines = 0;
+
     let mut truncated = false;
+
     let mut last_displayed_line = None;
 
     // Print the actual frame
@@ -497,19 +524,23 @@ fn print_full_diff(
 
         if displayed_lines > MAX_PATCH_LINES {
             truncated = true;
+
             continue;
         }
 
         let mut line_type = ChangeTag::Equal;
+
         let mut marker = markup! { " " };
 
         if line.before_line.is_none() {
             marker = markup! { <Success>"+"</Success> };
+
             line_type = ChangeTag::Insert;
         }
 
         if line.after_line.is_none() {
             marker = markup! { <Error>"-"</Error> };
+
             line_type = ChangeTag::Delete;
         }
 
@@ -609,10 +640,12 @@ struct FormatDiffLine<'a> {
 impl fmt::Display for FormatDiffLine<'_> {
     fn fmt(&self, fmt: &mut fmt::Formatter<'_>) -> io::Result<()> {
         let mut at_line_start = true;
+
         let last_index = self.ops.len().saturating_sub(1);
 
         for (i, (tag, text)) in self.ops.iter().enumerate() {
             let is_changed = *tag != ChangeTag::Equal;
+
             let options = PrintInvisiblesOptions {
                 ignore_leading_tabs: self.is_equal,
                 ignore_lone_spaces: self.is_equal,
@@ -623,7 +656,9 @@ impl fmt::Display for FormatDiffLine<'_> {
 
             let has_non_whitespace = if is_changed {
                 let mut slot = None;
+
                 let mut fmt = ElementWrapper::wrap(fmt, &mut slot, MarkupElement::Emphasis);
+
                 print_invisibles(&mut fmt, text, options)?
             } else {
                 print_invisibles(fmt, text, options)?
@@ -653,6 +688,7 @@ impl<'write> ElementWrapper<'write, dyn fmt::Write + 'write> {
 impl<W: fmt::Write + ?Sized> fmt::Write for ElementWrapper<'_, W> {
     fn write_str(&mut self, elements: &fmt::MarkupElements<'_>, content: &str) -> io::Result<()> {
         let elements = fmt::MarkupElements::Node(elements, slice::from_ref(&self.1));
+
         self.0.write_str(&elements, content)
     }
 
@@ -662,6 +698,7 @@ impl<W: fmt::Write + ?Sized> fmt::Write for ElementWrapper<'_, W> {
         content: std::fmt::Arguments<'_>,
     ) -> io::Result<()> {
         let elements = fmt::MarkupElements::Node(elements, slice::from_ref(&self.1));
+
         self.0.write_fmt(&elements, content)
     }
 }
@@ -669,14 +706,19 @@ impl<W: fmt::Write + ?Sized> fmt::Write for ElementWrapper<'_, W> {
 #[cfg(test)]
 mod tests {
     use super::print_diff;
+
     use biome_console::{fmt, markup, MarkupBuf};
+
     use biome_text_edit::TextEdit;
+
     use termcolor::Buffer;
 
     fn assert_eq_markup(actual: &MarkupBuf, expected: &MarkupBuf) {
         if actual != expected {
             let mut buffer = Buffer::ansi();
+
             let mut writer = fmt::Termcolor(&mut buffer);
+
             let mut output = fmt::Formatter::new(&mut writer);
 
             output
@@ -692,7 +734,9 @@ mod tests {
                 .unwrap();
 
             let buffer = buffer.into_inner();
+
             let buffer = String::from_utf8(buffer).unwrap();
+
             panic!("{buffer}");
         }
     }
@@ -702,6 +746,7 @@ mod tests {
         let diff = TextEdit::from_unicode_words("before", "after");
 
         let mut output = MarkupBuf::default();
+
         print_diff(&mut fmt::Formatter::new(&mut output), &diff).unwrap();
 
         let expected = markup! {
@@ -719,6 +764,7 @@ mod tests {
         let diff = TextEdit::from_unicode_words("start before end\n", "start after end \n");
 
         let mut output = MarkupBuf::default();
+
         print_diff(&mut fmt::Formatter::new(&mut output), &diff).unwrap();
 
         let expected = markup! {
@@ -777,6 +823,7 @@ function name(args) {
         let diff = TextEdit::from_unicode_words(SOURCE_LEFT, SOURCE_RIGHT);
 
         let mut output = MarkupBuf::default();
+
         print_diff(&mut fmt::Formatter::new(&mut output), &diff).unwrap();
 
         let expected = markup! {
@@ -825,6 +872,7 @@ function name(args) {
         let diff = TextEdit::from_unicode_words(SOURCE_LEFT, SOURCE_RIGHT);
 
         let mut output = MarkupBuf::default();
+
         print_diff(&mut fmt::Formatter::new(&mut output), &diff).unwrap();
 
         let expected = markup! {
@@ -862,6 +910,7 @@ function name(args) {
         let diff = TextEdit::from_unicode_words(SOURCE_LEFT, SOURCE_RIGHT);
 
         let mut output = MarkupBuf::default();
+
         print_diff(&mut fmt::Formatter::new(&mut output), &diff).unwrap();
 
         let expected = markup! {
@@ -899,6 +948,7 @@ function name(args) {
         let diff = TextEdit::from_unicode_words(SOURCE_LEFT, SOURCE_RIGHT);
 
         let mut output = MarkupBuf::default();
+
         print_diff(&mut fmt::Formatter::new(&mut output), &diff).unwrap();
 
         let expected = markup! {
@@ -936,6 +986,7 @@ function name(args) {
         let diff = TextEdit::from_unicode_words(SOURCE_LEFT, SOURCE_RIGHT);
 
         let mut output = MarkupBuf::default();
+
         print_diff(&mut fmt::Formatter::new(&mut output), &diff).unwrap();
 
         let expected = markup! {
@@ -969,6 +1020,7 @@ console.log(\"test\");
         let diff = TextEdit::from_unicode_words(SOURCE_LEFT, SOURCE_RIGHT);
 
         let mut output = MarkupBuf::default();
+
         print_diff(&mut fmt::Formatter::new(&mut output), &diff).unwrap();
 
         let expected = markup! {

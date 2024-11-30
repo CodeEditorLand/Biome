@@ -87,6 +87,7 @@ impl HooksContext {
             "beforeAll" => &mut self.before_all,
             _ => return 0, // Should never happen
         };
+
         if *counter <= 1 {
             *counter += 1;
         }
@@ -147,16 +148,19 @@ impl Visitor for DuplicateHooksVisitor {
                                     | "after" | "before" => {
                                         let counter =
                                             HooksContext::add(hooks_context, name.text_trimmed());
+
                                         if counter > 1 {
                                             ctx.match_query(DuplicateHooks(node.clone()));
                                         }
                                     }
+
                                     _ => {}
                                 };
                             };
                         })
                 }
             }
+
             WalkEvent::Leave(node) => {
                 // When the visitor exits a function, if it matches the node of the top-most
                 // entry of the stack and the `has_yield` flag is `false`, emit a query match
@@ -188,9 +192,11 @@ impl QueryMatch for DuplicateHooks {
 impl Queryable for DuplicateHooks {
     // `Input` is the type that `ctx.match_query()` is called with in the visitor
     type Input = Self;
+
     type Language = JsLanguage;
     // `Output` if the type that `ctx.query()` will return in the rule
     type Output = JsCallExpression;
+
     type Services = ();
 
     fn build_visitor(
@@ -209,8 +215,11 @@ impl Queryable for DuplicateHooks {
 
 impl Rule for NoDuplicateTestHooks {
     type Query = DuplicateHooks;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(_: &RuleContext<Self>) -> Self::Signals {
@@ -219,8 +228,11 @@ impl Rule for NoDuplicateTestHooks {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let callee = node.callee().ok()?;
+
         let node_name = callee.get_callee_object_name()?;
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

@@ -130,6 +130,7 @@ where
         } = self;
 
         let mut line_index = 0;
+
         let mut line_suppressions = Vec::new();
 
         for (index, (phase, mut visitors)) in phases.into_iter().enumerate() {
@@ -260,7 +261,9 @@ where
     /// suppression comments
     fn run_first_phase(mut self) -> ControlFlow<Break> {
         trace!("Running first analyzer phase");
+
         let iter = self.root.syntax().preorder_with_tokens(Direction::Next);
+
         for event in iter {
             let node_event = match event {
                 WalkEvent::Enter(SyntaxElement::Node(node)) => WalkEvent::Enter(node),
@@ -272,6 +275,7 @@ where
 
                     continue;
                 }
+
                 WalkEvent::Leave(SyntaxElement::Token(_)) => {
                     continue;
                 }
@@ -363,6 +367,7 @@ where
 
         // Flush signals from the queue until the end of the current token is reached
         let cutoff = token.text_range().end();
+
         self.flush_matches(Some(cutoff))
     }
 
@@ -371,6 +376,7 @@ where
     fn flush_matches(&mut self, cutoff: Option<TextSize>) -> ControlFlow<Break> {
         while let Some(entry) = self.signal_queue.peek() {
             let start = entry.text_range.start();
+
             if let Some(cutoff) = cutoff {
                 if start >= cutoff {
                     break;
@@ -455,8 +461,11 @@ where
         range: TextRange,
     ) -> ControlFlow<Break> {
         let mut suppress_all = false;
+
         let mut suppressed_rules = Vec::new();
+
         let mut suppressed_instances = Vec::new();
+
         let mut has_legacy = false;
 
         for result in (self.parse_suppression_comment)(text) {
@@ -466,11 +475,14 @@ where
                     // Emit the suppression parser diagnostic
                     let signal = DiagnosticSignal::new(move || {
                         let location = diag.location();
+
                         let span = location.span.map_or(range, |span| span + range.start());
+
                         diag.clone().with_file_span(span)
                     });
 
                     (self.emit_signal)(&signal)?;
+
                     continue;
                 }
             };
@@ -512,8 +524,10 @@ where
                     (Some(key), Some(value)) => suppressed_instances.push((key, value.to_owned())),
                     (Some(key), None) => {
                         suppressed_rules.push(key);
+
                         has_legacy |= matches!(kind, SuppressionKind::MaybeLegacy(_));
                     }
+
                     _ if range_match(self.range, range) => {
                         // Emit a warning for the unknown rule
                         let signal = DiagnosticSignal::new(move || match group_rule {
@@ -536,10 +550,12 @@ where
 
                         (self.emit_signal)(&signal)?;
                     }
+
                     _ => {}
                 }
             } else {
                 suppressed_rules.clear();
+
                 suppress_all = true;
                 // If this if a "suppress all lints" comment, no need to
                 // parse anything else
@@ -578,17 +594,23 @@ where
                 || last_suppression.line_index + 1 == line_index
             {
                 last_suppression.line_index = line_index;
+
                 last_suppression.text_range = last_suppression.text_range.cover(range);
+
                 last_suppression.suppress_all |= suppress_all;
+
                 if !last_suppression.suppress_all {
                     last_suppression.suppressed_rules.extend(suppressed_rules);
+
                     last_suppression
                         .suppressed_instances
                         .extend(suppressed_instances);
                 } else {
                     last_suppression.suppressed_rules.clear();
+
                     last_suppression.suppressed_instances.clear();
                 }
+
                 return ControlFlow::Continue(());
             }
         }
@@ -613,14 +635,18 @@ where
     /// current suppression as required
     fn bump_line_index(&mut self, text: &str, range: TextRange) {
         let mut did_match = false;
+
         for (index, _) in text.match_indices('\n') {
             if let Some(last_suppression) = self.line_suppressions.last_mut() {
                 if last_suppression.line_index == *self.line_index {
                     let index = TextSize::try_from(index).expect(
                         "integer overflow while converting a suppression line to `TextSize`",
                     );
+
                     let range = TextRange::at(range.start(), index);
+
                     last_suppression.text_range = last_suppression.text_range.cover(range);
+
                     did_match = true;
                 }
             }
@@ -642,20 +668,27 @@ fn create_suppression_comment_action<L: Language>(
     token: &SyntaxToken<L>,
 ) -> Option<AnalyzerAction<L>> {
     let first_node = token.parent()?;
+
     let mut new_leading_trivia = vec![];
+
     let mut token_text = String::new();
+
     let mut new_trailing_trivia = vec![];
+
     let mut mutation = BatchMutation::new(first_node);
 
     for piece in token.leading_trivia().pieces() {
         if !piece.is_comments() {
             new_leading_trivia.push(TriviaPiece::new(piece.kind(), piece.text_len()));
+
             token_text.push_str(piece.text());
         }
 
         if piece.text().contains("rome-ignore") {
             let new_text = piece.text().replace("rome-ignore", "biome-ignore");
+
             new_leading_trivia.push(TriviaPiece::new(piece.kind(), new_text.text_len()));
+
             token_text.push_str(&new_text);
         }
     }
@@ -664,6 +697,7 @@ fn create_suppression_comment_action<L: Language>(
 
     for piece in token.trailing_trivia().pieces() {
         new_trailing_trivia.push(TriviaPiece::new(piece.kind(), piece.text_len()));
+
         token_text.push_str(piece.text());
     }
 
@@ -675,6 +709,7 @@ fn create_suppression_comment_action<L: Language>(
     );
 
     mutation.replace_token_discard_trivia(token.clone(), new_token);
+
     Some(AnalyzerAction {
         mutation,
         applicability: Applicability::MaybeIncorrect,
@@ -730,6 +765,7 @@ fn update_suppression<L: Language>(
     text: &str,
 ) -> Option<AnalyzerAction<L>> {
     let old_token = token.clone();
+
     let new_token = token.clone().detach();
 
     let old_trivia = if is_leading {
@@ -744,7 +780,9 @@ fn update_suppression<L: Language>(
 
     while let Some(range_start) = text.find("lint(") {
         let range_end = range_start + text[range_start..].find(')')?;
+
         text.replace_range(range_end..range_end + 1, "");
+
         text.replace_range(range_start + 4..range_start + 5, "/");
     }
 
@@ -763,6 +801,7 @@ fn update_suppression<L: Language>(
     };
 
     let mut mutation = BatchMutation::new(root.syntax().clone());
+
     mutation.replace_token_discard_trivia(old_token, new_token);
 
     Some(AnalyzerAction {
@@ -842,6 +881,7 @@ impl<'a> Display for RuleFilter<'a> {
             RuleFilter::Group(group) => {
                 write!(f, "{group}")
             }
+
             RuleFilter::Rule(group, rule) => {
                 write!(f, "{group}/{rule}")
             }
@@ -855,6 +895,7 @@ impl<'a> biome_console::fmt::Display for RuleFilter<'a> {
             RuleFilter::Group(group) => {
                 write!(fmt, "{group}")
             }
+
             RuleFilter::Rule(group, rule) => {
                 write!(fmt, "{group}/{rule}")
             }

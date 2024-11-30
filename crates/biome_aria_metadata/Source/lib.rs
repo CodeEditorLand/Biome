@@ -97,6 +97,7 @@ impl AriaValueType {
         if value.is_empty() {
             return false;
         }
+
         match self {
             Self::String => true,
             Self::IdReference => is_valid_html_id(value),
@@ -243,9 +244,11 @@ pub struct HtmlElementInstance {
 impl std::fmt::Display for HtmlElementInstance {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "<{}", self.element)?;
+
         for attribute in self.attributes {
             write!(f, " {attribute}")?;
         }
+
         write!(f, ">")
     }
 }

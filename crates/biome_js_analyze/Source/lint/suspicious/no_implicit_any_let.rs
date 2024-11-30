@@ -43,12 +43,16 @@ declare_lint_rule! {
 
 impl Rule for NoImplicitAnyLet {
     type Query = Ast<JsVariableDeclaration>;
+
     type State = JsVariableDeclarator;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let source_type = ctx.source_type::<JsFileSource>().language();
+
         let node = ctx.query();
 
         if !source_type.is_typescript() || source_type.is_definition_file() || node.is_const() {
@@ -57,8 +61,11 @@ impl Rule for NoImplicitAnyLet {
 
         for declarator in node.declarators() {
             let variable = declarator.ok()?;
+
             let is_initialized = variable.initializer().is_some();
+
             let is_type_annotated = variable.variable_annotation().is_some();
+
             if !is_initialized && !is_type_annotated {
                 return Some(variable);
             }
@@ -75,6 +82,7 @@ impl Rule for NoImplicitAnyLet {
             .as_js_identifier_binding()?
             .name_token()
             .ok()?;
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

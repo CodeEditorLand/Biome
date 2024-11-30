@@ -139,12 +139,16 @@ declare_node_union! {
 
 impl Rule for NoUnsafeFinally {
     type Query = Ast<ControlFlowStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let query = ctx.query();
+
         if query.in_finally_block()? {
             Some(())
         } else {
@@ -154,6 +158,7 @@ impl Rule for NoUnsafeFinally {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let query = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             query.syntax().text_trimmed_range(),
@@ -169,15 +174,19 @@ impl Rule for NoUnsafeFinally {
 impl ControlFlowStatement {
     fn in_finally_block(&self) -> Option<bool> {
         let mut node = self.syntax().clone();
+
         let mut is_label_inside_finally = false;
+
         let label = self.label_token();
 
         loop {
             let kind = node.kind();
+
             let should_stop = match self {
                 Self::JsBreakStatement(it) if it.label_token().is_none() => {
                     sentinel_for_break(kind)
                 }
+
                 Self::JsContinueStatement(_) => sentinel_for_continue(kind),
                 _ => sentinel_for_throw_or_return(kind),
             };
@@ -197,9 +206,11 @@ impl ControlFlowStatement {
                     }
                 }
             }
+
             if node.kind() == JsSyntaxKind::JS_FINALLY_CLAUSE {
                 return Some(!is_label_inside_finally);
             }
+
             node = node.parent()?;
         }
 
@@ -230,6 +241,7 @@ fn sentinel_for_break(kind: JsSyntaxKind) -> bool {
 
 fn sentinel_for_continue(kind: JsSyntaxKind) -> bool {
     use JsSyntaxKind::*;
+
     sentinel_for_throw_or_return(kind)
         || matches!(
             kind,

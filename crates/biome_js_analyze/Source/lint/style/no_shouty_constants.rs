@@ -57,14 +57,19 @@ fn is_id_and_string_literal_inner_text_equal(
     declarator: &JsVariableDeclarator,
 ) -> Option<(JsIdentifierBinding, JsStringLiteralExpression)> {
     let id = declarator.id().ok()?;
+
     let id = id.as_any_js_binding()?.as_js_identifier_binding()?;
+
     let name = id.name_token().ok()?;
+
     let id_text = name.text_trimmed();
 
     let expression = declarator.initializer()?.expression().ok()?;
+
     let literal = expression
         .as_any_js_literal_expression()?
         .as_js_string_literal_expression()?;
+
     let literal_text = literal.inner_string_text().ok()?;
 
     if id_text.len() != literal_text.text().len() {
@@ -87,12 +92,16 @@ pub struct State {
 
 impl Rule for NoShoutyConstants {
     type Query = Semantic<JsVariableDeclarator>;
+
     type State = State;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let declarator = ctx.query();
+
         let declaration = declarator
             .parent::<JsVariableDeclaratorList>()?
             .parent::<JsVariableDeclaration>()?;
@@ -101,6 +110,7 @@ impl Rule for NoShoutyConstants {
             if let Some((binding, literal)) = is_id_and_string_literal_inner_text_equal(declarator)
             {
                 let model = ctx.model();
+
                 if model.is_exported(&binding) {
                     return None;
                 }
@@ -131,6 +141,7 @@ impl Rule for NoShoutyConstants {
         );
 
         let node = state.reference.syntax();
+
         diag = diag.detail(node.text_trimmed_range(), "Used here.");
 
         let diag = diag.note(
@@ -144,6 +155,7 @@ impl Rule for NoShoutyConstants {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let root = ctx.root();
+
         let literal = AnyJsLiteralExpression::JsStringLiteralExpression(state.literal.clone());
 
         let mut batch = root.begin();

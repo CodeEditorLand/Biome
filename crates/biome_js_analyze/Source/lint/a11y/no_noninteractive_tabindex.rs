@@ -63,19 +63,25 @@ pub struct RuleState {
 
 impl Rule for NoNoninteractiveTabindex {
     type Query = Aria<AnyJsxElement>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if !node.is_element() {
             return None;
         }
 
         if ctx.aria_roles().is_not_interactive_element(node) {
             let tabindex_attribute = node.find_attribute_by_name("tabIndex")?;
+
             let tabindex_attribute_value = tabindex_attribute.initializer()?.value().ok()?;
+
             if attribute_has_negative_tabindex(&tabindex_attribute_value)? {
                 return None;
             }
@@ -89,6 +95,7 @@ impl Rule for NoNoninteractiveTabindex {
                 .token_text_trimmed();
 
             let role_attribute = node.find_attribute_by_name("role");
+
             let Some(role_attribute) = role_attribute else {
                 return Some(RuleState {
                     attribute_range: tabindex_attribute.range(),
@@ -97,6 +104,7 @@ impl Rule for NoNoninteractiveTabindex {
             };
 
             let role_attribute_value = role_attribute.initializer()?.value().ok()?;
+
             if attribute_has_interactive_role(&role_attribute_value)? {
                 return None;
             }
@@ -106,11 +114,13 @@ impl Rule for NoNoninteractiveTabindex {
                 element_name,
             });
         }
+
         None
     }
 
     fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let element_name = state.element_name.text();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -128,10 +138,13 @@ impl Rule for NoNoninteractiveTabindex {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let tabindex_attribute = node.find_attribute_by_name("tabIndex")?;
+
         let mut mutation = ctx.root().begin();
 
         mutation.remove_node(tabindex_attribute);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -145,6 +158,7 @@ impl Rule for NoNoninteractiveTabindex {
 /// Non-integer numbers are considered valid.
 fn is_negative_tabindex(number_like_string: &str) -> bool {
     let number_string_result = number_like_string.trim().parse::<i32>();
+
     match number_string_result {
         Ok(number) => number < 0,
         Err(_) => true,
@@ -158,14 +172,19 @@ fn attribute_has_negative_tabindex(
     match tabindex_attribute_value {
         AnyJsxAttributeValue::JsxString(jsx_string) => {
             let value = jsx_string.inner_string_text().ok()?.to_string();
+
             Some(is_negative_tabindex(&value))
         }
+
         AnyJsxAttributeValue::JsxExpressionAttributeValue(value) => {
             let expression = value.expression().ok()?;
+
             let expression_value =
                 AnyNumberLikeExpression::cast(expression.into_syntax())?.value()?;
+
             Some(is_negative_tabindex(&expression_value))
         }
+
         _ => None,
     }
 }

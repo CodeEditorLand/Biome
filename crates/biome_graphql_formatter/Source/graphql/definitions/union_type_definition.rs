@@ -25,6 +25,7 @@ impl FormatNodeRule<GraphqlUnionTypeDefinition> for FormatGraphqlUnionTypeDefini
                     if let Some(description) = description.as_ref() {
                         write!(f, [description.format(), hard_line_break(),])?;
                     }
+
                     Ok(())
                 }),
                 group(&format_args!(

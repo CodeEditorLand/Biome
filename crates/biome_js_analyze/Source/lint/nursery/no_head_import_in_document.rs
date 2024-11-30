@@ -54,8 +54,11 @@ declare_lint_rule! {
 
 impl Rule for NoHeadImportInDocument {
     type Query = Ast<JsImport>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -64,7 +67,9 @@ impl Rule for NoHeadImportInDocument {
         }
 
         let import = ctx.query();
+
         let import_source = import.import_clause().ok()?.source().ok()?;
+
         let module_name = import_source.inner_string_text().ok()?;
 
         if module_name != "next/head" {
@@ -100,6 +105,7 @@ impl Rule for NoHeadImportInDocument {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let path = ctx.file_path().to_str()?.split("pages").nth(1)?;
+
         let path = if cfg!(debug_assertions) {
             path.replace(MAIN_SEPARATOR, "/")
         } else {

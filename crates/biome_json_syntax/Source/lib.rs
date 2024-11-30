@@ -15,6 +15,7 @@ use biome_rowan::{RawSyntaxKind, SyntaxKind, TokenText};
 impl From<u16> for JsonSyntaxKind {
     fn from(d: u16) -> JsonSyntaxKind {
         assert!(d <= (JsonSyntaxKind::__LAST as u16));
+
         unsafe { std::mem::transmute::<u16, JsonSyntaxKind>(d) }
     }
 }
@@ -41,6 +42,7 @@ impl JsonSyntaxKind {
 
 impl biome_rowan::SyntaxKind for JsonSyntaxKind {
     const TOMBSTONE: Self = JsonSyntaxKind::TOMBSTONE;
+
     const EOF: Self = JsonSyntaxKind::EOF;
 
     fn is_bogus(&self) -> bool {
@@ -115,11 +117,14 @@ impl TryFrom<JsonSyntaxKind> for TriviaPieceKind {
 /// Text of `token`, excluding all trivia and removing quotes if `token` is a string literal.
 pub fn inner_string_text(token: &JsonSyntaxToken) -> TokenText {
     let mut text = token.token_text_trimmed();
+
     if token.kind() == JsonSyntaxKind::JSON_STRING_LITERAL {
         // remove string delimiters
         // SAFETY: string literal token have a delimiters at the start and the end of the string
         let range = TextRange::new(1.into(), text.len() - TextSize::from(1));
+
         text = text.slice(range);
     }
+
     text
 }

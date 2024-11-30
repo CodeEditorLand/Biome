@@ -12,8 +12,11 @@ impl FunctionDefinitionCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<GritFunctionDefinition<GritQueryContext>, CompileError> {
         let name = node.name()?.text();
+
         let name = name.trim();
+
         let mut local_vars = BTreeMap::new();
+
         let (scope_index, mut context) = create_scope!(context, local_vars);
         // important that this occurs first, as calls assume
         // that parameters are registered first
@@ -38,6 +41,7 @@ impl FunctionDefinitionCompiler {
             local_vars.values().copied().collect(),
             body,
         );
+
         Ok(pattern_def)
     }
 }

@@ -49,14 +49,19 @@ fn parse_ts_identifier_binding(
         }
 
         let name = p.text(ident.range(p));
+
         let is_reserved_word_this_context = ts_identifier_context.is_reserved_word(name);
+
         if is_reserved_word_this_context {
             // test_err ts ts_type_alias_cannot_be_reserved_word
             // type undefined = any;
             // type any = any;
             // type string = any;
+
             let error = p.err_builder(format!("Type alias cannot be {name}"), ident.range(p));
+
             p.error(error);
+
             ident.change_to_bogus(p);
         }
 
@@ -77,10 +82,15 @@ pub(crate) fn parse_ts_type_assertion_expression(
     }
 
     let m = p.start();
+
     p.bump(T![<]);
+
     parse_ts_type(p, TypeContext::default()).or_add_diagnostic(p, expected_ts_type);
+
     p.expect(T![>]);
+
     parse_unary_expr(p, context).or_add_diagnostic(p, expected_expression);
+
     Present(m.complete(p, TS_TYPE_ASSERTION_EXPRESSION))
 }
 
@@ -93,7 +103,9 @@ pub(crate) fn parse_ts_implements_clause(p: &mut JsParser) -> ParsedSyntax {
     // class B implements C {}
 
     let m = p.start();
+
     p.expect(T![implements]);
+
     expect_ts_type_list(p, "implements");
 
     Present(m.complete(p, TS_IMPLEMENTS_CLAUSE))
@@ -111,12 +123,15 @@ fn expect_ts_type_list(p: &mut JsParser, clause_name: &str) -> CompletedMarker {
 
     while p.at(T![,]) {
         let comma_range = p.cur_range();
+
         p.bump(T![,]);
         // test_err ts ts_extends_trailing_comma
         // interface A {}
         // interface B extends A, {}
+
         if parse_ts_reference_type(p, TypeContext::default()).is_absent() {
             p.error(p.err_builder("Trailing comma not allowed.", comma_range));
+
             break;
         }
     }
@@ -131,7 +146,9 @@ pub(crate) fn try_parse<T, E>(
     let checkpoint = p.checkpoint();
 
     let old_value = std::mem::replace(&mut p.state_mut().speculative_parsing, true);
+
     let res = func(p);
+
     p.state_mut().speculative_parsing = old_value;
 
     if res.is_err() {
@@ -144,6 +161,7 @@ pub(crate) fn try_parse<T, E>(
 /// Must be at `[ident:` or `<modifiers> [ident:`
 pub(crate) fn is_at_ts_index_signature_member(p: &mut JsParser) -> bool {
     let mut offset = 0;
+
     while is_nth_at_modifier(p, offset, false) {
         offset += 1;
     }
@@ -175,19 +193,23 @@ pub(crate) fn expect_ts_index_signature_member(
         if p.eat(T![readonly]) {
             continue;
         }
+
         p.error(ts_member_cannot_be(
             p,
             p.cur_range(),
             "index signature",
             p.cur_text(),
         ));
+
         p.bump_any();
     }
 
     p.bump(T!['[']);
 
     let parameter = p.start();
+
     parse_identifier_binding(p).or_add_diagnostic(p, expected_identifier);
+
     parse_ts_type_annotation(p, context).unwrap(); // It's a computed member name if the type annotation is missing
     parameter.complete(p, TS_INDEX_SIGNATURE_PARAMETER);
 
@@ -213,9 +235,11 @@ fn eat_members_separator(p: &mut JsParser, parent: MemberParent) {
         MemberParent::Class => (false, true),
         MemberParent::TypeOrInterface => (true, true),
     };
+
     debug_assert!(comma || semi_colon);
 
     let separator_eaten = comma && p.eat(T![,]);
+
     let separator_eaten = separator_eaten || (semi_colon && optional_semi(p));
 
     if !separator_eaten {
@@ -223,15 +247,19 @@ fn eat_members_separator(p: &mut JsParser, parent: MemberParent) {
             let err = p
                 .err_builder("';' expected'", p.cur_range())
                 .with_hint("An explicit or implicit semicolon is expected here...");
+
             p.error(err);
         } else {
             let mut tokens = vec![];
+
             if comma {
                 tokens.push(T![,]);
             }
+
             if semi_colon {
                 tokens.push(T![;]);
             }
+
             p.error(expected_token_any(&tokens));
         }
     }

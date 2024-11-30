@@ -20,7 +20,9 @@ impl RewriteCompiler {
         let left = PatternCompiler::from_node(&node.left()?, context)?;
 
         let right = node.right()?;
+
         let right_syntax_kind = right.syntax().kind();
+
         let right = PatternCompiler::from_node_with_rhs(&right, context, true)?;
 
         if let (Pattern::CodeSnippet(left_snippet), Pattern::CodeSnippet(right_snippet)) =
@@ -53,6 +55,7 @@ impl PrRewriteCompiler {
         let left = Pattern::Variable(VariableCompiler::from_node(&node.left()?, context));
 
         let right = node.right()?;
+
         let right = to_dynamic_pattern(
             PatternCompiler::from_node_with_rhs(&right, context, true)?,
             right.syntax().kind(),

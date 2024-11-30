@@ -8,6 +8,7 @@ use libfuzzer_sys::Corpus;
 
 pub fn do_fuzz(case: &[u8]) -> Corpus {
     let parse_type = JsFileSource::jsx();
+
     rome_common::fuzz_js_parser_with_source_type(case, parse_type)
 }
 

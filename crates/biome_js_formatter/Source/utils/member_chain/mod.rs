@@ -134,8 +134,10 @@ impl MemberChain {
         tab_width: TabWidth,
     ) -> SyntaxResult<MemberChain> {
         let parent = call_expression.syntax().parent();
+
         let mut chain_members =
             ChainMembersIterator::new(call_expression.clone().into(), comments).collect::<Vec<_>>();
+
         chain_members.reverse();
 
         // as explained before, the first group is particular, so we calculate it
@@ -169,6 +171,7 @@ impl MemberChain {
     ) {
         if self.should_merge_tail_with_head(parent, tab_width, comments) {
             let group = self.tail.pop_first().unwrap();
+
             self.head.extend_members(group.into_members());
         }
     }
@@ -184,6 +187,7 @@ impl MemberChain {
             None => {
                 return false;
             }
+
             Some(first_group) => first_group,
         };
 
@@ -228,6 +232,7 @@ impl MemberChain {
                         false
                     }
                 }
+
                 _ => false,
             }
         } else if let Some(ChainMember::StaticMember { expression }) = self.head.members().last() {
@@ -249,6 +254,7 @@ impl MemberChain {
     /// It tells if the groups should break on multiple lines
     fn groups_should_break(&self, f: &mut JsFormatter) -> FormatResult<bool> {
         let comments = f.comments();
+
         let node_has_comments =
             self.head.has_comments(comments) || self.tail.has_comments(comments);
 
@@ -265,7 +271,9 @@ impl MemberChain {
             .peekable();
 
         let mut calls_count = 0u32;
+
         let mut any_has_function_like_argument = false;
+
         let mut any_complex_args = false;
 
         while let Some(call) = call_expressions.next() {
@@ -361,6 +369,7 @@ impl Format<JsFormatContext> for MemberChain {
             let mut joiner = f.join();
 
             joiner.entry(&self.head);
+
             joiner.entries(self.tail.iter());
 
             joiner.finish()
@@ -383,8 +392,10 @@ impl Format<JsFormatContext> for MemberChain {
                 } else {
                     write!(f, [hard_line_break()])?;
                 }
+
                 write!(f, [group])?;
             }
+
             Ok(())
         });
 
@@ -461,6 +472,7 @@ fn split_members_into_head_and_remaining_groups(
     {
         // Take as many member access chains as possible
         let rest = &members[non_call_or_array_member_access_start..];
+
         let member_end = rest
             .iter()
             .enumerate()
@@ -473,6 +485,7 @@ fn split_members_into_head_and_remaining_groups(
 
                     (!next_is_member).then_some(index)
                 }
+
                 _ => Some(index),
             })
             .unwrap_or(rest.len());
@@ -489,6 +502,7 @@ fn split_members_into_head_and_remaining_groups(
 /// computes groups coming after the first group
 fn compute_remaining_groups(members: Vec<ChainMember>, comments: &JsComments) -> TailChainGroups {
     let mut has_seen_call_expression = false;
+
     let mut groups_builder = MemberChainGroupsBuilder::default();
 
     for member in members {
@@ -508,7 +522,9 @@ fn compute_remaining_groups(members: Vec<ChainMember>, comments: &JsComments) ->
                 // and `()` belong to the call expression we just encountered
                 if has_seen_call_expression {
                     groups_builder.close_group();
+
                     groups_builder.start_group(member);
+
                     has_seen_call_expression = false;
                 } else {
                     groups_builder.start_or_continue_group(member);
@@ -517,6 +533,7 @@ fn compute_remaining_groups(members: Vec<ChainMember>, comments: &JsComments) ->
 
             ChainMember::CallExpression { .. } => {
                 groups_builder.start_or_continue_group(member);
+
                 has_seen_call_expression = true;
             }
 
@@ -526,6 +543,7 @@ fn compute_remaining_groups(members: Vec<ChainMember>, comments: &JsComments) ->
 
             ChainMember::Node(_) if member.is_call_like_expression() => {
                 groups_builder.start_or_continue_group(member);
+
                 has_seen_call_expression = true;
             }
 
@@ -537,6 +555,7 @@ fn compute_remaining_groups(members: Vec<ChainMember>, comments: &JsComments) ->
         // were originally commenting
         if has_trailing_comments {
             groups_builder.close_group();
+
             has_seen_call_expression = false;
         }
     }
@@ -679,6 +698,7 @@ impl Iterator for ChainMembersIterator<'_> {
 
             JsStaticMemberExpression(static_member) => {
                 self.next = static_member.object().ok();
+
                 ChainMember::StaticMember {
                     expression: static_member,
                 }
@@ -694,6 +714,7 @@ impl Iterator for ChainMembersIterator<'_> {
 
             TsNonNullAssertionExpression(expression) => {
                 self.next = expression.expression().ok();
+
                 ChainMember::TsNonNullAssertionExpression { expression }
             }
 

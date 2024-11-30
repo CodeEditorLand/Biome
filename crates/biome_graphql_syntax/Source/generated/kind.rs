@@ -166,12 +166,14 @@ impl GraphqlSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_literal(self) -> bool {
         match self {
             GRAPHQL_STRING_LITERAL | GRAPHQL_FLOAT_LITERAL | GRAPHQL_INT_LITERAL => true,
             _ => false,
         }
     }
+
     pub const fn is_list(self) -> bool {
         match self {
             GRAPHQL_DEFINITION_LIST
@@ -192,6 +194,7 @@ impl GraphqlSyntaxKind {
             _ => false,
         }
     }
+
     pub fn from_keyword(ident: &str) -> Option<GraphqlSyntaxKind> {
         let kw = match ident {
             "true" => TRUE_KW,
@@ -234,8 +237,10 @@ impl GraphqlSyntaxKind {
             "INPUT_FIELD_DEFINITION" => INPUT_FIELD_DEFINITION_KW,
             _ => return None,
         };
+
         Some(kw)
     }
+
     pub const fn to_string(&self) -> Option<&'static str> {
         let tok = match self {
             BANG => "!",
@@ -293,6 +298,7 @@ impl GraphqlSyntaxKind {
             GRAPHQL_STRING_LITERAL => "string literal",
             _ => return None,
         };
+
         Some(tok)
     }
 }

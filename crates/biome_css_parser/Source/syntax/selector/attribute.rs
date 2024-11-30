@@ -18,6 +18,7 @@ pub(crate) fn parse_attribute_selector(p: &mut CssParser) -> ParsedSyntax {
     if !p.at(T!['[']) {
         return Absent;
     }
+
     let m = p.start();
 
     p.bump(T!['[']);
@@ -30,6 +31,7 @@ pub(crate) fn parse_attribute_selector(p: &mut CssParser) -> ParsedSyntax {
     parse_attribute_matcher(p).ok();
 
     let context = selector_lex_context(p);
+
     if !p.eat_with_context(T![']'], context)
         && ParseRecoveryTokenSet::new(CSS_BOGUS, ATTRIBUTE_SELECTOR_RECOVERY_SET)
             .recover(p)
@@ -54,7 +56,9 @@ pub(crate) fn parse_attribute_name(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
     // we don't need diagnostic here, because namespace is optional
     parse_namespace(p).ok();
+
     parse_regular_identifier(p).or_add_diagnostic(p, expected_identifier);
+
     Present(m.complete(p, CSS_ATTRIBUTE_NAME))
 }
 
@@ -75,15 +79,19 @@ fn parse_attribute_matcher(p: &mut CssParser) -> ParsedSyntax {
 
     // bump attribute matcher type
     p.bump_any();
+
     parse_attribute_matcher_value(p).or_add_diagnostic(p, expected_any_attribute_matcher_name);
 
     let modifier = p.cur();
+
     if modifier.is_attribute_modifier_keyword() {
         p.bump(modifier);
     } else if modifier != T![']'] {
         // if we have an invalid modifier, we should add a diagnostic and bump it
         let diagnostic = expected_any_attribute_modifier(p, p.cur_range());
+
         p.error(diagnostic);
+
         p.bump_any();
     }
 

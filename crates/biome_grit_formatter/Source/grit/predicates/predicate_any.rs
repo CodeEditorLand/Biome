@@ -12,8 +12,11 @@ impl FormatNodeRule<GritPredicateAny> for FormatGritPredicateAny {
             predicates,
             r_curly_token,
         } = node.as_fields();
+
         write!(f, [any_token.format(), space(), l_curly_token.format()])?;
+
         let should_insert_space_around_brackets = f.options().bracket_spacing().value();
+
         write!(
             f,
             [group(&soft_block_indent_with_maybe_space(

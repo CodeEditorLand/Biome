@@ -71,8 +71,11 @@ pub(crate) fn parse_function(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     parse_regular_identifier(p).ok();
+
     p.bump(T!['(']);
+
     ParameterList.parse_list(p);
+
     p.expect(T![')']);
 
     Present(m.complete(p, CSS_FUNCTION))
@@ -82,7 +85,9 @@ struct ParameterListParseRecovery;
 
 impl ParseRecovery for ParameterListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_PARAMETER;
 
     /// Determines if the parser has reached a point where it can recover from an error
@@ -109,7 +114,9 @@ pub(crate) struct ParameterList;
 
 impl ParseSeparatedList for ParameterList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_PARAMETER_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -162,7 +169,9 @@ pub(crate) fn parse_parameter(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let param = p.start();
+
     parse_any_expression(p).ok();
+
     Present(param.complete(p, CSS_PARAMETER))
 }
 
@@ -197,6 +206,7 @@ pub(crate) fn parse_any_expression(p: &mut CssParser) -> ParsedSyntax {
         let binary_expression = param.precede(p);
 
         p.bump_ts(BINARY_OPERATION_TOKEN);
+
         parse_any_expression(p).or_add_diagnostic(p, expected_expression);
 
         Present(binary_expression.complete(p, CSS_BINARY_EXPRESSION))
@@ -238,9 +248,13 @@ pub(crate) fn parse_parenthesized_expression(p: &mut CssParser) -> ParsedSyntax 
     }
 
     let m = p.start();
+
     p.expect(T!['(']);
+
     parse_any_expression(p).ok();
+
     p.expect(T![')']);
+
     Present(m.complete(p, CSS_PARENTHESIZED_EXPRESSION))
 }
 
@@ -255,6 +269,8 @@ pub(crate) fn parse_list_of_component_values_expression(p: &mut CssParser) -> Pa
     }
 
     let m = p.start();
+
     CssComponentValueList.parse_list(p);
+
     Present(m.complete(p, CSS_LIST_OF_COMPONENT_VALUES_EXPRESSION))
 }

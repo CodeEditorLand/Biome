@@ -70,14 +70,20 @@ declare_lint_rule! {
 
 impl Rule for UseValidTypeof {
     type Query = Ast<JsBinaryExpression>;
+
     type State = AnyJsExpression;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let n = ctx.query();
+
         let left = n.left().ok()?.omit_parentheses();
+
         let right = n.right().ok()?.omit_parentheses();
+
         if !matches!(
             n.operator().ok()?,
             JsBinaryOperator::Equality
@@ -100,6 +106,7 @@ impl Rule for UseValidTypeof {
             {
                 other
             }
+
             _ => {
                 return None;
             }
@@ -110,9 +117,11 @@ impl Rule for UseValidTypeof {
                 // The literal is not a string
                 return Some(other);
             };
+
             if JsTypeofValue::from_str(literal_str).is_ok() {
                 return None;
             }
+
             return Some(other);
         }
 
@@ -137,6 +146,7 @@ impl Rule for UseValidTypeof {
             {
                 None
             }
+
             other => Some(other),
         }
     }
@@ -153,6 +163,7 @@ impl Rule for UseValidTypeof {
                 ));
             }
         }
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -177,14 +188,18 @@ impl Rule for UseValidTypeof {
 
     fn action(ctx: &RuleContext<Self>, other: &Self::State) -> Option<JsRuleAction> {
         let literal = other.as_static_value()?;
+
         let literal = literal.as_string_constant()?;
 
         // Try to fix the casing of the literal eg. "String" -> "string"
         let suggestion = literal.to_ascii_lowercase_cow();
+
         let suggestion = JsTypeofValue::from_str(&suggestion).ok()?;
+
         let suggestion = suggestion.as_str();
 
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(
             other.clone(),
             AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::from(
@@ -233,6 +248,7 @@ impl JsTypeofValue {
 }
 impl FromStr for JsTypeofValue {
     type Err = ();
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "undefined" => Ok(Self::Undefined),

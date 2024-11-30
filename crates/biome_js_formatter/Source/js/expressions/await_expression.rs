@@ -32,6 +32,7 @@ impl FormatNodeRule<JsAwaitExpression> for FormatJsAwaitExpression {
                     .and_then(|member| member.object().ok())
                     .is_some_and(|object| object.syntax() == node.syntax()),
             };
+
             if is_callee_or_object {
                 let ancestor_await_or_block = parent.ancestors().skip(1).find(|ancestor| {
                     matches!(
@@ -71,36 +72,49 @@ impl FormatNodeRule<JsAwaitExpression> for FormatJsAwaitExpression {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsAwaitExpression;
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("(await a)`template`", JsAwaitExpression);
+
         assert_needs_parentheses!("+(await a)", JsAwaitExpression);
 
         assert_needs_parentheses!("(await a).b", JsAwaitExpression);
+
         assert_needs_parentheses!("(await a)[b]", JsAwaitExpression);
+
         assert_not_needs_parentheses!("a[await b]", JsAwaitExpression);
 
         assert_needs_parentheses!("(await a)()", JsAwaitExpression);
+
         assert_needs_parentheses!("new (await a)()", JsAwaitExpression);
 
         assert_needs_parentheses!("(await a) && b", JsAwaitExpression);
+
         assert_needs_parentheses!("(await a) + b", JsAwaitExpression);
+
         assert_needs_parentheses!("(await a) instanceof b", JsAwaitExpression);
+
         assert_needs_parentheses!("(await a) in b", JsAwaitExpression);
 
         assert_needs_parentheses!("[...(await a)]", JsAwaitExpression);
+
         assert_needs_parentheses!("({...(await b)})", JsAwaitExpression);
+
         assert_needs_parentheses!("call(...(await b))", JsAwaitExpression);
 
         assert_needs_parentheses!("class A extends (await b) {}", JsAwaitExpression);
 
         assert_needs_parentheses!("(await b) as number", JsAwaitExpression);
+
         assert_needs_parentheses!("(await b)!", JsAwaitExpression);
 
         assert_needs_parentheses!("(await b) ? b : c", JsAwaitExpression);
+
         assert_not_needs_parentheses!("a ? await b : c", JsAwaitExpression);
+
         assert_not_needs_parentheses!("a ? b : await c", JsAwaitExpression);
     }
 }

@@ -62,18 +62,21 @@ impl HtmlSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_literal(self) -> bool {
         match self {
             HTML_STRING_LITERAL | HTML_LITERAL => true,
             _ => false,
         }
     }
+
     pub const fn is_list(self) -> bool {
         match self {
             HTML_ELEMENT_LIST | HTML_ATTRIBUTE_LIST => true,
             _ => false,
         }
     }
+
     pub fn from_keyword(ident: &str) -> Option<HtmlSyntaxKind> {
         let kw = match ident {
             "null" => NULL_KW,
@@ -83,8 +86,10 @@ impl HtmlSyntaxKind {
             "html" => HTML_KW,
             _ => return None,
         };
+
         Some(kw)
     }
+
     pub const fn to_string(&self) -> Option<&'static str> {
         let tok = match self {
             L_ANGLE => "<",
@@ -103,6 +108,7 @@ impl HtmlSyntaxKind {
             HTML_STRING_LITERAL => "string literal",
             _ => return None,
         };
+
         Some(tok)
     }
 }

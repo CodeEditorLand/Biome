@@ -13,6 +13,7 @@ pub struct JsonLanguage;
 
 impl Language for JsonLanguage {
     type Kind = JsonSyntaxKind;
+
     type Root = JsonRoot;
 }
 

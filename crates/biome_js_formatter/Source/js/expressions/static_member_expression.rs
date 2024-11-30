@@ -40,6 +40,7 @@ impl Format<JsFormatContext> for AnyJsStaticMemberLike {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         let is_member_chain = {
             let mut recording = f.start_recording();
+
             write!(recording, [self.object().format()])?;
 
             recording
@@ -67,6 +68,7 @@ impl Format<JsFormatContext> for AnyJsStaticMemberLike {
                     write!(f, [format_no_break])
                 }
             }
+
             StaticMemberLikeLayout::BreakAfterObject => {
                 write!(
                     f,
@@ -94,6 +96,7 @@ impl AnyJsStaticMemberLike {
             AnyJsStaticMemberLike::JsStaticMemberExpression(expression) => {
                 expression.operator_token()
             }
+
             AnyJsStaticMemberLike::JsStaticMemberAssignment(assignment) => assignment.dot_token(),
         }
     }
@@ -107,6 +110,7 @@ impl AnyJsStaticMemberLike {
 
     fn layout(&self, is_member_chain: bool) -> SyntaxResult<StaticMemberLikeLayout> {
         let parent = self.syntax().parent();
+
         let object = self.object()?;
 
         let is_nested = match &parent {
@@ -118,14 +122,17 @@ impl AnyJsStaticMemberLike {
                         AnyJsExpression::JsCallExpression(call_expression) => {
                             !call_expression.arguments()?.args().is_empty()
                         }
+
                         AnyJsExpression::TsNonNullAssertionExpression(non_null_assertion) => {
                             match non_null_assertion.expression()? {
                                 AnyJsExpression::JsCallExpression(call_expression) => {
                                     !call_expression.arguments()?.args().is_empty()
                                 }
+
                                 _ => false,
                             }
                         }
+
                         _ => false,
                     };
 
@@ -137,6 +144,7 @@ impl AnyJsStaticMemberLike {
                 AnyJsStaticMemberLike::can_cast(parent.kind())
                     || AnyJsComputedMember::can_cast(parent.kind())
             }
+
             None => false,
         };
 
@@ -163,6 +171,7 @@ impl AnyJsStaticMemberLike {
                     StaticMemberLikeLayout::NoBreak
                 }
             }
+
             _ => StaticMemberLikeLayout::BreakAfterObject,
         };
 
@@ -173,13 +182,17 @@ impl AnyJsStaticMemberLike {
 #[cfg(test)]
 mod tests {
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsStaticMemberExpression;
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("new (test().a)()", JsStaticMemberExpression);
+
         assert_needs_parentheses!("new (test()[a].b)()", JsStaticMemberExpression);
+
         assert_needs_parentheses!("new (test()`template`.length)()", JsStaticMemberExpression);
+
         assert_needs_parentheses!("new (test()!.member)()", JsStaticMemberExpression);
 
         assert_not_needs_parentheses!("new (test.a)()", JsStaticMemberExpression);

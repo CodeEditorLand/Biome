@@ -64,17 +64,23 @@ pub struct UseValidAriaValuesState {
 
 impl Rule for UseValidAriaValues {
     type Query = Ast<JsxAttribute>;
+
     type State = UseValidAriaValuesState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let attribute_name = node.name().ok()?.as_jsx_name()?.value_token().ok()?;
 
         if let Ok(aria_property) = AriaAttribute::from_str(attribute_name.text_trimmed()) {
             let attribute_static_value = node.as_static_value()?;
+
             let attribute_text = attribute_static_value.text();
+
             if !aria_property.value_type().contains(attribute_text) {
                 return Some(UseValidAriaValuesState {
                     attribute_name,
@@ -89,6 +95,7 @@ impl Rule for UseValidAriaValues {
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let attribute_name = state.attribute_name.text_trimmed();
+
         let diagnostic = RuleDiagnostic::new(
             rule_category!(),
             state.attribute_value_range,
@@ -96,6 +103,7 @@ impl Rule for UseValidAriaValues {
                 "The value of the ARIA attribute "<Emphasis>{attribute_name}</Emphasis>" is not correct."
             },
         );
+
         let diagnostic = match state.property_type {
             AriaValueType::Boolean => {
                 diagnostic.footer_list(
@@ -105,6 +113,7 @@ impl Rule for UseValidAriaValues {
                     ["false", "true"]
                 )
             }
+
             AriaValueType::OptionalBoolean => {
                 diagnostic.footer_list(
                     markup!{
@@ -113,6 +122,7 @@ impl Rule for UseValidAriaValues {
                     ["undefined", "false", "true"]
                 )
             }
+
             AriaValueType::Integer => {
                 diagnostic.note(
                     markup!{
@@ -120,6 +130,7 @@ impl Rule for UseValidAriaValues {
                     }
                 )
             }
+
             AriaValueType::IdReference => {
                 diagnostic.note(
                     markup!{
@@ -127,6 +138,7 @@ impl Rule for UseValidAriaValues {
                     }
                 )
             }
+
             AriaValueType::IdReferenceList => {
                 diagnostic.note(
                     markup!{
@@ -134,6 +146,7 @@ impl Rule for UseValidAriaValues {
                     }
                 )
             }
+
             AriaValueType::String => {
                 diagnostic.note(
                     markup!{
@@ -141,6 +154,7 @@ impl Rule for UseValidAriaValues {
                     }
                 )
             }
+
             AriaValueType::Number => {
                 diagnostic.note(
                     markup!{
@@ -148,6 +162,7 @@ impl Rule for UseValidAriaValues {
                     }
                 )
             }
+
             AriaValueType::Token(tokens) => {
                 diagnostic.footer_list(
                     markup!{
@@ -156,6 +171,7 @@ impl Rule for UseValidAriaValues {
                     tokens
                 )
             }
+
             AriaValueType::TokenList(tokens) => {
                 diagnostic.footer_list(
                     markup!{
@@ -164,6 +180,7 @@ impl Rule for UseValidAriaValues {
                     tokens
                 )
             }
+
             AriaValueType::Tristate => {
                 diagnostic.footer_list(
                     markup!{
@@ -173,6 +190,7 @@ impl Rule for UseValidAriaValues {
                 )
             }
         };
+
         Some(diagnostic)
     }
 }

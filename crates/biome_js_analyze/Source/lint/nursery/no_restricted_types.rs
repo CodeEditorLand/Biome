@@ -58,17 +58,24 @@ declare_lint_rule! {
 
 impl Rule for NoRestrictedTypes {
     type Query = Ast<TsReferenceType>;
+
     type State = CustomRestrictedTypeOptions;
+
     type Signals = Option<Self::State>;
+
     type Options = NoRestrictedTypesOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let ts_reference_type = ctx.query();
+
         let options = ctx.options();
 
         let ts_any_name = ts_reference_type.name().ok()?;
+
         let identifier = ts_any_name.as_js_reference_identifier()?;
+
         let identifier_token = identifier.value_token().ok()?;
+
         let token_name = identifier_token.text_trimmed();
 
         let restricted_type = options.types.get(token_name)?.clone();
@@ -86,6 +93,7 @@ impl Rule for NoRestrictedTypes {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let suggested_type = state.use_instead.as_ref()?;
+
         if !is_js_ident(suggested_type) {
             return None;
         }
@@ -93,8 +101,11 @@ impl Rule for NoRestrictedTypes {
         let mut mutation = ctx.root().begin();
 
         let ts_reference_type = ctx.query();
+
         let ts_any_name = ts_reference_type.name().ok()?;
+
         let identifier = ts_any_name.as_js_reference_identifier()?;
+
         let prev_token = identifier.value_token().ok()?;
 
         let new_token = make::ident(suggested_type);

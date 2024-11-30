@@ -13,6 +13,7 @@ impl BubbleCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Bubble<GritQueryContext>, CompileError> {
         let mut local_vars = BTreeMap::new();
+
         let (local_scope_index, mut local_context) = create_scope!(context, local_vars);
 
         // important that this occurs first, as calls assume
@@ -29,6 +30,7 @@ impl BubbleCompiler {
                 )
             })
             .collect();
+
         if parameters
             .iter()
             .map(|n| &n.0)

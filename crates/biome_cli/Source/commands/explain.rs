@@ -17,6 +17,7 @@ fn print_rule(session: CliSession, metadata: &RuleMetadata) {
                 "No fix available.\n"
             });
         }
+
         kind => {
             session.app.console.log(markup! {
                 "Fix is "{kind}".\n"
@@ -43,19 +44,25 @@ pub(crate) fn explain(session: CliSession, doc: Doc) -> Result<(), CliDiagnostic
     match doc {
         Doc::Rule(metadata) => {
             print_rule(session, &metadata);
+
             Ok(())
         }
+
         Doc::DaemonLogs => {
             let cache_dir = biome_env()
                 .biome_log_path
                 .value()
                 .unwrap_or(default_biome_log_path().display().to_string());
+
             session.app.console.error(markup! {
                 <Info>"The daemon logs are available in the directory: \n"</Info>
             });
+
             session.app.console.log(markup! {{cache_dir}});
+
             Ok(())
         }
+
         Doc::Unknown(arg) => Err(CliDiagnostic::unexpected_argument(arg, "explain")),
     }
 }

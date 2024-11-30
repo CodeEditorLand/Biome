@@ -129,12 +129,15 @@ impl<'fmt, Context> From<&'fmt Argument<'fmt, Context>> for Arguments<'fmt, Cont
 #[cfg(test)]
 mod tests {
     use crate::format_element::tag::Tag;
+
     use crate::prelude::*;
+
     use crate::{format_args, write, FormatState, VecBuffer};
 
     #[test]
     fn test_nesting() {
         let mut context = FormatState::new(());
+
         let mut buffer = VecBuffer::new(&mut context);
 
         write!(

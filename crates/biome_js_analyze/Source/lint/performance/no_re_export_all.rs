@@ -47,8 +47,11 @@ declare_lint_rule! {
 
 impl Rule for NoReExportAll {
     type Query = Ast<JsExportFromClause>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {

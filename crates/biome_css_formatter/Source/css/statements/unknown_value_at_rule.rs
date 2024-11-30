@@ -18,6 +18,7 @@ impl FormatNodeRule<CssUnknownValueAtRule> for FormatCssUnknownValueAtRule {
             if components.items().next().is_some() {
                 write!(f, [space()])?;
             }
+
             write!(f, [components.format()])?;
         }
 

@@ -58,15 +58,18 @@ pub(crate) fn rage(
                     ConnectedClientServerLog(session.app.workspace.deref())
                 }));
             }
+
             None => {
                 session
                     .app
                     .console
                     .log(markup!("Discovering running Biome servers..."));
+
                 session.app.console.log(markup!({ RunningRomeServer }));
             }
         }
     }
+
     Ok(())
 }
 
@@ -85,15 +88,18 @@ impl Display for WorkspaceRage<'_> {
                         RageEntry::Section(title) => {
                             Section(&title).fmt(fmt)?;
                         }
+
                         RageEntry::Pair { name, value } => {
                             KeyValuePair(&name, markup!({ value })).fmt(fmt)?;
                         }
+
                         RageEntry::Markup(markup) => markup.fmt(fmt)?,
                     }
                 }
 
                 Ok(())
             }
+
             Err(err) => {
                 writeln!(fmt)?;
                 (markup! {<Error>"\u{2716} Workspace rage failed:"</Error>}).fmt(fmt)?;
@@ -113,6 +119,7 @@ impl Display for RunningRomeServer {
             Ok(iter) => iter,
             Err(err) => {
                 (markup! {<Error>"\u{2716} Enumerating Biome instances failed:"</Error>}).fmt(f)?;
+
                 return writeln!(f, " {err}");
             }
         };
@@ -120,6 +127,7 @@ impl Display for RunningRomeServer {
         for version in versions {
             if version == biome_configuration::VERSION {
                 let runtime = Runtime::new()?;
+
                 match service::open_transport(runtime) {
                     Ok(None) => {
                         markup!(
@@ -127,8 +135,10 @@ impl Display for RunningRomeServer {
                             {KeyValuePair("Status", markup!(<Dim>"stopped"</Dim>))}
                         )
                         .fmt(f)?;
+
                         continue;
                     }
+
                     Ok(Some(transport)) => {
                         markup!("\n"<Emphasis>"Running Biome Server:"</Emphasis>" "{HorizontalLine::new(78)}"
 
@@ -140,12 +150,15 @@ impl Display for RunningRomeServer {
                             Ok(client) => WorkspaceRage(client.deref()).fmt(f)?,
                             Err(err) => {
                                 markup!(<Error>"\u{2716} Failed to connect: "</Error>).fmt(f)?;
+
                                 writeln!(f, "{err}")?;
                             }
                         }
                     }
+
                     Err(err) => {
                         markup!("\n"<Error>"\u{2716} Failed to connect: "</Error>).fmt(f)?;
+
                         writeln!(f, "{err}")?;
                     }
                 }
@@ -190,6 +203,7 @@ impl Display for RageConfiguration<'_, '_> {
                         diagnostics,
                         ..
                     } = loaded_configuration;
+
                     let status = if !diagnostics.is_empty() {
                         for diagnostic in diagnostics {
                             (markup! {
@@ -199,6 +213,7 @@ impl Display for RageConfiguration<'_, '_> {
                             })
                             .fmt(fmt)?;
                         }
+
                         markup!(<Dim>"Loaded with errors"</Dim>)
                     } else {
                         markup!(<Dim>"Loaded successfully"</Dim>)
@@ -215,6 +230,7 @@ impl Display for RageConfiguration<'_, '_> {
                     // Print formatter configuration if --formatter option is true
                     if self.formatter {
                         let formatter_configuration = configuration.get_formatter_configuration();
+
                         markup! (
                             {Section("Formatter")}
                             {KeyValuePair("Format with errors", markup!({DebugDisplay(configuration.get_formatter_configuration().format_with_errors)}))}
@@ -230,6 +246,7 @@ impl Display for RageConfiguration<'_, '_> {
 
                         let javascript_formatter_configuration =
                             configuration.get_javascript_formatter_configuration();
+
                         markup! (
                             {Section("JavaScript Formatter")}
                             {KeyValuePair("Enabled", markup!({DebugDisplay(javascript_formatter_configuration.enabled)}))}
@@ -251,6 +268,7 @@ impl Display for RageConfiguration<'_, '_> {
 
                         let json_formatter_configuration =
                             configuration.get_json_formatter_configuration();
+
                         markup! (
                             {Section("JSON Formatter")}
                             {KeyValuePair("Enabled", markup!({DebugDisplay(json_formatter_configuration.enabled)}))}
@@ -263,6 +281,7 @@ impl Display for RageConfiguration<'_, '_> {
 
                         let css_formatter_configuration =
                             configuration.get_css_formatter_configuration();
+
                         markup! (
                             {Section("CSS Formatter")}
                             {KeyValuePair("Enabled", markup!({DebugDisplay(css_formatter_configuration.enabled)}))}
@@ -275,6 +294,7 @@ impl Display for RageConfiguration<'_, '_> {
 
                         let graphql_formatter_configuration =
                             configuration.get_graphql_formatter_configuration();
+
                         markup! (
                             {Section("GraphQL Formatter")}
                             {KeyValuePair("Enabled", markup!({DebugDisplayOption(graphql_formatter_configuration.enabled)}))}
@@ -292,9 +312,13 @@ impl Display for RageConfiguration<'_, '_> {
                         let linter_configuration = configuration.get_linter_rules();
 
                         let javascript_linter = configuration.get_javascript_linter_configuration();
+
                         let json_linter = configuration.get_json_linter_configuration();
+
                         let css_linter = configuration.get_css_linter_configuration();
+
                         let graphq_linter = configuration.get_graphql_linter_configuration();
+
                         markup! (
                             {Section("Linter")}
                             {KeyValuePair("JavaScript enabled", markup!({DebugDisplay(javascript_linter.enabled)}))}
@@ -308,6 +332,7 @@ impl Display for RageConfiguration<'_, '_> {
                     }
                 }
             }
+
             Err(err) => markup! (
                 {KeyValuePair("Status", markup!(<Error>"Failed to load"</Error>))}
                 {KeyValuePair("Error", markup!({format!("{err}")}))}
@@ -324,13 +349,20 @@ struct RageConfigurationLintRules<'a>(&'a str, Rules);
 impl Display for RageConfigurationLintRules<'_> {
     fn fmt(&self, fmt: &mut Formatter<'_>) -> io::Result<()> {
         let rules_str = self.0;
+
         let padding = Padding::new(2);
+
         fmt.write_markup(markup! {{padding}{rules_str}":"})?;
+
         fmt.write_markup(markup! {{SOFT_LINE}})?;
+
         let rules = self.1.as_enabled_rules();
+
         let rules = rules.iter().collect::<std::collections::BTreeSet<_>>();
+
         for rule in rules {
             fmt.write_markup(markup! {{padding}{rule}})?;
+
             fmt.write_markup(markup! {{SOFT_LINE}})?;
         }
 
@@ -343,6 +375,7 @@ struct EnvVarOs(&'static str);
 impl fmt::Display for EnvVarOs {
     fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
         let name = self.0;
+
         match env::var_os(name) {
             None => KeyValuePair(name, markup! { <Dim>"unset"</Dim> }).fmt(fmt),
             Some(value) => KeyValuePair(name, markup! {{DebugDisplay(value)}}).fmt(fmt),

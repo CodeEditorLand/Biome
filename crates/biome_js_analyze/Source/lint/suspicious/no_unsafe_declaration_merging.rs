@@ -51,19 +51,27 @@ declare_lint_rule! {
 
 impl Rule for NoUnsafeDeclarationMerging {
     type Query = Semantic<TsInterfaceDeclaration>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let ts_interface = ctx.query();
+
         let model = ctx.model();
+
         let interface_binding = ts_interface.id().ok()?;
+
         let interface_name = interface_binding
             .as_ts_identifier_binding()?
             .name_token()
             .ok()?;
+
         let scope = model.scope(ts_interface.syntax()).parent()?;
+
         for binding in scope.bindings() {
             if let Some(AnyJsBindingDeclaration::JsClassDeclaration(class)) =
                 binding.tree().declaration()
@@ -82,11 +90,13 @@ impl Rule for NoUnsafeDeclarationMerging {
                 }
             }
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, class_range: &Self::State) -> Option<RuleDiagnostic> {
         let ts_interface = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

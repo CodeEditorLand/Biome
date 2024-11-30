@@ -63,21 +63,28 @@ declare_lint_rule! {
 
 impl Rule for NoUnmatchableAnbSelector {
     type Query = Ast<CssPseudoClassNthSelector>;
+
     type State = CssPseudoClassNthSelector;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let nth = node.nth().ok()?;
+
         if is_unmatchable(&nth) && !is_within_not_pseudo_class(&nth) {
             return Some(node.clone());
         }
+
         None
     }
 
     fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
         let span = node.range();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -100,6 +107,7 @@ fn is_unmatchable(nth: &AnyCssPseudoClassNth) -> bool {
         AnyCssPseudoClassNth::CssPseudoClassNthIdentifier(_) => false,
         AnyCssPseudoClassNth::CssPseudoClassNth(nth) => {
             let coefficient = nth.value();
+
             let constant = nth.offset().and_then(|offset| offset.value().ok());
 
             match (coefficient, constant) {
@@ -108,6 +116,7 @@ fn is_unmatchable(nth: &AnyCssPseudoClassNth) -> bool {
                 _ => false,
             }
         }
+
         AnyCssPseudoClassNth::CssPseudoClassNthNumber(nth) => nth.text() == "0",
     }
 }
@@ -123,5 +132,6 @@ fn is_within_not_pseudo_class(node: &AnyCssPseudoClassNth) -> bool {
         .filter_map(|n| n.name().ok())
         .filter(|n| n.text() == "not")
         .count();
+
     number_of_not % 2 == 1
 }

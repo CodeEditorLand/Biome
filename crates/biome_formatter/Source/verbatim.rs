@@ -41,6 +41,7 @@ where
                 SyntaxElement::Token(token) => f.state_mut().track_token(&token),
                 SyntaxElement::Node(node) => {
                     let comments = f.context().comments();
+
                     comments.mark_suppression_checked(&node);
 
                     for comment in comments.leading_dangling_trailing_comments(&node) {
@@ -72,6 +73,7 @@ where
         // Format all leading comments that are outside of the node's source range.
         if self.format_comments {
             let comments = f.context().comments().clone();
+
             let leading_comments = comments.leading_comments(self.node);
 
             let outside_trimmed_range = leading_comments.partition_point(|comment| {
@@ -148,6 +150,7 @@ where
 impl<L: Language> FormatVerbatimNode<'_, L> {
     pub fn skip_comments(mut self) -> Self {
         self.format_comments = false;
+
         self
     }
 }
@@ -202,6 +205,7 @@ where
                 // Doing so, the formatter formats the nodes/tokens as is.
                 format_suppressed_node(self.inner.item().syntax()).fmt(f)
             }
+
             Err(err) => Err(err),
         }
     }

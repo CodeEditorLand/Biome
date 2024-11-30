@@ -70,6 +70,7 @@ impl Report {
             ReportKind::Formatter(path, stat) => {
                 self.formatter.insert_file_content(path, stat);
             }
+
             ReportKind::Error(path, error) => {
                 self.diagnostics.insert(path, error);
             }

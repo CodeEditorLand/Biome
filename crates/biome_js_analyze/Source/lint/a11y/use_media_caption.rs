@@ -42,8 +42,11 @@ declare_lint_rule! {
 
 impl Rule for UseMediaCaption {
     type Query = Ast<AnyJsxElement>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -53,7 +56,9 @@ impl Rule for UseMediaCaption {
             node.name_value_token().ok()?.text_trimmed(),
             "video" | "audio"
         );
+
         let has_muted = node.find_attribute_by_name("muted").is_some();
+
         let has_spread_prop = node
             .attributes()
             .into_iter()
@@ -66,6 +71,7 @@ impl Rule for UseMediaCaption {
         match node {
             AnyJsxElement::JsxOpeningElement(_) => {
                 let jsx_element = node.parent::<JsxElement>()?;
+
                 let has_track = jsx_element
                     .children()
                     .into_iter()
@@ -74,13 +80,16 @@ impl Rule for UseMediaCaption {
                             AnyJsxChild::JsxElement(element) => {
                                 Some(AnyJsxElement::from(element.opening_element().ok()?))
                             }
+
                             AnyJsxChild::JsxSelfClosingElement(element) => {
                                 Some(AnyJsxElement::from(element))
                             }
+
                             _ => None,
                         }?;
 
                         let has_track = any_jsx.name_value_token().ok()?.text_trimmed() == "track";
+
                         let has_valid_kind = &any_jsx
                             .find_attribute_by_name("kind")?
                             .initializer()?
@@ -100,6 +109,7 @@ impl Rule for UseMediaCaption {
                     return Some(jsx_element.range());
                 }
             }
+
             _ => return Some(node.range()),
         }
 

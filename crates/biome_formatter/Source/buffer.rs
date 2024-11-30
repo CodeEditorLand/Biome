@@ -120,6 +120,7 @@ impl BufferSnapshot {
             BufferSnapshot::Position(_) => {
                 panic!("Tried to unwrap Position snapshot as Any snapshot.")
             }
+
             BufferSnapshot::Any(value) => match value.downcast::<T>() {
                 Ok(snapshot) => *snapshot,
                 Err(err) => {
@@ -245,6 +246,7 @@ impl<Context> Buffer for VecBuffer<'_, Context> {
 
     fn restore_snapshot(&mut self, snapshot: BufferSnapshot) {
         let position = snapshot.unwrap_position();
+
         assert!(
             self.elements.len() >= position,
             r#"Outdated snapshot. This buffer contains fewer elements than at the time the snapshot was taken.
@@ -351,6 +353,7 @@ where
     fn write_element(&mut self, element: FormatElement) -> FormatResult<()> {
         if self.empty {
             write!(self.inner, [&self.preamble])?;
+
             self.empty = false;
         }
 
@@ -380,6 +383,7 @@ where
         let snapshot = snapshot.unwrap_any::<PreambleBufferSnapshot>();
 
         self.empty = snapshot.empty;
+
         self.inner.restore_snapshot(snapshot.inner);
     }
 }
@@ -409,6 +413,7 @@ where
 
     fn write_element(&mut self, element: FormatElement) -> FormatResult<()> {
         (self.inspector)(&element);
+
         self.inner.write_element(element)
     }
 
@@ -544,22 +549,29 @@ fn clean_interned(
                     )
                     | FormatElement::BestFitting(_) => {
                         let mut cleaned = Vec::new();
+
                         cleaned.extend_from_slice(&interned[..index]);
+
                         Some((cleaned, &interned[index..]))
                     }
+
                     FormatElement::Interned(inner) => {
                         let cleaned_inner =
                             clean_interned(inner, interned_cache, condition_content_stack);
 
                         if &cleaned_inner != inner {
                             let mut cleaned = Vec::with_capacity(interned.len());
+
                             cleaned.extend_from_slice(&interned[..index]);
+
                             cleaned.push(FormatElement::Interned(cleaned_inner));
+
                             Some((cleaned, &interned[index + 1..]))
                         } else {
                             None
                         }
                     }
+
                     _ => None,
                 });
 
@@ -567,14 +579,18 @@ fn clean_interned(
                 // Copy the whole interned buffer so that becomes possible to change the necessary elements.
                 Some((mut cleaned, rest)) => {
                     let mut element_stack = rest.iter().rev().collect::<Vec<_>>();
+
                     while let Some(element) = element_stack.pop() {
                         match element {
                             FormatElement::Tag(Tag::StartConditionalContent(condition)) => {
                                 condition_content_stack.push(condition.clone());
+
                                 continue;
                             }
+
                             FormatElement::Tag(Tag::EndConditionalContent) => {
                                 condition_content_stack.pop();
+
                                 continue;
                             }
                             // All content within an expanded conditional gets dropped. If there's a
@@ -603,11 +619,13 @@ fn clean_interned(
                             // Just extract the flattest variant and then handle elements within it.
                             FormatElement::BestFitting(best_fitting) => {
                                 let most_flat = best_fitting.most_flat();
+
                                 most_flat
                                     .iter()
                                     .rev()
                                     .for_each(|element| element_stack.push(element));
                             }
+
                             element => cleaned.push(element.clone()),
                         };
                     }
@@ -619,6 +637,7 @@ fn clean_interned(
             };
 
             interned_cache.insert(interned.clone(), result.clone());
+
             result
         }
     }
@@ -629,6 +648,7 @@ impl<Context> Buffer for RemoveSoftLinesBuffer<'_, Context> {
 
     fn write_element(&mut self, element: FormatElement) -> FormatResult<()> {
         let mut element_statck = Vec::new();
+
         element_statck.push(element);
 
         while let Some(element) = element_statck.pop() {
@@ -636,6 +656,7 @@ impl<Context> Buffer for RemoveSoftLinesBuffer<'_, Context> {
                 FormatElement::Tag(Tag::StartConditionalContent(condition)) => {
                     self.conditional_content_stack.push(condition.clone());
                 }
+
                 FormatElement::Tag(Tag::EndConditionalContent) => {
                     self.conditional_content_stack.pop();
                 }
@@ -647,22 +668,27 @@ impl<Context> Buffer for RemoveSoftLinesBuffer<'_, Context> {
                 FormatElement::Line(LineMode::SoftOrSpace) => {
                     self.inner.write_element(FormatElement::Space)?
                 }
+
                 FormatElement::Interned(interned) => {
                     let cleaned = self.clean_interned(&interned);
+
                     self.inner.write_element(FormatElement::Interned(cleaned))?
                 }
                 // Since this buffer aims to simulate infinite print width, we don't need to retain the best fitting.
                 // Just extract the flattest variant and then handle elements within it.
                 FormatElement::BestFitting(best_fitting) => {
                     let most_flat = best_fitting.most_flat();
+
                     most_flat
                         .iter()
                         .rev()
                         .for_each(|element| element_statck.push(element.clone()));
                 }
+
                 element => self.inner.write_element(element)?,
             }
         }
+
         Ok(())
     }
 
@@ -783,6 +809,7 @@ where
 
     pub fn stop(self) -> Recorded<'buf> {
         let buffer: &'buf B = self.buffer;
+
         let elements = buffer.elements();
 
         let recorded = if self.start > elements.len() {

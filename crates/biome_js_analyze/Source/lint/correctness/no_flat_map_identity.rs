@@ -46,8 +46,11 @@ declare_lint_rule! {
 
 impl Rule for NoFlatMapIdentity {
     type Query = Ast<JsCallExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -68,12 +71,14 @@ impl Rule for NoFlatMapIdentity {
 
         if let Some(arg) = arguments.first() {
             let arg = arg.ok()?;
+
             let (function_param, function_body) = match arg.as_any_js_expression()? {
                 AnyJsExpression::JsArrowFunctionExpression(arg) => {
                     let parameter: String = match arg.parameters().ok()? {
                         biome_js_syntax::AnyJsArrowFunctionParameters::AnyJsBinding(p) => {
                             p.text().trim_matches(['(', ')']).to_owned()
                         }
+
                         biome_js_syntax::AnyJsArrowFunctionParameters::JsParameters(p) => {
                             if p.items().len() == 1 {
                                 if let Some(param) = p.items().into_iter().next() {
@@ -91,6 +96,7 @@ impl Rule for NoFlatMapIdentity {
                         AnyJsFunctionBody::AnyJsExpression(body) => body.omit_parentheses().text(),
                         AnyJsFunctionBody::JsFunctionBody(body) => {
                             let mut statement = body.statements().into_iter();
+
                             match statement.next() {
                                 Some(AnyJsStatement::JsReturnStatement(body)) => {
                                     let Some(AnyJsExpression::JsIdentifierExpression(
@@ -99,19 +105,24 @@ impl Rule for NoFlatMapIdentity {
                                     else {
                                         return None;
                                     };
+
                                     return_statement.name().ok()?.text()
                                 }
+
                                 _ => return None,
                             }
                         }
                     };
                     (parameter, function_body)
                 }
+
                 AnyJsExpression::JsFunctionExpression(arg) => {
                     let function_parameter = arg.parameters().ok()?.text();
+
                     let function_parameter = function_parameter.trim_matches(['(', ')']).to_owned();
 
                     let mut statement = arg.body().ok()?.statements().into_iter();
+
                     if let Some(AnyJsStatement::JsReturnStatement(body)) = statement.next() {
                         let Some(AnyJsExpression::JsIdentifierExpression(return_statement)) =
                             body.argument()
@@ -123,6 +134,7 @@ impl Rule for NoFlatMapIdentity {
                         return None;
                     }
                 }
+
                 _ => return None,
             };
 
@@ -130,11 +142,13 @@ impl Rule for NoFlatMapIdentity {
                 return Some(());
             }
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -146,8 +160,10 @@ impl Rule for NoFlatMapIdentity {
             .note(markup! {"You can just use "<Emphasis>"flat"</Emphasis>" to flatten the array."}),
         )
     }
+
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let empty_argument = js_call_arguments(
@@ -161,6 +177,7 @@ impl Rule for NoFlatMapIdentity {
         };
 
         let flat_member = js_name(ident("flat"));
+
         let flat_call = flat_expression.with_member(AnyJsName::JsName(flat_member));
 
         mutation.replace_node(

@@ -13,12 +13,15 @@ pub(crate) fn rename(
     params: RenameParams,
 ) -> Result<Option<WorkspaceEdit>, LspError> {
     let url = params.text_document_position.text_document.uri;
+
     let biome_path = session.file_path(&url)?;
 
     trace!("Renaming...");
 
     let doc = session.document(&url)?;
+
     let position_encoding = session.position_encoding();
+
     let cursor_range = from_proto::offset(
         &doc.line_index,
         params.text_document_position.position,
@@ -40,6 +43,7 @@ pub(crate) fn rename(
         })?;
 
     let mut changes = HashMap::new();
+
     changes.insert(
         url,
         utils::text_edit(&doc.line_index, result.indels, position_encoding, None)?,

@@ -19,6 +19,7 @@ impl VariableLocations {
     #[allow(dead_code)]
     pub(crate) fn compiled_vars(&self) -> Vec<VariableBinding> {
         let mut variables = Vec::new();
+
         for (i, scope) in self.0.iter().enumerate() {
             for (j, var) in scope.iter().enumerate() {
                 if let VariableSource::Compiled {
@@ -33,6 +34,7 @@ impl VariableLocations {
                 }
             }
         }
+
         variables
     }
 }

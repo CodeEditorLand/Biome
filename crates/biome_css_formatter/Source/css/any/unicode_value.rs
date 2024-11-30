@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssUnicodeValue;
 pub(crate) struct FormatAnyCssUnicodeValue;
 impl FormatRule<AnyCssUnicodeValue> for FormatAnyCssUnicodeValue {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssUnicodeValue, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssUnicodeValue::CssBogusUnicodeRangeValue(node) => node.format().fmt(f),

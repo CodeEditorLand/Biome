@@ -55,6 +55,7 @@ impl Scope {
     /// [Scope].
     pub fn descendents(&self) -> impl Iterator<Item = Scope> {
         let mut q = VecDeque::new();
+
         q.push_back(self.id);
 
         ScopeDescendentsIter {
@@ -70,6 +71,7 @@ impl Scope {
         debug_assert!((self.id.index()) < self.data.scopes.len());
 
         let parent = self.data.scopes[self.id.index()].parent?;
+
         Some(Scope {
             data: self.data.clone(),
             id: parent,
@@ -92,6 +94,7 @@ impl Scope {
         let data = &self.data.scopes[self.id.index()];
 
         let name = name.as_ref();
+
         let id = *data.bindings_by_name.get(name)?;
 
         Some(Binding {
@@ -139,7 +142,9 @@ impl Iterator for ScopeDescendentsIter {
     fn next(&mut self) -> Option<Self::Item> {
         if let Some(id) = self.q.pop_front() {
             let scope = &self.data.scopes[id.index()];
+
             self.q.extend(scope.children.iter());
+
             Some(Scope {
                 data: self.data.clone(),
                 id,

@@ -75,12 +75,16 @@ declare_lint_rule! {
 
 impl Rule for UseAnchorContent {
     type Query = Ast<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let name = node.name().ok()?.name_value_token().ok()?;
 
         if name.text_trimmed() == "a" {
@@ -98,6 +102,7 @@ impl Rule for UseAnchorContent {
                         return Some(());
                     }
                 }
+
                 AnyJsxElement::JsxSelfClosingElement(_) => return Some(()),
             }
         }
@@ -110,8 +115,10 @@ impl Rule for UseAnchorContent {
             AnyJsxElement::JsxOpeningElement(node) => {
                 node.parent::<JsxElement>()?.syntax().text_range()
             }
+
             AnyJsxElement::JsxSelfClosingElement(node) => node.syntax().text_trimmed_range(),
         };
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             range,
@@ -135,10 +142,12 @@ impl Rule for UseAnchorContent {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         if node.has_truthy_attribute("aria-hidden") {
             let aria_hidden = node.find_attribute_by_name("aria-hidden")?;
+
             mutation.remove_node(aria_hidden);
 
             return Some(JsRuleAction::new(
@@ -148,6 +157,7 @@ impl Rule for UseAnchorContent {
                 mutation,
             ));
         }
+
         None
     }
 }
@@ -162,6 +172,7 @@ fn has_valid_anchor_content(node: &AnyJsxElement) -> bool {
                 if attribute.initializer().is_none() {
                     return false;
                 }
+
                 attribute
                     .as_static_value()
                     .map_or(true, |attribute| !attribute.is_falsy())

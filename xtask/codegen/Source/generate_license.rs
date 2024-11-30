@@ -33,8 +33,11 @@ const URL: &str =
     "https://raw.githubusercontent.com/spdx/license-list-data/master/json/licenses.json";
 pub(crate) fn generate_license(mode: Mode) -> Result<()> {
     let request = get(URL);
+
     let result = request.call()?;
+
     let license_list = result.into_json::<LicenseList>()?;
+
     let config_root = project_root().join("crates/biome_project/src/license");
 
     let tokens = create_data(license_list).expect("To write data into file");
@@ -52,24 +55,34 @@ fn create_data(license_list: LicenseList) -> io::Result<TokenStream> {
     let mut list = vec![];
 
     let version = Literal::string(&license_list.license_list_version);
+
     let release_date = Literal::string(&license_list.release_date);
 
     for item in license_list.licenses {
         let reference = Literal::string(&item.reference);
+
         let details_url = Literal::string(&item.details_url);
+
         let name = Literal::string(&item.name);
+
         let license_id = Literal::string(&item.license_id);
+
         let is_deprecated_license_id = item.is_deprecated_license_id;
+
         let is_osi_approved = item.is_osi_approved.unwrap_or_default();
+
         let is_fsf_libre = item.is_fsf_libre.unwrap_or_default();
+
         let see_also: Vec<_> = item
             .see_also
             .iter()
             .map(|see_also| {
                 let see_also = Literal::string(see_also);
+
                 quote!(#see_also)
             })
             .collect();
+
         list.push(quote! {
 
              &Licence {

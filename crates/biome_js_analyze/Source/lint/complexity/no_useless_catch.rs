@@ -75,14 +75,20 @@ declare_lint_rule! {
 
 impl Rule for NoUselessCatch {
     type Query = Ast<AnyJsTryStatement>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let catch_clause = node.catch_clause()?;
+
         let catch_body = catch_clause.body().ok()?;
+
         let catch_body_statements = catch_body.statements();
 
         // We need guarantees that body_statements has only one `throw` statement.
@@ -91,6 +97,7 @@ impl Rule for NoUselessCatch {
         }
 
         let catch_declaration = catch_clause.declaration()?;
+
         let catch_binding_err = catch_declaration
             .binding()
             .ok()?
@@ -98,10 +105,13 @@ impl Rule for NoUselessCatch {
             .as_js_identifier_binding()?
             .name_token()
             .ok()?;
+
         let catch_err_name = catch_binding_err.text();
 
         let first_statement = catch_body_statements.first()?;
+
         let js_throw_statement = first_statement.as_js_throw_statement()?;
+
         let throw_ident = js_throw_statement
             .argument()
             .ok()?
@@ -130,24 +140,34 @@ impl Rule for NoUselessCatch {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let note = if node.finally_clause().is_some() {
             let catch_clause = node.catch_clause()?;
+
             mutation.remove_node(catch_clause);
             "catch"
         } else {
             let try_stmts = node.body().ok()?.statements();
+
             let stmts_list = node.parent::<JsStatementList>()?;
+
             let node = node.syntax();
+
             let try_pos = stmts_list.iter().position(|x| x.syntax() == node)?;
+
             let prev_stmts = stmts_list.iter().take(try_pos);
+
             let next_stmts = stmts_list.iter().skip(try_pos + 1);
+
             let new_stmts = prev_stmts
                 .chain(try_stmts)
                 .chain(next_stmts)
                 .collect::<Vec<_>>();
+
             let new_stmts_list = make::js_statement_list(new_stmts);
+
             mutation.replace_node_discard_trivia(stmts_list, new_stmts_list);
             "try/catch"
         };

@@ -21,6 +21,7 @@ pub(crate) fn parse_binding_pattern(p: &mut JsParser, context: ExpressionContext
         T!['{'] if context.is_object_expression_allowed() => {
             ObjectBindingPattern.parse_object_pattern(p)
         }
+
         _ => parse_identifier_binding(p),
     }
 }
@@ -82,9 +83,11 @@ pub(crate) fn parse_identifier_binding(p: &mut JsParser) -> ParsedSyntax {
                 ),
                 identifier.range(p),
             );
+
             p.error(err);
 
             identifier.change_to_bogus(p);
+
             return identifier;
         }
 
@@ -101,7 +104,9 @@ pub(crate) fn parse_identifier_binding(p: &mut JsParser) -> ParsedSyntax {
                     .with_hint("Rename the let identifier here");
 
                 p.error(err);
+
                 identifier.change_to_bogus(p);
+
                 return identifier;
             }
 
@@ -123,13 +128,18 @@ pub(crate) fn parse_identifier_binding(p: &mut JsParser) -> ParsedSyntax {
                         *existing,
                         format!("`{identifier_name}` is first declared here"),
                     );
+
                 p.error(err);
+
                 identifier.change_to_bogus(p);
+
                 return identifier;
             }
 
             let identifier_name = String::from(identifier_name);
+
             let identifier_range = identifier.range(p);
+
             p.state_mut()
                 .name_map
                 .insert(identifier_name, identifier_range.as_range());
@@ -281,20 +291,25 @@ impl ParseObjectPattern for ObjectBindingPattern {
             || ((is_at_identifier_binding(p) || is_at_metavariable(p)) && !p.nth_at(1, T![:]))
         {
             parse_binding(p).or_add_diagnostic(p, expected_identifier);
+
             JS_OBJECT_BINDING_PATTERN_SHORTHAND_PROPERTY
         } else {
             parse_object_member_name(p).or_add_diagnostic(p, expected_object_member_name);
+
             if p.expect(T![:]) {
                 parse_binding_pattern(p, ExpressionContext::default())
                     .or_add_diagnostic(p, expected_binding);
             }
+
             JS_OBJECT_BINDING_PATTERN_PROPERTY
         };
 
         // test js destructuring_initializer_binding
         // const { value, f = (value) => value } = item
         let parent = p.state_mut().duplicate_binding_parent.take();
+
         parse_initializer_clause(p, ExpressionContext::default()).ok();
+
         p.state_mut().duplicate_binding_parent = parent;
 
         Present(m.complete(p, kind))
@@ -313,9 +328,11 @@ impl ParseObjectPattern for ObjectBindingPattern {
     // async function test() {
     //   let { ...await } = a;
     // }
+
     fn parse_rest_property_pattern(&self, p: &mut JsParser) -> ParsedSyntax {
         if p.at(T![...]) {
             let m = p.start();
+
             p.bump(T![...]);
 
             let inner = parse_binding_pattern(p, ExpressionContext::default())

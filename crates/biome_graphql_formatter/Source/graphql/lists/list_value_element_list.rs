@@ -6,6 +6,7 @@ use biome_graphql_syntax::GraphqlListValueElementList;
 pub(crate) struct FormatGraphqlListValueElementList;
 impl FormatRule<GraphqlListValueElementList> for FormatGraphqlListValueElementList {
     type Context = GraphqlFormatContext;
+
     fn fmt(
         &self,
         node: &GraphqlListValueElementList,

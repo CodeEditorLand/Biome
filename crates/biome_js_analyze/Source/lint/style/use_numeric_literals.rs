@@ -65,18 +65,24 @@ declare_lint_rule! {
 
 impl Rule for UseNumericLiterals {
     type Query = Semantic<JsCallExpression>;
+
     type State = CallInfo;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let expr = ctx.query();
+
         let model = ctx.model();
+
         CallInfo::try_from_expr(expr, model)
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),
@@ -89,9 +95,13 @@ impl Rule for UseNumericLiterals {
 
     fn action(ctx: &RuleContext<Self>, call: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let number = call.to_numeric_literal()?;
+
         let number = ast_utils::token_with_source_trivia(&number, node);
+
         mutation.replace_node_discard_trivia(
             AnyJsExpression::JsCallExpression(node.clone()),
             AnyJsExpression::AnyJsLiteralExpression(
@@ -119,24 +129,30 @@ pub struct CallInfo {
 impl CallInfo {
     fn try_from_expr(expr: &JsCallExpression, model: &SemanticModel) -> Option<CallInfo> {
         let args = expr.arguments().ok()?.args();
+
         if args.len() != 2 {
             return None;
         }
+
         let [Some(text), Some(radix)] = expr.arguments().ok()?.get_arguments_by_index([0, 1])
         else {
             return None;
         };
+
         let text = text
             .as_any_js_expression()?
             .as_static_value()?
             .as_string_constant()?
             .to_string();
+
         let radix = radix
             .as_any_js_expression()?
             .as_any_js_literal_expression()?
             .as_js_number_literal_expression()?
             .as_number()?;
+
         let callee = get_callee(expr, model)?;
+
         Some(CallInfo {
             callee,
             text,
@@ -153,30 +169,42 @@ impl CallInfo {
         } else {
             ("", text_trimmed.strip_prefix('+').unwrap_or(text_trimmed))
         };
+
         i128::from_str_radix(text_trimmed, self.radix as u32).ok()?;
+
         let prefix = self.radix.prefix();
+
         let number = make::js_number_literal(format_args!("{sign}{prefix}{text_trimmed}"));
+
         Some(number)
     }
 }
 
 fn get_callee(expr: &JsCallExpression, model: &SemanticModel) -> Option<&'static str> {
     let callee = expr.callee().ok()?.omit_parentheses();
+
     if let Some((reference, name)) = global_identifier(&callee) {
         if name.text() == "parseInt" && model.binding(&reference).is_none() {
             return Some("parseInt()");
         }
+
         return None;
     }
+
     let callee = AnyJsMemberExpression::cast(callee.into_syntax())?;
+
     if callee.member_name()?.text() != "parseInt" {
         return None;
     }
+
     let object = callee.object().ok()?.omit_parentheses();
+
     let (reference, name) = global_identifier(&object)?;
+
     if name.text() == "Number" && model.binding(&reference).is_none() {
         return Some("Number.parseInt()");
     }
+
     None
 }
 

@@ -57,6 +57,7 @@ impl SyntaxElement {
             NodeOrToken::Node(it) => Some(it.clone()),
             NodeOrToken::Token(it) => it.parent(),
         };
+
         iter::successors(first, SyntaxNode::parent)
     }
 
@@ -66,6 +67,7 @@ impl SyntaxElement {
             NodeOrToken::Token(it) => Some(it.clone()),
         }
     }
+
     pub fn last_token(&self) -> Option<SyntaxToken> {
         match self {
             NodeOrToken::Node(it) => it.last_token(),
@@ -79,6 +81,7 @@ impl SyntaxElement {
             NodeOrToken::Token(it) => it.next_sibling_or_token(),
         }
     }
+
     pub fn prev_sibling_or_token(&self) -> Option<SyntaxElement> {
         match self {
             NodeOrToken::Node(it) => it.prev_sibling_or_token(),
@@ -88,6 +91,7 @@ impl SyntaxElement {
 
     pub(super) fn token_at_offset(&self, offset: TextSize) -> TokenAtOffset<SyntaxToken> {
         assert!(self.text_range().start() <= offset && offset <= self.text_range().end());
+
         match self {
             NodeOrToken::Token(token) => TokenAtOffset::Single(token.clone()),
             NodeOrToken::Node(node) => node.token_at_offset(offset),

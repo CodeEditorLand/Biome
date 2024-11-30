@@ -27,12 +27,15 @@ impl quickcheck::Arbitrary for AsciiString {
         let s = String::arbitrary(g);
 
         let mut ascii = String::new();
+
         for chr in s.chars() {
             if chr.is_ascii() {
                 ascii.push(chr);
             } else {
                 const WIDTH: u8 = b'~' - b' ';
+
                 let chr = b' ' + (u8::arbitrary(g) % WIDTH);
+
                 ascii.push(chr as char);
             }
         }

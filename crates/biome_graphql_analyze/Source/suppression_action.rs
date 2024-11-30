@@ -19,8 +19,10 @@ impl SuppressionAction for GraphqlSuppressionAction {
 
         // Find the token at the start of suppressed token's line
         let mut current_token = token;
+
         loop {
             let trivia = current_token.leading_trivia();
+
             if trivia.pieces().any(|trivia| trivia.kind().is_newline()) {
                 break;
             } else if let Some(prev_token) = current_token.prev_token() {
@@ -31,6 +33,7 @@ impl SuppressionAction for GraphqlSuppressionAction {
         }
 
         apply_suppression.token_to_apply_suppression = current_token;
+
         Some(apply_suppression)
     }
 
@@ -47,6 +50,7 @@ impl SuppressionAction for GraphqlSuppressionAction {
         } = apply_suppression;
 
         let mut new_token = token_to_apply_suppression.clone();
+
         let leading_whitespaces: Vec<_> = new_token
             .leading_trivia()
             .pieces()
@@ -54,11 +58,14 @@ impl SuppressionAction for GraphqlSuppressionAction {
             .collect();
 
         let suppression_comment = format!("# {}: {}", suppression_text, suppression_reason);
+
         let suppression_comment = suppression_comment.as_str();
+
         let trivia = [
             (TriviaPieceKind::SingleLineComment, suppression_comment),
             (TriviaPieceKind::Newline, "\n"),
         ];
+
         if leading_whitespaces.is_empty() {
             new_token = new_token.with_leading_trivia(trivia);
         }
@@ -69,8 +76,10 @@ impl SuppressionAction for GraphqlSuppressionAction {
             for w in leading_whitespaces.iter() {
                 trivia.push((TriviaPieceKind::Whitespace, w.text()));
             }
+
             new_token = new_token.with_leading_trivia(trivia);
         }
+
         mutation.replace_token_transfer_trivia(token_to_apply_suppression, new_token);
     }
 }

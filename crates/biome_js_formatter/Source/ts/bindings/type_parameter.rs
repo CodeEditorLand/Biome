@@ -20,6 +20,7 @@ impl FormatNodeRule<TsTypeParameter> for FormatTsTypeParameter {
         }
 
         write!(f, [name.format()])?;
+
         if let Some(constraint) = constraint {
             write!(f, [space(), constraint.format()])?;
         }

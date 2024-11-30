@@ -35,6 +35,7 @@ impl Marker {
         if self.old_start >= old {
             self.old_start = old;
         };
+
         self
     }
 
@@ -46,21 +47,27 @@ impl Marker {
         P: Parser,
     {
         self.bomb.defuse();
+
         let context = p.context_mut();
 
         let idx = self.pos as usize;
+
         match context.events[idx] {
             Event::Start {
                 kind: ref mut slot, ..
             } => {
                 *slot = kind;
             }
+
             _ => unreachable!(),
         }
+
         let finish_pos = context.events.len() as u32;
+
         context.push_event(Event::Finish);
 
         let new = CompletedMarker::new(self.pos, finish_pos, self.start);
+
         new.old_start(self.old_start)
     }
 
@@ -71,7 +78,9 @@ impl Marker {
         P: Parser,
     {
         self.bomb.defuse();
+
         let idx = self.pos as usize;
+
         if idx == p.context().events.len() - 1 {
             if let Some(Event::Start {
                 forward_parent: None,
@@ -81,6 +90,7 @@ impl Marker {
                 assert_eq!(kind, P::Kind::TOMBSTONE);
             }
         }
+
         if let Some(idx) = self.child_idx {
             match p.context_mut().events[idx] {
                 Event::Start {
@@ -89,6 +99,7 @@ impl Marker {
                 } => {
                     *forward_parent = None;
                 }
+
                 _ => unreachable!(),
             }
         }
@@ -125,6 +136,7 @@ impl CompletedMarker {
         if self.old_start >= old {
             self.old_start = old;
         };
+
         self
     }
 
@@ -142,6 +154,7 @@ impl CompletedMarker {
             Event::Start { kind, .. } => {
                 *kind = new_kind;
             }
+
             _ => unreachable!(),
         }
     }
@@ -190,12 +203,15 @@ impl CompletedMarker {
     /// Append a new `START` events as `[START, FINISH, NEWSTART]`,
     /// then mark `NEWSTART` as `START`'s parent with saving its relative
     /// distance to `NEWSTART` into forward_parent(=2 in this case);
+
     pub fn precede<P>(self, p: &mut P) -> Marker
     where
         P: Parser,
     {
         let mut new_pos = p.start();
+
         let idx = self.start_pos as usize;
+
         match p.context_mut().events[idx] {
             Event::Start {
                 ref mut forward_parent,
@@ -205,10 +221,14 @@ impl CompletedMarker {
                 // subtracting the two positions can never be 0.
                 *forward_parent = Some(NonZeroU32::try_from(new_pos.pos - self.start_pos).unwrap());
             }
+
             _ => unreachable!(),
         }
+
         new_pos.child_idx = Some(self.start_pos as usize);
+
         new_pos.start = self.offset;
+
         new_pos.old_start(self.old_start)
     }
 
@@ -218,6 +238,7 @@ impl CompletedMarker {
         P: Parser,
     {
         let start_idx = self.start_pos as usize;
+
         let finish_idx = self.finish_pos as usize;
 
         let events = &mut p.context_mut().events;
@@ -229,10 +250,12 @@ impl CompletedMarker {
             } => *kind = P::Kind::TOMBSTONE,
             _ => unreachable!(),
         }
+
         match events[finish_idx] {
             ref mut slot @ Event::Finish { .. } => *slot = Event::tombstone(),
             _ => unreachable!(),
         }
+
         Marker::new(self.start_pos, self.offset)
     }
 

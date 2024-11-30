@@ -39,18 +39,21 @@ impl CssParserOptions {
     /// Allows the parser to parse wrong line comments.
     pub fn allow_wrong_line_comments(mut self) -> Self {
         self.allow_wrong_line_comments = true;
+
         self
     }
 
     /// Enables parsing of css modules selectors.
     pub fn allow_css_modules(mut self) -> Self {
         self.css_modules = true;
+
         self
     }
 
     /// Enables parsing of Grit metavariables.
     pub fn allow_metavariables(mut self) -> Self {
         self.grit_metavariables = true;
+
         self
     }
 
@@ -107,6 +110,7 @@ impl<'source> CssParser<'source> {
         let CssParserCheckpoint { context, source } = checkpoint;
 
         self.context.rewind(context);
+
         self.source.rewind(source);
         // `state` is not checkpointed because it (currently) only contains
         // scoped properties that aren't only dependent on checkpoints and
@@ -115,6 +119,7 @@ impl<'source> CssParser<'source> {
 
     pub fn finish(self) -> (Vec<Event<CssSyntaxKind>>, Vec<ParseDiagnostic>, Vec<Trivia>) {
         let (trivia, lexer_diagnostics) = self.source.finish();
+
         let (events, parse_diagnostics) = self.context.finish();
 
         let diagnostics = merge_diagnostics(lexer_diagnostics, parse_diagnostics);
@@ -125,6 +130,7 @@ impl<'source> CssParser<'source> {
 
 impl<'source> Parser for CssParser<'source> {
     type Kind = CssSyntaxKind;
+
     type Source = CssTokenSource<'source>;
 
     fn context(&self) -> &ParserContext<Self::Kind> {

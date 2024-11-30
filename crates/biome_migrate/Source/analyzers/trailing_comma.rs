@@ -18,8 +18,11 @@ declare_migration! {
 
 impl Rule for TrailingComma {
     type Query = Ast<JsonMemberName>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -34,6 +37,7 @@ impl Rule for TrailingComma {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 category!("migrate"),
@@ -49,9 +53,11 @@ impl Rule for TrailingComma {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<MigrationAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let new_node = json_member_name(ident("\"trailingCommas\""));
+
         mutation.replace_node(node.clone(), new_node);
 
         Some(RuleAction::new(

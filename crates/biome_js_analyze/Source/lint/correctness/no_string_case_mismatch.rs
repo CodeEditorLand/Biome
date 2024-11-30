@@ -45,12 +45,16 @@ declare_lint_rule! {
 
 impl Rule for NoStringCaseMismatch {
     type Query = Ast<QueryCandidate>;
+
     type State = CaseMismatchInfo;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let query = ctx.query();
+
         match query {
             QueryCandidate::JsBinaryExpression(expr) => CaseMismatchInfo::from_binary_expr(expr)
                 .into_iter()
@@ -62,6 +66,7 @@ impl Rule for NoStringCaseMismatch {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let query = ctx.query();
+
         let mut diagnostic = match query {
             QueryCandidate::JsBinaryExpression(expr) => RuleDiagnostic::new(
                 rule_category!(),
@@ -74,6 +79,7 @@ impl Rule for NoStringCaseMismatch {
                 markup! { "This case will never match." },
             ),
         };
+
         diagnostic = diagnostic
             .description("This expression always returns false, because the string is converted and will never match")
             .detail(
@@ -88,14 +94,17 @@ impl Rule for NoStringCaseMismatch {
                     "... but this value is not in " { state.expected_case.description() }
                 },
             );
+
         Some(diagnostic)
     }
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let static_value = state.literal.as_static_value()?;
 
         let expected_value = state.expected_case.convert(static_value.text());
+
         mutation.replace_node(
             state.literal.clone(),
             AnyJsExpression::AnyJsLiteralExpression(
@@ -108,6 +117,7 @@ impl Rule for NoStringCaseMismatch {
                 ),
             ),
         );
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -137,11 +147,13 @@ impl CaseMismatchInfo {
             } if matches!(op.kind(), JsSyntaxKind::EQ2 | JsSyntaxKind::EQ3) => (left, right),
             _ => return None,
         };
+
         let (call, literal) = match (left, right) {
             (AnyJsExpression::JsCallExpression(call), other)
             | (other, AnyJsExpression::JsCallExpression(call)) => (call, other),
             _ => return None,
         };
+
         Self::compare_call_with_literal(call, literal)
     }
 
@@ -162,10 +174,15 @@ impl CaseMismatchInfo {
 
     fn compare_call_with_literal(call: JsCallExpression, literal: AnyJsExpression) -> Option<Self> {
         let expected_case = StringCase::from_call(&call)?;
+
         let value = literal.as_static_value()?;
+
         let literal_value = value.text();
+
         let mut case_iter = CharCaseIterator::from(literal_value);
+
         let is_mismatch = case_iter.any(|case| case != expected_case);
+
         is_mismatch.then_some(Self {
             expected_case,
             call,
@@ -185,16 +202,23 @@ impl StringCase {
         if call.arguments().ok()?.args().len() != 0 {
             return None;
         }
+
         let callee = call.callee().ok()?;
+
         let member_expr = AnyJsMemberExpression::cast(callee.into_syntax())?;
+
         let member_name = member_expr.member_name()?;
+
         let member_name = member_name.text();
+
         if member_name == "toLowerCase" {
             return Some(Self::Lower);
         }
+
         if member_name == "toUpperCase" {
             return Some(Self::Upper);
         }
+
         None
     }
 
@@ -223,6 +247,7 @@ impl<'a> CharCaseIterator<'a> {
 }
 impl<'a> Iterator for CharCaseIterator<'a> {
     type Item = StringCase;
+
     fn next(&mut self) -> Option<Self::Item> {
         while let Some(c) = self.iter.next() {
             match c {
@@ -231,26 +256,33 @@ impl<'a> Iterator for CharCaseIterator<'a> {
                         'x' => {
                             // \xHH
                             self.iter.next();
+
                             self.iter.next();
                         }
                         'u' => {
                             if self.iter.next()? == '{' {
                                 // \u{H}, \u{HH}, ..., \u{HHHHHH}
+
                                 while self.iter.next()? != '}' {}
                             } else {
                                 // \uHHHH
                                 self.iter.next();
+
                                 self.iter.next();
+
                                 self.iter.next();
+
                                 self.iter.next();
                             }
                         }
+
                         _ => {
                             // \n, ...
                             self.iter.next();
                         }
                     }
                 }
+
                 c => {
                     if c.is_uppercase() {
                         return Some(StringCase::Upper);
@@ -260,6 +292,7 @@ impl<'a> Iterator for CharCaseIterator<'a> {
                 }
             }
         }
+
         None
     }
 }

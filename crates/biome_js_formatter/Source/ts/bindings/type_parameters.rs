@@ -18,6 +18,7 @@ impl FormatRuleWithOptions<TsTypeParameters> for FormatTsTypeParameters {
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.options = options;
+
         self
     }
 }

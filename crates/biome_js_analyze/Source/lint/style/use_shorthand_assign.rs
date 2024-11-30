@@ -65,8 +65,11 @@ pub struct RuleState {
 
 impl Rule for UseShorthandAssign {
     type Query = Ast<JsAssignmentExpression>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -77,6 +80,7 @@ impl Rule for UseShorthandAssign {
         }
 
         let left = node.left().ok()?;
+
         let right = node.right().ok()?;
 
         let left_var_name = match left.as_any_js_assignment()? {
@@ -91,10 +95,12 @@ impl Rule for UseShorthandAssign {
             AnyJsExpression::JsParenthesizedExpression(param) => {
                 JsBinaryExpression::cast(param.expression().ok()?.into_syntax())?
             }
+
             _ => return None,
         };
 
         let operator = binary_expression.operator().ok()?;
+
         let shorthand_operator = get_shorthand(operator)?;
 
         let variable_position_in_expression =
@@ -119,6 +125,7 @@ impl Rule for UseShorthandAssign {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let shorthand_operator = state.shorthand_operator.to_string()?;
 
         Some(RuleDiagnostic::new(
@@ -134,10 +141,13 @@ impl Rule for UseShorthandAssign {
         let node = ctx.query();
 
         let mut mutation = ctx.root().begin();
+
         let shorthand_operator = state.shorthand_operator;
 
         let token_leading_trivia = node.operator_token().ok()?.leading_trivia().pieces();
+
         let token_trailing_trivia = node.operator_token().ok()?.trailing_trivia().pieces();
+
         let token = make::token(shorthand_operator)
             .with_leading_trivia_pieces(token_leading_trivia)
             .with_trailing_trivia_pieces(token_trailing_trivia);

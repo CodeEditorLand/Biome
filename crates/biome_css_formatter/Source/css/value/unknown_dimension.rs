@@ -18,6 +18,7 @@ impl FormatNodeRule<CssUnknownDimension> for FormatCssUnknownDimension {
                 FormatTokenAsLowercase::from(unit_token?),
             ]
         );
+
         var_name
     }
 }

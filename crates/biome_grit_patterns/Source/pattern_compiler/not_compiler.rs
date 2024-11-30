@@ -18,6 +18,7 @@ impl NotCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Not<GritQueryContext>, CompileError> {
         let pattern = PatternCompiler::from_node(&node.pattern()?, context)?;
+
         if pattern.iter(&StaticDefinitions::default()).any(|p| {
             matches!(
                 p,
@@ -43,6 +44,7 @@ impl PrNotCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<PrNot<GritQueryContext>, CompileError> {
         let predicate = PredicateCompiler::from_node(&node.predicate()?, context)?;
+
         if predicate.iter(&StaticDefinitions::default()).any(|p| {
             matches!(
                 p,

@@ -5744,182 +5744,234 @@ mod tests {
     #[test]
     fn test_basic_keywords_sorted() {
         let sorted = BASIC_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(BASIC_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_system_family_name_keywords_sorted() {
         let sorted = SYSTEM_FAMILY_NAME_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(SYSTEM_FAMILY_NAME_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_font_family_keywords_sorted() {
         let sorted = FONT_FAMILY_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(FONT_FAMILY_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_font_weight_absolute_keywords_sorted() {
         let sorted = FONT_WEIGHT_ABSOLUTE_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(FONT_WEIGHT_ABSOLUTE_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_font_weight_numeric_keywords_sorted() {
         let sorted = FONT_WEIGHT_NUMERIC_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(FONT_WEIGHT_NUMERIC_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_font_style_keywords_sorted() {
         let sorted = FONT_STYLE_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(FONT_STYLE_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_font_variants_keywords_sorted() {
         let sorted = FONT_VARIANTS_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(FONT_VARIANTS_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_font_stretch_keywords_sorted() {
         let sorted = FONT_STRETCH_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(FONT_STRETCH_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_font_size_keywords_sorted() {
         let sorted = FONT_SIZE_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(FONT_SIZE_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_line_height_keywords_sorted() {
         let sorted = LINE_HEIGHT_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(LINE_HEIGHT_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_function_keywords_sorted() {
         let sorted = FUNCTION_KEYWORDS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(FUNCTION_KEYWORDS, sorted.as_slice());
     }
 
     #[test]
     fn test_function_keywords_unique() {
         let mut set = HashSet::new();
+
         let has_duplicates = FUNCTION_KEYWORDS.iter().any(|&x| !set.insert(x));
+
         assert!(!has_duplicates);
     }
 
     #[test]
     fn test_level_one_and_two_pseudo_elements_sorted() {
         let sorted = LEVEL_ONE_AND_TWO_PSEUDO_ELEMENTS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(LEVEL_ONE_AND_TWO_PSEUDO_ELEMENTS, sorted.as_slice());
     }
 
     #[test]
     fn test_vendor_specific_pseudo_elements_sorted() {
         let sorted = VENDOR_SPECIFIC_PSEUDO_ELEMENTS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(VENDOR_SPECIFIC_PSEUDO_ELEMENTS, sorted.as_slice());
     }
 
     #[test]
     fn test_shadow_tree_pseudo_elements_sorted() {
         let sorted = SHADOW_TREE_PSEUDO_ELEMENTS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(SHADOW_TREE_PSEUDO_ELEMENTS, sorted.as_slice());
     }
 
     #[test]
     fn test_other_pseudo_elements_sorted() {
         let sorted = OTHER_PSEUDO_ELEMENTS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(OTHER_PSEUDO_ELEMENTS, sorted.as_slice());
     }
 
     #[test]
     fn test_vendor_prefixes_sorted() {
         let sorted = VENDOR_PREFIXES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(VENDOR_PREFIXES, sorted.as_slice());
     }
 
     #[test]
     fn test_at_rule_page_pseudo_classes_sorted() {
         let sorted = AT_RULE_PAGE_PSEUDO_CLASSES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(AT_RULE_PAGE_PSEUDO_CLASSES, sorted.as_slice());
     }
 
     #[test]
     fn test_webkit_scrollbar_pseudo_elements_sorted() {
         let sorted = WEBKIT_SCROLLBAR_PSEUDO_ELEMENTS.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(WEBKIT_SCROLLBAR_PSEUDO_ELEMENTS, sorted.as_slice());
     }
 
     #[test]
     fn test_webkit_scrollbar_pseudo_classes_sorted() {
         let sorted = WEBKIT_SCROLLBAR_PSEUDO_CLASSES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(WEBKIT_SCROLLBAR_PSEUDO_CLASSES, sorted.as_slice());
     }
 
     #[test]
     fn test_a_nplus_bnotation_pseudo_classes_sorted() {
         let sorted = A_NPLUS_BNOTATION_PSEUDO_CLASSES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(A_NPLUS_BNOTATION_PSEUDO_CLASSES, sorted.as_slice());
     }
 
     #[test]
     fn test_a_nplus_bof_snotation_pseudo_classes_sorted() {
         let sorted = A_NPLUS_BOF_SNOTATION_PSEUDO_CLASSES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(A_NPLUS_BOF_SNOTATION_PSEUDO_CLASSES, sorted.as_slice());
     }
 
     #[test]
     fn test_linguistic_pseudo_classes_sorted() {
         let sorted = LINGUISTIC_PSEUDO_CLASSES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(LINGUISTIC_PSEUDO_CLASSES, sorted.as_slice());
     }
 
     #[test]
     fn test_logical_combinations_pseudo_classes_sorted() {
         let sorted = LOGICAL_COMBINATIONS_PSEUDO_CLASSES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(LOGICAL_COMBINATIONS_PSEUDO_CLASSES, sorted.as_slice());
     }
 
     #[test]
     fn test_resource_state_pseudo_classes_sorted() {
         let sorted = RESOURCE_STATE_PSEUDO_CLASSES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(RESOURCE_STATE_PSEUDO_CLASSES, sorted.as_slice());
     }
 
     #[test]
     fn test_other_pseudo_classes_sorted() {
         let sorted = OTHER_PSEUDO_CLASSES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(OTHER_PSEUDO_CLASSES, sorted.as_slice());
     }
 
@@ -5933,7 +5985,9 @@ mod tests {
     #[test]
     fn test_known_chrome_properties_sorted() {
         let sorted = KNOWN_CHROME_PROPERTIES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(KNOWN_CHROME_PROPERTIES, sorted.as_slice());
     }
 
@@ -5989,14 +6043,18 @@ mod tests {
     #[test]
     fn test_shorthand_properties_sorted() {
         let sorted = SHORTHAND_PROPERTIES.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(SHORTHAND_PROPERTIES, sorted.as_slice());
     }
 
     #[test]
     fn test_shorthand_properties_unique() {
         let mut set = HashSet::new();
+
         let has_duplicates = SHORTHAND_PROPERTIES.iter().any(|&x| !set.insert(x));
+
         assert!(!has_duplicates);
     }
 
@@ -6004,7 +6062,9 @@ mod tests {
     fn test_longhand_sub_properties_of_shorthand_properties_sorted() {
         for longhand_sub_properties in LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES.iter() {
             let sorted = longhand_sub_properties.to_vec();
+
             let _ = sorted.is_sorted();
+
             assert_eq!(*longhand_sub_properties, sorted.as_slice());
         }
     }
@@ -6013,7 +6073,9 @@ mod tests {
     fn test_longhand_sub_properties_of_shorthand_properties_unique() {
         for longhand_sub_properties in LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES.iter() {
             let mut set = HashSet::new();
+
             let has_duplicates = longhand_sub_properties.iter().any(|&x| !set.insert(x));
+
             assert!(!has_duplicates);
         }
     }
@@ -6034,7 +6096,9 @@ mod tests {
                 .contains(shorthand_property)
                 {
                     let (start, end) = shorthand_property.split_at(6);
+
                     assert!(longhand_sub_property.starts_with(start));
+
                     assert!(longhand_sub_property.ends_with(end));
                 } else if *shorthand_property == "columns" {
                     assert!(longhand_sub_property.starts_with("column"));
@@ -6053,7 +6117,9 @@ mod tests {
                     );
                 } else if *shorthand_property == "grid-gap" {
                     let (start, end) = shorthand_property.split_at(4);
+
                     assert!(longhand_sub_property.starts_with(start));
+
                     assert!(longhand_sub_property.ends_with(end));
                 } else if *shorthand_property == "inset" {
                     assert!(["bottom", "left", "right", "top"].contains(longhand_sub_property));
@@ -6066,6 +6132,7 @@ mod tests {
                     );
 
                     let (_, end) = shorthand_property.split_at(5);
+
                     assert!(longhand_sub_property.ends_with(end));
                 } else {
                     assert!(longhand_sub_property.starts_with(shorthand_property));
@@ -6077,32 +6144,40 @@ mod tests {
     #[test]
     fn test_reset_to_initial_properties_by_border_sorted() {
         let sorted = RESET_TO_INITIAL_PROPERTIES_BY_BORDER.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(RESET_TO_INITIAL_PROPERTIES_BY_BORDER, sorted.as_slice());
     }
 
     #[test]
     fn test_reset_to_initial_properties_by_border_unique() {
         let mut set = HashSet::new();
+
         let has_duplicates = RESET_TO_INITIAL_PROPERTIES_BY_BORDER
             .iter()
             .any(|&x| !set.insert(x));
+
         assert!(!has_duplicates);
     }
 
     #[test]
     fn test_reset_to_initial_properties_by_font_sorted() {
         let sorted = RESET_TO_INITIAL_PROPERTIES_BY_FONT.to_vec();
+
         let _ = sorted.is_sorted();
+
         assert_eq!(RESET_TO_INITIAL_PROPERTIES_BY_FONT, sorted.as_slice());
     }
 
     #[test]
     fn test_reset_to_initial_properties_by_font_unique() {
         let mut set = HashSet::new();
+
         let has_duplicates = RESET_TO_INITIAL_PROPERTIES_BY_FONT
             .iter()
             .any(|&x| !set.insert(x));
+
         assert!(!has_duplicates);
     }
 

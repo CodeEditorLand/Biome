@@ -37,19 +37,29 @@ pub struct TsEnumMembers {
 
 impl Rule for TsEnum {
     type Query = Ast<TsEnumDeclaration>;
+
     type State = TsEnumMembers;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let mut member_names = vec![];
+
         let id = node.id().ok()?;
+
         let name = id.text();
+
         for member in node.members() {
             let member = member.ok()?;
+
             let key = member.name().ok()?.text();
+
             let value = member.initializer().clone();
+
             member_names.push((key, value));
         }
 
@@ -58,19 +68,26 @@ impl Rule for TsEnum {
 
     fn transform(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsBatchMutation> {
         let node = ctx.query();
+
         let mut mutation = node.clone().begin();
+
         let parent = node.syntax().parent();
+
         if let Some(parent) = parent {
             if let Some(module_list) = JsModuleItemList::cast(parent) {
                 let variable = make_variable(state);
+
                 let function = make_function_caller(state);
+
                 let statements = vec![
                     AnyJsModuleItem::AnyJsStatement(AnyJsStatement::JsVariableStatement(variable)),
                     AnyJsModuleItem::AnyJsStatement(AnyJsStatement::JsExpressionStatement(
                         function,
                     )),
                 ];
+
                 let new_modules_list = js_module_item_list(statements);
+
                 mutation.replace_node(module_list, new_modules_list);
             }
         }
@@ -92,6 +109,7 @@ fn make_variable(node: &TsEnumMembers) -> JsVariableStatement {
     .build();
 
     let list = js_variable_declarator_list([binding], []);
+
     js_variable_statement(
         js_variable_declaration(
             token(T![var]).with_trailing_trivia([(TriviaPieceKind::Whitespace, " ")]),
@@ -109,19 +127,23 @@ fn make_function_caller(node: &TsEnumMembers) -> JsExpressionStatement {
         AnyJsExpression::JsFunctionExpression(make_function(node)),
         token(T![')']),
     );
+
     let argument = AnyJsCallArgument::AnyJsExpression(AnyJsExpression::JsLogicalExpression(
         make_logical_expression(node),
     ));
+
     let arguments = js_call_arguments(
         token(T!['(']),
         js_call_argument_list([argument], []),
         token(T![')']),
     );
+
     let expression = js_call_expression(
         AnyJsExpression::JsParenthesizedExpression(callee),
         arguments,
     )
     .build();
+
     js_expression_statement(AnyJsExpression::JsCallExpression(expression))
         .with_semicolon_token(token(T![;]))
         .build()
@@ -142,6 +164,7 @@ fn make_function(node: &TsEnumMembers) -> JsFunctionExpression {
         )],
         [],
     );
+
     let parameters = js_parameters(token(T!['(']), parameters_list, token(T![')']));
 
     let body = js_function_body(
@@ -150,11 +173,13 @@ fn make_function(node: &TsEnumMembers) -> JsFunctionExpression {
         make_members(node),
         token(T!['}']),
     );
+
     js_function_expression(token(T![function]), parameters, body).build()
 }
 
 fn make_members(ts_enum: &TsEnumMembers) -> JsStatementList {
     let mut list = vec![];
+
     for (index, (name, value)) in ts_enum.member_names.iter().enumerate() {
         let value = value
             .as_ref()
@@ -166,6 +191,7 @@ fn make_members(ts_enum: &TsEnumMembers) -> JsStatementList {
                     ),
                 )
             });
+
         list.push(AnyJsStatement::JsExpressionStatement(
             make_high_order_assignment(ts_enum.name.as_str(), name.as_str(), value),
         ));
@@ -219,6 +245,7 @@ fn make_high_order_assignment(
         )),
         token(T![']']),
     );
+
     let right = js_string_literal_expression(js_string_literal(member_name));
 
     let expression = js_assignment_expression(
@@ -261,7 +288,9 @@ fn make_computed_member_assignment(
     member_name: &str,
 ) -> JsComputedMemberAssignment {
     let object = js_identifier_expression(js_reference_identifier(ident(enum_name)));
+
     let member = js_string_literal_expression(js_string_literal(member_name));
+
     js_computed_member_assignment(
         AnyJsExpression::JsIdentifierExpression(object),
         token(T!['[']),

@@ -32,6 +32,7 @@ impl TryFrom<&Vec<Attribute>> for Attrs {
 
     fn try_from(attrs: &Vec<Attribute>) -> Result<Self, Self::Error> {
         let mut opts = Self::default();
+
         for attr in attrs {
             if attr.path.is_ident("partial") {
                 parse_meta_list(&attr.parse_meta()?, |meta| {
@@ -39,19 +40,23 @@ impl TryFrom<&Vec<Attribute>> for Attrs {
                         Meta::List(_) if meta.path().is_ident("derive") => {
                             parse_meta_list(meta, |meta| {
                                 opts.derives.insert(meta.path().clone());
+
                                 Ok(())
                             })?;
                         }
+
                         _ => {
                             opts.nested_attrs.push(meta.into_token_stream());
                         }
                     }
+
                     Ok(())
                 })?;
             } else if attr.style == AttrStyle::Outer && attr.path.is_ident("doc") {
                 opts.doc_lines.push(attr.tokens.clone());
             }
         }
+
         Ok(opts)
     }
 }
@@ -68,6 +73,7 @@ impl TryFrom<&Vec<Attribute>> for FieldAttrs {
 
     fn try_from(attrs: &Vec<Attribute>) -> Result<Self, Self::Error> {
         let mut opts = Self::default();
+
         for attr in attrs {
             if attr.path.is_ident("partial") {
                 parse_meta_list(&attr.parse_meta()?, |meta| {
@@ -75,6 +81,7 @@ impl TryFrom<&Vec<Attribute>> for FieldAttrs {
                         syn::Meta::Path(path) if opts.ty.is_none() && path.is_ident("type") => {
                             opts.ty = Some(PartialType::Prefixed);
                         }
+
                         syn::Meta::NameValue(MetaNameValue {
                             path,
                             lit: Lit::Str(s),
@@ -82,16 +89,19 @@ impl TryFrom<&Vec<Attribute>> for FieldAttrs {
                         }) if opts.ty.is_none() && path.is_ident("type") => {
                             opts.ty = Some(PartialType::Literal(s.parse()?));
                         }
+
                         _ => {
                             opts.nested_attrs.push(meta.into_token_stream());
                         }
                     }
+
                     Ok(())
                 })?;
             } else if attr.style == AttrStyle::Outer && attr.path.is_ident("doc") {
                 opts.doc_lines.push(attr.tokens.clone());
             }
         }
+
         Ok(opts)
     }
 }

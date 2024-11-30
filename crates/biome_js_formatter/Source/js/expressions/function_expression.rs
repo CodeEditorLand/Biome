@@ -15,6 +15,7 @@ impl FormatRuleWithOptions<JsFunctionExpression> for FormatJsFunctionExpression 
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.options = options;
+
         self
     }
 }
@@ -22,6 +23,7 @@ impl FormatRuleWithOptions<JsFunctionExpression> for FormatJsFunctionExpression 
 impl FormatNodeRule<JsFunctionExpression> for FormatJsFunctionExpression {
     fn fmt_fields(&self, node: &JsFunctionExpression, f: &mut JsFormatter) -> FormatResult<()> {
         FormatFunction::from(node.clone()).fmt_with_options(f, &self.options)?;
+
         Ok(())
     }
 
@@ -34,14 +36,17 @@ impl FormatNodeRule<JsFunctionExpression> for FormatJsFunctionExpression {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsFunctionExpression;
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("console.log((function () {})())", JsFunctionExpression);
+
         assert_needs_parentheses!("console.log(new (function () {})())", JsFunctionExpression);
 
         assert_needs_parentheses!("(function() {}).test", JsFunctionExpression);
+
         assert_not_needs_parentheses!("a => function () {} ", JsFunctionExpression);
 
         assert_needs_parentheses!(

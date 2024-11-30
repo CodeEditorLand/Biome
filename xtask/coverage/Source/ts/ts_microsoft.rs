@@ -27,6 +27,7 @@ struct MicrosoftTypeScriptTestCase {
 impl MicrosoftTypeScriptTestCase {
     fn new(path: &Path, code: String) -> Self {
         let name = path.strip_prefix(CASES_PATH).unwrap().display().to_string();
+
         Self { name, code }
     }
 }
@@ -40,6 +41,7 @@ impl TestCase for MicrosoftTypeScriptTestCase {
         let TestCaseMetadata { files, run_options } = extract_metadata(&self.code, &self.name);
 
         let mut all_errors = Vec::new();
+
         let mut bogus_errors = Vec::new();
 
         for file in &files {
@@ -53,6 +55,7 @@ impl TestCase for MicrosoftTypeScriptTestCase {
                         bogus_errors.push(create_bogus_node_in_tree_diagnostic(bogus));
                     }
                 }
+
                 Err(errors) => all_errors.extend(errors),
             }
         }
@@ -98,25 +101,33 @@ impl TestSuite for MicrosoftTypescriptTestSuite {
 
     fn load_test(&self, path: &Path) -> Option<Box<dyn TestCase>> {
         let code = check_file_encoding(path)?;
+
         Some(Box::new(MicrosoftTypeScriptTestCase::new(path, code)))
     }
 
     fn checkout(&self) -> io::Result<()> {
         let base_path = project_root().join("xtask/coverage/Typescript");
+
         let mut command = Command::new("git");
+
         command
             .arg("clone")
             .arg("https://github.com/microsoft/Typescript.git")
             .arg("--depth")
             .arg("1")
             .arg(base_path.display().to_string());
+
         command.output()?;
+
         let mut command = Command::new("git");
+
         command
             .arg("reset")
             .arg("--hard")
             .arg("61a96b1641abe24c4adc3633eb936df89eb991f2");
+
         command.output()?;
+
         Ok(())
     }
 }
@@ -135,14 +146,19 @@ fn extract_metadata(code: &str, path: &str) -> TestCaseMetadata {
         Regex::new(r"(?m)^/{2}\s*@(?P<name>\w+)\s*:\s*(?P<value>[^\r\n]*)").unwrap();
 
     let mut files = TestCaseFiles::new();
+
     let line_ending = infer_line_ending(code);
+
     let mut current_file_content = String::new();
+
     let mut current_file_name: Option<String> = None;
+
     let mut run_options: Vec<String> = vec![];
 
     for line in code.lines() {
         if let Some(option) = options_regex.captures(line) {
             let option_name = option.name("name").unwrap().as_str().to_lowercase_cow();
+
             let option_value = option.name("value").unwrap().as_str().trim();
 
             if option_name == "alwaysstrict" {
@@ -175,6 +191,7 @@ fn extract_metadata(code: &str, path: &str) -> TestCaseMetadata {
                 // skip leading whitespace
                 continue;
             }
+
             write!(current_file_content, "{line}{line_ending}").unwrap();
         }
     }

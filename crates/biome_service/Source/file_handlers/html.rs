@@ -42,10 +42,15 @@ impl Default for HtmlFormatterSettings {
 
 impl ServiceLanguage for HtmlLanguage {
     type FormatterSettings = HtmlFormatterSettings;
+
     type LinterSettings = ();
+
     type OrganizeImportsSettings = ();
+
     type FormatOptions = HtmlFormatOptions;
+
     type ParserSettings = ();
+
     type EnvironmentSettings = ();
 
     fn lookup_settings(
@@ -65,10 +70,12 @@ impl ServiceLanguage for HtmlLanguage {
             .and_then(|l| l.indent_style)
             .or(global.and_then(|g| g.indent_style))
             .unwrap_or_default();
+
         let line_width = language
             .and_then(|l| l.line_width)
             .or(global.and_then(|g| g.line_width))
             .unwrap_or_default();
+
         let indent_width = language
             .and_then(|l| l.indent_width)
             .or(global.and_then(|g| g.indent_width))
@@ -84,6 +91,7 @@ impl ServiceLanguage for HtmlLanguage {
             .with_indent_width(indent_width)
             .with_line_width(line_width)
             .with_line_ending(line_ending);
+
         if let Some(overrides) = overrides {
             overrides.to_override_html_format_options(path, options)
         } else {
@@ -154,7 +162,9 @@ fn parse(
 
 fn debug_syntax_tree(_biome_path: &BiomePath, parse: AnyParse) -> GetSyntaxTreeResult {
     let syntax: HtmlSyntaxNode = parse.syntax();
+
     let tree: HtmlRoot = parse.tree();
+
     GetSyntaxTreeResult {
         cst: format!("{syntax:#?}"),
         ast: format!("{tree:#?}"),
@@ -170,9 +180,11 @@ fn debug_formatter_ir(
     let options = settings.format_options::<HtmlLanguage>(path, document_file_source);
 
     let tree = parse.syntax();
+
     let formatted = format_node(options, &tree)?;
 
     let root_element = formatted.into_document();
+
     Ok(root_element.to_string())
 }
 
@@ -188,6 +200,7 @@ fn format(
     tracing::debug!("Format with the following options: \n{}", options);
 
     let tree = parse.syntax();
+
     let formatted = format_node(options, &tree)?;
 
     match formatted.print() {

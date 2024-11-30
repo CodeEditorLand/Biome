@@ -27,6 +27,7 @@ impl HtmlFileSource {
             variant: HtmlVariant::Standard,
         }
     }
+
     pub fn astro() -> Self {
         Self {
             variant: HtmlVariant::Astro,

@@ -56,11 +56,14 @@ impl CommandRunner for FormatCommandPayload {
             directory_path: configuration_path,
             ..
         } = loaded_configuration;
+
         let editorconfig_search_path = configuration_path.clone();
+
         let mut fs_configuration =
             self.load_editor_config(editorconfig_search_path, &biome_configuration, fs, console)?;
         // this makes biome configuration take precedence over editorconfig configuration
         fs_configuration.merge_with(biome_configuration);
+
         let mut configuration = fs_configuration;
 
         // TODO: remove in biome 2.0
@@ -69,6 +72,7 @@ impl CommandRunner for FormatCommandPayload {
                 let diagnostic = DeprecatedArgument::new(markup! {
                     "The argument "<Emphasis>"--indent-size"</Emphasis>" is deprecated, it will be removed in the next major release. Use "<Emphasis>"--indent-width"</Emphasis>" instead."
                 });
+
                 console.error(markup! {
                     {PrintDiagnostic::simple(&diagnostic)}
                 });
@@ -84,6 +88,7 @@ impl CommandRunner for FormatCommandPayload {
                 let diagnostic = DeprecatedArgument::new(markup! {
                     "The argument "<Emphasis>"--javascript-formatter-indent-size"</Emphasis>" is deprecated, it will be removed in the next major release. Use "<Emphasis>"--javascript-formatter-indent-width"</Emphasis>" instead."
                 });
+
                 console.error(markup! {
                     {PrintDiagnostic::simple(&diagnostic)}
                 });
@@ -97,6 +102,7 @@ impl CommandRunner for FormatCommandPayload {
                 let diagnostic = DeprecatedArgument::new(markup! {
                     "The argument "<Emphasis>"--trailing-comma"</Emphasis>" is deprecated, it will be removed in the next major release. Use "<Emphasis>"--trailing-commas"</Emphasis>" instead."
                 });
+
                 console.error(markup! {
                     {PrintDiagnostic::simple(&diagnostic)}
                 });
@@ -112,6 +118,7 @@ impl CommandRunner for FormatCommandPayload {
                 let diagnostic = DeprecatedArgument::new(markup! {
                     "The argument "<Emphasis>"--json-formatter-indent-size"</Emphasis>" is deprecated, it will be removed in the next major release. Use "<Emphasis>"--json-formatter-indent-width"</Emphasis>" instead."
                 });
+
                 console.error(markup! {
                     {PrintDiagnostic::simple(&diagnostic)}
                 });
@@ -129,18 +136,23 @@ impl CommandRunner for FormatCommandPayload {
             .is_some_and(PartialFormatterConfiguration::is_disabled)
         {
             let formatter = configuration.formatter.get_or_insert_with(Default::default);
+
             if let Some(formatter_configuration) = self.formatter_configuration.clone() {
                 formatter.merge_with(formatter_configuration);
             }
 
             formatter.enabled = Some(true);
         }
+
         if self.css_formatter.is_some() {
             let css = configuration.css.get_or_insert_with(Default::default);
+
             css.formatter.merge_with(self.css_formatter.clone());
         }
+
         if self.graphql_formatter.is_some() {
             let graphql = configuration.graphql.get_or_insert_with(Default::default);
+
             graphql.formatter.merge_with(self.graphql_formatter.clone());
         }
 
@@ -148,18 +160,22 @@ impl CommandRunner for FormatCommandPayload {
             let javascript = configuration
                 .javascript
                 .get_or_insert_with(Default::default);
+
             javascript
                 .formatter
                 .merge_with(self.javascript_formatter.clone());
         }
+
         if self.json_formatter.is_some() {
             let json = configuration.json.get_or_insert_with(Default::default);
+
             json.formatter.merge_with(self.json_formatter.clone());
         }
 
         configuration
             .files
             .merge_with(self.files_configuration.clone());
+
         configuration.vcs.merge_with(self.vcs_configuration.clone());
 
         Ok(configuration)

@@ -47,12 +47,15 @@ impl Document {
             checked_interned: &mut FxHashMap<&'a Interned, bool>,
         ) -> bool {
             let mut expands = false;
+
             for element in elements {
                 let element_expands = match element {
                     FormatElement::Tag(Tag::StartGroup(group)) => {
                         enclosing.push(Enclosing::Group(group));
+
                         false
                     }
+
                     FormatElement::Tag(Tag::EndGroup) => match enclosing.pop() {
                         Some(Enclosing::Group(group)) => !group.mode().is_flat(),
                         _ => false,
@@ -62,7 +65,9 @@ impl Document {
                         None => {
                             let interned_expands =
                                 propagate_expands(interned, enclosing, checked_interned);
+
                             checked_interned.insert(interned, interned_expands);
+
                             interned_expands
                         }
                     },
@@ -111,6 +116,7 @@ impl Document {
                         // propagate their expansion.
                         false
                     }
+
                     FormatElement::StaticText { text } => text.contains('\n'),
                     FormatElement::DynamicText { text, .. } => text.contains('\n'),
                     FormatElement::LocatedTokenText { slice, .. } => slice.contains('\n'),
@@ -121,6 +127,7 @@ impl Document {
 
                 if element_expands {
                     expands = true;
+
                     expand_parent(enclosing)
                 }
             }
@@ -129,7 +136,9 @@ impl Document {
         }
 
         let mut enclosing: Vec<Enclosing> = Vec::new();
+
         let mut interned = FxHashMap::default();
+
         propagate_expands(self, &mut enclosing, &mut interned);
     }
 }
@@ -227,7 +236,9 @@ impl Format<IrFormatContext> for &[FormatElement] {
         write!(f, [ContentArrayStart])?;
 
         let mut tag_stack = Vec::new();
+
         let mut first_element = true;
+
         let mut in_text = false;
 
         let mut iter = self.iter().peekable();
@@ -256,6 +267,7 @@ impl Format<IrFormatContext> for &[FormatElement] {
                         FormatElement::Space | FormatElement::HardSpace => {
                             write!(f, [text(" ")])?;
                         }
+
                         element if element.is_text() => {
                             // escape quotes
                             let new_element = match element {
@@ -266,25 +278,31 @@ impl Format<IrFormatContext> for &[FormatElement] {
                                     source_position,
                                 } => {
                                     let text = text.to_string().replace('"', "\\\"");
+
                                     FormatElement::DynamicText {
                                         text: text.into(),
                                         source_position: *source_position,
                                     }
                                 }
+
                                 FormatElement::LocatedTokenText {
                                     slice,
                                     source_position,
                                 } => {
                                     let text = slice.to_string().replace('"', "\\\"");
+
                                     FormatElement::DynamicText {
                                         text: text.into(),
                                         source_position: *source_position,
                                     }
                                 }
+
                                 _ => unreachable!(),
                             };
+
                             f.write_element(new_element)?;
                         }
+
                         _ => unreachable!(),
                     }
 
@@ -292,6 +310,7 @@ impl Format<IrFormatContext> for &[FormatElement] {
 
                     if !is_next_text {
                         write!(f, [text("\"")])?;
+
                         in_text = false;
                     }
                 }
@@ -300,12 +319,15 @@ impl Format<IrFormatContext> for &[FormatElement] {
                     LineMode::SoftOrSpace => {
                         write!(f, [text("soft_line_break_or_space")])?;
                     }
+
                     LineMode::Soft => {
                         write!(f, [text("soft_line_break")])?;
                     }
+
                     LineMode::Hard => {
                         write!(f, [text("hard_line_break")])?;
                     }
+
                     LineMode::Empty => {
                         write!(f, [text("empty_line")])?;
                     }
@@ -320,6 +342,7 @@ impl Format<IrFormatContext> for &[FormatElement] {
 
                 FormatElement::BestFitting(best_fitting) => {
                     write!(f, [text("best_fitting([")])?;
+
                     f.write_elements([
                         FormatElement::Tag(StartIndent),
                         FormatElement::Line(LineMode::Hard),
@@ -343,6 +366,7 @@ impl Format<IrFormatContext> for &[FormatElement] {
                     match interned_elements.get(interned).copied() {
                         None => {
                             let index = interned_elements.len();
+
                             interned_elements.insert(interned.clone(), index);
 
                             write!(
@@ -357,6 +381,7 @@ impl Format<IrFormatContext> for &[FormatElement] {
                                 ]
                             )?;
                         }
+
                         Some(reference) => {
                             write!(
                                 f,
@@ -372,6 +397,7 @@ impl Format<IrFormatContext> for &[FormatElement] {
                 FormatElement::Tag(tag) => {
                     if tag.is_start() {
                         first_element = true;
+
                         tag_stack.push(tag.kind());
                     }
                     // Handle documents with mismatching start/end or superfluous end tags
@@ -390,9 +416,12 @@ impl Format<IrFormatContext> for &[FormatElement] {
                                         text(">>"),
                                     ]
                                 )?;
+
                                 first_element = false;
+
                                 continue;
                             }
+
                             Some(start_kind) if start_kind != tag.kind() => {
                                 write!(
                                     f,
@@ -413,9 +442,12 @@ impl Format<IrFormatContext> for &[FormatElement] {
                                         text(">>")
                                     ]
                                 )?;
+
                                 first_element = false;
+
                                 continue;
                             }
+
                             _ => {
                                 // all ok
                             }
@@ -475,9 +507,11 @@ impl Format<IrFormatContext> for &[FormatElement] {
 
                             match group.mode() {
                                 GroupMode::Flat => {}
+
                                 GroupMode::Expand => {
                                     write!(f, [text("expand: true,"), space()])?;
                                 }
+
                                 GroupMode::Propagated => {
                                     write!(f, [text("expand: propagated,"), space()])?;
                                 }
@@ -501,6 +535,7 @@ impl Format<IrFormatContext> for &[FormatElement] {
                                 PrintMode::Flat => {
                                     write!(f, [text("if_group_fits_on_line(")])?;
                                 }
+
                                 PrintMode::Expanded => {
                                     write!(f, [text("if_group_breaks(")])?;
                                 }
@@ -543,6 +578,7 @@ impl Format<IrFormatContext> for &[FormatElement] {
                         StartEntry => {
                             // handled after the match for all start tags
                         }
+
                         EndEntry => write!(f, [ContentArrayEnd])?,
 
                         EndFill
@@ -606,6 +642,7 @@ struct ContentArrayEnd;
 impl Format<IrFormatContext> for ContentArrayEnd {
     fn fmt(&self, f: &mut Formatter<IrFormatContext>) -> FormatResult<()> {
         use Tag::*;
+
         f.write_elements([
             FormatElement::Tag(EndIndent),
             FormatElement::Line(LineMode::Soft),
@@ -619,6 +656,7 @@ impl Format<IrFormatContext> for ContentArrayEnd {
 impl FormatElements for [FormatElement] {
     fn will_break(&self) -> bool {
         use Tag::*;
+
         let mut ignore_depth = 0usize;
 
         for element in self {
@@ -628,9 +666,11 @@ impl FormatElements for [FormatElement] {
                 FormatElement::Tag(StartLineSuffix) => {
                     ignore_depth += 1;
                 }
+
                 FormatElement::Tag(EndLineSuffix) => {
                     ignore_depth -= 1;
                 }
+
                 FormatElement::Interned(interned) if ignore_depth == 0 => {
                     if interned.will_break() {
                         return true;
@@ -640,6 +680,7 @@ impl FormatElements for [FormatElement] {
                 element if ignore_depth == 0 && element.will_break() => {
                     return true;
                 }
+
                 _ => continue,
             }
         }
@@ -651,6 +692,7 @@ impl FormatElements for [FormatElement] {
 
     fn may_directly_break(&self) -> bool {
         use Tag::*;
+
         let mut ignore_depth = 0usize;
 
         for element in self {
@@ -660,9 +702,11 @@ impl FormatElements for [FormatElement] {
                 FormatElement::Tag(StartLineSuffix) => {
                     ignore_depth += 1;
                 }
+
                 FormatElement::Tag(EndLineSuffix) => {
                     ignore_depth -= 1;
                 }
+
                 FormatElement::Interned(interned) if ignore_depth == 0 => {
                     if interned.may_directly_break() {
                         return true;
@@ -672,6 +716,7 @@ impl FormatElements for [FormatElement] {
                 element if ignore_depth == 0 && element.may_directly_break() => {
                     return true;
                 }
+
                 _ => continue,
             }
         }
@@ -688,6 +733,7 @@ impl FormatElements for [FormatElement] {
 
     fn start_tag(&self, kind: TagKind) -> Option<&Tag> {
         // Assert that the document ends at a tag with the specified kind;
+
         let _ = self.end_tag(kind)?;
 
         fn traverse_slice<'a>(
@@ -711,6 +757,7 @@ impl FormatElements for [FormatElement] {
                             *depth += 1;
                         }
                     }
+
                     FormatElement::Interned(interned) => {
                         match traverse_slice(interned, kind, depth) {
                             Some(start) => {
@@ -720,11 +767,13 @@ impl FormatElements for [FormatElement] {
                             None if *depth == 0 => {
                                 return None;
                             }
+
                             _ => {
                                 // continue with other elements
                             }
                         }
                     }
+
                     _ => {}
                 }
             }
@@ -745,11 +794,15 @@ impl FormatElements for [FormatElement] {
 #[cfg(test)]
 mod tests {
     use biome_js_syntax::JsSyntaxKind;
+
     use biome_js_syntax::JsSyntaxToken;
+
     use biome_rowan::TextSize;
 
     use crate::prelude::*;
+
     use crate::SimpleFormatContext;
+
     use crate::{format, format_args, write};
 
     #[test]
@@ -879,6 +932,7 @@ mod tests {
     #[test]
     fn escapes_quotes() {
         let token = JsSyntaxToken::new_detached(JsSyntaxKind::JS_STRING_LITERAL, "\"bar\"", [], []);
+
         let token_text = FormatElement::LocatedTokenText {
             source_position: TextSize::default(),
             slice: token.token_text(),
@@ -891,6 +945,7 @@ mod tests {
             },
             token_text,
         ]);
+
         document.propagate_expand();
 
         assert_eq!(&std::format!("{document}"), r#"["\"foo\"\"bar\""]"#);

@@ -21,12 +21,15 @@ pub(super) fn parse_fields_definition(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_fields(p) {
         return Absent;
     }
+
     let m = p.start();
 
     p.expect(T!['{']);
+
     FieldDefinitionList.parse_list(p);
 
     p.expect(T!['}']);
+
     Present(m.complete(p, GRAPHQL_FIELDS_DEFINITION))
 }
 
@@ -35,6 +38,7 @@ struct FieldDefinitionList;
 
 impl ParseNodeList for FieldDefinitionList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_FIELD_DEFINITION_LIST;
@@ -64,7 +68,9 @@ struct FieldDefinitionListParseRecovery;
 
 impl ParseRecovery for FieldDefinitionListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -77,14 +83,17 @@ fn parse_field_definition(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_field(p) {
         return Absent;
     }
+
     let m = p.start();
 
     // description is optional
     parse_description(p).ok();
+
     parse_literal_name(p).or_add_diagnostic(p, expected_name);
 
     // arguments are optional
     parse_arguments_definition(p).ok();
+
     p.expect(T![:]);
 
     parse_type(p).or_add_diagnostic(p, expected_type);
@@ -99,10 +108,13 @@ pub(super) fn parse_arguments_definition(p: &mut GraphqlParser) -> ParsedSyntax 
     if !is_at_arguments_definition(p) {
         return Absent;
     }
+
     let m = p.start();
 
     p.expect(T!['(']);
+
     ArgumentDefinitionList.parse_list(p);
+
     p.expect(T![')']);
 
     Present(m.complete(p, GRAPHQL_ARGUMENTS_DEFINITION))
@@ -112,6 +124,7 @@ pub(super) fn parse_arguments_definition(p: &mut GraphqlParser) -> ParsedSyntax 
 struct ArgumentDefinitionList;
 impl ParseNodeList for ArgumentDefinitionList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_ARGUMENT_DEFINITION_LIST;
@@ -140,7 +153,9 @@ impl ParseNodeList for ArgumentDefinitionList {
 struct ArgumentDefinitionListParseRecovery;
 impl ParseRecovery for ArgumentDefinitionListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -153,10 +168,12 @@ pub(super) fn parse_input_value_definition(p: &mut GraphqlParser) -> ParsedSynta
     if !is_at_input_value_definition(p) {
         return Absent;
     }
+
     let m = p.start();
 
     // description is optional
     parse_description(p).ok();
+
     parse_literal_name(p).or_add_diagnostic(p, expected_name);
 
     p.expect(T![:]);

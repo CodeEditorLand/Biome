@@ -58,6 +58,7 @@ pub(crate) fn parse_url_function(p: &mut CssParser) -> ParsedSyntax {
     if !is_at_url_function(p) {
         return Absent;
     }
+
     let m = p.start();
 
     p.bump_ts(URL_SET);
@@ -68,10 +69,12 @@ pub(crate) fn parse_url_function(p: &mut CssParser) -> ParsedSyntax {
         p.bump(T!['(']);
     } else {
         p.bump_with_context(T!['('], CssLexContext::UrlRawValue);
+
         parse_url_value(p).ok();
     }
 
     UrlModifierList.parse_list(p);
+
     p.expect(T![')']);
 
     Present(m.complete(p, CSS_URL_FUNCTION))
@@ -117,7 +120,9 @@ pub(crate) fn parse_url_value_raw(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.expect(CSS_URL_VALUE_RAW_LITERAL);
+
     Present(m.complete(p, CSS_URL_VALUE_RAW))
 }
 
@@ -125,7 +130,9 @@ struct UrlModifierListParseRecovery;
 
 impl ParseRecovery for UrlModifierListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_URL_MODIFIER;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -144,7 +151,9 @@ struct UrlModifierList;
 
 impl ParseNodeList for UrlModifierList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_URL_MODIFIER_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {

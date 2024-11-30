@@ -16,7 +16,9 @@ pub(crate) struct MigrationCategory;
 
 impl RuleGroup for MigrationGroup {
     type Language = JsonLanguage;
+
     type Category = MigrationCategory;
+
     const NAME: &'static str = "migrations";
 
     fn record_rules<V: RegistryVisitor<Self::Language> + ?Sized>(registry: &mut V) {
@@ -34,6 +36,7 @@ impl RuleGroup for MigrationGroup {
 
 impl GroupCategory for MigrationCategory {
     type Language = JsonLanguage;
+
     const CATEGORY: RuleCategory = RuleCategory::Action;
 
     fn record_groups<V: RegistryVisitor<Self::Language> + ?Sized>(registry: &mut V) {

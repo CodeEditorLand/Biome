@@ -6,6 +6,7 @@ use biome_graphql_syntax::AnyGraphqlPrimitiveType;
 pub(crate) struct FormatAnyGraphqlPrimitiveType;
 impl FormatRule<AnyGraphqlPrimitiveType> for FormatAnyGraphqlPrimitiveType {
     type Context = GraphqlFormatContext;
+
     fn fmt(&self, node: &AnyGraphqlPrimitiveType, f: &mut GraphqlFormatter) -> FormatResult<()> {
         match node {
             AnyGraphqlPrimitiveType::GraphqlListType(node) => node.format().fmt(f),

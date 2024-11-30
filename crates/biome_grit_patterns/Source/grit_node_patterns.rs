@@ -47,9 +47,11 @@ impl Matcher<GritQueryContext> for GritNodePattern {
         let Some(binding) = binding.get_last_binding() else {
             return Ok(false);
         };
+
         let Some(node) = binding.singleton() else {
             return Ok(false);
         };
+
         if binding.is_list() {
             return self.execute(
                 &ResolvedPattern::from_node_binding(node),
@@ -62,6 +64,7 @@ impl Matcher<GritQueryContext> for GritNodePattern {
         if node.kind() != self.kind {
             return Ok(false);
         }
+
         if self.args.is_empty() {
             return Ok(true);
         }
@@ -80,6 +83,7 @@ impl Matcher<GritQueryContext> for GritNodePattern {
         }
 
         let mut running_state = init_state.clone();
+
         for GritNodePatternArg {
             pattern,
             slot_index,
@@ -96,6 +100,7 @@ impl Matcher<GritQueryContext> for GritNodePattern {
                 context,
                 logs,
             );
+
             if res? {
                 running_state = cur_state;
             } else {
@@ -103,6 +108,7 @@ impl Matcher<GritQueryContext> for GritNodePattern {
             }
         }
         *init_state = running_state;
+
         Ok(true)
     }
 }
@@ -142,7 +148,9 @@ impl GritLeafNodePattern {
         lang: &GritTargetLanguage,
     ) -> Result<Self, CompileError> {
         let text = text.into();
+
         let equivalence_class = lang.get_equivalence_class(kind, &text)?;
+
         Ok(Self {
             kind,
             equivalence_class,

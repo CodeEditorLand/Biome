@@ -39,7 +39,9 @@ struct DefinitionListParseRecovery;
 
 impl ParseRecovery for DefinitionListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS_DEFINITION;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -52,6 +54,7 @@ pub(crate) struct DefinitionList;
 
 impl ParseNodeList for DefinitionList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_DEFINITION_LIST;
@@ -76,6 +79,7 @@ impl ParseNodeList for DefinitionList {
 #[inline]
 fn parse_definition(p: &mut GraphqlParser) -> ParsedSyntax {
     let keyword = if is_at_string(p) { p.nth(1) } else { p.cur() };
+
     match keyword {
         T![query] | T![mutation] | T![subscription] => parse_operation_definition(p),
         T!['{'] => parse_selection_set(p),
@@ -110,6 +114,7 @@ fn parse_extension(p: &mut GraphqlParser) -> ParsedSyntax {
 #[inline]
 fn is_at_definition(p: &mut GraphqlParser<'_>) -> bool {
     let keyword = if is_at_string(p) { p.nth(1) } else { p.cur() };
+
     matches!(
         keyword,
         T![query]

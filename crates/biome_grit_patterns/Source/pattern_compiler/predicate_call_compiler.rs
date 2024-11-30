@@ -15,6 +15,7 @@ impl PrCallCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Predicate<GritQueryContext>, CompileError> {
         let name = node.name()?;
+
         let name = name.text();
 
         if name == "log" {
@@ -28,20 +29,26 @@ impl PrCallCompiler {
         } else {
             return Err(CompileError::UnknownFunctionOrPredicate(name));
         };
+
         let params = collect_params(&info.parameters);
+
         let expected_params = Some(params.clone());
+
         let named_args = node_to_args_pairs(
             &name,
             node.named_args(),
             &context.compilation.lang,
             &expected_params,
         )?;
+
         let args = named_args_to_map(named_args, context)?;
+
         if args.len() != node.named_args().into_iter().count() {
             Err(NodeLikeArgumentError::DuplicateArguments { name: name.clone() })?
         }
 
         let args = match_args_to_params(&name, args, &params, &context.compilation.lang)?;
+
         Ok(Predicate::Call(Box::new(PrCall::new(info.index, args))))
     }
 }

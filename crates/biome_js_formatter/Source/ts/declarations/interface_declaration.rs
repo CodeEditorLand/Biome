@@ -19,7 +19,9 @@ impl FormatNodeRule<TsInterfaceDeclaration> for FormatTsInterfaceDeclaration {
         } = node.as_fields();
 
         let l_curly_token = l_curly_token?;
+
         let r_curly_token = r_curly_token?;
+
         let id = id?;
 
         let should_indent_extends_only = type_parameters.as_ref().map_or(false, |params| {
@@ -75,6 +77,7 @@ impl FormatNodeRule<TsInterfaceDeclaration> for FormatTsInterfaceDeclaration {
             write![f, [interface_token.format(), space()]]?;
 
             let id_has_trailing_comments = f.comments().has_trailing_comments(id.syntax());
+
             if id_has_trailing_comments || extends_clause.is_some() {
                 if should_indent_extends_only {
                     write!(

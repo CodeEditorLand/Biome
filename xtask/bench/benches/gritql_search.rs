@@ -29,11 +29,15 @@ static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 static GLOBAL: std::alloc::System = std::alloc::System;
 fn bench_gritql_search(criterion: &mut Criterion) {
     let mut all_suites = HashMap::new();
+
     all_suites.insert("gritql", include_str!("libs-ts.txt"));
+
     let mut libs = vec![];
+
     libs.extend(all_suites.values().flat_map(|suite| suite.lines()));
 
     let mut group = criterion.benchmark_group("gritql_search");
+
     for lib in libs {
         let test_case = TestCase::try_from(lib);
 
@@ -41,9 +45,11 @@ fn bench_gritql_search(criterion: &mut Criterion) {
             Ok(test_case) => {
                 bench_search_group(&mut group, test_case);
             }
+
             Err(error) => println!("{error:?}"),
         }
     }
+
     group.finish();
 }
 
@@ -56,6 +62,7 @@ pub fn bench_search_group(group: &mut BenchmarkGroup<WallTime>, test_case: TestC
     .unwrap();
 
     let code = test_case.code();
+
     let source_type = if test_case.extension() == "d.ts" {
         JsFileSource::d_ts()
     } else {
@@ -68,7 +75,9 @@ pub fn bench_search_group(group: &mut BenchmarkGroup<WallTime>, test_case: TestC
     };
 
     group.throughput(Throughput::Bytes(code.len() as u64));
+
     group.sample_size(10);
+
     group.bench_with_input(
         BenchmarkId::new(test_case.filename(), "execute"),
         &code,
@@ -76,6 +85,7 @@ pub fn bench_search_group(group: &mut BenchmarkGroup<WallTime>, test_case: TestC
             b.iter(|| {
                 let (_results, logs) =
                     black_box(query.execute(target_file.clone())).expect("Couldn't execute query");
+
                 for log in logs.logs() {
                     println!("{log}");
                 }

@@ -41,29 +41,42 @@ declare_lint_rule! {
 
 impl Rule for NoConsoleLog {
     type Query = Semantic<JsCallExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let call_expression = ctx.query();
+
         let model = ctx.model();
+
         let callee = call_expression.callee().ok()?;
+
         let member_expression = AnyJsMemberExpression::cast(callee.into_syntax())?;
+
         if member_expression.member_name()?.text() != "log" {
             return None;
         }
+
         let object = member_expression.object().ok()?;
+
         let (reference, name) = global_identifier(&object)?;
+
         if name.text() != "console" {
             return None;
         }
+
         model.binding(&reference).is_none().then_some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let node = JsExpressionStatement::cast(node.syntax().parent()?)?;
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -83,12 +96,14 @@ impl Rule for NoConsoleLog {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let call_expression = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         match JsExpressionStatement::cast(call_expression.syntax().parent()?) {
             Some(stmt) if stmt.semicolon_token().is_some() => {
                 mutation.remove_node(stmt);
             }
+
             _ => {
                 mutation.remove_node(call_expression.clone());
             }

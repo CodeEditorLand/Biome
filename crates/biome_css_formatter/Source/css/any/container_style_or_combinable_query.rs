@@ -8,6 +8,7 @@ impl FormatRule<AnyCssContainerStyleOrCombinableQuery>
     for FormatAnyCssContainerStyleOrCombinableQuery
 {
     type Context = CssFormatContext;
+
     fn fmt(
         &self,
         node: &AnyCssContainerStyleOrCombinableQuery,
@@ -17,6 +18,7 @@ impl FormatRule<AnyCssContainerStyleOrCombinableQuery>
             AnyCssContainerStyleOrCombinableQuery::CssContainerStyleInParens(node) => {
                 node.format().fmt(f)
             }
+
             AnyCssContainerStyleOrCombinableQuery::CssContainerStyleOrQuery(node) => {
                 node.format().fmt(f)
             }

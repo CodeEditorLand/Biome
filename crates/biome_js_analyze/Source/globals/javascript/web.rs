@@ -1510,9 +1510,11 @@ fn test_order() {
     for items in BROWSER.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in SERVICE_WORKER.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in WEB_WORKER.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }

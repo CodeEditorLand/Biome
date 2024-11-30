@@ -40,8 +40,11 @@ impl LintRulesVisitor {
         };
 
         biome_graphql_analyze::visit_registry(&mut visitor);
+
         biome_css_analyze::visit_registry(&mut visitor);
+
         biome_json_analyze::visit_registry(&mut visitor);
+
         biome_js_analyze::visit_registry(&mut visitor);
 
         visitor

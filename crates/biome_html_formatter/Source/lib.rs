@@ -126,7 +126,9 @@ impl HtmlFormatLanguage {
 
 impl FormatLanguage for HtmlFormatLanguage {
     type SyntaxLanguage = HtmlLanguage;
+
     type Context = HtmlFormatContext;
+
     type FormatRule = FormatHtmlSyntaxNode;
 
     fn options(&self) -> &<Self::Context as biome_formatter::FormatContext>::Options {
@@ -139,6 +141,7 @@ impl FormatLanguage for HtmlFormatLanguage {
         source_map: Option<biome_formatter::TransformSourceMap>,
     ) -> Self::Context {
         let comments = Comments::from_node(root, &HtmlCommentStyle, source_map.as_ref());
+
         HtmlFormatContext::new(self.options, comments).with_source_map(source_map)
     }
 }
@@ -157,14 +160,18 @@ where
         }
 
         self.fmt_leading_comments(node, f)?;
+
         self.fmt_node(node, f)?;
+
         self.fmt_dangling_comments(node, f)?;
+
         self.fmt_trailing_comments(node, f)
     }
 
     /// Formats the node without comments. Ignores any suppression comments.
     fn fmt_node(&self, node: &N, f: &mut HtmlFormatter) -> FormatResult<()> {
         self.fmt_fields(node, f)?;
+
         Ok(())
     }
 

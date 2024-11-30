@@ -82,6 +82,7 @@ impl<'source> GraphqlParser<'source> {
         Vec<Trivia>,
     ) {
         let (trivia, lexer_diagnostics) = self.source.finish();
+
         let (events, parse_diagnostics) = self.context.finish();
 
         let diagnostics = merge_diagnostics(lexer_diagnostics, parse_diagnostics);
@@ -92,6 +93,7 @@ impl<'source> GraphqlParser<'source> {
 
 impl<'source> Parser for GraphqlParser<'source> {
     type Kind = GraphqlSyntaxKind;
+
     type Source = GraphqlTokenSource<'source>;
 
     fn context(&self) -> &ParserContext<Self::Kind> {
@@ -130,7 +132,9 @@ fn parse_literal_name(p: &mut GraphqlParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump_remap(T![ident]);
+
     Present(m.complete(p, GRAPHQL_LITERAL_NAME))
 }
 
@@ -141,7 +145,9 @@ fn parse_binding(p: &mut GraphqlParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump_remap(T![ident]);
+
     Present(m.complete(p, GRAPHQL_NAME_BINDING))
 }
 
@@ -152,7 +158,9 @@ fn parse_reference(p: &mut GraphqlParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump_remap(T![ident]);
+
     Present(m.complete(p, GRAPHQL_NAME_REFERENCE))
 }
 

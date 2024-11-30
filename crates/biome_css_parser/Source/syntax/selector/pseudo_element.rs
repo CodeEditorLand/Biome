@@ -22,6 +22,7 @@ pub(crate) fn parse_pseudo_element_selector(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![::]);
+
     parse_pseudo_element(p).or_add_diagnostic(p, expected_any_pseudo_element);
 
     Present(m.complete(p, CSS_PSEUDO_ELEMENT_SELECTOR))
@@ -56,6 +57,7 @@ pub(crate) fn parse_pseudo_element_function_identifier(p: &mut CssParser) -> Par
     let m = p.start();
 
     p.bump_ts(PSEUDO_ELEMENT_FUNCTION_IDENTIFIER_SET);
+
     p.bump(T!['(']);
 
     let kind = match parse_regular_identifier(p) {
@@ -66,9 +68,12 @@ pub(crate) fn parse_pseudo_element_function_identifier(p: &mut CssParser) -> Par
                 CSS_BOGUS_PSEUDO_ELEMENT
             }
         }
+
         Absent => {
             recover_selector_function_parameter(p, expected_identifier);
+
             p.expect(T![')']);
+
             CSS_BOGUS_PSEUDO_ELEMENT
         }
     };
@@ -91,6 +96,7 @@ pub(crate) fn parse_pseudo_element_function_selector(p: &mut CssParser) -> Parse
 
     // we don't need to check if the identifier is valid, because we already did that
     parse_regular_identifier(p).ok();
+
     p.bump(T!['(']);
 
     let kind = match parse_selector(p) {
@@ -101,9 +107,12 @@ pub(crate) fn parse_pseudo_element_function_selector(p: &mut CssParser) -> Parse
                 CSS_BOGUS_PSEUDO_ELEMENT
             }
         }
+
         Absent => {
             recover_selector_function_parameter(p, expected_selector);
+
             p.expect(T![')']);
+
             CSS_BOGUS_PSEUDO_ELEMENT
         }
     };
@@ -118,6 +127,8 @@ pub(crate) fn parse_pseudo_element_identifier(p: &mut CssParser) -> ParsedSyntax
     }
 
     let m = p.start();
+
     parse_selector_identifier(p).or_add_diagnostic(p, expected_identifier);
+
     Present(m.complete(p, CSS_PSEUDO_ELEMENT_IDENTIFIER))
 }

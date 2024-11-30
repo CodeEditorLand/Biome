@@ -38,23 +38,31 @@ declare_lint_rule! {
 
 impl Rule for UseFragmentSyntax {
     type Query = Semantic<JsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
 
         let opening_element = node.opening_element().ok()?;
+
         let name = opening_element.name().ok()?;
+
         let maybe_invalid = match name {
             AnyJsxElementName::JsxMemberName(member_name) => {
                 jsx_member_name_is_react_fragment(&member_name, model)?
             }
+
             AnyJsxElementName::JsxReferenceIdentifier(identifier) => {
                 jsx_reference_identifier_is_fragment(&identifier, model)?
             }
+
             AnyJsxElementName::JsxName(_) | AnyJsxElementName::JsxNamespaceName(_) => false,
         };
 
@@ -67,10 +75,15 @@ impl Rule for UseFragmentSyntax {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let list = jsx_child_list(node.children());
+
         let opening_element = node.opening_element().ok()?;
+
         let closing_element = node.closing_element().ok()?;
+
         let fragment = jsx_fragment(
             jsx_opening_fragment(
                 opening_element.l_angle_token().ok()?,

@@ -35,11 +35,13 @@ impl Modifier {
             | Self::Public as u16,
         BitFlags::CONST_TOKEN,
     );
+
     pub const CLASS_MEMBER_ONLY: BitFlags<Self> =
         Self::ACCESSIBILITY.union_c(BitFlags::<Self>::from_bits_truncate_c(
             Self::Static as u16 | Self::Override as u16 | Self::Accessor as u16,
             BitFlags::CONST_TOKEN,
         ));
+
     pub const CLASS_TYPE_PROPERTY: BitFlags<Self> = BitFlags::<Self>::from_bits_truncate_c(
         Self::Readonly as u16 | Self::Accessor as u16,
         BitFlags::CONST_TOKEN,
@@ -97,6 +99,7 @@ impl From<&AnyTsMethodSignatureModifier> for Modifier {
             AnyTsMethodSignatureModifier::TsAccessibilityModifier(accessibility) => {
                 accessibility.into()
             }
+
             AnyTsMethodSignatureModifier::TsOverrideModifier(_) => Modifier::Override,
         }
     }
@@ -121,6 +124,7 @@ impl From<&AnyTsPropertyParameterModifier> for Modifier {
             AnyTsPropertyParameterModifier::TsAccessibilityModifier(accessibility) => {
                 accessibility.into()
             }
+
             AnyTsPropertyParameterModifier::TsOverrideModifier(_) => Modifier::Override,
             AnyTsPropertyParameterModifier::TsReadonlyModifier(_) => Modifier::Readonly,
         }
@@ -134,6 +138,7 @@ impl From<&AnyTsPropertySignatureModifier> for Modifier {
             AnyTsPropertySignatureModifier::TsAccessibilityModifier(accessibility) => {
                 accessibility.into()
             }
+
             AnyTsPropertySignatureModifier::TsDeclareModifier(_) => Modifier::Declare,
             AnyTsPropertySignatureModifier::JsStaticModifier(_) => Modifier::Static,
             AnyTsPropertySignatureModifier::JsAccessorModifier(_) => Modifier::Accessor,

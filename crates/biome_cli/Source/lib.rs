@@ -66,6 +66,7 @@ impl<'app> CliSession<'app> {
     /// Main function to run Biome CLI
     pub fn run(self, command: BiomeCommand) -> Result<(), CliDiagnostic> {
         let has_metrics = command.has_metrics();
+
         if has_metrics {
             crate::metrics::init_metrics();
         }
@@ -81,6 +82,7 @@ impl<'app> CliSession<'app> {
             BiomeCommand::Rage(_, daemon_logs, formatter, linter) => {
                 commands::rage::rage(self, daemon_logs, formatter, linter)
             }
+
             BiomeCommand::Clean => commands::clean::clean(self),
             BiomeCommand::Start {
                 config_path,
@@ -314,5 +316,6 @@ pub(crate) fn run_command(
     mut command: impl CommandRunner,
 ) -> Result<(), CliDiagnostic> {
     let command = &mut command;
+
     command.run(session, cli_options)
 }

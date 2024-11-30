@@ -42,8 +42,11 @@ pub enum NoChildrenPropState {
 
 impl Rule for NoChildrenProp {
     type Query = Semantic<NoChildrenPropQuery>;
+
     type State = NoChildrenPropState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -52,15 +55,19 @@ impl Rule for NoChildrenProp {
         match node {
             NoChildrenPropQuery::JsxAttribute(attribute) => {
                 let name = attribute.name().ok()?;
+
                 let name = name.as_jsx_name()?;
+
                 if name.value_token().ok()?.text_trimmed() == "children" {
                     return Some(NoChildrenPropState::JsxProp(name.range()));
                 }
 
                 None
             }
+
             NoChildrenPropQuery::JsCallExpression(call_expression) => {
                 let model = ctx.model();
+
                 if let Some(react_create_element) =
                     ReactCreateElementCall::from_call_expression(call_expression, model)
                 {
@@ -72,6 +79,7 @@ impl Rule for NoChildrenProp {
                         ));
                     }
                 }
+
                 None
             }
         }
@@ -87,6 +95,7 @@ impl Rule for NoChildrenProp {
                     }).to_owned()
                 )
             }
+
             NoChildrenPropState::MemberProp(children_prop_range) => (
                 children_prop_range,
                 (markup! {

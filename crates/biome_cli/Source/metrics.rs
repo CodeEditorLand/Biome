@@ -119,12 +119,14 @@ impl<I: Timepoint> Timings<I> {
     /// Count the time between the last update and now as idle
     fn enter(&mut self, now: I) {
         self.idle += (now - self.last).as_nanos() as u64;
+
         self.last = now;
     }
 
     /// Count the time between the last update and now as busy
     fn exit(&mut self, now: I) {
         self.busy += (now - self.last).as_nanos() as u64;
+
         self.last = now;
     }
 
@@ -136,9 +138,12 @@ impl<I: Timepoint> Timings<I> {
             CallsiteEntry::Debug { total } => {
                 total.record(self.busy + self.idle).unwrap();
             }
+
             CallsiteEntry::Trace { total, busy, idle } => {
                 busy.record(self.busy).unwrap();
+
                 idle.record(self.idle).unwrap();
+
                 total.record(self.busy + self.idle).unwrap();
             }
         }
@@ -177,6 +182,7 @@ where
     /// When a new span is created, attach the timing data extension to it
     fn on_new_span(&self, _attrs: &span::Attributes<'_>, id: &span::Id, ctx: Context<'_, S>) {
         let span = read_span(&ctx, id);
+
         let mut extensions = span.extensions_mut();
 
         if extensions.get_mut::<Timings>().is_none() {
@@ -190,8 +196,10 @@ where
         let span = read_span(&ctx, id);
 
         let now = Instant::now();
+
         if let Some(parent) = span.parent() {
             let mut extensions = parent.extensions_mut();
+
             if let Some(timings) = extensions.get_mut::<Timings>() {
                 // The parent span was busy until now
                 timings.exit(now);
@@ -199,6 +207,7 @@ where
         }
 
         let mut extensions = span.extensions_mut();
+
         if let Some(timings) = extensions.get_mut::<Timings>() {
             // The child span was idle until now
             timings.enter(now);
@@ -211,7 +220,9 @@ where
         let span = read_span(&ctx, id);
 
         let now = Instant::now();
+
         let mut extensions = span.extensions_mut();
+
         if let Some(timings) = extensions.get_mut::<Timings>() {
             // Child span was busy until now
             timings.exit(now);
@@ -220,6 +231,7 @@ where
         // Re-enter parent
         if let Some(parent) = span.parent() {
             let mut extensions = parent.extensions_mut();
+
             if let Some(timings) = extensions.get_mut::<Timings>() {
                 // Parent span was idle until now
                 timings.enter(now);
@@ -231,18 +243,22 @@ where
     /// the associated histograms
     fn on_close(&self, id: span::Id, ctx: Context<'_, S>) {
         let span = read_span(&ctx, &id);
+
         let mut extensions = span.extensions_mut();
+
         if let Some(timing) = extensions.remove::<Timings>() {
             let now = Instant::now();
 
             // Acquire a read lock on the metrics storage, access the metrics entry
             // associated with this call site and acquire a write lock on it
             let metrics = METRICS.read().unwrap();
+
             let entry = metrics
                 .get(&CallsiteKey(span.metadata()))
                 .expect("callsite not found, it should have been registered in register_callsite");
 
             let mut entry = entry.lock().unwrap();
+
             timing.record(now, &mut entry);
         }
     }
@@ -257,6 +273,7 @@ pub fn init_metrics() {
 /// Flush and print the recorded metrics to the console
 pub fn print_metrics() {
     let mut write_guard = METRICS.write().unwrap();
+
     let mut histograms: Vec<_> = write_guard
         .drain()
         .flat_map(|(key, entry)| entry.into_inner().unwrap().into_histograms(key.0.name()))
@@ -279,10 +296,12 @@ pub fn print_metrics() {
         // of samples falling within this bucket and the percentile
         // corresponding to this bucket
         let total = histogram.len() as f64;
+
         for v in histogram.iter_quantiles(1) {
             let duration = Duration::from_nanos(v.value_iterated_to());
 
             let count = v.count_since_last_iteration() as f64;
+
             let bar_length = (count * 40.0 / total).ceil() as usize;
 
             println!(
@@ -303,6 +322,7 @@ mod tests {
     use std::{ops::Sub, thread, time::Duration};
 
     use tracing::Level;
+
     use tracing_subscriber::prelude::*;
 
     use super::{CallsiteEntry, CallsiteKey, MetricsLayer, Timepoint, Timings, METRICS};
@@ -337,6 +357,7 @@ mod tests {
         }
 
         let histograms = entry.into_histograms("test");
+
         for (name, histogram) in histograms {
             let scale = match name.as_ref() {
                 "test" => 2.0,
@@ -345,20 +366,25 @@ mod tests {
             };
 
             let sample_count = 5;
+
             assert_eq!(histogram.len(), sample_count);
 
             let mean = 3.0 * scale;
+
             assert_eq!(histogram.mean(), mean);
 
             let sum = (1..=5).fold(0.0, |sum, i| {
                 let sample = i as f64 * scale;
+
                 sum + (sample - mean).powi(2)
             });
 
             let stddev = (sum / sample_count as f64).sqrt();
+
             assert_eq!(histogram.stdev(), stddev);
 
             let s = scale as u64 - 1;
+
             let expected_buckets = [
                 (0, s, 0.0),
                 (1, 2 * s + 1, 0.2),
@@ -372,7 +398,9 @@ mod tests {
                 let (count, value, quantile) = *expected;
 
                 assert_eq!(bucket.count_since_last_iteration(), count);
+
                 assert_eq!(bucket.value_iterated_to(), value);
+
                 assert_eq!(bucket.quantile_iterated_to(), quantile);
             }
         }
@@ -386,6 +414,7 @@ mod tests {
 
         let key = {
             let span = tracing::trace_span!("test_layer");
+
             span.in_scope(|| {
                 thread::sleep(Duration::from_millis(1));
             });
@@ -395,12 +424,14 @@ mod tests {
 
         let entry = {
             let mut metrics = METRICS.write().unwrap();
+
             metrics.remove(&CallsiteKey(key))
         };
 
         let entry = entry.expect("callsite does not exist in metrics storage");
 
         let entry = entry.into_inner().unwrap();
+
         let histograms = entry.into_histograms(key.name());
 
         for (_, histogram) in histograms {

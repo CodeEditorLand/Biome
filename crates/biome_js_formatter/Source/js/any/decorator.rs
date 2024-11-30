@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsDecorator;
 pub(crate) struct FormatAnyJsDecorator;
 impl FormatRule<AnyJsDecorator> for FormatAnyJsDecorator {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsDecorator, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsDecorator::JsBogusExpression(node) => node.format().fmt(f),

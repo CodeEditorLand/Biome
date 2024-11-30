@@ -22,6 +22,7 @@ impl FormatNodeRule<JsxFragment> for FormatJsxFragment {
             !f.comments().has_leading_comments(node.syntax()),
             "JsxFragment can not have comments."
         );
+
         Ok(())
     }
 
@@ -30,6 +31,7 @@ impl FormatNodeRule<JsxFragment> for FormatJsxFragment {
             !f.comments().has_dangling_comments(node.syntax()),
             "JsxFragment can not have comments."
         );
+
         Ok(())
     }
 
@@ -38,6 +40,7 @@ impl FormatNodeRule<JsxFragment> for FormatJsxFragment {
             !f.comments().has_trailing_comments(node.syntax()),
             "JsxFragment can not have comments."
         );
+
         Ok(())
     }
 }

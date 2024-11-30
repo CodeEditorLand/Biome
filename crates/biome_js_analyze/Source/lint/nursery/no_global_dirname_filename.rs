@@ -68,48 +68,67 @@ declare_node_union! {
 
 impl Rule for NoGlobalDirnameFilename {
     type Query = Semantic<AnyGlobalDirnameFileName>;
+
     type State = (JsSyntaxToken, String);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let file_source = ctx.source_type::<JsFileSource>();
+
         if file_source.is_script() {
             return None;
         };
 
         match node {
             // const dirname = __dirname;
+
             AnyGlobalDirnameFileName::JsVariableDeclarator(declarator) => {
                 let init = declarator.initializer()?;
+
                 let expr = init.expression().ok()?;
+
                 validate_dirname_filename(&expr, model)
             }
             // `if (__dirname.startsWith("/project/src"))`
             AnyGlobalDirnameFileName::JsStaticMemberExpression(member_expr) => {
                 let expr = member_expr.object().ok()?;
+
                 let expr = expr.as_js_identifier_expression()?;
+
                 let expr = AnyJsExpression::JsIdentifierExpression(expr.clone());
+
                 validate_dirname_filename(&expr, model)
             }
             // const dirname = { __dirname };
+
             AnyGlobalDirnameFileName::JsObjectExpression(object_expr) => {
                 for member in object_expr.members().iter().flatten() {
                     match member {
                         AnyJsObjectMember::JsPropertyObjectMember(member) => {
                             let expr = member.value().ok()?;
+
                             return validate_dirname_filename(&expr, model);
                         }
+
                         AnyJsObjectMember::JsShorthandPropertyObjectMember(member) => {
                             let token = member.name().and_then(|name| name.value_token()).ok()?;
+
                             let text = maybe_text(&token)?;
+
                             return Some((token, text));
                         }
+
                         _ => continue,
                     }
                 }
+
                 None
             }
         }
@@ -117,6 +136,7 @@ impl Rule for NoGlobalDirnameFilename {
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let syntax_token = &state.0;
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -133,8 +153,11 @@ impl Rule for NoGlobalDirnameFilename {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let node = ctx.query();
+
         let syntax_token = &state.0;
+
         let dirname_or_filename = state.1.as_str();
 
         match node {
@@ -146,42 +169,56 @@ impl Rule for NoGlobalDirnameFilename {
                     )),
                 );
             }
+
             AnyGlobalDirnameFileName::JsObjectExpression(object_expr) => {
                 for member in object_expr.members().iter().flatten() {
                     match member {
                         AnyJsObjectMember::JsPropertyObjectMember(member) => {
                             let expr = member.value().ok()?;
+
                             let expr = expr.as_js_identifier_expression()?;
+
                             let id = expr.name().ok()?.value_token().ok()?;
+
                             if &id == syntax_token {
                                 let key = member.name().ok()?;
+
                                 let key = key.as_js_literal_member_name()?;
+
                                 let property_member = make_property_object_member(
                                     &key.value().ok()?,
                                     dirname_or_filename,
                                 );
+
                                 mutation.replace_node(member.clone(), property_member);
+
                                 break;
                             };
                         }
+
                         AnyJsObjectMember::JsShorthandPropertyObjectMember(member) => {
                             let key = member.name().ok()?.value_token().ok()?;
+
                             if &key == syntax_token {
                                 let property_member =
                                     make_property_object_member(&key, dirname_or_filename);
+
                                 mutation.replace_node(
                                     AnyJsObjectMember::JsShorthandPropertyObjectMember(
                                         member.clone(),
                                     ),
                                     AnyJsObjectMember::JsPropertyObjectMember(property_member),
                                 );
+
                                 break;
                             };
                         }
+
                         _ => continue,
                     }
                 }
             }
+
             AnyGlobalDirnameFileName::JsStaticMemberExpression(member_expr) => {
                 mutation.replace_node(
                     member_expr.object().ok()?,
@@ -208,7 +245,9 @@ fn validate_dirname_filename(
     model: &SemanticModel,
 ) -> Option<(JsSyntaxToken, String)> {
     let (reference, _name) = global_identifier(expr)?;
+
     let token = reference.value_token().ok()?;
+
     maybe_text(&token)
         .filter(|_| model.binding(&reference).is_none())
         .map(|name| (token, name))

@@ -123,12 +123,15 @@ impl DocumentFileSource {
         if let Ok(file_source) = JsonFileSource::try_from_well_known(path) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = JsFileSource::try_from_well_known(path) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = CssFileSource::try_from_well_known(path) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = GraphqlFileSource::try_from_well_known(path) {
             return Ok(file_source.into());
         }
@@ -147,12 +150,15 @@ impl DocumentFileSource {
         if let Ok(file_source) = JsonFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = JsFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = CssFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = GraphqlFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
         }
@@ -160,9 +166,11 @@ impl DocumentFileSource {
         if let Ok(file_source) = HtmlFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = GritFileSource::try_from_extension(extension) {
             return Ok(file_source.into());
         }
+
         Err(FileSourceError::UnknownExtension)
     }
 
@@ -177,12 +185,15 @@ impl DocumentFileSource {
         if let Ok(file_source) = JsonFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = JsFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = CssFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = GraphqlFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
         }
@@ -190,9 +201,11 @@ impl DocumentFileSource {
         if let Ok(file_source) = HtmlFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
         }
+
         if let Ok(file_source) = GritFileSource::try_from_language_id(language_id) {
             return Ok(file_source.into());
         }
+
         Err(FileSourceError::UnknownLanguageId)
     }
 
@@ -228,12 +241,15 @@ impl DocumentFileSource {
             Some(filename) if filename.as_encoded_bytes().ends_with(b".d.ts") => {
                 Cow::Borrowed("d.ts".as_ref())
             }
+
             Some(filename) if filename.as_encoded_bytes().ends_with(b".d.mts") => {
                 Cow::Borrowed("d.mts".as_ref())
             }
+
             Some(filename) if filename.as_encoded_bytes().ends_with(b".d.cts") => {
                 Cow::Borrowed("d.cts".as_ref())
             }
+
             _ => path
                 .extension()
                 // We assume the file extensions are case-insensitive.
@@ -338,6 +354,7 @@ impl DocumentFileSource {
 
     pub fn can_parse(path: &Path, content: &str) -> bool {
         let file_source = DocumentFileSource::from(path);
+
         match file_source {
             DocumentFileSource::Js(js) => match js.as_embedding_kind() {
                 EmbeddingKind::Astro => ASTRO_FENCE.is_match(content),
@@ -360,6 +377,7 @@ impl biome_console::fmt::Display for DocumentFileSource {
         match self {
             DocumentFileSource::Js(js) => {
                 let is_jsx = js.is_jsx();
+
                 if js.is_typescript() {
                     if is_jsx {
                         fmt.write_markup(markup! { "TSX" })
@@ -372,6 +390,7 @@ impl biome_console::fmt::Display for DocumentFileSource {
                     fmt.write_markup(markup! { "JavaScript" })
                 }
             }
+
             DocumentFileSource::Json(json) => {
                 if json.allow_comments() {
                     fmt.write_markup(markup! { "JSONC" })
@@ -379,6 +398,7 @@ impl biome_console::fmt::Display for DocumentFileSource {
                     fmt.write_markup(markup! { "JSON" })
                 }
             }
+
             DocumentFileSource::Css(_) => fmt.write_markup(markup! { "CSS" }),
             DocumentFileSource::Graphql(_) => fmt.write_markup(markup! { "GraphQL" }),
             DocumentFileSource::Html(_) => fmt.write_markup(markup! { "HTML" }),
@@ -650,12 +670,18 @@ pub(crate) fn parse_lang_from_script_opening_tag(
                 .as_js_expression_statement()?
                 .expression()
                 .ok()?;
+
             let tag = expression.as_jsx_tag_expression()?.tag().ok()?;
+
             let opening_element = tag.as_jsx_element()?.opening_element().ok()?;
+
             let lang_attribute = opening_element.attributes().find_by_name("lang")?;
+
             let attribute_value = lang_attribute.initializer()?.value().ok()?;
+
             let attribute_inner_string =
                 attribute_value.as_jsx_string()?.inner_string_text().ok()?;
+
             match attribute_inner_string.text() {
                 "ts" => Some((
                     Language::TypeScript {
@@ -711,8 +737,11 @@ pub(crate) fn search(
 #[test]
 fn test_svelte_script_lang() {
     const SVELTE_JS_SCRIPT_OPENING_TAG: &str = r#"<script>"#;
+
     const SVELTE_TS_SCRIPT_OPENING_TAG: &str = r#"<script lang="ts">"#;
+
     const SVELTE_CONTEXT_MODULE_JS_SCRIPT_OPENING_TAG: &str = r#"<script context="module">"#;
+
     const SVELTE_CONTEXT_MODULE_TS_SCRIPT_OPENING_TAG: &str =
         r#"<script context="module" lang="ts">"#;
 
@@ -721,16 +750,19 @@ fn test_svelte_script_lang() {
             .0
             .is_javascript()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(SVELTE_TS_SCRIPT_OPENING_TAG)
             .0
             .is_typescript()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(SVELTE_CONTEXT_MODULE_JS_SCRIPT_OPENING_TAG)
             .0
             .is_javascript()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(SVELTE_CONTEXT_MODULE_TS_SCRIPT_OPENING_TAG)
             .0
@@ -854,6 +886,7 @@ impl<'a, 'b> LintVisitor<'a, 'b> {
 
     fn finish(mut self) -> (FxHashSet<RuleFilter<'a>>, FxHashSet<RuleFilter<'a>>) {
         let has_only_filter = !self.only.is_empty();
+
         if !has_only_filter {
             let enabled_rules = self
                 .settings
@@ -861,6 +894,7 @@ impl<'a, 'b> LintVisitor<'a, 'b> {
                 .as_ref()
                 .map(|rules| rules.as_enabled_rules())
                 .unwrap_or_default();
+
             self.enabled_rules.extend(enabled_rules);
         }
         (self.enabled_rules, self.disabled_rules)
@@ -875,12 +909,15 @@ impl<'a, 'b> LintVisitor<'a, 'b> {
         // - if a single rule is run.
         for selector in self.only {
             let filter = RuleFilter::from(selector);
+
             if filter.match_rule::<R>() {
                 self.enabled_rules.insert(filter);
             }
         }
+
         for selector in self.skip {
             let filter = RuleFilter::from(selector);
+
             if filter.match_rule::<R>() {
                 self.disabled_rules.insert(filter);
             }
@@ -1046,8 +1083,10 @@ impl<'a, 'b> AssistsVisitor<'a, 'b> {
         let organize_imports_enabled = self
             .settings
             .is_some_and(|settings| settings.organize_imports.enabled);
+
         if organize_imports_enabled && self.import_sorting.match_rule::<R>() {
             self.enabled_rules.push(self.import_sorting);
+
             return;
         }
         // Do not report unused suppression comment diagnostics if:
@@ -1055,12 +1094,15 @@ impl<'a, 'b> AssistsVisitor<'a, 'b> {
         // - if a single rule is run.
         for selector in self.only {
             let filter = RuleFilter::from(selector);
+
             if filter.match_rule::<R>() {
                 self.enabled_rules.push(filter)
             }
         }
+
         for selector in self.skip {
             let filter = RuleFilter::from(selector);
+
             if filter.match_rule::<R>() {
                 self.disabled_rules.push(filter)
             }
@@ -1076,6 +1118,7 @@ impl<'a, 'b> AssistsVisitor<'a, 'b> {
             .unwrap_or_default()
             .into_iter()
             .collect::<Vec<_>>();
+
         self.enabled_rules.extend(enabled_rules);
         (self.enabled_rules, self.disabled_rules)
     }
@@ -1164,6 +1207,7 @@ impl<'a, 'b> AnalyzerVisitorBuilder<'a, 'b> {
     #[must_use]
     pub(crate) fn with_syntax_rules(mut self) -> Self {
         self.syntax = Some(SyntaxVisitor::default());
+
         self
     }
     #[must_use]
@@ -1174,6 +1218,7 @@ impl<'a, 'b> AnalyzerVisitorBuilder<'a, 'b> {
         path: &'b Path,
     ) -> Self {
         self.lint = Some(LintVisitor::new(only, skip, self.settings, path));
+
         self
     }
 
@@ -1185,38 +1230,57 @@ impl<'a, 'b> AnalyzerVisitorBuilder<'a, 'b> {
         path: &'b Path,
     ) -> Self {
         self.assists = Some(AssistsVisitor::new(only, skip, self.settings, path));
+
         self
     }
 
     #[must_use]
     pub(crate) fn finish(self) -> (Vec<RuleFilter<'a>>, Vec<RuleFilter<'a>>) {
         let mut disabled_rules = vec![];
+
         let mut enabled_rules = vec![];
+
         if let Some(mut syntax) = self.syntax {
             biome_js_analyze::visit_registry(&mut syntax);
+
             biome_css_analyze::visit_registry(&mut syntax);
+
             biome_json_analyze::visit_registry(&mut syntax);
+
             biome_graphql_analyze::visit_registry(&mut syntax);
+
             enabled_rules.extend(syntax.enabled_rules);
         }
 
         if let Some(mut lint) = self.lint {
             biome_js_analyze::visit_registry(&mut lint);
+
             biome_css_analyze::visit_registry(&mut lint);
+
             biome_json_analyze::visit_registry(&mut lint);
+
             biome_graphql_analyze::visit_registry(&mut lint);
+
             let (linter_enabled_rules, linter_disabled_rules) = lint.finish();
+
             enabled_rules.extend(linter_enabled_rules);
+
             disabled_rules.extend(linter_disabled_rules);
         }
 
         if let Some(mut assists) = self.assists {
             biome_js_analyze::visit_registry(&mut assists);
+
             biome_css_analyze::visit_registry(&mut assists);
+
             biome_json_analyze::visit_registry(&mut assists);
+
             biome_graphql_analyze::visit_registry(&mut assists);
+
             let (assists_enabled_rules, assists_disabled_rules) = assists.finish();
+
             enabled_rules.extend(assists_enabled_rules);
+
             disabled_rules.extend(assists_disabled_rules);
         }
 
@@ -1227,10 +1291,15 @@ impl<'a, 'b> AnalyzerVisitorBuilder<'a, 'b> {
 #[test]
 fn test_vue_script_lang() {
     const VUE_JS_SCRIPT_OPENING_TAG: &str = r#"<script>"#;
+
     const VUE_TS_SCRIPT_OPENING_TAG: &str = r#"<script lang="ts">"#;
+
     const VUE_TSX_SCRIPT_OPENING_TAG: &str = r#"<script lang="tsx">"#;
+
     const VUE_JSX_SCRIPT_OPENING_TAG: &str = r#"<script lang="jsx">"#;
+
     const VUE_SETUP_JS_SCRIPT_OPENING_TAG: &str = r#"<script setup>"#;
+
     const VUE_SETUP_TS_SCRIPT_OPENING_TAG: &str = r#"<script setup lang="ts">"#;
 
     assert!(
@@ -1238,41 +1307,49 @@ fn test_vue_script_lang() {
             .0
             .is_javascript()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(VUE_JS_SCRIPT_OPENING_TAG)
             .1
             .is_standard()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(VUE_TS_SCRIPT_OPENING_TAG)
             .0
             .is_typescript()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(VUE_TS_SCRIPT_OPENING_TAG)
             .1
             .is_standard()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(VUE_JSX_SCRIPT_OPENING_TAG)
             .0
             .is_javascript()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(VUE_JSX_SCRIPT_OPENING_TAG)
             .1
             .is_jsx()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(VUE_TSX_SCRIPT_OPENING_TAG)
             .0
             .is_typescript()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(VUE_SETUP_JS_SCRIPT_OPENING_TAG)
             .0
             .is_javascript()
     );
+
     assert!(
         parse_lang_from_script_opening_tag(VUE_SETUP_TS_SCRIPT_OPENING_TAG)
             .0

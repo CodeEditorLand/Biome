@@ -41,8 +41,10 @@ pub struct Grammar {
 
 impl FromStr for Grammar {
     type Err = Error;
+
     fn from_str(s: &str) -> Result<Self> {
         let tokens = lexer::tokenize(s)?;
+
         parser::parse(tokens)
     }
 }
@@ -61,6 +63,7 @@ impl Grammar {
 
 impl ops::Index<Node> for Grammar {
     type Output = NodeData;
+
     fn index(&self, Node(index): Node) -> &NodeData {
         &self.nodes[index]
     }
@@ -68,6 +71,7 @@ impl ops::Index<Node> for Grammar {
 
 impl ops::Index<Token> for Grammar {
     type Output = TokenData;
+
     fn index(&self, Token(index): Token) -> &TokenData {
         &self.tokens[index]
     }
@@ -126,6 +130,8 @@ pub enum Rule {
 #[test]
 fn smoke() {
     let grammar = include_str!("../ungrammar.ungram");
+
     let grammar = grammar.parse::<Grammar>().unwrap();
+
     drop(grammar)
 }

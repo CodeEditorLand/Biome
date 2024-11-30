@@ -23,6 +23,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlAttribute {
         biome_html_syntax::HtmlAttribute,
         crate::html::auxiliary::attribute::FormatHtmlAttribute,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -36,6 +37,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlAttribute {
         biome_html_syntax::HtmlAttribute,
         crate::html::auxiliary::attribute::FormatHtmlAttribute,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -63,6 +65,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlAttributeInitializer
         biome_html_syntax::HtmlAttributeInitializerClause,
         crate::html::auxiliary::attribute_initializer_clause::FormatHtmlAttributeInitializerClause,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule :: new (self , crate :: html :: auxiliary :: attribute_initializer_clause :: FormatHtmlAttributeInitializerClause :: default ())
@@ -73,6 +76,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlAttributeInitializ
         biome_html_syntax::HtmlAttributeInitializerClause,
         crate::html::auxiliary::attribute_initializer_clause::FormatHtmlAttributeInitializerClause,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule :: new (self , crate :: html :: auxiliary :: attribute_initializer_clause :: FormatHtmlAttributeInitializerClause :: default ())
@@ -97,6 +101,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlClosingElement {
         biome_html_syntax::HtmlClosingElement,
         crate::html::auxiliary::closing_element::FormatHtmlClosingElement,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -110,6 +115,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlClosingElement {
         biome_html_syntax::HtmlClosingElement,
         crate::html::auxiliary::closing_element::FormatHtmlClosingElement,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -137,6 +143,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlComment {
         biome_html_syntax::HtmlComment,
         crate::html::auxiliary::comment::FormatHtmlComment,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -150,6 +157,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlComment {
         biome_html_syntax::HtmlComment,
         crate::html::auxiliary::comment::FormatHtmlComment,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -177,6 +185,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlContent {
         biome_html_syntax::HtmlContent,
         crate::html::auxiliary::content::FormatHtmlContent,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -190,6 +199,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlContent {
         biome_html_syntax::HtmlContent,
         crate::html::auxiliary::content::FormatHtmlContent,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -217,6 +227,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlDirective {
         biome_html_syntax::HtmlDirective,
         crate::html::auxiliary::directive::FormatHtmlDirective,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -230,6 +241,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlDirective {
         biome_html_syntax::HtmlDirective,
         crate::html::auxiliary::directive::FormatHtmlDirective,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -257,6 +269,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlElement {
         biome_html_syntax::HtmlElement,
         crate::html::auxiliary::element::FormatHtmlElement,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -270,6 +283,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlElement {
         biome_html_syntax::HtmlElement,
         crate::html::auxiliary::element::FormatHtmlElement,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -291,6 +305,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlName {
         biome_html_syntax::HtmlName,
         crate::html::auxiliary::name::FormatHtmlName,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -304,6 +319,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlName {
         biome_html_syntax::HtmlName,
         crate::html::auxiliary::name::FormatHtmlName,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -331,6 +347,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlOpeningElement {
         biome_html_syntax::HtmlOpeningElement,
         crate::html::auxiliary::opening_element::FormatHtmlOpeningElement,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -344,6 +361,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlOpeningElement {
         biome_html_syntax::HtmlOpeningElement,
         crate::html::auxiliary::opening_element::FormatHtmlOpeningElement,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -365,6 +383,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlRoot {
         biome_html_syntax::HtmlRoot,
         crate::html::auxiliary::root::FormatHtmlRoot,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -378,6 +397,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlRoot {
         biome_html_syntax::HtmlRoot,
         crate::html::auxiliary::root::FormatHtmlRoot,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -405,6 +425,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlSelfClosingElement {
         biome_html_syntax::HtmlSelfClosingElement,
         crate::html::auxiliary::self_closing_element::FormatHtmlSelfClosingElement,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -418,6 +439,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlSelfClosingElement
         biome_html_syntax::HtmlSelfClosingElement,
         crate::html::auxiliary::self_closing_element::FormatHtmlSelfClosingElement,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -441,6 +463,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlString {
         biome_html_syntax::HtmlString,
         crate::html::auxiliary::string::FormatHtmlString,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -454,6 +477,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlString {
         biome_html_syntax::HtmlString,
         crate::html::auxiliary::string::FormatHtmlString,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -468,6 +492,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlAttributeList {
         biome_html_syntax::HtmlAttributeList,
         crate::html::lists::attribute_list::FormatHtmlAttributeList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -481,6 +506,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlAttributeList {
         biome_html_syntax::HtmlAttributeList,
         crate::html::lists::attribute_list::FormatHtmlAttributeList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -495,6 +521,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlElementList {
         biome_html_syntax::HtmlElementList,
         crate::html::lists::element_list::FormatHtmlElementList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -508,6 +535,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlElementList {
         biome_html_syntax::HtmlElementList,
         crate::html::lists::element_list::FormatHtmlElementList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -529,6 +557,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlBogus {
         biome_html_syntax::HtmlBogus,
         crate::html::bogus::bogus::FormatHtmlBogus,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(self, crate::html::bogus::bogus::FormatHtmlBogus::default())
@@ -539,6 +568,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlBogus {
         biome_html_syntax::HtmlBogus,
         crate::html::bogus::bogus::FormatHtmlBogus,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(self, crate::html::bogus::bogus::FormatHtmlBogus::default())
@@ -563,6 +593,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlBogusAttribute {
         biome_html_syntax::HtmlBogusAttribute,
         crate::html::bogus::bogus_attribute::FormatHtmlBogusAttribute,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -576,6 +607,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlBogusAttribute {
         biome_html_syntax::HtmlBogusAttribute,
         crate::html::bogus::bogus_attribute::FormatHtmlBogusAttribute,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -603,6 +635,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::HtmlBogusElement {
         biome_html_syntax::HtmlBogusElement,
         crate::html::bogus::bogus_element::FormatHtmlBogusElement,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -616,6 +649,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::HtmlBogusElement {
         biome_html_syntax::HtmlBogusElement,
         crate::html::bogus::bogus_element::FormatHtmlBogusElement,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -630,6 +664,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::AnyHtmlAttribute {
         biome_html_syntax::AnyHtmlAttribute,
         crate::html::any::attribute::FormatAnyHtmlAttribute,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -643,6 +678,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::AnyHtmlAttribute {
         biome_html_syntax::AnyHtmlAttribute,
         crate::html::any::attribute::FormatAnyHtmlAttribute,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -657,6 +693,7 @@ impl AsFormat<HtmlFormatContext> for biome_html_syntax::AnyHtmlElement {
         biome_html_syntax::AnyHtmlElement,
         crate::html::any::element::FormatAnyHtmlElement,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -670,6 +707,7 @@ impl IntoFormat<HtmlFormatContext> for biome_html_syntax::AnyHtmlElement {
         biome_html_syntax::AnyHtmlElement,
         crate::html::any::element::FormatAnyHtmlElement,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(

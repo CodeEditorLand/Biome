@@ -24,12 +24,15 @@ impl NodeVisitor for ForOfVisitor {
         _: StatementStack,
     ) -> SyntaxResult<Self> {
         let continue_block = builder.append_block();
+
         let loop_block = builder.append_block();
+
         let break_block = builder.append_block();
 
         builder.append_jump(false, continue_block);
 
         builder.set_cursor(continue_block);
+
         builder
             .append_jump(true, loop_block)
             .with_node(node.initializer()?.into_syntax());

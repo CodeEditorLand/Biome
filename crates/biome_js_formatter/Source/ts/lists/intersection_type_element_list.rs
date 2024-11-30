@@ -14,6 +14,7 @@ impl FormatRule<TsIntersectionTypeElementList> for FormatTsIntersectionTypeEleme
         let last_index = node.len().saturating_sub(1);
 
         let mut is_prev_object_type_like = false;
+
         let mut is_chain_indented = false;
 
         for (index, element) in node.elements().enumerate() {

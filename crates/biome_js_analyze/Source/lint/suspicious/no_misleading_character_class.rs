@@ -83,10 +83,12 @@ impl Message {
             Self::SurrogatePairWithoutUFlag => {
                 "A character class cannot match a surrogate pair. Add the 'u' unicode flag to match against them."
             }
+
             Self::EmojiModifier => "A character class cannot match an emoji with a skin tone modifier.",
             Self::RegionalIndicatorSymbol => {
                 "A character class cannot match a pair of regional indicator symbols."
             }
+
             Self::JoinedCharSequence => "A character class cannot match a joined character sequence.",
         }
     }
@@ -97,10 +99,12 @@ impl Message {
             Self::SurrogatePairWithoutUFlag => {
                 "A surrogate pair forms a single codepoint, but is encoded as a pair of two characters. Without the unicode flag, the regex matches a single surrogate character."
             }
+
             Self::EmojiModifier => "Replace the character class with an alternation.",
             Self::RegionalIndicatorSymbol => {
                 "A pair of regional indicator symbols encodes a country code. Replace the character class with an alternation."
             }
+
             Self::JoinedCharSequence => "A zero width joiner composes several emojis into a new one. Replace the character class with an alternation.",
         }
     }
@@ -113,50 +117,66 @@ pub struct RuleState {
 
 impl Rule for NoMisleadingCharacterClass {
     type Query = Ast<AnyRegexExpression>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let regex = ctx.query();
+
         let (callee, arguments) = match regex {
             AnyRegexExpression::JsRegexLiteralExpression(expr) => {
                 let (pattern, flags) = expr.decompose().ok()?;
+
                 let RuleState { range, message } =
                     diagnostic_regex_pattern(pattern.text(), flags.text(), false)?;
+
                 return Some(RuleState {
                     range: range.checked_add(expr.range().start().checked_add(1.into())?)?,
                     message,
                 });
             }
+
             AnyRegexExpression::JsNewExpression(expr) => (expr.callee().ok()?, expr.arguments()?),
             AnyRegexExpression::JsCallExpression(expr) => {
                 (expr.callee().ok()?, expr.arguments().ok()?)
             }
         };
+
         if is_regex_expr(callee)? {
             let mut args = arguments.args().iter();
+
             let pattern = args
                 .next()?
                 .ok()?
                 .as_any_js_expression()?
                 .as_static_value()?;
+
             let pattern_range = pattern.range();
+
             let pattern = pattern.as_string_constant()?;
+
             let flags = args
                 .next()
                 .and_then(|arg| arg.ok()?.as_any_js_expression()?.as_static_value());
+
             let flags = if let Some(StaticValue::String(flags)) = &flags {
                 flags.text()
             } else {
                 ""
             };
+
             let RuleState { range, message } = diagnostic_regex_pattern(pattern, flags, true)?;
+
             return Some(RuleState {
                 range: range.checked_add(pattern_range.start().checked_add(1.into())?)?,
                 message,
             });
         }
+
         None
     }
 
@@ -169,20 +189,27 @@ impl Rule for NoMisleadingCharacterClass {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let is_fixable = matches!(state.message, Message::SurrogatePairWithoutUFlag);
+
         if is_fixable {
             match node {
                 AnyRegexExpression::JsRegexLiteralExpression(expr) => {
                     let prev_token = expr.value_token().ok()?;
+
                     let text = prev_token.text();
+
                     let next_token = JsSyntaxToken::new_detached(
                         JsSyntaxKind::JS_REGEX_LITERAL,
                         &format!("{text}u"),
                         [],
                         [],
                     );
+
                     let mut mutation = ctx.root().begin();
+
                     mutation.replace_token(prev_token, next_token);
+
                     Some(JsRuleAction::new(
                         ctx.metadata().action_category(ctx.category(), ctx.group()),
                         ctx.metadata().applicability(),
@@ -191,15 +218,22 @@ impl Rule for NoMisleadingCharacterClass {
                         mutation,
                     ))
                 }
+
                 AnyRegexExpression::JsNewExpression(expr) => {
                     let prev_node = expr.arguments()?;
+
                     let mut prev_args = prev_node.args().iter();
+
                     let regex_pattern = prev_args.next().and_then(|a| a.ok())?;
+
                     let flag = prev_args.next().and_then(|a| a.ok());
+
                     match make_suggestion(regex_pattern, flag) {
                         Some(suggest) => {
                             let mut mutation = ctx.root().begin();
+
                             mutation.replace_node(prev_node, suggest);
+
                             Some(JsRuleAction::new(
                                 ctx.metadata().action_category(ctx.category(), ctx.group()),
                                 ctx.metadata().applicability(),
@@ -208,18 +242,26 @@ impl Rule for NoMisleadingCharacterClass {
                                 mutation,
                             ))
                         }
+
                         None => None,
                     }
                 }
+
                 AnyRegexExpression::JsCallExpression(expr) => {
                     let prev_node = expr.arguments().ok()?;
+
                     let mut prev_args = expr.arguments().ok()?.args().iter();
+
                     let regex_pattern = prev_args.next().and_then(|a| a.ok())?;
+
                     let flag = prev_args.next().and_then(|a| a.ok());
+
                     match make_suggestion(regex_pattern, flag) {
                         Some(suggest) => {
                             let mut mutation = ctx.root().begin();
+
                             mutation.replace_node(prev_node, suggest);
+
                             Some(JsRuleAction::new(
                                 ctx.metadata().action_category(ctx.category(), ctx.group()),
                                 ctx.metadata().applicability(),
@@ -228,6 +270,7 @@ impl Rule for NoMisleadingCharacterClass {
                                 mutation,
                             ))
                         }
+
                         None => None,
                     }
                 }
@@ -243,14 +286,20 @@ fn is_regex_expr(expr: AnyJsExpression) -> Option<bool> {
         AnyJsExpression::JsIdentifierExpression(callee) => {
             Some(callee.name().ok()?.has_name("RegExp"))
         }
+
         AnyJsExpression::JsStaticMemberExpression(callee) => {
             let is_member_regexp = callee.member().ok()?.value_token().ok()?.text() == "RegExp";
+
             let callee = callee.object().ok()?;
+
             let (_, name) = global_identifier(&callee)?;
+
             let is_global_obj =
                 name.text() == "globalThis" || name.text() == "global" || name.text() == "window";
+
             Some(is_global_obj && is_member_regexp)
         }
+
         _ => Some(false),
     }
 }
@@ -263,21 +312,27 @@ fn diagnostic_regex_pattern(
     if flags.contains('v') {
         return None;
     }
+
     let has_u_flag = flags.contains('u');
+
     let mut bytes_iter = regex_pattern.bytes().enumerate();
+
     while let Some((i, byte)) = bytes_iter.next() {
         match byte {
             b'\\' => {
                 bytes_iter.next();
             }
+
             b'[' => {
                 while let Some((j, byte)) = bytes_iter.next() {
                     match byte {
                         b'\\' => {
                             bytes_iter.next();
                         }
+
                         b']' => {
                             let char_class = &regex_pattern[i + 1..j];
+
                             if let Some(RuleState { range, message }) =
                                 diagnostic_regex_class(char_class, has_u_flag, is_in_string)
                             {
@@ -286,15 +341,19 @@ fn diagnostic_regex_pattern(
                                     message,
                                 });
                             }
+
                             break;
                         }
+
                         _ => {}
                     }
                 }
             }
+
             _ => {}
         }
     }
+
     None
 }
 
@@ -314,16 +373,21 @@ fn diagnostic_regex_class(
     is_in_string: bool,
 ) -> Option<RuleState> {
     let mut prev_char_index = 0;
+
     let mut prev_char_type = CharType::None;
+
     let mut iter = char_class.char_indices();
+
     while let Some((i, c)) = iter.next() {
         let (codepoint, end) = if c == '\\' {
             // Maybe  unicode esccapes \u{XXX} \uXXXX
             let Some((codepoint, len)) = decode_next_codepoint(&char_class[i..], is_in_string)
             else {
                 prev_char_index = i;
+
                 continue;
             };
+
             for _ in c.len_utf8()..len {
                 iter.next();
             }
@@ -331,6 +395,7 @@ fn diagnostic_regex_class(
         } else {
             (c as u32, i + c.len_utf8())
         };
+
         match codepoint {
             // Non-BMP characters are encoded as surrogate pairs in UTF-16 / UCS-2
             0x10000.. if !has_u_flag => {
@@ -361,6 +426,7 @@ fn diagnostic_regex_class(
                         message: Message::CombiningClassOrVs16,
                     });
                 }
+
                 prev_char_type = CharType::CombiningOrVariationSelectorS16;
             }
             // Regional indicator
@@ -371,6 +437,7 @@ fn diagnostic_regex_class(
                         message: Message::RegionalIndicatorSymbol,
                     });
                 }
+
                 prev_char_type = CharType::RegionalIndicator;
             }
             // Emoji skin modifier
@@ -381,6 +448,7 @@ fn diagnostic_regex_class(
                         message: Message::EmojiModifier,
                     });
                 }
+
                 prev_char_type = CharType::EmojiModifier;
             }
             // Zero Width Joiner (used to combine emoji)
@@ -398,14 +466,18 @@ fn diagnostic_regex_class(
                         }
                     }
                 }
+
                 prev_char_type = CharType::ZeroWidthJoiner;
             }
+
             _ => {
                 prev_char_type = CharType::Regular;
             }
         }
+
         prev_char_index = i;
     }
+
     None
 }
 
@@ -453,6 +525,7 @@ fn decode_next_codepoint(char_class: &str, is_in_string: bool) -> Option<(u32, u
         // Ignore the escape sequence
         return Some((c as u32, c.len_utf8()));
     };
+
     if kind != UnicodeEscapeKind::RegexBraced
         && matches!(codepoint, 0xD800..=0xDBFF)
         && len <= char_class.len()
@@ -471,6 +544,7 @@ fn decode_next_codepoint(char_class: &str, is_in_string: bool) -> Option<(u32, u
             } else {
                 (codepoint, len)
             };
+
             Some((final_codepoint, final_len))
         } else {
             Some((codepoint, len))
@@ -482,23 +556,28 @@ fn decode_next_codepoint(char_class: &str, is_in_string: bool) -> Option<(u32, u
 
 fn decode_unicode_escape_sequence(s: &str, is_in_string: bool) -> Option<UnicodeEscape> {
     let bytes = s.as_bytes();
+
     if bytes.len() < 5 || bytes[0] != b'\\' {
         return None;
     }
+
     let (offset, is_regex_escape) = if is_in_string && bytes[1] == b'\\' {
         (1, true)
     } else {
         (0, !is_in_string)
     };
+
     if bytes[offset + 1] != b'u' {
         return None;
     }
+
     if bytes[offset + 2] == b'{' {
         let (end, _) = bytes
             .iter()
             .enumerate()
             .skip(offset + 3)
             .find(|(_, &c)| c == b'}')?;
+
         Some(UnicodeEscape {
             // SAFETY: slicing is safe because `{` is at `offset + 2` and `}` is at `end`.
             codepoint: u32::from_str_radix(&s[offset + 3..end], 16).ok()?,
@@ -539,6 +618,7 @@ fn make_suggestion(
             AnyJsCallArgument::AnyJsExpression(expr) => match expr {
                 AnyJsExpression::AnyJsLiteralExpression(e) => {
                     let text = e.text();
+
                     if text.starts_with('\'') {
                         Some(AnyJsCallArgument::AnyJsExpression(
                             AnyJsExpression::AnyJsLiteralExpression(
@@ -561,6 +641,7 @@ fn make_suggestion(
                         ))
                     }
                 }
+
                 AnyJsExpression::JsTemplateExpression(expr) => {
                     let mut elements = expr
                         .elements()
@@ -570,7 +651,9 @@ fn make_suggestion(
                     let uflag = AnyJsTemplateElement::from(make::js_template_chunk_element(
                         make::js_template_chunk("u"),
                     ));
+
                     elements.push(uflag);
+
                     Some(AnyJsCallArgument::AnyJsExpression(
                         AnyJsExpression::JsTemplateExpression(
                             make::js_template_expression(
@@ -582,12 +665,14 @@ fn make_suggestion(
                         ),
                     ))
                 }
+
                 AnyJsExpression::JsIdentifierExpression(_) => None,
                 _ => None,
             },
             AnyJsCallArgument::JsSpread(_) => None,
         },
     };
+
     suggestion.map(|s| {
         make::js_call_arguments(
             make::token(T!['(']),
@@ -607,15 +692,25 @@ mod tests {
     #[test]
     fn test_decode_unicode_escape_sequence() {
         assert_eq!(decode_unicode_escape_sequence(r"", false), None);
+
         assert_eq!(decode_unicode_escape_sequence(r"\", false), None);
+
         assert_eq!(decode_unicode_escape_sequence(r"\\", false), None);
+
         assert_eq!(decode_unicode_escape_sequence(r"\\", true), None);
+
         assert_eq!(decode_unicode_escape_sequence(r"\n", false), None);
+
         assert_eq!(decode_unicode_escape_sequence(r"\u", false), None);
+
         assert_eq!(decode_unicode_escape_sequence(r"\uZ", false), None);
+
         assert_eq!(decode_unicode_escape_sequence(r"\u{", false), None);
+
         assert_eq!(decode_unicode_escape_sequence(r"\u{}", false), None);
+
         assert_eq!(decode_unicode_escape_sequence(r"\u{Z}", false), None);
+
         assert_eq!(decode_unicode_escape_sequence(r"\\u{31}", false), None);
 
         assert_eq!(
@@ -626,6 +721,7 @@ mod tests {
                 len: 6
             })
         );
+
         assert_eq!(
             decode_unicode_escape_sequence(r"\u0031 test", true),
             Some(UnicodeEscape {
@@ -634,6 +730,7 @@ mod tests {
                 len: 6
             })
         );
+
         assert_eq!(
             decode_unicode_escape_sequence(r"\\u0031 test", true),
             Some(UnicodeEscape {
@@ -651,6 +748,7 @@ mod tests {
                 len: 6
             })
         );
+
         assert_eq!(
             decode_unicode_escape_sequence(r"\u{31} test", true),
             Some(UnicodeEscape {
@@ -659,6 +757,7 @@ mod tests {
                 len: 6
             })
         );
+
         assert_eq!(
             decode_unicode_escape_sequence(r"\\u{31} test", true),
             Some(UnicodeEscape {
@@ -681,13 +780,16 @@ mod tests {
     #[test]
     fn test_decode_next_codepoint() {
         assert_eq!(decode_next_codepoint(r"", false), None);
+
         assert_eq!(decode_next_codepoint(r"1 test", false), Some((0x31, 1)));
 
         assert_eq!(
             decode_next_codepoint(r"\u0031\u0031", false),
             Some((0x31, 6))
         );
+
         assert_eq!(decode_next_codepoint(r"\u0031 test", true), Some((0x31, 6)));
+
         assert_eq!(
             decode_next_codepoint(r"\\u0031 test", true),
             Some((0x31, 7))
@@ -697,7 +799,9 @@ mod tests {
             decode_next_codepoint(r"\u{31}\u{31}", false),
             Some((0x31, 6))
         );
+
         assert_eq!(decode_next_codepoint(r"\u{31} test", true), Some((0x31, 6)));
+
         assert_eq!(
             decode_next_codepoint(r"\\u{31} test", true),
             Some((0x31, 7))
@@ -708,22 +812,27 @@ mod tests {
             decode_next_codepoint(r"\uD83D\uDC4D", false),
             Some(('👍' as u32, 12))
         );
+
         assert_eq!(
             decode_next_codepoint(r"\uD83D\uDC4D", true),
             Some(('👍' as u32, 12))
         );
+
         assert_eq!(
             decode_next_codepoint(r"\\uD83D\\uDC4D", true),
             Some(('👍' as u32, 14))
         );
+
         assert_eq!(
             decode_next_codepoint(r"\u{D83D}\u{DC4D}", true),
             Some(('👍' as u32, 16))
         );
+
         assert_eq!(
             decode_next_codepoint(r"\uD83D\u{DC4D}", true),
             Some(('👍' as u32, 14))
         );
+
         assert_eq!(
             decode_next_codepoint(r"\u{D83D}\uDC4D", true),
             Some(('👍' as u32, 14))
@@ -734,22 +843,27 @@ mod tests {
             decode_next_codepoint(r"\u{D83D}\u{DC4D}", false),
             Some((0xD83D, 8))
         );
+
         assert_eq!(
             decode_next_codepoint(r"\\u{D83D}\\u{DC4D}", true),
             Some((0xD83D, 9))
         );
+
         assert_eq!(
             decode_next_codepoint(r"\\uD83D\\u{DC4D}", true),
             Some((0xD83D, 7))
         );
+
         assert_eq!(
             decode_next_codepoint(r"\\u{D83D}\\uDC4D", true),
             Some((0xD83D, 9))
         );
+
         assert_eq!(
             decode_next_codepoint(r"\u{D83D}\\uDC4D", true),
             Some((0xD83D, 8))
         );
+
         assert_eq!(
             decode_next_codepoint(r"\uD83D\\uDC4D", true),
             Some((0xD83D, 6))

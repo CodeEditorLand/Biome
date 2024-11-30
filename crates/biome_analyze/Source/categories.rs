@@ -87,12 +87,15 @@ impl ActionCategory {
             ActionCategory::Refactor(RefactorKind::Extract) => {
                 Cow::Borrowed("refactor.extract.biome")
             }
+
             ActionCategory::Refactor(RefactorKind::Inline) => {
                 Cow::Borrowed("refactor.inline.biome")
             }
+
             ActionCategory::Refactor(RefactorKind::Rewrite) => {
                 Cow::Borrowed("refactor.rewrite.biome")
             }
+
             ActionCategory::Refactor(RefactorKind::Other(tag)) => {
                 Cow::Owned(format!("refactor.{tag}.biome"))
             }
@@ -101,9 +104,11 @@ impl ActionCategory {
             ActionCategory::Source(SourceActionKind::FixAll) => {
                 Cow::Borrowed("source.fixAll.biome")
             }
+
             ActionCategory::Source(SourceActionKind::OrganizeImports) => {
                 Cow::Borrowed("source.organizeImports.biome")
             }
+
             ActionCategory::Source(SourceActionKind::Other(tag)) => {
                 Cow::Owned(format!("source.{tag}.biome"))
             }
@@ -198,11 +203,13 @@ pub struct RuleCategories(BitFlags<Categories>);
 impl RuleCategories {
     pub fn empty() -> Self {
         let empty: BitFlags<Categories> = BitFlags::empty();
+
         Self(empty)
     }
 
     pub fn all() -> Self {
         let empty: BitFlags<Categories> = BitFlags::all();
+
         Self(empty)
     }
 
@@ -272,6 +279,7 @@ impl<'de> serde::Deserialize<'de> for RuleCategories {
         D: serde::Deserializer<'de>,
     {
         use serde::de::{self, SeqAccess};
+
         use std::fmt::{self, Formatter};
 
         struct Visitor;
@@ -331,21 +339,25 @@ pub struct RuleCategoriesBuilder {
 impl RuleCategoriesBuilder {
     pub fn with_syntax(mut self) -> Self {
         self.flags.insert(Categories::Syntax);
+
         self
     }
 
     pub fn with_lint(mut self) -> Self {
         self.flags.insert(Categories::Lint);
+
         self
     }
 
     pub fn with_action(mut self) -> Self {
         self.flags.insert(Categories::Action);
+
         self
     }
 
     pub fn with_transformation(mut self) -> Self {
         self.flags.insert(Categories::Transformation);
+
         self
     }
 

@@ -30,6 +30,7 @@ impl NodeVisitor for DoWhileVisitor {
         builder.append_jump(false, body_block);
 
         let continue_block = builder.append_block();
+
         let break_block = builder.append_block();
 
         let label = node
@@ -65,6 +66,7 @@ impl NodeVisitor for DoWhileVisitor {
 
         // Fill the continue block
         builder.set_cursor(continue_block);
+
         builder
             .append_jump(true, body_block)
             .with_node(node.test()?.into_syntax());

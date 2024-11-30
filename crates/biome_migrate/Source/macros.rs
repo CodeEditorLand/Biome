@@ -9,6 +9,7 @@ macro_rules! declare_migration {
 
         impl biome_analyze::RuleMeta for $id {
             type Group = $crate::analyzers::MigrationGroup;
+
             const METADATA: biome_analyze::RuleMetadata =
                 biome_analyze::RuleMetadata::new($version, $name, "", "") $( .$key($value) )*;
         }

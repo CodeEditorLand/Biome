@@ -22,7 +22,9 @@ impl FormatNodeRule<JsParenthesizedExpression> for FormatJsParenthesizedExpressi
         } = node.as_fields();
 
         let l_paren_token = l_paren_token?;
+
         let expression = expression?;
+
         let comments = f.context().comments();
 
         let should_hug = !comments.has_comments(expression.syntax())

@@ -32,6 +32,7 @@ impl JsonFormatContext {
 
     pub fn with_source_map(mut self, source_map: Option<TransformSourceMap>) -> Self {
         self.source_map = source_map;
+
         self
     }
 }
@@ -50,7 +51,9 @@ impl FormatContext for JsonFormatContext {
 
 impl CstFormatContext for JsonFormatContext {
     type Language = JsonLanguage;
+
     type Style = JsonCommentStyle;
+
     type CommentRule = FormatJsonLeadingComment;
 
     fn comments(&self) -> &JsonComments {
@@ -113,26 +116,31 @@ impl JsonFormatOptions {
 
     pub fn with_indent_style(mut self, indent_style: IndentStyle) -> Self {
         self.indent_style = indent_style;
+
         self
     }
 
     pub fn with_indent_width(mut self, indent_width: IndentWidth) -> Self {
         self.indent_width = indent_width;
+
         self
     }
 
     pub fn with_line_ending(mut self, line_ending: LineEnding) -> Self {
         self.line_ending = line_ending;
+
         self
     }
 
     pub fn with_line_width(mut self, line_width: LineWidth) -> Self {
         self.line_width = line_width;
+
         self
     }
 
     pub fn with_trailing_commas(mut self, trailing_commas: TrailingCommas) -> Self {
         self.trailing_commas = trailing_commas;
+
         self
     }
 
@@ -197,9 +205,13 @@ impl FormatOptions for JsonFormatOptions {
 impl fmt::Display for JsonFormatOptions {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         writeln!(f, "Indent style: {}", self.indent_style)?;
+
         writeln!(f, "Indent width: {}", self.indent_width.value())?;
+
         writeln!(f, "Line ending: {}", self.line_ending)?;
+
         writeln!(f, "Line width: {}", self.line_width.value())?;
+
         writeln!(f, "Trailing commas: {}", self.trailing_commas)
     }
 }

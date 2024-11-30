@@ -123,19 +123,25 @@ impl RuleState {
 
 impl Rule for NoMisleadingInstantiator {
     type Query = Ast<DeclarationQuery>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         match node {
             DeclarationQuery::TsInterfaceDeclaration(decl) => check_interface_methods(decl),
             DeclarationQuery::TsTypeAliasDeclaration(decl) => check_type_alias(decl),
             DeclarationQuery::JsClassDeclaration(decl) => check_class_methods(decl),
             DeclarationQuery::TsDeclareStatement(decl) => {
                 let decl = decl.declaration().ok()?;
+
                 let decl = decl.as_js_class_declaration()?;
+
                 check_class_methods(decl)
             }
         }
@@ -144,6 +150,7 @@ impl Rule for NoMisleadingInstantiator {
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let diagnostic = RuleDiagnostic::new(rule_category!(), state.range(), state.message())
             .note(state.note());
+
         Some(diagnostic)
     }
 }
@@ -156,34 +163,43 @@ fn check_interface_methods(decl: &TsInterfaceDeclaration) -> Option<RuleState> {
         .as_ts_identifier_binding()?
         .name_token()
         .ok()?;
+
     for member in decl.members() {
         match member {
             AnyTsTypeMember::TsConstructSignatureTypeMember(construct)
                 if construct.new_token().ok().is_some() =>
             {
                 let any_ts_type = construct.type_annotation()?.ty().ok()?;
+
                 match any_ts_type {
                     AnyTsType::TsReferenceType(ref_type) => {
                         let return_type_ident = extract_return_type_ident(&ref_type)?;
+
                         if interface_ident.text_trimmed() == return_type_ident.text_trimmed() {
                             return Some(RuleState::InterfaceMisleadingNew(construct.range()));
                         }
                     }
+
                     AnyTsType::TsThisType(this_type) if this_type.this_token().ok().is_some() => {
                         return Some(RuleState::InterfaceMisleadingNew(construct.range()));
                     }
+
                     _ => continue,
                 }
             }
+
             AnyTsTypeMember::TsMethodSignatureTypeMember(method) => {
                 let method_name = method.name().ok()?.name()?;
+
                 if method_name == "constructor" {
                     return Some(RuleState::InterfaceMisleadingConstructor(method.range()));
                 }
             }
+
             _ => continue,
         };
     }
+
     None
 }
 
@@ -195,43 +211,53 @@ fn check_class_methods(js_class_decl: &JsClassDeclaration) -> Option<RuleState> 
         .as_js_identifier_binding()?
         .name_token()
         .ok()?;
+
     for member in js_class_decl.members() {
         if let AnyJsClassMember::TsMethodSignatureClassMember(method) = member {
             if let Some(ClassMemberName::Public(name)) = method.name().ok()?.name() {
                 if name.text() == "new" {
                     let return_type = method.return_type_annotation()?.ty().ok()?;
+
                     match return_type.as_any_ts_type()? {
                         AnyTsType::TsReferenceType(ref_type) => {
                             let return_type_ident = extract_return_type_ident(ref_type)?;
+
                             if class_ident.text_trimmed() == return_type_ident.text_trimmed() {
                                 return Some(RuleState::ClassMisleadingNew(method.range()));
                             }
                         }
+
                         AnyTsType::TsThisType(this_type)
                             if this_type.this_token().ok().is_some() =>
                         {
                             return Some(RuleState::ClassMisleadingNew(method.range()));
                         }
+
                         _ => continue,
                     }
                 }
             }
         }
     }
+
     None
 }
 
 /// Checks if the type alias has a misleading constructor method.
 fn check_type_alias(decl: &TsTypeAliasDeclaration) -> Option<RuleState> {
     let any_ts_type = decl.ty().ok()?;
+
     let object = any_ts_type.as_ts_object_type()?;
+
     let method = object
         .members()
         .into_iter()
         .find_map(|member| member.as_ts_method_signature_type_member().cloned())?;
+
     if method.name().ok()?.name()? == "constructor" {
         return Some(RuleState::TypeAliasMisleadingConstructor(method.range()));
     }
+
     None
 }
 

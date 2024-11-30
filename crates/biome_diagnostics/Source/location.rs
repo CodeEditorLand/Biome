@@ -199,16 +199,19 @@ pub struct LocationBuilder<'a> {
 impl<'a> LocationBuilder<'a> {
     pub fn resource<P: AsResource>(mut self, resource: &'a P) -> Self {
         self.resource = resource.as_resource();
+
         self
     }
 
     pub fn span<S: AsSpan>(mut self, span: &'a S) -> Self {
         self.span = span.as_span();
+
         self
     }
 
     pub fn source_code<S: AsSourceCode>(mut self, source_code: &'a S) -> Self {
         self.source_code = source_code.as_source_code();
+
         self
     }
 
@@ -351,6 +354,7 @@ mod tests {
     #[test]
     fn line_starts_with_carriage_return_line_feed() {
         let input = "a\r\nb\r\nc";
+
         let LineIndexBuf(starts) = LineIndexBuf::from_source_text(input);
 
         assert_eq!(
@@ -366,6 +370,7 @@ mod tests {
     #[test]
     fn line_starts_with_carriage_return() {
         let input = "a\rb\rc";
+
         let LineIndexBuf(starts) = LineIndexBuf::from_source_text(input);
 
         assert_eq!(
@@ -381,6 +386,7 @@ mod tests {
     #[test]
     fn line_starts_with_line_feed() {
         let input = "a\nb\nc";
+
         let LineIndexBuf(starts) = LineIndexBuf::from_source_text(input);
 
         assert_eq!(

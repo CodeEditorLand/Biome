@@ -62,16 +62,23 @@ pub struct RuleState {
 
 impl Rule for NoNoninteractiveElementToInteractiveRole {
     type Query = Aria<AnyJsxElement>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.is_element() {
             let role_attribute = node.find_attribute_by_name("role")?;
+
             let role_attribute_static_value = role_attribute.as_static_value()?;
+
             let role_attribute_value = role_attribute_static_value.text();
+
             let element_name = node
                 .name()
                 .ok()?
@@ -87,6 +94,7 @@ impl Rule for NoNoninteractiveElementToInteractiveRole {
                 // <div> and <span> are considered neither interactive nor non-interactive, depending on the presence or absence of the role attribute.
                 // We don't report <div> and <span> here, because we cannot determine whether they are interactive or non-interactive.
                 let role_sensitive_elements = ["div", "span"];
+
                 if role_sensitive_elements.contains(&element_name.text()) {
                     return None;
                 }
@@ -97,11 +105,13 @@ impl Rule for NoNoninteractiveElementToInteractiveRole {
                 });
             }
         }
+
         None
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let element_name = state.element_name.text();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             state.attribute_range,
@@ -117,10 +127,13 @@ impl Rule for NoNoninteractiveElementToInteractiveRole {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let role_attribute = node.find_attribute_by_name("role")?;
 
         let mut mutation = ctx.root().begin();
+
         mutation.remove_node(role_attribute);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

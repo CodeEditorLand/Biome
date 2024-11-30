@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsArrowFunctionParameters;
 pub(crate) struct FormatAnyJsArrowFunctionParameters;
 impl FormatRule<AnyJsArrowFunctionParameters> for FormatAnyJsArrowFunctionParameters {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsArrowFunctionParameters, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsArrowFunctionParameters::AnyJsBinding(node) => node.format().fmt(f),

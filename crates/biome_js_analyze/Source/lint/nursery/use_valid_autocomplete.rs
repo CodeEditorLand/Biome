@@ -142,26 +142,35 @@ pub struct UseValidAutocompleteOptions {
 
 impl Rule for UseValidAutocomplete {
     type Query = Ast<AnyJsxElement>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = Box<UseValidAutocompleteOptions>;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let input_components = &ctx.options().input_components;
 
         let elem_name = node.name().ok()?.name_value_token().ok()?;
+
         let elem_name = elem_name.text_trimmed();
+
         if elem_name != "input" && input_components.iter().all(|x| x.as_ref() != elem_name) {
             return None;
         }
 
         let autocomplete_attribute = node.attributes().find_by_name("autocomplete")?;
+
         let autocomplete_val = autocomplete_attribute.as_static_value()?;
+
         let autocompletes = autocomplete_val
             .text()
             .split_ascii_whitespace()
             .collect::<smallvec::SmallVec<[&str; 2]>>();
+
         if (autocompletes.len() == 1 && autocompletes[0] == "none")
             || is_valid_autocomplete(&autocompletes)
         {
@@ -199,14 +208,18 @@ fn is_valid_autocomplete(autocomplete_values: &[&str]) -> bool {
         1 => {
             // SAFETY: the size of the slice is superior or equal to `1`
             let first = autocomplete_values[0];
+
             first.is_empty()
                 || first.starts_with("section-")
                 || VALID_AUTOCOMPLETE_VALUES.binary_search(&first).is_ok()
         }
+
         2.. => {
             // SAFETY: the size of the slice is superior or equal to `2`
             let first = autocomplete_values[0];
+
             let second = autocomplete_values[1];
+
             first.starts_with("section-")
                 || ["billing", "shipping"].contains(&first)
                     && (BILLING_AND_SHIPPING_ADDRESS.contains(&second)
@@ -221,5 +234,6 @@ fn is_valid_autocomplete(autocomplete_values: &[&str]) -> bool {
 #[test]
 fn test_order() {
     assert!(VALID_AUTOCOMPLETE_VALUES.is_sorted());
+
     assert!(BILLING_AND_SHIPPING_ADDRESS.is_sorted());
 }

@@ -47,6 +47,7 @@ impl ModuleKind {
     pub const fn is_script(&self) -> bool {
         matches!(self, ModuleKind::Script)
     }
+
     pub const fn is_module(&self) -> bool {
         matches!(self, ModuleKind::Module)
     }
@@ -72,9 +73,11 @@ impl LanguageVariant {
     pub const fn is_standard(&self) -> bool {
         matches!(self, LanguageVariant::Standard)
     }
+
     pub const fn is_standard_restricted(&self) -> bool {
         matches!(self, LanguageVariant::StandardRestricted)
     }
+
     pub const fn is_jsx(&self) -> bool {
         matches!(self, LanguageVariant::Jsx)
     }
@@ -97,6 +100,7 @@ impl Language {
     pub const fn is_javascript(&self) -> bool {
         matches!(self, Language::JavaScript)
     }
+
     pub const fn is_typescript(&self) -> bool {
         matches!(self, Language::TypeScript { .. })
     }
@@ -126,9 +130,11 @@ impl EmbeddingKind {
     pub const fn is_astro(&self) -> bool {
         matches!(self, EmbeddingKind::Astro)
     }
+
     pub const fn is_vue(&self) -> bool {
         matches!(self, EmbeddingKind::Vue)
     }
+
     pub const fn is_svelte(&self) -> bool {
         matches!(self, EmbeddingKind::Svelte)
     }
@@ -211,6 +217,7 @@ impl JsFileSource {
 
     pub const fn with_module_kind(mut self, kind: ModuleKind) -> Self {
         self.module_kind = kind;
+
         self
     }
 
@@ -220,16 +227,19 @@ impl JsFileSource {
 
     pub const fn with_version(mut self, version: LanguageVersion) -> Self {
         self.version = version;
+
         self
     }
 
     pub const fn with_variant(mut self, variant: LanguageVariant) -> Self {
         self.variant = variant;
+
         self
     }
 
     pub const fn with_embedding_kind(mut self, kind: EmbeddingKind) -> Self {
         self.embedding_kind = kind;
+
         self
     }
 
@@ -275,11 +285,13 @@ impl JsFileSource {
                 if matches!(self.variant, LanguageVariant::Jsx) {
                     return "jsx";
                 }
+
                 match self.module_kind {
                     ModuleKind::Script => "cjs",
                     ModuleKind::Module => "js",
                 }
             }
+
             Language::TypeScript { .. } => {
                 match self.variant {
                     LanguageVariant::Standard => "ts",
@@ -290,6 +302,7 @@ impl JsFileSource {
                         // attributes (See `noTypeOnlyImportAttributes` syntax rule).
                         "cts"
                     }
+
                     LanguageVariant::Jsx => "tsx",
                 }
             }

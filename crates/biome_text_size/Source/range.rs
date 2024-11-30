@@ -64,6 +64,7 @@ impl TextRange {
     #[inline]
     pub const fn new(start: TextSize, end: TextSize) -> TextRange {
         assert!(start.raw <= end.raw);
+
         TextRange { start, end }
     }
 
@@ -244,10 +245,13 @@ impl TextRange {
     #[inline]
     pub fn intersect(self, other: TextRange) -> Option<TextRange> {
         let start = cmp::max(self.start(), other.start());
+
         let end = cmp::min(self.end(), other.end());
+
         if end < start {
             return None;
         }
+
         Some(TextRange::new(start, end))
     }
 
@@ -268,7 +272,9 @@ impl TextRange {
     #[inline]
     pub fn cover(self, other: TextRange) -> TextRange {
         let start = cmp::min(self.start(), other.start());
+
         let end = cmp::max(self.end(), other.end());
+
         TextRange::new(start, end)
     }
 
@@ -499,6 +505,7 @@ macro_rules! ops {
                 self $op *other
             }
         }
+
         impl<T> $Op<T> for &TextRange
         where
             TextRange: $Op<T, Output=TextRange>,

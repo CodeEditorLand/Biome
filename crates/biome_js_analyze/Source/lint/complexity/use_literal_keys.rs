@@ -58,21 +58,29 @@ declare_lint_rule! {
 
 impl Rule for UseLiteralKeys {
     type Query = Ast<AnyJsMember>;
+
     type State = (TextRange, String, bool);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let mut is_computed_member_name = false;
+
         let inner_expression = match node {
             AnyJsMember::AnyJsComputedMember(computed_member) => computed_member.member().ok()?,
             AnyJsMember::JsComputedMemberName(member) => {
                 is_computed_member_name = true;
+
                 member.expression().ok()?
             }
         };
+
         let value = inner_expression.as_static_value()?;
+
         let value = value.as_string_constant()?;
         // `{["__proto__"]: null }` and `{"__proto__": null}`/`{"__proto__": null}`
         // have different semantic.
@@ -97,6 +105,7 @@ impl Rule for UseLiteralKeys {
                 is_computed_member_name,
             ));
         }
+
         None
     }
 
@@ -121,11 +130,15 @@ impl Rule for UseLiteralKeys {
 
     fn action(ctx: &RuleContext<Self>, (_, identifier, _): &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         match node {
             AnyJsMember::AnyJsComputedMember(node) => {
                 let object = node.object().ok()?;
+
                 let member = make::js_name(make::ident(identifier));
+
                 let dot_token = node
                     .optional_chain_token()
                     .unwrap_or_else(|| make::token(T![.]));
@@ -137,17 +150,20 @@ impl Rule for UseLiteralKeys {
                             dot_token,
                             AnyJsName::JsName(member),
                         );
+
                         mutation.replace_node(
                             AnyJsMemberExpression::from(node.clone()),
                             static_expression.into(),
                         );
                     }
+
                     AnyJsComputedMember::JsComputedMemberAssignment(node) => {
                         let static_member = make::js_static_member_assignment(
                             object,
                             dot_token,
                             AnyJsName::JsName(member),
                         );
+
                         mutation.replace_node(
                             AnyJsAssignment::from(node.clone()),
                             static_member.into(),
@@ -155,20 +171,24 @@ impl Rule for UseLiteralKeys {
                     }
                 }
             }
+
             AnyJsMember::JsComputedMemberName(member) => {
                 let name_token = if ctx.as_preferred_quote().is_double() {
                     make::js_string_literal(identifier)
                 } else {
                     make::js_string_literal_single_quotes(identifier)
                 };
+
                 if member.syntax().parent().kind() == Some(JsSyntaxKind::TS_ENUM_MEMBER) {
                     let literal_enum_member_name = make::ts_literal_enum_member_name(name_token);
+
                     mutation.replace_node(
                         AnyTsEnumMemberName::from(member.clone()),
                         literal_enum_member_name.into(),
                     );
                 } else {
                     let literal_member_name = make::js_literal_member_name(name_token);
+
                     mutation.replace_node(
                         AnyJsObjectMemberName::from(member.clone()),
                         literal_member_name.into(),
@@ -176,6 +196,7 @@ impl Rule for UseLiteralKeys {
                 }
             }
         }
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -194,16 +215,20 @@ declare_node_union! {
 
 fn has_unescaped_new_line(text: &str) -> bool {
     let mut iter = text.as_bytes().iter();
+
     while let Some(c) = iter.next() {
         match c {
             b'\\' => {
                 iter.next();
             }
+
             b'\n' => {
                 return true;
             }
+
             _ => {}
         }
     }
+
     false
 }

@@ -20,6 +20,7 @@ impl FormatRuleWithOptions<JsInitializerClause> for FormatJsInitializerClause {
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.assignment_layout = options.assignment_layout;
+
         self
     }
 }

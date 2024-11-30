@@ -88,12 +88,16 @@ declare_lint_rule! {
 
 impl Rule for NoThisInStatic {
     type Query = Ast<JsThisSuperExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let this_super_expression = ctx.query();
+
         let static_method = this_super_expression
             .syntax()
             .ancestors()
@@ -122,13 +126,17 @@ impl Rule for NoThisInStatic {
                 AnyJsClassMember::JsStaticInitializationBlockClassMember(_) => true,
                 _ => false,
             });
+
         static_method.is_some().then_some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let this_super_expression = ctx.query();
+
         let this_super_token = this_super_expression.token().ok()?;
+
         let text = this_super_token.text_trimmed();
+
         let note = if let JsThisSuperExpression::JsSuperExpression(_) = this_super_expression {
             markup! {
                 <Emphasis>"super"</Emphasis>" refers to a parent class."
@@ -138,6 +146,7 @@ impl Rule for NoThisInStatic {
                 <Emphasis>"this"</Emphasis>" refers to the class."
             }
         };
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             this_super_expression.range(),
@@ -149,26 +158,36 @@ impl Rule for NoThisInStatic {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let this_super_expression = ctx.query();
+
         let class = this_super_expression
             .syntax()
             .ancestors()
             .find_map(AnyJsClass::cast)?;
+
         let suggested_class_name = if let JsThisSuperExpression::JsSuperExpression(_) =
             this_super_expression
         {
             let extends_clause = class.extends_clause()?;
+
             let super_class_name = extends_clause.super_class().ok()?;
+
             let AnyJsExpression::JsIdentifierExpression(super_class_name) = super_class_name else {
                 return None;
             };
+
             super_class_name
         } else {
             let class_name = class.id()?.as_js_identifier_binding()?.name_token().ok()?;
+
             make::js_identifier_expression(make::js_reference_identifier(class_name))
         };
+
         let expr = AnyJsExpression::cast_ref(this_super_expression.syntax())?;
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(expr, suggested_class_name.into());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

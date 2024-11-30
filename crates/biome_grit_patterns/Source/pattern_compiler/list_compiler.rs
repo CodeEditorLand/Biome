@@ -40,6 +40,7 @@ fn compile_list_pattern(
         AnyGritListPattern::AnyGritPattern(pattern) => {
             PatternCompiler::from_node_with_rhs(pattern, context, is_rhs)
         }
+
         AnyGritListPattern::GritDotdotdot(_) => Ok(Pattern::Dots),
     }
 }

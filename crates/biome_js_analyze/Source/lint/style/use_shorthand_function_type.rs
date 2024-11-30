@@ -87,8 +87,11 @@ declare_lint_rule! {
 
 impl Rule for UseShorthandFunctionType {
     type Query = Ast<TsCallSignatureTypeMember>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -111,6 +114,7 @@ impl Rule for UseShorthandFunctionType {
                     return None;
                 }
             }
+
             return Some(());
         }
 
@@ -125,6 +129,7 @@ impl Rule for UseShorthandFunctionType {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         // If there are comments, it's not a single call signature.
@@ -150,6 +155,7 @@ impl Rule for UseShorthandFunctionType {
                 AnyJsDeclarationClause::from(interface_decl),
                 AnyJsDeclarationClause::from(type_alias_declaration),
             );
+
             return Some(JsRuleAction::new(
                 ctx.metadata().action_category(ctx.category(), ctx.group()),
                 ctx.metadata().applicability(),
@@ -178,8 +184,10 @@ impl Rule for UseShorthandFunctionType {
                 let AnyTsReturnType::AnyTsType(any_ts_type) = return_type else {
                     return None;
                 };
+
                 Some(any_ts_type)
             }), Ok(Some(AnyTsType::TsInferType(infer_type))) if infer_type.constraint().is_some());
+
             let new_function_type: AnyTsType = if needs_parens {
                 make::ts_parenthesized_type(
                     make::token(T!['(']),
@@ -192,6 +200,7 @@ impl Rule for UseShorthandFunctionType {
             };
 
             mutation.replace_node(AnyTsType::from(ts_object_type), new_function_type);
+
             return Some(JsRuleAction::new(
                 ctx.metadata().action_category(ctx.category(), ctx.group()),
                 ctx.metadata().applicability(),

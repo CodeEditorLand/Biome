@@ -231,12 +231,15 @@ impl AnyJsImportLike {
             AnyJsImportLike::JsModuleSource(source) => source.inner_string_text().ok(),
             AnyJsImportLike::JsCallExpression(expression) => {
                 let callee = expression.callee().ok()?;
+
                 let name = callee.as_js_reference_identifier()?.value_token().ok()?;
+
                 if name.text_trimmed() == "require" {
                     let [Some(argument)] = expression.arguments().ok()?.get_arguments_by_index([0])
                     else {
                         return None;
                     };
+
                     argument
                         .as_any_js_expression()?
                         .as_any_js_literal_expression()?
@@ -247,11 +250,13 @@ impl AnyJsImportLike {
                     None
                 }
             }
+
             AnyJsImportLike::JsImportCallExpression(import_call) => {
                 let [Some(argument)] = import_call.arguments().ok()?.get_arguments_by_index([0])
                 else {
                     return None;
                 };
+
                 argument
                     .as_any_js_expression()?
                     .as_any_js_literal_expression()?
@@ -279,12 +284,15 @@ impl AnyJsImportLike {
             AnyJsImportLike::JsModuleSource(source) => source.value_token().ok(),
             AnyJsImportLike::JsCallExpression(expression) => {
                 let callee = expression.callee().ok()?;
+
                 let name = callee.as_js_reference_identifier()?.value_token().ok()?;
+
                 if name.text_trimmed() == "require" {
                     let [Some(argument)] = expression.arguments().ok()?.get_arguments_by_index([0])
                     else {
                         return None;
                     };
+
                     argument
                         .as_any_js_expression()?
                         .as_any_js_literal_expression()?
@@ -295,11 +303,13 @@ impl AnyJsImportLike {
                     None
                 }
             }
+
             AnyJsImportLike::JsImportCallExpression(import_call) => {
                 let [Some(argument)] = import_call.arguments().ok()?.get_arguments_by_index([0])
                 else {
                     return None;
                 };
+
                 argument
                     .as_any_js_expression()?
                     .as_any_js_literal_expression()?

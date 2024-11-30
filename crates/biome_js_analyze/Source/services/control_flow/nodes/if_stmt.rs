@@ -33,6 +33,7 @@ impl NodeVisitor for IfVisitor {
         let entry_block = builder.cursor();
 
         let consequent_start = builder.append_block();
+
         builder.set_cursor(consequent_start);
 
         Ok(Self {
@@ -63,18 +64,22 @@ impl NodeVisitor for IfVisitor {
             builder
                 .append_jump(true, self.consequent_start)
                 .with_node(node.test()?.into_syntax());
+
             builder.append_jump(false, alt_start);
 
             builder.set_cursor(alt_end);
+
             builder.append_jump(false, next_block);
         } else {
             builder
                 .append_jump(true, self.consequent_start)
                 .with_node(node.test()?.into_syntax());
+
             builder.append_jump(false, next_block);
         }
 
         builder.set_cursor(consequent_end);
+
         builder.append_jump(false, next_block);
 
         builder.set_cursor(next_block);
@@ -99,6 +104,7 @@ impl NodeVisitor for ElseVisitor {
         let consequent_block = builder.cursor();
 
         let alt_block = builder.append_block();
+
         builder.set_cursor(alt_block);
 
         Ok(Self {
@@ -116,6 +122,7 @@ impl NodeVisitor for ElseVisitor {
         let if_state = stack.read_top::<IfVisitor>()?;
 
         if_state.consequent_end = Some(self.consequent_block);
+
         if_state.alt_block = Some((self.alt_block, builder.cursor()));
 
         Ok(())

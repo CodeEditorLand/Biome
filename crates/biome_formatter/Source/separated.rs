@@ -7,14 +7,17 @@ where
     N: AstNode,
 {
     type Context;
+
     type FormatNode<'a>: Format<Self::Context>
     where
         N: 'a;
+
     type FormatSeparator<'a>: Format<Self::Context>
     where
         N: 'a;
 
     fn format_node<'a>(&self, node: &'a N) -> Self::FormatNode<'a>;
+
     fn format_separator<'a>(
         &self,
         separator: &'a SyntaxToken<N::Language>,
@@ -56,6 +59,7 @@ where
 {
     fn fmt(&self, f: &mut Formatter<C>) -> FormatResult<()> {
         let node = self.element.node()?;
+
         let separator = self.element.trailing_separator()?;
 
         let format_node = self.rule.format_node(node);
@@ -81,13 +85,16 @@ where
                             .with_group_id(self.options.group_id)
                             .fmt(f)?;
                     }
+
                     TrailingSeparator::Mandatory => {
                         write!(f, [format_separator])?;
                     }
+
                     TrailingSeparator::Disallowed => {
                         // A trailing separator was present where it wasn't allowed, opt out of formatting
                         return Err(FormatError::SyntaxError);
                     }
+
                     TrailingSeparator::Omit => {
                         write!(f, [format_removed(separator)])?;
                     }
@@ -104,9 +111,11 @@ where
                             .with_group_id(self.options.group_id)]
                     )?;
                 }
+
                 TrailingSeparator::Mandatory => {
                     text(self.separator).fmt(f)?;
                 }
+
                 TrailingSeparator::Omit | TrailingSeparator::Disallowed => { /* no op */ }
             }
         } else {
@@ -149,17 +158,20 @@ where
     /// Wraps every node inside of a group
     pub fn nodes_grouped(mut self) -> Self {
         self.options.nodes_grouped = true;
+
         self
     }
 
     pub fn with_trailing_separator(mut self, separator: TrailingSeparator) -> Self {
         self.options.trailing_separator = separator;
+
         self
     }
 
     #[allow(unused)]
     pub fn with_group_id(mut self, group_id: Option<GroupId>) -> Self {
         self.options.group_id = group_id;
+
         self
     }
 }
@@ -176,6 +188,7 @@ where
         let element = self.next.take().or_else(|| self.inner.next())?;
 
         self.next = self.inner.next();
+
         let is_last = self.next.is_none();
 
         Some(FormatSeparatedElement {

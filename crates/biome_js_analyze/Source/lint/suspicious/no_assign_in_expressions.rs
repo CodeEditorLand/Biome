@@ -53,12 +53,16 @@ declare_lint_rule! {
 
 impl Rule for NoAssignInExpressions {
     type Query = Ast<JsAssignmentExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let assign = ctx.query();
+
         let mut ancestor = assign
             .syntax()
             .ancestors()
@@ -68,13 +72,18 @@ impl Rule for NoAssignInExpressions {
                     || JsParenthesizedExpression::can_cast(x.kind())
             })
             .last()?;
+
         let mut prev_ancestor = ancestor;
+
         ancestor = prev_ancestor.parent()?;
+
         while JsSequenceExpression::can_cast(ancestor.kind()) {
             // Allow statements separated by sequences such as `a = 1, b = 2`
             prev_ancestor = ancestor;
+
             ancestor = prev_ancestor.parent()?;
         }
+
         if JsExpressionStatement::can_cast(ancestor.kind()) {
             None
         } else if let Some(for_stmt) = JsForStatement::cast(ancestor) {
@@ -92,6 +101,7 @@ impl Rule for NoAssignInExpressions {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let assign = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             assign.range(),

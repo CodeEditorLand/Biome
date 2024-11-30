@@ -189,16 +189,20 @@ impl From<QuoteProps> for QuoteProperties {
 
 impl TryFrom<PrettierConfiguration> for biome_configuration::PartialConfiguration {
     type Error = ParseFormatNumberError;
+
     fn try_from(value: PrettierConfiguration) -> Result<Self, Self::Error> {
         let mut result = biome_configuration::PartialConfiguration::default();
 
         let line_width = LineWidth::try_from(value.print_width)?;
+
         let indent_width = IndentWidth::try_from(value.tab_width)?;
+
         let indent_style = if value.use_tabs {
             biome_formatter::IndentStyle::Tab
         } else {
             biome_formatter::IndentStyle::Space
         };
+
         let formatter = biome_configuration::PartialFormatterConfiguration {
             indent_width: Some(indent_width),
             line_width: Some(line_width),
@@ -216,6 +220,7 @@ impl TryFrom<PrettierConfiguration> for biome_configuration::PartialConfiguratio
             indent_size: None,
             bracket_spacing: Some(BracketSpacing::default()),
         };
+
         result.formatter = Some(formatter);
 
         let semicolons = if value.semi {
@@ -223,16 +228,19 @@ impl TryFrom<PrettierConfiguration> for biome_configuration::PartialConfiguratio
         } else {
             Semicolons::AsNeeded
         };
+
         let quote_style = if value.single_quote {
             QuoteStyle::Single
         } else {
             QuoteStyle::Double
         };
+
         let jsx_quote_style = if value.jsx_single_quote {
             QuoteStyle::Single
         } else {
             QuoteStyle::Double
         };
+
         let js_formatter = biome_configuration::PartialJavascriptFormatter {
             indent_width: None,
             line_width: None,
@@ -255,29 +263,37 @@ impl TryFrom<PrettierConfiguration> for biome_configuration::PartialConfiguratio
             jsx_quote_style: Some(jsx_quote_style),
             attribute_position: Some(AttributePosition::default()),
         };
+
         let js_config = biome_configuration::PartialJavascriptConfiguration {
             formatter: Some(js_formatter),
             ..Default::default()
         };
+
         result.javascript = Some(js_config);
+
         if !value.overrides.is_empty() {
             let mut overrides = biome_configuration::Overrides::default();
+
             for override_elt in value.overrides {
                 overrides.0.push(override_elt.try_into()?);
             }
+
             result.overrides = Some(overrides);
         }
+
         Ok(result)
     }
 }
 
 impl TryFrom<Override> for biome_configuration::OverridePattern {
     type Error = ParseFormatNumberError;
+
     fn try_from(Override { files, options }: Override) -> Result<Self, Self::Error> {
         let mut result = biome_configuration::OverridePattern {
             include: Some(StringSet::new(files.into_iter().collect())),
             ..Default::default()
         };
+
         if options.print_width.is_some()
             || options.use_tabs.is_some()
             || options.tab_width.is_some()
@@ -295,6 +311,7 @@ impl TryFrom<Override> for biome_configuration::OverridePattern {
             } else {
                 None
             };
+
             let indent_style = options.use_tabs.map(|use_tabs| {
                 if use_tabs {
                     biome_formatter::IndentStyle::Tab
@@ -302,6 +319,7 @@ impl TryFrom<Override> for biome_configuration::OverridePattern {
                     biome_formatter::IndentStyle::Space
                 }
             });
+
             let formatter = biome_configuration::OverrideFormatterConfiguration {
                 indent_width,
                 line_width,
@@ -309,8 +327,10 @@ impl TryFrom<Override> for biome_configuration::OverridePattern {
                 line_ending: options.end_of_line.map(|end_of_line| end_of_line.into()),
                 ..Default::default()
             };
+
             result.formatter = Some(formatter);
         }
+
         if options.semi.is_none()
             && options.single_quote.is_none()
             && options.jsx_single_quote.is_none()
@@ -331,6 +351,7 @@ impl TryFrom<Override> for biome_configuration::OverridePattern {
                 Semicolons::AsNeeded
             }
         });
+
         let quote_style = options.single_quote.map(|single_quote| {
             if single_quote {
                 QuoteStyle::Single
@@ -338,6 +359,7 @@ impl TryFrom<Override> for biome_configuration::OverridePattern {
                 QuoteStyle::Double
             }
         });
+
         let jsx_quote_style = options.jsx_single_quote.map(|jsx_single_quote| {
             if jsx_single_quote {
                 QuoteStyle::Single
@@ -345,6 +367,7 @@ impl TryFrom<Override> for biome_configuration::OverridePattern {
                 QuoteStyle::Double
             }
         });
+
         let js_formatter = biome_configuration::PartialJavascriptFormatter {
             bracket_same_line: options.bracket_line,
             arrow_parentheses: options.arrow_parens.map(|arrow_parens| arrow_parens.into()),
@@ -357,11 +380,14 @@ impl TryFrom<Override> for biome_configuration::OverridePattern {
             jsx_quote_style,
             ..Default::default()
         };
+
         let js_config = biome_configuration::PartialJavascriptConfiguration {
             formatter: Some(js_formatter),
             ..Default::default()
         };
+
         result.javascript = Some(js_config);
+
         Ok(result)
     }
 }
@@ -397,8 +423,10 @@ pub(crate) fn read_config_file(
             data,
         });
     }
+
     for config_name in CONFIG_FILES {
         let path = Path::new(config_name);
+
         if fs.path_exists(path) {
             return Ok(Config {
                 path: config_name,
@@ -406,6 +434,7 @@ pub(crate) fn read_config_file(
             });
         }
     }
+
     Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
         reason: "Biome couldn't find a Prettier configuration file.".to_string(),
     }))
@@ -419,8 +448,11 @@ fn load_config(
     let (deserialized, diagnostics) = match path.extension().and_then(OsStr::to_str) {
         None | Some("json") => {
             let mut file = fs.open_with_options(path, OpenOptions::default().read(true))?;
+
             let mut content = String::new();
+
             file.read_to_string(&mut content)?;
+
             if path.file_name().is_some_and(|name| name == PACKAGE_JSON) {
                 let (deserialized, _) = deserialize_from_json_str::<PrettierPackageJson>(
                     &content,
@@ -445,8 +477,10 @@ fn load_config(
                 .consume()
             }
         }
+
         Some("js" | "mjs" | "cjs") => {
             let node::Resolution { content, .. } = node::load_config(&path.to_string_lossy())?;
+
             deserialize_from_json_str::<PrettierConfiguration>(
                 &content,
                 JsonParserOptions::default(),
@@ -454,6 +488,7 @@ fn load_config(
             )
             .consume()
         }
+
         Some(ext) => {
             return Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
                 reason: format!(
@@ -462,6 +497,7 @@ fn load_config(
             }))
         }
     };
+
     let path_str = path.to_string_lossy();
     // Heuristic: the Prettier config file is considered a YAML file if:
     // - desrialization failed
@@ -478,15 +514,18 @@ fn load_config(
             )
         }) {
             let diagnostic = diagnostic.with_file_path(path_str.to_string());
+
             console.error(markup! {{PrintDiagnostic::simple(&diagnostic)}});
         }
     }
+
     if let Some(result) = deserialized {
         if result.end_of_line == EndOfLine::Auto {
             console.log(markup! {
                 <Warn>"Prettier's `\"endOfLine\": \"auto\"` option is not supported in Biome. The default `\"lf\"` option is used instead."</Warn>
             });
         }
+
         Ok(result)
     } else if path.extension().is_none() {
         // The Prettier config file may be a YAML file.
@@ -503,7 +542,9 @@ fn load_config(
 #[cfg(test)]
 mod tests {
     use crate::execute::migrate::prettier::{PrettierConfiguration, PrettierTrailingComma};
+
     use biome_deserialize::json::deserialize_from_json_str;
+
     use biome_json_parser::JsonParserOptions;
 
     #[test]

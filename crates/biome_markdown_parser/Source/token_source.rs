@@ -32,9 +32,11 @@ impl<'source> MarkdownTokenSource<'source> {
         let lexer = MarkdownLexer::from_str(source);
 
         let buffered = BufferedLexer::new(lexer);
+
         let mut source = MarkdownTokenSource::new(buffered);
 
         source.next_non_trivia_token(MarkdownLexContext::default(), true);
+
         source
     }
 
@@ -51,6 +53,7 @@ impl<'source> MarkdownTokenSource<'source> {
                     // Not trivia
                     break;
                 }
+
                 Ok(trivia_kind) => {
                     if trivia_kind.is_newline() {
                         trailing = false;
@@ -79,6 +82,7 @@ impl<'source> MarkdownTokenSource<'source> {
                 )
             })
             .collect();
+
         last_trivia.iter().fold(0, |count, b| match b.kind() {
             TriviaPieceKind::Skipped => count + 4,
             TriviaPieceKind::Whitespace => count + u32::from(b.len()) as usize,
@@ -104,7 +108,9 @@ impl<'source> MarkdownTokenSource<'source> {
     #[allow(dead_code)]
     pub fn rewind(&mut self, checkpoint: MarkdownTokenSourceCheckpoint) {
         assert!(self.trivia_list.len() >= checkpoint.trivia_len as usize);
+
         self.trivia_list.truncate(checkpoint.trivia_len as usize);
+
         self.lexer.rewind(checkpoint.lexer_checkpoint);
     }
 }

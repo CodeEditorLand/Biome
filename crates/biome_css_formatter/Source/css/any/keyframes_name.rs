@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssKeyframesName;
 pub(crate) struct FormatAnyCssKeyframesName;
 impl FormatRule<AnyCssKeyframesName> for FormatAnyCssKeyframesName {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssKeyframesName, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssKeyframesName::AnyCssKeyframesIdentifier(node) => node.format().fmt(f),

@@ -28,6 +28,7 @@ pub(crate) fn parse_schema_definition(p: &mut GraphqlParser) -> ParsedSyntax {
     p.bump(T![schema]);
 
     DirectiveList.parse_list(p);
+
     parse_root_operation_types(p);
 
     Present(m.complete(p, GRAPHQL_SCHEMA_DEFINITION))
@@ -39,10 +40,13 @@ pub(crate) fn parse_schema_extension(p: &mut GraphqlParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![extend]);
+
     p.bump(T![schema]);
 
     let pos = p.source().position();
+
     DirectiveList.parse_list(p);
+
     let directive_empty = p.source().position() == pos;
 
     if is_at_root_operation_types(p) {
@@ -57,9 +61,13 @@ pub(crate) fn parse_schema_extension(p: &mut GraphqlParser) -> ParsedSyntax {
 #[inline]
 fn parse_root_operation_types(p: &mut GraphqlParser) -> CompletedMarker {
     let m = p.start();
+
     p.expect(T!['{']);
+
     RootOperationTypeDefinitionList.parse_list(p);
+
     p.expect(T!['}']);
+
     m.complete(p, GRAPHQL_ROOT_OPERATION_TYPES)
 }
 
@@ -68,6 +76,7 @@ struct RootOperationTypeDefinitionList;
 
 impl ParseNodeList for RootOperationTypeDefinitionList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_ROOT_OPERATION_TYPE_DEFINITION_LIST;
@@ -97,7 +106,9 @@ struct RootOperationTypeDefinitionListRecovery;
 
 impl ParseRecovery for RootOperationTypeDefinitionListRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -110,10 +121,14 @@ fn parse_root_operation_type_definition(p: &mut GraphqlParser) -> ParsedSyntax {
     if !(is_at_root_operation_type_definition(p)) {
         return Absent;
     }
+
     let m = p.start();
+
     if p.at_ts(OPERATION_TYPE) {
         let m = p.start();
+
         p.bump_ts(OPERATION_TYPE);
+
         m.complete(p, GRAPHQL_OPERATION_TYPE);
     }
     // missing operation type
@@ -123,9 +138,12 @@ fn parse_root_operation_type_definition(p: &mut GraphqlParser) -> ParsedSyntax {
     // handle typo in operation type
     else {
         p.error(expected_operation_type(p, p.cur_range()));
+
         p.bump_any();
     }
+
     p.expect(T![:]);
+
     parse_named_type(p).or_add_diagnostic(p, expected_named_type);
 
     Present(m.complete(p, GRAPHQL_ROOT_OPERATION_TYPE_DEFINITION))

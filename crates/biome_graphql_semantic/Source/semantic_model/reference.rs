@@ -47,7 +47,9 @@ impl Reference {
         let node = self.syntax();
 
         let reference = GraphqlNameReference::cast_ref(node);
+
         debug_assert!(reference.is_some());
+
         reference.unwrap()
     }
 
@@ -137,105 +139,143 @@ impl BindingExtensions for GraphqlNameReference {
 
 pub trait HasDeclarationAstNode {
     type DeclarationAstNode;
+
     fn binding_node(&self, model: &SemanticModel) -> Option<Self::DeclarationAstNode>;
 }
 
 impl HasDeclarationAstNode for GraphqlNameReference {
     type DeclarationAstNode = GraphqlNameBinding;
+
     fn binding_node(&self, model: &SemanticModel) -> Option<Self::DeclarationAstNode> {
         let binding = model.binding(self)?;
+
         let name_binding = binding.syntax().clone().cast()?;
+
         Some(name_binding)
     }
 }
 
 impl HasDeclarationAstNode for GraphqlFragmentSpread {
     type DeclarationAstNode = GraphqlFragmentDefinition;
+
     fn binding_node(&self, model: &SemanticModel) -> Option<Self::DeclarationAstNode> {
         let name = self.name().ok()?;
+
         let name_binding = name.binding_node(model)?;
+
         let fragment_definition = name_binding.syntax().parent()?.cast()?;
+
         Some(fragment_definition)
     }
 }
 
 impl HasDeclarationAstNode for GraphqlDirective {
     type DeclarationAstNode = GraphqlDirectiveDefinition;
+
     fn binding_node(&self, model: &SemanticModel) -> Option<Self::DeclarationAstNode> {
         let name = self.name().ok()?;
+
         let name_binding = name.binding_node(model)?;
+
         let directive_definition = name_binding.syntax().parent()?.cast()?;
+
         Some(directive_definition)
     }
 }
 
 impl HasDeclarationAstNode for GraphqlTypeCondition {
     type DeclarationAstNode = AnyGraphqlTypeDefinition;
+
     fn binding_node(&self, model: &SemanticModel) -> Option<Self::DeclarationAstNode> {
         let type_name = self.ty().ok()?;
+
         let name_binding = type_name.binding_node(model)?;
+
         let definition = name_binding.syntax().parent()?.cast()?;
+
         Some(definition)
     }
 }
 
 impl HasDeclarationAstNode for GraphqlScalarTypeExtension {
     type DeclarationAstNode = GraphqlScalarTypeDefinition;
+
     fn binding_node(&self, model: &SemanticModel) -> Option<Self::DeclarationAstNode> {
         let name = self.name().ok()?;
+
         let name_binding = name.binding_node(model)?;
+
         let definition = name_binding.syntax().parent()?.cast()?;
+
         Some(definition)
     }
 }
 
 impl HasDeclarationAstNode for GraphqlObjectTypeExtension {
     type DeclarationAstNode = GraphqlObjectTypeDefinition;
+
     fn binding_node(&self, model: &SemanticModel) -> Option<Self::DeclarationAstNode> {
         let name = self.name().ok()?;
+
         let name_binding = name.binding_node(model)?;
+
         let definition = name_binding.syntax().parent()?.cast()?;
+
         Some(definition)
     }
 }
 
 impl HasDeclarationAstNode for GraphqlInterfaceTypeExtension {
     type DeclarationAstNode = GraphqlInterfaceTypeDefinition;
+
     fn binding_node(&self, model: &SemanticModel) -> Option<Self::DeclarationAstNode> {
         let name = self.name().ok()?;
+
         let name_binding = name.binding_node(model)?;
+
         let definition = name_binding.syntax().parent()?.cast()?;
+
         Some(definition)
     }
 }
 
 impl HasDeclarationAstNode for GraphqlUnionTypeExtension {
     type DeclarationAstNode = GraphqlUnionTypeDefinition;
+
     fn binding_node(&self, model: &SemanticModel) -> Option<Self::DeclarationAstNode> {
         let name = self.name().ok()?;
+
         let name_binding = name.binding_node(model)?;
+
         let definition = name_binding.syntax().parent()?.cast()?;
+
         Some(definition)
     }
 }
 
 impl HasDeclarationAstNode for GraphqlEnumTypeExtension {
     type DeclarationAstNode = GraphqlEnumTypeDefinition;
+
     fn binding_node(&self, model: &SemanticModel) -> Option<Self::DeclarationAstNode> {
         let name = self.name().ok()?;
+
         let name_binding = name.binding_node(model)?;
+
         let definition = name_binding.syntax().parent()?.cast()?;
+
         Some(definition)
     }
 }
 
 pub trait HasDeclarationAstNodes {
     type DeclarationAstNode;
+
     fn binding_nodes(&self, model: &SemanticModel) -> Vec<Self::DeclarationAstNode>;
 }
 
 impl HasDeclarationAstNodes for GraphqlVariableReference {
     type DeclarationAstNode = GraphqlVariableBinding;
+
     fn binding_nodes(&self, model: &SemanticModel) -> Vec<Self::DeclarationAstNode> {
         model
             .bindings(self)

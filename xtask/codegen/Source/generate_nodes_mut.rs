@@ -16,12 +16,14 @@ pub fn generate_nodes_mut(ast: &AstSrc, language_kind: LanguageKind) -> Result<S
                 .enumerate()
                 .map(|(index, field)| {
                     let method_name = format_ident!("with_{}", field.method_name(language_kind));
+
                     let type_name = field.ty();
 
                     let element = match field {
                         Field::Token { .. } => {
                             quote! { element }
                         }
+
                         Field::Node { .. } => {
                             quote! { element.into_syntax() }
                         }
@@ -48,7 +50,9 @@ pub fn generate_nodes_mut(ast: &AstSrc, language_kind: LanguageKind) -> Result<S
                                 // TODO: Implement range checking for the slot index to ensure other
                                 // tokens can't accidentally be overridden.
                                 let mut updated_slot_map = self.slot_map;
+
                                 updated_slot_map[#index] = slot_index;
+
                                 Self {
                                     syntax: self.syntax.splice_slots((slot_index as usize)..=(slot_index as usize), once(#element)),
                                     slot_map: updated_slot_map,
@@ -77,7 +81,9 @@ pub fn generate_nodes_mut(ast: &AstSrc, language_kind: LanguageKind) -> Result<S
 
     let ast = quote! {
         use std::iter::once;
+
         use biome_rowan::AstNode;
+
         use crate::{generated::nodes::*, #syntax_token as SyntaxToken};
 
         #(#node_boilerplate_impls)*
@@ -89,5 +95,6 @@ pub fn generate_nodes_mut(ast: &AstSrc, language_kind: LanguageKind) -> Result<S
         .replace(" ] )", "])");
 
     let pretty = xtask::reformat(ast)?;
+
     Ok(pretty)
 }

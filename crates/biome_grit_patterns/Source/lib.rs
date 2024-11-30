@@ -35,6 +35,7 @@ pub fn compile_pattern(
     language: GritTargetLanguage,
 ) -> Result<GritQuery, CompileError> {
     let parsed = parse_grit(source);
+
     if parsed.has_errors() {
         return Err(CompileError::ParsePatternError(
             // TODO: We may want to preserve other diagnostics too.

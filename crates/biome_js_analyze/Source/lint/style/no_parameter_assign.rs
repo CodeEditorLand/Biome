@@ -64,13 +64,18 @@ declare_lint_rule! {
 
 impl Rule for NoParameterAssign {
     type Query = Semantic<AnyJsParameter>;
+
     type State = Reference;
+
     type Signals = AllBindingWriteReferencesIter;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let param = ctx.query();
+
         let model = ctx.model();
+
         if let Some(AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(binding))) =
             binding_of(param)
         {
@@ -82,6 +87,7 @@ impl Rule for NoParameterAssign {
 
     fn diagnostic(ctx: &RuleContext<Self>, reference: &Self::State) -> Option<RuleDiagnostic> {
         let param = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -109,6 +115,7 @@ fn binding_of(param: &AnyJsParameter) -> Option<AnyJsBindingPattern> {
             AnyJsFormalParameter::JsBogusParameter(_) | AnyJsFormalParameter::JsMetavariable(_) => {
                 None
             }
+
             AnyJsFormalParameter::JsFormalParameter(param) => param.binding().ok(),
         },
         AnyJsParameter::JsRestParameter(param) => param.binding().ok(),

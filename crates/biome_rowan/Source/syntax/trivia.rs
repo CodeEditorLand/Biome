@@ -265,10 +265,12 @@ impl<L: Language> SyntaxTriviaPiece<L> {
     /// ```
     pub fn text(&self) -> &str {
         let token = self.raw.token();
+
         let txt = token.text();
 
         // Compute the offset relative to the token
         let start = self.offset - token.text_range().start();
+
         let end = start + self.text_len();
 
         // Don't use self.raw.text(). It iterates over all pieces
@@ -493,6 +495,7 @@ impl<L: Language> SyntaxTriviaPiece<L> {
             TriviaPieceKind::SingleLineComment | TriviaPieceKind::MultiLineComment => {
                 Some(SyntaxTriviaPieceComments(self.clone()))
             }
+
             _ => None,
         }
     }
@@ -518,9 +521,12 @@ impl<L: Language> fmt::Debug for SyntaxTriviaPiece<L> {
             TriviaPieceKind::SingleLineComment | TriviaPieceKind::MultiLineComment => {
                 write!(f, "Comments(")?
             }
+
             TriviaPieceKind::Skipped => write!(f, "Skipped(")?,
         }
+
         print_debug_str(self.text(), f)?;
+
         write!(f, ")")
     }
 }
@@ -542,6 +548,7 @@ impl<L: Language> Iterator for SyntaxTriviaPiecesIterator<L> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let (offset, trivia) = self.iter.next()?;
+
         Some(SyntaxTriviaPiece {
             raw: self.iter.raw.clone(),
             offset,
@@ -558,6 +565,7 @@ impl<L: Language> Iterator for SyntaxTriviaPiecesIterator<L> {
 impl<L: Language> DoubleEndedIterator for SyntaxTriviaPiecesIterator<L> {
     fn next_back(&mut self) -> Option<Self::Item> {
         let (offset, trivia) = self.iter.next_back()?;
+
         Some(SyntaxTriviaPiece {
             raw: self.iter.raw.clone(),
             offset,
@@ -648,15 +656,18 @@ impl<L: Language> SyntaxTrivia<L> {
 
 fn print_debug_str<S: AsRef<str>>(text: S, f: &mut fmt::Formatter<'_>) -> fmt::Result {
     let text = text.as_ref();
+
     if text.len() < 25 {
         write!(f, "{text:?}")
     } else {
         for idx in 21..25 {
             if text.is_char_boundary(idx) {
                 let text = format!("{} ...", &text[..idx]);
+
                 return write!(f, "{text:?}");
             }
         }
+
         write!(f, "")
     }
 }
@@ -664,13 +675,16 @@ fn print_debug_str<S: AsRef<str>>(text: S, f: &mut fmt::Formatter<'_>) -> fmt::R
 impl<L: Language> std::fmt::Debug for SyntaxTrivia<L> {
     fn fmt(&self, f: &mut Formatter<'_>) -> fmt::Result {
         write!(f, "[")?;
+
         let mut first_piece = true;
 
         for piece in self.pieces() {
             if !first_piece {
                 write!(f, ", ")?;
             }
+
             first_piece = false;
+
             write!(f, "{piece:?}")?;
         }
 
@@ -711,6 +725,7 @@ pub fn trim_leading_trivia_pieces<L: Language>(
         .next_if(|x| x.is_whitespace() || x.is_newline())
         .is_some()
     {}
+
     trivia
 }
 
@@ -741,6 +756,7 @@ pub fn trim_trailing_trivia_pieces<L: Language>(
     trivia: impl ExactSizeIterator<Item = SyntaxTriviaPiece<L>> + DoubleEndedIterator,
 ) -> impl ExactSizeIterator<Item = SyntaxTriviaPiece<L>> {
     let mut trivia = trivia.rev().peekable();
+
     let mut take_count = trivia.len();
     // We cannot use `take_while` because `TakeWhile` doesn't implement `ExactSizeIterator`.
     while trivia
@@ -832,6 +848,7 @@ where
                 Some(next) => Some(next),
                 None => {
                     self.first.take();
+
                     self.second.next()
                 }
             },
@@ -843,6 +860,7 @@ where
         match &self.first {
             Some(first) => {
                 let (first_lower, first_upper) = first.size_hint();
+
                 let (second_lower, second_upper) = self.second.size_hint();
 
                 let lower = first_lower.saturating_add(second_lower);
@@ -854,6 +872,7 @@ where
 
                 (lower, upper)
             }
+
             None => self.second.size_hint(),
         }
     }
@@ -877,12 +896,14 @@ where
         match &self.first {
             Some(first) => {
                 let first_len = first.len();
+
                 let second_len = self.second.len();
 
                 // SAFETY: Should be safe because a program can never contain more than u32 pieces
                 // because the text ranges are represented as u32 (and each piece must at least contain a single character).
                 first_len + second_len
             }
+
             None => self.second.len(),
         }
     }

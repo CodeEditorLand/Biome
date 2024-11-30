@@ -14,6 +14,7 @@ use tracing::debug;
 
 pub(crate) fn format<'ctx>(ctx: &'ctx SharedTraversalOptions<'ctx, '_>, path: &Path) -> FileResult {
     let mut workspace_file = WorkspaceFile::new(ctx, path)?;
+
     format_with_guard(ctx, &mut workspace_file)
 }
 
@@ -24,7 +25,9 @@ pub(crate) fn format_with_guard<'ctx>(
     tracing::info_span!("Processes formatting", path =? workspace_file.path.display()).in_scope(
         move || {
             let max_diagnostics = ctx.remaining_diagnostics.load(Ordering::Relaxed);
+
             debug!("Pulling diagnostics from parsed file");
+
             let diagnostics_result = workspace_file
                 .guard()
                 .pull_diagnostics(
@@ -39,6 +42,7 @@ pub(crate) fn format_with_guard<'ctx>(
                 )?;
 
             let input = workspace_file.input()?;
+
             let (should_write, ignore_errors) = match ctx.execution.traversal_mode {
                 TraversalMode::Format {
                     write,
@@ -51,7 +55,9 @@ pub(crate) fn format_with_guard<'ctx>(
                     false,
                 ),
             };
+
             debug!("Should write the file to disk? {}", should_write);
+
             debug!("Should ignore errors? {}", ignore_errors);
 
             if diagnostics_result.errors > 0 && ignore_errors {
@@ -96,12 +102,15 @@ pub(crate) fn format_with_guard<'ctx>(
                     if output.is_empty() {
                         return Ok(FileStatus::Unchanged);
                     }
+
                     output = AstroFileHandler::output(input.as_str(), output.as_str());
                 }
+
                 Some(b"vue") => {
                     if output.is_empty() {
                         return Ok(FileStatus::Unchanged);
                     }
+
                     output = VueFileHandler::output(input.as_str(), output.as_str());
                 }
 
@@ -109,14 +118,17 @@ pub(crate) fn format_with_guard<'ctx>(
                     if output.is_empty() {
                         return Ok(FileStatus::Unchanged);
                     }
+
                     output = SvelteFileHandler::output(input.as_str(), output.as_str());
                 }
+
                 _ => {}
             }
 
             if output != input {
                 if should_write {
                     workspace_file.update_file(output)?;
+
                     Ok(FileStatus::Changed)
                 } else {
                     Ok(FileStatus::Message(Message::Diff {

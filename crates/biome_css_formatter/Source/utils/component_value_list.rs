@@ -21,6 +21,7 @@ where
     //     grid-template-columns:
     //                          1fr 100px 3em;
     // }
+
     let has_newline = match layout {
         ValueListLayout::PreserveInline => node
             .iter()
@@ -78,20 +79,25 @@ where
                     // Add line break before the first element if we have more than two lines.
                     write!(f, [hard_line_break()])?;
                 }
+
                 write!(f, [values])
             });
 
             write!(f, [group(&indent(&content))])
         }
+
         ValueListLayout::Fill => {
             write!(f, [group(&indent(&values))])
         }
+
         ValueListLayout::SingleValue => {
             write!(f, [values])
         }
+
         ValueListLayout::OnePerLine => {
             let content = format_once(|f| {
                 write!(f, [hard_line_break()])?;
+
                 write!(f, [values])
             });
 
@@ -190,6 +196,7 @@ where
         .filter(|x| x.range().len() > TextSize::from(1))
         .map(|x| x.range().len())
         .sum();
+
     let value_count = list
         .iter()
         .filter(|x| x.range().len() > TextSize::from(1))

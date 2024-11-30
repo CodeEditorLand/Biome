@@ -46,7 +46,9 @@ impl TestCase for BabelTypescriptTestCase {
 
     fn run(&self) -> TestRunOutcome {
         let source_type = JsFileSource::ts().with_variant(self.variant);
+
         let options = JsParserOptions::default().with_parse_class_parameter_decorators();
+
         let files = TestCaseFiles::single(
             self.name().to_string(),
             self.code.clone(),
@@ -94,19 +96,25 @@ impl TestSuite for BabelTypescriptTestSuite {
 
     fn checkout(&self) -> io::Result<()> {
         let base_path = project_root().join("xtask/coverage/babel");
+
         let mut command = Command::new("git");
+
         command
             .arg("clone")
             .arg("https://github.com/babel/babel.git")
             .arg("--depth")
             .arg("1")
             .arg(base_path.display().to_string());
+
         command.output()?;
+
         let mut command = Command::new("git");
+
         command
             .arg("reset")
             .arg("--hard")
             .arg("33a6be4e56b149647c15fd6c0157c1413456851d");
+
         command.output()?;
 
         Ok(())
@@ -120,9 +128,11 @@ impl TestSuite for BabelTypescriptTestSuite {
         let code = check_file_encoding(path)?;
 
         let output_json_path = path.with_file_name("output.json");
+
         let options_path = path.with_file_name("options.json");
 
         let mut should_fail = false;
+
         let mut variant = LanguageVariant::Standard;
 
         if output_json_path.exists() {

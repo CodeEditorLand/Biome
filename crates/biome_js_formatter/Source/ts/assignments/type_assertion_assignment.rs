@@ -42,16 +42,23 @@ impl FormatNodeRule<TsTypeAssertionAssignment> for FormatTsTypeAssertionAssignme
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::TsTypeAssertionAssignment;
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("(<number>a) = 'test'", TsTypeAssertionAssignment);
+
         assert_needs_parentheses!("(<number>a)! = 'test'", TsTypeAssertionAssignment);
+
         assert_needs_parentheses!("(<number>(<any>a)) = 'test'", TsTypeAssertionAssignment[0]);
+
         assert_needs_parentheses!("(<number>(<any>a)) = 'test'", TsTypeAssertionAssignment[1]);
+
         assert_needs_parentheses!("++(<number>a)", TsTypeAssertionAssignment);
+
         assert_needs_parentheses!("(<number>a)--", TsTypeAssertionAssignment);
+
         assert_not_needs_parentheses!("({ a: <number>a } = { a: 5 })", TsTypeAssertionAssignment);
     }
 }

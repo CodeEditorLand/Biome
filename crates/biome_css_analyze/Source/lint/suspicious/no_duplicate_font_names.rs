@@ -59,16 +59,22 @@ pub struct RuleState {
 
 impl Rule for NoDuplicateFontNames {
     type Query = Ast<CssGenericProperty>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let property_name = node.name().ok()?.text();
+
         let property_name = property_name.to_ascii_lowercase_cow();
 
         let is_font_family = property_name == "font-family";
+
         let is_font = property_name == "font";
 
         if !is_font_family && !is_font {
@@ -76,8 +82,11 @@ impl Rule for NoDuplicateFontNames {
         }
 
         let mut unquoted_family_names: HashSet<String> = HashSet::new();
+
         let mut family_names: HashSet<String> = HashSet::new();
+
         let value_list = node.value();
+
         let font_families = if is_font {
             find_font_family(value_list)
         } else {
@@ -113,6 +122,7 @@ impl Rule for NoDuplicateFontNames {
                             span: val.range(),
                         });
                     }
+
                     unquoted_family_names.insert(font_name);
                 }
                 // A font family name. e.g "Lucida Grande", "Arial".
@@ -132,16 +142,20 @@ impl Rule for NoDuplicateFontNames {
                             span: val.range(),
                         });
                     }
+
                     family_names.insert(normalized_font_name);
                 }
+
                 _ => continue,
             }
         }
+
         None
     }
 
     fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let span = state.span;
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

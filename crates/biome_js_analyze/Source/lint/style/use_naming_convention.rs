@@ -687,24 +687,35 @@ declare_lint_rule! {
 
 impl Rule for UseNamingConvention {
     type Query = Semantic<AnyIdentifierBindingLike>;
+
     type State = State;
+
     type Signals = Option<Self::State>;
+
     type Options = NamingConventionOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let options = ctx.options();
+
         let name_token = node.name_token().ok()?;
+
         let mut name = name_token.text_trimmed();
+
         let mut name_range_start = 0;
+
         if name_token.kind() == JsSyntaxKind::JS_STRING_LITERAL {
             name_range_start += 1;
+
             name = &name[1..name.len() - 1];
+
             if name.is_empty() || !is_js_ident(name) {
                 // Ignore non-identifier strings
                 return None;
             }
         }
+
         if options.require_ascii && !name.is_ascii() {
             return Some(State {
                 convention_selector: Selector::default(),
@@ -715,8 +726,11 @@ impl Rule for UseNamingConvention {
                 suggestion: Suggestion::Ascii,
             });
         }
+
         let node_selector = Selector::from_name(node)?;
+
         let mut is_not_trimmed = true;
+
         for convention in options
             .conventions
             .iter()
@@ -733,11 +747,16 @@ impl Rule for UseNamingConvention {
                         suggestion: Suggestion::Match(matching.to_string().into_boxed_str()),
                     });
                 };
+
                 if let Some(first_capture) = capture.iter().skip(1).find_map(|x| x) {
                     name_range_start += first_capture.start();
+
                     let captured = first_capture.as_str();
+
                     is_not_trimmed = name.len() == captured.len();
+
                     name = captured;
+
                     if name.is_empty() {
                         // Empty string are always valid.
                         return None;
@@ -747,12 +766,15 @@ impl Rule for UseNamingConvention {
                     return None;
                 }
             }
+
             if !convention.formats.is_empty() {
                 let actual_case = Case::identify(name, options.strict_case);
+
                 if (*convention.formats | Case::Uni).contains(actual_case) {
                     // Valid case
                     return None;
                 }
+
                 return Some(State {
                     convention_selector: convention.selector,
                     name_range: Range {
@@ -763,18 +785,24 @@ impl Rule for UseNamingConvention {
                 });
             }
         }
+
         let default_convention = node_selector.default_convention(options);
         // We only tim the name if it was not trimmed yet
         if is_not_trimmed {
             let (prefix_len, trimmed_name) = trim_underscore_dollar(name);
+
             name_range_start += prefix_len;
+
             name = trimmed_name;
         }
+
         let actual_case = Case::identify(name, options.strict_case);
+
         if (*default_convention.formats | Case::Uni).contains(actual_case) || name.is_empty() {
             // Valid case
             return None;
         }
+
         Some(State {
             convention_selector: default_convention.selector,
             name_range: Range {
@@ -791,16 +819,23 @@ impl Rule for UseNamingConvention {
             name_range,
             suggestion,
         } = state;
+
         let options = ctx.options();
+
         let node = ctx.query();
+
         let name_token = node.name_token().ok()?;
+
         let name_token_range = name_token.text_trimmed_range();
+
         let name = name_token.text_trimmed();
+
         let trimmed_info = if name_range.len() < name.len() {
             " part"
         } else {
             ""
         };
+
         match suggestion {
             Suggestion::Ascii => {
                 Some(RuleDiagnostic::new(
@@ -813,8 +848,10 @@ impl Rule for UseNamingConvention {
                     "If you want to use non-ASCII names, then set the "<Emphasis>"requireAscii"</Emphasis>" option to `false`.\nSee the rule "<Hyperlink href="https://biomejs.dev/linter/rules/use-naming-convention#options">"options"</Hyperlink>" for more details."
                 }))
             }
+
             Suggestion::Match(regex) => {
                 let name_token_range = name_token_range.add_start(TextSize::from(name_range.start as u32)).sub_end(name_token_range.len() - TextSize::from(name_range.len() as u32));
+
                 Some(RuleDiagnostic::new(
                     rule_category!(),
                     name_token_range,
@@ -823,11 +860,15 @@ impl Rule for UseNamingConvention {
                     },
                 ))
             }
+
             Suggestion::Formats(expected_cases) => {
                 let name_token_range = TextRange::at(name_token_range.start() + TextSize::from(name_range.start as u32), TextSize::from(name_range.len() as u32));
+
                 if options.strict_case && (expected_cases.contains(Case::Camel) || expected_cases.contains(Case::Pascal)) {
                     let trimmed_name = &name[(name_range.start as _)..(name_range.end as _)];
+
                     let actual_case = Case::identify(trimmed_name, false);
+
                     if matches!(actual_case, Case::Camel | Case::Pascal)
                         && Case::identify(trimmed_name, true) == Case::Unknown
                     {
@@ -842,11 +883,13 @@ impl Rule for UseNamingConvention {
                         }));
                     }
                 }
+
                 let expected_case_names = expected_cases
                     .into_iter()
                     .map(|case| case.to_string())
                     .collect::<SmallVec<[_; 4]>>()
                     .join(" or ");
+
                 Some(RuleDiagnostic::new(
                     rule_category!(),
                     name_token_range,
@@ -867,11 +910,14 @@ impl Rule for UseNamingConvention {
         else {
             return None;
         };
+
         let node = ctx.query();
+
         let is_declaration_file = ctx
             .source_type::<JsFileSource>()
             .language()
             .is_definition_file();
+
         if is_declaration_file {
             if let Some(items) = node
                 .syntax()
@@ -883,31 +929,46 @@ impl Rule for UseNamingConvention {
                 // All types are available in every files of the project.
                 // Thus, it is ok if types are not used locally.
                 let is_top_level = items.parent::<TsDeclarationModule>().is_some();
+
                 if is_top_level && items.into_iter().all(|x| x.as_any_js_statement().is_some()) {
                     return None;
                 }
             }
         }
+
         let model = ctx.model();
+
         if let Some(renamable) = renamable(node, model) {
             let node = ctx.query();
+
             let name_token = &node.name_token().ok()?;
             // This assertion hold because only identifiers are renamable.
             debug_assert!(name_token.kind() != JsSyntaxKind::JS_STRING_LITERAL);
+
             let name = name_token.text_trimmed();
+
             let preferred_case = expected_cases.into_iter().next()?;
+
             let new_name_part =
                 preferred_case.convert(&name[(name_range.start as _)..(name_range.end as _)]);
+
             let mut new_name =
                 String::with_capacity(name.len() + new_name_part.len() - name_range.len());
+
             new_name.push_str(&name[..(name_range.start as _)]);
+
             new_name.push_str(&new_name_part);
+
             new_name.push_str(&name[(name_range.end as _)..]);
+
             if name == new_name {
                 return None;
             }
+
             let mut mutation = ctx.root().begin();
+
             let renamed = mutation.rename_any_renamable_node(model, &renamable, &new_name[..]);
+
             if renamed {
                 return Some(JsRuleAction::new(
                     ctx.metadata().action_category(ctx.category(), ctx.group()),
@@ -917,6 +978,7 @@ impl Rule for UseNamingConvention {
                 ));
             }
         }
+
         None
     }
 }
@@ -941,6 +1003,7 @@ impl AnyIdentifierBindingLike {
             AnyIdentifierBindingLike::JsPrivateClassMemberName(member_name) => {
                 member_name.id_token()
             }
+
             AnyIdentifierBindingLike::JsLiteralExportName(export_name) => export_name.value(),
             AnyIdentifierBindingLike::TsIdentifierBinding(binding) => binding.name_token(),
             AnyIdentifierBindingLike::TsLiteralEnumMemberName(member_name) => member_name.value(),
@@ -995,14 +1058,17 @@ fn renamable(
                 binding.clone(),
             ))
         }
+
         AnyIdentifierBindingLike::TsIdentifierBinding(binding) => {
             if binding.is_exported(model) {
                 return None;
             }
+
             Some(AnyJsRenamableDeclaration::TsIdentifierBinding(
                 binding.clone(),
             ))
         }
+
         _ => None,
     }
 }
@@ -1081,6 +1147,7 @@ impl DeserializableValidator for Convention {
                 )
                 .with_range(range),
             );
+
             false
         } else {
             true
@@ -1104,15 +1171,19 @@ impl std::fmt::Display for InvalidSelector {
                     "The `{modifier1}` and `{modifier2}` modifiers cannot be used together.",
                 )
             }
+
             InvalidSelector::UnsupportedModifiers(kind, modifier) => {
                 write!(
                     f,
                     "The `{modifier}` modifier cannot be used with the `{kind}` kind."
                 )
             }
+
             InvalidSelector::UnsupportedScope(kind, scope) => {
                 let scope = scope.to_string();
+
                 let scope = scope.trim_end();
+
                 write!(
                     f,
                     "The `{scope}` scope cannot be used with the `{kind}` kind."
@@ -1152,6 +1223,7 @@ impl Selector {
                     Modifier::Abstract,
                 ));
             }
+
             if self.modifiers.contains(Modifier::Static) {
                 return Err(InvalidSelector::IncompatibleModifiers(
                     Modifier::Abstract,
@@ -1159,6 +1231,7 @@ impl Selector {
                 ));
             }
         }
+
         if self.modifiers.contains(Modifier::Readonly)
             && !matches!(
                 self.kind,
@@ -1170,10 +1243,12 @@ impl Selector {
                 Modifier::Readonly,
             ));
         }
+
         if self.modifiers.intersects(Modifier::CLASS_MEMBER_ONLY)
             && !Kind::ClassMember.contains(self.kind)
         {
             let modifiers = self.modifiers.0 & Modifier::CLASS_MEMBER_ONLY;
+
             if let Some(modifier) = modifiers.iter().next() {
                 return Err(InvalidSelector::UnsupportedModifiers(self.kind, modifier));
             }
@@ -1181,19 +1256,23 @@ impl Selector {
         // The rule doesn't allow `Modifier::Public`.
         // So we only need to check for `Modifier::Private`/`Modifier::Protected` incompatibility.
         let accessibility = Modifier::Private | Modifier::Protected;
+
         if *self.modifiers & accessibility == accessibility {
             return Err(InvalidSelector::IncompatibleModifiers(
                 Modifier::Private,
                 Modifier::Protected,
             ));
         }
+
         let abstarct_or_static = Modifier::Abstract | Modifier::Static;
+
         if *self.modifiers & abstarct_or_static == abstarct_or_static {
             return Err(InvalidSelector::IncompatibleModifiers(
                 Modifier::Abstract,
                 Modifier::Static,
             ));
         }
+
         if self.scope == Scope::Global
             && !Kind::Variable.contains(self.kind)
             && !Kind::Function.contains(self.kind)
@@ -1201,6 +1280,7 @@ impl Selector {
         {
             return Err(InvalidSelector::UnsupportedScope(self.kind, Scope::Global));
         }
+
         Ok(())
     }
 }
@@ -1215,8 +1295,10 @@ impl DeserializableValidator for Selector {
         if let Err(error) = self.check() {
             diagnostics
                 .push(DeserializationDiagnostic::new(format_args!("{error}")).with_range(range));
+
             return false;
         }
+
         true
     }
 }
@@ -1257,9 +1339,11 @@ impl Selector {
             AnyIdentifierBindingLike::JsIdentifierBinding(binding) => {
                 Selector::from_binding_declaration(&binding.declaration()?)
             }
+
             AnyIdentifierBindingLike::TsIdentifierBinding(binding) => {
                 Selector::from_binding_declaration(&binding.declaration()?)
             }
+
             AnyIdentifierBindingLike::JsLiteralMemberName(member_name) => {
                 if let Some(member) = member_name.parent::<AnyJsClassMember>() {
                     Selector::from_class_member(&member)
@@ -1271,11 +1355,14 @@ impl Selector {
                     None
                 }
             }
+
             AnyIdentifierBindingLike::JsPrivateClassMemberName(member_name) => {
                 Selector::from_class_member(&member_name.parent::<AnyJsClassMember>()?)
             }
+
             AnyIdentifierBindingLike::JsLiteralExportName(export_name) => {
                 let parent = export_name.syntax().parent()?;
+
                 match parent.kind() {
                     JsSyntaxKind::JS_NAMED_IMPORT_SPECIFIER
                     | JsSyntaxKind::JS_EXPORT_NAMED_FROM_SPECIFIER => None,
@@ -1287,9 +1374,11 @@ impl Selector {
                             Some(Kind::ExportAlias.into())
                         }
                     }
+
                     _ => None,
                 }
             }
+
             AnyIdentifierBindingLike::TsLiteralEnumMemberName(_) => Some(Kind::EnumMember.into()),
             AnyIdentifierBindingLike::TsTypeParameterName(_) => Some(Kind::TypeParameter.into()),
         }
@@ -1310,30 +1399,39 @@ impl Selector {
             AnyJsClassMember::TsIndexSignatureClassMember(getter) => {
                 Selector::with_modifiers(Kind::IndexParameter, getter.modifiers())
             }
+
             AnyJsClassMember::JsGetterClassMember(getter) => {
                 Selector::with_modifiers(Kind::ClassGetter, getter.modifiers())
             }
+
             AnyJsClassMember::TsGetterSignatureClassMember(getter) => {
                 Selector::with_modifiers(Kind::ClassGetter, getter.modifiers())
             }
+
             AnyJsClassMember::JsMethodClassMember(method) => {
                 Selector::with_modifiers(Kind::ClassMethod, method.modifiers())
             }
+
             AnyJsClassMember::TsMethodSignatureClassMember(method) => {
                 Selector::with_modifiers(Kind::ClassMethod, method.modifiers())
             }
+
             AnyJsClassMember::JsPropertyClassMember(property) => {
                 Selector::with_modifiers(Kind::ClassProperty, property.modifiers())
             }
+
             AnyJsClassMember::TsPropertySignatureClassMember(property) => {
                 Selector::with_modifiers(Kind::ClassProperty, property.modifiers())
             }
+
             AnyJsClassMember::TsInitializedPropertySignatureClassMember(property) => {
                 Selector::with_modifiers(Kind::ClassProperty, property.modifiers())
             }
+
             AnyJsClassMember::JsSetterClassMember(setter) => {
                 Selector::with_modifiers(Kind::ClassSetter, setter.modifiers())
             }
+
             AnyJsClassMember::TsSetterSignatureClassMember(setter) => {
                 Selector::with_modifiers(Kind::ClassSetter, setter.modifiers())
             }
@@ -1354,9 +1452,11 @@ impl Selector {
             | AnyJsBindingDeclaration::JsObjectBindingPatternRest(_) => {
                 Self::from_parent_binding_pattern_declaration(&decl.parent_binding_pattern_declaration()?)
             }
+
             AnyJsBindingDeclaration::JsVariableDeclarator(var) => {
                 Selector::from_variable_declarator(var, Scope::from_declaration(decl)?)
             }
+
             AnyJsBindingDeclaration::JsArrowFunctionExpression(_)
             | AnyJsBindingDeclaration::JsBogusParameter(_)
             | AnyJsBindingDeclaration::JsFormalParameter(_)
@@ -1382,6 +1482,7 @@ impl Selector {
             | AnyJsBindingDeclaration::TsDeclareFunctionExportDefaultDeclaration(_) => {
                 Some(Selector::with_scope(Kind::Function, Scope::from_declaration(decl)?))
             }
+
             AnyJsBindingDeclaration::TsImportEqualsDeclaration(_)
             | AnyJsBindingDeclaration::JsDefaultImportSpecifier(_)
             | AnyJsBindingDeclaration::JsNamedImportSpecifier(_) => Some(Selector::with_scope(Kind::ImportAlias, Scope::Global)),
@@ -1398,6 +1499,7 @@ impl Selector {
                     scope: Scope::from_declaration(decl)?,
                 })
             }
+
             AnyJsBindingDeclaration::JsClassExportDefaultDeclaration(class) => {
                 Some(Selector {
                     kind: Kind::Class,
@@ -1409,9 +1511,11 @@ impl Selector {
                     scope: Scope::from_declaration(decl)?,
                 })
             }
+
             AnyJsBindingDeclaration::JsClassExpression(_) => {
                 Some(Selector::with_scope(Kind::Class, Scope::from_declaration(decl)?))
             }
+
             AnyJsBindingDeclaration::TsInterfaceDeclaration(_) => Some(Selector::with_scope(Kind::Interface, Scope::from_declaration(decl)?)),
             AnyJsBindingDeclaration::TsEnumDeclaration(_) => Some(Selector::with_scope(Kind::Enum, Scope::from_declaration(decl)?)),
             AnyJsBindingDeclaration::JsObjectBindingPatternShorthandProperty(_)
@@ -1427,6 +1531,7 @@ impl Selector {
 
     fn from_parent_binding_pattern_declaration(decl: &AnyJsBindingDeclaration) -> Option<Selector> {
         let scope = Scope::from_declaration(decl)?;
+
         if let AnyJsBindingDeclaration::JsVariableDeclarator(declarator) = decl {
             Selector::from_variable_declarator(declarator, scope)
         } else {
@@ -1439,13 +1544,16 @@ impl Selector {
             .syntax()
             .ancestors()
             .find_map(AnyJsVariableDeclaration::cast)?;
+
         let var_kind = var_declaration.variable_kind().ok()?;
+
         let kind = match var_kind {
             JsVariableKind::Const => Kind::Const,
             JsVariableKind::Let => Kind::Let,
             JsVariableKind::Using => Kind::Using,
             JsVariableKind::Var => Kind::Var,
         };
+
         Some(Selector::with_scope(kind, scope))
     }
 
@@ -1458,6 +1566,7 @@ impl Selector {
             | AnyJsObjectMember::JsShorthandPropertyObjectMember(_) => {
                 Some(Kind::ObjectLiteralProperty.into())
             }
+
             AnyJsObjectMember::JsSetterObjectMember(_) => Some(Kind::ObjectLiteralSetter.into()),
         }
     }
@@ -1474,6 +1583,7 @@ impl Selector {
                     Kind::IndexParameter.into()
                 })
             }
+
             AnyTsTypeMember::TsGetterSignatureTypeMember(_) => Some(Kind::TypeGetter.into()),
             AnyTsTypeMember::TsMethodSignatureTypeMember(_) => Some(Kind::TypeMethod.into()),
             AnyTsTypeMember::TsPropertySignatureTypeMember(property) => {
@@ -1483,6 +1593,7 @@ impl Selector {
                     Kind::TypeProperty.into()
                 })
             }
+
             AnyTsTypeMember::TsSetterSignatureTypeMember(_) => Some(Kind::TypeSetter.into()),
         }
     }
@@ -1491,6 +1602,7 @@ impl Selector {
     /// The preferred case comes first in the list.
     fn default_convention(self, options: &NamingConventionOptions) -> Convention {
         let kind = self.kind;
+
         match kind {
             Kind::TypeProperty if self.modifiers.contains(Modifier::Readonly) => Convention {
                 selector: Selector::with_modifiers(self.kind, Modifier::Readonly),
@@ -1514,6 +1626,7 @@ impl Selector {
                     formats: Formats(Case::Camel | Case::Pascal | Case::Constant),
                 }
             }
+
             Kind::Any | Kind::ExportAlias | Kind::ImportAlias => Convention {
                 selector: kind.into(),
                 matching: None,
@@ -1528,6 +1641,7 @@ impl Selector {
                     formats: Formats(Case::Camel | Case::Constant),
                 }
             }
+
             Kind::CatchParameter
             | Kind::ClassGetter
             | Kind::ClassMember
@@ -1753,6 +1867,7 @@ impl std::fmt::Display for Kind {
             Self::Var => "var",
             Self::Variable => "variable",
         };
+
         write!(f, "{repr}")
     }
 }
@@ -1818,6 +1933,7 @@ pub struct Modifiers(BitFlags<Modifier>);
 
 impl Deref for Modifiers {
     type Target = BitFlags<Modifier>;
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -1887,6 +2003,7 @@ impl std::fmt::Display for Modifiers {
         for value in self.0.iter() {
             write!(f, "{value} ")?;
         }
+
         Ok(())
     }
 }
@@ -1919,6 +2036,7 @@ impl Scope {
             AnyJsControlFlowRoot::can_cast(x.kind())
                 || x.kind() == JsSyntaxKind::TS_DECLARATION_MODULE
         })?;
+
         match control_flow_root.kind() {
             JsSyntaxKind::JS_MODULE
             | JsSyntaxKind::JS_SCRIPT
@@ -1940,6 +2058,7 @@ impl std::fmt::Display for Scope {
             Self::Any => "",
             Self::Global => "global ",
         };
+
         write!(f, "{repr}")
     }
 }
@@ -2020,6 +2139,7 @@ pub struct Formats(Cases);
 
 impl Deref for Formats {
     type Target = Cases;
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -2048,6 +2168,7 @@ impl JsonSchema for Formats {
     fn schema_name() -> String {
         "Formats".to_string()
     }
+
     fn json_schema(gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
         <std::collections::HashSet<Format>>::json_schema(gen)
     }
@@ -2059,12 +2180,15 @@ fn trim_underscore_dollar(name: &str) -> (usize, &str) {
         .bytes()
         .take_while(|c| matches!(c, b'_' | b'$'))
         .count();
+
     let name = &name[prefix_len..];
+
     let suffix_len = name
         .bytes()
         .rev()
         .take_while(|c| matches!(c, b'_' | b'$'))
         .count();
+
     let name = &name[..(name.len() - suffix_len)];
     (prefix_len, name)
 }

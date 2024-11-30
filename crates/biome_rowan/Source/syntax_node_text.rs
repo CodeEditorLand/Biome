@@ -15,6 +15,7 @@ pub struct SyntaxNodeText {
 impl SyntaxNodeText {
     pub(crate) fn new(node: SyntaxNode) -> SyntaxNodeText {
         let range = node.text_range();
+
         SyntaxNodeText { node, range }
     }
 
@@ -37,51 +38,71 @@ impl SyntaxNodeText {
 
     pub fn find_char(&self, c: char) -> Option<TextSize> {
         let mut acc: TextSize = 0.into();
+
         let res = self.try_for_each_chunk(|chunk| {
             if let Some(pos) = chunk.find(c) {
                 let pos: TextSize = (pos as u32).into();
+
                 return Err(acc + pos);
             }
+
             acc += TextSize::of(chunk);
+
             Ok(())
         });
+
         found(res)
     }
 
     pub fn char_at(&self, offset: TextSize) -> Option<char> {
         let mut start: TextSize = 0.into();
+
         let res = self.try_for_each_chunk(|chunk| {
             let end = start + TextSize::of(chunk);
+
             if start <= offset && offset < end {
                 let off: usize = u32::from(offset - start) as usize;
+
                 return Err(chunk[off..].chars().next().unwrap());
             }
+
             start = end;
+
             Ok(())
         });
+
         found(res)
     }
 
     pub fn slice<R: private::SyntaxTextRange>(&self, range: R) -> SyntaxNodeText {
         let start = range.start().unwrap_or_default();
+
         let end = range.end().unwrap_or_else(|| self.len());
+
         assert!(start <= end);
+
         let len = end - start;
+
         let start = self.range.start() + start;
+
         let end = start + len;
+
         assert!(
             start <= end,
             "invalid slice, range: {:?}, slice: {:?}",
             self.range,
             (range.start(), range.end()),
         );
+
         let range = TextRange::new(start, end);
+
         assert!(
             self.range.contains_range(range),
             "invalid slice, range: {:?}, slice: {:?}",
             self.range,
             range,
         );
+
         SyntaxNodeText {
             node: self.node.clone(),
             range,
@@ -95,6 +116,7 @@ impl SyntaxNodeText {
             }
 
             let text = &token.text()[range];
+
             match text.len().cmp(&prefix.len()) {
                 Ordering::Equal => return text == prefix,
                 Ordering::Greater => return text.starts_with(prefix),
@@ -130,10 +152,13 @@ impl SyntaxNodeText {
 
     pub fn for_each_chunk<F: FnMut(&str)>(&self, mut f: F) {
         enum Void {}
+
         let out = self.try_for_each_chunk(|chunk| {
             f(chunk);
+
             Ok::<(), Void>(())
         });
+
         match out {
             Ok(()) => (),
             Err(void) => match void {},
@@ -178,6 +203,7 @@ impl SyntaxNodeTokenWithRanges {
         let token_range = token.text_range();
 
         let range = text_range.intersect(token_range)?;
+
         Some((token, range - token_range.start()))
     }
 }
@@ -226,7 +252,9 @@ impl Iterator for SyntaxNodeTextChars {
 
             if self.index >= range.end() {
                 self.head = self.tail.next();
+
                 self.index = TextSize::default();
+
                 continue;
             }
 
@@ -239,6 +267,7 @@ impl Iterator for SyntaxNodeTextChars {
                 .unwrap();
 
             self.index += next_char.text_len();
+
             break Some(next_char);
         }
     }
@@ -277,7 +306,9 @@ impl PartialEq<str> for SyntaxNodeText {
             if !rhs.starts_with(chunk) {
                 return Err(());
             }
+
             rhs = &rhs[chunk.len()..];
+
             Ok(())
         })
         .is_ok()
@@ -308,8 +339,11 @@ impl PartialEq for SyntaxNodeText {
         if self.range.len() != other.range.len() {
             return false;
         }
+
         let mut lhs = self.tokens_with_ranges();
+
         let mut rhs = other.tokens_with_ranges();
+
         zip_texts(&mut lhs, &mut rhs).is_none()
             && lhs.all(|it| it.1.is_empty())
             && rhs.all(|it| it.1.is_empty())
@@ -318,21 +352,30 @@ impl PartialEq for SyntaxNodeText {
 
 fn zip_texts<I: Iterator<Item = (SyntaxToken, TextRange)>>(xs: &mut I, ys: &mut I) -> Option<()> {
     let mut x = xs.next()?;
+
     let mut y = ys.next()?;
+
     loop {
         while x.1.is_empty() {
             x = xs.next()?;
         }
+
         while y.1.is_empty() {
             y = ys.next()?;
         }
+
         let x_text = &x.0.text()[x.1];
+
         let y_text = &y.0.text()[y.1];
+
         if !(x_text.starts_with(y_text) || y_text.starts_with(x_text)) {
             return Some(());
         }
+
         let advance = std::cmp::min(x.1.len(), y.1.len());
+
         x.1 = TextRange::new(x.1.start() + advance, x.1.end());
+
         y.1 = TextRange::new(y.1.start() + advance, y.1.end());
     }
 }
@@ -346,6 +389,7 @@ mod private {
 
     pub trait SyntaxTextRange {
         fn start(&self) -> Option<TextSize>;
+
         fn end(&self) -> Option<TextSize>;
     }
 
@@ -353,6 +397,7 @@ mod private {
         fn start(&self) -> Option<TextSize> {
             Some(TextRange::start(*self))
         }
+
         fn end(&self) -> Option<TextSize> {
             Some(TextRange::end(*self))
         }
@@ -362,6 +407,7 @@ mod private {
         fn start(&self) -> Option<TextSize> {
             Some(self.start)
         }
+
         fn end(&self) -> Option<TextSize> {
             Some(self.end)
         }
@@ -371,6 +417,7 @@ mod private {
         fn start(&self) -> Option<TextSize> {
             Some(self.start)
         }
+
         fn end(&self) -> Option<TextSize> {
             None
         }
@@ -380,6 +427,7 @@ mod private {
         fn start(&self) -> Option<TextSize> {
             None
         }
+
         fn end(&self) -> Option<TextSize> {
             Some(self.end)
         }
@@ -389,6 +437,7 @@ mod private {
         fn start(&self) -> Option<TextSize> {
             None
         }
+
         fn end(&self) -> Option<TextSize> {
             None
         }
@@ -398,15 +447,20 @@ mod private {
 #[cfg(test)]
 mod tests {
     use crate::raw_language::{RawLanguage, RawLanguageKind, RawSyntaxTreeBuilder};
+
     use crate::SyntaxNode;
 
     fn build_tree(chunks: &[&str]) -> SyntaxNode<RawLanguage> {
         let mut builder = RawSyntaxTreeBuilder::new();
+
         builder.start_node(RawLanguageKind::ROOT);
+
         for &chunk in chunks.iter() {
             builder.token(RawLanguageKind::STRING_TOKEN, chunk);
         }
+
         builder.finish_node();
+
         builder.finish()
     }
 
@@ -414,28 +468,46 @@ mod tests {
     fn test_text_equality() {
         fn do_check(t1: &[&str], t2: &[&str]) {
             let t1 = build_tree(t1).text();
+
             let t2 = build_tree(t2).text();
+
             let expected = t1.to_string() == t2.to_string();
+
             let actual = t1 == t2;
+
             assert_eq!(expected, actual, "`{t1}` (SyntaxText) `{t2}` (SyntaxText)");
+
             let actual = t1 == *t2.to_string();
+
             assert_eq!(expected, actual, "`{t1}` (SyntaxText) `{t2}` (&str)");
         }
+
         fn check(t1: &[&str], t2: &[&str]) {
             do_check(t1, t2);
+
             do_check(t2, t1)
         }
 
         check(&[""], &[""]);
+
         check(&["a"], &[""]);
+
         check(&["a"], &["a"]);
+
         check(&["abc"], &["def"]);
+
         check(&["hello", "world"], &["hello", "world"]);
+
         check(&["hellowo", "rld"], &["hell", "oworld"]);
+
         check(&["hel", "lowo", "rld"], &["helloworld"]);
+
         check(&["{", "abc", "}"], &["{", "123", "}"]);
+
         check(&["{", "abc", "}", "{"], &["{", "123", "}"]);
+
         check(&["{", "abc", "}"], &["{", "123", "}", "{"]);
+
         check(&["{", "abc", "}ab"], &["{", "abc", "}", "ab"]);
     }
 
@@ -443,6 +515,7 @@ mod tests {
     fn test_chars() {
         fn check(t1: &[&str], expected: &str) {
             let t1 = build_tree(t1).text();
+
             let actual = t1.chars().collect::<String>();
 
             assert_eq!(
@@ -452,12 +525,19 @@ mod tests {
         }
 
         check(&[""], "");
+
         check(&["a"], "a");
+
         check(&["hello", "world"], "helloworld");
+
         check(&["hellowo", "rld"], "helloworld");
+
         check(&["hel", "lowo", "rld"], "helloworld");
+
         check(&["{", "abc", "}"], "{abc}");
+
         check(&["{", "abc", "}", "{"], "{abc}{");
+
         check(&["{", "abc", "}ab"], "{abc}ab");
     }
 }

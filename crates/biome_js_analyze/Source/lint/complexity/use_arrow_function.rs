@@ -78,22 +78,29 @@ declare_lint_rule! {
 
 impl Rule for UseArrowFunction {
     type Query = ActualThisScope;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let AnyThisScopeMetadata { scope, has_this } = ctx.query();
+
         if *has_this {
             return None;
         }
+
         let AnyThisScope::JsFunctionExpression(function_expression) = scope else {
             return None;
         };
+
         if function_expression.star_token().is_some() || function_expression.id().is_some() {
             // Ignore generators and function with a name.
             return None;
         }
+
         let has_this_parameter = function_expression
             .parameters()
             .ok()?
@@ -102,10 +109,12 @@ impl Rule for UseArrowFunction {
             .nth(0)
             .and_then(|param| param.ok())
             .is_some_and(|param| param.as_ts_this_parameter().is_some());
+
         if has_this_parameter {
             // Ignore functions that explicitly declare a `this` type.
             return None;
         }
+
         let requires_prototype = function_expression
             .syntax()
             .ancestors()
@@ -117,10 +126,12 @@ impl Rule for UseArrowFunction {
                     JsSyntaxKind::JS_NEW_EXPRESSION | JsSyntaxKind::JS_EXTENDS_CLAUSE
                 )
             });
+
         if requires_prototype {
             // Ignore cases where a prototype is required
             return None;
         }
+
         Some(())
     }
 
@@ -141,20 +152,25 @@ impl Rule for UseArrowFunction {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let AnyThisScopeMetadata { scope, .. } = ctx.query();
+
         let AnyThisScope::JsFunctionExpression(function_expression) = scope else {
             return None;
         };
+
         let mut arrow_function_builder = make::js_arrow_function_expression(
             function_expression.parameters().ok()?.into(),
             make::token(T![=>]).with_trailing_trivia([(TriviaPieceKind::Whitespace, " ")]),
             to_arrow_body(function_expression.body().ok()?),
         );
+
         if let Some(async_token) = function_expression.async_token() {
             arrow_function_builder = arrow_function_builder.with_async_token(async_token);
         }
+
         if let Some(type_parameters) = function_expression.type_parameters() {
             let mut type_parameters_iter =
                 type_parameters.items().iter().filter_map(|item| item.ok());
+
             let type_parameter = type_parameters_iter.next();
             // Keep a trailing comma when there is a single type parameter in arrow functions and JSX is enabled
             // Or the parser will treat it as a JSX tag and fail to parse it.
@@ -170,23 +186,30 @@ impl Rule for UseArrowFunction {
             } else {
                 type_parameters
             };
+
             arrow_function_builder = arrow_function_builder.with_type_parameters(type_parameters);
         }
+
         if let Some(return_type_annotation) = function_expression.return_type_annotation() {
             arrow_function_builder =
                 arrow_function_builder.with_return_type_annotation(return_type_annotation);
         }
+
         let arrow_function = arrow_function_builder.build();
+
         let arrow_function = if needs_parentheses(function_expression) {
             AnyJsExpression::from(make::parenthesized(arrow_function.trim_trailing_trivia()?))
         } else {
             AnyJsExpression::from(arrow_function)
         };
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(
             AnyJsExpression::from(function_expression.clone()),
             arrow_function,
         );
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -268,8 +291,11 @@ impl QueryMatch for ActualThisScope {
 
 impl Queryable for ActualThisScope {
     type Input = Self;
+
     type Language = JsLanguage;
+
     type Output = AnyThisScopeMetadata;
+
     type Services = ();
 
     fn build_visitor(
@@ -318,6 +344,7 @@ impl Visitor for AnyThisScopeVisitor {
                     }
                 }
             }
+
             WalkEvent::Leave(node) => {
                 if AnyThisScope::can_cast(node.kind()) {
                     if let Some(scope_metadata) = self.stack.pop() {
@@ -332,20 +359,26 @@ impl Visitor for AnyThisScopeVisitor {
 /// Get a minimal arrow function body from a regular function body.
 fn to_arrow_body(body: JsFunctionBody) -> AnyJsFunctionBody {
     let directives = body.directives();
+
     let body_statements = body.statements();
+
     let early_result = AnyJsFunctionBody::from(body);
+
     if !directives.is_empty() {
         // The function body has at least one directive.
         // e.g. `function() { "directive"; return 0; }`
         return early_result;
     }
+
     let Some(AnyJsStatement::JsReturnStatement(return_statement)) = body_statements.iter().next()
     else {
         return early_result;
     };
+
     let Some(return_arg) = return_statement.argument() else {
         return early_result;
     };
+
     if body_statements.syntax().has_comments_direct()
         || return_statement.syntax().has_comments_direct()
         || return_arg.syntax().has_comments_direct()
@@ -353,6 +386,7 @@ fn to_arrow_body(body: JsFunctionBody) -> AnyJsFunctionBody {
         // To keep comments, we keep the regular function body
         return early_result;
     }
+
     if matches!(
         return_arg,
         AnyJsExpression::JsSequenceExpression(_) | AnyJsExpression::JsObjectExpression(_)

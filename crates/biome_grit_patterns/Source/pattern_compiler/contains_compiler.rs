@@ -11,6 +11,7 @@ impl ContainsCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Contains<GritQueryContext>, CompileError> {
         let contains = PatternCompiler::from_maybe_curly_node(&node.contains()?, context)?;
+
         let until = node
             .until_clause()
             .map(|node| PatternCompiler::from_node(&node.until()?, context))

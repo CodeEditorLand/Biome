@@ -30,30 +30,47 @@ impl FormatNodeRule<JsObjectExpression> for FormatJsObjectExpression {
 #[cfg(test)]
 mod tests {
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsObjectExpression;
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("class A extends ({}) {}", JsObjectExpression);
+
         assert_needs_parentheses!("({a: 5})", JsObjectExpression);
+
         assert_needs_parentheses!("a => ({ a: 5})", JsObjectExpression);
 
         assert_needs_parentheses!("a => ({ a: 'test' })`template`", JsObjectExpression);
+
         assert_needs_parentheses!("({ a: 'test' }).member", JsObjectExpression);
+
         assert_needs_parentheses!("({ a: 'test' })[member]", JsObjectExpression);
+
         assert_needs_parentheses!("({ a: 'test' })()", JsObjectExpression);
+
         assert_needs_parentheses!("new ({ a: 'test' })()", JsObjectExpression);
+
         assert_needs_parentheses!("({ a: 'test' }) as number", JsObjectExpression);
+
         assert_needs_parentheses!("({ a: 'test' })!", JsObjectExpression);
+
         assert_needs_parentheses!("({ a: 'test' }), b, c", JsObjectExpression);
+
         assert_needs_parentheses!("({ a: 'test' }) + 5", JsObjectExpression);
+
         assert_needs_parentheses!("({ a: 'test' }) && true", JsObjectExpression);
+
         assert_needs_parentheses!("({ a: 'test' }) instanceof A", JsObjectExpression);
+
         assert_needs_parentheses!("({ a: 'test' }) in B", JsObjectExpression);
 
         assert_not_needs_parentheses!("() => ({}, a);", JsObjectExpression);
+
         assert_not_needs_parentheses!("() => (a = {});", JsObjectExpression);
+
         assert_not_needs_parentheses!("() => ({}.prop = 0);", JsObjectExpression);
+
         assert_not_needs_parentheses!("() => ({}['prop'] = 0);", JsObjectExpression);
     }
 }

@@ -40,6 +40,7 @@ impl FormatRule<SourceComment<JsLanguage>> for FormatJsLeadingComment {
 
             // SAFETY: Safe, `is_alignable_comment` only returns `true` for multiline comments
             let first_line = lines.next().unwrap();
+
             write!(f, [dynamic_text(first_line.trim_end(), source_offset)])?;
 
             source_offset += first_line.text_len();
@@ -159,6 +160,7 @@ fn handle_typecast_comment(comment: DecoratedComment<JsLanguage>) -> CommentPlac
         Some(following_node) if is_type_comment(comment.piece()) => {
             CommentPlacement::leading(following_node.clone(), comment)
         }
+
         _ => CommentPlacement::Default(comment),
     }
 }
@@ -217,6 +219,7 @@ fn handle_after_arrow_fat_arrow_comment(
             return CommentPlacement::leading(following_node.clone(), comment);
         }
     }
+
     CommentPlacement::Default(comment)
 }
 
@@ -322,9 +325,11 @@ fn handle_continue_break_comment(
                 {
                     CommentPlacement::trailing(parent, comment)
                 }
+
                 _ => CommentPlacement::trailing(enclosing.clone(), comment),
             }
         }
+
         _ => CommentPlacement::Default(comment),
     }
 }
@@ -368,6 +373,7 @@ fn handle_switch_default_case_comment(
         if comment.preceding_node().is_some() {
             return CommentPlacement::Default(comment);
         }
+
         return CommentPlacement::dangling(comment.enclosing_node().clone(), comment);
     };
 
@@ -381,6 +387,7 @@ fn handle_labelled_statement_comment(
         JsSyntaxKind::JS_LABELED_STATEMENT => {
             CommentPlacement::leading(comment.enclosing_node().clone(), comment)
         }
+
         _ => CommentPlacement::Default(comment),
     }
 }
@@ -400,6 +407,7 @@ fn handle_declare_comment(comment: DecoratedComment<JsLanguage>) -> CommentPlace
                     // Global declarations have no identifier, so keep at default
                     CommentPlacement::Default(comment)
                 }
+
                 JsSyntaxKind::TS_MODULE_DECLARATION
                 | JsSyntaxKind::TS_ENUM_DECLARATION
                 | JsSyntaxKind::TS_INTERFACE_DECLARATION
@@ -410,28 +418,36 @@ fn handle_declare_comment(comment: DecoratedComment<JsLanguage>) -> CommentPlace
                     if let Some(first_child) = following.first_child() {
                         return CommentPlacement::leading(first_child.clone(), comment);
                     }
+
                     CommentPlacement::Default(comment)
                 }
+
                 JsSyntaxKind::JS_CLASS_DECLARATION => {
                     if let Some(first_child) = following.first_child() {
                         if let Some(second_child) = first_child.next_sibling() {
                             return CommentPlacement::leading(second_child.clone(), comment);
                         }
                     }
+
                     CommentPlacement::Default(comment)
                 }
+
                 JsSyntaxKind::JS_VARIABLE_DECLARATION_CLAUSE => {
                     let first_identifier = following
                         .descendants()
                         .find(|node| node.kind() == JsSyntaxKind::JS_IDENTIFIER_BINDING);
+
                     if let Some(first_identifier_exists) = first_identifier {
                         return CommentPlacement::leading(first_identifier_exists.clone(), comment);
                     }
+
                     CommentPlacement::Default(comment)
                 }
+
                 _ => CommentPlacement::Default(comment),
             }
         }
+
         _ => CommentPlacement::Default(comment),
     }
 }
@@ -608,9 +624,11 @@ fn handle_root_comments(comment: DecoratedComment<JsLanguage>) -> CommentPlaceme
             AnyJsRoot::JsModule(module) => {
                 module.directives().is_empty() && module.items().is_empty()
             }
+
             AnyJsRoot::JsScript(script) => {
                 script.directives().is_empty() && script.statements().is_empty()
             }
+
             AnyJsRoot::TsDeclarationModule(module) => {
                 module.directives().is_empty() && module.items().is_empty()
             }
@@ -637,6 +655,7 @@ fn handle_member_expression_comment(
         {
             following
         }
+
         _ => return CommentPlacement::Default(comment),
     };
 
@@ -714,6 +733,7 @@ fn handle_conditional_comment(
     //   : {};
     // ```
     let token = comment.piece().as_piece().token();
+
     let is_after_operator = conditional.colon_token().as_ref() == Ok(&token)
         || conditional.question_mark_token().as_ref() == Ok(&token);
 
@@ -803,7 +823,9 @@ fn handle_if_statement_comment(
                 // Handle comments before `else`
                 if following.kind() == JsSyntaxKind::JS_ELSE_CLAUSE {
                     let consequent = preceding.clone();
+
                     let if_statement = comment.enclosing_node().clone();
+
                     return handle_else_clause(comment, consequent, if_statement);
                 }
             }
@@ -866,6 +888,7 @@ fn handle_if_statement_comment(
                 }
             }
         }
+
         _ => {
             // fall through
         }
@@ -966,6 +989,7 @@ fn handle_try_comment(comment: DecoratedComment<JsLanguage>) -> CommentPlacement
 
             following
         }
+
         Some(following)
             if matches!(
                 comment.enclosing_node().kind(),
@@ -974,6 +998,7 @@ fn handle_try_comment(comment: DecoratedComment<JsLanguage>) -> CommentPlacement
         {
             following
         }
+
         _ => return CommentPlacement::Default(comment),
     };
 
@@ -1043,6 +1068,7 @@ fn handle_variable_declarator_comment(
     }
 
     let enclosing = comment.enclosing_node();
+
     match enclosing.kind() {
         JsSyntaxKind::JS_ASSIGNMENT_EXPRESSION | JsSyntaxKind::TS_TYPE_ALIAS_DECLARATION => {
             // Makes all comments preceding objects/arrays/templates or block comments leading comments of these nodes.
@@ -1054,6 +1080,7 @@ fn handle_variable_declarator_comment(
                 return CommentPlacement::leading(following.clone(), comment);
             }
         }
+
         JsSyntaxKind::JS_VARIABLE_DECLARATOR => {
             let variable_declarator = JsVariableDeclarator::unwrap_cast(enclosing.clone());
 
@@ -1072,11 +1099,13 @@ fn handle_variable_declarator_comment(
                 {
                     return CommentPlacement::leading(initializer.into_syntax(), comment);
                 }
+
                 _ => {
                     // fall through
                 }
             }
         }
+
         JsSyntaxKind::JS_INITIALIZER_CLAUSE => {
             let parent_kind = enclosing.parent().kind();
 
@@ -1105,6 +1134,7 @@ fn handle_variable_declarator_comment(
                 }
             }
         }
+
         _ => {
             // fall through
         }
@@ -1146,6 +1176,7 @@ fn handle_parameter_comment(comment: DecoratedComment<JsLanguage>) -> CommentPla
                 return CommentPlacement::leading(comment.enclosing_node().clone(), comment);
             }
         }
+
         JsSyntaxKind::JS_INITIALIZER_CLAUSE => {
             if let Some(parameter) = comment
                 .enclosing_node()
@@ -1168,6 +1199,7 @@ fn handle_parameter_comment(comment: DecoratedComment<JsLanguage>) -> CommentPla
                 }
             }
         }
+
         _ => {
             // fall through
         }
@@ -1227,6 +1259,7 @@ fn handle_union_type_comment(
         (JsSyntaxKind::TS_UNION_TYPE, Some(preceding)) => {
             CommentPlacement::trailing(preceding.clone(), comment)
         }
+
         _ => CommentPlacement::Default(comment),
     }
 }
@@ -1281,6 +1314,7 @@ fn handle_import_export_specifier_comment(
                     }
                 }
             }
+
             CommentPlacement::Default(comment)
         }
 
@@ -1300,6 +1334,7 @@ fn handle_class_method_comment(
     comment: DecoratedComment<JsLanguage>,
 ) -> CommentPlacement<JsLanguage> {
     let enclosing_node = comment.enclosing_node();
+
     match enclosing_node.kind() {
         JsSyntaxKind::JS_METHOD_CLASS_MEMBER => {
             if let Some(following_token) = comment.following_token() {
@@ -1312,8 +1347,10 @@ fn handle_class_method_comment(
                     }
                 }
             }
+
             CommentPlacement::Default(comment)
         }
+
         _ => CommentPlacement::Default(comment),
     }
 }
@@ -1322,6 +1359,7 @@ fn handle_import_named_clause_comments(
     comment: DecoratedComment<JsLanguage>,
 ) -> CommentPlacement<JsLanguage> {
     let enclosing_node = comment.enclosing_node();
+
     match enclosing_node.kind() {
         JsSyntaxKind::JS_IMPORT_NAMED_CLAUSE => {
             if let Some(import_specifiers) = comment
@@ -1349,6 +1387,7 @@ fn handle_import_named_clause_comments(
                     let is_after_from_keyword = comment
                         .following_token()
                         .map_or(true, |token| token.kind() != JsSyntaxKind::FROM_KW);
+
                     if is_after_from_keyword {
                         if let Some(following_node) = comment.following_node() {
                             return CommentPlacement::leading(following_node.clone(), comment);
@@ -1356,8 +1395,10 @@ fn handle_import_named_clause_comments(
                     }
                 }
             }
+
             CommentPlacement::Default(comment)
         }
+
         _ => CommentPlacement::Default(comment),
     }
 }

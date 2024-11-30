@@ -50,6 +50,7 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
     /// It allows to structurally share underlying trees.
     pub fn with_cache(cache: &mut NodeCache) -> TreeBuilder<'_, L, S> {
         cache.increment_generation();
+
         TreeBuilder {
             cache: CowMut::Borrowed(cache),
             parents: Vec::new(),
@@ -70,9 +71,13 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
         F: Fn(&mut Self),
     {
         let mut builder = TreeBuilder::<L, S>::new();
+
         builder.start_node(kind);
+
         build(&mut builder);
+
         builder.finish_node();
+
         builder.finish()
     }
 
@@ -80,7 +85,9 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
     #[inline]
     pub fn token(&mut self, kind: L::Kind, text: &str) -> &mut Self {
         let (hash, token) = self.cache.token(kind.to_raw(), text);
+
         self.children.push((hash, token.into()));
+
         self
     }
 
@@ -96,6 +103,7 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
         let (hash, token) = self
             .cache
             .token_with_trivia(kind.to_raw(), text, leading, trailing);
+
         self.children.push((hash, token.into()));
     }
 
@@ -103,7 +111,9 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
     #[inline]
     pub fn start_node(&mut self, kind: L::Kind) -> &mut Self {
         let len = self.children.len();
+
         self.parents.push((kind, len));
+
         self
     }
 
@@ -112,9 +122,11 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
     #[inline]
     pub fn finish_node(&mut self) -> &mut Self {
         let (kind, first_child) = self.parents.pop().unwrap();
+
         let raw_kind = kind.to_raw();
 
         let slots = &self.children[first_child..];
+
         let node_entry = self.cache.node(raw_kind, slots);
 
         let mut build_node = || {
@@ -131,6 +143,7 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
                 let hash = entry.cache(node.clone());
                 (hash, node)
             }
+
             NodeCacheNodeEntryMut::Cached(cached) => {
                 self.children.truncate(first_child);
                 (cached.hash(), cached.node().to_owned())
@@ -138,6 +151,7 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
         };
 
         self.children.push((hash, node.into()));
+
         self
     }
 
@@ -176,6 +190,7 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
     #[inline]
     pub fn start_node_at(&mut self, checkpoint: Checkpoint, kind: L::Kind) {
         let checkpoint = checkpoint.into_inner();
+
         assert!(
             checkpoint <= self.children.len(),
             "checkpoint no longer valid, was finish_node called early?"
@@ -198,7 +213,9 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
     #[must_use]
     pub fn finish(mut self) -> SyntaxNode<L> {
         let root = SyntaxNode::new_root(self.finish_green());
+
         self.cache.retain_cache();
+
         root
     }
 
@@ -206,6 +223,7 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
     #[must_use]
     pub(crate) fn finish_green(&mut self) -> GreenNode {
         assert_eq!(self.children.len(), 1);
+
         match self.children.pop().unwrap().1 {
             NodeOrToken::Node(node) => node,
             _ => panic!(),
@@ -216,7 +234,9 @@ impl<L: Language, S: SyntaxFactory<Kind = L::Kind>> TreeBuilder<'_, L, S> {
 #[cfg(test)]
 mod tests {
     use crate::green::GreenElementRef;
+
     use crate::raw_language::{RawLanguageKind, RawSyntaxTreeBuilder};
+
     use crate::{GreenNodeData, GreenTokenData, NodeOrToken};
 
     // Builds a "Condition" like structure where the closing ) is missing
@@ -226,7 +246,9 @@ mod tests {
         builder.token(RawLanguageKind::L_PAREN_TOKEN, "(");
 
         builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
         builder.token(RawLanguageKind::STRING_TOKEN, "a");
+
         builder.finish_node();
 
         // missing )
@@ -240,15 +262,19 @@ mod tests {
 
         builder.start_node(RawLanguageKind::ROOT); // Root
         build_condition_with_missing_closing_parenthesis(&mut builder);
+
         build_condition_with_missing_closing_parenthesis(&mut builder);
+
         builder.finish_node();
 
         let root = builder.finish_green();
 
         let first = root.children().next().unwrap();
+
         let last = root.children().last().unwrap();
 
         assert_eq!(first.element(), last.element());
+
         assert_same_elements(first.element(), last.element());
     }
 
@@ -265,7 +291,9 @@ mod tests {
         builder.token(RawLanguageKind::L_PAREN_TOKEN, "(");
 
         builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
         builder.token(RawLanguageKind::STRING_TOKEN, "a");
+
         builder.finish_node();
 
         // missing )
@@ -277,7 +305,9 @@ mod tests {
         builder.finish_node();
 
         let root = builder.finish_green();
+
         let first_condition = root.children().next().unwrap();
+
         let last_condition = root.children().last().unwrap();
 
         assert_ne!(first_condition.element(), last_condition.element());

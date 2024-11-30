@@ -43,11 +43,17 @@ impl Default for GritFormatterSettings {
 
 impl ServiceLanguage for GritLanguage {
     type FormatterSettings = GritFormatterSettings;
+
     type LinterSettings = ();
+
     type OrganizeImportsSettings = ();
+
     type FormatOptions = GritFormatOptions;
+
     type ParserSettings = ();
+
     type EnvironmentSettings = ();
+
     fn lookup_settings(
         languages: &crate::settings::LanguageListSettings,
     ) -> &crate::settings::LanguageSettings<Self> {
@@ -65,10 +71,12 @@ impl ServiceLanguage for GritLanguage {
             .and_then(|l| l.indent_style)
             .or(global.and_then(|g| g.indent_style))
             .unwrap_or_default();
+
         let line_width = language
             .and_then(|l| l.line_width)
             .or(global.and_then(|g| g.line_width))
             .unwrap_or_default();
+
         let indent_width = language
             .and_then(|l| l.indent_width)
             .or(global.and_then(|g| g.indent_width))
@@ -84,6 +92,7 @@ impl ServiceLanguage for GritLanguage {
             .with_indent_width(indent_width)
             .with_line_width(line_width)
             .with_line_ending(line_ending);
+
         if let Some(overrides) = overrides {
             overrides.to_override_grit_format_options(path, options)
         } else {
@@ -154,7 +163,9 @@ fn parse(
 
 fn debug_syntax_tree(_rome_path: &BiomePath, parse: AnyParse) -> GetSyntaxTreeResult {
     let syntax: GritSyntaxNode = parse.syntax();
+
     let tree: GritRoot = parse.tree();
+
     GetSyntaxTreeResult {
         cst: format!("{syntax:#?}"),
         ast: format!("{tree:#?}"),
@@ -170,9 +181,11 @@ fn debug_formatter_ir(
     let options = settings.format_options::<GritLanguage>(biome_path, document_file_source);
 
     let tree = parse.syntax();
+
     let formatted = format_node(options, &tree)?;
 
     let root_element = formatted.into_document();
+
     Ok(root_element.to_string())
 }
 
@@ -188,6 +201,7 @@ fn format(
     tracing::debug!("Format with the following options: \n{}", options);
 
     let tree = parse.syntax();
+
     let formatted = format_node(options, &tree)?;
 
     match formatted.print() {
@@ -207,7 +221,9 @@ fn format_range(
     let options = settings.format_options::<GritLanguage>(biome_path, document_file_source);
 
     let tree = parse.syntax();
+
     let printed = biome_grit_formatter::format_range(options, &tree, range)?;
+
     Ok(printed)
 }
 
@@ -224,6 +240,7 @@ fn format_on_type(
     let tree = parse.syntax();
 
     let range = tree.text_range();
+
     if offset < range.start() || offset > range.end() {
         return Err(WorkspaceError::FormatError(FormatError::RangeError {
             input: TextRange::at(offset, TextSize::from(0)),
@@ -246,6 +263,7 @@ fn format_on_type(
     };
 
     let printed = format_sub_tree(options, &root_node)?;
+
     Ok(printed)
 }
 
@@ -253,10 +271,13 @@ fn format_on_type(
 fn lint(params: LintParams) -> LintResults {
     let _ = debug_span!("Linting Grit file", path =? params.path, language =? params.language)
         .entered();
+
     let diagnostics = params.parse.into_diagnostics();
 
     let diagnostic_count = diagnostics.len() as u32;
+
     let skipped_diagnostics = diagnostic_count.saturating_sub(diagnostics.len() as u32);
+
     let errors = diagnostics
         .iter()
         .filter(|diag| diag.severity() <= Severity::Error)

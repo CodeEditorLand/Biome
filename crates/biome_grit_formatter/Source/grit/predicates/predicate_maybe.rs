@@ -10,6 +10,7 @@ impl FormatNodeRule<GritPredicateMaybe> for FormatGritPredicateMaybe {
             predicate,
             maybe_token,
         } = node.as_fields();
+
         write!(f, [maybe_token.format(), space(), predicate.format()])
     }
 }

@@ -6,6 +6,7 @@ use biome_json_syntax::AnyJsonValue;
 pub(crate) struct FormatAnyJsonValue;
 impl FormatRule<AnyJsonValue> for FormatAnyJsonValue {
     type Context = JsonFormatContext;
+
     fn fmt(&self, node: &AnyJsonValue, f: &mut JsonFormatter) -> FormatResult<()> {
         match node {
             AnyJsonValue::JsonArrayValue(node) => node.format().fmt(f),

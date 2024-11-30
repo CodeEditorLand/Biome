@@ -2037,6 +2037,7 @@ fn test_order() {
     for items in DOM.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in WEB_WORKER.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }

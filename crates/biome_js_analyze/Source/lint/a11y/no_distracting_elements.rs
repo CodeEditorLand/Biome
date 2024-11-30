@@ -48,13 +48,18 @@ declare_lint_rule! {
 
 impl Rule for NoDistractingElements {
     type Query = Ast<AnyJsxElement>;
+
     type State = JsSyntaxToken;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let element = ctx.query();
+
         let name = element.name_value_token().ok()?;
+
         match name.text_trimmed() {
             "marquee" | "blink" => Some(name),
             _ => None,
@@ -63,6 +68,7 @@ impl Rule for NoDistractingElements {
 
     fn diagnostic(ctx: &RuleContext<Self>, name: &Self::State) -> Option<RuleDiagnostic> {
         let element = ctx.query();
+
         let diagnostic = RuleDiagnostic::new(
             rule_category!(),
             element.range(),
@@ -77,7 +83,9 @@ impl Rule for NoDistractingElements {
 
     fn action(ctx: &RuleContext<Self>, name: &Self::State) -> Option<JsRuleAction> {
         let element = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         mutation.remove_node(element.clone());
 
         Some(JsRuleAction::new(

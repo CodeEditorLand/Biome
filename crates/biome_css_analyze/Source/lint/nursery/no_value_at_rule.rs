@@ -38,8 +38,11 @@ declare_lint_rule! {
 
 impl Rule for NoValueAtRule {
     type Query = Ast<CssAtRule>;
+
     type State = CssAtRule;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -54,6 +57,7 @@ impl Rule for NoValueAtRule {
 
     fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
         let span = node.range();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

@@ -18,12 +18,14 @@ impl YamlArrayInline {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_items(self, element: YamlArrayInlineList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_r_brack_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -38,6 +40,7 @@ impl YamlArrayItem {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_item(self, element: AnyYamlValue) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -52,6 +55,7 @@ impl YamlBlockFolded {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_value(self, element: YamlBlockValue) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -66,6 +70,7 @@ impl YamlBlockLiteral {
                 .splice_slots(0usize..=0usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_value(self, element: YamlBlockValue) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -96,12 +101,14 @@ impl YamlDocument {
                 .splice_slots(0usize..=0usize, once(element.map(|element| element.into()))),
         )
     }
+
     pub fn with_body(self, element: AnyYamlValue) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_dotdotdot_token(self, element: Option<SyntaxToken>) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -148,12 +155,14 @@ impl YamlObjectMember {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_colon_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into()))),
         )
     }
+
     pub fn with_value(self, element: AnyYamlValue) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -168,12 +177,14 @@ impl YamlRoot {
                 .splice_slots(0usize..=0usize, once(element.map(|element| element.into()))),
         )
     }
+
     pub fn with_documents(self, element: YamlDocumentList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_eof_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax

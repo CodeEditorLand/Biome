@@ -57,16 +57,21 @@ declare_lint_rule! {
 
 impl Rule for NoNegationElse {
     type Query = Ast<AnyJsCondition>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         match node {
             AnyJsCondition::JsConditionalExpression(expr) => {
                 is_negation(&expr.test().ok()?).then_some(())
             }
+
             AnyJsCondition::JsIfStatement(stmt) => (!matches!(
                 stmt.else_clause()?.alternate().ok()?,
                 AnyJsStatement::JsIfStatement(_)
@@ -77,6 +82,7 @@ impl Rule for NoNegationElse {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),
@@ -88,24 +94,32 @@ impl Rule for NoNegationElse {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         match node.clone() {
             AnyJsCondition::JsConditionalExpression(node) => {
                 let test = node.test().ok()?;
+
                 let negated_test = test.as_js_unary_expression()?.argument().ok()?;
+
                 let new_node = node
                     .clone()
                     .with_test(negated_test)
                     .with_consequent(node.alternate().ok()?)
                     .with_colon_token(make::token_decorated_with_space(T![:]))
                     .with_alternate(node.consequent().ok()?);
+
                 mutation.replace_node(node, new_node);
             }
+
             AnyJsCondition::JsIfStatement(node) => {
                 let test = node.test().ok()?;
+
                 let negated_test = test.as_js_unary_expression()?.argument().ok()?;
+
                 let else_clause = node.else_clause()?;
+
                 let new_node = node
                     .clone()
                     .with_test(negated_test)
@@ -115,6 +129,7 @@ impl Rule for NoNegationElse {
                             .with_else_token(make::token_decorated_with_space(T![else]))
                             .with_alternate(node.consequent().ok()?),
                     ));
+
                 mutation.replace_node(node, new_node);
             }
         }
@@ -140,8 +155,10 @@ fn is_negation(node: &AnyJsExpression) -> bool {
                 // e.g. `!!0`
                 return inner_unary.operator() != Ok(JsUnaryOperator::LogicalNot);
             }
+
             return true;
         }
     }
+
     false
 }

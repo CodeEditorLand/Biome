@@ -22,15 +22,18 @@ impl<'ctx, 'app> WorkspaceFile<'ctx, 'app> {
         path: &Path,
     ) -> Result<Self, Error> {
         let biome_path = BiomePath::new(path);
+
         let open_options = OpenOptions::default()
             .read(true)
             .write(ctx.execution.requires_write_access());
+
         let mut file = ctx
             .fs
             .open_with_options(path, open_options)
             .with_file_path(path.display().to_string())?;
 
         let mut input = String::new();
+
         file.read_to_string(&mut input)
             .with_file_path(path.display().to_string())?;
 
@@ -71,8 +74,10 @@ impl<'ctx, 'app> WorkspaceFile<'ctx, 'app> {
         self.file
             .set_content(new_content.as_bytes())
             .with_file_path(self.path.display().to_string())?;
+
         self.guard
             .change_file(self.file.file_version(), new_content)?;
+
         Ok(())
     }
 }

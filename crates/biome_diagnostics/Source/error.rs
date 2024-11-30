@@ -144,6 +144,7 @@ mod tests {
     impl Drop for TestDiagnostic {
         fn drop(&mut self) {
             let was_dropped = self.0.swap(true, Ordering::Relaxed);
+
             assert!(!was_dropped);
         }
     }
@@ -151,11 +152,13 @@ mod tests {
     #[test]
     fn test_drop() {
         let drop_flag = AtomicBool::new(false);
+
         let drop_flag = Arc::new(drop_flag);
 
         let diag = TestDiagnostic(drop_flag.clone());
 
         let error = Error::from(diag);
+
         drop(error);
 
         assert!(drop_flag.load(Ordering::Relaxed));

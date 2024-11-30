@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsExpression;
 pub(crate) struct FormatAnyJsExpression;
 impl FormatRule<AnyJsExpression> for FormatAnyJsExpression {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsExpression, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsExpression::AnyJsLiteralExpression(node) => node.format().fmt(f),

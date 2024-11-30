@@ -146,13 +146,17 @@ macro_rules! merge_node_visitors {
                         $(
                             if <<$visitor as $crate::NodeVisitor<$name>>::Node as ::biome_rowan::AstNode>::can_cast(kind) {
                                 let node = <<$visitor as $crate::NodeVisitor<$name>>::Node as ::biome_rowan::AstNode>::unwrap_cast(node.clone());
+
                                 let state = <$visitor as $crate::NodeVisitor<$name>>::enter(node, &mut ctx, self);
 
                                 let stack_index = self.stack.len();
+
                                 let ty_index = self.$id.len();
 
                                 self.$id.push((stack_index, state));
+
                                 self.stack.push((::std::any::TypeId::of::<$visitor>(), ty_index));
+
                                 return;
                             }
                         )*
@@ -163,10 +167,12 @@ macro_rules! merge_node_visitors {
                         $(
                             if <<$visitor as $crate::NodeVisitor<$name>>::Node as ::biome_rowan::AstNode>::can_cast(kind) {
                                 self.stack.pop().unwrap();
+
                                 let (_, state) = self.$id.pop().unwrap();
 
                                 let node = <<$visitor as $crate::NodeVisitor<$name>>::Node as ::biome_rowan::AstNode>::unwrap_cast(node.clone());
                                 <$visitor as $crate::NodeVisitor<$name>>::exit(state, node, &mut ctx, self);
+
                                 return;
                             }
                         )*

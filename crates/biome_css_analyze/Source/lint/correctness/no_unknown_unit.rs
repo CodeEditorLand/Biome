@@ -75,8 +75,11 @@ pub struct NoUnknownUnitState {
 
 impl Rule for NoUnknownUnit {
     type Query = Ast<AnyCssDimension>;
+
     type State = NoUnknownUnitState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -85,6 +88,7 @@ impl Rule for NoUnknownUnit {
         match node {
             AnyCssDimension::CssUnknownDimension(dimension) => {
                 let unit_token = dimension.unit_token().ok()?;
+
                 let unit = unit_token.text_trimmed().to_string();
 
                 Some(NoUnknownUnitState {
@@ -92,8 +96,10 @@ impl Rule for NoUnknownUnit {
                     span: unit_token.text_trimmed_range(),
                 })
             }
+
             AnyCssDimension::CssRegularDimension(dimension) => {
                 let unit_token = dimension.unit_token().ok()?;
+
                 let unit = unit_token.text_trimmed().to_string();
 
                 // The `x` unit is parsed as `CssRegularDimension`, but it is used for describing resolutions.
@@ -110,14 +116,17 @@ impl Rule for NoUnknownUnit {
                                     .ok()?
                                     .value_token()
                                     .ok()?;
+
                                 let function_name =
                                     function_name_token.text_trimmed().to_ascii_lowercase_cow();
 
                                 if function_name.ends_with("image-set") {
                                     allow_x = true;
+
                                     break;
                                 }
                             }
+
                             CssSyntaxKind::CSS_GENERIC_PROPERTY => {
                                 let property_name_token = ancestor
                                     .cast::<CssGenericProperty>()?
@@ -126,14 +135,17 @@ impl Rule for NoUnknownUnit {
                                     .as_css_identifier()?
                                     .value_token()
                                     .ok()?;
+
                                 let property_name =
                                     property_name_token.text_trimmed().to_ascii_lowercase_cow();
 
                                 if property_name == "image-resolution" {
                                     allow_x = true;
+
                                     break;
                                 }
                             }
+
                             CssSyntaxKind::CSS_QUERY_FEATURE_PLAIN => {
                                 let feature_name_token = ancestor
                                     .cast::<CssQueryFeaturePlain>()?
@@ -141,14 +153,17 @@ impl Rule for NoUnknownUnit {
                                     .ok()?
                                     .value_token()
                                     .ok()?;
+
                                 let feature_name =
                                     feature_name_token.text_trimmed().to_ascii_lowercase_cow();
 
                                 if RESOLUTION_MEDIA_FEATURE_NAMES.contains(&feature_name.as_ref()) {
                                     allow_x = true;
+
                                     break;
                                 }
                             }
+
                             _ => {}
                         }
                     }
@@ -163,6 +178,7 @@ impl Rule for NoUnknownUnit {
 
                 None
             }
+
             _ => None,
         }
     }

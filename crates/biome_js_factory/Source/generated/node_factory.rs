@@ -41,8 +41,10 @@ pub struct JsArrayAssignmentPatternElementBuilder {
 impl JsArrayAssignmentPatternElementBuilder {
     pub fn with_init(mut self, init: JsInitializerClause) -> Self {
         self.init = Some(init);
+
         self
     }
+
     pub fn build(self) -> JsArrayAssignmentPatternElement {
         JsArrayAssignmentPatternElement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_ARRAY_ASSIGNMENT_PATTERN_ELEMENT,
@@ -95,8 +97,10 @@ pub struct JsArrayBindingPatternElementBuilder {
 impl JsArrayBindingPatternElementBuilder {
     pub fn with_init(mut self, init: JsInitializerClause) -> Self {
         self.init = Some(init);
+
         self
     }
+
     pub fn build(self) -> JsArrayBindingPatternElement {
         JsArrayBindingPatternElement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_ARRAY_BINDING_PATTERN_ELEMENT,
@@ -162,19 +166,25 @@ pub struct JsArrowFunctionExpressionBuilder {
 impl JsArrowFunctionExpressionBuilder {
     pub fn with_async_token(mut self, async_token: SyntaxToken) -> Self {
         self.async_token = Some(async_token);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn build(self) -> JsArrowFunctionExpression {
         JsArrowFunctionExpression::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_ARROW_FUNCTION_EXPRESSION,
@@ -272,12 +282,16 @@ pub struct JsBreakStatementBuilder {
 impl JsBreakStatementBuilder {
     pub fn with_label(mut self, label: JsLabel) -> Self {
         self.label = Some(label);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsBreakStatement {
         JsBreakStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_BREAK_STATEMENT,
@@ -325,12 +339,16 @@ pub struct JsCallExpressionBuilder {
 impl JsCallExpressionBuilder {
     pub fn with_optional_chain_token(mut self, optional_chain_token: SyntaxToken) -> Self {
         self.optional_chain_token = Some(optional_chain_token);
+
         self
     }
+
     pub fn with_type_arguments(mut self, type_arguments: TsTypeArguments) -> Self {
         self.type_arguments = Some(type_arguments);
+
         self
     }
+
     pub fn build(self) -> JsCallExpression {
         JsCallExpression::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_CALL_EXPRESSION,
@@ -376,8 +394,10 @@ pub struct JsCatchClauseBuilder {
 impl JsCatchClauseBuilder {
     pub fn with_declaration(mut self, declaration: JsCatchDeclaration) -> Self {
         self.declaration = Some(declaration);
+
         self
     }
+
     pub fn build(self) -> JsCatchClause {
         JsCatchClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_CATCH_CLAUSE,
@@ -411,8 +431,10 @@ pub struct JsCatchDeclarationBuilder {
 impl JsCatchDeclarationBuilder {
     pub fn with_type_annotation(mut self, type_annotation: TsTypeAnnotation) -> Self {
         self.type_annotation = Some(type_annotation);
+
         self
     }
+
     pub fn build(self) -> JsCatchDeclaration {
         JsCatchDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_CATCH_DECLARATION,
@@ -462,20 +484,28 @@ pub struct JsClassDeclarationBuilder {
 impl JsClassDeclarationBuilder {
     pub fn with_abstract_token(mut self, abstract_token: SyntaxToken) -> Self {
         self.abstract_token = Some(abstract_token);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_extends_clause(mut self, extends_clause: JsExtendsClause) -> Self {
         self.extends_clause = Some(extends_clause);
+
         self
     }
+
     pub fn with_implements_clause(mut self, implements_clause: TsImplementsClause) -> Self {
         self.implements_clause = Some(implements_clause);
+
         self
     }
+
     pub fn build(self) -> JsClassDeclaration {
         JsClassDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_CLASS_DECLARATION,
@@ -532,24 +562,34 @@ pub struct JsClassExportDefaultDeclarationBuilder {
 impl JsClassExportDefaultDeclarationBuilder {
     pub fn with_abstract_token(mut self, abstract_token: SyntaxToken) -> Self {
         self.abstract_token = Some(abstract_token);
+
         self
     }
+
     pub fn with_id(mut self, id: AnyJsBinding) -> Self {
         self.id = Some(id);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_extends_clause(mut self, extends_clause: JsExtendsClause) -> Self {
         self.extends_clause = Some(extends_clause);
+
         self
     }
+
     pub fn with_implements_clause(mut self, implements_clause: TsImplementsClause) -> Self {
         self.implements_clause = Some(implements_clause);
+
         self
     }
+
     pub fn build(self) -> JsClassExportDefaultDeclaration {
         JsClassExportDefaultDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_CLASS_EXPORT_DEFAULT_DECLARATION,
@@ -605,20 +645,28 @@ pub struct JsClassExpressionBuilder {
 impl JsClassExpressionBuilder {
     pub fn with_id(mut self, id: AnyJsBinding) -> Self {
         self.id = Some(id);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_extends_clause(mut self, extends_clause: JsExtendsClause) -> Self {
         self.extends_clause = Some(extends_clause);
+
         self
     }
+
     pub fn with_implements_clause(mut self, implements_clause: TsImplementsClause) -> Self {
         self.implements_clause = Some(implements_clause);
+
         self
     }
+
     pub fn build(self) -> JsClassExpression {
         JsClassExpression::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_CLASS_EXPRESSION,
@@ -680,8 +728,10 @@ pub struct JsComputedMemberExpressionBuilder {
 impl JsComputedMemberExpressionBuilder {
     pub fn with_optional_chain_token(mut self, optional_chain_token: SyntaxToken) -> Self {
         self.optional_chain_token = Some(optional_chain_token);
+
         self
     }
+
     pub fn build(self) -> JsComputedMemberExpression {
         JsComputedMemberExpression::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_COMPUTED_MEMBER_EXPRESSION,
@@ -773,12 +823,16 @@ pub struct JsContinueStatementBuilder {
 impl JsContinueStatementBuilder {
     pub fn with_label(mut self, label: JsLabel) -> Self {
         self.label = Some(label);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsContinueStatement {
         JsContinueStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_CONTINUE_STATEMENT,
@@ -805,8 +859,10 @@ pub struct JsDebuggerStatementBuilder {
 impl JsDebuggerStatementBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsDebuggerStatement {
         JsDebuggerStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_DEBUGGER_STATEMENT,
@@ -860,8 +916,10 @@ pub struct JsDirectiveBuilder {
 impl JsDirectiveBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsDirective {
         JsDirective::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_DIRECTIVE,
@@ -903,8 +961,10 @@ pub struct JsDoWhileStatementBuilder {
 impl JsDoWhileStatementBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsDoWhileStatement {
         JsDoWhileStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_DO_WHILE_STATEMENT,
@@ -986,8 +1046,10 @@ pub struct JsExportDefaultDeclarationClauseBuilder {
 impl JsExportDefaultDeclarationClauseBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsExportDefaultDeclarationClause {
         JsExportDefaultDeclarationClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_EXPORT_DEFAULT_DECLARATION_CLAUSE,
@@ -1018,8 +1080,10 @@ pub struct JsExportDefaultExpressionClauseBuilder {
 impl JsExportDefaultExpressionClauseBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsExportDefaultExpressionClause {
         JsExportDefaultExpressionClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_EXPORT_DEFAULT_EXPRESSION_CLAUSE,
@@ -1059,20 +1123,28 @@ pub struct JsExportFromClauseBuilder {
 impl JsExportFromClauseBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn with_export_as(mut self, export_as: JsExportAsClause) -> Self {
         self.export_as = Some(export_as);
+
         self
     }
+
     pub fn with_assertion(mut self, assertion: JsImportAssertion) -> Self {
         self.assertion = Some(assertion);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsExportFromClause {
         JsExportFromClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_EXPORT_FROM_CLAUSE,
@@ -1114,12 +1186,16 @@ pub struct JsExportNamedClauseBuilder {
 impl JsExportNamedClauseBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsExportNamedClause {
         JsExportNamedClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_EXPORT_NAMED_CLAUSE,
@@ -1165,16 +1241,22 @@ pub struct JsExportNamedFromClauseBuilder {
 impl JsExportNamedFromClauseBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn with_assertion(mut self, assertion: JsImportAssertion) -> Self {
         self.assertion = Some(assertion);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsExportNamedFromClause {
         JsExportNamedFromClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_EXPORT_NAMED_FROM_CLAUSE,
@@ -1210,12 +1292,16 @@ pub struct JsExportNamedFromSpecifierBuilder {
 impl JsExportNamedFromSpecifierBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn with_export_as(mut self, export_as: JsExportAsClause) -> Self {
         self.export_as = Some(export_as);
+
         self
     }
+
     pub fn build(self) -> JsExportNamedFromSpecifier {
         JsExportNamedFromSpecifier::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_EXPORT_NAMED_FROM_SPECIFIER,
@@ -1243,8 +1329,10 @@ pub struct JsExportNamedShorthandSpecifierBuilder {
 impl JsExportNamedShorthandSpecifierBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn build(self) -> JsExportNamedShorthandSpecifier {
         JsExportNamedShorthandSpecifier::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_EXPORT_NAMED_SHORTHAND_SPECIFIER,
@@ -1276,8 +1364,10 @@ pub struct JsExportNamedSpecifierBuilder {
 impl JsExportNamedSpecifierBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn build(self) -> JsExportNamedSpecifier {
         JsExportNamedSpecifier::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_EXPORT_NAMED_SPECIFIER,
@@ -1315,8 +1405,10 @@ pub struct JsExpressionStatementBuilder {
 impl JsExpressionStatementBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsExpressionStatement {
         JsExpressionStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_EXPRESSION_STATEMENT,
@@ -1346,8 +1438,10 @@ pub struct JsExtendsClauseBuilder {
 impl JsExtendsClauseBuilder {
     pub fn with_type_arguments(mut self, type_arguments: TsTypeArguments) -> Self {
         self.type_arguments = Some(type_arguments);
+
         self
     }
+
     pub fn build(self) -> JsExtendsClause {
         JsExtendsClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_EXTENDS_CLAUSE,
@@ -1424,8 +1518,10 @@ pub struct JsForOfStatementBuilder {
 impl JsForOfStatementBuilder {
     pub fn with_await_token(mut self, await_token: SyntaxToken) -> Self {
         self.await_token = Some(await_token);
+
         self
     }
+
     pub fn build(self) -> JsForOfStatement {
         JsForOfStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_FOR_OF_STATEMENT,
@@ -1476,16 +1572,22 @@ pub struct JsForStatementBuilder {
 impl JsForStatementBuilder {
     pub fn with_initializer(mut self, initializer: AnyJsForInitializer) -> Self {
         self.initializer = Some(initializer);
+
         self
     }
+
     pub fn with_test(mut self, test: AnyJsExpression) -> Self {
         self.test = Some(test);
+
         self
     }
+
     pub fn with_update(mut self, update: AnyJsExpression) -> Self {
         self.update = Some(update);
+
         self
     }
+
     pub fn build(self) -> JsForStatement {
         JsForStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_FOR_STATEMENT,
@@ -1524,8 +1626,10 @@ pub struct JsForVariableDeclarationBuilder {
 impl JsForVariableDeclarationBuilder {
     pub fn with_await_token(mut self, await_token: SyntaxToken) -> Self {
         self.await_token = Some(await_token);
+
         self
     }
+
     pub fn build(self) -> JsForVariableDeclaration {
         JsForVariableDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_FOR_VARIABLE_DECLARATION,
@@ -1559,16 +1663,22 @@ pub struct JsFormalParameterBuilder {
 impl JsFormalParameterBuilder {
     pub fn with_question_mark_token(mut self, question_mark_token: SyntaxToken) -> Self {
         self.question_mark_token = Some(question_mark_token);
+
         self
     }
+
     pub fn with_type_annotation(mut self, type_annotation: TsTypeAnnotation) -> Self {
         self.type_annotation = Some(type_annotation);
+
         self
     }
+
     pub fn with_initializer(mut self, initializer: JsInitializerClause) -> Self {
         self.initializer = Some(initializer);
+
         self
     }
+
     pub fn build(self) -> JsFormalParameter {
         JsFormalParameter::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_FORMAL_PARAMETER,
@@ -1631,23 +1741,31 @@ pub struct JsFunctionDeclarationBuilder {
 impl JsFunctionDeclarationBuilder {
     pub fn with_async_token(mut self, async_token: SyntaxToken) -> Self {
         self.async_token = Some(async_token);
+
         self
     }
+
     pub fn with_star_token(mut self, star_token: SyntaxToken) -> Self {
         self.star_token = Some(star_token);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn build(self) -> JsFunctionDeclaration {
         JsFunctionDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_FUNCTION_DECLARATION,
@@ -1695,27 +1813,37 @@ pub struct JsFunctionExportDefaultDeclarationBuilder {
 impl JsFunctionExportDefaultDeclarationBuilder {
     pub fn with_async_token(mut self, async_token: SyntaxToken) -> Self {
         self.async_token = Some(async_token);
+
         self
     }
+
     pub fn with_star_token(mut self, star_token: SyntaxToken) -> Self {
         self.star_token = Some(star_token);
+
         self
     }
+
     pub fn with_id(mut self, id: AnyJsBinding) -> Self {
         self.id = Some(id);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn build(self) -> JsFunctionExportDefaultDeclaration {
         JsFunctionExportDefaultDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_FUNCTION_EXPORT_DEFAULT_DECLARATION,
@@ -1764,27 +1892,37 @@ pub struct JsFunctionExpressionBuilder {
 impl JsFunctionExpressionBuilder {
     pub fn with_async_token(mut self, async_token: SyntaxToken) -> Self {
         self.async_token = Some(async_token);
+
         self
     }
+
     pub fn with_star_token(mut self, star_token: SyntaxToken) -> Self {
         self.star_token = Some(star_token);
+
         self
     }
+
     pub fn with_id(mut self, id: AnyJsBinding) -> Self {
         self.id = Some(id);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn build(self) -> JsFunctionExpression {
         JsFunctionExpression::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_FUNCTION_EXPRESSION,
@@ -1834,8 +1972,10 @@ pub struct JsGetterClassMemberBuilder {
 impl JsGetterClassMemberBuilder {
     pub fn with_return_type(mut self, return_type: TsTypeAnnotation) -> Self {
         self.return_type = Some(return_type);
+
         self
     }
+
     pub fn build(self) -> JsGetterClassMember {
         JsGetterClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_GETTER_CLASS_MEMBER,
@@ -1879,8 +2019,10 @@ pub struct JsGetterObjectMemberBuilder {
 impl JsGetterObjectMemberBuilder {
     pub fn with_return_type(mut self, return_type: TsTypeAnnotation) -> Self {
         self.return_type = Some(return_type);
+
         self
     }
+
     pub fn build(self) -> JsGetterObjectMember {
         JsGetterObjectMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_GETTER_OBJECT_MEMBER,
@@ -1941,8 +2083,10 @@ pub struct JsIfStatementBuilder {
 impl JsIfStatementBuilder {
     pub fn with_else_clause(mut self, else_clause: JsElseClause) -> Self {
         self.else_clause = Some(else_clause);
+
         self
     }
+
     pub fn build(self) -> JsIfStatement {
         JsIfStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_IF_STATEMENT,
@@ -1973,8 +2117,10 @@ pub struct JsImportBuilder {
 impl JsImportBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsImport {
         JsImport::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_IMPORT,
@@ -2030,8 +2176,10 @@ pub struct JsImportBareClauseBuilder {
 impl JsImportBareClauseBuilder {
     pub fn with_assertion(mut self, assertion: JsImportAssertion) -> Self {
         self.assertion = Some(assertion);
+
         self
     }
+
     pub fn build(self) -> JsImportBareClause {
         JsImportBareClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_IMPORT_BARE_CLAUSE,
@@ -2082,8 +2230,10 @@ pub struct JsImportCombinedClauseBuilder {
 impl JsImportCombinedClauseBuilder {
     pub fn with_assertion(mut self, assertion: JsImportAssertion) -> Self {
         self.assertion = Some(assertion);
+
         self
     }
+
     pub fn build(self) -> JsImportCombinedClause {
         JsImportCombinedClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_IMPORT_COMBINED_CLAUSE,
@@ -2122,12 +2272,16 @@ pub struct JsImportDefaultClauseBuilder {
 impl JsImportDefaultClauseBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn with_assertion(mut self, assertion: JsImportAssertion) -> Self {
         self.assertion = Some(assertion);
+
         self
     }
+
     pub fn build(self) -> JsImportDefaultClause {
         JsImportDefaultClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_IMPORT_DEFAULT_CLAUSE,
@@ -2179,12 +2333,16 @@ pub struct JsImportNamedClauseBuilder {
 impl JsImportNamedClauseBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn with_assertion(mut self, assertion: JsImportAssertion) -> Self {
         self.assertion = Some(assertion);
+
         self
     }
+
     pub fn build(self) -> JsImportNamedClause {
         JsImportNamedClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_IMPORT_NAMED_CLAUSE,
@@ -2222,12 +2380,16 @@ pub struct JsImportNamespaceClauseBuilder {
 impl JsImportNamespaceClauseBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn with_assertion(mut self, assertion: JsImportAssertion) -> Self {
         self.assertion = Some(assertion);
+
         self
     }
+
     pub fn build(self) -> JsImportNamespaceClause {
         JsImportNamespaceClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_IMPORT_NAMESPACE_CLAUSE,
@@ -2366,27 +2528,37 @@ pub struct JsMethodClassMemberBuilder {
 impl JsMethodClassMemberBuilder {
     pub fn with_async_token(mut self, async_token: SyntaxToken) -> Self {
         self.async_token = Some(async_token);
+
         self
     }
+
     pub fn with_star_token(mut self, star_token: SyntaxToken) -> Self {
         self.star_token = Some(star_token);
+
         self
     }
+
     pub fn with_question_mark_token(mut self, question_mark_token: SyntaxToken) -> Self {
         self.question_mark_token = Some(question_mark_token);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn build(self) -> JsMethodClassMember {
         JsMethodClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_METHOD_CLASS_MEMBER,
@@ -2434,23 +2606,31 @@ pub struct JsMethodObjectMemberBuilder {
 impl JsMethodObjectMemberBuilder {
     pub fn with_async_token(mut self, async_token: SyntaxToken) -> Self {
         self.async_token = Some(async_token);
+
         self
     }
+
     pub fn with_star_token(mut self, star_token: SyntaxToken) -> Self {
         self.star_token = Some(star_token);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn build(self) -> JsMethodObjectMember {
         JsMethodObjectMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_METHOD_OBJECT_MEMBER,
@@ -2491,12 +2671,16 @@ pub struct JsModuleBuilder {
 impl JsModuleBuilder {
     pub fn with_bom_token(mut self, bom_token: SyntaxToken) -> Self {
         self.bom_token = Some(bom_token);
+
         self
     }
+
     pub fn with_interpreter_token(mut self, interpreter_token: SyntaxToken) -> Self {
         self.interpreter_token = Some(interpreter_token);
+
         self
     }
+
     pub fn build(self) -> JsModule {
         JsModule::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_MODULE,
@@ -2544,8 +2728,10 @@ pub struct JsNamedImportSpecifierBuilder {
 impl JsNamedImportSpecifierBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn build(self) -> JsNamedImportSpecifier {
         JsNamedImportSpecifier::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_NAMED_IMPORT_SPECIFIER,
@@ -2606,12 +2792,16 @@ pub struct JsNewExpressionBuilder {
 impl JsNewExpressionBuilder {
     pub fn with_type_arguments(mut self, type_arguments: TsTypeArguments) -> Self {
         self.type_arguments = Some(type_arguments);
+
         self
     }
+
     pub fn with_arguments(mut self, arguments: JsCallArguments) -> Self {
         self.arguments = Some(arguments);
+
         self
     }
+
     pub fn build(self) -> JsNewExpression {
         JsNewExpression::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_NEW_EXPRESSION,
@@ -2687,8 +2877,10 @@ pub struct JsObjectAssignmentPatternPropertyBuilder {
 impl JsObjectAssignmentPatternPropertyBuilder {
     pub fn with_init(mut self, init: JsInitializerClause) -> Self {
         self.init = Some(init);
+
         self
     }
+
     pub fn build(self) -> JsObjectAssignmentPatternProperty {
         JsObjectAssignmentPatternProperty::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_OBJECT_ASSIGNMENT_PATTERN_PROPERTY,
@@ -2729,8 +2921,10 @@ pub struct JsObjectAssignmentPatternShorthandPropertyBuilder {
 impl JsObjectAssignmentPatternShorthandPropertyBuilder {
     pub fn with_init(mut self, init: JsInitializerClause) -> Self {
         self.init = Some(init);
+
         self
     }
+
     pub fn build(self) -> JsObjectAssignmentPatternShorthandProperty {
         JsObjectAssignmentPatternShorthandProperty::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_OBJECT_ASSIGNMENT_PATTERN_SHORTHAND_PROPERTY,
@@ -2777,8 +2971,10 @@ pub struct JsObjectBindingPatternPropertyBuilder {
 impl JsObjectBindingPatternPropertyBuilder {
     pub fn with_init(mut self, init: JsInitializerClause) -> Self {
         self.init = Some(init);
+
         self
     }
+
     pub fn build(self) -> JsObjectBindingPatternProperty {
         JsObjectBindingPatternProperty::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_OBJECT_BINDING_PATTERN_PROPERTY,
@@ -2819,8 +3015,10 @@ pub struct JsObjectBindingPatternShorthandPropertyBuilder {
 impl JsObjectBindingPatternShorthandPropertyBuilder {
     pub fn with_init(mut self, init: JsInitializerClause) -> Self {
         self.init = Some(init);
+
         self
     }
+
     pub fn build(self) -> JsObjectBindingPatternShorthandProperty {
         JsObjectBindingPatternShorthandProperty::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_OBJECT_BINDING_PATTERN_SHORTHAND_PROPERTY,
@@ -2958,16 +3156,22 @@ impl JsPropertyClassMemberBuilder {
         property_annotation: AnyTsPropertyAnnotation,
     ) -> Self {
         self.property_annotation = Some(property_annotation);
+
         self
     }
+
     pub fn with_value(mut self, value: JsInitializerClause) -> Self {
         self.value = Some(value);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsPropertyClassMember {
         JsPropertyClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_PROPERTY_CLASS_MEMBER,
@@ -3031,8 +3235,10 @@ pub struct JsRestParameterBuilder {
 impl JsRestParameterBuilder {
     pub fn with_type_annotation(mut self, type_annotation: TsTypeAnnotation) -> Self {
         self.type_annotation = Some(type_annotation);
+
         self
     }
+
     pub fn build(self) -> JsRestParameter {
         JsRestParameter::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_REST_PARAMETER,
@@ -3061,12 +3267,16 @@ pub struct JsReturnStatementBuilder {
 impl JsReturnStatementBuilder {
     pub fn with_argument(mut self, argument: AnyJsExpression) -> Self {
         self.argument = Some(argument);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsReturnStatement {
         JsReturnStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_RETURN_STATEMENT,
@@ -3103,12 +3313,16 @@ pub struct JsScriptBuilder {
 impl JsScriptBuilder {
     pub fn with_bom_token(mut self, bom_token: SyntaxToken) -> Self {
         self.bom_token = Some(bom_token);
+
         self
     }
+
     pub fn with_interpreter_token(mut self, interpreter_token: SyntaxToken) -> Self {
         self.interpreter_token = Some(interpreter_token);
+
         self
     }
+
     pub fn build(self) -> JsScript {
         JsScript::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_SCRIPT,
@@ -3170,8 +3384,10 @@ pub struct JsSetterClassMemberBuilder {
 impl JsSetterClassMemberBuilder {
     pub fn with_comma_token(mut self, comma_token: SyntaxToken) -> Self {
         self.comma_token = Some(comma_token);
+
         self
     }
+
     pub fn build(self) -> JsSetterClassMember {
         JsSetterClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_SETTER_CLASS_MEMBER,
@@ -3218,8 +3434,10 @@ pub struct JsSetterObjectMemberBuilder {
 impl JsSetterObjectMemberBuilder {
     pub fn with_comma_token(mut self, comma_token: SyntaxToken) -> Self {
         self.comma_token = Some(comma_token);
+
         self
     }
+
     pub fn build(self) -> JsSetterObjectMember {
         JsSetterObjectMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_SETTER_OBJECT_MEMBER,
@@ -3250,8 +3468,10 @@ pub struct JsShorthandNamedImportSpecifierBuilder {
 impl JsShorthandNamedImportSpecifierBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn build(self) -> JsShorthandNamedImportSpecifier {
         JsShorthandNamedImportSpecifier::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_SHORTHAND_NAMED_IMPORT_SPECIFIER,
@@ -3406,12 +3626,16 @@ pub struct JsTemplateExpressionBuilder {
 impl JsTemplateExpressionBuilder {
     pub fn with_tag(mut self, tag: AnyJsExpression) -> Self {
         self.tag = Some(tag);
+
         self
     }
+
     pub fn with_type_arguments(mut self, type_arguments: TsTypeArguments) -> Self {
         self.type_arguments = Some(type_arguments);
+
         self
     }
+
     pub fn build(self) -> JsTemplateExpression {
         JsTemplateExpression::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_TEMPLATE_EXPRESSION,
@@ -3451,8 +3675,10 @@ pub struct JsThrowStatementBuilder {
 impl JsThrowStatementBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsThrowStatement {
         JsThrowStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_THROW_STATEMENT,
@@ -3486,8 +3712,10 @@ pub struct JsTryFinallyStatementBuilder {
 impl JsTryFinallyStatementBuilder {
     pub fn with_catch_clause(mut self, catch_clause: JsCatchClause) -> Self {
         self.catch_clause = Some(catch_clause);
+
         self
     }
+
     pub fn build(self) -> JsTryFinallyStatement {
         JsTryFinallyStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_TRY_FINALLY_STATEMENT,
@@ -3545,8 +3773,10 @@ pub struct JsVariableDeclarationBuilder {
 impl JsVariableDeclarationBuilder {
     pub fn with_await_token(mut self, await_token: SyntaxToken) -> Self {
         self.await_token = Some(await_token);
+
         self
     }
+
     pub fn build(self) -> JsVariableDeclaration {
         JsVariableDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_VARIABLE_DECLARATION,
@@ -3573,8 +3803,10 @@ pub struct JsVariableDeclarationClauseBuilder {
 impl JsVariableDeclarationClauseBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsVariableDeclarationClause {
         JsVariableDeclarationClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_VARIABLE_DECLARATION_CLAUSE,
@@ -3604,12 +3836,16 @@ impl JsVariableDeclaratorBuilder {
         variable_annotation: AnyTsVariableAnnotation,
     ) -> Self {
         self.variable_annotation = Some(variable_annotation);
+
         self
     }
+
     pub fn with_initializer(mut self, initializer: JsInitializerClause) -> Self {
         self.initializer = Some(initializer);
+
         self
     }
+
     pub fn build(self) -> JsVariableDeclarator {
         JsVariableDeclarator::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_VARIABLE_DECLARATOR,
@@ -3636,8 +3872,10 @@ pub struct JsVariableStatementBuilder {
 impl JsVariableStatementBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> JsVariableStatement {
         JsVariableStatement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_VARIABLE_STATEMENT,
@@ -3698,8 +3936,10 @@ pub struct JsYieldArgumentBuilder {
 impl JsYieldArgumentBuilder {
     pub fn with_star_token(mut self, star_token: SyntaxToken) -> Self {
         self.star_token = Some(star_token);
+
         self
     }
+
     pub fn build(self) -> JsYieldArgument {
         JsYieldArgument::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_YIELD_ARGUMENT,
@@ -3723,8 +3963,10 @@ pub struct JsYieldExpressionBuilder {
 impl JsYieldExpressionBuilder {
     pub fn with_argument(mut self, argument: JsYieldArgument) -> Self {
         self.argument = Some(argument);
+
         self
     }
+
     pub fn build(self) -> JsYieldExpression {
         JsYieldExpression::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JS_YIELD_EXPRESSION,
@@ -3749,8 +3991,10 @@ pub struct JsxAttributeBuilder {
 impl JsxAttributeBuilder {
     pub fn with_initializer(mut self, initializer: JsxAttributeInitializerClause) -> Self {
         self.initializer = Some(initializer);
+
         self
     }
+
     pub fn build(self) -> JsxAttribute {
         JsxAttribute::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JSX_ATTRIBUTE,
@@ -3850,8 +4094,10 @@ pub struct JsxExpressionChildBuilder {
 impl JsxExpressionChildBuilder {
     pub fn with_expression(mut self, expression: AnyJsExpression) -> Self {
         self.expression = Some(expression);
+
         self
     }
+
     pub fn build(self) -> JsxExpressionChild {
         JsxExpressionChild::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JSX_EXPRESSION_CHILD,
@@ -3936,8 +4182,10 @@ pub struct JsxOpeningElementBuilder {
 impl JsxOpeningElementBuilder {
     pub fn with_type_arguments(mut self, type_arguments: TsTypeArguments) -> Self {
         self.type_arguments = Some(type_arguments);
+
         self
     }
+
     pub fn build(self) -> JsxOpeningElement {
         JsxOpeningElement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JSX_OPENING_ELEMENT,
@@ -3997,8 +4245,10 @@ pub struct JsxSelfClosingElementBuilder {
 impl JsxSelfClosingElementBuilder {
     pub fn with_type_arguments(mut self, type_arguments: TsTypeArguments) -> Self {
         self.type_arguments = Some(type_arguments);
+
         self
     }
+
     pub fn build(self) -> JsxSelfClosingElement {
         JsxSelfClosingElement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::JSX_SELF_CLOSING_ELEMENT,
@@ -4151,8 +4401,10 @@ pub struct TsAssertsReturnTypeBuilder {
 impl TsAssertsReturnTypeBuilder {
     pub fn with_predicate(mut self, predicate: TsAssertsCondition) -> Self {
         self.predicate = Some(predicate);
+
         self
     }
+
     pub fn build(self) -> TsAssertsReturnType {
         TsAssertsReturnType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_ASSERTS_RETURN_TYPE,
@@ -4178,8 +4430,10 @@ pub struct TsBigintLiteralTypeBuilder {
 impl TsBigintLiteralTypeBuilder {
     pub fn with_minus_token(mut self, minus_token: SyntaxToken) -> Self {
         self.minus_token = Some(minus_token);
+
         self
     }
+
     pub fn build(self) -> TsBigintLiteralType {
         TsBigintLiteralType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_BIGINT_LITERAL_TYPE,
@@ -4225,19 +4479,25 @@ pub struct TsCallSignatureTypeMemberBuilder {
 impl TsCallSignatureTypeMemberBuilder {
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn with_separator_token_token(mut self, separator_token_token: SyntaxToken) -> Self {
         self.separator_token_token = Some(separator_token_token);
+
         self
     }
+
     pub fn build(self) -> TsCallSignatureTypeMember {
         TsCallSignatureTypeMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_CALL_SIGNATURE_TYPE_MEMBER,
@@ -4303,16 +4563,22 @@ pub struct TsConstructSignatureTypeMemberBuilder {
 impl TsConstructSignatureTypeMemberBuilder {
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_type_annotation(mut self, type_annotation: TsTypeAnnotation) -> Self {
         self.type_annotation = Some(type_annotation);
+
         self
     }
+
     pub fn with_separator_token_token(mut self, separator_token_token: SyntaxToken) -> Self {
         self.separator_token_token = Some(separator_token_token);
+
         self
     }
+
     pub fn build(self) -> TsConstructSignatureTypeMember {
         TsConstructSignatureTypeMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_CONSTRUCT_SIGNATURE_TYPE_MEMBER,
@@ -4350,8 +4616,10 @@ pub struct TsConstructorSignatureClassMemberBuilder {
 impl TsConstructorSignatureClassMemberBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsConstructorSignatureClassMember {
         TsConstructorSignatureClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_CONSTRUCTOR_SIGNATURE_CLASS_MEMBER,
@@ -4391,12 +4659,16 @@ pub struct TsConstructorTypeBuilder {
 impl TsConstructorTypeBuilder {
     pub fn with_abstract_token(mut self, abstract_token: SyntaxToken) -> Self {
         self.abstract_token = Some(abstract_token);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn build(self) -> TsConstructorType {
         TsConstructorType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_CONSTRUCTOR_TYPE,
@@ -4435,12 +4707,16 @@ pub struct TsDeclarationModuleBuilder {
 impl TsDeclarationModuleBuilder {
     pub fn with_bom_token(mut self, bom_token: SyntaxToken) -> Self {
         self.bom_token = Some(bom_token);
+
         self
     }
+
     pub fn with_interpreter_token(mut self, interpreter_token: SyntaxToken) -> Self {
         self.interpreter_token = Some(interpreter_token);
+
         self
     }
+
     pub fn build(self) -> TsDeclarationModule {
         TsDeclarationModule::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_DECLARATION_MODULE,
@@ -4482,23 +4758,31 @@ pub struct TsDeclareFunctionDeclarationBuilder {
 impl TsDeclareFunctionDeclarationBuilder {
     pub fn with_async_token(mut self, async_token: SyntaxToken) -> Self {
         self.async_token = Some(async_token);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsDeclareFunctionDeclaration {
         TsDeclareFunctionDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_DECLARE_FUNCTION_DECLARATION,
@@ -4543,27 +4827,37 @@ pub struct TsDeclareFunctionExportDefaultDeclarationBuilder {
 impl TsDeclareFunctionExportDefaultDeclarationBuilder {
     pub fn with_async_token(mut self, async_token: SyntaxToken) -> Self {
         self.async_token = Some(async_token);
+
         self
     }
+
     pub fn with_id(mut self, id: AnyJsBinding) -> Self {
         self.id = Some(id);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsDeclareFunctionExportDefaultDeclaration {
         TsDeclareFunctionExportDefaultDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_DECLARE_FUNCTION_EXPORT_DEFAULT_DECLARATION,
@@ -4669,8 +4963,10 @@ pub struct TsEnumDeclarationBuilder {
 impl TsEnumDeclarationBuilder {
     pub fn with_const_token(mut self, const_token: SyntaxToken) -> Self {
         self.const_token = Some(const_token);
+
         self
     }
+
     pub fn build(self) -> TsEnumDeclaration {
         TsEnumDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_ENUM_DECLARATION,
@@ -4698,8 +4994,10 @@ pub struct TsEnumMemberBuilder {
 impl TsEnumMemberBuilder {
     pub fn with_initializer(mut self, initializer: JsInitializerClause) -> Self {
         self.initializer = Some(initializer);
+
         self
     }
+
     pub fn build(self) -> TsEnumMember {
         TsEnumMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_ENUM_MEMBER,
@@ -4732,8 +5030,10 @@ pub struct TsExportAsNamespaceClauseBuilder {
 impl TsExportAsNamespaceClauseBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsExportAsNamespaceClause {
         TsExportAsNamespaceClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_EXPORT_AS_NAMESPACE_CLAUSE,
@@ -4765,8 +5065,10 @@ pub struct TsExportAssignmentClauseBuilder {
 impl TsExportAssignmentClauseBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsExportAssignmentClause {
         TsExportAssignmentClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_EXPORT_ASSIGNMENT_CLAUSE,
@@ -4818,8 +5120,10 @@ pub struct TsExternalModuleDeclarationBuilder {
 impl TsExternalModuleDeclarationBuilder {
     pub fn with_body(mut self, body: AnyTsExternalModuleDeclarationBody) -> Self {
         self.body = Some(body);
+
         self
     }
+
     pub fn build(self) -> TsExternalModuleDeclaration {
         TsExternalModuleDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_EXTERNAL_MODULE_DECLARATION,
@@ -4869,8 +5173,10 @@ pub struct TsFunctionTypeBuilder {
 impl TsFunctionTypeBuilder {
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn build(self) -> TsFunctionType {
         TsFunctionType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_FUNCTION_TYPE,
@@ -4913,12 +5219,16 @@ pub struct TsGetterSignatureClassMemberBuilder {
 impl TsGetterSignatureClassMemberBuilder {
     pub fn with_return_type(mut self, return_type: TsTypeAnnotation) -> Self {
         self.return_type = Some(return_type);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsGetterSignatureClassMember {
         TsGetterSignatureClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_GETTER_SIGNATURE_CLASS_MEMBER,
@@ -4962,12 +5272,16 @@ pub struct TsGetterSignatureTypeMemberBuilder {
 impl TsGetterSignatureTypeMemberBuilder {
     pub fn with_type_annotation(mut self, type_annotation: TsTypeAnnotation) -> Self {
         self.type_annotation = Some(type_annotation);
+
         self
     }
+
     pub fn with_separator_token_token(mut self, separator_token_token: SyntaxToken) -> Self {
         self.separator_token_token = Some(separator_token_token);
+
         self
     }
+
     pub fn build(self) -> TsGetterSignatureTypeMember {
         TsGetterSignatureTypeMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_GETTER_SIGNATURE_TYPE_MEMBER,
@@ -5040,12 +5354,16 @@ pub struct TsImportEqualsDeclarationBuilder {
 impl TsImportEqualsDeclarationBuilder {
     pub fn with_type_token(mut self, type_token: SyntaxToken) -> Self {
         self.type_token = Some(type_token);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsImportEqualsDeclaration {
         TsImportEqualsDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_IMPORT_EQUALS_DECLARATION,
@@ -5083,16 +5401,22 @@ pub struct TsImportTypeBuilder {
 impl TsImportTypeBuilder {
     pub fn with_typeof_token(mut self, typeof_token: SyntaxToken) -> Self {
         self.typeof_token = Some(typeof_token);
+
         self
     }
+
     pub fn with_qualifier_clause(mut self, qualifier_clause: TsImportTypeQualifier) -> Self {
         self.qualifier_clause = Some(qualifier_clause);
+
         self
     }
+
     pub fn with_type_arguments(mut self, type_arguments: TsTypeArguments) -> Self {
         self.type_arguments = Some(type_arguments);
+
         self
     }
+
     pub fn build(self) -> TsImportType {
         TsImportType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_IMPORT_TYPE,
@@ -5131,15 +5455,19 @@ pub struct TsImportTypeArgumentsBuilder {
 impl TsImportTypeArgumentsBuilder {
     pub fn with_comma_token(mut self, comma_token: SyntaxToken) -> Self {
         self.comma_token = Some(comma_token);
+
         self
     }
+
     pub fn with_ts_import_type_assertion_block(
         mut self,
         ts_import_type_assertion_block: TsImportTypeAssertionBlock,
     ) -> Self {
         self.ts_import_type_assertion_block = Some(ts_import_type_assertion_block);
+
         self
     }
+
     pub fn build(self) -> TsImportTypeArguments {
         TsImportTypeArguments::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_IMPORT_TYPE_ARGUMENTS,
@@ -5228,8 +5556,10 @@ pub struct TsIndexSignatureClassMemberBuilder {
 impl TsIndexSignatureClassMemberBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsIndexSignatureClassMember {
         TsIndexSignatureClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_INDEX_SIGNATURE_CLASS_MEMBER,
@@ -5283,12 +5613,16 @@ pub struct TsIndexSignatureTypeMemberBuilder {
 impl TsIndexSignatureTypeMemberBuilder {
     pub fn with_readonly_token(mut self, readonly_token: SyntaxToken) -> Self {
         self.readonly_token = Some(readonly_token);
+
         self
     }
+
     pub fn with_separator_token_token(mut self, separator_token_token: SyntaxToken) -> Self {
         self.separator_token_token = Some(separator_token_token);
+
         self
     }
+
     pub fn build(self) -> TsIndexSignatureTypeMember {
         TsIndexSignatureTypeMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_INDEX_SIGNATURE_TYPE_MEMBER,
@@ -5335,8 +5669,10 @@ pub struct TsInferTypeBuilder {
 impl TsInferTypeBuilder {
     pub fn with_constraint(mut self, constraint: TsTypeConstraintClause) -> Self {
         self.constraint = Some(constraint);
+
         self
     }
+
     pub fn build(self) -> TsInferType {
         TsInferType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_INFER_TYPE,
@@ -5372,12 +5708,16 @@ pub struct TsInitializedPropertySignatureClassMemberBuilder {
 impl TsInitializedPropertySignatureClassMemberBuilder {
     pub fn with_question_mark_token(mut self, question_mark_token: SyntaxToken) -> Self {
         self.question_mark_token = Some(question_mark_token);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsInitializedPropertySignatureClassMember {
         TsInitializedPropertySignatureClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_INITIALIZED_PROPERTY_SIGNATURE_CLASS_MEMBER,
@@ -5434,12 +5774,16 @@ pub struct TsInterfaceDeclarationBuilder {
 impl TsInterfaceDeclarationBuilder {
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_extends_clause(mut self, extends_clause: TsExtendsClause) -> Self {
         self.extends_clause = Some(extends_clause);
+
         self
     }
+
     pub fn build(self) -> TsInterfaceDeclaration {
         TsInterfaceDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_INTERFACE_DECLARATION,
@@ -5470,8 +5814,10 @@ pub struct TsIntersectionTypeBuilder {
 impl TsIntersectionTypeBuilder {
     pub fn with_leading_separator_token(mut self, leading_separator_token: SyntaxToken) -> Self {
         self.leading_separator_token = Some(leading_separator_token);
+
         self
     }
+
     pub fn build(self) -> TsIntersectionType {
         TsIntersectionType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_INTERSECTION_TYPE,
@@ -5533,27 +5879,37 @@ impl TsMappedTypeBuilder {
         readonly_modifier: TsMappedTypeReadonlyModifierClause,
     ) -> Self {
         self.readonly_modifier = Some(readonly_modifier);
+
         self
     }
+
     pub fn with_as_clause(mut self, as_clause: TsMappedTypeAsClause) -> Self {
         self.as_clause = Some(as_clause);
+
         self
     }
+
     pub fn with_optional_modifier(
         mut self,
         optional_modifier: TsMappedTypeOptionalModifierClause,
     ) -> Self {
         self.optional_modifier = Some(optional_modifier);
+
         self
     }
+
     pub fn with_mapped_type(mut self, mapped_type: TsTypeAnnotation) -> Self {
         self.mapped_type = Some(mapped_type);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsMappedType {
         TsMappedType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_MAPPED_TYPE,
@@ -5603,8 +5959,10 @@ pub struct TsMappedTypeOptionalModifierClauseBuilder {
 impl TsMappedTypeOptionalModifierClauseBuilder {
     pub fn with_operator_token_token(mut self, operator_token_token: SyntaxToken) -> Self {
         self.operator_token_token = Some(operator_token_token);
+
         self
     }
+
     pub fn build(self) -> TsMappedTypeOptionalModifierClause {
         TsMappedTypeOptionalModifierClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_MAPPED_TYPE_OPTIONAL_MODIFIER_CLAUSE,
@@ -5631,8 +5989,10 @@ pub struct TsMappedTypeReadonlyModifierClauseBuilder {
 impl TsMappedTypeReadonlyModifierClauseBuilder {
     pub fn with_operator_token_token(mut self, operator_token_token: SyntaxToken) -> Self {
         self.operator_token_token = Some(operator_token_token);
+
         self
     }
+
     pub fn build(self) -> TsMappedTypeReadonlyModifierClause {
         TsMappedTypeReadonlyModifierClause::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_MAPPED_TYPE_READONLY_MODIFIER_CLAUSE,
@@ -5673,27 +6033,37 @@ pub struct TsMethodSignatureClassMemberBuilder {
 impl TsMethodSignatureClassMemberBuilder {
     pub fn with_async_token(mut self, async_token: SyntaxToken) -> Self {
         self.async_token = Some(async_token);
+
         self
     }
+
     pub fn with_question_mark_token(mut self, question_mark_token: SyntaxToken) -> Self {
         self.question_mark_token = Some(question_mark_token);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsMethodSignatureClassMember {
         TsMethodSignatureClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_METHOD_SIGNATURE_CLASS_MEMBER,
@@ -5738,23 +6108,31 @@ pub struct TsMethodSignatureTypeMemberBuilder {
 impl TsMethodSignatureTypeMemberBuilder {
     pub fn with_optional_token(mut self, optional_token: SyntaxToken) -> Self {
         self.optional_token = Some(optional_token);
+
         self
     }
+
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_return_type_annotation(
         mut self,
         return_type_annotation: TsReturnTypeAnnotation,
     ) -> Self {
         self.return_type_annotation = Some(return_type_annotation);
+
         self
     }
+
     pub fn with_separator_token_token(mut self, separator_token_token: SyntaxToken) -> Self {
         self.separator_token_token = Some(separator_token_token);
+
         self
     }
+
     pub fn build(self) -> TsMethodSignatureTypeMember {
         TsMethodSignatureTypeMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_METHOD_SIGNATURE_TYPE_MEMBER,
@@ -5823,12 +6201,16 @@ pub struct TsNamedTupleTypeElementBuilder {
 impl TsNamedTupleTypeElementBuilder {
     pub fn with_dotdotdot_token(mut self, dotdotdot_token: SyntaxToken) -> Self {
         self.dotdotdot_token = Some(dotdotdot_token);
+
         self
     }
+
     pub fn with_question_mark_token(mut self, question_mark_token: SyntaxToken) -> Self {
         self.question_mark_token = Some(question_mark_token);
+
         self
     }
+
     pub fn build(self) -> TsNamedTupleTypeElement {
         TsNamedTupleTypeElement::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_NAMED_TUPLE_TYPE_ELEMENT,
@@ -5899,8 +6281,10 @@ pub struct TsNumberLiteralTypeBuilder {
 impl TsNumberLiteralTypeBuilder {
     pub fn with_minus_token(mut self, minus_token: SyntaxToken) -> Self {
         self.minus_token = Some(minus_token);
+
         self
     }
+
     pub fn build(self) -> TsNumberLiteralType {
         TsNumberLiteralType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_NUMBER_LITERAL_TYPE,
@@ -5946,8 +6330,10 @@ pub struct TsOptionalPropertyAnnotationBuilder {
 impl TsOptionalPropertyAnnotationBuilder {
     pub fn with_type_annotation(mut self, type_annotation: TsTypeAnnotation) -> Self {
         self.type_annotation = Some(type_annotation);
+
         self
     }
+
     pub fn build(self) -> TsOptionalPropertyAnnotation {
         TsOptionalPropertyAnnotation::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_OPTIONAL_PROPERTY_ANNOTATION,
@@ -6048,12 +6434,16 @@ impl TsPropertySignatureClassMemberBuilder {
         property_annotation: AnyTsPropertySignatureAnnotation,
     ) -> Self {
         self.property_annotation = Some(property_annotation);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsPropertySignatureClassMember {
         TsPropertySignatureClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_PROPERTY_SIGNATURE_CLASS_MEMBER,
@@ -6089,20 +6479,28 @@ pub struct TsPropertySignatureTypeMemberBuilder {
 impl TsPropertySignatureTypeMemberBuilder {
     pub fn with_readonly_token(mut self, readonly_token: SyntaxToken) -> Self {
         self.readonly_token = Some(readonly_token);
+
         self
     }
+
     pub fn with_optional_token(mut self, optional_token: SyntaxToken) -> Self {
         self.optional_token = Some(optional_token);
+
         self
     }
+
     pub fn with_type_annotation(mut self, type_annotation: TsTypeAnnotation) -> Self {
         self.type_annotation = Some(type_annotation);
+
         self
     }
+
     pub fn with_separator_token_token(mut self, separator_token_token: SyntaxToken) -> Self {
         self.separator_token_token = Some(separator_token_token);
+
         self
     }
+
     pub fn build(self) -> TsPropertySignatureTypeMember {
         TsPropertySignatureTypeMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_PROPERTY_SIGNATURE_TYPE_MEMBER,
@@ -6165,8 +6563,10 @@ pub struct TsReferenceTypeBuilder {
 impl TsReferenceTypeBuilder {
     pub fn with_type_arguments(mut self, type_arguments: TsTypeArguments) -> Self {
         self.type_arguments = Some(type_arguments);
+
         self
     }
+
     pub fn build(self) -> TsReferenceType {
         TsReferenceType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_REFERENCE_TYPE,
@@ -6262,12 +6662,16 @@ pub struct TsSetterSignatureClassMemberBuilder {
 impl TsSetterSignatureClassMemberBuilder {
     pub fn with_comma_token(mut self, comma_token: SyntaxToken) -> Self {
         self.comma_token = Some(comma_token);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsSetterSignatureClassMember {
         TsSetterSignatureClassMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_SETTER_SIGNATURE_CLASS_MEMBER,
@@ -6314,12 +6718,16 @@ pub struct TsSetterSignatureTypeMemberBuilder {
 impl TsSetterSignatureTypeMemberBuilder {
     pub fn with_comma_token(mut self, comma_token: SyntaxToken) -> Self {
         self.comma_token = Some(comma_token);
+
         self
     }
+
     pub fn with_separator_token_token(mut self, separator_token_token: SyntaxToken) -> Self {
         self.separator_token_token = Some(separator_token_token);
+
         self
     }
+
     pub fn build(self) -> TsSetterSignatureTypeMember {
         TsSetterSignatureTypeMember::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_SETTER_SIGNATURE_TYPE_MEMBER,
@@ -6401,8 +6809,10 @@ pub struct TsThisParameterBuilder {
 impl TsThisParameterBuilder {
     pub fn with_type_annotation(mut self, type_annotation: TsTypeAnnotation) -> Self {
         self.type_annotation = Some(type_annotation);
+
         self
     }
+
     pub fn build(self) -> TsThisParameter {
         TsThisParameter::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_THIS_PARAMETER,
@@ -6460,12 +6870,16 @@ pub struct TsTypeAliasDeclarationBuilder {
 impl TsTypeAliasDeclarationBuilder {
     pub fn with_type_parameters(mut self, type_parameters: TsTypeParameters) -> Self {
         self.type_parameters = Some(type_parameters);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> TsTypeAliasDeclaration {
         TsTypeAliasDeclaration::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_TYPE_ALIAS_DECLARATION,
@@ -6581,12 +6995,16 @@ pub struct TsTypeParameterBuilder {
 impl TsTypeParameterBuilder {
     pub fn with_constraint(mut self, constraint: TsTypeConstraintClause) -> Self {
         self.constraint = Some(constraint);
+
         self
     }
+
     pub fn with_default(mut self, default: TsDefaultTypeClause) -> Self {
         self.default = Some(default);
+
         self
     }
+
     pub fn build(self) -> TsTypeParameter {
         TsTypeParameter::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_TYPE_PARAMETER,
@@ -6639,8 +7057,10 @@ pub struct TsTypeofTypeBuilder {
 impl TsTypeofTypeBuilder {
     pub fn with_type_arguments(mut self, type_arguments: TsTypeArguments) -> Self {
         self.type_arguments = Some(type_arguments);
+
         self
     }
+
     pub fn build(self) -> TsTypeofType {
         TsTypeofType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_TYPEOF_TYPE,
@@ -6672,8 +7092,10 @@ pub struct TsUnionTypeBuilder {
 impl TsUnionTypeBuilder {
     pub fn with_leading_separator_token(mut self, leading_separator_token: SyntaxToken) -> Self {
         self.leading_separator_token = Some(leading_separator_token);
+
         self
     }
+
     pub fn build(self) -> TsUnionType {
         TsUnionType::unwrap_cast(SyntaxNode::new_detached(
             JsSyntaxKind::TS_UNION_TYPE,
@@ -6708,8 +7130,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsArrayAssignmentPatternElementList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_ARRAY_ASSIGNMENT_PATTERN_ELEMENT_LIST,
         (0..length).map(|index| {
@@ -6732,8 +7157,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsArrayBindingPatternElementList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_ARRAY_BINDING_PATTERN_ELEMENT_LIST,
         (0..length).map(|index| {
@@ -6753,8 +7181,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsArrayElementList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_ARRAY_ELEMENT_LIST,
         (0..length).map(|index| {
@@ -6774,8 +7205,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsCallArgumentList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_CALL_ARGUMENT_LIST,
         (0..length).map(|index| {
@@ -6819,8 +7253,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsConstructorParameterList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_CONSTRUCTOR_PARAMETER_LIST,
         (0..length).map(|index| {
@@ -6867,8 +7304,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsExportNamedFromSpecifierList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_EXPORT_NAMED_FROM_SPECIFIER_LIST,
         (0..length).map(|index| {
@@ -6888,8 +7328,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsExportNamedSpecifierList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_EXPORT_NAMED_SPECIFIER_LIST,
         (0..length).map(|index| {
@@ -6909,8 +7352,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsImportAssertionEntryList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_IMPORT_ASSERTION_ENTRY_LIST,
         (0..length).map(|index| {
@@ -6954,8 +7400,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsNamedImportSpecifierList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_NAMED_IMPORT_SPECIFIER_LIST,
         (0..length).map(|index| {
@@ -6978,8 +7427,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsObjectAssignmentPatternPropertyList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_OBJECT_ASSIGNMENT_PATTERN_PROPERTY_LIST,
         (0..length).map(|index| {
@@ -7002,8 +7454,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsObjectBindingPatternPropertyList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_OBJECT_BINDING_PATTERN_PROPERTY_LIST,
         (0..length).map(|index| {
@@ -7023,8 +7478,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsObjectMemberList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_OBJECT_MEMBER_LIST,
         (0..length).map(|index| {
@@ -7044,8 +7502,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsParameterList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_PARAMETER_LIST,
         (0..length).map(|index| {
@@ -7113,8 +7574,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsVariableDeclaratorList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::JS_VARIABLE_DECLARATOR_LIST,
         (0..length).map(|index| {
@@ -7158,8 +7622,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     TsEnumMemberList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::TS_ENUM_MEMBER_LIST,
         (0..length).map(|index| {
@@ -7194,8 +7661,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     TsIntersectionTypeElementList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::TS_INTERSECTION_TYPE_ELEMENT_LIST,
         (0..length).map(|index| {
@@ -7263,8 +7733,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     TsTupleTypeElementList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::TS_TUPLE_TYPE_ELEMENT_LIST,
         (0..length).map(|index| {
@@ -7284,8 +7757,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     TsTypeArgumentList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::TS_TYPE_ARGUMENT_LIST,
         (0..length).map(|index| {
@@ -7305,8 +7781,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     TsTypeList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::TS_TYPE_LIST,
         (0..length).map(|index| {
@@ -7338,8 +7817,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     TsTypeParameterList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::TS_TYPE_PARAMETER_LIST,
         (0..length).map(|index| {
@@ -7371,8 +7853,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     TsUnionTypeVariantList::unwrap_cast(SyntaxNode::new_detached(
         JsSyntaxKind::TS_UNION_TYPE_VARIANT_LIST,
         (0..length).map(|index| {

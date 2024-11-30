@@ -20,8 +20,10 @@ pub struct HtmlAttributeBuilder {
 impl HtmlAttributeBuilder {
     pub fn with_initializer(mut self, initializer: HtmlAttributeInitializerClause) -> Self {
         self.initializer = Some(initializer);
+
         self
     }
+
     pub fn build(self) -> HtmlAttribute {
         HtmlAttribute::unwrap_cast(SyntaxNode::new_detached(
             HtmlSyntaxKind::HTML_ATTRIBUTE,
@@ -111,20 +113,28 @@ pub struct HtmlDirectiveBuilder {
 impl HtmlDirectiveBuilder {
     pub fn with_html_token(mut self, html_token: SyntaxToken) -> Self {
         self.html_token = Some(html_token);
+
         self
     }
+
     pub fn with_quirk_token(mut self, quirk_token: SyntaxToken) -> Self {
         self.quirk_token = Some(quirk_token);
+
         self
     }
+
     pub fn with_public_id_token(mut self, public_id_token: SyntaxToken) -> Self {
         self.public_id_token = Some(public_id_token);
+
         self
     }
+
     pub fn with_system_id_token(mut self, system_id_token: SyntaxToken) -> Self {
         self.system_id_token = Some(system_id_token);
+
         self
     }
+
     pub fn build(self) -> HtmlDirective {
         HtmlDirective::unwrap_cast(SyntaxNode::new_detached(
             HtmlSyntaxKind::HTML_DIRECTIVE,
@@ -196,12 +206,16 @@ pub struct HtmlRootBuilder {
 impl HtmlRootBuilder {
     pub fn with_bom_token(mut self, bom_token: SyntaxToken) -> Self {
         self.bom_token = Some(bom_token);
+
         self
     }
+
     pub fn with_directive(mut self, directive: HtmlDirective) -> Self {
         self.directive = Some(directive);
+
         self
     }
+
     pub fn build(self) -> HtmlRoot {
         HtmlRoot::unwrap_cast(SyntaxNode::new_detached(
             HtmlSyntaxKind::HTML_ROOT,
@@ -239,8 +253,10 @@ pub struct HtmlSelfClosingElementBuilder {
 impl HtmlSelfClosingElementBuilder {
     pub fn with_slash_token(mut self, slash_token: SyntaxToken) -> Self {
         self.slash_token = Some(slash_token);
+
         self
     }
+
     pub fn build(self) -> HtmlSelfClosingElement {
         HtmlSelfClosingElement::unwrap_cast(SyntaxNode::new_detached(
             HtmlSyntaxKind::HTML_SELF_CLOSING_ELEMENT,

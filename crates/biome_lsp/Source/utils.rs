@@ -30,6 +30,7 @@ pub(crate) fn text_edit(
     offset: Option<u32>,
 ) -> Result<Vec<lsp::TextEdit>> {
     let mut result: Vec<lsp::TextEdit> = Vec::new();
+
     let mut offset = if let Some(offset) = offset {
         TextSize::from(offset)
     } else {
@@ -41,6 +42,7 @@ pub(crate) fn text_edit(
             CompressedOp::DiffOp(DiffOp::Equal { range }) => {
                 offset += range.len();
             }
+
             CompressedOp::DiffOp(DiffOp::Insert { range }) => {
                 let start = to_proto::position(line_index, offset, position_encoding)?;
 
@@ -58,9 +60,12 @@ pub(crate) fn text_edit(
                     });
                 }
             }
+
             CompressedOp::DiffOp(DiffOp::Delete { range }) => {
                 let start = to_proto::position(line_index, offset, position_encoding)?;
+
                 offset += range.len();
+
                 let end = to_proto::position(line_index, offset, position_encoding)?;
 
                 result.push(lsp::TextEdit {
@@ -75,6 +80,7 @@ pub(crate) fn text_edit(
                     .expect("diff length is overflowing the line count in the original file");
 
                 line_col.line += line_count.get() + 1;
+
                 line_col.col = 0;
 
                 // SAFETY: This should only happen if `line_index` wasn't built
@@ -109,13 +115,16 @@ pub(crate) fn code_fix_to_lsp(
                 .iter()
                 .filter_map(|d| {
                     let code = d.code.as_ref()?;
+
                     let code = match code {
                         lsp::NumberOrString::String(code) => code.as_str(),
                         lsp::NumberOrString::Number(_) => return None,
                     };
 
                     let code = code.strip_prefix("lint/")?;
+
                     let code = code.strip_prefix(group_name.as_ref())?;
+
                     let code = code.strip_prefix('/')?;
 
                     if code == rule_name {
@@ -129,9 +138,11 @@ pub(crate) fn code_fix_to_lsp(
         .unwrap_or_default();
 
     let kind = action.category.to_str().into_owned();
+
     let suggestion = action.suggestion;
 
     let mut changes = HashMap::new();
+
     let edits = text_edit(line_index, suggestion.suggestion, position_encoding, offset)?;
 
     changes.insert(url.clone(), edits);
@@ -176,6 +187,7 @@ pub(crate) fn diagnostic_to_lsp<D: Diagnostic>(
     let location = diagnostic.location();
 
     let span = location.span.context("diagnostic location has no span")?;
+
     let span = if let Some(offset) = offset {
         TextRange::new(
             span.start().add(TextSize::from(offset)),
@@ -184,6 +196,7 @@ pub(crate) fn diagnostic_to_lsp<D: Diagnostic>(
     } else {
         span
     };
+
     let span = to_proto::range(line_index, span, position_encoding)
         .context("failed to convert diagnostic span to LSP range")?;
 
@@ -203,13 +216,16 @@ pub(crate) fn diagnostic_to_lsp<D: Diagnostic>(
         .and_then(|category| category.link())
         .and_then(|link| {
             let href = Url::parse(link).ok()?;
+
             Some(CodeDescription { href })
         });
 
     let message = PrintDescription(&diagnostic).to_string();
+
     ensure!(!message.is_empty(), "diagnostic description is empty");
 
     let mut related_information = None;
+
     let mut visitor = RelatedInformationVisitor {
         url,
         line_index,
@@ -220,6 +236,7 @@ pub(crate) fn diagnostic_to_lsp<D: Diagnostic>(
     diagnostic.advices(&mut visitor).unwrap();
 
     let tags = diagnostic.tags();
+
     let tags = {
         let mut result = Vec::new();
 
@@ -247,7 +264,9 @@ pub(crate) fn diagnostic_to_lsp<D: Diagnostic>(
         related_information,
         tags,
     );
+
     diagnostic.code_description = code_description;
+
     Ok(diagnostic)
 }
 
@@ -287,6 +306,7 @@ impl Visit for RelatedInformationVisitor<'_> {
 /// Convert a piece of markup into a String
 fn print_markup(markup: &MarkupBuf) -> String {
     let mut message = Termcolor(NoColor::new(Vec::new()));
+
     fmt::Display::fmt(markup, &mut Formatter::new(&mut message))
         // SAFETY: Writing to a memory buffer should never fail
         .unwrap();
@@ -298,9 +318,13 @@ fn print_markup(markup: &MarkupBuf) -> String {
 /// Helper to create a [tower_lsp::jsonrpc::Error] from a message
 pub(crate) fn into_lsp_error(msg: impl Display + Debug) -> LspError {
     let mut error = LspError::internal_error();
+
     error!("Error: {}", msg);
+
     error.message = Cow::Owned(msg.to_string());
+
     error.data = Some(format!("{msg:?}").into());
+
     error
 }
 
@@ -311,10 +335,12 @@ pub(crate) fn panic_to_lsp_error(err: Box<dyn Any + Send>) -> LspError {
         Ok(msg) => {
             error.message = Cow::Owned(msg.to_string());
         }
+
         Err(err) => match err.downcast::<&str>() {
             Ok(msg) => {
                 error.message = Cow::Owned(msg.to_string());
             }
+
             Err(_) => {
                 error.message = Cow::Owned(String::from("Biome encountered an unknown error"));
             }
@@ -342,14 +368,17 @@ pub(crate) fn apply_document_changes(
             range: None, text, ..
         }) => {
             let text = mem::take(text);
+
             start += 1;
 
             // The only change is a full document update
             if start == content_changes.len() {
                 return text;
             }
+
             text
         }
+
         Some(_) => current_content,
         // we received no content changes
         None => return current_content,
@@ -362,28 +391,37 @@ pub(crate) fn apply_document_changes(
     // Some clients (e.g. Code) sort the ranges in reverse. As an optimization, we
     // remember the last valid line in the index and only rebuild it if needed.
     let mut index_valid = u32::MAX;
+
     for change in content_changes {
         // The None case can't happen as we have handled it above already
         if let Some(range) = change.range {
             if index_valid <= range.end.line {
                 line_index = LineIndex::new(&text);
             }
+
             index_valid = range.start.line;
+
             if let Ok(range) = from_proto::text_range(&line_index, range, position_encoding) {
                 text.replace_range(Range::<usize>::from(range), &change.text);
             }
         }
     }
+
     text
 }
 
 #[cfg(test)]
 mod tests {
     use super::apply_document_changes;
+
     use biome_lsp_converters::line_index::LineIndex;
+
     use biome_lsp_converters::{PositionEncoding, WideEncoding};
+
     use biome_text_edit::TextEdit;
+
     use tower_lsp::lsp_types as lsp;
+
     use tower_lsp::lsp_types::{Position, Range, TextDocumentContentChangeEvent};
 
     #[test]
@@ -405,6 +443,7 @@ line 6
 line 7 new";
 
         let line_index = LineIndex::new(OLD);
+
         let diff = TextEdit::from_unicode_words(OLD, NEW);
 
         let text_edit = super::text_edit(&line_index, diff, PositionEncoding::Utf8, None).unwrap();
@@ -445,9 +484,11 @@ line 7 new";
     #[test]
     fn test_diff_2() {
         const OLD: &str = "console.log(\"Variable: \" + variable);";
+
         const NEW: &str = "console.log(`Variable: ${variable}`);";
 
         let line_index = LineIndex::new(OLD);
+
         let diff = TextEdit::from_unicode_words(OLD, NEW);
 
         let text_edit = super::text_edit(&line_index, diff, PositionEncoding::Utf8, None).unwrap();
@@ -501,7 +542,9 @@ line 7 new";
     #[test]
     fn test_range_formatting() {
         let encoding = PositionEncoding::Wide(WideEncoding::Utf16);
+
         let input = "(\"Jan 1, 2018\u{2009}–\u{2009}Jan 1, 2019\");\n(\"Jan 1, 2018\u{2009}–\u{2009}Jan 1, 2019\");\nisSpreadAssignment;\n".to_string();
+
         let change = TextDocumentContentChangeEvent {
             range: Some(Range::new(Position::new(0, 30), Position::new(1, 0))),
             range_length: Some(1),
@@ -509,6 +552,7 @@ line 7 new";
         };
 
         let output = apply_document_changes(encoding, input, vec![change]);
+
         let expected = "(\"Jan 1, 2018\u{2009}–\u{2009}Jan 1, 2019\");(\"Jan 1, 2018\u{2009}–\u{2009}Jan 1, 2019\");\nisSpreadAssignment;\n";
 
         assert_eq!(output, expected);

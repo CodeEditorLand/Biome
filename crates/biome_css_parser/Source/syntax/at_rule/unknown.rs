@@ -48,9 +48,11 @@ pub(crate) fn parse_unknown_at_rule(p: &mut CssParser) -> ParsedSyntax {
 
     let kind = if p.at(T!['{']) {
         parse_declaration_or_rule_list_block(p);
+
         CSS_UNKNOWN_BLOCK_AT_RULE
     } else {
         p.expect(T![;]);
+
         CSS_UNKNOWN_VALUE_AT_RULE
     };
 

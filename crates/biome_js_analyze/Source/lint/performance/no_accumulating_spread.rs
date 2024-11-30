@@ -55,12 +55,16 @@ declare_lint_rule! {
 
 impl Rule for NoAccumulatingSpread {
     type Query = Semantic<JsSpread>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
 
         is_known_accumulator(node, model)?.then_some(())
@@ -68,6 +72,7 @@ impl Rule for NoAccumulatingSpread {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -93,10 +98,12 @@ fn is_known_accumulator(node: &JsSpread, model: &SemanticModel) -> Option<bool> 
         .as_js_identifier_expression()?
         .name()
         .ok()?;
+
     let parameter = model
         .binding(&reference)
         .and_then(|declaration| declaration.syntax().parent())
         .and_then(JsFormalParameter::cast)?;
+
     let function = parameter
         .parent::<JsParameterList>()
         .and_then(|list| list.parent::<JsParameters>())
@@ -110,6 +117,7 @@ fn is_known_accumulator(node: &JsSpread, model: &SemanticModel) -> Option<bool> 
         .items()
         .iter()
         .count();
+
     if !(2..=4).contains(&param_count) {
         return None;
     }
@@ -122,15 +130,18 @@ fn is_known_accumulator(node: &JsSpread, model: &SemanticModel) -> Option<bool> 
     // The accumulator function should be a part of a call expression. This call expression should
     // have no more than 2 arguments. (callback, initialValue)
     let arg_count = call_expression.arguments().ok()?.args().iter().count();
+
     if arg_count > 2 {
         return None;
     }
 
     let callee = call_expression.callee().ok()?;
+
     let member_expression = AnyJsMemberExpression::cast(callee.into_syntax())?;
 
     // We only care about `.reduce` and `.reduceRight`.
     let member_name = member_expression.member_name()?;
+
     if !matches!(member_name.text(), "reduce" | "reduceRight") {
         return None;
     }

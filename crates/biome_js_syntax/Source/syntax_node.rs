@@ -16,6 +16,7 @@ pub struct JsLanguage;
 
 impl Language for JsLanguage {
     type Kind = JsSyntaxKind;
+
     type Root = AnyJsRoot;
 }
 

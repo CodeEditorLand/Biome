@@ -11,7 +11,9 @@ pub(crate) fn parse_variable_binding(p: &mut GraphqlParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![$]);
+
     parse_literal_name(p).or_add_diagnostic(p, expected_name);
 
     Present(m.complete(p, GRAPHQL_VARIABLE_BINDING))
@@ -24,7 +26,9 @@ pub(crate) fn parse_variable_reference(p: &mut GraphqlParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![$]);
+
     parse_literal_name(p).or_add_diagnostic(p, expected_name);
 
     Present(m.complete(p, GRAPHQL_VARIABLE_REFERENCE))

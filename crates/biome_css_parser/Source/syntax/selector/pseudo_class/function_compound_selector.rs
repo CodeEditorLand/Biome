@@ -27,6 +27,7 @@ pub(crate) fn parse_pseudo_class_function_compound_selector(p: &mut CssParser) -
     let m = p.start();
 
     p.bump_ts(PSEUDO_CLASS_FUNCTION_COMPOUND_SELECTOR_SET);
+
     p.bump(T!['(']);
 
     let kind = match parse_compound_selector(p) {
@@ -38,9 +39,12 @@ pub(crate) fn parse_pseudo_class_function_compound_selector(p: &mut CssParser) -
                 CSS_BOGUS_PSEUDO_CLASS
             }
         }
+
         Absent => {
             recover_selector_function_parameter(p, expected_compound_selector);
+
             p.expect(T![')']);
+
             CSS_BOGUS_PSEUDO_CLASS
         }
     };

@@ -4,6 +4,7 @@ use biome_css_syntax::CssPageAtRuleItemList;
 pub(crate) struct FormatCssPageAtRuleItemList;
 impl FormatRule<CssPageAtRuleItemList> for FormatCssPageAtRuleItemList {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &CssPageAtRuleItemList, f: &mut CssFormatter) -> FormatResult<()> {
         // This is one of the few cases where we _do_ want to respect empty
         // lines from the input, so we can use `join_nodes_with_hardline`.

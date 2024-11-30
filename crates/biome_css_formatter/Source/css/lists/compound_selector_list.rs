@@ -4,11 +4,13 @@ use biome_css_syntax::CssCompoundSelectorList;
 pub(crate) struct FormatCssCompoundSelectorList;
 impl FormatRule<CssCompoundSelectorList> for FormatCssCompoundSelectorList {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &CssCompoundSelectorList, f: &mut CssFormatter) -> FormatResult<()> {
         // Using `join_with` instead of `join_nodes_with_soft_line` to avoid
         // preserving empty lines from the input source. See the comment in
         // [FormatCssSelectorList] for more information.
         let separator = soft_line_break_or_space();
+
         let mut joiner = f.join_with(&separator);
 
         for formatted in node.format_separated(",") {

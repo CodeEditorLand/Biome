@@ -47,7 +47,9 @@ pub mod prelude {
     //! automatically bring all these traits into the ambient context
 
     pub use crate::advice::{Advices as _, Visit as _};
+
     pub use crate::context::{Context as _, DiagnosticExt as _};
+
     pub use crate::diagnostic::Diagnostic as _;
 }
 
@@ -81,6 +83,7 @@ pub fn print_diagnostic_to_string(diagnostic: &Error) -> String {
         .expect("failed to emit diagnostic");
 
     let mut content = String::new();
+
     writeln!(
         content,
         "{}",

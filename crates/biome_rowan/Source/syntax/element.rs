@@ -68,6 +68,7 @@ impl<L: Language> SyntaxElement<L> {
             NodeOrToken::Node(it) => Some(it.clone()),
             NodeOrToken::Token(it) => it.parent(),
         };
+
         iter::successors(first, SyntaxNode::parent)
     }
 

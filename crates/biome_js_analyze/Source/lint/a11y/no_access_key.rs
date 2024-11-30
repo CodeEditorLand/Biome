@@ -47,12 +47,16 @@ declare_lint_rule! {
 
 impl Rule for NoAccessKey {
     type Query = Ast<JsxAttribute>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.name_value_token().ok()?.text_trimmed() != "accessKey" {
             return None;
         }
@@ -68,6 +72,7 @@ impl Rule for NoAccessKey {
         }
 
         let attribute_value = node.initializer()?.value().ok()?;
+
         if attribute_value.is_value_null_or_undefined() {
             return None;
         }
@@ -77,6 +82,7 @@ impl Rule for NoAccessKey {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -96,8 +102,11 @@ impl Rule for NoAccessKey {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         mutation.remove_node(node.clone());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

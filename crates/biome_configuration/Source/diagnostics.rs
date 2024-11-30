@@ -211,6 +211,7 @@ impl CantLoadExtendFile {
         self.verbose_advice
             .messages
             .push(markup! {{messsage}}.to_owned());
+
         self
     }
 }
@@ -330,8 +331,11 @@ pub struct InvalidGlobPatternDiagnostic {
 #[cfg(test)]
 mod test {
     use crate::{BiomeDiagnostic, PartialConfiguration};
+
     use biome_deserialize::json::deserialize_from_json_str;
+
     use biome_diagnostics::{print_diagnostic_to_string, DiagnosticExt, Error};
+
     use biome_json_parser::JsonParserOptions;
 
     fn snap_diagnostic(test_name: &str, diagnostic: Error) {
@@ -360,6 +364,7 @@ mod test {
     #[test]
     fn deserialization_error() {
         let content = "{ \n\n\"formatter\" }";
+
         let result = deserialize_from_json_str::<PartialConfiguration>(
             content,
             JsonParserOptions::default(),
@@ -367,6 +372,7 @@ mod test {
         );
 
         assert!(result.has_errors());
+
         for diagnostic in result.into_diagnostics() {
             snap_diagnostic("deserialization_error", diagnostic)
         }
@@ -387,6 +393,7 @@ mod test {
     }
   }
 }"#;
+
         let _result = deserialize_from_json_str::<PartialConfiguration>(
             content,
             JsonParserOptions::default(),

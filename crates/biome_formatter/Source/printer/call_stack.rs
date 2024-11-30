@@ -40,6 +40,7 @@ impl PrintElementArgs {
 
     pub fn with_print_mode(mut self, mode: PrintMode) -> Self {
         self.mode = mode;
+
         self
     }
 }
@@ -92,6 +93,7 @@ pub(super) trait CallStack {
             ) => {
                 // Put it back in to guarantee that the stack is never empty
                 self.stack_mut().push(frame);
+
                 Err(PrintError::InvalidDocument(Self::invalid_document_error(
                     kind, None,
                 )))
@@ -210,7 +212,9 @@ impl<'a> CallStack for FitsCallStack<'a> {
 /// When ElementKind is [suffix], push the current indention onto the SuffixStack.
 pub(super) trait SuffixStack {
     type SuffixStack: Stack<Indention> + Debug;
+
     fn suffix_stack_mut(&mut self) -> &mut Self::SuffixStack;
+
     fn push_suffix(&mut self, indention: Indention) {
         self.suffix_stack_mut().push(indention);
     }
@@ -223,11 +227,13 @@ pub(super) trait SuffixStack {
 /// When the element kind is [end_dedent], pop the last item from the temp_indentations stack and push it onto the indentations stack.
 pub(super) trait IndentStack {
     type Stack: Stack<Indention> + Debug;
+
     type HistoryStack: Stack<Indention> + Debug;
 
     fn current_stack(&self) -> &Self::Stack;
 
     fn current_stack_mut(&mut self) -> &mut Self::Stack;
+
     fn history_stack_mut(&mut self) -> &mut Self::HistoryStack;
 
     fn start_dedent(&mut self) {
@@ -235,26 +241,34 @@ pub(super) trait IndentStack {
             self.history_stack_mut().push(indent);
         }
     }
+
     fn end_dedent(&mut self) {
         if let Some(indent) = self.history_stack_mut().pop() {
             self.current_stack_mut().push(indent);
         }
     }
+
     fn pop(&mut self) {
         self.current_stack_mut().pop();
     }
+
     fn indention(&self) -> Indention {
         self.current_stack().top().copied().unwrap_or_default()
     }
+
     fn reset_indent(&mut self) {
         self.current_stack_mut().push(Indention::default());
     }
+
     fn indent(&mut self, indent_style: IndentStyle) {
         let next_indent = self.indention().increment_level(indent_style);
+
         self.current_stack_mut().push(next_indent);
     }
+
     fn align(&mut self, count: NonZeroU8) {
         let next_indent = self.indention().set_align(count);
+
         self.current_stack_mut().push(next_indent);
     }
 }
@@ -275,6 +289,7 @@ impl PrintIndentStack {
             suffix_indentions: Vec::new(),
         }
     }
+
     pub fn flush_suffixes(&mut self) {
         self.indentions
             .extend(self.suffix_indentions.drain(..).rev());
@@ -282,6 +297,7 @@ impl PrintIndentStack {
 }
 impl IndentStack for PrintIndentStack {
     type Stack = Vec<Indention>;
+
     type HistoryStack = Vec<Indention>;
 
     fn current_stack(&self) -> &Self::Stack {
@@ -291,12 +307,14 @@ impl IndentStack for PrintIndentStack {
     fn current_stack_mut(&mut self) -> &mut Self::Stack {
         &mut self.indentions
     }
+
     fn history_stack_mut(&mut self) -> &mut Self::HistoryStack {
         &mut self.history_indentions
     }
 }
 impl SuffixStack for PrintIndentStack {
     type SuffixStack = Vec<Indention>;
+
     fn suffix_stack_mut(&mut self) -> &mut Self::SuffixStack {
         &mut self.suffix_indentions
     }
@@ -316,6 +334,7 @@ impl<'print> FitsIndentStack<'print> {
         saved_history_indent_stack: Vec<Indention>,
     ) -> Self {
         let indentions = StackedStack::with_vec(&print.indentions, saved_indent_stack);
+
         let history_indentions =
             StackedStack::with_vec(&print.history_indentions, saved_history_indent_stack);
 
@@ -328,6 +347,7 @@ impl<'print> FitsIndentStack<'print> {
 
 impl<'a> IndentStack for FitsIndentStack<'a> {
     type Stack = StackedStack<'a, Indention>;
+
     type HistoryStack = StackedStack<'a, Indention>;
 
     fn current_stack(&self) -> &Self::Stack {
@@ -337,6 +357,7 @@ impl<'a> IndentStack for FitsIndentStack<'a> {
     fn current_stack_mut(&mut self) -> &mut Self::Stack {
         &mut self.indentions
     }
+
     fn history_stack_mut(&mut self) -> &mut Self::HistoryStack {
         &mut self.history_indentions
     }

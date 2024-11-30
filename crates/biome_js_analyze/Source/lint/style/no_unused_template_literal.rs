@@ -48,8 +48,11 @@ declare_lint_rule! {
 
 impl Rule for NoUnusedTemplateLiteral {
     type Query = Ast<JsTemplateExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -73,6 +76,7 @@ impl Rule for NoUnusedTemplateLiteral {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         // join all template content
@@ -82,8 +86,10 @@ impl Rule for NoUnusedTemplateLiteral {
                     // Safety: if `ele.template_chunk_token()` is `Err` variant, [can_convert_to_string_lit] should return false,
                     // thus `run` will return None
                     acc += ele.template_chunk_token().unwrap().text();
+
                     acc
                 }
+
                 AnyJsTemplateElement::JsTemplateElement(_) => {
                     // Because we know if TemplateLit has any `JsTemplateElement` will return `None` in `run` function
                     unreachable!()
@@ -129,6 +135,7 @@ fn can_convert_to_string_literal(node: &JsTemplateExpression) -> bool {
                             .bytes()
                             .any(|byte| matches!(byte, b'\n' | b'\'' | b'"'))
                     }
+
                     Err(_) => {
                         // if we found an error, then just return `true`, which means that this template literal can't be converted to
                         // a string literal

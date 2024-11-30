@@ -26,13 +26,17 @@ pub(super) fn call_pattern_from_node_with_name(
     }
 
     let named_args = named_args_from_node(node, &name, context)?;
+
     let mut args = named_args_to_map(named_args, context)?;
+
     let named_args_count = node.named_args().into_iter().count();
+
     if args.len() != named_args_count {
         return Err(NodeLikeArgumentError::DuplicateArguments { name }.into());
     }
 
     let lang = &context.compilation.lang;
+
     if name == "file" {
         for arg in &args {
             if !VALID_FILE_ARGS.contains(&arg.0.as_str()) {
@@ -51,7 +55,9 @@ pub(super) fn call_pattern_from_node_with_name(
         let name = args
             .remove_entry("$name")
             .map_or(Pattern::Underscore, |p| p.1);
+
         let body = args.remove_entry("$body").map_or(Pattern::Top, |p| p.1);
+
         Ok(Pattern::File(Box::new(FilePattern::new(name, body))))
     } else if let Some((index, built_in)) = context
         .compilation
@@ -66,16 +72,19 @@ pub(super) fn call_pattern_from_node_with_name(
         }
 
         let params = &built_in.params;
+
         Ok(Pattern::CallBuiltIn(Box::new(call_built_in_from_args(
             args, params, index, lang, &name,
         )?)))
     } else if let Some(info) = context.compilation.function_definition_info.get(&name) {
         let args = match_args_to_params(&name, args, &collect_params(&info.parameters), lang)?;
+
         Ok(Pattern::CallFunction(Box::new(CallFunction::new(
             info.index, args,
         ))))
     } else if let Some(info) = context.compilation.pattern_definition_info.get(&name) {
         let args = match_args_to_params(&name, args, &collect_params(&info.parameters), lang)?;
+
         Ok(Pattern::Call(Box::new(Call::new(info.index, args))))
     } else {
         Err(CompileError::UnknownFunctionOrPattern(name))
@@ -90,9 +99,11 @@ fn call_built_in_from_args(
     name: &str,
 ) -> Result<CallBuiltIn<GritQueryContext>, CompileError> {
     let mut pattern_params = Vec::with_capacity(args.len());
+
     for param in params.iter() {
         pattern_params.push(args.remove(&(lang.metavariable_prefix().to_owned() + param)));
     }
+
     Ok(CallBuiltIn::new(index, name, pattern_params))
 }
 
@@ -168,10 +179,13 @@ pub(super) fn named_args_to_map(
         .into_iter()
         .map(|(name, pattern)| {
             let key = context.compilation.lang.metavariable_prefix().to_owned() + &name;
+
             let pattern = PatternCompiler::from_node_with_rhs(&pattern, context, true)?;
+
             Ok((key, pattern))
         })
         .collect::<Result<_, CompileError>>()?;
+
     Ok(args)
 }
 
@@ -194,6 +208,7 @@ pub(super) fn node_to_args_pairs(
                 };
 
                 let name = var.text();
+
                 let name = name
                     .strip_prefix(lang.metavariable_prefix())
                     .filter(|stripped| {
@@ -221,13 +236,18 @@ pub(super) fn node_to_args_pairs(
                             }
                         }
                     })?;
+
                 Ok((name.to_owned(), AnyGritPattern::GritVariable(var)))
             }
+
             Ok(AnyGritMaybeNamedArg::GritNamedArg(named_arg)) => {
                 let name = named_arg.name()?;
+
                 let pattern = named_arg.pattern()?;
+
                 Ok((name.text(), pattern))
             }
+
             Ok(AnyGritMaybeNamedArg::GritBogusNamedArg(_)) => Err(CompileError::UnexpectedKind(
                 GritSyntaxKind::GRIT_BOGUS_NAMED_ARG.into(),
             )),

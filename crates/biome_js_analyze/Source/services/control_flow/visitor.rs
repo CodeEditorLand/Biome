@@ -48,6 +48,7 @@ macro_rules! declare_visitor {
                 Some((builder, Self {
                     stack: {
                         let stack_len = visitor.stack.len();
+
                         visitor.stack.get_mut(*index + 1..).unwrap_or_else(|| panic!("stack index out of bounds: {} >= {stack_len}", *index + 1))
                     },
                     $(
@@ -79,7 +80,9 @@ macro_rules! declare_visitor {
                     self.$id.last_mut().ok_or(::biome_rowan::SyntaxError::MissingRequiredChild)?;
 
                 let VisitorAdapter(visitor) = visitor;
+
                 let visitor = visitor.as_mut().map_err(|err| *err)?;
+
                 Ok(visitor)
             }
 
@@ -97,7 +100,9 @@ macro_rules! declare_visitor {
                     .unwrap_or_else(|| panic!(concat!(stringify!($id), " index out of bounds: {} >= {}"), index, self.$id.len()));
 
                 let VisitorAdapter(visitor) = visitor;
+
                 let visitor = visitor.as_ref().ok()?;
+
                 Some(visitor)
             }
         } )*
@@ -132,6 +137,7 @@ declare_visitor! {
 /// allows type checked access into the visitor state stack
 pub(super) trait MergedVisitor<'a, N> {
     fn read_top(self) -> SyntaxResult<&'a mut N>;
+
     fn try_downcast(&'a self, type_id: TypeId, index: usize) -> Option<&'a N>;
 }
 

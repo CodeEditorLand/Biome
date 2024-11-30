@@ -10,6 +10,7 @@ pub(crate) struct FormatJsEmptyStatement;
 impl FormatNodeRule<JsEmptyStatement> for FormatJsEmptyStatement {
     fn fmt_fields(&self, node: &JsEmptyStatement, f: &mut JsFormatter) -> FormatResult<()> {
         let JsEmptyStatementFields { semicolon_token } = node.as_fields();
+
         let parent_kind = node.syntax().parent().kind();
 
         let leading_comments_with_break = f
@@ -22,6 +23,7 @@ impl FormatNodeRule<JsEmptyStatement> for FormatJsEmptyStatement {
         if leading_comments_with_break {
             write!(f, [hard_line_break()])?;
         }
+
         write!(f, [format_leading_comments(node.syntax())])?;
 
         if matches!(

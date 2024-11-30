@@ -38,8 +38,11 @@ declare_lint_rule! {
 
 impl Rule for UseValidAriaProps {
     type Query = Ast<AnyJsxElement>;
+
     type State = JsxAttribute;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -52,8 +55,10 @@ impl Rule for UseValidAriaProps {
                 .iter()
                 .filter_map(|attribute| {
                     let attribute = attribute.as_jsx_attribute()?;
+
                     let attribute_name =
                         attribute.name().ok()?.as_jsx_name()?.value_token().ok()?;
+
                     if attribute_name.text_trimmed().starts_with("aria-")
                         && AriaAttribute::from_str(attribute_name.text_trimmed()).is_err()
                     {
@@ -63,6 +68,7 @@ impl Rule for UseValidAriaProps {
                     }
                 })
                 .collect();
+
             attributes
         } else {
             Vec::new()
@@ -72,7 +78,9 @@ impl Rule for UseValidAriaProps {
 
     fn diagnostic(ctx: &RuleContext<Self>, attribute: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let attribute_name = attribute.name().ok()?.as_jsx_name()?.value_token().ok()?;
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),

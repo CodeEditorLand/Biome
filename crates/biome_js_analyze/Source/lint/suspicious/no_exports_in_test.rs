@@ -56,17 +56,22 @@ impl MaybeExport {
             MaybeExport::JsExport(_) => true,
             MaybeExport::JsAssignmentExpression(assignment_expr) => {
                 let left = assignment_expr.left().ok();
+
                 left.and_then(|left| AnyJsMemberAssignment::cast(left.into_syntax()))
                     .is_some_and(|member_expr| {
                         let object = member_expr.object().ok();
+
                         object.is_some_and(|object| match object {
                             AnyJsExpression::JsIdentifierExpression(ident) => match member_expr {
                                 AnyJsMemberAssignment::JsComputedMemberAssignment(_) => false,
                                 AnyJsMemberAssignment::JsStaticMemberAssignment(static_member) => {
                                     // module.exports = {}
+
                                     let indent_text = ident.text();
+
                                     let member_text =
                                         static_member.member().map(|member| member.text());
+
                                     indent_text == "module"
                                         && member_text
                                             .is_ok_and(|member_text| member_text == "exports")
@@ -74,11 +79,15 @@ impl MaybeExport {
                             },
                             AnyJsExpression::JsStaticMemberExpression(member_expr) => {
                                 // modules.exports.foo = {}, module.exports[foo] = {}
+
                                 let object_text = member_expr.object().map(|object| object.text());
+
                                 let member_text = member_expr.member().map(|member| member.text());
+
                                 object_text.is_ok_and(|text| text == "module")
                                     && member_text.is_ok_and(|member_text| member_text == "exports")
                             }
+
                             _ => false,
                         })
                     })
@@ -140,6 +149,7 @@ impl Visitor for AnyExportInTestVisitor {
                     }
                 }
             }
+
             WalkEvent::Leave(node) => {
                 if AnyJsRoot::cast_ref(node).is_some() && self.has_test {
                     for export in self.exports.iter() {
@@ -161,8 +171,11 @@ impl QueryMatch for AnyExportInTest {
 
 impl Queryable for AnyExportInTest {
     type Input = Self;
+
     type Language = JsLanguage;
+
     type Output = MaybeExport;
+
     type Services = ();
 
     fn build_visitor(
@@ -179,8 +192,11 @@ impl Queryable for AnyExportInTest {
 
 impl Rule for NoExportsInTest {
     type Query = AnyExportInTest;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(_: &RuleContext<Self>) -> Self::Signals {

@@ -17,19 +17,27 @@ declare_migration! {
 
 impl Rule for Schema {
     type Query = Version<JsonMember>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let version = ctx.version();
 
         let node_text = node.name().ok()?.inner_string_text().ok()?;
+
         let member_value = node.value().ok()?;
+
         if node_text.text() == "$schema" {
             let string_value = member_value.as_json_string_value()?;
+
             let value = string_value.inner_string_text().ok()?;
+
             let value = value
                 .text()
                 .strip_prefix("https://biomejs.dev/schemas/")?
@@ -60,13 +68,19 @@ impl Rule for Schema {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<MigrationAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let version = ctx.version();
+
         let schema = format!("\"https://biomejs.dev/schemas/{version}/schema.json\"");
 
         let new_node = json_string_value(ident(&schema));
+
         let member_value = node.value().ok()?;
+
         let member_value = member_value.as_json_string_value()?;
+
         mutation.replace_node(member_value.clone(), new_node);
 
         Some(RuleAction::new(

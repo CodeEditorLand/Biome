@@ -79,6 +79,7 @@ impl Visitor for MissingAwaitVisitor {
                         self.stack.push((node.range().start(), false));
                     }
                 }
+
                 if let Some((_, has_await)) = self.stack.last_mut() {
                     if JsAwaitExpression::can_cast(node.kind()) {
                         *has_await = true;
@@ -87,6 +88,7 @@ impl Visitor for MissingAwaitVisitor {
                     }
                 }
             }
+
             WalkEvent::Leave(node) => {
                 if let Some(node) = AnyFunctionLike::cast_ref(node) {
                     if let Some((function_start_range, has_await)) = self.stack.pop() {
@@ -113,8 +115,11 @@ impl QueryMatch for MissingAwait {
 
 impl Queryable for MissingAwait {
     type Input = Self;
+
     type Language = JsLanguage;
+
     type Output = AnyFunctionLike;
+
     type Services = ();
 
     fn build_visitor(
@@ -131,15 +136,20 @@ impl Queryable for MissingAwait {
 
 impl Rule for UseAwait {
     type Query = MissingAwait;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let query = ctx.query();
+
         if query.statements()?.is_empty() {
             return None;
         }
+
         Some(())
     }
 

@@ -19,6 +19,7 @@ use biome_rowan::SyntaxKind;
 /// ```
 pub trait ParseNodeList {
     type Kind: SyntaxKind;
+
     type Parser<'source>: Parser<Kind = Self::Kind>;
 
     /// The kind of the list node
@@ -54,6 +55,7 @@ pub trait ParseNodeList {
     /// It panics if the parser doesn't advance at each cycle of the loop
     fn parse_list(&mut self, p: &mut Self::Parser<'_>) -> CompletedMarker {
         let elements = self.start_list(p);
+
         let mut progress = ParserProgress::default();
 
         while !p.at(<<Self::Parser<'_> as Parser>::Kind as SyntaxKind>::EOF)
@@ -85,6 +87,7 @@ pub trait ParseNodeList {
 /// ```
 pub trait ParseSeparatedList {
     type Kind: SyntaxKind;
+
     type Parser<'source>: Parser<Kind = Self::Kind>;
 
     /// The kind of the list node
@@ -143,8 +146,11 @@ pub trait ParseSeparatedList {
     /// It panics if the parser doesn't advance at each cycle of the loop
     fn parse_list(&mut self, p: &mut Self::Parser<'_>) -> CompletedMarker {
         let elements = self.start_list(p);
+
         let mut progress = ParserProgress::default();
+
         let mut first = true;
+
         while (!self.allow_empty() && first)
             || (!p.at(<Self::Parser<'_> as Parser>::Kind::EOF) && !self.is_at_list_end(p))
         {
@@ -166,10 +172,12 @@ pub trait ParseSeparatedList {
                 // a missing element
                 continue;
             }
+
             if self.recover(p, parsed_element).is_err() {
                 break;
             }
         }
+
         self.finish_list(p, elements)
     }
 }

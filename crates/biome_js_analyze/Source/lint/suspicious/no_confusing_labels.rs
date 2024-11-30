@@ -67,14 +67,20 @@ declare_lint_rule! {
 
 impl Rule for NoConfusingLabels {
     type Query = Ast<JsLabeledStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let labeled_stmt = ctx.query();
+
         let label = labeled_stmt.label_token().ok()?;
+
         let label = label.text_trimmed();
+
         if label == "$"
             && ctx
                 .source_type::<JsFileSource>()
@@ -83,6 +89,7 @@ impl Rule for NoConfusingLabels {
         {
             return None;
         }
+
         match labeled_stmt.body().ok()? {
             AnyJsStatement::JsDoWhileStatement(_)
             | AnyJsStatement::JsForInStatement(_)
@@ -95,6 +102,7 @@ impl Rule for NoConfusingLabels {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let labeled_stmt = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

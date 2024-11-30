@@ -109,9 +109,11 @@ impl Case {
     /// ```
     pub fn identify(value: &str, strict: bool) -> Case {
         let mut chars = value.chars();
+
         let Some(first_char) = chars.next() else {
             return Case::Unknown;
         };
+
         let mut result = if first_char.is_lowercase() {
             Case::Lower
         } else if first_char.is_uppercase() {
@@ -123,8 +125,11 @@ impl Case {
         } else {
             return Case::Unknown;
         };
+
         let mut previous_char = first_char;
+
         let mut has_consecutive_uppercase = false;
+
         for current_char in chars {
             result = match current_char {
                 '-' => match result {
@@ -139,16 +144,19 @@ impl Case {
                 },
                 _ if current_char.is_uppercase() => {
                     has_consecutive_uppercase |= previous_char.is_uppercase();
+
                     match result {
                         Case::Camel | Case::Pascal if strict && has_consecutive_uppercase => {
                             return Case::Unknown
                         }
+
                         Case::Camel | Case::Constant | Case::Pascal => result,
                         Case::Lower | Case::Number => Case::Camel,
                         Case::NumberableCapital | Case::Upper => Case::Upper,
                         _ => return Case::Unknown,
                     }
                 }
+
                 _ if current_char.is_lowercase() => match result {
                     Case::Number => Case::Lower,
                     Case::Camel | Case::Kebab | Case::Lower | Case::Snake => result,
@@ -163,12 +171,14 @@ impl Case {
                 },
                 _ => return Case::Unknown,
             };
+
             previous_char = current_char;
         }
         // The last char cannot be a delimiter
         if matches!(previous_char, '-' | '_') {
             return Case::Unknown;
         }
+
         result
     }
 
@@ -200,8 +210,11 @@ impl Case {
         if value.is_empty() || matches!(self, Case::Unknown | Case::Number) {
             return value.to_string();
         }
+
         let mut word_separator = matches!(self, Case::Pascal);
+
         let mut output = String::with_capacity(value.len());
+
         for ((i, current), next) in value
             .char_indices()
             .zip(value.chars().skip(1).map(Some).chain(Some(None)))
@@ -210,13 +223,16 @@ impl Case {
                 || (matches!(self, Case::Uni) && (current.is_lowercase() || current.is_uppercase()))
             {
                 word_separator = true;
+
                 continue;
             }
+
             if let Some(next) = next {
                 if i != 0 && current.is_uppercase() && next.is_lowercase() {
                     word_separator = true;
                 }
             }
+
             if word_separator {
                 match self {
                     Case::Camel
@@ -230,11 +246,13 @@ impl Case {
                     Case::Constant | Case::Snake => {
                         output.push('_');
                     }
+
                     Case::Kebab => {
                         output.push('-');
                     }
                 }
             }
+
             match self {
                 Case::Camel | Case::Pascal => {
                     if word_separator {
@@ -243,23 +261,28 @@ impl Case {
                         output.extend(current.to_lowercase())
                     }
                 }
+
                 Case::Constant | Case::Upper => output.extend(current.to_uppercase()),
                 Case::NumberableCapital => {
                     if i == 0 {
                         output.extend(current.to_uppercase());
                     }
                 }
+
                 Case::Kebab | Case::Snake | Case::Lower => output.extend(current.to_lowercase()),
                 Case::Uni => output.extend(Some(current)),
                 Case::Number | Case::Unknown => (),
             }
+
             word_separator = false;
+
             if let Some(next) = next {
                 if current.is_lowercase() && next.is_uppercase() {
                     word_separator = true;
                 }
             }
         }
+
         output
     }
 }
@@ -279,6 +302,7 @@ impl std::fmt::Display for Case {
             Case::Unknown => "unknown case",
             Case::Upper => "UPPERCASE",
         };
+
         write!(f, "{repr}")
     }
 }
@@ -322,13 +346,16 @@ impl Cases {
     /// ```
     pub fn contains(self, other: impl Into<Cases>) -> bool {
         let other = other.into();
+
         self.0 & other.0 == other.0
     }
 }
 
 impl IntoIterator for Cases {
     type Item = Case;
+
     type IntoIter = CasesIterator;
+
     fn into_iter(self) -> Self::IntoIter {
         CasesIterator { rest: self }
     }
@@ -349,12 +376,14 @@ impl From<Case> for Cases {
 
 impl<Rhs: Into<Cases>> core::ops::BitOr<Rhs> for Cases {
     type Output = Cases;
+
     fn bitor(self, rhs: Rhs) -> Self::Output {
         Self(self.0 | rhs.into().0)
     }
 }
 impl core::ops::BitOr for Case {
     type Output = Cases;
+
     fn bitor(self, rhs: Self) -> Self::Output {
         Cases::from(self) | rhs
     }
@@ -392,8 +421,11 @@ impl Iterator for CasesIterator {
             None
         } else {
             let leading_bit_index = 15u16 - (self.rest.0.leading_zeros() as u16);
+
             let case = LEADING_BIT_INDEX_TO_CASE[leading_bit_index as usize];
+
             self.rest.0 &= !(case as u16);
+
             Some(case)
         }
     }
@@ -442,7 +474,9 @@ pub trait Collator {
         iter2: impl IntoIterator<Item = Self::Char>,
     ) -> Ordering {
         let mut iter1 = iter1.into_iter();
+
         let mut iter2 = iter2.into_iter();
+
         loop {
             match (iter1.next(), iter2.next()) {
                 (Some(c1), Some(c2)) if c1 == c2 => {}
@@ -453,6 +487,7 @@ pub trait Collator {
                         // Compare numbers
                         // We don't skip leading zeroes.
                         let mut number_ordering = n1.cmp(&n2);
+
                         loop {
                             match (iter1.next(), iter2.next()) {
                                 (None, None) => {
@@ -466,9 +501,11 @@ pub trait Collator {
                                 }
                                 (Some(next1), Some(next2)) => {
                                     c1 = next1;
+
                                     c2 = next2;
                                 }
                             }
+
                             match (self.as_ascii_digit(&c1), self.as_ascii_digit(&c2)) {
                                 (Some(n1), Some(_n2)) => {
                                     number_ordering = number_ordering.then(n1.cmp(&n2));
@@ -483,6 +520,7 @@ pub trait Collator {
                                     Ordering::Equal => {
                                         break;
                                     }
+
                                     ordering => {
                                         return ordering;
                                     }
@@ -490,8 +528,10 @@ pub trait Collator {
                             }
                         }
                     }
+
                     match self.weight(&c1).cmp(&self.weight(&c2)) {
                         Ordering::Equal => {}
+
                         ordering => {
                             return ordering;
                         }
@@ -586,19 +626,26 @@ impl AsciiCollator for CldrAsciiCollator {
 /// The last 128 bytes are mapped to themselves.
 pub const fn ascii_collation_weight_from(collation_table: &[u8; 128]) -> [u8; 256] {
     let mut result = [0u8; 256];
+
     let mut i = 0;
+
     while i < collation_table.len() {
         debug_assert!(
             result[collation_table[i] as usize] == 0,
             "A character appears twice in the collation table."
         );
+
         result[collation_table[i] as usize] = i as u8;
+
         i += 1;
     }
+
     while i < result.len() {
         result[i] = i as u8;
+
         i += 1;
     }
+
     result
 }
 
@@ -625,6 +672,7 @@ pub trait StrOnlyExtension: ToOwned {
 impl StrLikeExtension for str {
     fn to_ascii_lowercase_cow(&self) -> Cow<Self> {
         let has_ascii_uppercase = self.bytes().any(|b| b.is_ascii_uppercase());
+
         if has_ascii_uppercase {
             #[allow(clippy::disallowed_methods)]
             Cow::Owned(self.to_ascii_lowercase())
@@ -641,6 +689,7 @@ impl StrLikeExtension for str {
 impl StrOnlyExtension for str {
     fn to_lowercase_cow(&self) -> Cow<Self> {
         let has_uppercase = self.chars().any(char::is_uppercase);
+
         if has_uppercase {
             #[allow(clippy::disallowed_methods)]
             Cow::Owned(self.to_lowercase())
@@ -656,6 +705,7 @@ impl StrLikeExtension for std::ffi::OsStr {
             .as_encoded_bytes()
             .iter()
             .any(|b| b.is_ascii_uppercase());
+
         if has_ascii_uppercase {
             #[allow(clippy::disallowed_methods)]
             Cow::Owned(self.to_ascii_lowercase())
@@ -673,6 +723,7 @@ impl StrLikeExtension for std::ffi::OsStr {
 impl StrLikeExtension for [u8] {
     fn to_ascii_lowercase_cow(&self) -> Cow<Self> {
         let has_ascii_uppercase = self.iter().any(|b| b.is_ascii_uppercase());
+
         if has_ascii_uppercase {
             Cow::Owned(self.to_ascii_lowercase())
         } else {
@@ -693,6 +744,7 @@ impl<T: StrOnlyExtension + StrLikeExtension> StrExtension for T {}
 #[cfg(test)]
 mod tests {
     use core::cmp::Ordering;
+
     use std::ffi::OsStr;
 
     use super::*;
@@ -704,54 +756,79 @@ mod tests {
         assert_eq!(Case::identify("100", no_effect), Case::Number);
 
         assert_eq!(Case::identify("aHttpServer", no_effect), Case::Camel);
+
         assert_eq!(Case::identify("aHTTPServer", true), Case::Unknown);
+
         assert_eq!(Case::identify("aHTTPServer", false), Case::Camel);
+
         assert_eq!(Case::identify("v8Engine", no_effect), Case::Camel);
+
         assert_eq!(Case::identify("2024Edition", no_effect), Case::Camel);
 
         assert_eq!(Case::identify("HTTP_SERVER", no_effect), Case::Constant);
+
         assert_eq!(Case::identify("V8_ENGINE", no_effect), Case::Constant);
+
         assert_eq!(Case::identify("2024_EDITION", no_effect), Case::Unknown);
 
         assert_eq!(Case::identify("http-server", no_effect), Case::Kebab);
+
         assert_eq!(Case::identify("2024-edition", no_effect), Case::Kebab);
 
         assert_eq!(Case::identify("httpserver", no_effect), Case::Lower);
 
         assert_eq!(Case::identify("T", no_effect), Case::NumberableCapital);
+
         assert_eq!(Case::identify("T1", no_effect), Case::NumberableCapital);
 
         assert_eq!(Case::identify("HttpServer", no_effect), Case::Pascal);
+
         assert_eq!(Case::identify("HTTPServer", true), Case::Unknown);
+
         assert_eq!(Case::identify("HTTPServer", false), Case::Pascal);
+
         assert_eq!(Case::identify("V8Engine", true), Case::Pascal);
 
         assert_eq!(Case::identify("http_server", no_effect), Case::Snake);
+
         assert_eq!(Case::identify("2024_edition", no_effect), Case::Snake);
 
         assert_eq!(Case::identify("HTTPSERVER", no_effect), Case::Upper);
+
         assert_eq!(Case::identify("2024EDITION", no_effect), Case::Unknown);
 
         assert_eq!(Case::identify("100안녕하세요", no_effect), Case::Uni);
+
         assert_eq!(Case::identify("안녕하세요", no_effect), Case::Uni);
 
         // don't allow identifiers that starts/ends with a delimiter
         assert_eq!(Case::identify("-a", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("_a", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("a-", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("a_", no_effect), Case::Unknown);
 
         // don't allow identifiers that use consecutive delimiters
         assert_eq!(Case::identify("a--a", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("a__a", no_effect), Case::Unknown);
 
         assert_eq!(Case::identify("", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("-", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("_", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("안녕하세요ABC", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("안녕하세요abc", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("안녕하세요_ABC", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("안녕하세요_abc", no_effect), Case::Unknown);
+
         assert_eq!(Case::identify("안녕하세요-abc", no_effect), Case::Unknown);
     }
 
@@ -759,192 +836,335 @@ mod tests {
     fn test_cases_contains() {
         // Individual cases
         assert!(Cases::from(Case::Unknown).contains(Case::Unknown));
+
         assert!(!Cases::from(Case::Camel).contains(Case::Unknown));
+
         assert!(!Cases::from(Case::Constant).contains(Case::Unknown));
+
         assert!(!Cases::from(Case::Kebab).contains(Case::Unknown));
+
         assert!(!Cases::from(Case::Lower).contains(Case::Unknown));
+
         assert!(!Cases::from(Case::NumberableCapital).contains(Case::Unknown));
+
         assert!(!Cases::from(Case::Pascal).contains(Case::Unknown));
+
         assert!(!Cases::from(Case::Snake).contains(Case::Unknown));
+
         assert!(!Cases::from(Case::Uni).contains(Case::Unknown));
+
         assert!(!Cases::from(Case::Upper).contains(Case::Unknown));
 
         assert!(Cases::from(Case::Unknown).contains(Case::Camel));
+
         assert!(Cases::from(Case::Camel).contains(Case::Camel));
+
         assert!(!Cases::from(Case::Constant).contains(Case::Camel));
+
         assert!(!Cases::from(Case::Kebab).contains(Case::Camel));
+
         assert!(!Cases::from(Case::Lower).contains(Case::Camel));
+
         assert!(!Cases::from(Case::NumberableCapital).contains(Case::Camel));
+
         assert!(!Cases::from(Case::Pascal).contains(Case::Camel));
+
         assert!(!Cases::from(Case::Snake).contains(Case::Camel));
+
         assert!(!Cases::from(Case::Uni).contains(Case::Camel));
+
         assert!(!Cases::from(Case::Upper).contains(Case::Camel));
 
         assert!(Cases::from(Case::Unknown).contains(Case::Constant));
+
         assert!(!Cases::from(Case::Camel).contains(Case::Constant));
+
         assert!(Cases::from(Case::Constant).contains(Case::Constant));
+
         assert!(!Cases::from(Case::Kebab).contains(Case::Constant));
+
         assert!(!Cases::from(Case::Lower).contains(Case::Constant));
+
         assert!(!Cases::from(Case::NumberableCapital).contains(Case::Constant));
+
         assert!(!Cases::from(Case::Pascal).contains(Case::Constant));
+
         assert!(!Cases::from(Case::Snake).contains(Case::Constant));
+
         assert!(!Cases::from(Case::Uni).contains(Case::Constant));
+
         assert!(!Cases::from(Case::Upper).contains(Case::Constant));
 
         assert!(Cases::from(Case::Unknown).contains(Case::Kebab));
+
         assert!(!Cases::from(Case::Camel).contains(Case::Kebab));
+
         assert!(!Cases::from(Case::Constant).contains(Case::Kebab));
+
         assert!(Cases::from(Case::Kebab).contains(Case::Kebab));
+
         assert!(!Cases::from(Case::Lower).contains(Case::Kebab));
+
         assert!(!Cases::from(Case::NumberableCapital).contains(Case::Kebab));
+
         assert!(!Cases::from(Case::Pascal).contains(Case::Kebab));
+
         assert!(!Cases::from(Case::Snake).contains(Case::Kebab));
+
         assert!(!Cases::from(Case::Uni).contains(Case::Kebab));
+
         assert!(!Cases::from(Case::Upper).contains(Case::Kebab));
 
         assert!(Cases::from(Case::Unknown).contains(Case::Lower));
+
         assert!(Cases::from(Case::Camel).contains(Case::Lower));
+
         assert!(!Cases::from(Case::Constant).contains(Case::Lower));
+
         assert!(Cases::from(Case::Kebab).contains(Case::Lower));
+
         assert!(Cases::from(Case::Lower).contains(Case::Lower));
+
         assert!(!Cases::from(Case::NumberableCapital).contains(Case::Lower));
+
         assert!(!Cases::from(Case::Pascal).contains(Case::Lower));
+
         assert!(Cases::from(Case::Snake).contains(Case::Lower));
+
         assert!(!Cases::from(Case::Uni).contains(Case::Lower));
+
         assert!(!Cases::from(Case::Upper).contains(Case::Lower));
 
         assert!(Cases::from(Case::Unknown).contains(Case::NumberableCapital));
+
         assert!(!Cases::from(Case::Camel).contains(Case::NumberableCapital));
+
         assert!(Cases::from(Case::Constant).contains(Case::NumberableCapital));
+
         assert!(!Cases::from(Case::Kebab).contains(Case::NumberableCapital));
+
         assert!(!Cases::from(Case::Lower).contains(Case::NumberableCapital));
+
         assert!(Cases::from(Case::NumberableCapital).contains(Case::NumberableCapital));
+
         assert!(Cases::from(Case::Pascal).contains(Case::NumberableCapital));
+
         assert!(!Cases::from(Case::Snake).contains(Case::NumberableCapital));
+
         assert!(!Cases::from(Case::Uni).contains(Case::NumberableCapital));
+
         assert!(Cases::from(Case::Upper).contains(Case::NumberableCapital));
 
         assert!(Cases::from(Case::Unknown).contains(Case::Pascal));
+
         assert!(!Cases::from(Case::Camel).contains(Case::Pascal));
+
         assert!(!Cases::from(Case::Constant).contains(Case::Pascal));
+
         assert!(!Cases::from(Case::Kebab).contains(Case::Pascal));
+
         assert!(!Cases::from(Case::Lower).contains(Case::Pascal));
+
         assert!(!Cases::from(Case::NumberableCapital).contains(Case::Pascal));
+
         assert!(Cases::from(Case::Pascal).contains(Case::Pascal));
+
         assert!(!Cases::from(Case::Snake).contains(Case::Pascal));
+
         assert!(!Cases::from(Case::Uni).contains(Case::Pascal));
+
         assert!(!Cases::from(Case::Upper).contains(Case::Pascal));
 
         assert!(Cases::from(Case::Unknown).contains(Case::Snake));
+
         assert!(!Cases::from(Case::Camel).contains(Case::Snake));
+
         assert!(!Cases::from(Case::Constant).contains(Case::Snake));
+
         assert!(!Cases::from(Case::Kebab).contains(Case::Snake));
+
         assert!(!Cases::from(Case::Lower).contains(Case::Snake));
+
         assert!(!Cases::from(Case::NumberableCapital).contains(Case::Snake));
+
         assert!(!Cases::from(Case::Pascal).contains(Case::Snake));
+
         assert!(Cases::from(Case::Snake).contains(Case::Snake));
+
         assert!(!Cases::from(Case::Uni).contains(Case::Snake));
+
         assert!(!Cases::from(Case::Upper).contains(Case::Snake));
 
         assert!(Cases::from(Case::Unknown).contains(Case::Uni));
+
         assert!(!Cases::from(Case::Camel).contains(Case::Uni));
+
         assert!(!Cases::from(Case::Constant).contains(Case::Uni));
+
         assert!(!Cases::from(Case::Kebab).contains(Case::Uni));
+
         assert!(!Cases::from(Case::Lower).contains(Case::Uni));
+
         assert!(!Cases::from(Case::NumberableCapital).contains(Case::Uni));
+
         assert!(!Cases::from(Case::Pascal).contains(Case::Uni));
+
         assert!(!Cases::from(Case::Snake).contains(Case::Uni));
+
         assert!(Cases::from(Case::Uni).contains(Case::Uni));
+
         assert!(!Cases::from(Case::Upper).contains(Case::Uni));
 
         assert!(Cases::from(Case::Unknown).contains(Case::Upper));
+
         assert!(!Cases::from(Case::Camel).contains(Case::Upper));
+
         assert!(Cases::from(Case::Constant).contains(Case::Upper));
+
         assert!(!Cases::from(Case::Kebab).contains(Case::Upper));
+
         assert!(!Cases::from(Case::Lower).contains(Case::Upper));
+
         assert!(!Cases::from(Case::NumberableCapital).contains(Case::Upper));
+
         assert!(!Cases::from(Case::Pascal).contains(Case::Upper));
+
         assert!(!Cases::from(Case::Snake).contains(Case::Upper));
+
         assert!(!Cases::from(Case::Uni).contains(Case::Upper));
+
         assert!(Cases::from(Case::Upper).contains(Case::Upper));
 
         // Set of cases
         assert!((Case::Camel | Case::Kebab | Case::Snake).contains(Case::Camel));
+
         assert!((Case::Camel | Case::Kebab | Case::Snake).contains(Case::Kebab));
+
         assert!((Case::Camel | Case::Kebab | Case::Snake).contains(Case::Snake));
+
         assert!((Case::Camel | Case::Kebab | Case::Snake).contains(Case::Lower));
+
         assert!(!(Case::Camel | Case::Kebab | Case::Snake).contains(Case::Unknown));
+
         assert!(!(Case::Camel | Case::Kebab | Case::Snake).contains(Case::Constant));
+
         assert!(!(Case::Camel | Case::Kebab | Case::Snake).contains(Case::Upper));
+
         assert!(!(Case::Camel | Case::Kebab | Case::Snake).contains(Case::NumberableCapital));
+
         assert!(!(Case::Camel | Case::Kebab | Case::Snake).contains(Case::Uni));
 
         assert!((Case::Constant | Case::Upper).contains(Case::Constant));
+
         assert!((Case::Constant | Case::Upper).contains(Case::Upper));
+
         assert!((Case::Constant | Case::Upper).contains(Case::NumberableCapital));
+
         assert!(!(Case::Constant | Case::Upper).contains(Case::Unknown));
+
         assert!(!(Case::Constant | Case::Upper).contains(Case::Camel));
+
         assert!(!(Case::Constant | Case::Upper).contains(Case::Kebab));
+
         assert!(!(Case::Constant | Case::Upper).contains(Case::Snake));
+
         assert!(!(Case::Constant | Case::Upper).contains(Case::Lower));
+
         assert!(!(Case::Constant | Case::Upper).contains(Case::Uni));
     }
 
     #[test]
     fn test_case_convert() {
         assert_eq!(Case::Camel.convert("camelCase"), "camelCase");
+
         assert_eq!(Case::Camel.convert("CONSTANT_CASE"), "constantCase");
+
         assert_eq!(Case::Camel.convert("kebab-case"), "kebabCase");
+
         assert_eq!(Case::Camel.convert("PascalCase"), "pascalCase");
+
         assert_eq!(Case::Camel.convert("snake_case"), "snakeCase");
+
         assert_eq!(Case::Camel.convert("Unknown_Style"), "unknownStyle");
 
         assert_eq!(Case::Constant.convert("camelCase"), "CAMEL_CASE");
+
         assert_eq!(Case::Constant.convert("CONSTANT_CASE"), "CONSTANT_CASE");
+
         assert_eq!(Case::Constant.convert("kebab-case"), "KEBAB_CASE");
+
         assert_eq!(Case::Constant.convert("PascalCase"), "PASCAL_CASE");
+
         assert_eq!(Case::Constant.convert("snake_case"), "SNAKE_CASE");
+
         assert_eq!(Case::Constant.convert("Unknown_Style"), "UNKNOWN_STYLE");
 
         assert_eq!(Case::Kebab.convert("camelCase"), "camel-case");
+
         assert_eq!(Case::Kebab.convert("CONSTANT_CASE"), "constant-case");
+
         assert_eq!(Case::Kebab.convert("kebab-case"), "kebab-case");
+
         assert_eq!(Case::Kebab.convert("PascalCase"), "pascal-case");
+
         assert_eq!(Case::Kebab.convert("snake_case"), "snake-case");
+
         assert_eq!(Case::Kebab.convert("Unknown_Style"), "unknown-style");
 
         assert_eq!(Case::Lower.convert("camelCase"), "camelcase");
+
         assert_eq!(Case::Lower.convert("CONSTANT_CASE"), "constantcase");
+
         assert_eq!(Case::Lower.convert("kebab-case"), "kebabcase");
+
         assert_eq!(Case::Lower.convert("PascalCase"), "pascalcase");
+
         assert_eq!(Case::Lower.convert("snake_case"), "snakecase");
+
         assert_eq!(Case::Lower.convert("Unknown_Style"), "unknownstyle");
 
         assert_eq!(Case::NumberableCapital.convert("LONG"), "L");
 
         assert_eq!(Case::Pascal.convert("camelCase"), "CamelCase");
+
         assert_eq!(Case::Pascal.convert("CONSTANT_CASE"), "ConstantCase");
+
         assert_eq!(Case::Pascal.convert("kebab-case"), "KebabCase");
+
         assert_eq!(Case::Pascal.convert("PascalCase"), "PascalCase");
+
         assert_eq!(Case::Pascal.convert("V8Engine"), "V8Engine");
+
         assert_eq!(Case::Pascal.convert("snake_case"), "SnakeCase");
+
         assert_eq!(Case::Pascal.convert("Unknown_Style"), "UnknownStyle");
 
         assert_eq!(Case::Snake.convert("camelCase"), "camel_case");
+
         assert_eq!(Case::Snake.convert("CONSTANT_CASE"), "constant_case");
+
         assert_eq!(Case::Snake.convert("kebab-case"), "kebab_case");
+
         assert_eq!(Case::Snake.convert("PascalCase"), "pascal_case");
+
         assert_eq!(Case::Snake.convert("snake_case"), "snake_case");
+
         assert_eq!(Case::Snake.convert("Unknown_Style"), "unknown_style");
 
         assert_eq!(Case::Upper.convert("camelCase"), "CAMELCASE");
+
         assert_eq!(Case::Upper.convert("CONSTANT_CASE"), "CONSTANTCASE");
+
         assert_eq!(Case::Upper.convert("kebab-case"), "KEBABCASE");
+
         assert_eq!(Case::Upper.convert("PascalCase"), "PASCALCASE");
+
         assert_eq!(Case::Upper.convert("snake_case"), "SNAKECASE");
+
         assert_eq!(Case::Upper.convert("Unknown_Style"), "UNKNOWNSTYLE");
 
         assert_eq!(Case::Uni.convert("안녕하세요"), "안녕하세요");
+
         assert_eq!(Case::Uni.convert("a안b녕c하_세D요E"), "안녕하세요");
 
         assert_eq!(Case::Unknown.convert("Unknown_Style"), "Unknown_Style");
@@ -957,16 +1177,27 @@ mod tests {
         }
 
         assert_eq!(vec(Cases::empty()).as_slice(), &[]);
+
         assert_eq!(vec(Case::Unknown).as_slice(), &[Case::Unknown]);
+
         assert_eq!(vec(Case::Camel).as_slice(), &[Case::Camel]);
+
         assert_eq!(vec(Case::Kebab).as_slice(), &[Case::Kebab]);
+
         assert_eq!(vec(Case::Snake).as_slice(), &[Case::Snake]);
+
         assert_eq!(vec(Case::Lower).as_slice(), &[Case::Lower]);
+
         assert_eq!(vec(Case::Pascal).as_slice(), &[Case::Pascal]);
+
         assert_eq!(vec(Case::Constant).as_slice(), &[Case::Constant]);
+
         assert_eq!(vec(Case::Upper).as_slice(), &[Case::Upper]);
+
         assert_eq!(vec(Case::Uni).as_slice(), &[Case::Uni]);
+
         assert_eq!(vec(Case::Number).as_slice(), &[Case::Number]);
+
         assert_eq!(
             vec(Case::NumberableCapital).as_slice(),
             &[Case::NumberableCapital]
@@ -976,47 +1207,61 @@ mod tests {
             vec(Case::Unknown | Case::Camel).as_slice(),
             &[Case::Unknown]
         );
+
         assert_eq!(
             vec(Case::Unknown | Case::Kebab).as_slice(),
             &[Case::Unknown]
         );
+
         assert_eq!(
             vec(Case::Unknown | Case::Snake).as_slice(),
             &[Case::Unknown]
         );
+
         assert_eq!(
             vec(Case::Unknown | Case::Lower).as_slice(),
             &[Case::Unknown]
         );
+
         assert_eq!(
             vec(Case::Unknown | Case::Pascal).as_slice(),
             &[Case::Unknown]
         );
+
         assert_eq!(
             vec(Case::Unknown | Case::Constant).as_slice(),
             &[Case::Unknown]
         );
+
         assert_eq!(
             vec(Case::Unknown | Case::Upper).as_slice(),
             &[Case::Unknown]
         );
+
         assert_eq!(
             vec(Case::Unknown | Case::NumberableCapital).as_slice(),
             &[Case::Unknown]
         );
+
         assert_eq!(vec(Case::Unknown | Case::Uni).as_slice(), &[Case::Unknown]);
+
         assert_eq!(
             vec(Case::Unknown | Case::Pascal | Case::Camel).as_slice(),
             &[Case::Unknown]
         );
 
         assert_eq!(vec(Case::Camel | Case::Lower).as_slice(), &[Case::Camel]);
+
         assert_eq!(vec(Case::Kebab | Case::Lower).as_slice(), &[Case::Kebab]);
+
         assert_eq!(vec(Case::Snake | Case::Lower).as_slice(), &[Case::Snake]);
 
         assert_eq!(vec(Case::Lower | Case::Number).as_slice(), &[Case::Lower]);
+
         assert_eq!(vec(Case::Camel | Case::Number).as_slice(), &[Case::Camel]);
+
         assert_eq!(vec(Case::Kebab | Case::Number).as_slice(), &[Case::Kebab]);
+
         assert_eq!(vec(Case::Snake | Case::Number).as_slice(), &[Case::Snake]);
 
         assert_eq!(
@@ -1028,10 +1273,12 @@ mod tests {
             vec(Case::Pascal | Case::NumberableCapital).as_slice(),
             &[Case::Pascal]
         );
+
         assert_eq!(
             vec(Case::Constant | Case::NumberableCapital).as_slice(),
             &[Case::Constant]
         );
+
         assert_eq!(
             vec(Case::Upper | Case::NumberableCapital).as_slice(),
             &[Case::Upper]
@@ -1041,6 +1288,7 @@ mod tests {
             vec(Case::Pascal | Case::Camel).as_slice(),
             &[Case::Camel, Case::Pascal]
         );
+
         assert_eq!(
             vec(Case::NumberableCapital | Case::Uni).as_slice(),
             &[Case::NumberableCapital, Case::Uni]
@@ -1075,35 +1323,46 @@ mod tests {
     #[test]
     fn test_size_hint_upper_limit() {
         let mut cases = Cases::empty();
+
         let mut max_count = 0;
+
         for case in LEADING_BIT_INDEX_TO_CASE {
             let count = (cases | case).into_iter().count();
+
             if count >= max_count {
                 cases |= case;
+
                 max_count = count;
             }
         }
+
         assert_eq!(cases.into_iter().size_hint().1, Some(max_count));
     }
 
     #[test]
     fn to_ascii_lowercase_cow() {
         assert_eq!("test", "Test".to_ascii_lowercase_cow());
+
         assert_eq!(
             OsStr::new("test"),
             OsStr::new("Test").to_ascii_lowercase_cow()
         );
+
         assert_eq!(b"test", b"Test".to_ascii_lowercase_cow().as_ref());
 
         assert_eq!("test", "teSt".to_ascii_lowercase_cow());
+
         assert_eq!("te😀st", "te😀St".to_ascii_lowercase_cow());
+
         assert_eq!(
             OsStr::new("test"),
             OsStr::new("teSt").to_ascii_lowercase_cow()
         );
+
         assert_eq!(b"test", b"teSt".to_ascii_lowercase_cow().as_ref());
 
         assert!(matches!("test".to_ascii_lowercase_cow(), Cow::Borrowed(_)));
+
         assert!(matches!(
             OsStr::new("test").to_ascii_lowercase_cow(),
             Cow::Borrowed(_)
@@ -1115,6 +1374,7 @@ mod tests {
         assert_eq!("test", "Test".to_lowercase_cow());
 
         assert_eq!("test", "teSt".to_lowercase_cow());
+
         assert_eq!("te😀st", "te😀St".to_lowercase_cow());
 
         assert!(matches!("test".to_lowercase_cow(), Cow::Borrowed(_)));
@@ -1122,6 +1382,7 @@ mod tests {
         assert_eq!("ėest", "Ėest".to_lowercase_cow());
 
         assert_eq!("tešt", "teŠt".to_lowercase_cow());
+
         assert_eq!("te😀st", "te😀St".to_lowercase_cow());
 
         assert!(matches!("tešt".to_lowercase_cow(), Cow::Borrowed(_)));
@@ -1137,21 +1398,31 @@ mod tests {
     #[test]
     fn ascii_nat_ord() {
         assert_eq!("".ascii_nat_cmp(""), Ordering::Equal);
+
         assert_eq!("a".ascii_nat_cmp(""), Ordering::Greater);
+
         assert_eq!("".ascii_nat_cmp("a"), Ordering::Less);
 
         assert_eq!("ab".ascii_nat_cmp("ab"), Ordering::Equal);
+
         assert_eq!("abc".ascii_nat_cmp("ab"), Ordering::Greater);
+
         assert_eq!("ab".ascii_nat_cmp("abc"), Ordering::Less);
 
         assert_eq!("A".ascii_nat_cmp("a"), Ordering::Less);
+
         assert_eq!("a".ascii_nat_cmp("B"), Ordering::Less);
 
         assert_eq!("9".ascii_nat_cmp("10"), Ordering::Less);
+
         assert_eq!("10".ascii_nat_cmp("10"), Ordering::Equal);
+
         assert_eq!("10".ascii_nat_cmp("9"), Ordering::Greater);
+
         assert_eq!("09".ascii_nat_cmp("10"), Ordering::Less);
+
         assert_eq!("a00".ascii_nat_cmp("a01"), Ordering::Less);
+
         assert_eq!("a00b".ascii_nat_cmp("a01b"), Ordering::Less);
 
         assert_eq!("a10".ascii_nat_cmp("a009"), Ordering::Less);

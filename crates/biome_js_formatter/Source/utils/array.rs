@@ -22,13 +22,16 @@ where
     // semantic difference
 
     let mut join = f.join_nodes_with_soft_line();
+
     let last_index = node.len().saturating_sub(1);
 
     for (index, element) in node.elements().enumerate() {
         let node = element.node()?;
+
         let separator_mode = node.separator_mode();
 
         let is_disallow = matches!(separator_mode, TrailingSeparatorMode::Disallow);
+
         let is_force = matches!(separator_mode, TrailingSeparatorMode::Force);
 
         join.entry(
@@ -52,6 +55,7 @@ where
                         TrailingSeparator::Omit => {
                             write!(f, [format_removed(separator)])?;
                         }
+
                         _ => {
                             write!(f, [format_only_if_breaks(separator, &separator.format())])?;
                         }

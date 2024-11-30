@@ -1472,6 +1472,7 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::TsUnionTypeVariantList::new_unchecked(node) };
                     $body
                 }
+
                 _ => unreachable!(),
             },
         }

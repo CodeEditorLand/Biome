@@ -24,6 +24,7 @@ where
 {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         let modifiers = sort_modifiers_by_precedence(&self.list);
+
         let should_expand = should_expand_decorators(&self.list);
 
         // Returning early here is important, because otherwise this node
@@ -51,12 +52,14 @@ where
         // class Test {
         //   prop1 = true; // comment
         // }
+
         if self.list.is_empty() {
             return Ok(());
         }
 
         // need to use peek the iterator to check if the current node is a decorator and don't advance the iterator
         let mut iter = modifiers.into_iter().peekable();
+
         let decorators = format_once(|f| {
             let mut join = f.join_nodes_with_soft_line();
 
@@ -69,6 +72,7 @@ where
                         // advance the iterator
                         iter.next();
                     }
+
                     _ => {
                         // if we encounter a non-decorator we break out of the loop
                         break;
@@ -104,6 +108,7 @@ where
                     return true;
                 }
             }
+
             _ => {
                 // if we encounter a non-decorator with a leading newline after a decorator and the next modifier
                 return node.syntax().has_leading_newline();

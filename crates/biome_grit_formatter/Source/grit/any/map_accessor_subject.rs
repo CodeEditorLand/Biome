@@ -6,6 +6,7 @@ use biome_grit_syntax::AnyGritMapAccessorSubject;
 pub(crate) struct FormatAnyGritMapAccessorSubject;
 impl FormatRule<AnyGritMapAccessorSubject> for FormatAnyGritMapAccessorSubject {
     type Context = GritFormatContext;
+
     fn fmt(&self, node: &AnyGritMapAccessorSubject, f: &mut GritFormatter) -> FormatResult<()> {
         match node {
             AnyGritMapAccessorSubject::AnyGritContainer(node) => node.format().fmt(f),

@@ -72,15 +72,22 @@ pub struct RuleState {
 
 impl Rule for NoPrototypeBuiltins {
     type Query = Semantic<JsCallExpression>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let call_expr = ctx.query();
+
         let callee = call_expr.callee().ok()?.omit_parentheses();
+
         let member_expr = AnyJsMemberExpression::cast(callee.into_syntax())?;
+
         let member_name = member_expr.member_name()?;
+
         let member_name_text = member_name.text();
 
         if is_prototype_builtins(member_name_text) {
@@ -93,8 +100,11 @@ impl Rule for NoPrototypeBuiltins {
 
         if member_name_text == "call" {
             let object = member_expr.object().ok()?.omit_parentheses();
+
             let obj_expr = AnyJsMemberExpression::cast(object.into_syntax())?;
+
             let obj_name = obj_expr.member_name()?;
+
             let obj_name_text = obj_name.text();
 
             if obj_name_text == "hasOwnProperty"
@@ -143,6 +153,7 @@ impl Rule for NoPrototypeBuiltins {
         }
 
         let mut callee = node.callee().ok()?;
+
         let is_callee_parenthesized = callee.as_js_parenthesized_expression().is_some();
 
         while let Some(paren_callee) = callee.as_js_parenthesized_expression() {
@@ -150,6 +161,7 @@ impl Rule for NoPrototypeBuiltins {
         }
 
         let member_expr = AnyJsMemberExpression::cast(callee.clone().into_syntax())?;
+
         let member_syntax = member_expr.syntax();
 
         if member_expr.is_optional_chain()
@@ -160,6 +172,7 @@ impl Rule for NoPrototypeBuiltins {
         }
 
         let mut mutation = ctx.root().begin();
+
         let has_own_expr = build_has_own_expr(node, is_callee_parenthesized);
 
         // foo.hasOwnProperty('bar') -> Object.hasOwn(foo, 'bar')
@@ -167,6 +180,7 @@ impl Rule for NoPrototypeBuiltins {
         // foo.["bar"].hasOwnProperty('bar') -> Object.hasOwn(foo.["bar"], 'bar')
         if !state.has_call_fn {
             let callee_arg = AnyJsCallArgument::AnyJsExpression(member_expr.object().ok()?);
+
             let existing_arg = node.arguments().ok()?.args().into_iter().next()?.ok()?;
 
             mutation.replace_node(
@@ -223,8 +237,10 @@ fn has_left_hand_object(member_expr: &AnyJsMemberExpression) -> Option<bool> {
             if obj_expr.members().into_iter().count() == 0 {
                 return Some(true);
             }
+
             object
         }
+
         AnyJsExpression::JsStaticMemberExpression(_)
         | AnyJsExpression::JsComputedMemberExpression(_) => {
             let obj_member_expr = AnyJsMemberExpression::cast(object.clone().into_syntax())?;
@@ -235,6 +251,7 @@ fn has_left_hand_object(member_expr: &AnyJsMemberExpression) -> Option<bool> {
                 object
             }
         }
+
         _ => object,
     };
 
@@ -257,6 +274,7 @@ fn has_left_hand_object(member_expr: &AnyJsMemberExpression) -> Option<bool> {
 /// ```
 fn can_previous_token_be_adjacent(node: &JsCallExpression) -> bool {
     let mut prev_sibling = None;
+
     let mut current = node.syntax().clone();
 
     while AnyJsExpression::can_cast(current.kind()) {

@@ -72,6 +72,7 @@ impl SelectorList {
     /// behavior of the selector list parsing.
     pub(crate) fn with_end_kind_ts(mut self, end_kind_ts: TokenSet<CssSyntaxKind>) -> Self {
         self.end_kind_ts = end_kind_ts;
+
         self
     }
 
@@ -83,6 +84,7 @@ impl SelectorList {
     /// recognize as potential recovery points.
     pub(crate) fn with_recovery_ts(mut self, recovery_ts: TokenSet<CssSyntaxKind>) -> Self {
         self.recovery_ts = recovery_ts;
+
         self
     }
 
@@ -93,13 +95,16 @@ impl SelectorList {
     /// where we want to implement a custom recovery.
     pub(crate) fn disable_recovery(mut self) -> Self {
         self.is_recovery_disabled = true;
+
         self
     }
 }
 
 impl ParseSeparatedList for SelectorList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_SELECTOR_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -117,6 +122,7 @@ impl ParseSeparatedList for SelectorList {
     ) -> RecoveryResult {
         if parsed_element.is_absent() && self.is_recovery_disabled {
             p.error(expected_selector(p, p.cur_range()));
+
             Err(RecoveryError::RecoveryDisabled)
         } else {
             parsed_element.or_recover(
@@ -144,7 +150,9 @@ impl SelectorListParseRecovery {
 
 impl ParseRecovery for SelectorListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_SELECTOR;
 
     /// Determines if the parser is at a point where it can recover from an error
@@ -215,6 +223,7 @@ pub(crate) fn parse_selector(p: &mut CssParser) -> ParsedSyntax {
     if !is_nth_at_selector(p, 0) {
         return Absent;
     }
+
     if is_nth_at_metavariable(p, 0) {
         parse_metavariable(p)
     } else {
@@ -259,7 +268,9 @@ fn parse_complex_selector(p: &mut CssParser, mut left: CompletedMarker) -> Parse
             let complex_selector = left.precede(p);
 
             p.bump_ts(COMPLEX_SELECTOR_COMBINATOR_SET);
+
             parse_compound_selector(p).or_add_diagnostic(p, expected_compound_selector);
+
             left = complex_selector.complete(p, CSS_COMPLEX_SELECTOR)
         } else {
             return Present(left);
@@ -293,6 +304,7 @@ fn parse_compound_selector(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     NestedSelectorList.parse_list(p);
+
     parse_simple_selector(p).ok(); // We don't need to handle error here because a simple selector is optional
     SubSelectorList.parse_list(p);
 
@@ -354,6 +366,7 @@ fn parse_namespace(p: &mut CssParser) -> ParsedSyntax {
 
     // we don't need diagnostic here, because prefix is optional
     parse_namespace_prefix(p).ok();
+
     p.bump(T![|]);
 
     Present(m.complete(p, CSS_NAMESPACE))
@@ -388,6 +401,7 @@ fn parse_namespace_prefix(p: &mut CssParser) -> ParsedSyntax {
     } else {
         // we don't need to check if the identifier is valid, because we already did that
         parse_regular_identifier(p).ok();
+
         CSS_NAMED_NAMESPACE_PREFIX
     };
 
@@ -401,6 +415,7 @@ impl SubSelectorList {
 }
 impl ParseNodeList for SubSelectorList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
 
     const LIST_KIND: CssSyntaxKind = CSS_SUB_SELECTOR_LIST;
@@ -453,6 +468,7 @@ pub(crate) fn parse_class_selector(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![.]);
+
     parse_selector_custom_identifier(p).or_add_diagnostic(p, expected_identifier);
 
     Present(m.complete(p, CSS_CLASS_SELECTOR))
@@ -472,6 +488,7 @@ pub(crate) fn parse_id_selector(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![#]);
+
     parse_selector_custom_identifier(p).or_add_diagnostic(p, expected_identifier);
 
     Present(m.complete(p, CSS_ID_SELECTOR))
@@ -490,6 +507,7 @@ pub(crate) fn parse_universal_selector(p: &mut CssParser, namespace: ParsedSynta
     let m = namespace.precede(p);
 
     let context = selector_lex_context(p);
+
     p.eat_with_context(T![*], context);
 
     Present(m.complete(p, CSS_UNIVERSAL_SELECTOR))
@@ -521,6 +539,7 @@ fn parse_type_selector(p: &mut CssParser, namespace: ParsedSyntax) -> ParsedSynt
 #[inline]
 fn parse_selector_identifier(p: &mut CssParser) -> ParsedSyntax {
     let context = selector_lex_context(p);
+
     parse_identifier(p, context)
 }
 
@@ -562,10 +581,12 @@ where
                 p,
                 TextRange::new(parameter.range(p).start(), m.range(p).end()),
             );
+
             p.error(diagnostic);
         }
 
         let context = selector_lex_context(p);
+
         p.expect_with_context(T![')'], context);
 
         false
@@ -586,5 +607,6 @@ where
         .map_or_else(|_| p.cur_range(), |m| m.range(p));
 
     let diagnostic = error_builder(p, TextRange::new(start, range.end()));
+
     p.error(diagnostic);
 }

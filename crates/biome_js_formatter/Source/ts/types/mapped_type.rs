@@ -27,9 +27,11 @@ impl FormatNodeRule<TsMappedType> for FormatTsMappedType {
         } = node.as_fields();
 
         let property_name = property_name?;
+
         let should_expand = has_line_break_before_property_name(node)?;
 
         let comments = f.comments().clone();
+
         let type_annotation_has_leading_comment =
             mapped_type.as_ref().map_or(false, |annotation| {
                 comments.has_leading_comments(annotation.syntax())
@@ -70,6 +72,7 @@ impl FormatNodeRule<TsMappedType> for FormatTsMappedType {
         });
 
         let should_insert_space_around_brackets = f.options().bracket_spacing().value();
+
         write!(
             f,
             [
@@ -102,6 +105,7 @@ impl FormatNodeRule<TsMappedType> for FormatTsMappedType {
 /// Because the break is _after_ the `A`.
 fn has_line_break_before_property_name(node: &TsMappedType) -> FormatResult<bool> {
     let property_name = node.property_name()?;
+
     let first_property_name_token = match property_name.syntax().first_token() {
         Some(first_token) => first_token,
         None => return Err(FormatError::SyntaxError),

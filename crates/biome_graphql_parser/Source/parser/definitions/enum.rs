@@ -40,11 +40,13 @@ pub(crate) fn parse_enum_type_extension(p: &mut GraphqlParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![extend]);
+
     p.expect(T![enum]);
 
     parse_reference(p).or_add_diagnostic(p, expected_name);
 
     let directive_list = DirectiveList.parse_list(p);
+
     let directive_empty = directive_list.range(p).is_empty();
 
     let enum_values_empty = parse_enum_values(p).is_absent();
@@ -61,10 +63,13 @@ fn parse_enum_values(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_enum_values(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.expect(T!['{']);
 
     EnumValueList.parse_list(p);
+
     p.expect(T!['}']);
 
     Present(m.complete(p, GRAPHQL_ENUM_VALUES_DEFINITION))
@@ -75,6 +80,7 @@ struct EnumValueList;
 
 impl ParseNodeList for EnumValueList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_ENUM_VALUE_LIST;
@@ -100,7 +106,9 @@ struct EnumValueListParseRecovery;
 
 impl ParseRecovery for EnumValueListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -113,6 +121,7 @@ pub(crate) fn parse_enum_value_definition(p: &mut GraphqlParser) -> ParsedSyntax
     if !is_at_enum_value(p) {
         return Absent;
     }
+
     let m = p.start();
 
     // description is optional

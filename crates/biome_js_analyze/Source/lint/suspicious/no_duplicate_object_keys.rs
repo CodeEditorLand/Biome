@@ -78,12 +78,15 @@ impl MemberDefinition {
             MemberDefinition::Getter(getter) => {
                 getter.name().ok()?.as_js_literal_member_name()?.name().ok()
             }
+
             MemberDefinition::Setter(setter) => {
                 setter.name().ok()?.as_js_literal_member_name()?.name().ok()
             }
+
             MemberDefinition::Method(method) => {
                 method.name().ok()?.as_js_literal_member_name()?.name().ok()
             }
+
             MemberDefinition::Property(property) => property
                 .name()
                 .ok()?
@@ -132,10 +135,13 @@ impl Display for MemberDefinition {
             Self::Property(_) => "property value",
             Self::ShorthandProperty(_) => "shorthand property",
         })?;
+
         if let Some(name) = self.name() {
             f.write_str(" named ")?;
+
             f.write_str(&name)?;
         }
+
         Ok(())
     }
 }
@@ -154,9 +160,11 @@ impl TryFrom<AnyJsObjectMember> for MemberDefinition {
             AnyJsObjectMember::JsPropertyObjectMember(member) => {
                 Ok(MemberDefinition::Property(member))
             }
+
             AnyJsObjectMember::JsShorthandPropertyObjectMember(member) => {
                 Ok(MemberDefinition::ShorthandProperty(member))
             }
+
             AnyJsObjectMember::JsSpread(_) => Err(MemberDefinitionError::NotASinglePropertyMember),
             AnyJsObjectMember::JsBogusMember(_) => Err(MemberDefinitionError::BogusMemberType),
         }
@@ -212,14 +220,18 @@ impl DefinedProperty {
 
 impl Rule for NoDuplicateObjectKeys {
     type Query = Ast<JsObjectExpression>;
+
     type State = PropertyConflict;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
 
         let mut defined_properties = FxHashMap::default();
+
         let mut signals = Vec::new();
 
         for member_definition in node
@@ -236,13 +248,16 @@ impl Rule for NoDuplicateObjectKeys {
                         defined_properties
                             .insert(member_name, DefinedProperty::from(member_definition));
                     }
+
                     Some(defined_property) => {
                         match defined_property.extend_with(member_definition) {
                             Ok(new_defined_property) => {
                                 defined_properties.insert(member_name, new_defined_property);
                             }
+
                             Err(conflict) => {
                                 signals.push(conflict);
+
                                 defined_properties.insert(member_name, defined_property);
                             }
                         }
@@ -265,23 +280,29 @@ impl Rule for NoDuplicateObjectKeys {
                 "This {member_definition} is later overwritten by an object member with the same name."
             ),
         );
+
         diagnostic = match defined_property {
             DefinedProperty::Get(range) => {
                 diagnostic.detail(range, "Overwritten with this getter.")
             }
+
             DefinedProperty::Set(range) => {
                 diagnostic.detail(range, "Overwritten with this setter.")
             }
+
             DefinedProperty::Value(range) => {
                 diagnostic.detail(range, "Overwritten with this value.")
             }
+
             DefinedProperty::GetSet(get_range, set_range) => match member_definition {
                 MemberDefinition::Getter(_) => {
                     diagnostic.detail(get_range, "Overwritten with this getter.")
                 }
+
                 MemberDefinition::Setter(_) => {
                     diagnostic.detail(set_range, "Overwritten with this setter.")
                 }
+
                 MemberDefinition::Method(_)
                 | MemberDefinition::Property(_)
                 | MemberDefinition::ShorthandProperty(_) => match get_range.ordering(*set_range) {
@@ -289,6 +310,7 @@ impl Rule for NoDuplicateObjectKeys {
                     Ordering::Greater => {
                         diagnostic.detail(get_range, "Overwritten with this getter.")
                     }
+
                     Ordering::Equal => {
                         panic!(
                             "The ranges of the property getter and property setter cannot overlap."
@@ -297,6 +319,7 @@ impl Rule for NoDuplicateObjectKeys {
                 },
             },
         };
+
         diagnostic = diagnostic.note("If an object property with the same name is defined multiple times (except when combining a getter with a setter), only the last definition makes it into the object and previous definitions are ignored.");
 
         Some(diagnostic)
@@ -307,7 +330,9 @@ impl Rule for NoDuplicateObjectKeys {
         PropertyConflict(_, member_definition): &Self::State,
     ) -> Option<JsRuleAction> {
         let mut batch = ctx.root().begin();
+
         batch.remove_js_object_member(member_definition.node());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             // The property initialization could contain side effects

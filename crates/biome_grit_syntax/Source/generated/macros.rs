@@ -477,6 +477,7 @@ macro_rules! map_syntax_node {
                     let $pattern = unsafe { $crate::GritVariableList::new_unchecked(node) };
                     $body
                 }
+
                 _ => unreachable!(),
             },
         }

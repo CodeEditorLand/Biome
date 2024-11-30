@@ -6,6 +6,7 @@ pub struct YamlLanguage;
 
 impl Language for YamlLanguage {
     type Kind = YamlSyntaxKind;
+
     type Root = YamlRoot;
 }
 

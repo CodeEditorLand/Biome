@@ -41,6 +41,7 @@ pub(crate) fn code_actions(
     params: CodeActionParams,
 ) -> Result<Option<CodeActionResponse>, LspError> {
     let url = params.text_document.uri.clone();
+
     let biome_path = session.file_path(&url)?;
 
     let file_features = &session.workspace.file_features(SupportsFeatureParams {
@@ -57,40 +58,52 @@ pub(crate) fn code_actions(
         && !file_features.supports_assists()
     {
         info!("Linter, assists and organize imports are disabled");
+
         return Ok(Some(Vec::new()));
     }
 
     let mut has_fix_all = false;
+
     let mut has_quick_fix = false;
+
     let mut filters = Vec::new();
+
     if let Some(filter) = &params.context.only {
         for kind in filter {
             let kind = kind.as_str();
+
             if FIX_ALL_CATEGORY.matches(kind) {
                 has_fix_all = true;
             } else if "quickfix.biome" == kind {
                 // The action is a on-save quick-fixes
                 has_quick_fix = true;
             }
+
             filters.push(kind);
         }
     }
 
     let url = params.text_document.uri.clone();
+
     let biome_path = session.file_path(&url)?;
+
     let doc = session.document(&url)?;
+
     let position_encoding = session.position_encoding();
 
     let diagnostics = params.context.diagnostics;
+
     let content = session.workspace.get_file_content(GetFileContentParams {
         path: biome_path.clone(),
     })?;
+
     let offset = match biome_path.extension().map(OsStr::as_encoded_bytes) {
         Some(b"vue") => VueFileHandler::start(content.as_str()),
         Some(b"astro") => AstroFileHandler::start(content.as_str()),
         Some(b"svelte") => SvelteFileHandler::start(content.as_str()),
         _ => None,
     };
+
     let cursor_range = from_proto::text_range(&doc.line_index, params.range, position_encoding)
         .with_context(|| {
             format!(
@@ -98,6 +111,7 @@ pub(crate) fn code_actions(
                 params.range, &doc.line_index,
             )
         })?;
+
     let cursor_range = if let Some(offset) = offset {
         if cursor_range.start().gt(&TextSize::from(offset)) {
             TextRange::new(
@@ -112,6 +126,7 @@ pub(crate) fn code_actions(
     };
 
     debug!("Cursor range {:?}", &cursor_range);
+
     let result = match session.workspace.pull_actions(PullActionsParams {
         path: biome_path.clone(),
         range: Some(cursor_range),
@@ -131,6 +146,7 @@ pub(crate) fn code_actions(
     };
 
     trace!("Pull actions result: {:?}", result);
+
     trace!("Filters: {:?}", &filters);
 
     // Generate an additional code action to apply all safe fixes on the
@@ -183,8 +199,10 @@ pub(crate) fn code_actions(
                     filter,
                     action.category.to_str()
                 );
+
                 action.category.matches(filter)
             });
+
             if !filters.is_empty() && !matches_filters {
                 return None;
             }
@@ -200,6 +218,7 @@ pub(crate) fn code_actions(
             .ok()?;
 
             has_fixes |= action.diagnostics.is_some();
+
             Some(CodeActionOrCommand::CodeAction(action))
         })
         .rev()
@@ -240,6 +259,7 @@ fn fix_all(
             features: FeaturesBuilder::new().with_formatter().build(),
         })?
         .supports_format();
+
     let fixed = session.workspace.fix_file(FixFileParams {
         path: biome_path,
         fix_file_mode: FixFileMode::SafeFixes,
@@ -262,15 +282,18 @@ fn fix_all(
         .iter()
         .filter_map(|d| {
             let code = d.code.as_ref()?;
+
             let code = match code {
                 lsp::NumberOrString::String(code) => code.as_str(),
                 lsp::NumberOrString::Number(_) => return None,
             };
 
             let code = code.strip_prefix("lint/")?;
+
             let position_encoding = session.position_encoding();
 
             let diag_range = from_proto::text_range(line_index, d.range, position_encoding).ok()?;
+
             let diag_range = if let Some(offset) = offset {
                 if diag_range.start().gt(&TextSize::from(offset)) {
                     TextRange::new(
@@ -283,16 +306,20 @@ fn fix_all(
             } else {
                 diag_range
             };
+
             let has_matching_rule = fixed.actions.iter().any(|action| {
                 let Some((group_name, rule_name)) = &action.rule_name else {
                     return false;
                 };
+
                 let Some(code) = code.strip_prefix(group_name.as_ref()) else {
                     return false;
                 };
+
                 let Some(code) = code.strip_prefix('/') else {
                     return false;
                 };
+
                 code == rule_name && action.range.intersect(diag_range).is_some()
             });
 
@@ -305,6 +332,7 @@ fn fix_all(
         .collect();
 
     let mut changes = HashMap::new();
+
     changes.insert(
         url.clone(),
         vec![lsp::TextEdit {

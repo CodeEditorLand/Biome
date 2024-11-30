@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsForInitializer;
 pub(crate) struct FormatAnyJsForInitializer;
 impl FormatRule<AnyJsForInitializer> for FormatAnyJsForInitializer {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsForInitializer, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsForInitializer::AnyJsExpression(node) => node.format().fmt(f),

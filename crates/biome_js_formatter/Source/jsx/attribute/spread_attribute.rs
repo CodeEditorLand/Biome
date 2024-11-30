@@ -17,6 +17,7 @@ impl FormatNodeRule<JsxSpreadAttribute> for FormatJsxSpreadAttribute {
         } = node.as_fields();
 
         let argument = argument?;
+
         let format_inner = format_with(|f| {
             if f.comments().is_suppressed(argument.syntax()) {
                 write!(
@@ -35,7 +36,9 @@ impl FormatNodeRule<JsxSpreadAttribute> for FormatJsxSpreadAttribute {
                         dotdotdot_token.format()
                     ]
                 )?;
+
                 FormatAnyJsExpressionWithoutComments.fmt(&argument, f)?;
+
                 write!(
                     f,
                     [

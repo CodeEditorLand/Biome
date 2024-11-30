@@ -9,6 +9,7 @@ macro_rules! create_scope {
     ($context: expr, $local_vars: expr) => {{
         let scope_index = $context.vars_array.len();
         $context.vars_array.push(Vec::new());
+
         let context = crate::pattern_compiler::NodeCompilationContext {
             compilation: $context.compilation,
             vars: &mut $local_vars,
@@ -132,6 +133,7 @@ impl PatternCompiler {
             AnyGritPattern::AnyGritLiteral(node) => {
                 LiteralCompiler::from_node_with_rhs(node, context, is_rhs)
             }
+
             AnyGritPattern::GritAddOperation(node) => Ok(Pattern::Add(Box::new(
                 AddCompiler::from_node(node, context)?,
             ))),
@@ -141,6 +143,7 @@ impl PatternCompiler {
             AnyGritPattern::GritBracketedPattern(node) => {
                 Self::from_node_with_rhs(&node.pattern()?, context, is_rhs)
             }
+
             AnyGritPattern::GritBubble(node) => Ok(Pattern::Bubble(Box::new(
                 BubbleCompiler::from_node(node, context)?,
             ))),
@@ -152,6 +155,7 @@ impl PatternCompiler {
                     parts: vec![DynamicSnippetPart::String(String::new())],
                 })))
             }
+
             AnyGritPattern::GritEvery(node) => Ok(Pattern::Every(Box::new(
                 EveryCompiler::from_node(node, context)?,
             ))),
@@ -176,6 +180,7 @@ impl PatternCompiler {
             AnyGritPattern::GritNodeLike(node) => {
                 NodeLikeCompiler::from_node_with_rhs(node, context, is_rhs)
             }
+
             AnyGritPattern::GritPatternAccumulate(node) => Ok(Pattern::Accumulate(Box::new(
                 AccumulateCompiler::from_node(node, context)?,
             ))),
@@ -200,6 +205,7 @@ impl PatternCompiler {
             AnyGritPattern::GritPatternIfElse(node) => {
                 Ok(Pattern::If(Box::new(IfCompiler::from_node(node, context)?)))
             }
+
             AnyGritPattern::GritPatternIncludes(node) => Ok(Pattern::Includes(Box::new(
                 IncludesCompiler::from_node(node, context)?,
             ))),
@@ -215,9 +221,11 @@ impl PatternCompiler {
             AnyGritPattern::GritPatternOr(node) => {
                 Ok(Pattern::Or(Box::new(OrCompiler::from_node(node, context)?)))
             }
+
             AnyGritPattern::GritPatternOrElse(node) => {
                 Err(CompileError::UnsupportedKind(node.syntax().kind().into()))
             }
+
             AnyGritPattern::GritPatternWhere(node) => Ok(Pattern::Where(Box::new(
                 WhereCompiler::from_node(node, context)?,
             ))),

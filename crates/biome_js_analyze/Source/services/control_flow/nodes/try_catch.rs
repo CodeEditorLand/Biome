@@ -30,7 +30,9 @@ impl NodeVisitor for TryVisitor {
 
         let finally_block = if has_finally {
             let finally_block = builder.append_block();
+
             builder.push_exception_target(ExceptionHandlerKind::Finally, finally_block);
+
             Some(finally_block)
         } else {
             None
@@ -38,7 +40,9 @@ impl NodeVisitor for TryVisitor {
 
         let catch_block = if has_catch {
             let catch_block = builder.append_block();
+
             builder.push_exception_target(ExceptionHandlerKind::Catch, catch_block);
+
             Some(catch_block)
         } else {
             None
@@ -47,7 +51,9 @@ impl NodeVisitor for TryVisitor {
         // Create the actual try block (with the exception target set), append
         // an implicit jump to it and move the cursor there
         let try_block = builder.append_block();
+
         builder.append_jump(false, try_block);
+
         builder.set_cursor(try_block);
 
         Ok(Self {
@@ -79,6 +85,7 @@ impl NodeVisitor for CatchVisitor {
 
         // SAFETY: This block should have been created by the `TryVisitor`
         let catch_block = try_stmt.catch_block.unwrap();
+
         builder.set_cursor(catch_block);
 
         Ok(Self)
@@ -95,7 +102,9 @@ impl NodeVisitor for CatchVisitor {
         // Implicit jump from the end of the catch block to the finally block
         // (if it exists), or to the next block otherwise
         let next_block = try_stmt.finally_block.unwrap_or(try_stmt.next_block);
+
         builder.append_jump(false, next_block);
+
         builder.set_cursor(next_block);
 
         Ok(())

@@ -70,6 +70,7 @@ impl FormatNodeRule<JsCaseClause> for FormatJsCaseClause {
         //   default:
         //     break;
         // }
+
         if consequent.is_empty() {
             // Print nothing to ensure that trailing comments on the same line
             // are printed on the same line. The parent list formatter takes

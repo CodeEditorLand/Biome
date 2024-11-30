@@ -7,6 +7,7 @@ use biome_rowan::AstSeparatedElement;
 pub(crate) struct FormatGraphqlUnionMemberTypeList;
 impl FormatRule<GraphqlUnionMemberTypeList> for FormatGraphqlUnionMemberTypeList {
     type Context = GraphqlFormatContext;
+
     fn fmt(&self, node: &GraphqlUnionMemberTypeList, f: &mut GraphqlFormatter) -> FormatResult<()> {
         let last_index = node.len().saturating_sub(1);
 
@@ -31,6 +32,7 @@ pub struct FormatTypeVariant {
 impl Format<GraphqlFormatContext> for FormatTypeVariant {
     fn fmt(&self, f: &mut GraphqlFormatter) -> FormatResult<()> {
         let separator = self.element.trailing_separator()?;
+
         let node = self.element.node()?;
 
         write!(f, [node.format()])?;

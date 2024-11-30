@@ -5,6 +5,7 @@ use biome_graphql_syntax::GraphqlVariableDefinitionList;
 pub(crate) struct FormatGraphqlVariableDefinitionList;
 impl FormatRule<GraphqlVariableDefinitionList> for FormatGraphqlVariableDefinitionList {
     type Context = GraphqlFormatContext;
+
     fn fmt(
         &self,
         node: &GraphqlVariableDefinitionList,

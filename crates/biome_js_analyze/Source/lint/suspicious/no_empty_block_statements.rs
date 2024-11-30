@@ -74,14 +74,20 @@ declare_node_union! {
 
 impl Rule for NoEmptyBlockStatements {
     type Query = Ast<Query>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let query = ctx.query();
+
         let is_empty = is_empty(query);
+
         let has_comments = query.syntax().has_comments_descendants();
+
         let is_constructor_with_ts_param_props_or_private =
             is_constructor_with_ts_param_props_or_private(query);
 
@@ -90,6 +96,7 @@ impl Rule for NoEmptyBlockStatements {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let query = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -107,6 +114,7 @@ impl Rule for NoEmptyBlockStatements {
 
 fn is_empty(query: &Query) -> bool {
     use Query::*;
+
     match query {
         JsFunctionBody(body) => body.directives().len() == 0 && body.statements().len() == 0,
         JsBlockStatement(block) => block.statements().len() == 0,
@@ -134,13 +142,16 @@ fn is_constructor_with_ts_param_props_or_private(query: &Query) -> bool {
     let Ok(params) = constructor.parameters() else {
         return false;
     };
+
     let is_param_props = params
         .parameters()
         .into_iter()
         .any(|param| matches!(param, Ok(AnyJsConstructorParameter::TsPropertyParameter(_))));
+
     let is_private = constructor
         .modifiers()
         .into_iter()
         .any(|modifier| modifier.is_private() || modifier.is_protected());
+
     is_param_props || is_private
 }

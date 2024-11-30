@@ -84,12 +84,16 @@ declare_lint_rule! {
 
 impl Rule for UseConst {
     type Query = Semantic<AnyJsVariableDeclaration>;
+
     type State = ConstBindings;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let declaration = ctx.query();
+
         let model = ctx.model();
 
         // Not a let declaration or inside a for-loop init
@@ -102,12 +106,15 @@ impl Rule for UseConst {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let declaration = ctx.query();
+
         let kind = declaration.kind_token().ok()?;
+
         let title_end = if state.can_be_const.len() == 1 {
             "a variable that is only assigned once."
         } else {
             "some variables that are only assigned once."
         };
+
         let mut diag = RuleDiagnostic::new(
             rule_category!(),
             kind.text_trimmed_range(),
@@ -118,6 +125,7 @@ impl Rule for UseConst {
 
         for binding in state.can_be_const.iter() {
             let binding_name = binding.name_token().ok()?;
+
             if let Some(write) = binding.all_writes(ctx.model()).next() {
                 diag = diag.detail(
                     write.syntax().text_trimmed_range(),
@@ -140,12 +148,15 @@ impl Rule for UseConst {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let declaration = ctx.query();
+
         if state.can_fix {
             let mut batch = ctx.root().begin();
+
             batch.replace_token(
                 declaration.kind_token().ok()?,
                 make::token(JsSyntaxKind::CONST_KW),
             );
+
             Some(JsRuleAction::new(
                 ctx.metadata().action_category(ctx.category(), ctx.group()),
                 ctx.metadata().applicability(),
@@ -174,23 +185,30 @@ impl ConstBindings {
             can_be_const: Vec::new(),
             can_fix: true,
         };
+
         let in_for_in_or_of_loop = matches!(
             declaration,
             AnyJsVariableDeclaration::JsForVariableDeclaration(..)
         );
+
         let mut bindings = 0;
+
         for_each_binding_of(declaration, |binding, declarator| {
             bindings += 1;
 
             let has_initializer = declarator.initializer().is_some();
+
             let fix =
                 check_binding_can_be_const(&binding, in_for_in_or_of_loop, has_initializer, model);
+
             match fix {
                 Some(ConstCheckResult::Fix) => state.can_be_const.push(binding),
                 Some(ConstCheckResult::Report) => {
                     state.can_be_const.push(binding);
+
                     state.can_fix = false;
                 }
+
                 None => state.can_fix = false,
             }
         });
@@ -215,15 +233,18 @@ fn check_binding_can_be_const(
     }
 
     let binding_scope = binding.scope(model);
+
     let write = writes.next()?;
     // If teher are multiple assignement or the write is not in the same scope
     if writes.next().is_some() || write.scope() != binding_scope {
         return None;
     }
+
     let host = write
         .syntax()
         .ancestors()
         .find_map(DestructuringHost::cast)?;
+
     if host.has_member_expr_assignment() || host.has_outer_variables(&write.scope()) {
         return None;
     }
@@ -244,6 +265,7 @@ fn check_binding_can_be_const(
                 .take_while(|scope| scope != &binding_scope)
                 .any(|scope| AnyJsControlFlowRoot::can_cast(scope.syntax().kind()))
     });
+
     if matches!(next_ref, Some(next_ref) if next_ref.is_read()) {
         return None;
     }
@@ -273,6 +295,7 @@ fn for_each_binding_of(
         if let Ok(pattern) = declarator.id() {
             with_binding_pat_identifiers(pattern, &mut |binding| {
                 f(binding, &declarator);
+
                 false
             });
         }
@@ -304,6 +327,7 @@ fn with_object_binding_pat_identifiers(
         .filter_map(Result::ok)
         .any(|it| {
             use AnyJsObjectBindingPatternMember as P;
+
             match it {
                 P::JsObjectBindingPatternProperty(p) => p
                     .pattern()
@@ -325,6 +349,7 @@ fn with_array_binding_pat_identifiers(
 ) -> bool {
     pat.elements().into_iter().filter_map(Result::ok).any(|it| {
         use AnyJsArrayBindingPatternElement as P;
+
         match it {
             P::JsArrayBindingPatternRestElement(p) => p
                 .pattern()
@@ -357,18 +382,21 @@ impl DestructuringHost {
             Self::JsVariableDeclarator(_) => Some(true),
             Self::JsAssignmentExpression(e) => {
                 let mut parent = e.syntax().parent()?;
+
                 while parent.kind() == JsSyntaxKind::JS_PARENTHESIZED_EXPRESSION {
                     parent = parent.parent()?;
                 }
 
                 if parent.kind() == JsSyntaxKind::JS_EXPRESSION_STATEMENT {
                     parent = parent.parent()?;
+
                     Some(
                         parent.kind() == JsSyntaxKind::JS_STATEMENT_LIST
                             || parent.kind() == JsSyntaxKind::JS_MODULE_ITEM_LIST,
                     )
                 } else {
                     // example: while(a = b) {}
+
                     None
                 }
             }
@@ -380,6 +408,7 @@ impl DestructuringHost {
             Self::JsAssignmentExpression(it) => {
                 it.left().map_or(false, has_member_expr_in_assign_pat)
             }
+
             _ => false,
         }
     }
@@ -408,6 +437,7 @@ fn is_outer_variable_in_binding(binding: &JsIdentifierBinding, scope: &Scope) ->
 
 fn has_member_expr_in_assign_pat(pat: AnyJsAssignmentPattern) -> bool {
     use AnyJsAssignmentPattern as P;
+
     match pat {
         P::AnyJsAssignment(p) => is_member_expr_assignment(p),
         P::JsArrayAssignmentPattern(p) => has_member_expr_in_array_pat(&p),
@@ -421,13 +451,16 @@ fn has_member_expr_in_object_assign_pat(pat: &JsObjectAssignmentPattern) -> bool
         .filter_map(Result::ok)
         .any(|it| {
             use AnyJsObjectAssignmentPatternMember as P;
+
             match it {
                 P::JsObjectAssignmentPatternProperty(p) => {
                     p.pattern().map_or(false, has_member_expr_in_assign_pat)
                 }
+
                 P::JsObjectAssignmentPatternRest(p) => {
                     p.target().map_or(false, is_member_expr_assignment)
                 }
+
                 P::JsObjectAssignmentPatternShorthandProperty(_) | P::JsBogusAssignment(_) => false,
             }
         })
@@ -442,6 +475,7 @@ fn has_member_expr_in_array_pat(pat: &JsArrayAssignmentPattern) -> bool {
 
 fn is_member_expr_assignment(mut assignment: AnyJsAssignment) -> bool {
     use AnyJsAssignment::*;
+
     while let JsParenthesizedAssignment(p) = assignment {
         if let Ok(p) = p.assignment() {
             assignment = p
@@ -449,6 +483,7 @@ fn is_member_expr_assignment(mut assignment: AnyJsAssignment) -> bool {
             return false;
         }
     }
+
     matches!(
         assignment,
         JsComputedMemberAssignment(_) | JsStaticMemberAssignment(_)
@@ -457,6 +492,7 @@ fn is_member_expr_assignment(mut assignment: AnyJsAssignment) -> bool {
 
 fn has_outer_variables_in_assign_pat(pat: &AnyJsAssignmentPattern, scope: &Scope) -> bool {
     use AnyJsAssignmentPattern as P;
+
     match pat {
         P::AnyJsAssignment(p) => is_outer_variable_in_assignment(p, scope),
         P::JsArrayAssignmentPattern(p) => has_outer_variables_in_object_assign_pat(p, scope),
@@ -470,6 +506,7 @@ fn has_outer_variables_in_array_assign_pat(pat: &JsObjectAssignmentPattern, scop
         .filter_map(Result::ok)
         .any(|it| {
             use AnyJsObjectAssignmentPatternMember as P;
+
             match it {
                 P::JsObjectAssignmentPatternProperty(p) => p
                     .pattern()
@@ -507,6 +544,7 @@ fn is_outer_ident_in_assignment(assignment: &JsIdentifierAssignment, scope: &Sco
 
 fn is_binding_in_outer_scopes(scope: &Scope, name: &JsSyntaxToken) -> bool {
     let text = name.text_trimmed();
+
     scope
         .ancestors()
         .skip(1) // Skip current scope

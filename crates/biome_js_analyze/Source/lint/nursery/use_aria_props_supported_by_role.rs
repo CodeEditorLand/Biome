@@ -46,8 +46,11 @@ declare_lint_rule! {
 
 impl Rule for UseAriaPropsSupportedByRole {
     type Query = Aria<AnyJsxElement>;
+
     type State = AriaAttribute;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -65,6 +68,7 @@ impl Rule for UseAriaPropsSupportedByRole {
             .or_else(|| ctx.aria_roles().get_implicit_role(node));
 
         let role_attributes = role.map_or(Default::default(), |role| role.attributes());
+
         let role_prohibited_attributes =
             role.map_or(Default::default(), |role| role.prohibited_attributes());
 
@@ -72,9 +76,11 @@ impl Rule for UseAriaPropsSupportedByRole {
             let AnyJsxAttribute::JsxAttribute(attribute) = attribute else {
                 continue;
             };
+
             let aria_attribute = attribute.name().ok().and_then(|x| {
                 AriaAttribute::from_str(x.as_jsx_name()?.value_token().ok()?.text_trimmed()).ok()
             });
+
             let Some(aria_attribute) = aria_attribute else {
                 continue;
             };
@@ -85,6 +91,7 @@ impl Rule for UseAriaPropsSupportedByRole {
             {
                 continue;
             }
+
             if role_prohibited_attributes.contains(&aria_attribute)
                 || (!aria_attribute.is_global() && !role_attributes.contains(&aria_attribute))
             {
@@ -97,7 +104,9 @@ impl Rule for UseAriaPropsSupportedByRole {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let invalid_aria_prop = state.as_str();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

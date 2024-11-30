@@ -38,22 +38,30 @@ declare_lint_rule! {
 
 impl Rule for NoGlobalIsNan {
     type Query = Semantic<AnyJsExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let (reference, name) = global_identifier(node)?;
+
         if name.text() != "isNaN" {
             return None;
         }
+
         model.binding(&reference).is_none().then_some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -70,7 +78,9 @@ impl Rule for NoGlobalIsNan {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let (old, new) = match node {
             AnyJsExpression::JsIdentifierExpression(expression) => (
                 node.clone(),
@@ -107,9 +117,12 @@ impl Rule for NoGlobalIsNan {
                     ),
                 )
             }
+
             _ => return None,
         };
+
         mutation.replace_node(old, new.into());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

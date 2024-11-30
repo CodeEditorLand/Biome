@@ -17,10 +17,13 @@ use std::time::Duration;
 macro_rules! assert_lex {
     ($src:expr, $($kind:ident:$len:expr $(,)?)*) => {{
         let mut lexer = JsLexer::from_str($src);
+
         let mut idx = 0;
+
         let mut tok_idx = TextSize::default();
 
         let mut new_str = String::with_capacity($src.len());
+
         let mut tokens = vec![];
 
         while lexer.next_token(JsLexContext::default()) != EOF {
@@ -46,6 +49,7 @@ macro_rules! assert_lex {
             );
 
             new_str.push_str(&$src[tokens[idx].1.as_range()]);
+
             tok_idx += tokens[idx].1.len();
 
             idx += 1;
@@ -73,9 +77,12 @@ fn losslessness(string: String) -> bool {
     // using an mpsc channel allows us to spawn a thread and spawn the lexer there, then if
     // it takes more than 2 seconds we panic because it is 100% infinite recursion
     let cloned = string.clone();
+
     let (sender, receiver) = channel();
+
     thread::spawn(move || {
         let mut lexer = JsLexer::from_str(&cloned);
+
         let mut tokens = vec![];
 
         while lexer.next_token(JsLexContext::default()) != EOF {
@@ -86,15 +93,18 @@ fn losslessness(string: String) -> bool {
             .send(tokens)
             .expect("Could not send tokens to receiver");
     });
+
     let token_ranges = receiver
         .recv_timeout(Duration::from_secs(2))
         .unwrap_or_else(|_| panic!("Lexer is infinitely recursing with this code: ->{string}<-"));
 
     let mut new_str = String::with_capacity(string.len());
+
     let mut idx = TextSize::from(0);
 
     for range in token_ranges {
         new_str.push_str(&string[range.as_range()]);
+
         idx += range.len();
     }
 
@@ -240,21 +250,25 @@ fn all_whitespace() {
         NEWLINE:1
         WHITESPACE:2
     }
+
     assert_lex! {
         "\r\n\t\t",
         NEWLINE:2
         WHITESPACE:2
     }
+
     assert_lex! {
         "\n\n",
         NEWLINE:1
         NEWLINE:1
     }
+
     assert_lex! {
         "\r\n\r\n",
         NEWLINE:2
         NEWLINE:2
     }
+
     assert_lex! {
         "\r\r\r\r",
         NEWLINE:1
@@ -262,6 +276,7 @@ fn all_whitespace() {
         NEWLINE:1
         NEWLINE:1
     }
+
     assert_lex! {
         "\r\r\n\n\u{2028}\u{2029}",
         NEWLINE:1
@@ -1157,11 +1172,13 @@ fn newline_space_must_be_two_tokens() {
         NEWLINE:1
         WHITESPACE:1
     }
+
     assert_lex! {
         " \n",
         WHITESPACE:1
         NEWLINE:1
     }
+
     assert_lex! {
         " \n ",
         WHITESPACE:1
@@ -1180,6 +1197,7 @@ fn newline_space_must_be_two_tokens() {
         NEWLINE:1
         WHITESPACE:1
     }
+
     assert_lex! {
         "a //COMMENT \n /*COMMENT*/ b /*COM\nMENT*/",
         IDENT:1
@@ -1193,6 +1211,7 @@ fn newline_space_must_be_two_tokens() {
         WHITESPACE:1
         MULTILINE_COMMENT:12
     }
+
     assert_lex! {
         "a //COMMENT \n /*COMMENT*/ b /*COM\nMENT*/",
         IDENT:1
@@ -1219,6 +1238,7 @@ fn newline_space_must_be_two_tokens() {
         WHITESPACE:1
         NEWLINE:2
     }
+
     assert_lex! {
         " \r\n ",
         WHITESPACE:1
@@ -1237,6 +1257,7 @@ fn newline_space_must_be_two_tokens() {
         NEWLINE:2
         WHITESPACE:1
     }
+
     assert_lex! {
         "a //COMMENT \r\n /*COMMENT*/ b /*COM\r\nMENT*/",
         IDENT:1
@@ -1250,6 +1271,7 @@ fn newline_space_must_be_two_tokens() {
         WHITESPACE:1
         MULTILINE_COMMENT:13
     }
+
     assert_lex! {
         "a //COMMENT \r\n /*COMMENT*/ b /*COM\r\nMENT*/",
         IDENT:1
@@ -1387,15 +1409,18 @@ fn keywords() {
         );
 
         let mut lexer = JsLexer::from_str(keyword);
+
         lexer.next_token(JsLexContext::default());
 
         let lexed_kind = lexer.current();
+
         assert_eq!(
             lexed_kind, kind,
             "Expected token '{keyword}' to be of kind {kind:?} but is {lexed_kind:?}."
         );
 
         let lexed_range = lexer.current_range();
+
         assert_eq!(
             lexed_range.len(),
             TextSize::from(keyword.len() as u32),
@@ -1411,38 +1436,54 @@ fn keywords() {
 #[test]
 fn without_lookahead() {
     let lexer = JsLexer::from_str("let a\n = 5");
+
     let mut buffered = BufferedLexer::new(lexer);
 
     buffered.next_token(JsLexContext::default());
+
     assert_eq!(buffered.current(), T![let]);
+
     assert!(!buffered.has_preceding_line_break());
+
     assert_eq!(
         buffered.current_range(),
         TextRange::at(TextSize::from(0), TextSize::from(3))
     );
 
     assert_eq!(buffered.next_token(JsLexContext::default()), WHITESPACE);
+
     assert_eq!(buffered.next_token(JsLexContext::default()), T![ident]);
+
     assert_eq!(buffered.next_token(JsLexContext::default()), NEWLINE);
+
     assert_eq!(buffered.next_token(JsLexContext::default()), WHITESPACE);
+
     assert_eq!(buffered.next_token(JsLexContext::default()), T![=]);
+
     assert!(buffered.has_preceding_line_break());
+
     assert_eq!(buffered.next_token(JsLexContext::default()), WHITESPACE);
+
     assert_eq!(
         buffered.next_token(JsLexContext::default()),
         JS_NUMBER_LITERAL
     );
+
     assert_eq!(buffered.next_token(JsLexContext::default()), T![EOF]);
 }
 
 #[test]
 fn lookahead() {
     let lexer = JsLexer::from_str("let a\n = 5");
+
     let mut buffered = BufferedLexer::new(lexer);
 
     buffered.next_token(JsLexContext::default());
+
     assert_eq!(buffered.current(), T![let]);
+
     assert!(!buffered.has_preceding_line_break());
+
     assert_eq!(
         buffered.current_range(),
         TextRange::at(TextSize::from(0), TextSize::from(3))
@@ -1470,31 +1511,47 @@ fn lookahead() {
     }
 
     assert_eq!(buffered.current(), T![let]);
+
     assert_eq!(buffered.next_token(JsLexContext::default()), WHITESPACE);
 
     {
         let mut lookahead = buffered.lookahead_iter();
+
         let nth1 = lookahead.next().unwrap();
+
         let nth2 = lookahead.next().unwrap();
+
         let nth3 = lookahead.next().unwrap();
+
         let nth4 = lookahead.next().unwrap();
 
         assert_eq!(nth1.kind(), T![ident]);
+
         assert_eq!(nth2.kind(), NEWLINE);
+
         assert_eq!(nth3.kind(), WHITESPACE);
+
         assert_eq!(nth4.kind(), T![=]);
+
         assert!(nth4.has_preceding_line_break());
     }
 
     assert_eq!(buffered.next_token(JsLexContext::default()), T![ident]);
+
     assert_eq!(buffered.next_token(JsLexContext::default()), NEWLINE);
+
     assert_eq!(buffered.next_token(JsLexContext::default()), WHITESPACE);
+
     assert_eq!(buffered.next_token(JsLexContext::default()), T![=]);
+
     assert!(buffered.has_preceding_line_break());
+
     assert_eq!(buffered.next_token(JsLexContext::default()), WHITESPACE);
+
     assert_eq!(
         buffered.next_token(JsLexContext::default()),
         JS_NUMBER_LITERAL
     );
+
     assert_eq!(buffered.next_token(JsLexContext::default()), T![EOF]);
 }

@@ -53,12 +53,15 @@ impl MarkupElement<'_> {
             MarkupElement::Emphasis => {
                 color.set_bold(true);
             }
+
             MarkupElement::Dim => {
                 color.set_dimmed(true);
             }
+
             MarkupElement::Italic => {
                 color.set_italic(true);
             }
+
             MarkupElement::Underline => {
                 color.set_underline(true);
             }
@@ -67,15 +70,19 @@ impl MarkupElement<'_> {
             MarkupElement::Error => {
                 color.set_fg(Some(Color::Red));
             }
+
             MarkupElement::Success => {
                 color.set_fg(Some(Color::Green));
             }
+
             MarkupElement::Warn => {
                 color.set_fg(Some(Color::Yellow));
             }
+
             MarkupElement::Trace => {
                 color.set_fg(Some(Color::Magenta));
             }
+
             MarkupElement::Info | MarkupElement::Debug => {
                 // Blue is really difficult to see on the standard windows command line
                 #[cfg(windows)]
@@ -139,11 +146,14 @@ impl Debug for MarkupNodeBuf {
 
         if fmt.alternate() {
             let mut content = self.content.as_str();
+
             while let Some(index) = content.find('\n') {
                 let (before, after) = content.split_at(index + 1);
+
                 if !before.is_empty() {
                     writeln!(fmt, "{before:?}")?;
                 }
+
                 content = after;
             }
 
@@ -176,6 +186,7 @@ impl Markup<'_> {
         let mut result = MarkupBuf(Vec::new());
         // SAFETY: The implementation of Write for MarkupBuf below always returns Ok
         Formatter::new(&mut result).write_markup(*self).unwrap();
+
         result
     }
 }
@@ -206,14 +217,17 @@ impl MarkupBuf {
 impl Write for MarkupBuf {
     fn write_str(&mut self, elements: &MarkupElements, content: &str) -> io::Result<()> {
         let mut styles = Vec::new();
+
         elements.for_each(&mut |elements| {
             styles.extend(elements.iter().map(MarkupElement::to_owned));
+
             Ok(())
         })?;
 
         if let Some(last) = self.0.last_mut() {
             if last.elements == styles {
                 last.content.push_str(content);
+
                 return Ok(());
             }
         }
@@ -228,14 +242,17 @@ impl Write for MarkupBuf {
 
     fn write_fmt(&mut self, elements: &MarkupElements, content: fmt::Arguments) -> io::Result<()> {
         let mut styles = Vec::new();
+
         elements.for_each(&mut |elements| {
             styles.extend(elements.iter().map(MarkupElement::to_owned));
+
             Ok(())
         })?;
 
         if let Some(last) = self.0.last_mut() {
             if last.elements == styles {
                 last.content.push_str(&content.to_string());
+
                 return Ok(());
             }
         }
@@ -244,6 +261,7 @@ impl Write for MarkupBuf {
             elements: styles,
             content: content.to_string(),
         });
+
         Ok(())
     }
 }
@@ -268,6 +286,7 @@ impl Debug for MarkupBuf {
         for node in &self.0 {
             Debug::fmt(node, fmt)?;
         }
+
         Ok(())
     }
 }

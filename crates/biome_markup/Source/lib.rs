@@ -10,6 +10,7 @@ struct StackEntry {
 impl ToTokens for StackEntry {
     fn to_tokens(&self, tokens: &mut TokenStream) {
         let name = &self.name;
+
         tokens.extend(quote! {
             biome_console::MarkupElement::#name
         });
@@ -30,7 +31,9 @@ impl ToTokens for StackEntry {
 #[proc_macro_error]
 pub fn markup(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
     let mut input = TokenStream::from(input).into_iter().peekable();
+
     let mut stack = Vec::new();
+
     let mut output = Vec::new();
 
     while let Some(token) = input.next() {
@@ -41,8 +44,10 @@ pub fn markup(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         Some(TokenTree::Punct(punct)) if punct.as_char() == '/' => {
                             // SAFETY: Guarded by above call to peek
                             input.next().unwrap();
+
                             true
                         }
+
                         _ => false,
                     };
 
@@ -53,6 +58,7 @@ pub fn markup(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     };
 
                     let mut attributes = Vec::new();
+
                     while let Some(TokenTree::Ident(_)) = input.peek() {
                         // SAFETY: these panics are checked by the above call to peek
                         let attr = match input.next().unwrap() {
@@ -66,6 +72,7 @@ pub fn markup(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                                     abort!(punct.span(), "unexpected token");
                                 }
                             }
+
                             Some(token) => abort!(token.span(), "unexpected token"),
                             None => abort_call_site!("unexpected end of input"),
                         }
@@ -75,6 +82,7 @@ pub fn markup(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             Some(TokenTree::Group(group)) => {
                                 TokenTree::Group(Group::new(Delimiter::None, group.stream()))
                             }
+
                             Some(token) => abort!(token.span(), "unexpected token"),
                             None => abort_call_site!("unexpected end of input"),
                         };
@@ -88,11 +96,14 @@ pub fn markup(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                             '/' if !is_closing_element => {
                                 match input.next() {
                                     Some(TokenTree::Punct(punct)) if punct.as_char() == '>' => {}
+
                                     Some(token) => abort!(token.span(), "unexpected token"),
                                     None => abort_call_site!("unexpected end of input"),
                                 }
+
                                 true
                             }
+
                             _ => abort!(punct.span(), "unexpected token"),
                         },
                         Some(token) => abort!(token.span(), "unexpected token"),
@@ -110,11 +121,15 @@ pub fn markup(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         // the stack is empty as that error will be handled
                         // when the top element gets popped off the stack later
                         let name_str = name.to_string();
+
                         let top_str = top.name.to_string();
+
                         if name_str != top_str {
                             abort!(
                                 name.span(), "closing element mismatch";
+
                                 close = "found closing element {}", name_str;
+
                                 open = top.name.span() => "expected {}", top_str
                             );
                         }
@@ -124,6 +139,7 @@ pub fn markup(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         abort!(name.span(), "unexpected closing element");
                     }
                 }
+
                 _ => {
                     abort!(punct.span(), "unexpected token");
                 }
@@ -143,11 +159,13 @@ pub fn markup(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                     }
                 });
             }
+
             TokenTree::Group(group) => match group.delimiter() {
                 Delimiter::Brace => {
                     let elements: Vec<_> = stack.iter().map(|entry| quote! { #entry }).collect();
 
                     let body = group.stream();
+
                     output.push(quote! {
                         biome_console::MarkupNode {
                             elements: &[ #( #elements ),* ],
@@ -155,6 +173,7 @@ pub fn markup(input: proc_macro::TokenStream) -> proc_macro::TokenStream {
                         }
                     });
                 }
+
                 _ => abort!(group.span(), "unexpected token"),
             },
             TokenTree::Ident(_) => abort!(token.span(), "unexpected token"),

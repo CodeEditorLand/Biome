@@ -54,8 +54,10 @@ impl Location {
         match text.rfind('\n') {
             Some(idx) => {
                 self.line += text.bytes().filter(|byte| *byte == b'\n').count();
+
                 self.column = text[idx + 1..].chars().count();
             }
+
             None => self.column += text.chars().count(),
         }
     }
@@ -63,20 +65,28 @@ impl Location {
 
 pub(crate) fn tokenize(mut input: &str) -> Result<Vec<Token>> {
     let mut res = Vec::new();
+
     let mut loc = Location::default();
+
     while !input.is_empty() {
         let old_input = input;
+
         skip_ws(&mut input);
+
         skip_comment(&mut input);
+
         if old_input.len() == input.len() {
             match advance(&mut input) {
                 Ok(kind) => {
                     res.push(Token { kind, loc });
                 }
+
                 Err(err) => return Err(err.with_location(loc)),
             }
         }
+
         let consumed = old_input.len() - input.len();
+
         loc.advance(&old_input[..consumed]);
     }
 
@@ -95,7 +105,9 @@ fn skip_comment(input: &mut &str) {
 
 fn advance(input: &mut &str) -> Result<TokenKind> {
     let mut chars = input.chars();
+
     let c = chars.next().unwrap();
+
     let res = match c {
         '=' => TokenKind::Eq,
         '*' => TokenKind::Star,
@@ -105,20 +117,25 @@ fn advance(input: &mut &str) -> Result<TokenKind> {
         '|' => match chars.clone().next() {
             Some('|') => {
                 chars.next();
+
                 TokenKind::DoublePipe
             }
+
             _ => TokenKind::Pipe,
         },
         '&' => match chars.clone().next() {
             Some('&') => {
                 chars.next();
+
                 TokenKind::DoubleAmpersand
             }
+
             _ => bail!("unexpected `&`, did you mean to write `&&`?"),
         },
         ':' => TokenKind::Colon,
         '\'' => {
             let mut buf = String::new();
+
             loop {
                 match chars.next() {
                     None => bail!("unclosed token literal"),
@@ -130,20 +147,27 @@ fn advance(input: &mut &str) -> Result<TokenKind> {
                     Some(c) => buf.push(c),
                 }
             }
+
             TokenKind::Token(buf)
         }
+
         c if is_ident_char(c) => {
             let mut buf = String::new();
+
             buf.push(c);
+
             loop {
                 match chars.clone().next() {
                     Some(c) if is_ident_char(c) => {
                         chars.next();
+
                         buf.push(c);
                     }
+
                     _ => break,
                 }
             }
+
             TokenKind::Node(buf)
         }
         '\r' => bail!("unexpected `\\r`, only Unix-style line endings allowed"),
@@ -151,6 +175,7 @@ fn advance(input: &mut &str) -> Result<TokenKind> {
     };
 
     *input = chars.as_str();
+
     Ok(res)
 }
 

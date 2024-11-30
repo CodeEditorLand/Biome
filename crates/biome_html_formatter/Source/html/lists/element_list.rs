@@ -19,15 +19,19 @@ pub(crate) struct FormatHtmlElementList {
 }
 impl FormatRule<HtmlElementList> for FormatHtmlElementList {
     type Context = HtmlFormatContext;
+
     fn fmt(&self, node: &HtmlElementList, f: &mut HtmlFormatter) -> FormatResult<()> {
         if node.is_empty() {
             return Ok(());
         }
+
         let result = self.fmt_children(node, f)?;
+
         match result {
             FormatChildrenResult::ForceMultiline(format_multiline) => {
                 write!(f, [format_multiline])
             }
+
             FormatChildrenResult::BestFitting {
                 flat_children,
                 expanded_children,
@@ -70,6 +74,7 @@ impl FormatHtmlElementList {
         self.disarm_debug_assertions(list, f);
 
         let children_meta = self.children_meta(list, f.context().comments());
+
         let layout = self.layout(children_meta);
 
         let multiline_layout = if children_meta.meaningful_text {
@@ -84,6 +89,7 @@ impl FormatHtmlElementList {
             .is_some_and(|parent| HtmlRoot::can_cast(parent.kind()));
 
         let mut flat = FlatBuilder::new();
+
         let mut multiline = MultilineBuilder::new(multiline_layout, is_root_parent);
 
         let mut force_multiline = layout.is_multiline();
@@ -96,6 +102,7 @@ impl FormatHtmlElementList {
         }
 
         let mut last: Option<&HtmlChild> = None;
+
         let mut children_iter = HtmlChildrenIterator::new(children.iter());
 
         // Trim leading new lines
@@ -105,6 +112,7 @@ impl FormatHtmlElementList {
 
         while let Some(child) = children_iter.next() {
             let mut child_breaks = false;
+
             match &child {
                 // A single word: Both `a` and `b` are a word in `a b` because they're separated by HTML Whitespace.
                 HtmlChild::Word(word) => {
@@ -146,6 +154,7 @@ impl FormatHtmlElementList {
                 // * Whitespace before an opening tag: `a <div>`
                 HtmlChild::Whitespace => {
                     flat.write(&HtmlSpace, f);
+
                     multiline.write_separator(&soft_line_break_or_space(), f);
                 }
 
@@ -181,14 +190,17 @@ impl FormatHtmlElementList {
                         // ```
                         else if let Some(HtmlChild::Word(next_word)) = children_iter.peek() {
                             let next_next_element = children_iter.peek_next();
+
                             let is_next_next_element_new_line =
                                 matches!(next_next_element, Some(HtmlChild::Newline));
+
                             let is_next_next_element_self_closing = matches!(
                                 next_next_element,
                                 Some(HtmlChild::NonText(AnyHtmlElement::HtmlSelfClosingElement(
                                     _
                                 )))
                             );
+
                             let has_new_line_and_self_closing = is_next_next_element_new_line
                                 && matches!(
                                     children_iter.peek_next_next(),
@@ -209,6 +221,7 @@ impl FormatHtmlElementList {
                         multiline.write_separator(&soft_line_break(), f);
                     } else {
                         child_breaks = true;
+
                         multiline.write_separator(&hard_line_break(), f);
                     }
                 }
@@ -216,6 +229,7 @@ impl FormatHtmlElementList {
                 // An empty line between some JSX text and an element
                 HtmlChild::EmptyLine => {
                     child_breaks = true;
+
                     multiline.write_separator(&empty_line(), f);
                 }
 
@@ -272,6 +286,7 @@ impl FormatHtmlElementList {
                         let mut memoized = non_text.format().memoized();
 
                         force_multiline = memoized.inspect(f)?.will_break();
+
                         flat.write(&format_args![memoized, format_separator], f);
 
                         if let Some(format_separator) = format_separator {
@@ -286,6 +301,7 @@ impl FormatHtmlElementList {
 
             if child_breaks {
                 flat.disable();
+
                 force_multiline = true;
             }
 
@@ -310,6 +326,7 @@ impl FormatHtmlElementList {
     #[cfg(debug_assertions)]
     fn disarm_debug_assertions(&self, node: &HtmlElementList, f: &mut HtmlFormatter) {
         use biome_formatter::CstFormatContext;
+
         use AnyHtmlElement::*;
 
         for child in node {
@@ -322,6 +339,7 @@ impl FormatHtmlElementList {
                         .comments()
                         .mark_suppression_checked(text.syntax());
                 }
+
                 _ => {
                     continue;
                 }
@@ -341,6 +359,7 @@ impl FormatHtmlElementList {
                     HtmlChildListLayout::BestFitting
                 }
             }
+
             HtmlChildListLayout::Multiline => HtmlChildListLayout::Multiline,
         }
     }
@@ -360,6 +379,7 @@ impl FormatHtmlElementList {
                             .value_token()
                             .map_or(false, |token| is_meaningful_html_text(token.text()));
                 }
+
                 _ => {}
             }
         }
@@ -540,19 +560,25 @@ impl MultilineBuilder {
         self.result = result.and_then(|elements| {
             let elements = {
                 let mut buffer = VecBuffer::new_with_vec(f.state_mut(), elements);
+
                 match self.layout {
                     MultilineLayout::Fill => {
                         // Make sure that the separator and content only ever write a single element
                         buffer.write_element(FormatElement::Tag(Tag::StartEntry))?;
+
                         write!(buffer, [content])?;
+
                         buffer.write_element(FormatElement::Tag(Tag::EndEntry))?;
 
                         if let Some(separator) = separator {
                             buffer.write_element(FormatElement::Tag(Tag::StartEntry))?;
+
                             write!(buffer, [separator])?;
+
                             buffer.write_element(FormatElement::Tag(Tag::EndEntry))?;
                         }
                     }
+
                     MultilineLayout::NoFill => {
                         write!(buffer, [content, separator])?;
 
@@ -561,8 +587,10 @@ impl MultilineBuilder {
                         }
                     }
                 };
+
                 buffer.into_vec()
             };
+
             Ok(elements)
         })
     }
@@ -689,6 +717,7 @@ impl Format<HtmlFormatContext> for FormatFlatChildren {
         if let Some(elements) = f.intern_vec(self.elements.take()) {
             f.write_element(elements)?;
         }
+
         Ok(())
     }
 }

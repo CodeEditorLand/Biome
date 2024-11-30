@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssNamespacePrefix;
 pub(crate) struct FormatAnyCssNamespacePrefix;
 impl FormatRule<AnyCssNamespacePrefix> for FormatAnyCssNamespacePrefix {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssNamespacePrefix, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssNamespacePrefix::CssNamedNamespacePrefix(node) => node.format().fmt(f),

@@ -72,18 +72,22 @@ impl<'src> Lexer<'src> {
                 let kind = self.lex_token(current);
 
                 debug_assert!(start < self.text_position(), "Lexer did not progress");
+
                 Some(Token {
                     kind,
                     range: TextRange::new(start, self.text_position()),
                 })
             }
+
             None if self.position == self.source.len() => {
                 self.advance(1);
+
                 Some(Token {
                     kind: EOF,
                     range: TextRange::new(start, start),
                 })
             }
+
             None => None,
         }
     }
@@ -95,6 +99,7 @@ impl<'src> Lexer<'src> {
     /// Bumps the current byte and creates a lexed token of the passed in kind
     fn eat_byte(&mut self, tok: JsonSyntaxKind) -> JsonSyntaxKind {
         self.advance(1);
+
         tok
     }
 
@@ -108,14 +113,17 @@ impl<'src> Lexer<'src> {
         match self.current_byte() {
             Some(b'\n') => {
                 self.advance(1);
+
                 true
             }
+
             Some(b'\r') => {
                 if self.peek_byte() == Some(b'\n') {
                     self.advance(2)
                 } else {
                     self.advance(1)
                 }
+
                 true
             }
 
@@ -139,8 +147,10 @@ impl<'src> Lexer<'src> {
                     b'\r' | b'\n' => {
                         break;
                     }
+
                     _ => {
                         let start = self.text_position();
+
                         self.advance(1);
 
                         self.diagnostics.push(
@@ -167,6 +177,7 @@ impl<'src> Lexer<'src> {
             NEWLINE
         } else {
             self.consume_whitespaces();
+
             WHITESPACE
         }
     }
@@ -190,6 +201,7 @@ impl<'src> Lexer<'src> {
         // support other encodings like UTF-16.
         if let Some(first) = self.source().get(0..3) {
             let bom = Bom::from(first.as_bytes());
+
             self.advance(bom.len());
 
             match bom {
@@ -208,12 +220,14 @@ impl<'src> Lexer<'src> {
     fn current_char_unchecked(&self) -> char {
         // Precautionary measure for making sure the unsafe code below does not read over memory boundary
         debug_assert!(!self.is_eof());
+
         self.assert_at_char_boundary();
 
         // Safety: We know this is safe because we require the input to the lexer to be valid utf8 and we always call this when we are at a char
         let string = unsafe {
             std::str::from_utf8_unchecked(self.source.as_bytes().get_unchecked(self.position..))
         };
+
         let chr = if let Some(chr) = string.chars().next() {
             chr
         } else {
@@ -285,6 +299,7 @@ impl<'src> Lexer<'src> {
     #[inline]
     fn advance_char_unchecked(&mut self) {
         let c = self.current_char_unchecked();
+
         self.position += c.len_utf8();
     }
 
@@ -342,11 +357,14 @@ impl<'src> Lexer<'src> {
         self.assert_at_char_boundary();
 
         let char = self.current_char_unchecked();
+
         let err = ParseDiagnostic::new(
             format!("unexpected character `{char}`"),
             self.text_position()..self.text_position() + char.text_len(),
         );
+
         self.diagnostics.push(err);
+
         self.advance(char.len_utf8());
 
         ERROR_TOKEN
@@ -380,10 +398,12 @@ impl<'src> Lexer<'src> {
                                 reason: InvalidNumberReason::Octal,
                             }
                         }
+
                         LexNumberState::FirstDigit => LexNumberState::IntegerPart,
                         state => state,
                     }
                 }
+
                 Some(b'0'..=b'9') => {
                     self.advance(1);
 
@@ -392,6 +412,7 @@ impl<'src> Lexer<'src> {
                         state => state,
                     }
                 }
+
                 Some(b'.') => {
                     let position = self.text_position();
 
@@ -403,6 +424,7 @@ impl<'src> Lexer<'src> {
                         {
                             LexNumberState::FractionalPart
                         }
+
                         LexNumberState::IntegerPart => LexNumberState::Invalid {
                             position: self.text_position(),
                             reason: InvalidNumberReason::MissingFraction,
@@ -414,6 +436,7 @@ impl<'src> Lexer<'src> {
                         },
                     }
                 }
+
                 Some(b'e' | b'E') => {
                     let position = self.text_position();
 
@@ -428,12 +451,14 @@ impl<'src> Lexer<'src> {
                         {
                             LexNumberState::Exponent
                         }
+
                         LexNumberState::IntegerPart | LexNumberState::FractionalPart => {
                             LexNumberState::Invalid {
                                 position: self.text_position(),
                                 reason: InvalidNumberReason::MissingExponent,
                             }
                         }
+
                         invalid @ LexNumberState::Invalid { .. } => invalid,
                         _ => LexNumberState::Invalid {
                             position,
@@ -441,6 +466,7 @@ impl<'src> Lexer<'src> {
                         },
                     }
                 }
+
                 _ => {
                     break;
                 }
@@ -456,9 +482,12 @@ impl<'src> Lexer<'src> {
                     "Minus must be followed by a digit",
                     start..self.text_position(),
                 );
+
                 self.diagnostics.push(err);
+
                 ERROR_TOKEN
             }
+
             LexNumberState::Invalid { position, reason } => {
                 let diagnostic = match reason {
                     InvalidNumberReason::Fraction => ParseDiagnostic::new(
@@ -480,6 +509,7 @@ impl<'src> Lexer<'src> {
                         ParseDiagnostic::new( "Missing exponent", start..position)
                             .with_detail(position..position + TextSize::from(1), "Expected a digit as the exponent")
                     }
+
                     InvalidNumberReason::MissingFraction => {
                         ParseDiagnostic::new( "Missing fraction", position..position + TextSize::from(1))
                             .with_hint("Remove the `.`")
@@ -487,6 +517,7 @@ impl<'src> Lexer<'src> {
                 };
 
                 self.diagnostics.push(diagnostic);
+
                 ERROR_TOKEN
             }
         }
@@ -495,6 +526,7 @@ impl<'src> Lexer<'src> {
     fn lex_string_literal(&mut self, quote: u8) -> JsonSyntaxKind {
         // Handle invalid quotes
         self.assert_at_char_boundary();
+
         let start = self.text_position();
 
         self.advance(1); // Skip over the quote
@@ -509,15 +541,18 @@ impl<'src> Lexer<'src> {
             match dispatch {
                 QOT if quote == chr => {
                     self.advance(1);
+
                     state = match state {
                         LexStringState::InString => LexStringState::Terminated,
                         state => state,
                     };
+
                     break;
                 }
                 // '\t' etc
                 BSL => {
                     let escape_start = self.text_position();
+
                     self.advance(1);
 
                     match self.current_byte() {
@@ -529,6 +564,7 @@ impl<'src> Lexer<'src> {
                             (Ok(_), _) => {}
                             (Err(err), LexStringState::InString) => {
                                 self.diagnostics.push(err);
+
                                 state = LexStringState::InvalidEscapeSequence;
                             }
                             (Err(_), _) => {}
@@ -543,6 +579,7 @@ impl<'src> Lexer<'src> {
                         Some(_) => {
                             if matches!(state, LexStringState::InString) {
                                 let c = self.current_char_unchecked();
+
                                 self.diagnostics.push(
                                     ParseDiagnostic::new(
 
@@ -551,6 +588,7 @@ impl<'src> Lexer<'src> {
                                     )
                                         .with_hint(r#"Valid escape sequences are: `\\`, `\/`, `/"`, `\b\`, `\f`, `\n`, `\r`, `\t` or any unicode escape sequence `\uXXXX` where X is hexedecimal number. "#),
                                 );
+
                                 state = LexStringState::InvalidEscapeSequence;
                             }
                         }
@@ -564,18 +602,23 @@ impl<'src> Lexer<'src> {
                                 )
                                     .with_detail(self.text_position()..self.text_position(), "File ends here")
                                 );
+
                                 state = LexStringState::InvalidEscapeSequence;
                             }
                         }
                     }
                 }
+
                 WHS if matches!(chr, b'\n' | b'\r') => {
                     let unterminated =
                         ParseDiagnostic::new("Missing closing quote", start..self.text_position())
                             .with_hint("The closing quote must be on the same line.");
+
                     self.diagnostics.push(unterminated);
+
                     return ERROR_TOKEN;
                 }
+
                 UNI => self.advance_char_unchecked(),
 
                 // From the spec:
@@ -595,8 +638,10 @@ impl<'src> Lexer<'src> {
                         )
                         .with_hint(format!("Use the escape sequence '\\u{chr:04x}' instead.")),
                     );
+
                     state = LexStringState::InvalidEscapeSequence;
                 }
+
                 _ => self.advance(1),
             }
         }
@@ -605,6 +650,7 @@ impl<'src> Lexer<'src> {
             LexStringState::Terminated => JSON_STRING_LITERAL,
             LexStringState::InvalidQuote => {
                 let literal_range = TextRange::new(start, self.text_position());
+
                 self.diagnostics.push(
                     ParseDiagnostic::new(
                         "JSON standard does not allow single quoted strings",
@@ -612,8 +658,10 @@ impl<'src> Lexer<'src> {
                     )
                     .with_hint("Use double quotes to escape the string."),
                 );
+
                 ERROR_TOKEN
             }
+
             LexStringState::InString => {
                 let unterminated =
                     ParseDiagnostic::new("Missing closing quote", start..self.text_position())
@@ -621,9 +669,12 @@ impl<'src> Lexer<'src> {
                             self.source.text_len()..self.source.text_len(),
                             "file ends here",
                         );
+
                 self.diagnostics.push(unterminated);
+
                 ERROR_TOKEN
             }
+
             LexStringState::InvalidEscapeSequence => ERROR_TOKEN,
         }
     }
@@ -633,6 +684,7 @@ impl<'src> Lexer<'src> {
     /// A unicode escape sequence must consist of 4 hex characters.
     fn lex_unicode_escape(&mut self) -> Result<(), ParseDiagnostic> {
         self.assert_byte(b'u');
+
         self.assert_at_char_boundary();
 
         let start = self.text_position();
@@ -658,6 +710,7 @@ impl<'src> Lexer<'src> {
                     .with_detail(self.text_position()..self.text_position().add(char.text_len()), "Non hexadecimal number")
                     .with_hint("A unicode escape sequence must consist of 4 hexadecimal numbers: `\\uXXXX`, e.g. `\\u002F' for '/'."));
                 }
+
                 None => {
                     // Reached the end of the file before processing 4 hex digits
                     return Err(ParseDiagnostic::new(
@@ -688,20 +741,26 @@ impl<'src> Lexer<'src> {
 
         while let Some(byte) = self.current_byte() {
             self.current_char_unchecked();
+
             match lookup_byte(byte) {
                 IDT | DOL | DIG | ZER => {
                     keyword = keyword.next_character(byte);
+
                     self.advance(1)
                 }
+
                 UNI => {
                     let char = self.current_char_unchecked();
+
                     keyword = KeywordMatcher::None;
+
                     if is_js_id_continue(char) {
                         self.advance(char.len_utf8());
                     } else {
                         break;
                     }
                 }
+
                 _ => {
                     break;
                 }
@@ -719,6 +778,7 @@ impl<'src> Lexer<'src> {
     /// Lexes a comment. Comments are not supported in JSON but it should yield better error recovery.
     fn lex_slash(&mut self) -> JsonSyntaxKind {
         let start = self.text_position();
+
         match self.peek_byte() {
             Some(b'*') => {
                 // eat `/*`
@@ -744,10 +804,13 @@ impl<'src> Lexer<'src> {
                                 return COMMENT;
                             }
                         }
+
                         b'\n' | b'\r' => {
                             has_newline = true;
+
                             self.advance(1)
                         }
+
                         chr => self.advance_byte_or_char(chr),
                     }
                 }
@@ -767,6 +830,7 @@ impl<'src> Lexer<'src> {
                     COMMENT
                 }
             }
+
             Some(b'/') => {
                 self.advance(2);
 
@@ -786,12 +850,14 @@ impl<'src> Lexer<'src> {
 
                 COMMENT
             }
+
             _ => self.eat_unexpected_character(),
         }
     }
 
     pub(crate) fn with_options(mut self, options: JsonParserOptions) -> Self {
         self.options = options;
+
         self
     }
 }

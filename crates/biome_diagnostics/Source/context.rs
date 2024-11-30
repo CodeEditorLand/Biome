@@ -250,7 +250,9 @@ mod internal {
     use std::{fmt::Debug, io};
 
     use biome_console::{fmt, markup};
+
     use biome_rowan::TextRange;
+
     use biome_text_edit::TextEdit;
 
     use crate::{
@@ -289,7 +291,9 @@ mod internal {
 
         fn description(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             let mut writer = DisplayMarkup(fmt);
+
             let mut fmt = fmt::Formatter::new(&mut writer);
+
             fmt.write_markup(markup!({ self.message }))
                 .map_err(|_| std::fmt::Error)
         }
@@ -335,6 +339,7 @@ mod internal {
     impl<T: fmt::Display> Debug for DebugMarkup<T> {
         fn fmt(&self, fmt: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
             let buffer = markup!({ self.0 }).to_owned();
+
             Debug::fmt(&buffer, fmt)
         }
     }
@@ -458,6 +463,7 @@ mod internal {
 
         fn location(&self) -> Location<'_> {
             let loc = self.source.as_diagnostic().location();
+
             Location {
                 resource: match loc.resource {
                     Some(Resource::Argv) => Some(Resource::Argv),
@@ -469,6 +475,7 @@ mod internal {
                             Some(Resource::File(file))
                         }
                     }
+
                     None => self.path.as_ref().map(Resource::as_deref),
                 },
                 span: loc.span,
@@ -524,6 +531,7 @@ mod internal {
 
         fn location(&self) -> Location<'_> {
             let loc = self.source.as_diagnostic().location();
+
             Location {
                 resource: loc.resource,
                 span: self.span.or(loc.span),
@@ -598,6 +606,7 @@ mod internal {
 
         fn location(&self) -> Location<'_> {
             let location = self.source.as_diagnostic().location();
+
             Location {
                 source_code: location
                     .source_code

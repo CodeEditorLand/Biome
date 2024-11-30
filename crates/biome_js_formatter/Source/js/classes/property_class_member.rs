@@ -14,6 +14,7 @@ pub(crate) struct FormatJsPropertyClassMember;
 impl FormatNodeRule<JsPropertyClassMember> for FormatJsPropertyClassMember {
     fn fmt_fields(&self, node: &JsPropertyClassMember, f: &mut JsFormatter) -> FormatResult<()> {
         let semicolon_token = node.semicolon_token();
+
         write!(
             f,
             [
@@ -57,9 +58,11 @@ impl AnyJsPropertyClassMember {
             AnyJsPropertyClassMember::JsPropertyClassMember(property) => {
                 property.property_annotation().is_some()
             }
+
             AnyJsPropertyClassMember::TsPropertySignatureClassMember(property) => {
                 property.property_annotation().is_some()
             }
+
             AnyJsPropertyClassMember::TsInitializedPropertySignatureClassMember(_) => false,
         }
     }
@@ -118,12 +121,14 @@ fn needs_semicolon(property: &AnyJsPropertyClassMember) -> SyntaxResult<bool> {
 
     // a;
     // static b;
+
     if has_modifiers(&next_member) {
         return Ok(false);
     }
 
     // a = b;
     // instanceof;
+
     if property.value().is_some()
         && (next_member.has_name("instanceof")? || next_member.has_name("in")?)
     {
@@ -175,6 +180,7 @@ fn has_modifiers(member: &AnyJsClassMember) -> bool {
         AnyJsClassMember::JsConstructorClassMember(constructor) => {
             constructor.modifiers().is_empty()
         }
+
         AnyJsClassMember::JsEmptyClassMember(_) => true,
         AnyJsClassMember::JsGetterClassMember(getter) => getter.modifiers().is_empty(),
         AnyJsClassMember::JsMethodClassMember(method) => method.modifiers().is_empty(),
@@ -185,15 +191,18 @@ fn has_modifiers(member: &AnyJsClassMember) -> bool {
         AnyJsClassMember::TsConstructorSignatureClassMember(constructor) => {
             constructor.modifiers().is_empty()
         }
+
         AnyJsClassMember::TsGetterSignatureClassMember(getter) => getter.modifiers().is_empty(),
         AnyJsClassMember::TsIndexSignatureClassMember(index) => index.modifiers().is_empty(),
         AnyJsClassMember::TsMethodSignatureClassMember(method) => method.modifiers().is_empty(),
         AnyJsClassMember::TsPropertySignatureClassMember(property) => {
             property.modifiers().is_empty()
         }
+
         AnyJsClassMember::TsInitializedPropertySignatureClassMember(property) => {
             property.modifiers().is_empty()
         }
+
         AnyJsClassMember::TsSetterSignatureClassMember(setter) => setter.modifiers().is_empty(),
     };
 

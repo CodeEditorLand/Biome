@@ -118,9 +118,11 @@ impl RuleState {
             NoThenPropertyMessage::Object => {
                 markup! { "Do not add "<Emphasis>"then"</Emphasis>" to an object." }.to_owned()
             }
+
             NoThenPropertyMessage::Export => {
                 markup! { "Do not export "<Emphasis>"then"</Emphasis>"."}.to_owned()
             }
+
             NoThenPropertyMessage::Class => {
                 markup! {"Do not add "<Emphasis>"then"</Emphasis>" to a class." }.to_owned()
             }
@@ -129,18 +131,23 @@ impl RuleState {
 }
 impl Rule for NoThenProperty {
     type Query = Ast<NoThenPropertyQuery>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let binding = ctx.query();
+
         match binding {
             NoThenPropertyQuery::AnyJsObjectMember(node) => process_js_object_member(node),
             NoThenPropertyQuery::AnyJsClassMember(node) => process_js_class_member(node),
             NoThenPropertyQuery::JsComputedMemberName(node) => {
                 process_js_computed_member_name(node)
             }
+
             NoThenPropertyQuery::JsAssignmentExpression(node) => process_js_assignment_expr(node),
             NoThenPropertyQuery::JsCallExpression(node) => process_js_call_expr(node),
             NoThenPropertyQuery::JsExport(node) => process_js_export_named_clause(node),
@@ -166,6 +173,7 @@ fn process_js_object_member(node: &AnyJsObjectMember) -> Option<RuleState> {
                 });
             }
         }
+
         AnyJsObjectMember::JsPropertyObjectMember(node) => {
             if node.name().ok()?.name()? == "then" {
                 return Some(RuleState {
@@ -174,16 +182,20 @@ fn process_js_object_member(node: &AnyJsObjectMember) -> Option<RuleState> {
                 });
             }
         }
+
         AnyJsObjectMember::JsMethodObjectMember(node) => {
             return process_js_method_object_member(node)
         }
+
         _ => return None,
     };
+
     None
 }
 
 fn process_js_method_object_member(node: &JsMethodObjectMember) -> Option<RuleState> {
     let member_name = node.name().ok()?;
+
     match member_name {
         AnyJsObjectMemberName::JsComputedMemberName(expr) => match expr.expression().ok()? {
             AnyJsExpression::AnyJsLiteralExpression(lit) => {
@@ -194,6 +206,7 @@ fn process_js_method_object_member(node: &JsMethodObjectMember) -> Option<RuleSt
                     });
                 }
             }
+
             AnyJsExpression::JsTemplateExpression(lit) => {
                 for l in lit.elements() {
                     if let AnyJsTemplateElement::JsTemplateChunkElement(chunk) = l {
@@ -206,6 +219,7 @@ fn process_js_method_object_member(node: &JsMethodObjectMember) -> Option<RuleSt
                     }
                 }
             }
+
             _ => return None,
         },
         AnyJsObjectMemberName::JsLiteralMemberName(literal) => {
@@ -216,13 +230,16 @@ fn process_js_method_object_member(node: &JsMethodObjectMember) -> Option<RuleSt
                 });
             }
         }
+
         _ => return None,
     }
+
     None
 }
 
 fn process_js_class_member(node: &AnyJsClassMember) -> Option<RuleState> {
     let any_class_member_name = node.name().ok()??;
+
     if let Some(ClassMemberName::Public(name)) = any_class_member_name.name() {
         if name == "then" {
             return Some(RuleState {
@@ -231,6 +248,7 @@ fn process_js_class_member(node: &AnyJsClassMember) -> Option<RuleState> {
             });
         }
     }
+
     None
 }
 
@@ -244,6 +262,7 @@ fn process_js_computed_member_name(node: &JsComputedMemberName) -> Option<RuleSt
                 });
             }
         }
+
         AnyJsExpression::JsTemplateExpression(lit) => {
             for l in lit.elements() {
                 if let AnyJsTemplateElement::JsTemplateChunkElement(chunk) = l {
@@ -256,8 +275,10 @@ fn process_js_computed_member_name(node: &JsComputedMemberName) -> Option<RuleSt
                 }
             }
         }
+
         _ => return None,
     }
+
     None
 }
 
@@ -272,6 +293,7 @@ fn process_js_assignment_expr(node: &JsAssignmentExpression) -> Option<RuleState
                     });
                 }
             }
+
             AnyJsAssignment::JsStaticMemberAssignment(m) => {
                 if m.member().ok()?.text() == "then" {
                     return Some(RuleState {
@@ -280,10 +302,12 @@ fn process_js_assignment_expr(node: &JsAssignmentExpression) -> Option<RuleState
                     });
                 }
             }
+
             _ => return None,
         },
         _ => return None,
     }
+
     None
 }
 
@@ -291,6 +315,7 @@ fn process_js_call_expr(node: &JsCallExpression) -> Option<RuleState> {
     if node.is_optional_chain() {
         return None;
     }
+
     match node.callee().ok()? {
         AnyJsExpression::JsStaticMemberExpression(m) => {
             if m.is_optional_chain() {
@@ -298,19 +323,23 @@ fn process_js_call_expr(node: &JsCallExpression) -> Option<RuleState> {
             }
 
             let callee = m.object().ok()?.text();
+
             let member = m.member().ok()?.text();
 
             let args = node.arguments().ok()?.args();
+
             let first = args.iter().next()?.ok()?;
 
             // Handle `Object.fromEntries()`
             // ex)
             //   Object.fromEntries([["then", 1]])
             //   Object.fromEntries([['foo', 'foo'], ['then', 32],['bar', 'bar']]);
+
             if callee == "Object" && member == "fromEntries" {
                 if args.len() != 1 {
                     return None;
                 }
+
                 if let AnyJsCallArgument::AnyJsExpression(expr) = &first {
                     if let AnyJsExpression::JsArrayExpression(array) = expr {
                         for arr in array.elements().iter() {
@@ -319,6 +348,7 @@ fn process_js_call_expr(node: &JsCallExpression) -> Option<RuleState> {
                                     AnyJsExpression::JsArrayExpression(arg),
                                 ) => {
                                     let key = arg.elements().first()?.ok()?;
+
                                     if key.text() == "\"then\"" || key.text() == "`then`" {
                                         return Some(RuleState {
                                             range: key.range(),
@@ -326,6 +356,7 @@ fn process_js_call_expr(node: &JsCallExpression) -> Option<RuleState> {
                                         });
                                     }
                                 }
+
                                 _ => continue,
                             }
                         }
@@ -340,10 +371,13 @@ fn process_js_call_expr(node: &JsCallExpression) -> Option<RuleState> {
                 if args.len() < 3 {
                     return None;
                 }
+
                 if matches!(first, AnyJsCallArgument::JsSpread(_)) {
                     return None;
                 }
+
                 let second = args.iter().nth(1)?.ok()?;
+
                 if second.text() == "\"then\"" || second.text() == "`then`" {
                     return Some(RuleState {
                         range: second.range(),
@@ -352,8 +386,10 @@ fn process_js_call_expr(node: &JsCallExpression) -> Option<RuleState> {
                 }
             }
         }
+
         _ => return None,
     }
+
     None
 }
 
@@ -361,6 +397,7 @@ fn process_js_export_named_clause(node: &JsExport) -> Option<RuleState> {
     match node.export_clause().ok()? {
         AnyJsExportClause::JsExportNamedClause(node) => {
             let specifiers = node.specifiers();
+
             for specifier in specifiers.iter() {
                 match specifier.ok()? {
                     AnyJsExportNamedSpecifier::JsExportNamedShorthandSpecifier(name) => {
@@ -371,6 +408,7 @@ fn process_js_export_named_clause(node: &JsExport) -> Option<RuleState> {
                             });
                         }
                     }
+
                     AnyJsExportNamedSpecifier::JsExportNamedSpecifier(name) => {
                         if name.exported_name().ok()?.text() == "then" {
                             return Some(RuleState {
@@ -382,12 +420,15 @@ fn process_js_export_named_clause(node: &JsExport) -> Option<RuleState> {
                 }
             }
         }
+
         AnyJsExportClause::AnyJsDeclarationClause(
             AnyJsDeclarationClause::JsVariableDeclarationClause(node),
         ) => {
             let decls = node.declaration().ok()?;
+
             for d in decls.declarators().iter() {
                 let id = d.ok()?.id().ok()?;
+
                 if id.text() == "then" {
                     return Some(RuleState {
                         range: id.range(),
@@ -396,7 +437,9 @@ fn process_js_export_named_clause(node: &JsExport) -> Option<RuleState> {
                 }
             }
         }
+
         _ => return None,
     }
+
     None
 }

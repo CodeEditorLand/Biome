@@ -35,10 +35,13 @@ pub struct GraphqlLexer<'src> {
 
 impl<'src> Lexer<'src> for GraphqlLexer<'src> {
     const NEWLINE: Self::Kind = NEWLINE;
+
     const WHITESPACE: Self::Kind = WHITESPACE;
 
     type Kind = GraphqlSyntaxKind;
+
     type LexContext = ();
+
     type ReLexContext = ();
 
     fn source(&self) -> &'src str {
@@ -73,15 +76,18 @@ impl<'src> Lexer<'src> for GraphqlLexer<'src> {
         if self.consume_newline() {
             self.current_flags
                 .set(TokenFlags::PRECEDING_LINE_BREAK, true);
+
             NEWLINE
         } else {
             self.consume_whitespaces();
+
             WHITESPACE
         }
     }
 
     fn next_token(&mut self, _context: Self::LexContext) -> Self::Kind {
         self.current_start = self.text_position();
+
         self.current_flags = TokenFlags::empty();
 
         let kind = match self.current_byte() {
@@ -102,6 +108,7 @@ impl<'src> Lexer<'src> for GraphqlLexer<'src> {
     #[inline]
     fn advance_char_unchecked(&mut self) {
         let c = self.current_char_unchecked();
+
         self.position += c.len_utf8();
     }
 
@@ -151,6 +158,7 @@ impl<'src> GraphqlLexer<'src> {
     /// Bumps the current byte and creates a lexed token of the passed in kind
     fn consume_byte(&mut self, tok: GraphqlSyntaxKind) -> GraphqlSyntaxKind {
         self.advance(1);
+
         tok
     }
 
@@ -183,10 +191,13 @@ impl<'src> GraphqlLexer<'src> {
             _ if self.position == 0 => {
                 if let Some((bom, bom_size)) = self.consume_potential_bom(UNICODE_BOM) {
                     self.unicode_bom_length = bom_size;
+
                     return bom;
                 }
+
                 self.consume_unexpected_character()
             }
+
             _ => self.consume_unexpected_character(),
         }
     }
@@ -194,8 +205,11 @@ impl<'src> GraphqlLexer<'src> {
     /// Lexes an ellipsis.
     fn consume_ellipsis(&mut self) -> GraphqlSyntaxKind {
         self.assert_byte(b'.');
+
         let start = self.position;
+
         self.advance(1);
+
         if self.current_byte() == Some(b'.') {
             if self.byte_at(1) == Some(b'.') {
                 self.advance(2);
@@ -206,6 +220,7 @@ impl<'src> GraphqlLexer<'src> {
                     }
 
                     let end = self.position;
+
                     self.diagnostics.push(
                         ParseDiagnostic::new(
                             format!("'{}' isn't valid here.", ".".repeat(end - start)),
@@ -220,6 +235,7 @@ impl<'src> GraphqlLexer<'src> {
                 }
             } else {
                 self.advance(1);
+
                 self.diagnostics.push(
                     ParseDiagnostic::new("'..' isn't valid here.", start..self.position)
                         .with_hint("Did you mean '...'?"),
@@ -244,8 +260,11 @@ impl<'src> GraphqlLexer<'src> {
         // Note to keep the buffer large enough to fit every possible keyword
         // that the lexer can return.
         const BUFFER_SIZE: usize = 32;
+
         let mut buffer = [0u8; BUFFER_SIZE];
+
         buffer[0] = first;
+
         let mut len = 1;
 
         self.advance_byte_or_char(first);
@@ -254,6 +273,7 @@ impl<'src> GraphqlLexer<'src> {
             if is_name_continue(byte) {
                 if len < BUFFER_SIZE {
                     buffer[len] = byte;
+
                     len += 1;
                 }
 
@@ -311,11 +331,14 @@ impl<'src> GraphqlLexer<'src> {
         self.assert_current_char_boundary();
 
         let char = self.current_char_unchecked();
+
         let err = ParseDiagnostic::new(
             format!("unexpected character `{char}`"),
             self.text_position()..self.text_position() + char.text_len(),
         );
+
         self.diagnostics.push(err);
+
         self.advance(char.len_utf8());
 
         ERROR_TOKEN
@@ -332,6 +355,7 @@ impl<'src> GraphqlLexer<'src> {
             b'0' => LexNumberState::LeadingZero,
             _ => LexNumberState::IntegerPart,
         };
+
         self.advance(1);
 
         while let Some(chr) = self.current_byte() {
@@ -341,6 +365,7 @@ impl<'src> GraphqlLexer<'src> {
                 b'e' | b'E' => self.consume_exponent(chr, start, state),
                 _ => break,
             };
+
             state = new_state;
         }
 
@@ -355,8 +380,10 @@ impl<'src> GraphqlLexer<'src> {
 
                 ERROR_TOKEN
             }
+
             LexNumberState::Invalid(diagnostic) => {
                 self.diagnostics.push(diagnostic);
+
                 ERROR_TOKEN
             }
         }
@@ -365,9 +392,11 @@ impl<'src> GraphqlLexer<'src> {
     /// consume a single digit in a number
     fn consume_digit(&mut self, chr: u8, state: LexNumberState) -> LexNumberState {
         debug_assert!(chr.is_ascii_digit());
+
         match chr {
             b'0' => {
                 let position = self.text_position();
+
                 self.advance(1);
 
                 match state {
@@ -376,14 +405,18 @@ impl<'src> GraphqlLexer<'src> {
                             "GraphQL doesn't allow numbers starting with zero",
                             position..position + TextSize::from(1),
                         );
+
                         LexNumberState::Invalid(diagnostic)
                     }
+
                     LexNumberState::Minus => LexNumberState::LeadingZero,
                     _ => state,
                 }
             }
+
             b'1'..=b'9' => {
                 let position = self.text_position();
+
                 self.advance(1);
 
                 match state {
@@ -392,8 +425,10 @@ impl<'src> GraphqlLexer<'src> {
                             "GraphQL doesn't allow numbers starting with zero",
                             position..position + TextSize::from(1),
                         );
+
                         LexNumberState::Invalid(diagnostic)
                     }
+
                     LexNumberState::Minus => LexNumberState::IntegerPart,
                     _ => state,
                 }
@@ -401,6 +436,7 @@ impl<'src> GraphqlLexer<'src> {
             // should never happen
             _ => {
                 let position = self.text_position();
+
                 LexNumberState::Invalid(ParseDiagnostic::new(
                     "Invalid character",
                     position..position + TextSize::from(1),
@@ -408,9 +444,12 @@ impl<'src> GraphqlLexer<'src> {
             }
         }
     }
+
     fn consume_fraction(&mut self, state: LexNumberState) -> LexNumberState {
         self.assert_byte(b'.');
+
         let position = self.text_position();
+
         self.advance(1);
 
         if !self.current_byte().is_some_and(|b| b.is_ascii_digit()) {
@@ -423,6 +462,7 @@ impl<'src> GraphqlLexer<'src> {
                 LexNumberState::IntegerPart | LexNumberState::LeadingZero => {
                     LexNumberState::FractionalPart
                 }
+
                 invalid @ LexNumberState::Invalid(_) => invalid,
                 _ => LexNumberState::Invalid(ParseDiagnostic::new(
                     "Invalid fraction part",
@@ -439,7 +479,9 @@ impl<'src> GraphqlLexer<'src> {
         state: LexNumberState,
     ) -> LexNumberState {
         debug_assert!(matches!(chr, b'e' | b'E'));
+
         let position = self.text_position();
+
         self.advance(1);
 
         if let Some(b'-' | b'+') = self.current_byte() {
@@ -469,6 +511,7 @@ impl<'src> GraphqlLexer<'src> {
 
     fn consume_string(&mut self) -> GraphqlSyntaxKind {
         self.assert_byte(b'"');
+
         let start = self.text_position();
 
         self.advance(1); // Skip over the quote
@@ -479,15 +522,20 @@ impl<'src> GraphqlLexer<'src> {
 
         while let Some(chr) = self.current_byte() {
             let (new_state, diagnostic) = self.consume_string_character(chr, start, state);
+
             state = new_state;
+
             if let Some(diagnostic) = diagnostic {
                 self.push_diagnostic(diagnostic);
+
                 has_error = true;
             }
+
             if matches!(state, LexStringState::Terminated) {
                 break;
             }
         }
+
         match state {
             LexStringState::Terminated => {
                 if has_error {
@@ -496,6 +544,7 @@ impl<'src> GraphqlLexer<'src> {
                     GRAPHQL_STRING_LITERAL
                 }
             }
+
             LexStringState::InString
             | LexStringState::InBlockString
             | LexStringState::Uninitialized => {
@@ -505,6 +554,7 @@ impl<'src> GraphqlLexer<'src> {
                             self.source.text_len()..self.source.text_len(),
                             "file ends here",
                         );
+
                 self.diagnostics.push(unterminated);
 
                 ERROR_TOKEN
@@ -520,6 +570,7 @@ impl<'src> GraphqlLexer<'src> {
         state: LexStringState,
     ) -> (LexStringState, Option<ParseDiagnostic>) {
         self.assert_current_char_boundary();
+
         match state {
             LexStringState::Uninitialized => match chr {
                 b'"' => self.consume_quote_in_string(state),
@@ -564,7 +615,9 @@ impl<'src> GraphqlLexer<'src> {
         state: LexStringState,
     ) -> (LexStringState, Option<ParseDiagnostic>) {
         self.assert_byte(b'"');
+
         self.advance(1);
+
         match state {
             LexStringState::Uninitialized => {
                 if self.current_byte() == Some(b'"') {
@@ -575,6 +628,7 @@ impl<'src> GraphqlLexer<'src> {
                     (LexStringState::Terminated, None)
                 }
             }
+
             LexStringState::InString => (LexStringState::Terminated, None),
             LexStringState::InBlockString => {
                 if self.current_byte() == Some(b'"') && self.byte_at(1) == Some(b'"') {
@@ -600,8 +654,11 @@ impl<'src> GraphqlLexer<'src> {
         state: LexStringState,
     ) -> (LexStringState, Option<ParseDiagnostic>) {
         self.assert_byte(b'\\');
+
         let escape_start = self.text_position();
+
         self.advance(1);
+
         match state {
             // '\t' etc
             LexStringState::InString => match self.current_byte() {
@@ -617,6 +674,7 @@ impl<'src> GraphqlLexer<'src> {
 
                 Some(_) => {
                     let c = self.current_char_unchecked();
+
                     let diagnostic = ParseDiagnostic::new(
                         "Invalid escape sequence",
                         escape_start..self.text_position() + c.text_len(),
@@ -675,6 +733,7 @@ impl<'src> GraphqlLexer<'src> {
     /// A unicode escape sequence must consist of 4 hex characters.
     fn consume_unicode_escape(&mut self) -> Result<(), ParseDiagnostic> {
         self.assert_byte(b'u');
+
         self.assert_current_char_boundary();
 
         let start = self.text_position();
@@ -700,6 +759,7 @@ impl<'src> GraphqlLexer<'src> {
                     .with_detail(self.text_position()..self.text_position().add(char.text_len()), "Non hexadecimal number")
                     .with_hint("A unicode escape sequence must consist of 4 hexadecimal numbers: `\\uXXXX`, e.g. `\\u002F' for '/'."));
                 }
+
                 None => {
                     // Reached the end of the file before processing 4 hex digits
                     return Err(ParseDiagnostic::new(
@@ -729,12 +789,14 @@ impl<'src> GraphqlLexer<'src> {
                 chr => self.advance_byte_or_char(chr),
             }
         }
+
         COMMENT
     }
 
     fn consume_commas(&mut self) -> GraphqlSyntaxKind {
         while self.current_byte() == Some(b',') {
             self.assert_byte(b',');
+
             self.advance(1);
         }
 

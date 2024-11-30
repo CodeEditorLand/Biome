@@ -59,8 +59,10 @@ where
         self.stack.pop().or_else(|| match self.original {
             [rest @ .., last] => {
                 self.original = rest;
+
                 Some(*last)
             }
+
             _ => None,
         })
     }
@@ -81,14 +83,19 @@ mod tests {
     #[test]
     fn restore_consumed_stack() {
         let original = vec![1, 2, 3];
+
         let mut restorable = StackedStack::new(&original);
 
         restorable.push(4);
 
         assert_eq!(restorable.pop(), Some(4));
+
         assert_eq!(restorable.pop(), Some(3));
+
         assert_eq!(restorable.pop(), Some(2));
+
         assert_eq!(restorable.pop(), Some(1));
+
         assert_eq!(restorable.pop(), None);
 
         assert_eq!(original, vec![1, 2, 3]);
@@ -97,15 +104,21 @@ mod tests {
     #[test]
     fn restore_partially_consumed_stack() {
         let original = vec![1, 2, 3];
+
         let mut restorable = StackedStack::new(&original);
 
         restorable.push(4);
 
         assert_eq!(restorable.pop(), Some(4));
+
         assert_eq!(restorable.pop(), Some(3));
+
         assert_eq!(restorable.pop(), Some(2));
+
         restorable.push(5);
+
         restorable.push(6);
+
         restorable.push(7);
 
         assert_eq!(original, vec![1, 2, 3]);
@@ -114,15 +127,21 @@ mod tests {
     #[test]
     fn restore_stack() {
         let original = vec![1, 2, 3];
+
         let mut restorable = StackedStack::new(&original);
 
         restorable.push(4);
+
         restorable.push(5);
+
         restorable.push(6);
+
         restorable.push(7);
 
         assert_eq!(restorable.pop(), Some(7));
+
         assert_eq!(restorable.pop(), Some(6));
+
         assert_eq!(restorable.pop(), Some(5));
 
         assert_eq!(original, vec![1, 2, 3]);

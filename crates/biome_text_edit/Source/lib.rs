@@ -75,7 +75,9 @@ impl TextEdit {
     /// Create a diff of `old` to `new`, tokenized by Unicode words
     pub fn from_unicode_words(old: &str, new: &str) -> Self {
         let mut builder = Self::builder();
+
         builder.with_unicode_words_diff(old, new);
+
         builder.finish()
     }
 
@@ -105,27 +107,35 @@ impl TextEdit {
     /// text sections that are equal between revisions
     pub fn new_string(&self, old_string: &str) -> String {
         let mut output = String::new();
+
         let mut input_position = TextSize::from(0);
 
         for op in &self.ops {
             match op {
                 CompressedOp::DiffOp(DiffOp::Equal { range }) => {
                     output.push_str(&self.dictionary[*range]);
+
                     input_position += range.len();
                 }
+
                 CompressedOp::DiffOp(DiffOp::Insert { range }) => {
                     output.push_str(&self.dictionary[*range]);
                 }
+
                 CompressedOp::DiffOp(DiffOp::Delete { range }) => {
                     input_position += range.len();
                 }
+
                 CompressedOp::EqualLines { line_count } => {
                     let start = u32::from(input_position) as usize;
+
                     let input = &old_string[start..];
 
                     let line_break_count = line_count.get() as usize + 1;
+
                     for line in input.split_inclusive('\n').take(line_break_count) {
                         output.push_str(line);
+
                         input_position += TextSize::of(line);
                     }
                 }
@@ -138,6 +148,7 @@ impl TextEdit {
 
 impl IntoIterator for TextEdit {
     type Item = CompressedOp;
+
     type IntoIter = std::vec::IntoIter<CompressedOp>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -147,6 +158,7 @@ impl IntoIterator for TextEdit {
 
 impl<'a> IntoIterator for &'a TextEdit {
     type Item = &'a CompressedOp;
+
     type IntoIter = std::slice::Iter<'a, CompressedOp>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -163,6 +175,7 @@ impl TextEditBuilder {
     /// range in the dictionnary string
     fn intern(&mut self, value: &str) -> TextRange {
         let value_bytes = value.as_bytes();
+
         let value_len = TextSize::of(value);
 
         let index = self.index.binary_search_by(|range| {
@@ -186,15 +199,21 @@ impl TextEditBuilder {
         match index {
             Ok(index) => {
                 let range = self.index[index];
+
                 let len = value_len.min(range.len());
+
                 TextRange::at(range.start(), len)
             }
+
             Err(index) => {
                 let start = TextSize::of(&self.edit.dictionary);
+
                 self.edit.dictionary.push_str(value);
 
                 let range = TextRange::at(start, value_len);
+
                 self.index.insert(index, range);
+
                 range
             }
         }
@@ -204,6 +223,7 @@ impl TextEditBuilder {
         match compress_equal_op(text) {
             Some((start, mid, end)) => {
                 let start = self.intern(start);
+
                 self.edit
                     .ops
                     .push(CompressedOp::DiffOp(DiffOp::Equal { range: start }));
@@ -213,12 +233,15 @@ impl TextEditBuilder {
                     .push(CompressedOp::EqualLines { line_count: mid });
 
                 let end = self.intern(end);
+
                 self.edit
                     .ops
                     .push(CompressedOp::DiffOp(DiffOp::Equal { range: end }));
             }
+
             None => {
                 let range = self.intern(text);
+
                 self.edit
                     .ops
                     .push(CompressedOp::DiffOp(DiffOp::Equal { range }));
@@ -228,6 +251,7 @@ impl TextEditBuilder {
 
     pub fn insert(&mut self, text: &str) {
         let range = self.intern(text);
+
         self.edit
             .ops
             .push(CompressedOp::DiffOp(DiffOp::Insert { range }));
@@ -235,6 +259,7 @@ impl TextEditBuilder {
 
     pub fn delete(&mut self, text: &str) {
         let range = self.intern(text);
+
         self.edit
             .ops
             .push(CompressedOp::DiffOp(DiffOp::Delete { range }));
@@ -242,6 +267,7 @@ impl TextEditBuilder {
 
     pub fn replace(&mut self, old: &str, new: &str) {
         self.delete(old);
+
         self.insert(new);
     }
 
@@ -264,9 +290,11 @@ impl TextEditBuilder {
                 ChangeTag::Equal => {
                     self.equal(text);
                 }
+
                 ChangeTag::Delete => {
                     self.delete(text);
                 }
+
                 ChangeTag::Insert => {
                     self.insert(text);
                 }
@@ -287,17 +315,21 @@ fn compress_equal_op(text: &str) -> Option<(&str, NonZeroU32, &str)> {
     let mut iter = text.split('\n');
 
     let mut leading_len = COMPRESSED_DIFFS_CONTEXT_LINES;
+
     for _ in 0..=COMPRESSED_DIFFS_CONTEXT_LINES {
         leading_len += iter.next()?.len();
     }
 
     let mut trailing_len = COMPRESSED_DIFFS_CONTEXT_LINES;
+
     for _ in 0..=COMPRESSED_DIFFS_CONTEXT_LINES {
         trailing_len += iter.next_back()?.len();
     }
 
     let mid_count = iter.count();
+
     let mid_count = u32::try_from(mid_count).ok()?;
+
     let mid_count = NonZeroU32::new(mid_count)?;
 
     let trailing_start = text.len().saturating_sub(trailing_len);
@@ -368,6 +400,7 @@ line 6
 line 7 new";
 
         let diff = TextEdit::from_unicode_words(OLD, NEW);
+
         let new_string = diff.new_string(OLD);
 
         assert_eq!(new_string, NEW);

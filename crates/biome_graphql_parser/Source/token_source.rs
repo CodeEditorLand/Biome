@@ -19,13 +19,16 @@ impl<'source> GraphqlTokenSource<'source> {
             trivia_list: Vec::new(),
         }
     }
+
     pub fn from_str(source: &'source str) -> Self {
         let lexer = GraphqlLexer::from_str(source);
+
         let lexer = BufferedLexer::new(lexer);
 
         let mut source = GraphqlTokenSource::new(lexer);
 
         source.next_non_trivia_token(true);
+
         source
     }
 
@@ -42,6 +45,7 @@ impl<'source> GraphqlTokenSource<'source> {
                     // Not trivia
                     break;
                 }
+
                 Ok(trivia_kind) => {
                     if trivia_kind.is_newline() {
                         trailing = false;

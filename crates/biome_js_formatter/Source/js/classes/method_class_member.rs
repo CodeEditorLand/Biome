@@ -59,7 +59,9 @@ impl Format<JsFormatContext> for FormatAnyJsMethodMember {
             f,
             [group(&format_with(|f| {
                 let parameters = self.parameters()?;
+
                 let return_type_annotation = self.return_type_annotation();
+
                 let mut format_return_type_annotation = return_type_annotation.format().memoized();
 
                 if should_group_function_parameters(
@@ -97,6 +99,7 @@ impl FormatAnyJsMethodMember {
             FormatAnyJsMethodMember::TsMethodSignatureClassMember(signature) => {
                 signature.async_token()
             }
+
             FormatAnyJsMethodMember::TsMethodSignatureTypeMember(_) => None,
         }
     }
@@ -118,9 +121,11 @@ impl FormatAnyJsMethodMember {
             FormatAnyJsMethodMember::JsConstructorClassMember(member) => {
                 AnyJsMemberName::from(AnyJsClassMemberName::from(member.name()?))
             }
+
             FormatAnyJsMethodMember::TsMethodSignatureClassMember(signature) => {
                 signature.name()?.into()
             }
+
             FormatAnyJsMethodMember::TsMethodSignatureTypeMember(member) => member.name()?.into(),
         })
     }
@@ -133,6 +138,7 @@ impl FormatAnyJsMethodMember {
             FormatAnyJsMethodMember::TsMethodSignatureClassMember(signature) => {
                 signature.type_parameters()
             }
+
             FormatAnyJsMethodMember::TsMethodSignatureTypeMember(member) => {
                 member.type_parameters()
             }
@@ -146,9 +152,11 @@ impl FormatAnyJsMethodMember {
             FormatAnyJsMethodMember::JsConstructorClassMember(member) => {
                 member.parameters()?.into()
             }
+
             FormatAnyJsMethodMember::TsMethodSignatureClassMember(signature) => {
                 signature.parameters()?.into()
             }
+
             FormatAnyJsMethodMember::TsMethodSignatureTypeMember(member) => {
                 member.parameters()?.into()
             }
@@ -161,10 +169,12 @@ impl FormatAnyJsMethodMember {
             FormatAnyJsMethodMember::JsMethodObjectMember(member) => {
                 member.return_type_annotation()
             }
+
             FormatAnyJsMethodMember::JsConstructorClassMember(_) => None,
             FormatAnyJsMethodMember::TsMethodSignatureClassMember(signature) => {
                 signature.return_type_annotation()
             }
+
             FormatAnyJsMethodMember::TsMethodSignatureTypeMember(member) => {
                 member.return_type_annotation()
             }
@@ -179,6 +189,7 @@ impl FormatAnyJsMethodMember {
             FormatAnyJsMethodMember::TsMethodSignatureClassMember(signature) => {
                 signature.question_mark_token()
             }
+
             FormatAnyJsMethodMember::TsMethodSignatureTypeMember(member) => member.optional_token(),
         }
     }

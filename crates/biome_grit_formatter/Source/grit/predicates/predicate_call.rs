@@ -12,6 +12,7 @@ impl FormatNodeRule<GritPredicateCall> for FormatGritPredicateCall {
             named_args,
             r_paren_token,
         } = node.as_fields();
+
         write!(
             f,
             [

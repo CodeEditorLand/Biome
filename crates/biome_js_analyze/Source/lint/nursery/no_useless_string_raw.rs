@@ -39,22 +39,32 @@ declare_lint_rule! {
 
 impl Rule for NoUselessStringRaw {
     type Query = Ast<JsTemplateExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let tag = node.tag()?;
+
         let tag = tag.as_js_static_member_expression()?;
 
         let object = tag.object().ok()?;
+
         let object_expr = object.as_js_identifier_expression()?;
+
         let object_name = object_expr.name().ok()?.value_token().ok()?;
+
         let object_name = object_name.text_trimmed();
 
         let member = tag.member().ok()?;
+
         let member_name = member.as_js_name()?.value_token().ok()?;
+
         let member_name = member_name.text_trimmed();
 
         if object_name != "String" || member_name != "raw" {
@@ -70,6 +80,7 @@ impl Rule for NoUselessStringRaw {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

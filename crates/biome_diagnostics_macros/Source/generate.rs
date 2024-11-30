@@ -15,25 +15,37 @@ pub(crate) fn generate_diagnostic(input: DeriveInput) -> TokenStream {
 
 fn generate_struct_diagnostic(input: DeriveStructInput) -> TokenStream {
     let category = generate_category(&input);
+
     let severity = generate_severity(&input);
+
     let description = generate_description(&input);
+
     let message = generate_message(&input);
+
     let advices = generate_advices(&input);
+
     let verbose_advices = generate_verbose_advices(&input);
+
     let location = generate_location(&input);
+
     let tags = generate_tags(&input);
+
     let source = generate_source(&input);
 
     let generic_params = if !input.generics.params.is_empty() {
         let lt_token = &input.generics.lt_token;
+
         let params = &input.generics.params;
+
         let gt_token = &input.generics.gt_token;
+
         quote! { #lt_token #params #gt_token }
     } else {
         quote!()
     };
 
     let ident = input.ident;
+
     let generics = input.generics;
 
     quote! {
@@ -91,20 +103,25 @@ fn generate_description(input: &DeriveStructInput) -> TokenStream {
     let description = match &input.description {
         Some(StaticOrDynamic::Static(StringOrMarkup::String(value))) => {
             let mut format_string = String::new();
+
             let mut format_params = Vec::new();
 
             let input = value.value();
+
             let mut input = input.as_str();
 
             while let Some(idx) = input.find('{') {
                 let (before, after) = input.split_at(idx);
+
                 format_string.push_str(before);
 
                 let after = &after[1..];
+
                 format_string.push('{');
 
                 if let Some(after) = after.strip_prefix('{') {
                     input = after;
+
                     continue;
                 }
 
@@ -114,7 +131,9 @@ fn generate_description(input: &DeriveStructInput) -> TokenStream {
                 };
 
                 let (ident, after) = after.split_at(end);
+
                 let ident = Ident::new(ident, Span::call_site());
+
                 format_params.push(quote! { self.#ident });
 
                 input = after;
@@ -134,14 +153,18 @@ fn generate_description(input: &DeriveStructInput) -> TokenStream {
                 }
             }
         }
+
         Some(StaticOrDynamic::Static(StringOrMarkup::Markup(markup))) => quote! {
             let mut buffer = Vec::new();
 
             let write = biome_diagnostics::termcolor::NoColor::new(&mut buffer);
+
             let mut write = biome_diagnostics::console::fmt::Termcolor(write);
+
             let mut write = biome_diagnostics::console::fmt::Formatter::new(&mut write);
 
             use biome_diagnostics::console as biome_console;
+
             write.write_markup(&biome_diagnostics::console::markup!{ #markup })
                 .map_err(|_| ::std::fmt::Error)?;
 
@@ -167,6 +190,7 @@ fn generate_message(input: &DeriveStructInput) -> TokenStream {
         },
         Some(StaticOrDynamic::Static(StringOrMarkup::Markup(markup))) => quote! {
             use biome_diagnostics::console as biome_console;
+
             fmt.write_markup(biome_diagnostics::console::markup!{ #markup })
         },
         Some(StaticOrDynamic::Dynamic(value)) => quote! {
@@ -218,6 +242,7 @@ fn generate_location(input: &DeriveStructInput) -> TokenStream {
     }
 
     let field = input.location.iter().map(|(field, _)| field);
+
     let method = input.location.iter().map(|(_, method)| method);
 
     quote! {
@@ -233,10 +258,12 @@ fn generate_tags(input: &DeriveStructInput) -> TokenStream {
     let tags = match &input.tags {
         Some(StaticOrDynamic::Static(value)) => {
             let values = value.iter();
+
             quote! {
                 #( biome_diagnostics::DiagnosticTags::#values )|*
             }
         }
+
         Some(StaticOrDynamic::Dynamic(value)) => quote! {
             self.#value
         },
@@ -264,15 +291,20 @@ fn generate_source(input: &DeriveStructInput) -> TokenStream {
 fn generate_enum_diagnostic(input: DeriveEnumInput) -> TokenStream {
     let generic_params = if !input.generics.params.is_empty() {
         let lt_token = &input.generics.lt_token;
+
         let params = &input.generics.params;
+
         let gt_token = &input.generics.gt_token;
+
         quote! { #lt_token #params #gt_token }
     } else {
         quote!()
     };
 
     let ident = input.ident;
+
     let generics = input.generics;
+
     let variants: Vec<_> = input
         .variants
         .iter()

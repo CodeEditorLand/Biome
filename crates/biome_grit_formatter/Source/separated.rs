@@ -23,7 +23,9 @@ where
     N: AstNode<Language = GritLanguage> + AsFormat<GritFormatContext> + 'static,
 {
     type Context = GritFormatContext;
+
     type FormatNode<'a> = N::Format<'a>;
+
     type FormatSeparator<'a> = FormatRefWithRule<'a, GritSyntaxToken, FormatGritSyntaxToken>;
 
     fn format_node<'a>(&self, node: &'a N) -> Self::FormatNode<'a> {

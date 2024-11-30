@@ -34,8 +34,10 @@ pub struct CssAttributeMatcherBuilder {
 impl CssAttributeMatcherBuilder {
     pub fn with_modifier_token(mut self, modifier_token: SyntaxToken) -> Self {
         self.modifier_token = Some(modifier_token);
+
         self
     }
+
     pub fn build(self) -> CssAttributeMatcher {
         CssAttributeMatcher::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_ATTRIBUTE_MATCHER,
@@ -66,8 +68,10 @@ pub struct CssAttributeNameBuilder {
 impl CssAttributeNameBuilder {
     pub fn with_namespace(mut self, namespace: CssNamespace) -> Self {
         self.namespace = Some(namespace);
+
         self
     }
+
     pub fn build(self) -> CssAttributeName {
         CssAttributeName::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_ATTRIBUTE_NAME,
@@ -100,8 +104,10 @@ pub struct CssAttributeSelectorBuilder {
 impl CssAttributeSelectorBuilder {
     pub fn with_matcher(mut self, matcher: CssAttributeMatcher) -> Self {
         self.matcher = Some(matcher);
+
         self
     }
+
     pub fn build(self) -> CssAttributeSelector {
         CssAttributeSelector::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_ATTRIBUTE_SELECTOR,
@@ -244,8 +250,10 @@ pub struct CssComposesPropertyValueBuilder {
 impl CssComposesPropertyValueBuilder {
     pub fn with_specifier(mut self, specifier: CssComposesImportSpecifier) -> Self {
         self.specifier = Some(specifier);
+
         self
     }
+
     pub fn build(self) -> CssComposesPropertyValue {
         CssComposesPropertyValue::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_COMPOSES_PROPERTY_VALUE,
@@ -275,8 +283,10 @@ pub struct CssCompoundSelectorBuilder {
 impl CssCompoundSelectorBuilder {
     pub fn with_simple_selector(mut self, simple_selector: AnyCssSimpleSelector) -> Self {
         self.simple_selector = Some(simple_selector);
+
         self
     }
+
     pub fn build(self) -> CssCompoundSelector {
         CssCompoundSelector::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_COMPOUND_SELECTOR,
@@ -324,8 +334,10 @@ pub struct CssContainerAtRuleBuilder {
 impl CssContainerAtRuleBuilder {
     pub fn with_name(mut self, name: CssCustomIdentifier) -> Self {
         self.name = Some(name);
+
         self
     }
+
     pub fn build(self) -> CssContainerAtRule {
         CssContainerAtRule::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_CONTAINER_AT_RULE,
@@ -502,8 +514,10 @@ pub struct CssDeclarationBuilder {
 impl CssDeclarationBuilder {
     pub fn with_important(mut self, important: CssDeclarationImportant) -> Self {
         self.important = Some(important);
+
         self
     }
+
     pub fn build(self) -> CssDeclaration {
         CssDeclaration::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_DECLARATION,
@@ -584,8 +598,10 @@ pub struct CssDeclarationWithSemicolonBuilder {
 impl CssDeclarationWithSemicolonBuilder {
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> CssDeclarationWithSemicolon {
         CssDeclarationWithSemicolon::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_DECLARATION_WITH_SEMICOLON,
@@ -632,8 +648,10 @@ pub struct CssDocumentCustomMatcherBuilder {
 impl CssDocumentCustomMatcherBuilder {
     pub fn with_value(mut self, value: AnyCssUrlValue) -> Self {
         self.value = Some(value);
+
         self
     }
+
     pub fn build(self) -> CssDocumentCustomMatcher {
         CssDocumentCustomMatcher::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_DOCUMENT_CUSTOM_MATCHER,
@@ -810,12 +828,16 @@ pub struct CssImportAtRuleBuilder {
 impl CssImportAtRuleBuilder {
     pub fn with_layer(mut self, layer: AnyCssImportLayer) -> Self {
         self.layer = Some(layer);
+
         self
     }
+
     pub fn with_supports(mut self, supports: CssImportSupports) -> Self {
         self.supports = Some(supports);
+
         self
     }
+
     pub fn build(self) -> CssImportAtRule {
         CssImportAtRule::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_IMPORT_AT_RULE,
@@ -1136,8 +1158,10 @@ pub struct CssMediaTypeQueryBuilder {
 impl CssMediaTypeQueryBuilder {
     pub fn with_modifier_token(mut self, modifier_token: SyntaxToken) -> Self {
         self.modifier_token = Some(modifier_token);
+
         self
     }
+
     pub fn build(self) -> CssMediaTypeQuery {
         CssMediaTypeQuery::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_MEDIA_TYPE_QUERY,
@@ -1173,8 +1197,10 @@ pub struct CssNamespaceBuilder {
 impl CssNamespaceBuilder {
     pub fn with_prefix(mut self, prefix: AnyCssNamespacePrefix) -> Self {
         self.prefix = Some(prefix);
+
         self
     }
+
     pub fn build(self) -> CssNamespace {
         CssNamespace::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_NAMESPACE,
@@ -1207,8 +1233,10 @@ pub struct CssNamespaceAtRuleBuilder {
 impl CssNamespaceAtRuleBuilder {
     pub fn with_prefix(mut self, prefix: CssIdentifier) -> Self {
         self.prefix = Some(prefix);
+
         self
     }
+
     pub fn build(self) -> CssNamespaceAtRule {
         CssNamespaceAtRule::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_NAMESPACE_AT_RULE,
@@ -1293,8 +1321,10 @@ pub struct CssPageSelectorBuilder {
 impl CssPageSelectorBuilder {
     pub fn with_ty(mut self, ty: CssCustomIdentifier) -> Self {
         self.ty = Some(ty);
+
         self
     }
+
     pub fn build(self) -> CssPageSelector {
         CssPageSelector::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_PAGE_SELECTOR,
@@ -1342,8 +1372,10 @@ pub struct CssParenthesizedExpressionBuilder {
 impl CssParenthesizedExpressionBuilder {
     pub fn with_expression(mut self, expression: AnyCssExpression) -> Self {
         self.expression = Some(expression);
+
         self
     }
+
     pub fn build(self) -> CssParenthesizedExpression {
         CssParenthesizedExpression::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_PARENTHESIZED_EXPRESSION,
@@ -1530,16 +1562,22 @@ pub struct CssPseudoClassNthBuilder {
 impl CssPseudoClassNthBuilder {
     pub fn with_sign_token(mut self, sign_token: SyntaxToken) -> Self {
         self.sign_token = Some(sign_token);
+
         self
     }
+
     pub fn with_value(mut self, value: CssNumber) -> Self {
         self.value = Some(value);
+
         self
     }
+
     pub fn with_offset(mut self, offset: CssNthOffset) -> Self {
         self.offset = Some(offset);
+
         self
     }
+
     pub fn build(self) -> CssPseudoClassNth {
         CssPseudoClassNth::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_PSEUDO_CLASS_NTH,
@@ -1573,8 +1611,10 @@ pub struct CssPseudoClassNthNumberBuilder {
 impl CssPseudoClassNthNumberBuilder {
     pub fn with_sign_token(mut self, sign_token: SyntaxToken) -> Self {
         self.sign_token = Some(sign_token);
+
         self
     }
+
     pub fn build(self) -> CssPseudoClassNthNumber {
         CssPseudoClassNthNumber::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_PSEUDO_CLASS_NTH_NUMBER,
@@ -1600,8 +1640,10 @@ pub struct CssPseudoClassNthSelectorBuilder {
 impl CssPseudoClassNthSelectorBuilder {
     pub fn with_of_selector(mut self, of_selector: CssPseudoClassOfNthSelector) -> Self {
         self.of_selector = Some(of_selector);
+
         self
     }
+
     pub fn build(self) -> CssPseudoClassNthSelector {
         CssPseudoClassNthSelector::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_PSEUDO_CLASS_NTH_SELECTOR,
@@ -1812,8 +1854,10 @@ pub struct CssRelativeSelectorBuilder {
 impl CssRelativeSelectorBuilder {
     pub fn with_combinator_token(mut self, combinator_token: SyntaxToken) -> Self {
         self.combinator_token = Some(combinator_token);
+
         self
     }
+
     pub fn build(self) -> CssRelativeSelector {
         CssRelativeSelector::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_RELATIVE_SELECTOR,
@@ -1840,8 +1884,10 @@ pub struct CssRootBuilder {
 impl CssRootBuilder {
     pub fn with_bom_token(mut self, bom_token: SyntaxToken) -> Self {
         self.bom_token = Some(bom_token);
+
         self
     }
+
     pub fn build(self) -> CssRoot {
         CssRoot::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_ROOT,
@@ -1885,8 +1931,10 @@ pub struct CssScopeAtRuleBuilder {
 impl CssScopeAtRuleBuilder {
     pub fn with_range(mut self, range: AnyCssScopeRange) -> Self {
         self.range = Some(range);
+
         self
     }
+
     pub fn build(self) -> CssScopeAtRule {
         CssScopeAtRule::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_SCOPE_AT_RULE,
@@ -2071,8 +2119,10 @@ pub struct CssTypeSelectorBuilder {
 impl CssTypeSelectorBuilder {
     pub fn with_namespace(mut self, namespace: CssNamespace) -> Self {
         self.namespace = Some(namespace);
+
         self
     }
+
     pub fn build(self) -> CssTypeSelector {
         CssTypeSelector::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_TYPE_SELECTOR,
@@ -2138,8 +2188,10 @@ pub struct CssUniversalSelectorBuilder {
 impl CssUniversalSelectorBuilder {
     pub fn with_namespace(mut self, namespace: CssNamespace) -> Self {
         self.namespace = Some(namespace);
+
         self
     }
+
     pub fn build(self) -> CssUniversalSelector {
         CssUniversalSelector::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_UNIVERSAL_SELECTOR,
@@ -2215,8 +2267,10 @@ pub struct CssUrlFunctionBuilder {
 impl CssUrlFunctionBuilder {
     pub fn with_value(mut self, value: AnyCssUrlValue) -> Self {
         self.value = Some(value);
+
         self
     }
+
     pub fn build(self) -> CssUrlFunction {
         CssUrlFunction::unwrap_cast(SyntaxNode::new_detached(
             CssSyntaxKind::CSS_URL_FUNCTION,
@@ -2351,8 +2405,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssCompoundSelectorList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_COMPOUND_SELECTOR_LIST,
         (0..length).map(|index| {
@@ -2420,8 +2477,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssDocumentMatcherList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_DOCUMENT_MATCHER_LIST,
         (0..length).map(|index| {
@@ -2441,8 +2501,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssFontFamilyNameList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_FONT_FAMILY_NAME_LIST,
         (0..length).map(|index| {
@@ -2498,8 +2561,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssKeyframesSelectorList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_KEYFRAMES_SELECTOR_LIST,
         (0..length).map(|index| {
@@ -2519,8 +2585,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssLayerNameList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_LAYER_NAME_LIST,
         (0..length).map(|index| {
@@ -2540,8 +2609,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssLayerReferenceList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_LAYER_REFERENCE_LIST,
         (0..length).map(|index| {
@@ -2561,8 +2633,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssMediaQueryList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_MEDIA_QUERY_LIST,
         (0..length).map(|index| {
@@ -2606,8 +2681,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssPageSelectorList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_PAGE_SELECTOR_LIST,
         (0..length).map(|index| {
@@ -2639,8 +2717,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssParameterList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_PARAMETER_LIST,
         (0..length).map(|index| {
@@ -2660,8 +2741,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssPseudoValueList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_PSEUDO_VALUE_LIST,
         (0..length).map(|index| {
@@ -2681,8 +2765,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssRelativeSelectorList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_RELATIVE_SELECTOR_LIST,
         (0..length).map(|index| {
@@ -2714,8 +2801,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssSelectorList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_SELECTOR_LIST,
         (0..length).map(|index| {
@@ -2762,8 +2852,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssValueAtRuleImportSpecifierList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_VALUE_AT_RULE_IMPORT_SPECIFIER_LIST,
         (0..length).map(|index| {
@@ -2783,8 +2876,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     CssValueAtRulePropertyList::unwrap_cast(SyntaxNode::new_detached(
         CssSyntaxKind::CSS_VALUE_AT_RULE_PROPERTY_LIST,
         (0..length).map(|index| {

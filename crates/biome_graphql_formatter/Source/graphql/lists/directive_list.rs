@@ -7,6 +7,7 @@ use biome_rowan::SyntaxNodeOptionExt;
 pub(crate) struct FormatGraphqlDirectiveList;
 impl FormatRule<GraphqlDirectiveList> for FormatGraphqlDirectiveList {
     type Context = GraphqlFormatContext;
+
     fn fmt(&self, node: &GraphqlDirectiveList, f: &mut GraphqlFormatter) -> FormatResult<()> {
         if node.len() == 0 {
             return Ok(());

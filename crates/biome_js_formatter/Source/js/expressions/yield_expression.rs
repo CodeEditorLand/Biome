@@ -27,6 +27,7 @@ impl FormatNodeRule<JsYieldExpression> for FormatJsYieldExpression {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsYieldExpression;
 
     #[test]
@@ -35,25 +36,34 @@ mod tests {
             "function* test() { (yield a)`template` }",
             JsYieldExpression
         );
+
         assert_needs_parentheses!("function* test() { +(yield a) }", JsYieldExpression);
 
         assert_needs_parentheses!("function* test() { (yield a).b }", JsYieldExpression);
+
         assert_needs_parentheses!("function* test() { (yield a)[b] }", JsYieldExpression);
+
         assert_not_needs_parentheses!("function* test() { a[yield b] }", JsYieldExpression);
 
         assert_needs_parentheses!("function* test() { (yield a)() }", JsYieldExpression);
+
         assert_needs_parentheses!("function* test() { new (yield a)() }", JsYieldExpression);
 
         assert_needs_parentheses!("function* test() { (yield a) && b }", JsYieldExpression);
+
         assert_needs_parentheses!("function* test() { (yield a) + b }", JsYieldExpression);
+
         assert_needs_parentheses!(
             "function* test() { (yield a) instanceof b }",
             JsYieldExpression
         );
+
         assert_needs_parentheses!("function* test() { (yield a) in b }", JsYieldExpression);
 
         assert_needs_parentheses!("function* test() { [...(yield a)] }", JsYieldExpression);
+
         assert_needs_parentheses!("function* test() { ({...(yield b)}) }", JsYieldExpression);
+
         assert_needs_parentheses!("function* test() { call(...(yield b)) }", JsYieldExpression);
 
         assert_needs_parentheses!(
@@ -65,10 +75,13 @@ mod tests {
             "function* test() { (yield b) as number }",
             JsYieldExpression
         );
+
         assert_needs_parentheses!("function* test() { (yield b)! }", JsYieldExpression);
 
         assert_needs_parentheses!("function* test() { (yield b) ? b : c }", JsYieldExpression);
+
         assert_not_needs_parentheses!("function* test() { a ? yield b : c }", JsYieldExpression);
+
         assert_not_needs_parentheses!("function* test() { a ? b : yield c }", JsYieldExpression);
     }
 }

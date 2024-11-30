@@ -16,7 +16,9 @@ pub(crate) fn is_nth_at_metavariable(p: &mut JsParser, n: usize) -> bool {
 pub(crate) fn parse_metavariable(p: &mut JsParser) -> ParsedSyntax {
     if is_at_metavariable(p) {
         let m = p.start();
+
         p.bump_any();
+
         ParsedSyntax::Present(m.complete(p, JS_METAVARIABLE))
     } else {
         ParsedSyntax::Absent

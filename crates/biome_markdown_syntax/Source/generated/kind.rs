@@ -82,6 +82,7 @@ impl MarkdownSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_literal(self) -> bool {
         match self {
             MD_HARD_LINE_LITERAL
@@ -94,6 +95,7 @@ impl MarkdownSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_list(self) -> bool {
         match self {
             MD_BLOCK_LIST
@@ -104,13 +106,16 @@ impl MarkdownSyntaxKind {
             _ => false,
         }
     }
+
     pub fn from_keyword(ident: &str) -> Option<MarkdownSyntaxKind> {
         let kw = match ident {
             "null" => NULL_KW,
             _ => return None,
         };
+
         Some(kw)
     }
+
     pub const fn to_string(&self) -> Option<&'static str> {
         let tok = match self {
             L_ANGLE => "<",
@@ -132,6 +137,7 @@ impl MarkdownSyntaxKind {
             NULL_KW => "null",
             _ => return None,
         };
+
         Some(tok)
     }
 }

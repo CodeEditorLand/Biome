@@ -53,6 +53,7 @@ impl SemanticModelBuilder {
     #[inline]
     pub fn push_node(&mut self, node: &GraphqlSyntaxNode) {
         use GraphqlSyntaxKind::*;
+
         if matches!(
             node.kind(),
             GRAPHQL_NAME_BINDING
@@ -68,22 +69,29 @@ impl SemanticModelBuilder {
     #[inline]
     pub fn push_event(&mut self, e: SemanticEvent) {
         use std::collections::hash_map::Entry;
+
         use SemanticEvent::*;
+
         match e {
             Declaration { range } => {
                 let binding_id = self.bindings.len();
+
                 self.bindings.push(SemanticModelBinding {
                     index: binding_id.into(),
                     range,
                 });
+
                 self.bindings_by_start.insert(range.start(), binding_id);
+
                 self.bindings_to_references.push(Vec::new());
             }
+
             Reference {
                 range,
                 declared_at: declaration_at,
             } => {
                 let binding_id = self.bindings_by_start[&declaration_at.start()];
+
                 let reference_id =
                     if let Entry::Vacant(e) = self.references_by_start.entry(range.start()) {
                         let reference_id = self.references.len();
@@ -94,23 +102,30 @@ impl SemanticModelBuilder {
                         });
 
                         e.insert(reference_id);
+
                         self.references_to_bindings.push(Vec::new());
+
                         reference_id
                     } else {
                         self.references_by_start[&range.start()]
                     };
+
                 self.references_to_bindings[reference_id].push(binding_id);
+
                 self.bindings_to_references[binding_id].push(reference_id);
             }
 
             UnresolvedReference { range } => {
                 let node = &self.node_by_range[&range];
+
                 let name = node.text_trimmed().to_string();
+
                 if !Self::is_builtin_type(&name) && !Self::is_builtin_directive(&name) {
                     self.unresolved_references
                         .push(SemanticModelUnresolvedReference { range })
                 }
             }
+
             UnresolvedVariableReference {
                 range,
                 referenced_operation,
@@ -138,6 +153,7 @@ impl SemanticModelBuilder {
             unresolved_references: self.unresolved_references,
             unresolved_variable_references: self.unresolved_variable_references,
         };
+
         SemanticModel::new(data)
     }
 

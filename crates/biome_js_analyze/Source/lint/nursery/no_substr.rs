@@ -51,12 +51,16 @@ declare_lint_rule! {
 
 impl Rule for NoSubstr {
     type Query = Ast<AnyJsStatement>;
+
     type State = NoSubstrState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let value_token = node.value_token()?;
 
         if matches!(value_token.text_trimmed(), "substr" | "substring") {
@@ -71,15 +75,18 @@ impl Rule for NoSubstr {
             "Avoid using "{state.member_name().text()}" and consider using slice instead."
         }
         .to_owned();
+
         let note_message = markup! {
         <Emphasis>"slice"</Emphasis>" is more commonly used and has a less surprising behavior."
         }
         .to_owned();
+
         let mdn_link =
             markup! {
                 "See "<Hyperlink href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/substring#the_difference_between_substring_and_substr">"MDN web docs"</Hyperlink>" for more details."
         }
         .to_owned();
+
         Some(
             RuleDiagnostic::new(rule_category!(), state.span(), diagnostic_message)
                 .note(note_message)
@@ -89,7 +96,9 @@ impl Rule for NoSubstr {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let arguments = node.arguments()?;
+
         let args = arguments.args();
 
         if !args.is_empty() {
@@ -100,7 +109,9 @@ impl Rule for NoSubstr {
         }
 
         let mut mutation = ctx.root().begin();
+
         let replaced_function = make::js_name(make::ident("slice"));
+
         mutation.replace_element(node.member()?.into(), replaced_function.into());
 
         Some(JsRuleAction::new(
@@ -143,6 +154,7 @@ impl AnyJsStatement {
                     .as_js_call_expression()?
                     .callee()
                     .ok()?;
+
                 callee
                     .as_js_static_member_expression()?
                     .member()
@@ -150,11 +162,15 @@ impl AnyJsStatement {
                     .value_token()
                     .ok()
             }
+
             AnyJsStatement::JsVariableStatement(node) => {
                 let declaration = node.declaration().ok()?;
+
                 let declarators = declaration.declarators();
+
                 declarators.into_iter().find_map(|declarator| {
                     let init = declarator.ok()?.initializer()?;
+
                     init.expression()
                         .ok()?
                         .as_js_static_member_expression()?
@@ -166,6 +182,7 @@ impl AnyJsStatement {
             }
         }
     }
+
     pub fn member(&self) -> Option<AnyJsName> {
         match self {
             AnyJsStatement::JsExpressionStatement(node) => {
@@ -175,13 +192,18 @@ impl AnyJsStatement {
                     .as_js_call_expression()?
                     .callee()
                     .ok()?;
+
                 callee.as_js_static_member_expression()?.member().ok()
             }
+
             AnyJsStatement::JsVariableStatement(node) => {
                 let declaration = node.declaration().ok()?;
+
                 let declarators = declaration.declarators();
+
                 declarators.into_iter().find_map(|declarator| {
                     let init = declarator.ok()?.initializer()?;
+
                     init.expression()
                         .ok()?
                         .as_js_static_member_expression()?
@@ -191,6 +213,7 @@ impl AnyJsStatement {
             }
         }
     }
+
     pub fn arguments(&self) -> Option<JsCallArguments> {
         match self {
             AnyJsStatement::JsExpressionStatement(node) => node

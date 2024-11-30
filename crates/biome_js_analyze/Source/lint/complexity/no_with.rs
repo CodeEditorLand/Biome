@@ -33,8 +33,11 @@ declare_lint_rule! {
 
 impl Rule for NoWith {
     type Query = Ast<JsWithStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(_ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -43,6 +46,7 @@ impl Rule for NoWith {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),

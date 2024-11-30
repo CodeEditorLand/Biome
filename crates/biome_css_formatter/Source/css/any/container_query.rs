@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssContainerQuery;
 pub(crate) struct FormatAnyCssContainerQuery;
 impl FormatRule<AnyCssContainerQuery> for FormatAnyCssContainerQuery {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssContainerQuery, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssContainerQuery::AnyCssContainerQueryInParens(node) => node.format().fmt(f),

@@ -166,11 +166,13 @@ impl Group {
 
     pub fn with_id(mut self, id: Option<GroupId>) -> Self {
         self.id = id;
+
         self
     }
 
     pub fn with_mode(mut self, mode: GroupMode) -> Self {
         self.mode = Cell::new(mode);
+
         self
     }
 
@@ -219,6 +221,7 @@ impl Condition {
 
     pub fn with_group_id(mut self, id: Option<GroupId>) -> Self {
         self.group_id = id;
+
         self
     }
 

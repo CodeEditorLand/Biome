@@ -15,6 +15,7 @@ impl<'a> LineSuffixes<'a> {
     {
         self.suffixes
             .extend(elements.into_iter().map(LineSuffixEntry::Suffix));
+
         self.suffixes.push(LineSuffixEntry::Args(args));
     }
 

@@ -16,8 +16,11 @@ impl MemberChainGroupsBuilder {
     /// starts a new group
     pub fn start_group(&mut self, member: ChainMember) {
         debug_assert!(self.current_group.is_none());
+
         let mut group = MemberChainGroup::default();
+
         group.members.push(member);
+
         self.current_group = Some(group);
     }
 
@@ -39,6 +42,7 @@ impl MemberChainGroupsBuilder {
             None => {
                 panic!("It is necessary to start a group first using `start_group`.");
             }
+
             Some(group) => {
                 group.members.push(member);
             }
@@ -111,8 +115,10 @@ impl TailChainGroups {
 
         let cutoff_has_leading_comments = if !self.groups.is_empty() {
             let group = self.groups.get(1);
+
             if let Some(group) = group {
                 let first_item = group.members.first();
+
                 first_item.map_or(false, |first_item| {
                     comments.has_leading_comments(first_item.syntax())
                 })
@@ -190,6 +196,7 @@ impl MemberChainGroup {
     /// Tests if the formatted result of this group results in a [break](FormatElements::will_break).
     pub(super) fn will_break(&self, f: &mut JsFormatter) -> FormatResult<bool> {
         let mut cell = self.formatted.borrow_mut();
+
         let result = match cell.as_ref() {
             Some(formatted) => formatted.will_break(),
             None => {
@@ -198,6 +205,7 @@ impl MemberChainGroup {
                 if let Some(interned) = interned {
                     let breaks = interned.will_break();
                     *cell = Some(interned);
+
                     breaks
                 } else {
                     false
@@ -223,6 +231,7 @@ impl MemberChainGroup {
 
     pub(super) fn needs_empty_line_before(&self) -> bool {
         let first = self.members.first();
+
         first.map_or(false, |first| match first {
             ChainMember::StaticMember { expression } => {
                 let operator = expression.operator_token();
@@ -232,6 +241,7 @@ impl MemberChainGroup {
                     _ => false,
                 }
             }
+
             ChainMember::ComputedMember { expression } => {
                 let l_brack_token = expression.l_brack_token();
 
@@ -241,9 +251,11 @@ impl MemberChainGroup {
                             &expression.optional_chain_token().unwrap_or(l_brack_token),
                         ) > 1
                     }
+
                     _ => false,
                 }
             }
+
             _ => false,
         })
     }

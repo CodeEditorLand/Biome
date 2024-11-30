@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsObjectAssignmentPatternMember;
 pub(crate) struct FormatAnyJsObjectAssignmentPatternMember;
 impl FormatRule<AnyJsObjectAssignmentPatternMember> for FormatAnyJsObjectAssignmentPatternMember {
     type Context = JsFormatContext;
+
     fn fmt(
         &self,
         node: &AnyJsObjectAssignmentPatternMember,
@@ -16,9 +17,11 @@ impl FormatRule<AnyJsObjectAssignmentPatternMember> for FormatAnyJsObjectAssignm
             AnyJsObjectAssignmentPatternMember::JsObjectAssignmentPatternProperty(node) => {
                 node.format().fmt(f)
             }
+
             AnyJsObjectAssignmentPatternMember::JsObjectAssignmentPatternRest(node) => {
                 node.format().fmt(f)
             }
+
             AnyJsObjectAssignmentPatternMember::JsObjectAssignmentPatternShorthandProperty(
                 node,
             ) => node.format().fmt(f),

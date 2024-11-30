@@ -101,10 +101,15 @@ impl From<JsxRuntime> for JsEnvironmentSettings {
 
 impl ServiceLanguage for JsLanguage {
     type FormatterSettings = JsFormatterSettings;
+
     type LinterSettings = JsLinterSettings;
+
     type FormatOptions = JsFormatOptions;
+
     type OrganizeImportsSettings = JsOrganizeImportsSettings;
+
     type ParserSettings = JsParserSettings;
+
     type EnvironmentSettings = JsEnvironmentSettings;
 
     fn lookup_settings(languages: &LanguageListSettings) -> &LanguageSettings<Self> {
@@ -212,6 +217,7 @@ impl ServiceLanguage for JsLanguage {
                 .unwrap_or_default();
 
         let mut jsx_runtime = None;
+
         let mut globals = Vec::new();
 
         if let (Some(overrides), Some(global)) = (overrides, global) {
@@ -335,6 +341,7 @@ fn parse(
                 .parse_class_parameter_decorators
         }),
     };
+
     if let Some(settings) = settings {
         options = settings
             .override_settings
@@ -342,7 +349,9 @@ fn parse(
     }
 
     let file_source = file_source.to_js_file_source().unwrap_or_default();
+
     let parse = biome_js_parser::parse_js_with_cache(text, file_source, options, cache);
+
     ParseResult {
         any_parse: parse.into(),
         language: None,
@@ -351,7 +360,9 @@ fn parse(
 
 fn debug_syntax_tree(_rome_path: &BiomePath, parse: AnyParse) -> GetSyntaxTreeResult {
     let syntax: JsSyntaxNode = parse.syntax();
+
     let tree: AnyJsRoot = parse.tree();
+
     GetSyntaxTreeResult {
         cst: format!("{syntax:#?}"),
         ast: format!("{tree:#?}"),
@@ -366,6 +377,7 @@ fn debug_control_flow(parse: AnyParse, cursor: TextSize) -> String {
         enabled_rules: Some(&[RuleFilter::Rule("correctness", "noUnreachable")]),
         ..AnalysisFilter::default()
     };
+
     let options = AnalyzerOptions::default();
 
     analyze_with_inspect_matcher(
@@ -378,6 +390,7 @@ fn debug_control_flow(parse: AnyParse, cursor: TextSize) -> String {
             };
 
             let range = cfg.text_range();
+
             if !range.contains(cursor) {
                 return;
             }
@@ -386,6 +399,7 @@ fn debug_control_flow(parse: AnyParse, cursor: TextSize) -> String {
                 None => {
                     control_flow_graph = Some((cfg.graph.to_string(), range));
                 }
+
                 Some((_, prev_range)) => {
                     if range.len() < prev_range.len() {
                         control_flow_graph = Some((cfg.graph.to_string(), range));
@@ -411,9 +425,11 @@ fn debug_formatter_ir(
     let options = settings.format_options::<JsLanguage>(path, document_file_source);
 
     let tree = parse.syntax();
+
     let formatted = format_node(options, &tree)?;
 
     let root_element = formatted.into_document();
+
     Ok(root_element.to_string())
 }
 
@@ -431,7 +447,9 @@ pub(crate) fn lint(params: LintParams) -> LintResults {
                     skipped_diagnostics: 0,
                 };
             };
+
             let tree = params.parse.tree();
+
             let analyzer_options = &params.workspace.analyzer_options::<JsLanguage>(
                 params.path,
                 &params.language,
@@ -462,13 +480,16 @@ pub(crate) fn lint(params: LintParams) -> LintResults {
                 !filter.categories.contains(RuleCategory::Lint) || !params.only.is_empty();
 
             let mut diagnostics = params.parse.into_diagnostics();
+
             let mut diagnostic_count = diagnostics.len() as u32;
+
             let mut errors = diagnostics
                 .iter()
                 .filter(|diag| diag.severity() <= Severity::Error)
                 .count();
 
             info!("Analyze file {}", params.path.display());
+
             let (_, analyze_diagnostics) = analyze(
                 &tree,
                 filter,
@@ -527,6 +548,7 @@ pub(crate) fn lint(params: LintParams) -> LintResults {
                     .map(biome_diagnostics::serde::Diagnostic::new)
                     .collect::<Vec<_>>(),
             );
+
             let skipped_diagnostics = diagnostic_count.saturating_sub(diagnostics.len() as u32);
 
             LintResults {
@@ -550,12 +572,16 @@ pub(crate) fn code_actions(params: CodeActionsParams) -> PullActionsResult {
         skip,
         suppression_reason,
     } = params;
+
     debug_span!("Code actions JavaScript", range =? range, path =? path).in_scope(move || {
         let tree = parse.tree();
+
         trace_span!("Parsed file", tree =? tree).in_scope(move || {
             let analyzer_options =
                 workspace.analyzer_options::<JsLanguage>(path, &language, suppression_reason);
+
             let mut actions = Vec::new();
+
             let (enabled_rules, disabled_rules) =
                 AnalyzerVisitorBuilder::new(params.workspace.settings())
                     .with_syntax_rules()
@@ -576,12 +602,14 @@ pub(crate) fn code_actions(params: CodeActionsParams) -> PullActionsResult {
 
             let Some(source_type) = language.to_js_file_source() else {
                 error!("Could not determine the file source of the file");
+
                 return PullActionsResult {
                     actions: Vec::new(),
                 };
             };
 
             trace!("Javascript runs the analyzer");
+
             analyze(
                 &tree,
                 filter,
@@ -611,6 +639,7 @@ pub(crate) fn code_actions(params: CodeActionsParams) -> PullActionsResult {
 /// If applies all the safe fixes to the given syntax tree.
 pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceError> {
     let mut tree: AnyJsRoot = params.parse.tree();
+
     let Some(settings) = params.workspace.settings() else {
         return Ok(FixFileResult {
             actions: Vec::new(),
@@ -645,13 +674,17 @@ pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceEr
     };
 
     let mut actions = Vec::new();
+
     let mut skipped_suggested_fixes = 0;
+
     let mut errors: u16 = 0;
+
     let analyzer_options = params.workspace.analyzer_options::<JsLanguage>(
         params.biome_path,
         &params.document_file_source,
         params.suppression_reason,
     );
+
     loop {
         let (action, _) = analyze(
             &tree,
@@ -675,27 +708,34 @@ pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceEr
                                 return ControlFlow::Break(action);
                             }
                         }
+
                         FixFileMode::SafeFixes => {
                             if action.is_suppression() {
                                 continue;
                             }
+
                             if action.applicability == Applicability::MaybeIncorrect {
                                 skipped_suggested_fixes += 1;
                             }
+
                             if action.applicability == Applicability::Always {
                                 errors = errors.saturating_sub(1);
+
                                 return ControlFlow::Break(action);
                             }
                         }
+
                         FixFileMode::SafeAndUnsafeFixes => {
                             if action.is_suppression() {
                                 continue;
                             }
+
                             if matches!(
                                 action.applicability,
                                 Applicability::Always | Applicability::MaybeIncorrect
                             ) {
                                 errors = errors.saturating_sub(1);
+
                                 return ControlFlow::Break(action);
                             }
                         }
@@ -723,6 +763,7 @@ pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceEr
                             ));
                         }
                     };
+
                     actions.push(FixAction {
                         rule_name: action
                             .rule_name
@@ -731,6 +772,7 @@ pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceEr
                     });
                 }
             }
+
             None => {
                 let code = if params.should_format {
                     format_node(
@@ -745,6 +787,7 @@ pub(crate) fn fix_all(params: FixAllParams) -> Result<FixFileResult, WorkspaceEr
                 } else {
                     tree.syntax().to_string()
                 };
+
                 return Ok(FixFileResult {
                     code,
                     skipped_suggested_fixes,
@@ -768,12 +811,16 @@ pub(crate) fn format(
     debug!("Options used for format: \n{}", options);
 
     let tree = parse.syntax();
+
     info!("Format file {}", biome_path.display());
+
     let formatted = format_node(options, &tree)?;
+
     match formatted.print() {
         Ok(printed) => Ok(printed),
         Err(error) => {
             error!("The file {} couldn't be formatted", biome_path.display());
+
             Err(WorkspaceError::FormatError(error.into()))
         }
     }
@@ -790,7 +837,9 @@ pub(crate) fn format_range(
     let options = settings.format_options::<JsLanguage>(biome_path, document_file_source);
 
     let tree = parse.syntax();
+
     let printed = biome_js_formatter::format_range(options, &tree, range)?;
+
     Ok(printed)
 }
 
@@ -807,6 +856,7 @@ pub(crate) fn format_on_type(
     let tree = parse.syntax();
 
     let range = tree.text_range();
+
     if offset < range.start() || offset > range.end() {
         return Err(WorkspaceError::FormatError(FormatError::RangeError {
             input: TextRange::at(offset, TextSize::from(0)),
@@ -829,6 +879,7 @@ pub(crate) fn format_on_type(
     };
 
     let printed = biome_js_formatter::format_sub_tree(options, &root_node)?;
+
     Ok(printed)
 }
 
@@ -839,6 +890,7 @@ fn rename(
     new_name: String,
 ) -> Result<RenameResult, WorkspaceError> {
     let root = parse.tree();
+
     let model = semantic_model(&root, SemanticModelOptions::default());
 
     if let Some(node) = parse
@@ -848,11 +900,15 @@ fn rename(
         .and_then(|token| token.parent())
     {
         let original_name = node.text_trimmed();
+
         let range = node.text_range();
+
         match node.try_into() {
             Ok(node) => {
                 let mut batch = root.begin();
+
                 let result = batch.rename_any_renamable_node(&model, &node, &new_name);
+
                 if !result {
                     Err(WorkspaceError::RenameError(RenameError::CannotBeRenamed {
                         original_name: original_name.to_string(),
@@ -861,9 +917,11 @@ fn rename(
                     }))
                 } else {
                     let (range, indels) = batch.as_text_range_and_edit().unwrap_or_default();
+
                     Ok(RenameResult { range, indels })
                 }
             }
+
             Err(err) => Err(WorkspaceError::RenameError(err)),
         }
     } else {
@@ -896,6 +954,7 @@ pub(crate) fn organize_imports(parse: AnyParse) -> Result<OrganizeImportsResult,
 
                 return ControlFlow::Break(action);
             }
+
             ControlFlow::Continue(())
         },
     );

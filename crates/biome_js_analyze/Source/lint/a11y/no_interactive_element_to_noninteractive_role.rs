@@ -48,17 +48,25 @@ declare_lint_rule! {
 
 impl Rule for NoInteractiveElementToNoninteractiveRole {
     type Query = Aria<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.is_element() {
             let role_attribute = node.find_attribute_by_name("role")?;
+
             let role_attribute_static_value = role_attribute.as_static_value()?;
+
             let role_attribute_value = role_attribute_static_value.text();
+
             let element_name = node.name().ok()?.as_jsx_name()?.value_token().ok()?;
+
             let element_name = element_name.text_trimmed();
 
             if !ctx.aria_roles().is_not_interactive_element(node)
@@ -68,6 +76,7 @@ impl Rule for NoInteractiveElementToNoninteractiveRole {
                 // <div> and <span> are considered neither interactive nor non-interactive, depending on the presence or absence of the role attribute.
                 // We don't report <div> and <span> here, because we cannot determine whether they are interactive or non-interactive.
                 let role_sensitive_elements = ["div", "span", "source"];
+
                 if role_sensitive_elements.contains(&element_name) {
                     return None;
                 }
@@ -96,6 +105,7 @@ impl Rule for NoInteractiveElementToNoninteractiveRole {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -115,10 +125,13 @@ impl Rule for NoInteractiveElementToNoninteractiveRole {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let role_attribute = node.find_attribute_by_name("role")?;
 
         let mut mutation = ctx.root().begin();
+
         mutation.remove_node(role_attribute);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

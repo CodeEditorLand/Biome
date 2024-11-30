@@ -77,28 +77,36 @@ impl Rule for UseEnumInitializers {
     // We apply the rule on an entire enum declaration to avoid reporting
     // a diagnostic for every enum members without initializers.
     type Query = Ast<TsEnumDeclaration>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let enum_declaration = ctx.query();
+
         if enum_declaration.is_ambient() {
             // In ambient declarations, enum members without initializers are opaque types.
             // They generally represent an enum with complex initializers.
             return None;
         }
+
         for enum_member in enum_declaration.members() {
             let enum_member = enum_member.ok()?;
+
             if enum_member.initializer().is_none() {
                 return Some(());
             }
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let enum_declaration = ctx.query();
+
         let mut diagnostic = RuleDiagnostic::new(
             rule_category!(),
             enum_declaration.id().ok()?.range(),
@@ -106,14 +114,17 @@ impl Rule for UseEnumInitializers {
                 "This "<Emphasis>"enum declaration"</Emphasis>" contains members that are implicitly initialized."
             },
         );
+
         for enum_member in enum_declaration.members() {
             let enum_member = enum_member.ok()?;
+
             if enum_member.initializer().is_none() {
                 diagnostic = diagnostic.detail(enum_member.range(), markup! {
                     "This "<Emphasis>"enum member"</Emphasis>" should be explicitly initialized."
                 });
             }
         }
+
         Some(diagnostic.note(
             "Allowing implicit initializations for enum members can cause bugs if enum declarations are modified over time."
         ))
@@ -121,29 +132,39 @@ impl Rule for UseEnumInitializers {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let enum_declaration = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let mut has_mutations = false;
+
         let mut next_member_value = EnumInitializer::Integer(0);
 
         for enum_member in enum_declaration.members() {
             let enum_member = enum_member.ok()?;
+
             if let Some(initializer) = enum_member.initializer() {
                 next_member_value = EnumInitializer::Other;
+
                 let expr = initializer.expression().ok()?.omit_parentheses();
+
                 if let Some(expr) = expr.as_any_js_literal_expression() {
                     match expr {
                         AnyJsLiteralExpression::JsNumberLiteralExpression(expr) => {
                             let n = expr.value_token().ok()?;
+
                             let n = n.text_trimmed();
+
                             if let Ok(n) = n.parse::<i64>() {
                                 next_member_value = EnumInitializer::Integer(n + 1);
                             }
                         }
+
                         AnyJsLiteralExpression::JsStringLiteralExpression(expr) => {
                             if enum_member.name().ok()?.name() == expr.inner_string_text().ok() {
                                 next_member_value = EnumInitializer::EnumName;
                             }
                         }
+
                         _ => {}
                     }
                 }
@@ -151,13 +172,17 @@ impl Rule for UseEnumInitializers {
                 let x = match next_member_value {
                     EnumInitializer::Integer(n) => {
                         next_member_value = EnumInitializer::Integer(n + 1);
+
                         Some(AnyJsLiteralExpression::JsNumberLiteralExpression(
                             make::js_number_literal_expression(make::js_number_literal(n)),
                         ))
                     }
+
                     EnumInitializer::EnumName => {
                         let enum_name = enum_member.name().ok()?.name()?;
+
                         let enum_name = enum_name.text();
+
                         Some(AnyJsLiteralExpression::JsStringLiteralExpression(
                             make::js_string_literal_expression(
                                 if ctx.as_preferred_quote().is_double() {
@@ -168,8 +193,10 @@ impl Rule for UseEnumInitializers {
                             ),
                         ))
                     }
+
                     EnumInitializer::Other => None,
                 };
+
                 if let Some(x) = x {
                     has_mutations = true;
 
@@ -198,6 +225,7 @@ impl Rule for UseEnumInitializers {
                 mutation,
             ));
         }
+
         None
     }
 }

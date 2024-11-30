@@ -33,6 +33,7 @@ pub(crate) fn parse_page_at_rule(p: &mut CssParser) -> ParsedSyntax {
     p.bump(T![page]);
 
     PageSelectorList.parse_list(p);
+
     PageBlock.parse_block_body(p);
 
     Present(m.complete(p, CSS_PAGE_AT_RULE))
@@ -45,7 +46,9 @@ struct PageSelectorList;
 
 impl ParseSeparatedList for PageSelectorList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_PAGE_SELECTOR_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -92,6 +95,7 @@ pub(crate) fn parse_page_selector(p: &mut CssParser) -> ParsedSyntax {
     // sensitive, we use a `<custom-ident>` instead to preserve the casing, but
     // need to allow the CSS-wide keywords that would otherwise be disallowed.
     parse_custom_identifier_with_keywords(p, CssLexContext::Regular, true).ok();
+
     PageSelectorPseudoList.parse_list(p);
 
     Present(m.complete(p, CSS_PAGE_SELECTOR))
@@ -105,7 +109,9 @@ struct PageSelectorPseudoList;
 
 impl ParseNodeList for PageSelectorPseudoList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_PAGE_SELECTOR_PSEUDO_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -178,7 +184,9 @@ const CSS_PAGE_AT_RULE_ITEM_LIST_RECOVERY_SET: TokenSet<CssSyntaxKind> =
 struct PageAtRuleItemList;
 impl ParseNodeList for PageAtRuleItemList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_PAGE_AT_RULE_ITEM_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -242,6 +250,7 @@ pub(crate) fn parse_margin_at_rule(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![@]);
+
     p.bump_ts(PAGE_MARGIN_AT_RULE_NAME_SET);
 
     parse_declaration_or_at_rule_list_block(p);

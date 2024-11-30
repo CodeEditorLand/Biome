@@ -45,14 +45,17 @@ impl FormatNodeRule<JsClassExpression> for FormatJsClassExpression {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsClassExpression;
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("console.log((class {})())", JsClassExpression);
+
         assert_needs_parentheses!("console.log(new (class {})())", JsClassExpression);
 
         assert_needs_parentheses!("(class {}).test", JsClassExpression);
+
         assert_not_needs_parentheses!("a => class {} ", JsClassExpression);
 
         assert_needs_parentheses!("export default (class  {})", JsClassExpression);

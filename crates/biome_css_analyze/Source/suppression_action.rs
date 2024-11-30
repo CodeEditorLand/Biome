@@ -16,9 +16,12 @@ impl SuppressionAction for CssSuppressionAction {
             token_to_apply_suppression: token.clone(),
             should_insert_leading_newline: false,
         };
+
         let mut current_token = token;
+
         loop {
             let trivia = current_token.leading_trivia();
+
             if trivia.pieces().any(|trivia| trivia.kind().is_newline()) {
                 break;
             } else if let Some(prev_token) = current_token.prev_token() {
@@ -32,7 +35,9 @@ impl SuppressionAction for CssSuppressionAction {
             .trailing_trivia()
             .pieces()
             .any(|trivia| trivia.kind().is_multiline_comment());
+
         apply_suppression.token_to_apply_suppression = current_token;
+
         Some(apply_suppression)
     }
 
@@ -50,6 +55,7 @@ impl SuppressionAction for CssSuppressionAction {
         } = apply_suppression;
 
         let mut new_token = token_to_apply_suppression.clone();
+
         let has_leading_whitespace = new_token
             .leading_trivia()
             .pieces()
@@ -65,6 +71,7 @@ impl SuppressionAction for CssSuppressionAction {
             ]);
         } else if has_leading_whitespace {
             let suppression_comment = format!("/* {}: {} */", suppression_text, suppression_reason);
+
             let mut trivia = vec![
                 (
                     TriviaPieceKind::SingleLineComment,
@@ -72,6 +79,7 @@ impl SuppressionAction for CssSuppressionAction {
                 ),
                 (TriviaPieceKind::Newline, "\n"),
             ];
+
             let leading_whitespace: Vec<_> = new_token
                 .leading_trivia()
                 .pieces()
@@ -81,6 +89,7 @@ impl SuppressionAction for CssSuppressionAction {
             for w in leading_whitespace.iter() {
                 trivia.push((TriviaPieceKind::Whitespace, w.text()));
             }
+
             new_token = new_token.with_leading_trivia(trivia);
         } else {
             new_token = new_token.with_leading_trivia([
@@ -91,6 +100,7 @@ impl SuppressionAction for CssSuppressionAction {
                 (TriviaPieceKind::Newline, "\n"),
             ]);
         }
+
         mutation.replace_token_transfer_trivia(token_to_apply_suppression, new_token);
     }
 }

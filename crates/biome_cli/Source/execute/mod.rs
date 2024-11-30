@@ -291,6 +291,7 @@ impl Execution {
     /// It sets the reporting mode by reading the [CliOptions]
     pub(crate) fn set_report(mut self, cli_options: &CliOptions) -> Self {
         self.report_mode = cli_options.reporter.clone().into();
+
         self
     }
 
@@ -429,12 +430,14 @@ pub fn execute_mode(
         cli_options.max_diagnostics.into()
     } else {
         info!("Removing the limit of --max-diagnostics, because of a reporter different from the default one: {}", cli_options.reporter);
+
         u32::MAX
     };
 
     // don't do any traversal if there's some content coming from stdin
     if let Some(stdin) = execution.as_stdin_file() {
         let biome_path = BiomePath::new(stdin.as_path());
+
         std_in::run(
             session,
             &execution,
@@ -457,6 +460,7 @@ pub fn execute_mode(
             verbose: cli_options.verbose,
             sub_command,
         };
+
         migrate::run(payload)
     } else {
         let TraverseResult {
@@ -464,10 +468,15 @@ pub fn execute_mode(
             evaluated_paths,
             diagnostics,
         } = traverse(&execution, &mut session, cli_options, paths)?;
+
         let console = session.app.console;
+
         let errors = summary.errors;
+
         let skipped = summary.skipped;
+
         let processed = summary.changed + summary.unchanged;
+
         let should_exit_on_warnings = summary.warnings > 0 && cli_options.error_on_warnings;
 
         match execution.report_mode {
@@ -482,6 +491,7 @@ pub fn execute_mode(
                         },
                         execution: execution.clone(),
                     };
+
                     reporter.write(&mut SummaryReporterVisitor(console))?;
                 } else {
                     let reporter = ConsoleReporter {
@@ -494,13 +504,16 @@ pub fn execute_mode(
                         execution: execution.clone(),
                         evaluated_paths,
                     };
+
                     reporter.write(&mut ConsoleReporterVisitor(console))?;
                 }
             }
+
             ReportMode::Json { pretty } => {
                 console.error(markup!{
                     <Warn>"The "<Emphasis>"--json"</Emphasis>" option is "<Underline>"unstable/experimental"</Underline>" and its output might change between patches/minor releases."</Warn>
                 });
+
                 let reporter = JsonReporter {
                     summary,
                     diagnostics: DiagnosticsPayload {
@@ -510,24 +523,31 @@ pub fn execute_mode(
                     },
                     execution: execution.clone(),
                 };
+
                 let mut buffer = JsonReporterVisitor::new(summary);
+
                 reporter.write(&mut buffer)?;
+
                 if pretty {
                     let content = serde_json::to_string(&buffer).map_err(|error| {
                         CliDiagnostic::Report(ReportDiagnostic::Serialization(
                             SerdeJsonError::from(error),
                         ))
                     })?;
+
                     let report_file = BiomePath::new("_report_output.json");
+
                     session.app.workspace.open_file(OpenFileParams {
                         content,
                         path: report_file.clone(),
                         version: 0,
                         document_file_source: None,
                     })?;
+
                     let code = session.app.workspace.format_file(FormatFileParams {
                         path: report_file.clone(),
                     })?;
+
                     console.log(markup! {
                         {code.as_code()}
                     });
@@ -537,6 +557,7 @@ pub fn execute_mode(
                     });
                 }
             }
+
             ReportMode::GitHub => {
                 let reporter = GithubReporter {
                     diagnostics_payload: DiagnosticsPayload {
@@ -546,8 +567,10 @@ pub fn execute_mode(
                     },
                     execution: execution.clone(),
                 };
+
                 reporter.write(&mut GithubReporterVisitor(console))?;
             }
+
             ReportMode::GitLab => {
                 let reporter = GitLabReporter {
                     diagnostics: DiagnosticsPayload {
@@ -557,11 +580,13 @@ pub fn execute_mode(
                     },
                     execution: execution.clone(),
                 };
+
                 reporter.write(&mut GitLabReporterVisitor::new(
                     console,
                     session.app.fs.borrow().working_directory(),
                 ))?;
             }
+
             ReportMode::Junit => {
                 let reporter = JunitReporter {
                     summary,
@@ -572,6 +597,7 @@ pub fn execute_mode(
                     },
                     execution: execution.clone(),
                 };
+
                 reporter.write(&mut JunitReporterVisitor::new(console))?;
             }
         }
@@ -581,6 +607,7 @@ pub fn execute_mode(
             Err(CliDiagnostic::no_files_processed())
         } else if errors > 0 || should_exit_on_warnings {
             let category = execution.as_diagnostic_category();
+
             if should_exit_on_warnings {
                 if execution.is_check_apply() {
                     Err(CliDiagnostic::apply_warnings(category))

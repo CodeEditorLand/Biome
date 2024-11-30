@@ -15,6 +15,7 @@ pub(crate) type GritLosslessTreeSink<'source> =
 
 pub fn parse_grit(source: &str) -> GritParse {
     let mut cache = NodeCache::default();
+
     parse_grit_with_cache(source, &mut cache)
 }
 
@@ -28,7 +29,9 @@ pub fn parse_grit_with_cache(source: &str, cache: &mut NodeCache) -> GritParse {
         let (events, diagnostics, trivia) = parser.finish();
 
         let mut tree_sink = GritLosslessTreeSink::with_cache(source, &trivia, cache);
+
         biome_parser::event::process(&mut tree_sink, events, diagnostics);
+
         let (green, diagnostics) = tree_sink.finish();
 
         GritParse::new(green, diagnostics)
@@ -104,7 +107,9 @@ impl GritParse {
 impl From<GritParse> for AnyParse {
     fn from(parse: GritParse) -> Self {
         let root = parse.syntax();
+
         let diagnostics = parse.into_diagnostics();
+
         Self::new(root.as_send().unwrap(), diagnostics)
     }
 }

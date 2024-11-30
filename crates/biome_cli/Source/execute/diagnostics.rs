@@ -102,6 +102,7 @@ pub(crate) struct ContentDiffAdvice {
 impl Advices for ContentDiffAdvice {
     fn record(&self, visitor: &mut dyn Visit) -> io::Result<()> {
         let diff = TextEdit::from_unicode_words(&self.old, &self.new);
+
         visitor.record_diff(&diff)
     }
 }
@@ -134,6 +135,7 @@ pub(crate) struct SearchDiagnostic;
 /// Extension trait for turning [Display]-able error types into [TraversalError]
 pub(crate) trait ResultExt {
     type Result;
+
     fn with_file_path_and_code(
         self,
         file_path: String,

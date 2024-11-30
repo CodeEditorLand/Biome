@@ -19,9 +19,13 @@ pub struct UtilityLayer {
 
 pub fn build_variant_weight(size: usize) -> BitVec<u8, Lsb0> {
     let mut bit_vec = BitVec::new();
+
     let iterable = vec![false; size];
+
     bit_vec.extend(iterable);
+
     bit_vec.push(true);
+
     bit_vec
 }
 
@@ -44,11 +48,15 @@ impl SortConfig {
     pub fn new(preset: &ConfigPreset) -> Self {
         // Compute the layer index map.
         let mut layer_index_map: HashMap<&'static str, usize> = HashMap::new();
+
         let mut index = 0;
+
         for layer in preset.utilities.iter() {
             layer_index_map.insert(layer.name, index);
+
             index += 1;
         }
+
         layer_index_map.insert("arbitrary", index);
 
         Self {

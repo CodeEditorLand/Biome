@@ -25,9 +25,11 @@ impl QueryMatch for ControlFlowGraph {
 
 impl Queryable for ControlFlowGraph {
     type Input = ControlFlowGraph;
+
     type Output = JsControlFlowGraph;
 
     type Language = JsLanguage;
+
     type Services = ();
 
     fn build_visitor(analyzer: &mut impl AddVisitor<JsLanguage>, _: &AnyJsRoot) {

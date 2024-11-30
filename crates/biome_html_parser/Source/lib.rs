@@ -20,7 +20,9 @@ pub fn parse_html_with_cache(source: &str, cache: &mut NodeCache) -> HtmlParse {
         let (events, diagnostics, trivia) = parser.finish();
 
         let mut tree_sink = HtmlLosslessTreeSink::with_cache(source, &trivia, cache);
+
         biome_parser::event::process(&mut tree_sink, events, diagnostics);
+
         let (green, diagnostics) = tree_sink.finish();
 
         HtmlParse::new(green, diagnostics)
@@ -28,6 +30,7 @@ pub fn parse_html_with_cache(source: &str, cache: &mut NodeCache) -> HtmlParse {
 }
 pub fn parse_html(source: &str) -> HtmlParse {
     let mut cache = NodeCache::default();
+
     parse_html_with_cache(source, &mut cache)
 }
 
@@ -96,7 +99,9 @@ impl HtmlParse {
 impl From<HtmlParse> for AnyParse {
     fn from(parse: HtmlParse) -> Self {
         let root = parse.syntax();
+
         let diagnostics = parse.into_diagnostics();
+
         Self::new(
             // SAFETY: the parser should always return a root node
             root.as_send().unwrap(),

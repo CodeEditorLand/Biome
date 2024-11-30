@@ -49,8 +49,11 @@ declare_lint_rule! {
 
 impl Rule for UseWhile {
     type Query = Ast<JsForStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -65,7 +68,9 @@ impl Rule for UseWhile {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let for_range = node.for_token().ok()?.text_trimmed_range();
+
         let r_paren_range = node.r_paren_token().ok()?.text_trimmed_range();
 
         Some(RuleDiagnostic::new(
@@ -81,9 +86,13 @@ impl Rule for UseWhile {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let test_leading_comments = node.first_semi_token().ok()?.trailing_trivia().pieces();
+
         let for_trailing_trivia = node.for_token().ok()?.trailing_trivia().pieces();
+
         mutation.replace_node(
             AnyJsStatement::from(node.clone()),
             AnyJsStatement::from(make::js_while_statement(

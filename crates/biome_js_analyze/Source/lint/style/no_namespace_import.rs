@@ -40,8 +40,11 @@ declare_lint_rule! {
 
 impl Rule for NoNamespaceImport {
     type Query = Ast<JsImportNamespaceClause>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -50,11 +53,13 @@ impl Rule for NoNamespaceImport {
         if import_namespace_clause.type_token().is_some() {
             return None;
         }
+
         Some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

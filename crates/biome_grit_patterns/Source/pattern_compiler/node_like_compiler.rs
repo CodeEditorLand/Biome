@@ -18,9 +18,11 @@ impl NodeLikeCompiler {
         is_rhs: bool,
     ) -> Result<Pattern<GritQueryContext>, CompileError> {
         let name = node.name()?;
+
         let name = name.text();
 
         let lang = &context.compilation.lang;
+
         if let Some(kind) = lang.kind_by_name(&name) {
             node_pattern_from_node_with_name_and_kind(node, name, kind, context, is_rhs)
         } else {
@@ -45,6 +47,7 @@ fn node_pattern_from_node_with_name_and_kind(
         let args = match named_args.len().cmp(&1) {
             Ordering::Equal => {
                 let (arg_name, node) = named_args.remove(0);
+
                 if arg_name != "content" {
                     Err(NodeLikeArgumentError::UnknownArgument {
                         name,
@@ -54,8 +57,10 @@ fn node_pattern_from_node_with_name_and_kind(
                 }
 
                 let pattern = PatternCompiler::from_node(&node, context)?;
+
                 vec![GritNodePatternArg::new(0, pattern)]
             }
+
             Ordering::Less => Vec::new(),
             Ordering::Greater => Err(NodeLikeArgumentError::TooManyArguments {
                 name: "comment".to_string(),
@@ -67,6 +72,7 @@ fn node_pattern_from_node_with_name_and_kind(
     }
 
     let mut args: Vec<GritNodePatternArg> = Vec::with_capacity(named_args.len());
+
     for (arg_name, node) in named_args {
         let node_slots = &context.compilation.lang.named_slots_for_kind(kind);
 
@@ -89,6 +95,7 @@ fn node_pattern_from_node_with_name_and_kind(
         }
 
         let pattern = PatternCompiler::from_node_with_rhs(&node, context, is_rhs)?;
+
         args.push(GritNodePatternArg::new(*slot_index, pattern));
     }
 

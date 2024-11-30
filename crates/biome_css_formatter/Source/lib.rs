@@ -179,8 +179,11 @@ where
         }
 
         self.fmt_leading_comments(node, f)?;
+
         self.fmt_fields(node, f)?;
+
         self.fmt_dangling_comments(node, f)?;
+
         self.fmt_trailing_comments(node, f)
     }
 
@@ -244,7 +247,9 @@ impl CssFormatLanguage {
 
 impl FormatLanguage for CssFormatLanguage {
     type SyntaxLanguage = CssLanguage;
+
     type Context = CssFormatContext;
+
     type FormatRule = FormatCssSyntaxNode;
 
     // For CSS, range formatting allows:
@@ -275,6 +280,7 @@ impl FormatLanguage for CssFormatLanguage {
         source_map: Option<TransformSourceMap>,
     ) -> Self::Context {
         let comments = Comments::from_node(root, &CssCommentStyle, source_map.as_ref());
+
         CssFormatContext::new(self.options, comments).with_source_map(source_map)
     }
 }
@@ -297,6 +303,7 @@ impl FormatRule<CssSyntaxToken> for FormatCssSyntaxToken {
 
         if token.kind().is_contextual_keyword() {
             let original = token.text_trimmed();
+
             match original.to_ascii_lowercase_cow() {
                 Cow::Borrowed(_) => write!(f, [format_trimmed_token(token)]),
                 Cow::Owned(lowercase) => write!(
@@ -372,15 +379,21 @@ pub fn format_sub_tree(options: CssFormatOptions, root: &CssSyntaxNode) -> Forma
 #[cfg(test)]
 mod tests {
     use crate::context::CssFormatOptions;
+
     use crate::format_node;
+
     use biome_css_parser::{parse_css, CssParserOptions};
 
     #[test]
     fn smoke_test() {
         let src = r#"html {}"#;
+
         let parse = parse_css(src, CssParserOptions::default());
+
         let options = CssFormatOptions::default();
+
         let formatted = format_node(options, &parse.syntax()).unwrap();
+
         assert_eq!(formatted.print().unwrap().as_code(), "html {\n}\n");
     }
 }

@@ -6,6 +6,7 @@ use biome_js_syntax::AnyTsTupleTypeElement;
 pub(crate) struct FormatAnyTsTupleTypeElement;
 impl FormatRule<AnyTsTupleTypeElement> for FormatAnyTsTupleTypeElement {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyTsTupleTypeElement, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyTsTupleTypeElement::AnyTsType(node) => node.format().fmt(f),

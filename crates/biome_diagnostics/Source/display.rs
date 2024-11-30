@@ -78,13 +78,16 @@ impl<D: AsDiagnostic + ?Sized> fmt::Display for PrintDiagnostic<'_, D> {
         })?;
         // Wrap the formatter with an indentation level and print the advices
         let mut slot = None;
+
         let mut fmt = IndentWriter::wrap(fmt, &mut slot, true, "  ");
 
         if self.search {
             let mut visitor = PrintSearch(&mut fmt);
+
             print_advices(&mut visitor, diagnostic, self.verbose)
         } else {
             let mut visitor = PrintAdvices(&mut fmt);
+
             print_advices(&mut visitor, diagnostic, self.verbose)
         }
     }
@@ -99,10 +102,12 @@ impl<D: Diagnostic + ?Sized> fmt::Display for PrintHeader<'_, D> {
 
         // Wrap the formatter with a counter to measure the width of the printed text
         let mut slot = None;
+
         let mut fmt = CountWidth::wrap(f, &mut slot);
 
         // Print the diagnostic location if it has a file path
         let location = diagnostic.location();
+
         let file_name = match &location.resource {
             Some(Resource::File(file)) => Some(file),
             _ => None,
@@ -115,8 +120,10 @@ impl<D: Diagnostic + ?Sized> fmt::Display for PrintHeader<'_, D> {
                 fmt.write_str(name)?;
             } else {
                 let path_name = Path::new(name);
+
                 if path_name.is_absolute() {
                     let link = format!("file://{name}");
+
                     fmt.write_markup(markup! {
                         <Hyperlink href={link}>{name}</Hyperlink>
                     })?;
@@ -129,6 +136,7 @@ impl<D: Diagnostic + ?Sized> fmt::Display for PrintHeader<'_, D> {
             // (the source code is necessary to convert a byte offset into a line + column)
             if let (Some(span), Some(source_code)) = (location.span, location.source_code) {
                 let file = SourceFile::new(source_code);
+
                 if let Ok(location) = file.location(span.start()) {
                     fmt.write_markup(markup! {
                         ":"{location.line_number.get()}":"{location.column_number.get()}
@@ -179,6 +187,7 @@ impl<D: Diagnostic + ?Sized> fmt::Display for PrintHeader<'_, D> {
                 <Inverse>" VERBOSE "</Inverse>" "
             })?;
         }
+
         if diagnostic.severity() == Severity::Fatal {
             fmt.write_markup(markup! {
                 <Inverse><Error>" FATAL "</Error></Inverse>" "
@@ -188,10 +197,13 @@ impl<D: Diagnostic + ?Sized> fmt::Display for PrintHeader<'_, D> {
         // Load the printed width for the header, and fill the rest of the line
         // with the '━' line character up to 100 columns with at least 10 characters
         const HEADER_WIDTH: usize = 100;
+
         const MIN_WIDTH: usize = 10;
 
         let text_width = slot.map_or(0, |writer| writer.width);
+
         let line_width = HEADER_WIDTH.saturating_sub(text_width).max(MIN_WIDTH);
+
         HorizontalLine::new(line_width).fmt(f)
     }
 }
@@ -216,7 +228,9 @@ impl<'write> CountWidth<'write, dyn fmt::Write + 'write> {
 impl<W: fmt::Write + ?Sized> fmt::Write for CountWidth<'_, W> {
     fn write_str(&mut self, elements: &fmt::MarkupElements<'_>, content: &str) -> io::Result<()> {
         self.writer.write_str(elements, content)?;
+
         self.width += UnicodeWidthStr::width(content);
+
         Ok(())
     }
 
@@ -229,6 +243,7 @@ impl<W: fmt::Write + ?Sized> fmt::Write for CountWidth<'_, W> {
             self.write_str(elements, content)
         } else {
             let content = content.to_string();
+
             self.write_str(elements, &content)
         }
     }
@@ -264,11 +279,13 @@ where
     if verbose {
         // Count the number of verbose advices in the diagnostic
         let mut counter = CountAdvices(0);
+
         diagnostic.verbose_advices(&mut counter)?;
 
         // If the diagnostic has any verbose advice, print the group
         if !counter.is_empty() {
             let verbose_advices = PrintVerboseAdvices(diagnostic);
+
             visitor.record_group(&"Verbose advice", &verbose_advices)?;
         }
     }
@@ -288,11 +305,13 @@ impl Visit for FrameVisitor<'_> {
         if location == self.location {
             self.skip_frame = true;
         }
+
         Ok(())
     }
 
     fn record_backtrace(&mut self, _: &dyn fmt::Display, _: &Backtrace) -> io::Result<()> {
         self.skip_frame = true;
+
         Ok(())
     }
 }
@@ -306,8 +325,11 @@ where
     // Print the entire message / cause chain for the diagnostic to a MarkupBuf
     let message = {
         let mut message = MarkupBuf::default();
+
         let mut fmt = fmt::Formatter::new(&mut message);
+
         fmt.write_markup(markup!({ PrintCauseChain(diagnostic) }))?;
+
         message
     };
 
@@ -333,6 +355,7 @@ where
     // a code frame advice with the location of the diagnostic
     if !skip_frame {
         let location = diagnostic.location();
+
         if location.span.is_some() {
             visitor.record_frame(location)?;
         }
@@ -352,11 +375,14 @@ impl<D: Diagnostic + ?Sized> fmt::Display for PrintCauseChain<'_, D> {
         diagnostic.message(fmt)?;
 
         let chain = iter::successors(diagnostic.source(), |prev| prev.source());
+
         for diagnostic in chain {
             fmt.write_str("\n\nCaused by:\n")?;
 
             let mut slot = None;
+
             let mut fmt = IndentWriter::wrap(fmt, &mut slot, true, "  ");
+
             diagnostic.message(&mut fmt)?;
         }
 
@@ -390,7 +416,9 @@ impl PrintAdvices<'_, '_> {
         self.0.write_str(" ")?;
 
         let mut slot = None;
+
         let mut fmt = IndentWriter::wrap(self.0, &mut slot, false, "  ");
+
         fmt.write_markup(Markup(&[MarkupNode {
             elements: &[kind],
             content: text,
@@ -413,7 +441,9 @@ impl Visit for PrintAdvices<'_, '_> {
     fn record_list(&mut self, list: &[&dyn fmt::Display]) -> io::Result<()> {
         for item in list {
             let mut slot = None;
+
             let mut fmt = IndentWriter::wrap(self.0, &mut slot, false, "  ");
+
             fmt.write_markup(markup! {
                 "- "{*item}"\n"
             })?;
@@ -440,6 +470,7 @@ impl Visit for PrintAdvices<'_, '_> {
         backtrace: &Backtrace,
     ) -> io::Result<()> {
         let mut backtrace = backtrace.clone();
+
         backtrace.resolve();
 
         if backtrace.is_empty() {
@@ -463,8 +494,11 @@ impl Visit for PrintAdvices<'_, '_> {
         })?;
 
         let mut slot = None;
+
         let mut fmt = IndentWriter::wrap(self.0, &mut slot, true, "  ");
+
         let mut visitor = PrintAdvices(&mut fmt);
+
         advice.record(&mut visitor)
     }
 
@@ -485,20 +519,26 @@ impl Visit for PrintAdvices<'_, '_> {
         }
 
         let mut headers_iter = headers.iter().enumerate();
+
         let rows_number = columns[0].len();
+
         let columns_number = columns.len();
 
         let mut longest_cell = 0;
+
         for current_row_index in 0..rows_number {
             for current_column_index in 0..columns_number {
                 let cell = columns
                     .get(current_column_index)
                     .and_then(|c| c.get(current_row_index));
+
                 if let Some(cell) = cell {
                     if current_column_index == 0 && current_row_index == 0 {
                         longest_cell = cell.text_len();
+
                         for (index, header_cell) in headers_iter.by_ref() {
                             self.0.write_markup(markup!({ header_cell }))?;
+
                             if index < headers.len() - 1 {
                                 self.0.write_markup(
                                     markup! {{Padding::new(padding + longest_cell - header_cell.text_len())}},
@@ -508,15 +548,18 @@ impl Visit for PrintAdvices<'_, '_> {
 
                         self.0.write_markup(markup! {"\n\n"})?;
                     }
+
                     let extra_padding = longest_cell.saturating_sub(cell.text_len());
 
                     self.0.write_markup(markup!({ cell }))?;
+
                     if columns_number != current_column_index + 1 {
                         self.0
                             .write_markup(markup! {{Padding::new(padding + extra_padding)}})?;
                     }
                 }
             }
+
             self.0.write_markup(markup!("\n"))?;
         }
 
@@ -553,36 +596,43 @@ impl CountAdvices {
 impl Visit for CountAdvices {
     fn record_log(&mut self, _: LogCategory, _: &dyn fmt::Display) -> io::Result<()> {
         self.0 += 1;
+
         Ok(())
     }
 
     fn record_list(&mut self, _: &[&dyn fmt::Display]) -> io::Result<()> {
         self.0 += 1;
+
         Ok(())
     }
 
     fn record_frame(&mut self, _: Location<'_>) -> io::Result<()> {
         self.0 += 1;
+
         Ok(())
     }
 
     fn record_diff(&mut self, _: &TextEdit) -> io::Result<()> {
         self.0 += 1;
+
         Ok(())
     }
 
     fn record_backtrace(&mut self, _: &dyn fmt::Display, _: &Backtrace) -> io::Result<()> {
         self.0 += 1;
+
         Ok(())
     }
 
     fn record_command(&mut self, _: &str) -> io::Result<()> {
         self.0 += 1;
+
         Ok(())
     }
 
     fn record_group(&mut self, _: &dyn fmt::Display, _: &dyn Advices) -> io::Result<()> {
         self.0 += 1;
+
         Ok(())
     }
 }
@@ -631,13 +681,17 @@ impl<W: fmt::Write + ?Sized> fmt::Write for IndentWriter<'_, W> {
             if self.pending_indent {
                 self.writer
                     .write_str(&MarkupElements::Root, self.ident_text)?;
+
                 self.pending_indent = false;
             }
 
             if let Some(index) = content.find('\n') {
                 let (start, end) = content.split_at(index + 1);
+
                 self.writer.write_str(elements, start)?;
+
                 self.pending_indent = true;
+
                 content = end;
             } else {
                 return self.writer.write_str(elements, content);
@@ -656,6 +710,7 @@ impl<W: fmt::Write + ?Sized> fmt::Write for IndentWriter<'_, W> {
             self.write_str(elements, content)
         } else {
             let content = content.to_string();
+
             self.write_str(elements, &content)
         }
     }
@@ -666,13 +721,19 @@ mod tests {
     use std::io;
 
     use biome_console::{fmt, markup};
+
     use biome_diagnostics::{DiagnosticTags, Severity};
+
     use biome_diagnostics_categories::{category, Category};
+
     use biome_text_edit::TextEdit;
+
     use biome_text_size::{TextRange, TextSize};
+
     use serde_json::{from_value, json};
 
     use crate::{self as biome_diagnostics};
+
     use crate::{
         Advices, Diagnostic, Location, LogCategory, PrintDiagnostic, Resource, SourceCode, Visit,
     };
@@ -767,8 +828,11 @@ mod tests {
     impl Advices for LogAdvices {
         fn record(&self, visitor: &mut dyn Visit) -> io::Result<()> {
             visitor.record_log(LogCategory::Error, &"error")?;
+
             visitor.record_log(LogCategory::Warn, &"warn")?;
+
             visitor.record_log(LogCategory::Info, &"info")?;
+
             visitor.record_log(LogCategory::None, &"none")
         }
     }
@@ -805,6 +869,7 @@ mod tests {
         fn record(&self, visitor: &mut dyn Visit) -> io::Result<()> {
             let diff =
                 TextEdit::from_unicode_words("context before context", "context after context");
+
             visitor.record_diff(&diff)
         }
     }

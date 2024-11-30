@@ -13,6 +13,7 @@ impl FormatNodeRule<TsNumberLiteralType> for FormatTsNumberLiteralType {
             minus_token,
             literal_token,
         } = node.as_fields();
+
         write![
             f,
             [minus_token.format(), format_number_token(&literal_token?)]

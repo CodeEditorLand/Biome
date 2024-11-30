@@ -30,6 +30,7 @@ impl NodeVisitor for SwitchVisitor {
         builder.append_statement().with_node(node.discriminant()?);
 
         let entry_block = builder.cursor();
+
         let break_block = builder.append_block();
 
         let label = node
@@ -68,6 +69,7 @@ impl NodeVisitor for SwitchVisitor {
         // (over the switch statement) at the end of the entry block if no case
         // was matched
         builder.set_cursor(entry_block);
+
         if let Some((block, token)) = self.default_block {
             builder.append_jump(false, block).with_node(token);
         } else {
@@ -103,12 +105,15 @@ impl NodeVisitor for CaseVisitor {
         match node {
             AnyJsSwitchClause::JsCaseClause(node) => {
                 builder.set_cursor(switch_stmt.entry_block);
+
                 builder
                     .append_jump(true, case_block)
                     .with_node(node.test()?.into_syntax());
             }
+
             AnyJsSwitchClause::JsDefaultClause(node) => {
                 let token = node.default_token()?;
+
                 switch_stmt.default_block = Some((case_block, token));
             }
         }

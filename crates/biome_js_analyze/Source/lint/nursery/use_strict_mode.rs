@@ -45,12 +45,16 @@ declare_lint_rule! {
 
 impl Rule for UseStrictMode {
     type Query = Ast<JsScript>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node
             .directives()
             .iter()
@@ -65,6 +69,7 @@ impl Rule for UseStrictMode {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -84,23 +89,31 @@ impl Rule for UseStrictMode {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query().clone();
+
         let mut mutation = ctx.root().begin();
+
         let value = match ctx.as_preferred_quote() {
             PreferredQuote::Double => "\"use strict\"",
             PreferredQuote::Single => "'use strict'",
         };
+
         let value = JsSyntaxToken::new_detached(JsSyntaxKind::JSX_STRING_LITERAL, value, [], []);
+
         let use_strict_diretcive = make::js_directive(value)
             .with_semicolon_token(make::token(T![;]))
             .build();
+
         let directives = make::js_directive_list(
             node.directives()
                 .into_iter()
                 .chain([use_strict_diretcive])
                 .collect::<Vec<_>>(),
         );
+
         let new_node = node.clone().with_directives(directives);
+
         mutation.replace_node(node, new_node);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

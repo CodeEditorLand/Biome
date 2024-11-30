@@ -18,6 +18,7 @@ impl FormatRuleWithOptions<JsArrayExpression> for FormatJsArrayExpression {
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.options = options;
+
         self
     }
 }
@@ -45,6 +46,7 @@ impl FormatNodeRule<JsArrayExpression> for FormatJsArrayExpression {
             let group_id = f.group_id("array");
 
             let should_expand = !self.options.is_force_flat_mode && should_break(&elements)?;
+
             let elements = elements.format().with_options(Some(group_id));
 
             write!(
@@ -97,10 +99,12 @@ fn should_break(elements: &JsArrayElementList) -> SyntaxResult<bool> {
                             AnyJsExpression::JsArrayExpression(_)
                         )))
                     );
+
                     if array.elements().len() < 2 || !next_is_array_or_end {
                         return Ok(false);
                     }
                 }
+
                 AnyJsArrayElement::AnyJsExpression(AnyJsExpression::JsObjectExpression(object)) => {
                     let next_is_object_or_empty = matches!(
                         elements.peek(),
@@ -113,6 +117,7 @@ fn should_break(elements: &JsArrayElementList) -> SyntaxResult<bool> {
                         return Ok(false);
                     }
                 }
+
                 _ => {
                     return Ok(false);
                 }

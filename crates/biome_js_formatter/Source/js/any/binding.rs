@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsBinding;
 pub(crate) struct FormatAnyJsBinding;
 impl FormatRule<AnyJsBinding> for FormatAnyJsBinding {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsBinding, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsBinding::JsBogusBinding(node) => node.format().fmt(f),

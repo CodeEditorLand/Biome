@@ -6,6 +6,7 @@ use biome_graphql_syntax::GraphqlDirectiveLocationList;
 pub(crate) struct FormatGraphqlDirectiveLocationList;
 impl FormatRule<GraphqlDirectiveLocationList> for FormatGraphqlDirectiveLocationList {
     type Context = GraphqlFormatContext;
+
     fn fmt(
         &self,
         node: &GraphqlDirectiveLocationList,

@@ -77,8 +77,11 @@ where
         }
 
         self.fmt_leading_comments(node, f)?;
+
         self.fmt_fields(node, f)?;
+
         self.fmt_dangling_comments(node, f)?;
+
         self.fmt_trailing_comments(node, f)
     }
 

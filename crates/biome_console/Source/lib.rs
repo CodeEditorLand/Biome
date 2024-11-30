@@ -126,7 +126,9 @@ impl EnvConsole {
 
     pub fn set_color(&mut self, colors: ColorMode) {
         let (out_mode, err_mode) = Self::compute_color(colors);
+
         self.out = StandardStream::stdout(out_mode);
+
         self.err = StandardStream::stderr(err_mode);
     }
 }
@@ -172,8 +174,11 @@ impl Console for EnvConsole {
         if io::stdin().is_terminal() {
             return None;
         }
+
         let mut handle = self.r#in.lock();
+
         let mut buffer = String::new();
+
         let result = handle.read_to_string(&mut buffer);
         // Skipping the error for now
         if result.is_ok() {
@@ -195,6 +200,7 @@ pub struct BufferConsole {
 impl BufferConsole {
     pub fn with_json(mut self) -> Self {
         self.print_json = true;
+
         self
     }
 }
@@ -220,6 +226,7 @@ impl Console for BufferConsole {
             content: args.to_owned(),
         });
     }
+
     fn read(&mut self) -> Option<String> {
         if self.in_buffer.is_empty() {
             None

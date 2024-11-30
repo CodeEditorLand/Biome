@@ -20,6 +20,7 @@ impl FormatNodeRule<JsxExpressionChild> for FormatJsxExpressionChild {
         match expression {
             Some(expression) => {
                 let comments = f.context().comments();
+
                 let is_conditional_or_binary =
                     matches!(expression, AnyJsExpression::JsConditionalExpression(_))
                         || AnyJsBinaryLikeExpression::can_cast(expression.syntax().kind());
@@ -50,6 +51,7 @@ impl FormatNodeRule<JsxExpressionChild> for FormatJsxExpressionChild {
                     )
                 }
             }
+
             None => {
                 let has_line_comment = f
                     .comments()

@@ -63,6 +63,7 @@ pub trait SuppressionAction {
                     } else {
                         left_token
                     };
+
                 Some(chosen_token)
             }
         }

@@ -14,7 +14,9 @@ impl FormatNodeRule<GritPatternOrElse> for FormatGritPatternOrElse {
         } = node.as_fields();
 
         write!(f, [orelse_token.format(), space(), l_curly_token.format()])?;
+
         let should_insert_space_around_brackets = f.options().bracket_spacing().value();
+
         write!(
             f,
             [group(&soft_block_indent_with_maybe_space(

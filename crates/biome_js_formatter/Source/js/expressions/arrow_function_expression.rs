@@ -35,6 +35,7 @@ impl FormatRuleWithOptions<JsArrowFunctionExpression> for FormatJsArrowFunctionE
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.options = options;
+
         self
     }
 }
@@ -52,8 +53,10 @@ impl FormatNodeRule<JsArrowFunctionExpression> for FormatJsArrowFunctionExpressi
             ArrowFunctionLayout::Chain(chain) => {
                 write!(f, [chain])
             }
+
             ArrowFunctionLayout::Single(arrow) => {
                 use self::AnyJsExpression::*;
+
                 use AnyJsFunctionBody::*;
 
                 let body = arrow.body()?;
@@ -100,8 +103,10 @@ impl FormatNodeRule<JsArrowFunctionExpression> for FormatJsArrowFunctionExpressi
                     AnyJsExpression(JsTemplateExpression(template)) => {
                         is_multiline_template_starting_on_same_line(template)
                     }
+
                     AnyJsExpression(JsSequenceExpression(sequence)) => {
                         let has_comment = f.context().comments().has_comments(sequence.syntax());
+
                         if has_comment {
                             return write!(
                                 f,
@@ -116,6 +121,7 @@ impl FormatNodeRule<JsArrowFunctionExpression> for FormatJsArrowFunctionExpressi
                                 ])]
                             );
                         }
+
                         return write!(
                             f,
                             [group(&format_args![
@@ -129,10 +135,13 @@ impl FormatNodeRule<JsArrowFunctionExpression> for FormatJsArrowFunctionExpressi
                             ])]
                         );
                     }
+
                     _ => false,
                 };
+
                 let body_is_condition_type =
                     matches!(body, AnyJsExpression(JsConditionalExpression(_)));
+
                 if body_has_soft_line_break {
                     write![f, [formatted_signature, space(), format_body]]
                 } else {
@@ -147,6 +156,7 @@ impl FormatNodeRule<JsArrowFunctionExpression> for FormatJsArrowFunctionExpressi
                         // if it's inside a JSXExpression (e.g. an attribute) we should align the expression's closing } with the line with the opening {.
                         || matches!(node.syntax().parent().kind(), Some(JsSyntaxKind::JSX_EXPRESSION_CHILD | JsSyntaxKind::JSX_EXPRESSION_ATTRIBUTE_VALUE)))
                         && !f.context().comments().has_comments(node.syntax());
+
                     if body_is_condition_type {
                         write!(
                             f,
@@ -237,6 +247,7 @@ fn format_signature(
         let formatted_async_token = format_with(|f: &mut JsFormatter| {
             if let Some(async_token) = arrow.async_token() {
                 write!(f, [async_token.format(), space()])?;
+
                 Ok(())
             } else {
                 Ok(())
@@ -250,6 +261,7 @@ fn format_signature(
                 AnyJsArrowFunctionParameters::AnyJsBinding(binding) => {
                     let should_hug =
                         is_test_call_argument(arrow.syntax())? || is_first_or_last_call_argument;
+
                     let parentheses_not_needed = can_avoid_parentheses(arrow, f);
 
                     if !parentheses_not_needed {
@@ -272,6 +284,7 @@ fn format_signature(
                         write!(f, [text(")")])?;
                     }
                 }
+
                 AnyJsArrowFunctionParameters::JsParameters(params) => {
                     write!(f, [params.format()])?;
                 }
@@ -282,6 +295,7 @@ fn format_signature(
 
         if is_first_or_last_call_argument {
             let mut buffer = RemoveSoftLinesBuffer::new(f);
+
             let mut recording = buffer.start_recording();
 
             write!(
@@ -374,10 +388,12 @@ fn should_add_parens(body: &AnyJsFunctionBody) -> bool {
                         | AnyJsExpression::JsClassExpression(_)
                 )
             );
+
             let are_parentheses_mandatory = var_name;
 
             !are_parentheses_mandatory
         }
+
         _ => false,
     }
 }
@@ -399,6 +415,7 @@ fn has_rest_object_or_array_parameter(parameters: &AnyJsArrowFunctionParameters)
                             | AnyJsBindingPattern::JsObjectBindingPattern(_))
                     )
                 }
+
                 AnyJsParameter::AnyJsFormalParameter(
                     AnyJsFormalParameter::JsBogusParameter(_)
                     | AnyJsFormalParameter::JsMetavariable(_),
@@ -490,8 +507,11 @@ impl Format<JsFormatContext> for ArrowChain {
         } = self;
 
         let head_parent = head.syntax().parent();
+
         let tail_body = tail.body()?;
+
         let is_assignment_rhs = self.options.assignment_layout.is_some();
+
         let is_grouped_call_arg_layout = self.options.call_arg_layout.is_some();
 
         // If this chain is the callee in a parent call expression, then we
@@ -504,6 +524,7 @@ impl Format<JsFormatContext> for ArrowChain {
         //        () => () =>
         //          a
         //      )();
+
         let is_callee = head_parent.as_ref().map_or(false, |parent| {
             matches!(
                 parent.kind(),
@@ -562,6 +583,7 @@ impl Format<JsFormatContext> for ArrowChain {
         let format_arrow_signatures = format_with(|f| {
             let join_signatures = format_with(|f: &mut JsFormatter| {
                 let mut is_first_in_chain = true;
+
                 for arrow in self.arrows() {
                     // The first comment in the chain gets formatted by the
                     // parent (the FormatJsArrowFunctionExpression), but the
@@ -570,6 +592,7 @@ impl Format<JsFormatContext> for ArrowChain {
                     // Format node to handle it.
                     let should_format_comments = !is_first_in_chain
                         && f.context().comments().has_leading_comments(arrow.syntax());
+
                     let is_first = is_first_in_chain;
 
                     let formatted_signature = format_with(|f: &mut JsFormatter| {
@@ -614,6 +637,7 @@ impl Format<JsFormatContext> for ArrowChain {
                     // one additional level, as shown above.
                     if is_first_in_chain || has_initial_indent {
                         is_first_in_chain = false;
+
                         write!(f, [formatted_signature])?;
                     } else {
                         write!(f, [indent(&formatted_signature)])?;
@@ -675,6 +699,7 @@ impl Format<JsFormatContext> for ArrowChain {
                 }
             } else {
                 let should_add_parens = should_add_parens(&tail_body);
+
                 if should_add_parens {
                     write!(
                         f,
@@ -777,8 +802,11 @@ impl ArrowFunctionLayout {
         options: &FormatJsArrowFunctionExpressionOptions,
     ) -> SyntaxResult<ArrowFunctionLayout> {
         let mut head = None;
+
         let mut middle = Vec::new();
+
         let mut current = arrow;
+
         let mut should_break = false;
 
         let result = loop {
@@ -804,6 +832,7 @@ impl ArrowFunctionLayout {
 
                     current = next;
                 }
+
                 _ => {
                     break match head {
                         None => ArrowFunctionLayout::Single(current),
@@ -883,32 +912,51 @@ pub(crate) fn is_multiline_template_starting_on_same_line(template: &JsTemplateE
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::{JsArrowFunctionExpression, JsFileSource};
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("new (a => test)()`", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("(a => test)()", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("(a => test).member", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("(a => test)[member]", JsArrowFunctionExpression);
+
         assert_not_needs_parentheses!("object[a => a]", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("(a => a) as Function", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("(a => a)!", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("(a => a)`template`", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("+(a => a)", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("(a => a) && b", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("(a => a) instanceof b", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("(a => a) in b", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("(a => a) + b", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("await (a => a)", JsArrowFunctionExpression);
+
         assert_needs_parentheses!(
             "<Function>(a => a)",
             JsArrowFunctionExpression,
             JsFileSource::ts()
         );
+
         assert_needs_parentheses!("(a => a) ? b : c", JsArrowFunctionExpression);
+
         assert_not_needs_parentheses!("a ? b => b : c", JsArrowFunctionExpression);
+
         assert_not_needs_parentheses!("a ? b : c => c", JsArrowFunctionExpression);
+
         assert_needs_parentheses!("class Test extends (a => a) {}", JsArrowFunctionExpression);
     }
 }

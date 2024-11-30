@@ -14,6 +14,7 @@ use biome_rowan::SyntaxNodeOptionExt;
 pub(crate) struct FormatJsDecoratorList;
 impl FormatRule<JsDecoratorList> for FormatJsDecoratorList {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &JsDecoratorList, f: &mut JsFormatter) -> FormatResult<()> {
         if node.is_empty() {
             return Ok(());
@@ -34,17 +35,22 @@ impl FormatRule<JsDecoratorList> for FormatJsDecoratorList {
                     AnyJsDeclarationClause::JsClassDeclaration(class),
                 ) => {
                     // @before export @after class Foo {}
+
                     Some(class.decorators())
                 }
+
                 AnyJsExportClause::JsExportDefaultDeclarationClause(export_default_declaration) => {
                     match export_default_declaration.declaration()? {
                         AnyJsExportDefaultDeclaration::JsClassExportDefaultDeclaration(class) => {
                             // @before export default @after class Foo {}
+
                             Some(class.decorators())
                         }
+
                         _ => None,
                     }
                 }
+
                 _ => None,
             };
 
@@ -60,6 +66,7 @@ impl FormatRule<JsDecoratorList> for FormatJsDecoratorList {
             write!(f, [hard_line_break()])
         } else if matches!(node.syntax().parent().kind(), Some(JS_CLASS_EXPRESSION)) {
             write!(f, [expand_parent()])?;
+
             f.join_with(&soft_line_break_or_space())
                 .entries(node.iter().formatted())
                 .finish()?;
@@ -85,6 +92,7 @@ impl FormatRule<JsDecoratorList> for FormatJsDecoratorList {
                     JsExport::cast_ref(&grand_parent)
                         .or_else(|| grand_parent.parent().and_then(JsExport::cast))
                 });
+
                 let is_export = export.is_some();
 
                 let has_decorators_before_export =

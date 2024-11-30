@@ -24,6 +24,7 @@ impl FormatNodeRule<CssImportAtRule> for FormatCssImportAtRule {
             // If there are, we need to group them together and try to fill them.
             let modifiers = format_once(|f| {
                 let separator = soft_line_break_or_space();
+
                 let mut fill = f.fill();
 
                 fill.entry(&separator, &url.format());
@@ -42,6 +43,7 @@ impl FormatNodeRule<CssImportAtRule> for FormatCssImportAtRule {
 
                 fill.finish()
             });
+
             write!(f, [group(&indent(&modifiers))])?;
         } else {
             // If there are no modifiers, simply write the formatted `url` to the formatter `f`.

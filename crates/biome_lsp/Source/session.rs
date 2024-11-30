@@ -168,7 +168,9 @@ impl Session {
         fs: DynRef<'static, dyn FileSystem>,
     ) -> Self {
         let documents = Default::default();
+
         let config = RwLock::new(ExtensionSettings::new());
+
         Self {
             key,
             client,
@@ -212,9 +214,11 @@ impl Session {
     /// Register a set of capabilities with the client
     pub(crate) async fn register_capabilities(&self, capabilities: CapabilitySet) {
         let mut registrations = Vec::new();
+
         let mut unregistrations = Vec::new();
 
         let mut register_methods = String::new();
+
         let mut unregister_methods = String::new();
 
         for (id, (method, status)) in capabilities.registry {
@@ -291,6 +295,7 @@ impl Session {
                 // It can be a newly created file that it's not on disk
                 PathBuf::from(url.path())
             }
+
             Ok(path) => path,
         };
 
@@ -303,13 +308,17 @@ impl Session {
     #[tracing::instrument(level = "trace", skip_all, fields(url = display(&url), diagnostic_count), err)]
     pub(crate) async fn update_diagnostics(&self, url: lsp_types::Url) -> Result<(), LspError> {
         let biome_path = self.file_path(&url)?;
+
         let doc = self.document(&url)?;
+
         if self.configuration_status().is_error() && !self.notified_broken_configuration() {
             self.set_notified_broken_configuration();
+
             self.client
                     .show_message(MessageType::WARNING, "The configuration file has errors. Biome will report only parsing errors until the configuration is fixed.")
                     .await;
         }
+
         let file_features = self.workspace.file_features(SupportsFeatureParams {
             features: FeaturesBuilder::new()
                 .with_linter()
@@ -326,19 +335,23 @@ impl Session {
             self.client
                 .publish_diagnostics(url, vec![], Some(doc.version))
                 .await;
+
             return Ok(());
         }
 
         let diagnostics: Vec<Diagnostic> = {
             let mut categories = RuleCategoriesBuilder::default().with_syntax();
+
             if self.configuration_status().is_loaded() {
                 if file_features.supports_lint() {
                     categories = categories.with_lint();
                 }
+
                 if file_features.supports_organize_imports() {
                     categories = categories.with_action();
                 }
             }
+
             let result = self.workspace.pull_diagnostics(PullDiagnosticsParams {
                 path: biome_path.clone(),
                 categories: categories.build(),
@@ -348,9 +361,11 @@ impl Session {
             })?;
 
             tracing::trace!("biome diagnostics: {:#?}", result.diagnostics);
+
             let content = self.workspace.get_file_content(GetFileContentParams {
                 path: biome_path.clone(),
             })?;
+
             let offset = match biome_path.extension().map(OsStr::as_encoded_bytes) {
                 Some(b"vue") => VueFileHandler::start(content.as_str()),
                 Some(b"astro") => AstroFileHandler::start(content.as_str()),
@@ -372,6 +387,7 @@ impl Session {
                         Ok(diag) => Some(diag),
                         Err(err) => {
                             error!("failed to convert diagnostic to LSP: {err:?}");
+
                             None
                         }
                     }
@@ -427,12 +443,14 @@ impl Session {
         let initialize_params = self.initialize_params.get()?;
 
         let root_uri = initialize_params.root_uri.as_ref()?;
+
         match root_uri.to_file_path() {
             Ok(base_path) => Some(base_path),
             Err(()) => {
                 error!(
                     "The Workspace root URI {root_uri:?} could not be parsed as a filesystem path"
                 );
+
                 None
             }
         }
@@ -450,14 +468,20 @@ impl Session {
         // Providing a custom configuration path will not allow to support workspaces
         if let Some(config_path) = &self.config_path {
             let base_path = ConfigurationPathHint::FromUser(config_path.clone());
+
             let status = self.load_biome_configuration_file(base_path).await;
+
             self.set_configuration_status(status);
         } else if let Some(folders) = self.get_workspace_folders() {
             info!("Detected workspace folder.");
+
             self.set_configuration_status(ConfigurationStatus::Loading);
+
             for folder in folders {
                 info!("Attempt to load the configuration file in {:?}", folder.uri);
+
                 let base_path = folder.uri.to_file_path();
+
                 match base_path {
                     Ok(base_path) => {
                         let status = self
@@ -465,8 +489,10 @@ impl Session {
                                 base_path,
                             ))
                             .await;
+
                         self.set_configuration_status(status);
                     }
+
                     Err(_) => {
                         error!(
                             "The Workspace root URI {:?} could not be parsed as a filesystem path",
@@ -480,7 +506,9 @@ impl Session {
                 None => ConfigurationPathHint::default(),
                 Some(path) => ConfigurationPathHint::FromLsp(path),
             };
+
             let status = self.load_biome_configuration_file(base_path).await;
+
             self.set_configuration_status(status);
         }
     }
@@ -493,10 +521,13 @@ impl Session {
             Ok(loaded_configuration) => {
                 if loaded_configuration.has_errors() {
                     error!("Couldn't load the configuration file, reasons:");
+
                     for diagnostic in loaded_configuration.as_diagnostics_iter() {
                         let message = PrintDescription(diagnostic).to_string();
+
                         self.client.log_message(MessageType::ERROR, message).await;
                     }
+
                     ConfigurationStatus::Error
                 } else {
                     let LoadedConfiguration {
@@ -504,17 +535,22 @@ impl Session {
                         directory_path: configuration_path,
                         ..
                     } = loaded_configuration;
+
                     info!("Configuration loaded successfully from disk.");
+
                     info!("Update workspace settings.");
 
                     let fs = &self.fs;
+
                     let should_use_editorconfig =
                         fs_configuration.use_editorconfig().unwrap_or_default();
+
                     let mut configuration = if should_use_editorconfig {
                         let (editorconfig, editorconfig_diagnostics) = {
                             let search_path = configuration_path
                                 .clone()
                                 .unwrap_or_else(|| fs.working_directory().unwrap_or_default());
+
                             match load_editorconfig(fs, search_path) {
                                 Ok(result) => result,
                                 Err(error) => {
@@ -522,15 +558,20 @@ impl Session {
                                         "Failed load the `.editorconfig` file. Reason: {}",
                                         error
                                     );
+
                                     self.client.log_message(MessageType::ERROR, &error).await;
+
                                     return ConfigurationStatus::Error;
                                 }
                             }
                         };
+
                         for diagnostic in editorconfig_diagnostics {
                             let message = PrintDescription(&diagnostic).to_string();
+
                             self.client.log_message(MessageType::ERROR, message).await;
                         }
+
                         editorconfig.unwrap_or_default()
                     } else {
                         Default::default()
@@ -562,11 +603,15 @@ impl Session {
                                         })
                                         .err()
                                 };
+
                             if let Some(error) = register_result {
                                 error!("Failed to register the project folder: {}", error);
+
                                 self.client.log_message(MessageType::ERROR, &error).await;
+
                                 return ConfigurationStatus::Error;
                             }
+
                             let result = self.workspace.update_settings(UpdateSettingsParams {
                                 workspace_directory: fs.working_directory(),
                                 configuration,
@@ -576,15 +621,20 @@ impl Session {
 
                             if let Err(error) = result {
                                 error!("Failed to set workspace settings: {}", error);
+
                                 self.client.log_message(MessageType::ERROR, &error).await;
+
                                 ConfigurationStatus::Error
                             } else {
                                 ConfigurationStatus::Loaded
                             }
                         }
+
                         Err(err) => {
                             error!("Couldn't load the configuration file, reason:\n {}", err);
+
                             self.client.log_message(MessageType::ERROR, &err).await;
+
                             ConfigurationStatus::Error
                         }
                     }
@@ -593,7 +643,9 @@ impl Session {
 
             Err(err) => {
                 error!("Couldn't load the configuration file, reason:\n {}", err);
+
                 self.client.log_message(MessageType::ERROR, &err).await;
+
                 ConfigurationStatus::Error
             }
         }
@@ -606,12 +658,15 @@ impl Session {
             .as_deref()
             .map(PathBuf::from)
             .or(self.base_path());
+
         if let Some(base_path) = base_path {
             let result = self.fs.auto_search(&base_path, &["package.json"], false);
+
             match result {
                 Ok(result) => {
                     if let Some(result) = result {
                         let biome_path = BiomePath::new(result.file_path);
+
                         let result =
                             self.workspace
                                 .set_manifest_for_project(SetManifestForProjectParams {
@@ -619,11 +674,13 @@ impl Session {
                                     content: result.content,
                                     version: 0,
                                 });
+
                         if let Err(err) = result {
                             error!("{}", err);
                         }
                     }
                 }
+
                 Err(err) => {
                     error!("Couldn't load the package.json file, reason:\n {}", err);
                 }
@@ -643,6 +700,7 @@ impl Session {
             Ok(client_configurations) => client_configurations,
             Err(err) => {
                 error!("Couldn't read configuration from the client: {err}");
+
                 return;
             }
         };
@@ -653,6 +711,7 @@ impl Session {
             info!("Loaded client configuration: {client_configuration:#?}");
 
             let mut config = self.extension_settings.write().unwrap();
+
             if let Err(err) = config.set_workspace_settings(client_configuration) {
                 error!("Couldn't set client configuration: {}", err);
             }
@@ -691,6 +750,7 @@ impl Session {
     fn set_configuration_status(&self, status: ConfigurationStatus) {
         self.notified_broken_configuration
             .store(false, Ordering::Relaxed);
+
         self.configuration_status
             .store(status as u8, Ordering::Relaxed);
     }
@@ -698,6 +758,7 @@ impl Session {
     fn notified_broken_configuration(&self) -> bool {
         self.notified_broken_configuration.load(Ordering::Relaxed)
     }
+
     fn set_notified_broken_configuration(&self) {
         self.notified_broken_configuration
             .store(true, Ordering::Relaxed);

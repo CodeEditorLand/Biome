@@ -58,24 +58,32 @@ pub struct UseButtonTypeState {
 
 impl Rule for UseButtonType {
     type Query = Semantic<UseButtonTypeQuery>;
+
     type State = UseButtonTypeState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         match node {
             UseButtonTypeQuery::JsxSelfClosingElement(element) => {
                 let name = element.name().ok()?;
+
                 if !is_button(&name)? {
                     return None;
                 }
+
                 let type_attribute = element.find_attribute_by_name("type");
+
                 let Some(attribute) = type_attribute else {
                     let has_spread_prop = element
                         .attributes()
                         .into_iter()
                         .any(|attr| attr.as_jsx_spread_attribute().is_some());
+
                     if has_spread_prop {
                         return None;
                     } else {
@@ -85,19 +93,25 @@ impl Rule for UseButtonType {
                         });
                     }
                 };
+
                 inspect_jsx_type_attribute(&attribute)
             }
+
             UseButtonTypeQuery::JsxOpeningElement(element) => {
                 let name = element.name().ok()?;
+
                 if !is_button(&name)? {
                     return None;
                 }
+
                 let type_attribute = element.find_attribute_by_name("type");
+
                 let Some(attribute) = type_attribute else {
                     let has_spread_prop = element
                         .attributes()
                         .into_iter()
                         .any(|attr| attr.as_jsx_spread_attribute().is_some());
+
                     if has_spread_prop {
                         return None;
                     } else {
@@ -107,10 +121,13 @@ impl Rule for UseButtonType {
                         });
                     }
                 };
+
                 inspect_jsx_type_attribute(&attribute)
             }
+
             UseButtonTypeQuery::JsCallExpression(call_expression) => {
                 let model = ctx.model();
+
                 let react_create_element =
                     ReactCreateElementCall::from_call_expression(call_expression, model)?;
                 // first argument needs to be a string
@@ -118,15 +135,18 @@ impl Rule for UseButtonType {
                     .element_type
                     .as_any_js_expression()?
                     .as_static_value()?;
+
                 if first_argument.text() != "button" {
                     return None;
                 }
+
                 let Some(props) = react_create_element.props.as_ref() else {
                     return Some(UseButtonTypeState {
                         range: first_argument.range(),
                         missing_prop: true,
                     });
                 };
+
                 let Some(member) = react_create_element.find_prop_by_name("type") else {
                     // We haven't found the property `type`
                     return Some(UseButtonTypeState {
@@ -134,7 +154,9 @@ impl Rule for UseButtonType {
                         missing_prop: false,
                     });
                 };
+
                 let property_value = member.value().ok()?.as_static_value()?;
+
                 if ALLOWED_BUTTON_TYPES.contains(&property_value.text()) {
                     None
                 } else {
@@ -157,6 +179,7 @@ impl Rule for UseButtonType {
                 "Provide a valid "<Emphasis>"type"</Emphasis>" prop for the "<Emphasis>"button"</Emphasis>" element."
             }).to_owned()
         };
+
         Some(RuleDiagnostic::new(rule_category!(),
             state.range,
             message
@@ -181,14 +204,18 @@ fn inspect_jsx_type_attribute(attribute: &JsxAttribute) -> Option<UseButtonTypeS
             missing_prop: false,
         });
     };
+
     let value = initializer.value().ok()?;
+
     let Some(value) = value.as_jsx_string() else {
         // computed value
         return None;
     };
+
     if ALLOWED_BUTTON_TYPES.contains(&&*value.inner_string_text().ok()?) {
         return None;
     }
+
     Some(UseButtonTypeState {
         range: value.range(),
         missing_prop: false,
@@ -203,8 +230,10 @@ fn is_button(name: &AnyJsxElementName) -> Option<bool> {
     Some(match name {
         AnyJsxElementName::JsxName(name) => {
             let name = name.value_token().ok()?;
+
             name.text_trimmed() == "button"
         }
+
         _ => false,
     })
 }

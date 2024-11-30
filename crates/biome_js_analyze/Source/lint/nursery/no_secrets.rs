@@ -88,13 +88,18 @@ declare_lint_rule! {
 
 impl Rule for NoSecrets {
     type Query = Ast<JsStringLiteralExpression>;
+
     type State = &'static str;
+
     type Signals = Option<Self::State>;
+
     type Options = NoSecretsOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let token = node.value_token().ok()?;
+
         let text = token.text();
 
         if text.len() < MIN_PATTERN_LEN {
@@ -130,11 +135,13 @@ impl Rule for NoSecrets {
             .options()
             .entropy_threshold
             .unwrap_or(DEFAULT_HIGH_ENTROPY_THRESHOLD);
+
         detect_secret(text, &entropy_threshold)
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -364,6 +371,7 @@ fn is_known_safe_pattern(data: &str) -> bool {
             return true;
         }
     }
+
     false
 }
 
@@ -384,11 +392,13 @@ fn detect_secret(data: &str, entropy_threshold: &u16) -> Option<&'static str> {
 
             let entropy =
                 calculate_entropy_with_case_and_classes(token, *entropy_threshold as f64, 15.0);
+
             if (entropy as u16) > *entropy_threshold {
                 return Some("Detected high entropy string");
             }
         }
     }
+
     None
 }
 
@@ -409,6 +419,7 @@ fn calculate_entropy_with_case_and_classes(
     scaling_factor: f64,
 ) -> f64 {
     let mut freq = [0usize; 256];
+
     let len = data.len();
 
     for &byte in data.as_bytes() {
@@ -416,17 +427,25 @@ fn calculate_entropy_with_case_and_classes(
     }
 
     let mut shannon_entropy = 0.0;
+
     let mut letter_count = 0;
+
     let mut uppercase_count = 0;
+
     let mut lowercase_count = 0;
+
     let mut digit_count = 0;
+
     let mut symbol_count = 0;
+
     let mut case_switches = 0;
+
     let mut previous_char_was_upper = false;
 
     for count in freq.iter() {
         if *count > 0 {
             let p = *count as f64 / len as f64;
+
             shannon_entropy -= p * p.log2();
         }
     }
@@ -435,17 +454,22 @@ fn calculate_entropy_with_case_and_classes(
     for (i, c) in data.chars().enumerate() {
         if c.is_ascii_alphabetic() {
             letter_count += 1;
+
             if c.is_uppercase() {
                 uppercase_count += 1;
+
                 if i > 0 && !previous_char_was_upper {
                     case_switches += 1;
                 }
+
                 previous_char_was_upper = true;
             } else {
                 lowercase_count += 1;
+
                 if i > 0 && previous_char_was_upper {
                     case_switches += 1;
                 }
+
                 previous_char_was_upper = false;
             }
         } else if c.is_ascii_digit() {
@@ -498,6 +522,7 @@ fn apply_exponential_entropy_scaling(
 ) -> f64 {
     // We will apply a logarithmic dampening to prevent excessive scaling for long tokens
     let scaling_adjustment = (token_length as f64 / scaling_factor).ln();
+
     base_threshold + entropy * scaling_adjustment
 }
 
@@ -513,6 +538,7 @@ mod tests {
             .unwrap_or(0);
 
         let initialized_min_pattern_len = MIN_PATTERN_LEN;
+
         assert_eq!(initialized_min_pattern_len, actual_min_pattern_len, "The initialized MIN_PATTERN_LEN value is not correct. Please ensure it's the smallest possible number from the SENSITIVE_PATTERNS.");
     }
 }

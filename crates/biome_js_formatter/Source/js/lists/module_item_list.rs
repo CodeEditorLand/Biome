@@ -15,6 +15,7 @@ impl FormatRule<JsModuleItemList> for FormatJsModuleItemList {
                 AnyJsModuleItem::AnyJsStatement(AnyJsStatement::JsEmptyStatement(empty)) => {
                     join.entry_no_separator(&empty.format());
                 }
+
                 _ => {
                     join.entry(
                         module_item.syntax(),

@@ -20,6 +20,7 @@ pub(crate) type JsonLosslessTreeSink<'source> =
 
 pub fn parse_json(source: &str, options: JsonParserOptions) -> JsonParse {
     let mut cache = NodeCache::default();
+
     parse_json_with_cache(source, &mut cache, options)
 }
 
@@ -37,7 +38,9 @@ pub fn parse_json_with_cache(
         let (events, diagnostics, trivia) = parser.finish();
 
         let mut tree_sink = JsonLosslessTreeSink::with_cache(source, &trivia, cache);
+
         biome_parser::event::process(&mut tree_sink, events, diagnostics);
+
         let (green, diagnostics) = tree_sink.finish();
 
         JsonParse::new(green, diagnostics)
@@ -109,7 +112,9 @@ impl JsonParse {
 impl From<JsonParse> for AnyParse {
     fn from(parse: JsonParse) -> Self {
         let root = parse.syntax();
+
         let diagnostics = parse.into_diagnostics();
+
         Self::new(
             // SAFETY: the parser should always return a root node
             root.as_send().unwrap(),

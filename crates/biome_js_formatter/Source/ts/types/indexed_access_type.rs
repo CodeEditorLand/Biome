@@ -15,6 +15,7 @@ impl FormatNodeRule<TsIndexedAccessType> for FormatTsIndexedAccessType {
             index_type,
             r_brack_token,
         } = node.as_fields();
+
         write![
             f,
             [

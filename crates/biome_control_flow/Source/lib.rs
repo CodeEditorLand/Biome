@@ -179,9 +179,11 @@ impl<L: Language> Display for ControlFlowGraph<L> {
         writeln!(fmt, "flowchart TB")?;
 
         let mut links = FxHashMap::default();
+
         for (id, block) in self.blocks.iter().enumerate() {
             if fmt.alternate() {
                 writeln!(fmt, "    subgraph block_{id}")?;
+
                 writeln!(fmt, "        direction TB")?;
             } else {
                 write!(fmt, "    block_{id}[\"<b>block_{id}</b><br/>")?;
@@ -213,6 +215,7 @@ impl<L: Language> Display for ControlFlowGraph<L> {
                         .as_ref()
                         .filter(|_| conditional)
                         .map(|node| (node.kind(), node.text_trimmed_range()));
+
                     links.insert((id, index, block.index()), condition);
                 }
             }
@@ -267,6 +270,7 @@ impl<L: Language> Display for Instruction<L> {
             } if self.node.is_some() => {
                 // SAFETY: Checked by the above call to `is_some`
                 let node = self.node.as_ref().unwrap();
+
                 write!(
                     fmt,
                     "Jump {{ condition: {:?} {:?}, block: {} }}",

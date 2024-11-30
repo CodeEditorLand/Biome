@@ -6,6 +6,7 @@ use biome_js_syntax::AnyTsPropertySignatureModifier;
 pub(crate) struct FormatAnyTsPropertySignatureModifier;
 impl FormatRule<AnyTsPropertySignatureModifier> for FormatAnyTsPropertySignatureModifier {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyTsPropertySignatureModifier, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyTsPropertySignatureModifier::JsAccessorModifier(node) => node.format().fmt(f),

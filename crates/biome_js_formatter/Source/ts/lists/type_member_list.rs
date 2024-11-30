@@ -13,6 +13,7 @@ impl FormatRule<TsTypeMemberList> for FormatTsTypeMemberList {
 
     fn fmt(&self, node: &TsTypeMemberList, f: &mut JsFormatter) -> FormatResult<()> {
         let items = node.iter();
+
         let last_index = items.len().saturating_sub(1);
 
         let mut joiner = f.join_nodes_with_soft_line();
@@ -44,6 +45,7 @@ impl Format<JsFormatContext> for TsTypeMemberItem<'_> {
             f,
             [group(&format_once(|f| {
                 let mut recording = f.start_recording();
+
                 write!(recording, [self.member.format()])?;
 
                 is_verbatim = recording.stop().end_tag(TagKind::Verbatim).is_some();
@@ -63,6 +65,7 @@ impl Format<JsFormatContext> for TsTypeMemberItem<'_> {
                         text(";").fmt(f)?;
                     }
                 }
+
                 Semicolons::AsNeeded => {
                     if !self.last {
                         write!(f, [if_group_fits_on_line(&text(";"))])?;

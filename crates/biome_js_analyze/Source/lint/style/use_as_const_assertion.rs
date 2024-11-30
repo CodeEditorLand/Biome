@@ -66,45 +66,70 @@ pub enum RuleState {
 
 impl Rule for UseAsConstAssertion {
     type Query = Ast<Query>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let query = ctx.query();
+
         match query {
             Query::JsVariableDeclarator(decl) => {
                 let literal = decl.initializer()?.expression().ok()?;
+
                 let literal = literal.as_any_js_literal_expression()?;
+
                 let type_annotation = decl.variable_annotation()?;
+
                 let type_annotation = type_annotation.as_ts_type_annotation()?;
+
                 let type_annotation = type_annotation.ty().ok()?;
+
                 let range = check_literal_match(literal, &type_annotation)?;
+
                 Some(RuleState::TypeAnnotation(range))
             }
+
             Query::JsPropertyClassMember(member) => {
                 let literal = member.value()?.expression().ok()?;
+
                 let literal = literal.as_any_js_literal_expression()?;
+
                 let property_annotation = member
                     .property_annotation()?
                     .as_ts_type_annotation()?
                     .ty()
                     .ok()?;
+
                 let range = check_literal_match(literal, &property_annotation)?;
+
                 Some(RuleState::TypeAnnotation(range))
             }
+
             Query::TsAsExpression(expr) => {
                 let literal = expr.expression().ok()?;
+
                 let literal = literal.as_any_js_literal_expression()?;
+
                 let asserted_literal = expr.ty().ok()?;
+
                 let range = check_literal_match(literal, &asserted_literal)?;
+
                 Some(RuleState::AsAssertion(range))
             }
+
             Query::TsTypeAssertionExpression(expr) => {
                 let literal = expr.expression().ok()?;
+
                 let literal = literal.as_any_js_literal_expression()?;
+
                 let asserted_literal = expr.ty().ok()?;
+
                 let range = check_literal_match(literal, &asserted_literal)?;
+
                 Some(RuleState::AngleBracketAssertion(range))
             }
         }
@@ -134,15 +159,18 @@ impl Rule for UseAsConstAssertion {
                 markup! {""<Emphasis>"as const"</Emphasis>" doesn't require any update when the value is changed."},
             ),
         };
+
         Some(RuleDiagnostic::new(rule_category!(), range, message).note(note))
     }
 
     /// Replace type assertion or annotation with const assertion (`as const`).
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let query = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let as_token = make::token_decorated_with_space(JsSyntaxKind::AS_KW);
+
         let const_reference_type = AnyTsType::from(
             make::ts_reference_type(AnyTsName::JsReferenceIdentifier(
                 make::js_reference_identifier(make::ident("const")),
@@ -153,6 +181,7 @@ impl Rule for UseAsConstAssertion {
         match query {
             Query::JsVariableDeclarator(previous_decl) => {
                 mutation.remove_node(previous_decl.variable_annotation()?);
+
                 let new_initializer = make::js_initializer_clause(
                     make::token_decorated_with_space(JsSyntaxKind::EQ),
                     AnyJsExpression::TsAsExpression(make::ts_as_expression(
@@ -161,10 +190,13 @@ impl Rule for UseAsConstAssertion {
                         const_reference_type,
                     )),
                 );
+
                 mutation.replace_node_discard_trivia(previous_decl.initializer()?, new_initializer);
             }
+
             Query::JsPropertyClassMember(previous_member) => {
                 mutation.remove_node(previous_member.property_annotation()?);
+
                 let new_initializer = make::js_initializer_clause(
                     make::token_decorated_with_space(JsSyntaxKind::EQ),
                     AnyJsExpression::TsAsExpression(make::ts_as_expression(
@@ -173,21 +205,27 @@ impl Rule for UseAsConstAssertion {
                         const_reference_type,
                     )),
                 );
+
                 mutation.replace_node_discard_trivia(previous_member.value()?, new_initializer);
             }
+
             Query::TsAsExpression(previous_expr) => {
                 mutation.replace_node(previous_expr.ty().ok()?, const_reference_type);
             }
+
             Query::TsTypeAssertionExpression(previous_expr) => {
                 let previous_initializer = previous_expr.parent::<JsInitializerClause>()?;
+
                 let new_expr = AnyJsExpression::TsAsExpression(make::ts_as_expression(
                     previous_expr.expression().ok()?,
                     as_token,
                     const_reference_type,
                 ));
+
                 mutation.replace_node(previous_initializer.expression().ok()?, new_expr);
             }
         };
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -222,7 +260,9 @@ fn check_literal_match(
                 return Some(specified_literal.range());
             }
         }
+
         _ => return None,
     }
+
     None
 }

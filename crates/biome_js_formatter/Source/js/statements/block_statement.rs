@@ -23,6 +23,7 @@ impl FormatNodeRule<JsBlockStatement> for FormatJsBlockStatement {
         let r_curly_token = r_curly_token?;
 
         let comments = f.context().comments();
+
         if is_empty_block(node, comments) {
             let has_dangling_comments = comments.has_dangling_comments(node.syntax());
 
@@ -96,6 +97,7 @@ fn is_empty_block(block: &JsBlockStatement, comments: &JsComments) -> bool {
 fn is_non_collapsible(block: &JsBlockStatement) -> bool {
     // reference https://github.com/prettier/prettier/blob/b188c905cfaeb238a122b4a95c230da83f2f3226/src/language-js/print/block.js#L19
     let parent = block.syntax().parent();
+
     match parent.kind() {
         Some(
             JsSyntaxKind::JS_FUNCTION_BODY
@@ -109,12 +111,15 @@ fn is_non_collapsible(block: &JsBlockStatement) -> bool {
         Some(JsSyntaxKind::JS_CATCH_CLAUSE) => {
             // SAFETY: since parent node have `Some(kind)`, this must not be `None`
             let parent_unwrap = parent.unwrap();
+
             let finally_clause = parent_unwrap.next_sibling();
+
             matches!(
                 finally_clause.map(|finally| finally.kind()),
                 Some(JsSyntaxKind::JS_FINALLY_CLAUSE),
             )
         }
+
         Some(_) => true,
         None => false,
     }

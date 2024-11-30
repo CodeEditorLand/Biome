@@ -15,6 +15,7 @@ pub struct GraphqlLanguage;
 
 impl Language for GraphqlLanguage {
     type Kind = GraphqlSyntaxKind;
+
     type Root = GraphqlRoot;
 }
 

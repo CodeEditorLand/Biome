@@ -50,6 +50,7 @@ impl From<String> for MessageAndDescription {
 impl From<MarkupBuf> for MessageAndDescription {
     fn from(message: MarkupBuf) -> Self {
         let description = markup_to_string(&message);
+
         Self {
             message,
             description,
@@ -78,8 +79,11 @@ impl biome_console::fmt::Display for MessageAndDescription {
 /// Utility function to transform a [MarkupBuf] into a [String]
 pub fn markup_to_string(markup: &MarkupBuf) -> String {
     let mut buffer = Vec::new();
+
     let mut write = Termcolor(NoColor::new(&mut buffer));
+
     let mut fmt = Formatter::new(&mut write);
+
     fmt.write_markup(markup! { {markup} })
         .expect("to have written in the buffer");
 

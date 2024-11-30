@@ -55,25 +55,38 @@ impl<'a> GritResolvedPattern<'a> {
             Self::List(elements) => {
                 // merge separated by space
                 let mut snippets = Vec::new();
+
                 for pattern in elements {
                     snippets.extend(pattern.to_snippets()?);
+
                     snippets.push(ResolvedSnippet::Text(" ".into()));
                 }
+
                 snippets.pop();
+
                 Ok(snippets)
             }
+
             Self::Map(map) => {
                 let mut snippets = Vec::new();
+
                 snippets.push(ResolvedSnippet::Text("{".into()));
+
                 for (key, value) in map {
                     snippets.push(ResolvedSnippet::Text(format!("\"{key}\": ").into()));
+
                     snippets.extend(value.to_snippets()?);
+
                     snippets.push(ResolvedSnippet::Text(", ".into()));
                 }
+
                 snippets.pop();
+
                 snippets.push(ResolvedSnippet::Text("}".into()));
+
                 Ok(snippets)
             }
+
             Self::File(_) => Err(GritPatternError::new(
                 "cannot convert ResolvedPattern::File to ResolvedSnippet",
             )),
@@ -123,15 +136,18 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
         logs: &mut grit_util::AnalysisLogs,
     ) -> GritResult<Self> {
         let mut parts = Vec::new();
+
         for part in &snippet.parts {
             match part {
                 DynamicSnippetPart::String(string) => {
                     parts.push(ResolvedSnippet::Text(string.into()));
                 }
+
                 DynamicSnippetPart::Variable(var) => {
                     let content = &state.bindings[var.try_scope().unwrap() as usize]
                         .last()
                         .unwrap()[var.try_index().unwrap() as usize];
+
                     let name = &content.name;
                     // feels weird not sure if clone is correct
                     let value = if let Some(value) = &content.value {
@@ -143,11 +159,14 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
                             "cannot create resolved snippet from unresolved variable {name}"
                         )));
                     };
+
                     let value = value.to_snippets()?;
+
                     parts.extend(value);
                 }
             }
         }
+
         Ok(Self::Snippets(parts))
     }
 
@@ -162,6 +181,7 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
                 let content = &state.bindings[var.try_scope().unwrap() as usize]
                     .last()
                     .unwrap()[var.try_index().unwrap() as usize];
+
                 let name = &content.name;
                 // feels weird not sure if clone is correct
                 if let Some(value) = &content.value {
@@ -175,20 +195,26 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
                     )));
                 }
             }
+
             DynamicPattern::Accessor(accessor) => {
                 Self::from_accessor(accessor, state, context, logs)
             }
+
             DynamicPattern::ListIndex(index) => Self::from_list_index(index, state, context, logs),
             DynamicPattern::List(list) => {
                 let mut elements = Vec::new();
+
                 for element in &list.elements {
                     elements.push(Self::from_dynamic_pattern(element, state, context, logs)?);
                 }
+
                 Ok(Self::List(elements))
             }
+
             DynamicPattern::Snippet(snippet) => {
                 Self::from_dynamic_snippet(snippet, state, context, logs)
             }
+
             DynamicPattern::CallBuiltIn(built_in) => built_in.call(state, context, logs),
             DynamicPattern::CallFunction(func) => func.call(state, context, logs),
             DynamicPattern::CallForeignFunction(_) => unimplemented!(),
@@ -205,6 +231,7 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
             Some(PatternOrResolved::Pattern(pattern)) => {
                 Self::from_pattern(pattern, state, context, logs)
             }
+
             Some(PatternOrResolved::ResolvedBinding(resolved)) => Ok(resolved),
             Some(PatternOrResolved::Resolved(resolved)) => Ok(resolved.clone()),
             None => Ok(Self::from_constant_binding(&Constant::Undefined)),
@@ -221,6 +248,7 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
             Some(PatternOrResolved::Pattern(pattern)) => {
                 Self::from_pattern(pattern, state, context, logs)
             }
+
             Some(PatternOrResolved::ResolvedBinding(resolved)) => Ok(resolved),
             Some(PatternOrResolved::Resolved(resolved)) => Ok(resolved.clone()),
             None => Ok(Self::from_constant_binding(&Constant::Undefined)),
@@ -256,6 +284,7 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
                 let content = &state.bindings[var.try_scope().unwrap() as usize]
                     .last()
                     .unwrap()[var.try_index().unwrap() as usize];
+
                 let name = &content.name;
                 // feels weird not sure if clone is correct
                 if let Some(value) = &content.value {
@@ -269,6 +298,7 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
                     )));
                 }
             }
+
             Pattern::List(list) => list
                 .patterns
                 .iter()
@@ -290,16 +320,23 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
             Pattern::Accessor(accessor) => Self::from_accessor(accessor, state, context, logs),
             Pattern::File(file_pattern) => {
                 let name = &file_pattern.name;
+
                 let body = &file_pattern.body;
+
                 let name = Self::from_pattern(name, state, context, logs)?;
+
                 let name = name.text(&state.files, context.language())?;
+
                 let name = Self::Constant(Constant::String(name.to_string()));
+
                 let body = Self::from_pattern(body, state, context, logs)?;
+
                 Ok(Self::File(GritFile::Resolved(Box::new(ResolvedFile {
                     name,
                     body,
                 }))))
             }
+
             Pattern::Add(add_pattern) => add_pattern.call(state, context, logs),
             Pattern::Subtract(subtract_pattern) => subtract_pattern.call(state, context, logs),
             Pattern::Multiply(multiply_pattern) => multiply_pattern.call(state, context, logs),
@@ -372,19 +409,23 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
                     .map(|snippet| snippet.text(state, language))
                     .collect::<GritResult<Vec<_>>>()?
                     .join("");
+
                 text.parse::<f64>().map_err(|_| {
                     GritPatternError::new("Failed to convert snippet to double. Ensure that you are only attempting arithmetic operations on numeric-parsable types.")
                 })
             }
+
             Self::Binding(binding) => {
                 let text = binding
                     .last()
                     .ok_or_else(|| GritPatternError::new("cannot grab text of resolved_pattern with no binding"))?
                     .text(language)?;
+
                 text.parse::<f64>().map_err(|_| {
                     GritPatternError::new("Failed to convert binding to double. Ensure that you are only attempting arithmetic operations on numeric-parsable types.")
                 })
             }
+
             Self::List(_) | Self::Map(_) | Self::File(_) | Self::Files(_) => Err(GritPatternError::new("Cannot convert type to double. Ensure that you are only attempting arithmetic operations on numeric-parsable types.")),
         }
     }
@@ -512,9 +553,11 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
                     false
                 }
             }
+
             Self::File(..) => true,
             Self::Files(..) => true,
         };
+
         Ok(truthiness)
     }
 
@@ -576,6 +619,7 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
         };
 
         bindings.push(binding);
+
         Ok(())
     }
 
@@ -589,6 +633,7 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
         };
 
         items.insert(index, value);
+
         Ok(true)
     }
 
@@ -610,6 +655,7 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
                 .iter()
                 .try_fold(String::new(), |mut text, snippet| {
                     text.push_str(&snippet.text(state, language)?);
+
                     Ok::<String, GritPatternError>(text)
                 })?
                 .into()),
@@ -626,11 +672,14 @@ impl<'a> ResolvedPattern<'a, GritQueryContext> for GritResolvedPattern<'a> {
                         let value = value
                             .text(state, language)
                             .expect("failed to get text of map value");
+
                         format!("\"{key}\": {value}")
                     })
                     .reduce(|mut acc, entry| {
                         acc.push_str(", ");
+
                         acc.push_str(&entry);
+
                         acc
                     })
                     .unwrap_or_default()

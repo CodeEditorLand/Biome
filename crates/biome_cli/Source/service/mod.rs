@@ -153,9 +153,11 @@ impl SocketTransport {
         let (write_send, write_recv) = channel(WRITE_CHANNEL_CAPACITY);
 
         let pending_requests = PendingRequests::default();
+
         let pending_requests_2 = pending_requests.clone();
 
         let socket_read = BufReader::new(socket_read);
+
         let socket_write = BufWriter::new(socket_write);
 
         let broadcast_shutdown = Arc::new(Notify::new());
@@ -169,6 +171,7 @@ impl SocketTransport {
         runtime.spawn(async move {
             tokio::select! {
                 _ = read_task(socket_read, &pending_requests) => {}
+
                 _ = broadcast_shutdown.notified() => {}
             }
         });
@@ -224,6 +227,7 @@ impl WorkspaceTransport for SocketTransport {
                         Err(_) => Err(TransportError::ChannelClosed),
                     }
                 }
+
                 _ = sleep(Duration::from_secs(15)) => {
                     Err(TransportError::Timeout)
                 }
@@ -231,6 +235,7 @@ impl WorkspaceTransport for SocketTransport {
         })?;
 
         let response = response.get();
+
         let result = from_str(response).map_err(|err| {
             TransportError::SerdeError(format!(
                 "failed to deserialize {} from {response:?}: {err}",
@@ -248,6 +253,7 @@ where
 {
     loop {
         let message = read_message(&mut socket_read).await;
+
         let message = match message {
             Ok(message) => {
                 let response = from_slice(&message).with_context(|| {
@@ -260,6 +266,7 @@ where
 
                 response.map(|response| (message, response))
             }
+
             Err(err) => Err(err),
         };
 
@@ -270,6 +277,7 @@ where
                     "{:?}",
                     err.context("remote connection read task exited with an error")
                 );
+
                 break;
             }
         };
@@ -308,6 +316,7 @@ where
     R: AsyncBufRead + Unpin,
 {
     let mut length = None;
+
     let mut line = String::new();
 
     loop {
@@ -329,6 +338,7 @@ where
 
                 break;
             }
+
             _ => {
                 let header: TransportHeader = line
                     .parse()
@@ -338,7 +348,9 @@ where
                     TransportHeader::ContentLength(value) => {
                         length = Some(value);
                     }
+
                     TransportHeader::ContentType => {}
+
                     TransportHeader::Unknown(name) => {
                         eprintln!("ignoring unknown header {name:?}");
                     }
@@ -354,6 +366,7 @@ where
     )?;
 
     let mut result = vec![0u8; length];
+
     socket_read
         .read_exact(&mut result)
         .await
@@ -379,6 +392,7 @@ async fn write_task<W>(
                 "{:?}",
                 err.context("remote connection write task exited with an error")
             );
+
             break;
         }
 
@@ -395,7 +409,9 @@ where
     socket_write.write_all(b"Content-Length: ").await?;
 
     let length = message.len().to_string();
+
     socket_write.write_all(length.as_bytes()).await?;
+
     socket_write.write_all(b"\r\n").await?;
 
     socket_write
@@ -453,6 +469,7 @@ impl FromStr for TransportHeader {
             .with_context(|| format!("could not find colon token in {line:?}"))?;
 
         let (name, value) = line.split_at(colon);
+
         let value = value[1..].trim();
 
         match name {
@@ -471,6 +488,7 @@ impl FromStr for TransportHeader {
 
                 Ok(TransportHeader::ContentType)
             }
+
             _ => Ok(TransportHeader::Unknown(name.into())),
         }
     }

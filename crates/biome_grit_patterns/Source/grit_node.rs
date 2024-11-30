@@ -45,20 +45,24 @@ impl GritAstNode for GritNode {
 
     fn next_named_node(&self) -> Option<Self> {
         let mut current_node = Cow::Borrowed(&self.0);
+
         loop {
             if let Some(sibling) = current_node.next_sibling() {
                 return Some(sibling.into());
             }
+
             current_node = Cow::Owned(current_node.parent()?);
         }
     }
 
     fn previous_named_node(&self) -> Option<Self> {
         let mut current_node = Cow::Borrowed(&self.0);
+
         loop {
             if let Some(sibling) = current_node.prev_sibling() {
                 return Some(sibling.into());
             }
+
             current_node = Cow::Owned(current_node.parent()?);
         }
     }
@@ -81,6 +85,7 @@ impl GritAstNode for GritNode {
 
     fn code_range(&self) -> CodeRange {
         let range = self.0.text_trimmed_range();
+
         CodeRange {
             start: range.start().into(),
             end: range.end().into(),
@@ -117,7 +122,9 @@ impl Iterator for AncestorIterator {
 
     fn next(&mut self) -> Option<Self::Item> {
         let node = self.node.clone()?;
+
         self.node = node.parent();
+
         Some(node)
     }
 }
@@ -129,6 +136,7 @@ pub struct ChildrenIterator {
 impl ChildrenIterator {
     fn new(node: &GritNode) -> Self {
         let mut cursor = GritNodeCursor::new(node);
+
         Self {
             cursor: cursor.goto_first_child().then_some(cursor),
         }
@@ -140,10 +148,13 @@ impl Iterator for ChildrenIterator {
 
     fn next(&mut self) -> Option<Self::Item> {
         let c = self.cursor.as_mut()?;
+
         let node = c.node();
+
         if !c.goto_next_sibling() {
             self.cursor = None;
         }
+
         Some(node)
     }
 }
@@ -170,8 +181,10 @@ impl AstCursor for GritNodeCursor {
         match self.current.first_child() {
             Some(child) => {
                 self.current = child.into();
+
                 true
             }
+
             None => false,
         }
     }
@@ -184,8 +197,10 @@ impl AstCursor for GritNodeCursor {
         match self.current.parent() {
             Some(parent) => {
                 self.current = parent;
+
                 true
             }
+
             None => false,
         }
     }
@@ -198,8 +213,10 @@ impl AstCursor for GritNodeCursor {
         match self.current.next_sibling() {
             Some(sibling) => {
                 self.current = sibling;
+
                 true
             }
+
             None => false,
         }
     }

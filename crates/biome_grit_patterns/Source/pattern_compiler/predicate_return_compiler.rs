@@ -11,6 +11,7 @@ impl PrReturnCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<PrReturn<GritQueryContext>, CompileError> {
         let pattern = PatternCompiler::from_node_with_rhs(&node.pattern()?, context, true)?;
+
         Ok(PrReturn::new(pattern))
     }
 }

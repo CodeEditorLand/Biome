@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsxElementName;
 pub(crate) struct FormatAnyJsxElementName;
 impl FormatRule<AnyJsxElementName> for FormatAnyJsxElementName {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsxElementName, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsxElementName::JsxMemberName(node) => node.format().fmt(f),

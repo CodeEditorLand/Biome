@@ -143,7 +143,9 @@ impl NoVoidElementsWithChildrenState {
 
     fn diagnostic_message(&self) -> MarkupBuf {
         let has_children_cause = self.has_children_cause();
+
         let has_dangerous_cause = self.has_dangerous_prop_cause();
+
         match (has_children_cause, has_dangerous_cause) {
             (true, true) => {
                 (markup! {
@@ -168,7 +170,9 @@ impl NoVoidElementsWithChildrenState {
 
     fn action_message(&self) -> MarkupBuf {
         let has_children_cause = self.has_children_cause();
+
         let has_dangerous_cause = self.has_dangerous_prop_cause();
+
         match (has_children_cause, has_dangerous_cause) {
             (true, true) => {
                 (markup! {
@@ -193,25 +197,36 @@ impl NoVoidElementsWithChildrenState {
 
 impl Rule for NoVoidElementsWithChildren {
     type Query = Semantic<NoVoidElementsWithChildrenQuery>;
+
     type State = NoVoidElementsWithChildrenState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
 
         match node {
             NoVoidElementsWithChildrenQuery::JsxElement(element) => {
                 let opening_element = element.opening_element().ok()?;
+
                 let name = opening_element.name().ok()?;
+
                 let name = name.as_jsx_name()?.value_token().ok()?;
+
                 let name = name.text_trimmed();
+
                 if is_void_dom_element(name) {
                     let dangerous_prop =
                         opening_element.find_attribute_by_name("dangerouslySetInnerHTML");
+
                     let has_children = !element.children().is_empty();
+
                     let children_prop = opening_element.find_attribute_by_name("children");
+
                     if dangerous_prop.is_some() || has_children || children_prop.is_some() {
                         let cause = NoVoidElementsWithChildrenCause::Jsx {
                             children_prop,
@@ -223,13 +238,19 @@ impl Rule for NoVoidElementsWithChildren {
                     }
                 }
             }
+
             NoVoidElementsWithChildrenQuery::JsxSelfClosingElement(element) => {
                 let name = element.name().ok()?;
+
                 let name = name.as_jsx_name()?.value_token().ok()?;
+
                 let name = name.text_trimmed();
+
                 if is_void_dom_element(name) {
                     let dangerous_prop = element.find_attribute_by_name("dangerouslySetInnerHTML");
+
                     let children_prop = element.find_attribute_by_name("children");
+
                     if dangerous_prop.is_some() || children_prop.is_some() {
                         let cause = NoVoidElementsWithChildrenCause::Jsx {
                             children_prop,
@@ -241,9 +262,11 @@ impl Rule for NoVoidElementsWithChildren {
                     }
                 }
             }
+
             NoVoidElementsWithChildrenQuery::JsCallExpression(call_expression) => {
                 let react_create_element =
                     ReactCreateElementCall::from_call_expression(call_expression, model)?;
+
                 let element_type = react_create_element
                     .element_type
                     .as_any_js_expression()?
@@ -251,11 +274,15 @@ impl Rule for NoVoidElementsWithChildren {
                     .as_js_string_literal_expression()?;
 
                 let element_name = element_type.inner_string_text().ok()?;
+
                 let element_name = element_name.text();
+
                 if is_void_dom_element(element_name) {
                     let has_children = react_create_element.children.is_some();
+
                     let dangerous_prop =
                         react_create_element.find_prop_by_name("dangerouslySetInnerHTML");
+
                     let children_prop = react_create_element.find_prop_by_name("children");
 
                     if dangerous_prop.is_some() || has_children || children_prop.is_some() {
@@ -277,17 +304,21 @@ impl Rule for NoVoidElementsWithChildren {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let range = match node {
             NoVoidElementsWithChildrenQuery::JsxElement(element) => {
                 element.syntax().text_trimmed_range()
             }
+
             NoVoidElementsWithChildrenQuery::JsCallExpression(expression) => {
                 expression.syntax().text_trimmed_range()
             }
+
             NoVoidElementsWithChildrenQuery::JsxSelfClosingElement(element) => {
                 element.syntax().text_trimmed_range()
             }
         };
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             range,
@@ -297,6 +328,7 @@ impl Rule for NoVoidElementsWithChildren {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         match node {
@@ -308,6 +340,7 @@ impl Rule for NoVoidElementsWithChildren {
                 } = &state.cause
                 {
                     let opening_element = element.opening_element().ok()?;
+
                     let closing_element = element.closing_element().ok()?;
 
                     // here we create a new list of attributes, ignoring the ones that needs to be
@@ -329,6 +362,7 @@ impl Rule for NoVoidElementsWithChildren {
                                     }
                                 }
                             }
+
                             Some(attribute)
                         })
                         .collect();
@@ -343,12 +377,14 @@ impl Rule for NoVoidElementsWithChildren {
                         opening_element.r_angle_token().ok()?,
                     )
                     .build();
+
                     mutation.replace_element(
                         element.clone().into_syntax().into(),
                         new_node.into_syntax().into(),
                     );
                 }
             }
+
             NoVoidElementsWithChildrenQuery::JsCallExpression(_) => {
                 if let NoVoidElementsWithChildrenCause::ReactCreateElement {
                     children_prop,
@@ -362,9 +398,11 @@ impl Rule for NoVoidElementsWithChildren {
                             mutation.remove_node(children.clone());
                         }
                     }
+
                     if let Some(children_prop) = children_prop.as_ref() {
                         mutation.remove_node(children_prop.clone());
                     }
+
                     if let Some(dangerous_prop_case) = dangerous_prop_cause.as_ref() {
                         mutation.remove_node(dangerous_prop_case.clone());
                     }
@@ -382,6 +420,7 @@ impl Rule for NoVoidElementsWithChildren {
                     if let Some(children_prop) = children_prop.as_ref() {
                         mutation.remove_node(children_prop.clone());
                     }
+
                     if let Some(dangerous_prop_case) = dangerous_prop_cause.as_ref() {
                         mutation.remove_node(dangerous_prop_case.clone());
                     }

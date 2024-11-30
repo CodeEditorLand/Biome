@@ -164,29 +164,38 @@ static SORT_CONFIG: LazyLock<SortConfig> =
 
 impl Rule for UseSortedClasses {
     type Query = Ast<AnyClassStringLike>;
+
     type State = String;
+
     type Signals = Option<Self::State>;
+
     type Options = Box<UtilityClassSortingOptions>;
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let options = ctx.options();
+
         let node = ctx.query();
 
         if node.should_visit(options)? {
             if let Some(value) = node.value() {
                 // Check if the class should be ignored.
                 let ignore_prefix = should_ignore_prefix(node);
+
                 let ignore_postfix = should_ignore_postfix(node);
+
                 let sorted_value =
                     sort_class_name(&value, &SORT_CONFIG, ignore_prefix, ignore_postfix);
+
                 if sorted_value.is_empty() {
                     return None;
                 }
+
                 if value.text() != sorted_value {
                     return Some(sorted_value);
                 }
             }
         }
+
         None
     }
 
@@ -196,10 +205,14 @@ impl Rule for UseSortedClasses {
         // Calculate the range offset to account for the ignored prefix and postfix.
         let sort_range = if let Some(value) = node.value() {
             let range = node.range();
+
             let ignore_prefix = should_ignore_prefix(node);
+
             let ignore_postfix = should_ignore_postfix(node);
+
             let real_sort_range =
                 get_sort_class_name_range(&value, &range, ignore_prefix, ignore_postfix);
+
             real_sort_range.unwrap_or(range)
         } else {
             node.range()
@@ -214,6 +227,7 @@ impl Rule for UseSortedClasses {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         match ctx.query() {
             AnyClassStringLike::JsStringLiteralExpression(string_literal) => {
                 let replacement =
@@ -222,26 +236,33 @@ impl Rule for UseSortedClasses {
                     } else {
                         js_string_literal_single_quotes(state)
                     });
+
                 mutation.replace_node(string_literal.clone(), replacement);
             }
+
             AnyClassStringLike::JsLiteralMemberName(string_literal) => {
                 let replacement = js_literal_member_name(if ctx.as_preferred_quote().is_double() {
                     js_string_literal(state)
                 } else {
                     js_string_literal_single_quotes(state)
                 });
+
                 mutation.replace_node(string_literal.clone(), replacement);
             }
+
             AnyClassStringLike::JsxString(jsx_string_node) => {
                 let replacement = jsx_string(if ctx.as_preferred_quote().is_double() {
                     js_string_literal(state)
                 } else {
                     js_string_literal_single_quotes(state)
                 });
+
                 mutation.replace_node(jsx_string_node.clone(), replacement);
             }
+
             AnyClassStringLike::JsTemplateChunkElement(chunk) => {
                 let replacement = js_template_chunk_element(js_template_chunk(state));
+
                 mutation.replace_node(chunk.clone(), replacement);
             }
         };

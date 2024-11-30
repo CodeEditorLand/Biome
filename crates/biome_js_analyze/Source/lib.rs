@@ -33,7 +33,9 @@ pub(crate) type JsRuleAction = RuleAction<JsLanguage>;
 
 pub static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
     let mut metadata = MetadataRegistry::default();
+
     visit_registry(&mut metadata);
+
     metadata
 });
 
@@ -68,10 +70,13 @@ where
                     if comment.is_legacy {
                         result.push(Ok(SuppressionKind::Deprecated));
                     }
+
                     comment.categories
                 }
+
                 Err(err) => {
                     result.push(Err(err));
+
                     continue;
                 }
             };
@@ -85,6 +90,7 @@ where
                     }
                 } else {
                     let category = key.name();
+
                     if let Some(rule) = category.strip_prefix("lint/") {
                         if let Some(instance) = value {
                             result.push(Ok(SuppressionKind::RuleInstance(rule, instance)));
@@ -100,6 +106,7 @@ where
     }
 
     let mut registry = RuleRegistry::builder(&filter, root);
+
     visit_registry(&mut registry);
 
     let (registry, mut services, diagnostics, visitors) = registry.build();
@@ -122,7 +129,9 @@ where
     }
 
     services.insert_service(Arc::new(AriaRoles));
+
     services.insert_service(Arc::new(manifest));
+
     services.insert_service(source_type);
     (
         analyzer.run(AnalyzerContext {
@@ -164,14 +173,23 @@ where
 #[cfg(test)]
 mod tests {
     use biome_analyze::{AnalyzerOptions, Never, RuleCategoriesBuilder, RuleFilter};
+
     use biome_console::fmt::{Formatter, Termcolor};
+
     use biome_console::{markup, Markup};
+
     use biome_diagnostics::category;
+
     use biome_diagnostics::termcolor::NoColor;
+
     use biome_diagnostics::{Diagnostic, DiagnosticExt, PrintDiagnostic, Severity};
+
     use biome_js_parser::{parse, JsParserOptions};
+
     use biome_js_syntax::{JsFileSource, TextRange, TextSize};
+
     use biome_project::{Dependencies, PackageJson};
+
     use std::slice;
 
     use crate::{analyze, AnalysisFilter, ControlFlow};
@@ -181,8 +199,11 @@ mod tests {
     fn quick_test() {
         fn markup_to_string(markup: Markup) -> String {
             let mut buffer = Vec::new();
+
             let mut write = Termcolor(NoColor::new(&mut buffer));
+
             let mut fmt = Formatter::new(&mut write);
+
             fmt.write_markup(markup).unwrap();
 
             String::from_utf8(buffer).unwrap()
@@ -193,11 +214,15 @@ mod tests {
         let parsed = parse(SOURCE, JsFileSource::tsx(), JsParserOptions::default());
 
         let mut error_ranges: Vec<TextRange> = Vec::new();
+
         let options = AnalyzerOptions::default();
+
         let rule_filter = RuleFilter::Rule("style", "useNodejsImportProtocol");
 
         let mut dependencies = Dependencies::default();
+
         dependencies.add("buffer", "latest");
+
         analyze(
             &parsed.tree(),
             AnalysisFilter {
@@ -213,19 +238,24 @@ mod tests {
             |signal| {
                 if let Some(diag) = signal.diagnostic() {
                     error_ranges.push(diag.location().span.unwrap());
+
                     let error = diag
                         .with_severity(Severity::Warning)
                         .with_file_path("dummyFile")
                         .with_file_source_code(SOURCE);
+
                     let text = markup_to_string(markup! {
                         {PrintDiagnostic::verbose(&error)}
                     });
+
                     eprintln!("{text}");
                 }
 
                 for action in signal.actions() {
                     let new_code = action.mutation.commit();
+
                     eprintln!("new code!!!");
+
                     eprintln!("{new_code}");
                 }
 
@@ -250,6 +280,7 @@ mod tests {
                 // biome-ignore lint/style/useWhile: multiple line comments
                 // biome-ignore lint/suspicious/noDoubleEquals: multiple line comments
                 a == b;
+
                 a == b;
             }
 
@@ -269,6 +300,7 @@ mod tests {
                 // rome-ignore lint/style/useWhile: multiple line comments
                 // rome-ignore lint/suspicious/noDoubleEquals: multiple line comments
                 a == b;
+
                 a == b;
             }
 
@@ -292,10 +324,13 @@ mod tests {
         );
 
         let mut lint_ranges: Vec<TextRange> = Vec::new();
+
         let mut parse_ranges: Vec<TextRange> = Vec::new();
+
         let mut warn_ranges: Vec<TextRange> = Vec::new();
 
         let options = AnalyzerOptions::default();
+
         analyze(
             &parsed.tree(),
             AnalysisFilter::default(),
@@ -305,12 +340,14 @@ mod tests {
             |signal| {
                 if let Some(diag) = signal.diagnostic() {
                     let span = diag.get_span();
+
                     let error = diag
                         .with_severity(Severity::Warning)
                         .with_file_path("example.js")
                         .with_file_source_code(SOURCE);
 
                     let code = error.category().unwrap();
+
                     if code == category!("lint/suspicious/noDoubleEquals") {
                         lint_ranges.push(span.unwrap());
                     }
@@ -327,6 +364,7 @@ mod tests {
                 ControlFlow::<Never>::Continue(())
             },
         );
+
         assert_eq!(
             lint_ranges.as_slice(),
             &[
@@ -382,6 +420,7 @@ mod tests {
         };
 
         let options = AnalyzerOptions::default();
+
         analyze(
             &parsed.tree(),
             filter,
@@ -391,6 +430,7 @@ mod tests {
             |signal| {
                 if let Some(diag) = signal.diagnostic() {
                     let code = diag.category().unwrap();
+
                     if code != category!("suppressions/unused") {
                         panic!("unexpected diagnostic {code:?}");
                     }

@@ -95,8 +95,11 @@ impl NoInvalidConstructorSuperState {
 
 impl Rule for NoInvalidConstructorSuper {
     type Query = Ast<JsConstructorClassMember>;
+
     type State = NoInvalidConstructorSuperState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -124,7 +127,9 @@ impl Rule for NoInvalidConstructorSuper {
         match (super_range, extends_clause) {
             (Some(super_range), Some(extends_clause)) => {
                 let super_class = extends_clause.super_class().ok()?;
+
                 let extends_range = super_class.range();
+
                 if let Some(is_valid) = is_valid_constructor(super_class) {
                     if !is_valid {
                         return Some(NoInvalidConstructorSuperState::BadExtends {
@@ -133,20 +138,24 @@ impl Rule for NoInvalidConstructorSuper {
                         });
                     }
                 }
+
                 None
             }
             (Some(super_range), None) => {
                 Some(NoInvalidConstructorSuperState::UnexpectedSuper(super_range))
             }
+
             _ => None,
         }
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let mut diagnostic = RuleDiagnostic::new(rule_category!(), state.range(), state.message());
+
         if let Some((range, text)) = state.detail() {
             diagnostic = diagnostic.detail(range, text);
         }
+
         Some(diagnostic)
     }
 }
@@ -156,6 +165,7 @@ fn is_valid_constructor(expression: AnyJsExpression) -> Option<bool> {
         AnyJsExpression::JsAwaitExpression(await_expression) => {
             is_valid_constructor(await_expression.argument().ok()?)
         }
+
         AnyJsExpression::JsThisExpression(_)
         | AnyJsExpression::JsFunctionExpression(_)
         | AnyJsExpression::JsCallExpression(_)
@@ -169,8 +179,10 @@ fn is_valid_constructor(expression: AnyJsExpression) -> Option<bool> {
         AnyJsExpression::JsIdentifierExpression(identifier) => {
             Some(!identifier.name().ok()?.is_undefined())
         }
+
         AnyJsExpression::JsAssignmentExpression(assignment) => {
             let operator = assignment.operator().ok()?;
+
             if matches!(
                 operator,
                 JsAssignmentOperator::Assign
@@ -180,42 +192,55 @@ fn is_valid_constructor(expression: AnyJsExpression) -> Option<bool> {
             ) {
                 return is_valid_constructor(assignment.right().ok()?);
             }
+
             Some(false)
         }
+
         AnyJsExpression::JsLogicalExpression(expression) => {
             let operator = expression.operator().ok()?;
+
             if matches!(operator, JsLogicalOperator::LogicalAnd) {
                 return is_valid_constructor(expression.right().ok()?);
             }
+
             is_valid_constructor(expression.left().ok()?)
                 .or_else(|| is_valid_constructor(expression.right().ok()?))
         }
+
         AnyJsExpression::JsConditionalExpression(conditional_expression) => {
             is_valid_constructor(conditional_expression.alternate().ok()?)
                 .or_else(|| is_valid_constructor(conditional_expression.consequent().ok()?))
         }
+
         AnyJsExpression::JsSequenceExpression(sequence_expression) => {
             is_valid_constructor(sequence_expression.right().ok()?)
         }
+
         AnyJsExpression::JsTemplateExpression(template_expression) => {
             // Tagged templates can return anything
             Some(template_expression.tag().is_some())
         }
+
         AnyJsExpression::TsInstantiationExpression(instantiation_expression) => {
             is_valid_constructor(instantiation_expression.expression().ok()?)
         }
+
         AnyJsExpression::TsAsExpression(type_assertion) => {
             is_valid_constructor(type_assertion.expression().ok()?)
         }
+
         AnyJsExpression::TsNonNullAssertionExpression(type_assertion) => {
             is_valid_constructor(type_assertion.expression().ok()?)
         }
+
         AnyJsExpression::TsSatisfiesExpression(type_assertion) => {
             is_valid_constructor(type_assertion.expression().ok()?)
         }
+
         AnyJsExpression::TsTypeAssertionExpression(type_assertion) => {
             is_valid_constructor(type_assertion.expression().ok()?)
         }
+
         AnyJsExpression::JsComputedMemberExpression(_)
         | AnyJsExpression::AnyJsLiteralExpression(_)
         | AnyJsExpression::JsArrayExpression(_)

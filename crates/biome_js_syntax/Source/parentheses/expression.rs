@@ -109,6 +109,7 @@ impl NeedsParentheses for JsArrowFunctionExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         matches!(
             parent.kind(),
             // Cast like
@@ -135,6 +136,7 @@ impl NeedsParentheses for JsAssignmentExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         match_ast! {
             match &parent {
                 JsAssignmentExpression(_) => false,
@@ -150,8 +152,10 @@ impl NeedsParentheses for JsAssignmentExpression {
                         Some(AnyJsForInitializer::AnyJsExpression(expr)) => {
                             expr.syntax() == self.syntax()
                         }
+
                         None | Some(_) => false,
                     };
+
                     let is_update = for_statement
                         .update()
                         .is_some_and(|update| update.syntax() == self.syntax());
@@ -169,6 +173,7 @@ impl NeedsParentheses for JsAssignmentExpression {
                 },
                 JsSequenceExpression(_) => {
                     let mut child = Cow::Borrowed(&parent);
+
                     for ancestor in parent.ancestors().skip(1) {
                         match ancestor.kind() {
                             JsSyntaxKind::JS_SEQUENCE_EXPRESSION
@@ -177,19 +182,24 @@ impl NeedsParentheses for JsAssignmentExpression {
                                 let Some(for_statement) = JsForStatement::cast(ancestor) else {
                                     break;
                                 };
+
                                 let is_initializer = match for_statement.initializer() {
                                     Some(AnyJsForInitializer::AnyJsExpression(expression)) => {
                                         expression.syntax() == child.as_ref()
                                     }
+
                                     None | Some(_) => false,
                                 };
+
                                 let is_update = for_statement
                                     .update()
                                     .is_some_and(|update| update.syntax() == child.as_ref());
+
                                 return !(is_initializer || is_update);
                             }
                         }
                     }
+
                     true
                 },
                 _ => true,
@@ -204,6 +214,7 @@ impl NeedsParentheses for JsAwaitExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         await_or_yield_needs_parens(parent, self.syntax())
     }
 }
@@ -234,10 +245,12 @@ impl NeedsParentheses for JsCallExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         parent.kind() == JsSyntaxKind::JS_NEW_EXPRESSION
             || (parent.kind() == JsSyntaxKind::JS_EXPORT_DEFAULT_EXPRESSION_CLAUSE
                 && self.callee().map_or(true, |callee| {
                     let callee_range = callee.range();
+
                     let leftmost = AnyJsExpressionLeftSide::leftmost(callee);
                     // require parens for iife and
                     // when the leftmost expression is not a class expression or a function expression
@@ -274,6 +287,7 @@ impl NeedsParentheses for JsComputedMemberExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         parent.kind() == JsSyntaxKind::JS_NEW_EXPRESSION
             && (self.is_optional_chain() || member_chain_callee_needs_parens(self.clone().into()))
     }
@@ -284,6 +298,7 @@ impl NeedsParentheses for JsConditionalExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         match parent.kind() {
             JsSyntaxKind::JS_UNARY_EXPRESSION
             | JsSyntaxKind::JS_AWAIT_EXPRESSION
@@ -314,6 +329,7 @@ impl NeedsParentheses for JsFunctionExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         matches!(
             parent.kind(),
             JsSyntaxKind::JS_CALL_EXPRESSION
@@ -337,6 +353,7 @@ impl NeedsParentheses for JsIdentifierExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         let Ok(name) = self.name().and_then(|x| x.value_token()) else {
             return false;
         };
@@ -369,10 +386,12 @@ impl NeedsParentheses for JsIdentifierExpression {
                         .and_then(|x| x.first_child()?.first_token())
                         .is_some_and(|token| token == name)
             }
+
             JsSyntaxKind::JS_CALL_EXPRESSION
             | JsSyntaxKind::JS_STATIC_MEMBER_EXPRESSION
             | JsSyntaxKind::JS_STATIC_MEMBER_ASSIGNMENT => {
                 // for ( (let).a of [] ) {}
+
                 name.text_trimmed() == "let"
                     && parent
                         .ancestors()
@@ -384,6 +403,7 @@ impl NeedsParentheses for JsIdentifierExpression {
                         .and_then(|x| x.first_child()?.first_token())
                         .is_some_and(|token| token == name)
             }
+
             JsSyntaxKind::TS_AS_EXPRESSION | JsSyntaxKind::TS_SATISFIES_EXPRESSION => {
                 // `(let) as unknown satisfies unknown;`
                 // `(type) as unknown satisfies unknown;`
@@ -401,6 +421,7 @@ impl NeedsParentheses for JsIdentifierExpression {
                     })
                     .is_some_and(|x| x.kind() == JsSyntaxKind::JS_EXPRESSION_STATEMENT)
             }
+
             _ => false,
         }
     }
@@ -435,6 +456,7 @@ fn is_in_for_initializer(expression: &JsInExpression) -> bool {
         .ancestors()
         .skip(1)
         .find_map(AnyJsStatement::cast);
+
     match statement {
         Some(AnyJsStatement::JsForInStatement(for_in_statement)) => for_in_statement
             .initializer()
@@ -515,6 +537,7 @@ impl NeedsParentheses for JsObjectExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         matches!(parent.kind(), JsSyntaxKind::JS_EXTENDS_CLAUSE)
             || is_first_in_statement(
                 self.syntax(),
@@ -541,6 +564,7 @@ impl NeedsParentheses for JsPreUpdateExpression {
     fn needs_parentheses(&self) -> bool {
         if let Some(unary) = self.parent::<JsUnaryExpression>() {
             let parent_operator = unary.operator();
+
             let operator = self.operator();
             (parent_operator == Ok(JsUnaryOperator::Plus)
                 && operator == Ok(JsPreUpdateOperator::Increment))
@@ -582,6 +606,7 @@ impl NeedsParentheses for JsStaticMemberExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         matches!(parent.kind(), JsSyntaxKind::JS_NEW_EXPRESSION)
             && (self.is_optional_chain() || member_chain_callee_needs_parens(self.clone().into()))
     }
@@ -619,6 +644,7 @@ impl NeedsParentheses for JsTemplateExpression {
             let Some(parent) = self.syntax().parent() else {
                 return false;
             };
+
             parent.kind() == JsSyntaxKind::JS_NEW_EXPRESSION
                 && member_chain_callee_needs_parens(self.clone().into())
         } else {
@@ -639,6 +665,7 @@ impl NeedsParentheses for JsUnaryExpression {
         match self.parent::<AnyJsExpression>() {
             Some(AnyJsExpression::JsUnaryExpression(parent_unary)) => {
                 let parent_operator = parent_unary.operator();
+
                 let operator = self.operator();
 
                 matches!(operator, Ok(JsUnaryOperator::Plus | JsUnaryOperator::Minus))
@@ -660,6 +687,7 @@ impl NeedsParentheses for JsYieldExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         matches!(
             parent.kind(),
             JsSyntaxKind::JS_AWAIT_EXPRESSION | JsSyntaxKind::TS_TYPE_ASSERTION_EXPRESSION
@@ -672,12 +700,16 @@ impl NeedsParentheses for JsxTagExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         match parent.kind() {
             JsSyntaxKind::JS_BINARY_EXPRESSION => {
                 let binary = JsBinaryExpression::unwrap_cast(parent);
+
                 let is_left = binary.left().map(AstNode::into_syntax).as_ref() == Ok(self.syntax());
+
                 matches!(binary.operator(), Ok(JsBinaryOperator::LessThan)) && is_left
             }
+
             JsSyntaxKind::TS_AS_EXPRESSION
             | JsSyntaxKind::TS_SATISFIES_EXPRESSION
             | JsSyntaxKind::JS_AWAIT_EXPRESSION
@@ -726,6 +758,7 @@ impl NeedsParentheses for TsNonNullAssertionExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         parent.kind() == JsSyntaxKind::JS_EXTENDS_CLAUSE
             || (parent.kind() == JsSyntaxKind::JS_NEW_EXPRESSION
                 && member_chain_callee_needs_parens(self.clone().into()))
@@ -745,6 +778,7 @@ impl NeedsParentheses for TsTypeAssertionExpression {
         let Some(parent) = self.syntax().parent() else {
             return false;
         };
+
         match parent.kind() {
             JsSyntaxKind::TS_AS_EXPRESSION => true,
             JsSyntaxKind::TS_SATISFIES_EXPRESSION => true,
@@ -752,6 +786,7 @@ impl NeedsParentheses for TsTypeAssertionExpression {
                 JsBinaryExpression::unwrap_cast(parent).operator()
                     == Ok(JsBinaryOperator::LeftShift)
             }
+
             _ => type_cast_like_needs_parens(self.syntax(), parent),
         }
     }
@@ -764,6 +799,7 @@ fn as_or_satisfies_expression_needs_parens(
     let Some(parent) = node.parent() else {
         return false;
     };
+
     match parent.kind() {
         JsSyntaxKind::JS_CONDITIONAL_EXPRESSION
         // Binary-like
@@ -784,6 +820,7 @@ fn as_or_satisfies_expression_needs_parens(
                 )
             })
         }
+
         _ => {
             type_cast_like_needs_parens(node, parent)
         }
@@ -795,6 +832,7 @@ fn await_or_yield_needs_parens(parent: JsSyntaxNode, node: &JsSyntaxNode) -> boo
         node.kind(),
         JsSyntaxKind::JS_AWAIT_EXPRESSION | JsSyntaxKind::JS_YIELD_EXPRESSION
     ));
+
     match parent.kind() {
         JsSyntaxKind::JS_UNARY_EXPRESSION
         | JsSyntaxKind::TS_AS_EXPRESSION
@@ -820,9 +858,11 @@ fn await_or_yield_needs_parens(parent: JsSyntaxNode, node: &JsSyntaxNode) -> boo
 /// Implements the rules when a node needs parentheses that are common across all [AnyJsBinaryLikeExpression] nodes.
 fn binary_like_needs_parens(node: &JsSyntaxNode) -> bool {
     debug_assert!(AnyJsBinaryLikeExpression::can_cast(node.kind()));
+
     let Some(parent) = node.parent() else {
         return false;
     };
+
     match parent.kind() {
         JsSyntaxKind::JS_EXTENDS_CLAUSE
         | JsSyntaxKind::TS_AS_EXPRESSION
@@ -847,13 +887,16 @@ fn binary_like_needs_parens(node: &JsSyntaxNode) -> bool {
             let Some(node) = AnyJsBinaryLikeExpression::cast_ref(node) else {
                 return false;
             };
+
             match AnyJsBinaryLikeExpression::try_cast(parent) {
                 Ok(parent) => {
                     let (Ok(operator), Ok(parent_operator)) = (node.operator(), parent.operator()) else {
                         // Just to be sure
                         return true;
                     };
+
                     let precedence = operator.precedence();
+
                     let parent_precedence = parent_operator.precedence();
 
                     // If the parent has a higher precedence than parentheses are necessary to not change the semantic meaning
@@ -882,6 +925,7 @@ fn binary_like_needs_parens(node: &JsSyntaxNode) -> bool {
 
                     parent_precedence == precedence && !should_flatten(parent_operator, operator)
                 }
+
                 Err(parent) => {
                     AnyJsComputedMember::cast(parent)
                         .and_then(|member| member.object().ok())
@@ -900,6 +944,7 @@ fn member_chain_callee_needs_parens(node: AnyJsExpression) -> bool {
         AnyJsExpression::TsNonNullAssertionExpression(expr) => expr.expression().ok(),
         _ => None,
     });
+
     object_chain.any(|object| matches!(object, AnyJsExpression::JsCallExpression(_)))
 }
 
@@ -935,11 +980,13 @@ fn unary_like_expression_needs_parens(expression: &JsSyntaxNode) -> bool {
     let Some(parent) = expression.parent() else {
         return false;
     };
+
     match JsBinaryExpression::try_cast(parent) {
         Ok(binary) => {
             matches!(binary.operator(), Ok(JsBinaryOperator::Exponent))
                 && binary.left().map(AstNode::into_syntax).as_ref() == Ok(expression)
         }
+
         Err(parent) => update_or_lower_expression_needs_parens(expression, parent),
     }
 }
@@ -982,12 +1029,15 @@ pub(crate) enum FirstInStatementMode {
 /// the left most node or reached a statement.
 fn is_first_in_statement(node: &JsSyntaxNode, mode: FirstInStatementMode) -> bool {
     let mut current = Cow::Borrowed(node);
+
     let mut is_not_first_iteration = false;
+
     while let Some(parent) = current.parent() {
         let parent = match parent.kind() {
             JsSyntaxKind::JS_EXPRESSION_STATEMENT => {
                 return true;
             }
+
             JsSyntaxKind::JS_STATIC_MEMBER_EXPRESSION
             | JsSyntaxKind::JS_STATIC_MEMBER_ASSIGNMENT
             | JsSyntaxKind::JS_TEMPLATE_EXPRESSION
@@ -998,59 +1048,74 @@ fn is_first_in_statement(node: &JsSyntaxNode, mode: FirstInStatementMode) -> boo
             | JsSyntaxKind::TS_NON_NULL_ASSERTION_EXPRESSION => parent,
             JsSyntaxKind::JS_SEQUENCE_EXPRESSION => {
                 let expr = JsSequenceExpression::unwrap_cast(parent);
+
                 let is_left = expr
                     .left()
                     .is_ok_and(|left| left.syntax() == current.as_ref());
+
                 if is_left {
                     expr.into_syntax()
                 } else {
                     break;
                 }
             }
+
             JsSyntaxKind::JS_COMPUTED_MEMBER_EXPRESSION => {
                 let expr = JsComputedMemberExpression::unwrap_cast(parent);
+
                 let is_object = expr
                     .object()
                     .is_ok_and(|object| object.syntax() == current.as_ref());
+
                 if is_object {
                     expr.into_syntax()
                 } else {
                     break;
                 }
             }
+
             JsSyntaxKind::JS_COMPUTED_MEMBER_ASSIGNMENT => {
                 let assignment = JsComputedMemberAssignment::unwrap_cast(parent);
+
                 let is_object = assignment
                     .object()
                     .is_ok_and(|object| object.syntax() == current.as_ref());
+
                 if is_object {
                     assignment.into_syntax()
                 } else {
                     break;
                 }
             }
+
             JsSyntaxKind::JS_ASSIGNMENT_EXPRESSION => {
                 let assignment = JsAssignmentExpression::unwrap_cast(parent);
+
                 let is_left = assignment
                     .left()
                     .is_ok_and(|left| left.syntax() == current.as_ref());
+
                 if is_left {
                     assignment.into_syntax()
                 } else {
                     break;
                 }
             }
+
             JsSyntaxKind::JS_CONDITIONAL_EXPRESSION => {
                 let cond = JsConditionalExpression::unwrap_cast(parent);
+
                 let is_test = cond
                     .test()
                     .is_ok_and(|test| test.syntax() == current.as_ref());
+
                 if is_test {
                     cond.into_syntax()
                 } else {
                     break;
                 }
             }
+
             JsSyntaxKind::JS_ARROW_FUNCTION_EXPRESSION
                 if mode == FirstInStatementMode::ExpressionStatementOrArrow =>
             {
@@ -1067,30 +1132,39 @@ fn is_first_in_statement(node: &JsSyntaxNode, mode: FirstInStatementMode) -> boo
                     // because an ancestor requires parens.
                     break;
                 }
+
                 let arrow = JsArrowFunctionExpression::unwrap_cast(parent);
+
                 let is_body = arrow.body().is_ok_and(|body| match body {
                     AnyJsFunctionBody::AnyJsExpression(expression) => {
                         expression.syntax() == current.as_ref()
                     }
+
                     _ => false,
                 });
+
                 return is_body;
             }
+
             JsSyntaxKind::JS_EXPORT_DEFAULT_EXPRESSION_CLAUSE
                 if mode == FirstInStatementMode::ExpressionOrExportDefault =>
             {
                 return !is_not_first_iteration;
             }
+
             _ => {
                 let Some(binary_like) = AnyJsBinaryLikeExpression::cast(parent) else {
                     break;
                 };
+
                 let is_left = binary_like.left().is_ok_and(|left| match left {
                     AnyJsBinaryLikeLeftExpression::AnyJsExpression(expression) => {
                         expression.syntax() == current.as_ref()
                     }
+
                     _ => false,
                 });
+
                 if is_left {
                     binary_like.into_syntax()
                 } else {
@@ -1098,8 +1172,11 @@ fn is_first_in_statement(node: &JsSyntaxNode, mode: FirstInStatementMode) -> boo
                 }
             }
         };
+
         is_not_first_iteration = true;
+
         current = Cow::Owned(parent);
     }
+
     false
 }

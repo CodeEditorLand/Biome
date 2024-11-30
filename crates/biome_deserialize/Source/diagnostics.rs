@@ -39,23 +39,33 @@ impl std::fmt::Display for DeserializableType {
 pub struct DeserializableTypes(BitFlags<DeserializableType>);
 impl DeserializableTypes {
     pub const NULL: Self = Self(make_bitflags!(DeserializableType::{Null}));
+
     pub const BOOL: Self = Self(make_bitflags!(DeserializableType::{Bool}));
+
     pub const NUMBER: Self = Self(make_bitflags!(DeserializableType::{Number}));
+
     pub const STR: Self = Self(make_bitflags!(DeserializableType::{Str}));
+
     pub const ARRAY: Self = Self(make_bitflags!(DeserializableType::{Array}));
+
     pub const MAP: Self = Self(make_bitflags!(DeserializableType::{Map}));
+
     pub const fn all() -> Self {
         Self(BitFlags::ALL)
     }
+
     pub const fn empty() -> Self {
         Self(BitFlags::EMPTY)
     }
+
     pub fn contains(self, other: impl Into<DeserializableTypes>) -> bool {
         self.0.contains(other.into().0)
     }
+
     pub const fn union(self, other: Self) -> Self {
         Self(self.0.union_c(other.0))
     }
+
     pub fn is_empty(self) -> bool {
         self.0.is_empty()
     }
@@ -65,12 +75,15 @@ impl std::fmt::Display for DeserializableTypes {
         if self.is_empty() {
             return write!(fmt, "no value");
         }
+
         for (i, expected_type) in self.0.iter().enumerate() {
             if i != 0 {
                 write!(fmt, ", or ")?;
             }
+
             write!(fmt, "{expected_type}")?;
         }
+
         Ok(())
     }
 }
@@ -125,6 +138,7 @@ impl DeserializationDiagnostic {
         if name.is_empty() {
             return Self::new_incorrect_type(actual_type, expected_type, range);
         }
+
         Self::new(markup! {
             <Emphasis>{name}</Emphasis>" has an incorrect type, expected "<Emphasis>{format_args!("{}", expected_type)}</Emphasis>", but received "<Emphasis>{format_args!("{}", actual_type)}</Emphasis>"."
         })
@@ -194,6 +208,7 @@ impl DeserializationDiagnostic {
     /// Adds a range to the diagnostic
     pub fn with_range(mut self, span: impl AsSpan) -> Self {
         self.range = span.as_span();
+
         self
     }
 
@@ -202,18 +217,21 @@ impl DeserializationDiagnostic {
         self.deserialization_advice
             .notes
             .push((markup! {{message}}.to_owned(), vec![]));
+
         self
     }
 
     /// Changes the severity of the diagnostic
     pub fn with_custom_severity(mut self, severity: Severity) -> Self {
         self.severity = severity;
+
         self
     }
 
     /// Add a tag to the list of tags
     pub fn with_tags(mut self, tag: DiagnosticTags) -> Self {
         self.tags |= tag;
+
         self
     }
 
@@ -225,6 +243,7 @@ impl DeserializationDiagnostic {
                 .map(|message| markup! {{message}}.to_owned())
                 .collect::<Vec<_>>(),
         ));
+
         self
     }
 }
@@ -244,6 +263,7 @@ impl DeserializationAdvice {
     pub fn note(mut self, message: impl Display) -> Self {
         self.notes
             .push((markup! {{message}}.to_owned(), Vec::new()));
+
         self
     }
 }
@@ -252,11 +272,13 @@ impl Advices for DeserializationAdvice {
     fn record(&self, visitor: &mut dyn Visit) -> std::io::Result<()> {
         for (message, known_keys) in &self.notes {
             visitor.record_log(LogCategory::Info, message)?;
+
             if !known_keys.is_empty() {
                 let list: Vec<_> = known_keys
                     .iter()
                     .map(|message| message as &dyn Display)
                     .collect();
+
                 visitor.record_list(&list)?;
             }
         }
@@ -272,13 +294,16 @@ mod test {
     #[test]
     fn test_visitable_type_fmt() {
         assert_eq!(DeserializableTypes::empty().to_string(), "no value");
+
         assert_eq!(DeserializableTypes::NULL.to_string(), "null");
+
         assert_eq!(
             DeserializableTypes::NULL
                 .union(DeserializableTypes::BOOL)
                 .to_string(),
             "null, or a boolean"
         );
+
         assert_eq!(
             DeserializableTypes::all().to_string(),
             "null, or a boolean, or a number, or a string, or an array, or an object"

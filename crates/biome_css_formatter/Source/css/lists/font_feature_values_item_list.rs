@@ -4,6 +4,7 @@ use biome_css_syntax::CssFontFeatureValuesItemList;
 pub(crate) struct FormatCssFontFeatureValuesItemList;
 impl FormatRule<CssFontFeatureValuesItemList> for FormatCssFontFeatureValuesItemList {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &CssFontFeatureValuesItemList, f: &mut CssFormatter) -> FormatResult<()> {
         // This is one of the few cases where we _do_ want to respect empty
         // lines from the input, so we can use `join_nodes_with_hardline`.

@@ -20,6 +20,7 @@ use GraphqlSyntaxKind::*;
 impl From<u16> for GraphqlSyntaxKind {
     fn from(d: u16) -> GraphqlSyntaxKind {
         assert!(d <= (GraphqlSyntaxKind::__LAST as u16));
+
         unsafe { std::mem::transmute::<u16, GraphqlSyntaxKind>(d) }
     }
 }
@@ -41,6 +42,7 @@ impl GraphqlSyntaxKind {
 
 impl biome_rowan::SyntaxKind for GraphqlSyntaxKind {
     const TOMBSTONE: Self = TOMBSTONE;
+
     const EOF: Self = EOF;
 
     fn is_bogus(&self) -> bool {

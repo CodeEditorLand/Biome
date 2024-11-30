@@ -36,6 +36,7 @@ impl Advices for NotFoundAdvices {
         visitor.record_list(&pattern_list)?;
 
         visitor.record_log(LogCategory::Info, &"Ignore patterns were defined here")?;
+
         visitor.record_frame(Location {
             resource: Some(Resource::File(&self.configuration_path)),
             span: Some(self.configuration_span),

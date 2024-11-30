@@ -36,6 +36,7 @@ pub(crate) fn parse_percentage_dimension(p: &mut CssParser) -> ParsedSyntax {
     // CSS_PERCENTAGE_VALUE guarantees the `%` will be the next token,
     // but we can use expect just to be safe.
     p.expect(T![%]);
+
     Present(m.complete(p, CSS_PERCENTAGE))
 }
 

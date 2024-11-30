@@ -21,8 +21,11 @@ impl FormatNodeRule<JsForInStatement> for FormatJsForInStatement {
         } = node.as_fields();
 
         let for_token = for_token.format();
+
         let initializer = initializer.format();
+
         let in_token = in_token.format();
+
         let expression = expression.format();
 
         write!(

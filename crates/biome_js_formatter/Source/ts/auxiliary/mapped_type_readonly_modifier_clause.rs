@@ -19,6 +19,7 @@ impl FormatNodeRule<TsMappedTypeReadonlyModifierClause>
             operator_token,
             readonly_token,
         } = node.as_fields();
+
         write![f, [operator_token.format(), readonly_token.format()]]
     }
 }

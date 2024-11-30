@@ -62,6 +62,7 @@ impl FormatNodeRule<JsCallExpression> for FormatJsCallExpression {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsCallExpression;
 
     #[test]
@@ -69,10 +70,13 @@ mod tests {
         assert_needs_parentheses!("new (call())()", JsCallExpression);
 
         assert_not_needs_parentheses!("a?.()!.c", JsCallExpression);
+
         assert_not_needs_parentheses!("(a?.())!.c", JsCallExpression);
 
         assert_not_needs_parentheses!("(call())()", JsCallExpression[1]);
+
         assert_not_needs_parentheses!("getLogger().error(err);", JsCallExpression[0]);
+
         assert_not_needs_parentheses!("getLogger().error(err);", JsCallExpression[1]);
     }
 }

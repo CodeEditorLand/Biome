@@ -56,6 +56,7 @@ impl<T> Arc<T> {
         // To find the corresponding pointer to the `ArcInner` we need
         // to subtract the offset of the `data` field from the pointer.
         let ptr = (ptr as *const u8).sub(offset_of!(ArcInner<T>, data));
+
         Arc {
             p: ptr::NonNull::new_unchecked(ptr as *mut ArcInner<T>),
             phantom: PhantomData,
@@ -94,7 +95,9 @@ impl<T: ?Sized> Arc<T> {
     #[inline]
     pub(crate) fn into_raw(self) -> NonNull<T> {
         let ptr = NonNull::from(&self.inner().data);
+
         mem::forget(self);
+
         ptr
     }
 }
@@ -273,6 +276,7 @@ impl<H, T> Deref for HeaderSlice<H, [T; 0]> {
     fn deref(&self) -> &Self::Target {
         unsafe {
             let len = self.length;
+
             let fake_slice: *const [T] =
                 ptr::slice_from_raw_parts(self as *const _ as *const T, len);
             &*(fake_slice as *const HeaderSlice<H, [T]>)
@@ -309,6 +313,7 @@ fn thin_to_thick<H, T>(
     thin: *mut ArcInner<HeaderSlice<H, [T; 0]>>,
 ) -> *mut ArcInner<HeaderSlice<H, [T]>> {
     let len = unsafe { (*thin).data.length };
+
     let fake_slice: *mut [T] = ptr::slice_from_raw_parts_mut(thin as *mut T, len);
     // Transplants metadata.
     fake_slice as *mut ArcInner<HeaderSlice<H, [T]>>
@@ -347,24 +352,31 @@ impl<H, T> ThinArc<H, T> {
 
         // Offset of the start of the slice in the allocation.
         let inner_to_data_offset = offset_of!(ArcInner<HeaderSlice<H, [T; 0]>>, data);
+
         let data_to_slice_offset = offset_of!(HeaderSlice<H, [T; 0]>, slice);
+
         let slice_offset = inner_to_data_offset + data_to_slice_offset;
 
         // Compute the size of the real payload.
         let slice_size = mem::size_of::<T>()
             .checked_mul(num_items)
             .expect("size overflows");
+
         let usable_size = slice_offset
             .checked_add(slice_size)
             .expect("size overflows");
 
         // Round up size to alignment.
         let align = mem::align_of::<ArcInner<HeaderSlice<H, [T; 0]>>>();
+
         let size = usable_size.wrapping_add(align - 1) & !(align - 1);
+
         assert!(size >= usable_size, "size overflows");
+
         let layout = Layout::from_size_align(size, align).expect("invalid layout");
 
         let ptr: *mut ArcInner<HeaderSlice<H, [T; 0]>>;
+
         unsafe {
             let buffer = alloc::alloc(layout);
 
@@ -380,6 +392,7 @@ impl<H, T> ThinArc<H, T> {
             // // or something else with a [T] as its last member.
             // let fake_slice: &mut [T] = slice::from_raw_parts_mut(buffer as *mut T, num_items);
             // ptr = fake_slice as *mut [T] as *mut ArcInner<HeaderSlice<H, [T]>>;
+
             ptr = buffer as *mut _;
 
             let count = atomic::AtomicUsize::new(1);
@@ -389,11 +402,16 @@ impl<H, T> ThinArc<H, T> {
             // Note that any panics here (i.e. from the iterator) are safe, since
             // we'll just leak the uninitialized memory.
             ptr::write(ptr::addr_of_mut!((*ptr).count), count);
+
             ptr::write(ptr::addr_of_mut!((*ptr).data.header), header);
+
             ptr::write(ptr::addr_of_mut!((*ptr).data.length), num_items);
+
             if num_items != 0 {
                 let mut current = ptr::addr_of_mut!((*ptr).data.slice) as *mut T;
+
                 debug_assert_eq!(current as usize - buffer as usize, slice_offset);
+
                 for _ in 0..num_items {
                     ptr::write(
                         current,
@@ -401,8 +419,10 @@ impl<H, T> ThinArc<H, T> {
                             .next()
                             .expect("ExactSizeIterator over-reported length"),
                     );
+
                     current = current.offset(1);
                 }
+
                 assert!(
                     items.next().is_none(),
                     "ExactSizeIterator under-reported length"
@@ -411,6 +431,7 @@ impl<H, T> ThinArc<H, T> {
                 // We should have consumed the buffer exactly.
                 debug_assert_eq!(current as *mut u8, buffer.add(usable_size));
             }
+
             assert!(
                 items.next().is_none(),
                 "ExactSizeIterator under-reported length"
@@ -460,9 +481,13 @@ impl<H, T> Arc<HeaderSlice<H, [T]>> {
             a.slice.len(),
             "Length needs to be correct for ThinArc to work"
         );
+
         let fat_ptr: *mut ArcInner<HeaderSlice<H, [T]>> = a.ptr();
+
         mem::forget(a);
+
         let thin_ptr = fat_ptr as *mut [usize] as *mut usize;
+
         ThinArc {
             ptr: unsafe {
                 ptr::NonNull::new_unchecked(thin_ptr as *mut ArcInner<HeaderSlice<H, [T; 0]>>)
@@ -476,7 +501,9 @@ impl<H, T> Arc<HeaderSlice<H, [T]>> {
     #[inline]
     pub(crate) fn from_thin(a: ThinArc<H, T>) -> Self {
         let ptr = thin_to_thick(a.ptr.as_ptr());
+
         mem::forget(a);
+
         unsafe {
             Arc {
                 p: ptr::NonNull::new_unchecked(ptr),

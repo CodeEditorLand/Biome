@@ -51,8 +51,11 @@ declare_lint_rule! {
 
 impl Rule for UseTopLevelRegex {
     type Query = Ast<JsRegexLiteralExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -60,10 +63,13 @@ impl Rule for UseTopLevelRegex {
         // Ignore regular expressions with the g and/or y flags, as calling test/exec has side effects.
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/RegExp/lastIndex#avoiding_side_effects
         let (_, flags) = regex.decompose().ok()?;
+
         let flags = flags.text();
+
         if flags.contains('g') || flags.contains('y') {
             return None;
         }
+
         let found_all_allowed =
             regex
                 .syntax()
@@ -78,6 +84,7 @@ impl Rule for UseTopLevelRegex {
                                 | AnyJsControlFlowRoot::JsScript(_)
                         )
                     }
+
                     Err(node) => {
                         if let Some(node) = JsPropertyClassMember::cast(node) {
                             node.modifiers().iter().any(|modifier| {
@@ -88,6 +95,7 @@ impl Rule for UseTopLevelRegex {
                         }
                     }
                 });
+
         if found_all_allowed {
             None
         } else {
@@ -97,6 +105,7 @@ impl Rule for UseTopLevelRegex {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

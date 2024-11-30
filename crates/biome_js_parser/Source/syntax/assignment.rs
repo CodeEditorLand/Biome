@@ -87,12 +87,16 @@ pub(crate) fn expression_to_assignment_pattern(
     match target.kind(p) {
         JS_OBJECT_EXPRESSION => {
             p.rewind(checkpoint);
+
             ObjectAssignmentPattern.parse_object_pattern(p).unwrap()
         }
+
         JS_ARRAY_EXPRESSION => {
             p.rewind(checkpoint);
+
             ArrayAssignmentPattern.parse_array_pattern(p).unwrap()
         }
+
         _ => expression_to_assignment(p, target, checkpoint),
     }
 }
@@ -116,6 +120,7 @@ pub(crate) fn expression_to_assignment_pattern(
 // }.y = 42 } = { x: 23 });
 pub(crate) fn parse_assignment_pattern(p: &mut JsParser) -> ParsedSyntax {
     let checkpoint = p.checkpoint();
+
     let assignment_expression = parse_conditional_expr(p, ExpressionContext::default());
 
     assignment_expression
@@ -165,6 +170,7 @@ pub(crate) fn parse_assignment(
     context: ExpressionContext,
 ) -> ParsedSyntax {
     let checkpoint = p.checkpoint();
+
     let assignment_expression = expr_kind.parse_expression(p, context);
 
     assignment_expression.map(|expr| expression_to_assignment(p, expr, checkpoint))
@@ -289,6 +295,7 @@ impl ParseObjectPattern for ObjectAssignmentPattern {
     // ({:="test"} = {});
     // ({:=} = {});
     // ({ a b } = {});
+
     fn parse_property_pattern(&self, p: &mut JsParser) -> ParsedSyntax {
         let m = p.start();
 
@@ -301,6 +308,7 @@ impl ParseObjectPattern for ObjectAssignmentPattern {
                 ExpressionContext::default(),
             )
             .or_add_diagnostic(p, expected_identifier);
+
             JS_OBJECT_ASSIGNMENT_PATTERN_SHORTHAND_PROPERTY
         } else if is_at_object_member_name(p) || p.at(T![:]) || p.nth_at(1, T![:]) {
             // If the parser is at an object member name, parse it and look for the colon token next.
@@ -314,11 +322,15 @@ impl ParseObjectPattern for ObjectAssignmentPattern {
                     expected_object_member_name,
                 )
                 .ok();
+
             p.expect(T![:]);
+
             parse_assignment_pattern(p).or_add_diagnostic(p, expected_assignment_target);
+
             JS_OBJECT_ASSIGNMENT_PATTERN_PROPERTY
         } else {
             m.abandon(p);
+
             return Absent;
         };
 
@@ -341,12 +353,14 @@ impl ParseObjectPattern for ObjectAssignmentPattern {
     // ({ ...{a} } = b);
     // ({ ...rest, other_assignment } = a);
     // ({ ...rest, } = a);
+
     fn parse_rest_property_pattern(&self, p: &mut JsParser) -> ParsedSyntax {
         if !p.at(T![...]) {
             return Absent;
         }
 
         let m = p.start();
+
         p.bump(T![...]);
 
         let target = parse_assignment_pattern(p).or_add_diagnostic(p, expected_assignment_target);
@@ -357,6 +371,7 @@ impl ParseObjectPattern for ObjectAssignmentPattern {
                 JS_OBJECT_ASSIGNMENT_PATTERN | JS_ARRAY_ASSIGNMENT_PATTERN
             ) {
                 target.change_kind(p, JS_BOGUS_ASSIGNMENT);
+
                 p.error(p.err_builder(
                     "object and array assignment targets are not allowed in rest patterns",
                     target.range(p),
@@ -391,6 +406,7 @@ fn try_expression_to_assignment(
     // but it's not yet guaranteed if it is valid or not (for example, a static member expression
     // is valid, except if it uses optional chaining).
     let mut reparse_assignment = ReparseAssignment::new();
+
     rewrite_events(&mut reparse_assignment, checkpoint, p);
 
     Ok(reparse_assignment.result.unwrap())
@@ -427,6 +443,7 @@ impl RewriteParseEvents for ReparseAssignment {
     fn start_node(&mut self, kind: JsSyntaxKind, p: &mut RewriteParser) {
         if !self.inside_assignment {
             self.parents.push((kind, Some(p.start())));
+
             return;
         }
 
@@ -435,12 +452,16 @@ impl RewriteParseEvents for ReparseAssignment {
             JS_PARENTHESIZED_EXPRESSION => JS_PARENTHESIZED_ASSIGNMENT,
             JS_STATIC_MEMBER_EXPRESSION => {
                 self.inside_assignment = false;
+
                 JS_STATIC_MEMBER_ASSIGNMENT
             }
+
             JS_COMPUTED_MEMBER_EXPRESSION => {
                 self.inside_assignment = false;
+
                 JS_COMPUTED_MEMBER_ASSIGNMENT
             }
+
             JS_IDENTIFIER_EXPRESSION => JS_IDENTIFIER_ASSIGNMENT,
             TS_NON_NULL_ASSERTION_EXPRESSION => TS_NON_NULL_ASSERTION_ASSIGNMENT,
             TS_AS_EXPRESSION => TS_AS_ASSIGNMENT,
@@ -450,8 +471,10 @@ impl RewriteParseEvents for ReparseAssignment {
                 self.parents.push((kind, None)); // Omit reference identifiers
                 return;
             }
+
             _ => {
                 self.inside_assignment = false;
+
                 if AnyTsType::can_cast(kind)
                     && matches!(
                         self.parents.last(),
@@ -484,19 +507,24 @@ impl RewriteParseEvents for ReparseAssignment {
                     // test_err js eval_arguments_assignment
                     // eval = "test";
                     // arguments = "test";
+
                     let name = completed.text(p);
+
                     if matches!(name, "eval" | "arguments") && p.is_strict_mode() {
                         let error = p.err_builder(
                             format!("Illegal use of `{name}` as an identifier in strict mode"),
                             completed.range(p),
                         );
+
                         p.error(error);
 
                         completed.change_to_bogus(p);
                     }
                 }
+
                 JS_BOGUS_ASSIGNMENT => {
                     let range = completed.range(p);
+
                     p.error(
                         p.err_builder(
                             format!("Invalid assignment to `{}`", completed.text(p)),
@@ -505,6 +533,7 @@ impl RewriteParseEvents for ReparseAssignment {
                         .with_hint("This expression cannot be assigned to"),
                     );
                 }
+
                 _ => {}
             }
 

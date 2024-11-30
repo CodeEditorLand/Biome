@@ -32,9 +32,11 @@ impl<'src> CssTokenSource<'src> {
         let lexer = CssLexer::from_str(source).with_options(options);
 
         let buffered = BufferedLexer::new(lexer);
+
         let mut source = CssTokenSource::new(buffered);
 
         source.next_non_trivia_token(CssLexContext::default(), true);
+
         source
     }
 
@@ -51,6 +53,7 @@ impl<'src> CssTokenSource<'src> {
                     // Not trivia
                     break;
                 }
+
                 Ok(trivia_kind) => {
                     if trivia_kind.is_newline() {
                         trailing = false;
@@ -79,7 +82,9 @@ impl<'src> CssTokenSource<'src> {
     /// Restores the token source to a previous state
     pub fn rewind(&mut self, checkpoint: CssTokenSourceCheckpoint) {
         assert!(self.trivia_list.len() >= checkpoint.trivia_len as usize);
+
         self.trivia_list.truncate(checkpoint.trivia_len as usize);
+
         self.lexer.rewind(checkpoint.lexer_checkpoint);
     }
 }

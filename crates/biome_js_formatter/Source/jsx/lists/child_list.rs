@@ -19,6 +19,7 @@ impl FormatRuleWithOptions<JsxChildList> for FormatJsxChildList {
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.layout = options;
+
         self
     }
 }
@@ -33,6 +34,7 @@ impl FormatRule<JsxChildList> for FormatJsxChildList {
             FormatChildrenResult::ForceMultiline(format_multiline) => {
                 write!(f, [format_multiline])
             }
+
             FormatChildrenResult::BestFitting {
                 flat_children,
                 expanded_children,
@@ -75,6 +77,7 @@ impl FormatJsxChildList {
         self.disarm_debug_assertions(list, f);
 
         let children_meta = self.children_meta(list, f.context().comments());
+
         let layout = self.layout(children_meta);
 
         let multiline_layout = if children_meta.meaningful_text {
@@ -84,6 +87,7 @@ impl FormatJsxChildList {
         };
 
         let mut flat = FlatBuilder::new();
+
         let mut multiline = MultilineBuilder::new(multiline_layout);
 
         let mut force_multiline = layout.is_multiline();
@@ -96,6 +100,7 @@ impl FormatJsxChildList {
         }
 
         let mut last: Option<&JsxChild> = None;
+
         let mut children_iter = JsxChildrenIterator::new(children.iter());
 
         // Trim leading new lines
@@ -207,12 +212,15 @@ impl FormatJsxChildList {
                         // ```
                         else if let Some(JsxChild::Word(next_word)) = children_iter.peek() {
                             let next_next_element = children_iter.peek_next();
+
                             let is_next_next_element_new_line =
                                 matches!(next_next_element, Some(JsxChild::Newline));
+
                             let is_next_next_element_self_closing = matches!(
                                 next_next_element,
                                 Some(JsxChild::NonText(AnyJsxChild::JsxSelfClosingElement(_)))
                             );
+
                             let has_new_line_and_self_closing = is_next_next_element_new_line
                                 && matches!(
                                     children_iter.peek_next_next(),
@@ -231,6 +239,7 @@ impl FormatJsxChildList {
                         multiline.write_separator(&soft_line_break(), f);
                     } else {
                         child_breaks = true;
+
                         multiline.write_separator(&hard_line_break(), f);
                     }
                 }
@@ -317,6 +326,7 @@ impl FormatJsxChildList {
                         let mut memoized = non_text.format().memoized();
 
                         force_multiline = memoized.inspect(f)?.will_break();
+
                         flat.write(&format_args![memoized, format_separator], f);
 
                         if let Some(format_separator) = format_separator {
@@ -331,6 +341,7 @@ impl FormatJsxChildList {
 
             if child_breaks {
                 flat.disable();
+
                 force_multiline = true;
             }
 
@@ -355,6 +366,7 @@ impl FormatJsxChildList {
     #[cfg(debug_assertions)]
     fn disarm_debug_assertions(&self, node: &JsxChildList, f: &mut JsFormatter) {
         use biome_js_syntax::{AnyJsExpression, AnyJsLiteralExpression};
+
         use AnyJsxChild::*;
 
         for child in node {
@@ -379,12 +391,15 @@ impl FormatJsxChildList {
 
                             f.state_mut()
                                 .track_token(&expression.l_curly_token().unwrap());
+
                             f.state_mut()
                                 .track_token(&expression.r_curly_token().unwrap());
                         }
+
                         _ => unreachable!(),
                     }
                 }
+
                 JsxText(text) => {
                     f.state_mut().track_token(&text.value_token().unwrap());
 
@@ -393,6 +408,7 @@ impl FormatJsxChildList {
                         .comments()
                         .mark_suppression_checked(text.syntax());
                 }
+
                 _ => {
                     continue;
                 }
@@ -412,6 +428,7 @@ impl FormatJsxChildList {
                     JsxChildListLayout::BestFitting
                 }
             }
+
             JsxChildListLayout::Multiline => JsxChildListLayout::Multiline,
         }
     }
@@ -432,15 +449,18 @@ impl FormatJsxChildList {
                         meta.meaningful_text = true;
                     } else {
                         meta.multiple_expressions = has_expression;
+
                         has_expression = true;
                     }
                 }
+
                 JsxText(text) => {
                     meta.meaningful_text = meta.meaningful_text
                         || text
                             .value_token()
                             .map_or(false, |token| is_meaningful_jsx_text(token.text()));
                 }
+
                 _ => {}
             }
         }
@@ -615,19 +635,25 @@ impl MultilineBuilder {
         self.result = result.and_then(|elements| {
             let elements = {
                 let mut buffer = VecBuffer::new_with_vec(f.state_mut(), elements);
+
                 match self.layout {
                     MultilineLayout::Fill => {
                         // Make sure that the separator and content only ever write a single element
                         buffer.write_element(FormatElement::Tag(Tag::StartEntry))?;
+
                         write!(buffer, [content])?;
+
                         buffer.write_element(FormatElement::Tag(Tag::EndEntry))?;
 
                         if let Some(separator) = separator {
                             buffer.write_element(FormatElement::Tag(Tag::StartEntry))?;
+
                             write!(buffer, [separator])?;
+
                             buffer.write_element(FormatElement::Tag(Tag::EndEntry))?;
                         }
                     }
+
                     MultilineLayout::NoFill => {
                         write!(buffer, [content, separator])?;
 
@@ -636,8 +662,10 @@ impl MultilineBuilder {
                         }
                     }
                 };
+
                 buffer.into_vec()
             };
+
             Ok(elements)
         })
     }
@@ -758,6 +786,7 @@ impl Format<JsFormatContext> for FormatFlatChildren {
         if let Some(elements) = f.intern_vec(self.elements.take()) {
             f.write_element(elements)?;
         }
+
         Ok(())
     }
 }

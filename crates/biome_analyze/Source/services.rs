@@ -21,6 +21,7 @@ pub struct MissingServicesDiagnostic {
 impl MissingServicesDiagnostic {
     pub fn new(rule_name: &str, missing_services: &'static [&'static str]) -> Self {
         let description = missing_services.join(", ");
+
         Self {
             message: format!("Errors emitted while attempting run the rule: {rule_name}"),
             description: format!("Missing services: {description}"),
@@ -47,12 +48,15 @@ pub struct ServiceBag {
 impl ServiceBag {
     pub fn insert_service<T: 'static>(&mut self, service: T) {
         let id = TypeId::of::<T>();
+
         self.services.insert(id, Box::new(service));
     }
 
     pub fn get_service<T: 'static>(&self) -> Option<&T> {
         let id = TypeId::of::<T>();
+
         let svc = self.services.get(&id)?;
+
         svc.downcast_ref()
     }
 }

@@ -63,6 +63,7 @@ impl serde::Serialize for Backtrace {
         let frames = match &self.inner {
             BacktraceKind::Native(backtrace) => {
                 let mut backtrace = backtrace.clone();
+
                 backtrace.resolve();
 
                 let frames: Vec<_> = backtrace
@@ -73,6 +74,7 @@ impl serde::Serialize for Backtrace {
 
                 Cow::Owned(frames)
             }
+
             BacktraceKind::Serialized(frames) => Cow::Borrowed(frames),
         };
 
@@ -250,6 +252,7 @@ pub(super) fn print_backtrace(
         fmt.write_fmt(format_args!("{frame_index:4}: "))?;
 
         let mut slot = None;
+
         let mut fmt = IndentWriter::wrap(fmt, &mut slot, false, "      ");
 
         for symbol in frame.symbols().iter() {
@@ -261,6 +264,7 @@ pub(super) fn print_backtrace(
 
             if let Some(filename) = symbol.filename() {
                 let mut slot = None;
+
                 let mut fmt = IndentWriter::wrap(&mut fmt, &mut slot, true, "    ");
 
                 // Print a hyperlink if the file exists on disk

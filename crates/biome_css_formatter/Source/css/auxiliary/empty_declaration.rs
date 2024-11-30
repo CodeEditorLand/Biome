@@ -7,6 +7,7 @@ pub(crate) struct FormatCssEmptyDeclaration;
 impl FormatNodeRule<CssEmptyDeclaration> for FormatCssEmptyDeclaration {
     fn fmt_fields(&self, node: &CssEmptyDeclaration, f: &mut CssFormatter) -> FormatResult<()> {
         let CssEmptyDeclarationFields { semicolon_token } = node.as_fields();
+
         let parent_kind = node.syntax().parent().kind();
 
         if matches!(

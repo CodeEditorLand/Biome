@@ -157,6 +157,7 @@ impl GritTargetLanguage {
             "cjs" | "js" | "jsx" | "mjs" | "ts" | "tsx" => {
                 Some(Self::JsTargetLanguage(JsTargetLanguage))
             }
+
             _ => None,
         }
     }
@@ -189,6 +190,7 @@ impl GritTargetLanguage {
         let source = self.substitute_metavariable_prefix(source);
 
         let mut snippet_trees: Vec<SnippetTree<GritTargetTree>> = Vec::new();
+
         for (pre, post) in self.snippet_context_strings() {
             let parse_result = self.get_parser().parse_snippet(pre, &source, post);
 
@@ -199,6 +201,7 @@ impl GritTargetLanguage {
                 .map_or(false, |mut descendants| {
                     descendants.any(|descendant| descendant.kind().is_bogus())
                 });
+
             if has_errors {
                 continue;
             }
@@ -378,6 +381,7 @@ impl LeafEquivalenceClass {
             let rep = normalizer
                 .normalize(representative)
                 .ok_or(CompileError::NormalizationError)?;
+
             Ok(Some(Self {
                 representative: rep.to_owned(),
                 class: members.to_owned(),

@@ -50,19 +50,29 @@ pub struct UseValidLangState {
 
 impl Rule for UseValidLang {
     type Query = Ast<AnyJsxElement>;
+
     type State = UseValidLangState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let element_text = node.name().ok()?.as_jsx_name()?.value_token().ok()?;
+
         if element_text.text_trimmed() == "html" {
             let attribute = node.find_attribute_by_name("lang")?;
+
             let attribute_value = attribute.initializer()?.value().ok()?;
+
             let attribute_static_value = attribute_value.as_static_value()?;
+
             let attribute_text = attribute_static_value.text();
+
             let mut split_value = attribute_text.split('-');
+
             match (split_value.next(), split_value.next()) {
                 (Some(language), Some(country)) => {
                     if !is_valid_language(language) {
@@ -91,6 +101,7 @@ impl Rule for UseValidLang {
                         });
                     }
                 }
+
                 _ => {}
             }
         }
@@ -106,9 +117,11 @@ impl Rule for UseValidLang {
                 "Provide a valid value for the "<Emphasis>"lang"</Emphasis>" attribute."
             },
         );
+
         diagnostic = match state.invalid_kind {
             InvalidKind::Language => {
                 let languages = biome_aria_metadata::languages();
+
                 let languages = if languages.len() > 15 {
                     &languages[..15]
                 } else {
@@ -117,8 +130,10 @@ impl Rule for UseValidLang {
 
                 diagnostic.footer_list("Some of valid languages:", languages)
             }
+
             InvalidKind::Country => {
                 let countries = biome_aria_metadata::countries();
+
                 let countries = if countries.len() > 15 {
                     &countries[..15]
                 } else {
@@ -127,8 +142,10 @@ impl Rule for UseValidLang {
 
                 diagnostic.footer_list("Some of valid countries:", countries)
             }
+
             InvalidKind::Value => diagnostic,
         };
+
         Some(diagnostic)
     }
 }

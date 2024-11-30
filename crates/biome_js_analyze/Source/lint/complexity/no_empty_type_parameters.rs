@@ -44,8 +44,11 @@ declare_lint_rule! {
 
 impl Rule for NoEmptyTypeParameters {
     type Query = Ast<TsTypeParameters>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -65,6 +68,7 @@ impl Rule for NoEmptyTypeParameters {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),

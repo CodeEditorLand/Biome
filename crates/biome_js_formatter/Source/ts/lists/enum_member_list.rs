@@ -11,6 +11,7 @@ impl FormatRule<TsEnumMemberList> for FormatTsEnumMemberList {
 
     fn fmt(&self, node: &TsEnumMemberList, f: &mut JsFormatter) -> FormatResult<()> {
         let trailing_separator = FormatTrailingCommas::ES5.trailing_separator(f.options());
+
         let mut joiner = f.join_nodes_with_soft_line();
 
         for variant in node

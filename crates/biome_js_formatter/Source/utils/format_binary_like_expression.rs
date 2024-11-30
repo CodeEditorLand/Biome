@@ -70,6 +70,7 @@ impl Format<JsFormatContext> for AnyJsBinaryLikeExpression {
         let parent = self.syntax().parent();
 
         let is_inside_condition = self.is_inside_condition(parent.as_ref());
+
         let parts = split_into_left_and_right_sides(self, is_inside_condition)?;
 
         // Don't indent inside of conditions because conditions add their own indent and grouping.
@@ -84,6 +85,7 @@ impl Format<JsFormatContext> for AnyJsBinaryLikeExpression {
                 parent.kind(),
                 JsSyntaxKind::JS_CALL_EXPRESSION | JsSyntaxKind::JS_NEW_EXPRESSION
             );
+
             if is_callee
                 || JsUnaryExpression::can_cast(parent.kind())
                 || AnyJsStaticMemberLike::can_cast(parent.kind())
@@ -98,7 +100,9 @@ impl Format<JsFormatContext> for AnyJsBinaryLikeExpression {
         }
 
         let inline_logical_expression = self.should_inline_logical_expression();
+
         let should_indent_if_inlines = should_indent_if_parent_inlines(parent.as_ref());
+
         let should_not_indent = self.should_not_indent_if_parent_indents(parent);
 
         let flattened = parts.len() > 2;
@@ -117,6 +121,7 @@ impl Format<JsFormatContext> for AnyJsBinaryLikeExpression {
 
         if let Some(first) = parts.first() {
             let last_is_jsx = parts.last().map_or(false, |part| part.is_jsx());
+
             let tail_parts = if last_is_jsx {
                 &parts[1..parts.len() - 1]
             } else {
@@ -141,6 +146,7 @@ impl Format<JsFormatContext> for AnyJsBinaryLikeExpression {
             if last_is_jsx {
                 // SAFETY: `last_is_jsx` is only true if parts is not empty
                 let jsx_element = parts.last().unwrap();
+
                 write!(
                     f,
                     [group(&format_args![
@@ -186,6 +192,7 @@ fn split_into_left_and_right_sides(
                     items.push(BinaryLeftOrRightSide::Left { parent: binary });
                 }
             }
+
             VisitEvent::Exit(expression) => items.push(BinaryLeftOrRightSide::Right {
                 print_parent_comments: expression.syntax() != root.syntax(),
                 parent: expression,
@@ -259,6 +266,7 @@ impl Format<JsFormatContext> for BinaryLeftOrRightSide {
             Self::Left { parent } => {
                 write!(f, [group(&parent.left())])
             }
+
             Self::Right {
                 parent: binary_like_expression,
                 inside_condition: inside_parenthesis,
@@ -272,6 +280,7 @@ impl Format<JsFormatContext> for BinaryLeftOrRightSide {
                     .mark_suppression_checked(binary_like_expression.syntax());
 
                 let right = binary_like_expression.right()?;
+
                 let operator_token = binary_like_expression.operator_token()?;
 
                 let operator_and_right_expression = format_with(|f| {
@@ -291,6 +300,7 @@ impl Format<JsFormatContext> for BinaryLeftOrRightSide {
                 });
 
                 let syntax = binary_like_expression.syntax();
+
                 let parent = syntax.parent();
 
                 // Doesn't match prettier that only distinguishes between logical and binary
@@ -304,6 +314,7 @@ impl Format<JsFormatContext> for BinaryLeftOrRightSide {
                     .map_or(false, |left| {
                         is_same_binary_expression_kind(binary_like_expression, left.syntax())
                     });
+
                 let right_has_same_kind =
                     is_same_binary_expression_kind(binary_like_expression, right.syntax());
 
@@ -358,6 +369,7 @@ impl Format<JsFormatContext> for AnyJsBinaryLikeLeftExpression {
             Self::AnyJsExpression(expression) => {
                 write![f, [expression.format()]]
             }
+
             Self::JsPrivateName(private_name) => {
                 write![f, [private_name.format()]]
             }
@@ -373,6 +385,7 @@ fn is_same_binary_expression_kind(
         AnyJsBinaryLikeExpression::JsLogicalExpression(_) => {
             matches!(other.kind(), JsSyntaxKind::JS_LOGICAL_EXPRESSION)
         }
+
         AnyJsBinaryLikeExpression::JsBinaryExpression(_)
         | AnyJsBinaryLikeExpression::JsInstanceofExpression(_)
         | AnyJsBinaryLikeExpression::JsInExpression(_) => {
@@ -466,8 +479,10 @@ impl BinaryLikePreorder {
                     Some(VisitEvent::Exit(expression))
                 }
             }
+
             VisitEvent::Exit(node) => Some(VisitEvent::Exit(node)),
         });
+
         self.skip_subtree = false;
     }
 }
@@ -481,6 +496,7 @@ impl Iterator for BinaryLikePreorder {
         }
 
         let next = self.next.take()?;
+
         match &next {
             VisitEvent::Enter(binary) => {
                 let next = binary
@@ -498,12 +514,14 @@ impl Iterator for BinaryLikePreorder {
                     self.next = Some(VisitEvent::Exit(binary.clone()));
                 }
             }
+
             VisitEvent::Exit(node) => {
                 if node.syntax() != &self.start {
                     self.next = node.syntax().parent().map(|parent| {
                         // SAFETY: Calling `unwrap` here is safe because the iterator only enters (traverses into) a node
                         // if it is a valid binary like expression.
                         let expression = AnyJsBinaryLikeExpression::cast(parent).unwrap();
+
                         VisitEvent::Exit(expression)
                     });
                 }
@@ -519,20 +537,27 @@ impl FusedIterator for BinaryLikePreorder {}
 #[cfg(test)]
 mod tests {
     use crate::utils::format_binary_like_expression::{BinaryLikePreorder, VisitEvent};
+
     use biome_js_parser::{parse_module, JsParserOptions};
+
     use biome_js_syntax::binary_like_expression::AnyJsBinaryLikeExpression;
+
     use biome_js_syntax::JsLogicalExpression;
+
     use biome_rowan::AstNode;
 
     #[test]
     fn in_order_visits_every_binary_like_expression() {
         let parse = parse_module("a && b && c || d", JsParserOptions::default());
+
         let root = parse
             .syntax()
             .descendants()
             .find_map(JsLogicalExpression::cast)
             .unwrap();
+
         let a_and_b_and_c = JsLogicalExpression::unwrap_cast(root.left().unwrap().into_syntax());
+
         let a_and_b = JsLogicalExpression::unwrap_cast(a_and_b_and_c.left().unwrap().into_syntax());
 
         let mut iterator = BinaryLikePreorder::new(AnyJsBinaryLikeExpression::from(root.clone()));
@@ -543,12 +568,14 @@ mod tests {
                 root.clone()
             )))
         );
+
         assert_eq!(
             iterator.next(),
             Some(VisitEvent::Enter(AnyJsBinaryLikeExpression::from(
                 a_and_b_and_c.clone()
             )))
         );
+
         assert_eq!(
             iterator.next(),
             Some(VisitEvent::Enter(AnyJsBinaryLikeExpression::from(
@@ -560,12 +587,14 @@ mod tests {
             iterator.next(),
             Some(VisitEvent::Exit(AnyJsBinaryLikeExpression::from(a_and_b)))
         );
+
         assert_eq!(
             iterator.next(),
             Some(VisitEvent::Exit(AnyJsBinaryLikeExpression::from(
                 a_and_b_and_c
             )))
         );
+
         assert_eq!(
             iterator.next(),
             Some(VisitEvent::Exit(AnyJsBinaryLikeExpression::from(root)))
@@ -575,11 +604,13 @@ mod tests {
     #[test]
     fn in_order_skip_subtree() {
         let parse = parse_module("a && b && c || d", JsParserOptions::default());
+
         let root = parse
             .syntax()
             .descendants()
             .find_map(JsLogicalExpression::cast)
             .unwrap();
+
         let a_and_b_and_c = JsLogicalExpression::unwrap_cast(root.left().unwrap().into_syntax());
 
         let mut iterator = BinaryLikePreorder::new(AnyJsBinaryLikeExpression::from(root.clone()));
@@ -590,6 +621,7 @@ mod tests {
                 root.clone()
             )))
         );
+
         assert_eq!(
             iterator.next(),
             Some(VisitEvent::Enter(AnyJsBinaryLikeExpression::from(
@@ -606,6 +638,7 @@ mod tests {
                 a_and_b_and_c
             )))
         );
+
         assert_eq!(
             iterator.next(),
             Some(VisitEvent::Exit(AnyJsBinaryLikeExpression::from(root)))

@@ -37,6 +37,7 @@ pub(crate) fn parse_import_at_rule(p: &mut CssParser) -> ParsedSyntax {
 
     let kind = if is_at_import_url(p) {
         parse_import_url(p).ok();
+
         CSS_IMPORT_AT_RULE
     } else {
         CSS_BOGUS_AT_RULE
@@ -105,7 +106,9 @@ pub(crate) fn parse_import_anonymous_layer(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![layer]);
+
     Present(m.complete(p, CSS_IMPORT_ANONYMOUS_LAYER))
 }
 
@@ -132,8 +135,11 @@ pub(crate) fn parse_import_named_layer(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![layer]);
+
     p.bump(T!['(']);
+
     LayerNameList.parse_list(p);
+
     p.expect(T![')']);
 
     Present(m.complete(p, CSS_IMPORT_NAMED_LAYER))
@@ -156,7 +162,9 @@ pub(crate) fn parse_import_supports(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![supports]);
+
     p.bump(T!['(']);
 
     if is_at_declaration(p) {
@@ -166,5 +174,6 @@ pub(crate) fn parse_import_supports(p: &mut CssParser) -> ParsedSyntax {
     }
 
     p.expect(T![')']);
+
     Present(m.complete(p, CSS_IMPORT_SUPPORTS))
 }

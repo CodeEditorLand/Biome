@@ -88,22 +88,32 @@ impl SimpleArgument {
         let result = if let SimpleArgument::Expression(any_expression) = self {
             if is_call_like_expression(any_expression) {
                 let mut is_import_call_expression = false;
+
                 let mut is_simple_callee = false;
+
                 let arguments = match any_expression {
                     AnyJsExpression::JsNewExpression(expr) => {
                         let callee = expr.callee()?;
+
                         is_simple_callee = SimpleArgument::from(callee).is_simple_impl(depth);
+
                         expr.arguments()
                     }
+
                     AnyJsExpression::JsCallExpression(expr) => {
                         let callee = expr.callee()?;
+
                         is_simple_callee = SimpleArgument::from(callee).is_simple_impl(depth);
+
                         expr.arguments().ok()
                     }
+
                     AnyJsExpression::JsImportCallExpression(expr) => {
                         is_import_call_expression = true;
+
                         expr.arguments().ok()
                     }
+
                     _ => unreachable!("The check is done inside `is_call_like_expression`"),
                 };
 
@@ -143,6 +153,7 @@ impl SimpleArgument {
 
                     Ok(member.is_ok() && SimpleArgument::from(object?).is_simple_impl(depth))
                 }
+
                 AnyJsExpression::JsComputedMemberExpression(computed_expression) => {
                     let JsComputedMemberExpressionFields { member, object, .. } =
                         computed_expression.as_fields();
@@ -150,6 +161,7 @@ impl SimpleArgument {
                     Ok(SimpleArgument::from(member?).is_simple_impl(depth)
                         && SimpleArgument::from(object?).is_simple_impl(depth))
                 }
+
                 _ => Ok(false),
             }
         } else {
@@ -205,6 +217,7 @@ impl SimpleArgument {
                     Ok(false)
                 }
             }
+
             SimpleArgument::Expression(AnyJsExpression::JsPostUpdateExpression(
                 update_expression,
             )) => {
@@ -217,6 +230,7 @@ impl SimpleArgument {
                     Ok(false)
                 }
             }
+
             _ => Ok(false),
         }
     }
@@ -246,6 +260,7 @@ impl SimpleArgument {
                     AnyJsArrayElement::AnyJsExpression(expression) => {
                         SimpleArgument::from(expression).is_simple_impl(depth + 1)
                     }
+
                     AnyJsArrayElement::JsArrayHole(_) => true,
                     _ => false,
                 })
@@ -310,6 +325,7 @@ impl SimpleArgument {
 
                             !is_computed && is_simple
                         }
+
                         _ => false,
                     }
                 })
@@ -368,8 +384,10 @@ pub fn is_simple_template_literal(
                     return Ok(false);
                 }
             }
+
             AnyJsTemplateElement::JsTemplateElement(element) => {
                 let expression = element.expression()?;
+
                 if !(SimpleArgument::from(expression).is_simple_impl(depth)) {
                     return Ok(false);
                 }

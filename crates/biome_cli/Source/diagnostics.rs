@@ -290,11 +290,14 @@ impl CliAdvice {
 impl Advices for CliAdvice {
     fn record(&self, visitor: &mut dyn Visit) -> std::io::Result<()> {
         let command_name = command_name();
+
         let help_sub_command = format!("{} {} --help", command_name, &self.sub_command);
+
         visitor.record_log(
             LogCategory::Info,
             &markup! { "Type the following command for more information" },
         )?;
+
         visitor.record_command(&help_sub_command)?;
 
         Ok(())
@@ -467,6 +470,7 @@ impl From<std::io::Error> for CliDiagnostic {
 impl Termination for CliDiagnostic {
     fn report(self) -> ExitCode {
         let severity = self.severity();
+
         if severity >= Severity::Error {
             ExitCode::FAILURE
         } else {

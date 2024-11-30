@@ -16,6 +16,7 @@ pub(crate) struct FilenameCaseOptions {
 impl From<FilenameCaseOptions> for use_filenaming_convention::FilenamingConventionOptions {
     fn from(val: FilenameCaseOptions) -> Self {
         let filename_cases: Option<use_filenaming_convention::FilenameCases> = val.cases.into();
+
         use_filenaming_convention::FilenamingConventionOptions {
             strict_case: true,
             require_ascii: true,
@@ -58,18 +59,23 @@ pub(crate) struct FilenameCases {
 impl From<FilenameCases> for Option<use_filenaming_convention::FilenameCases> {
     fn from(val: FilenameCases) -> Self {
         let mut cases: SmallVec<[use_filenaming_convention::FilenameCase; 4]> = SmallVec::new();
+
         if val.kebab_case {
             cases.push(use_filenaming_convention::FilenameCase::Kebab);
         }
+
         if val.camel_case {
             cases.push(use_filenaming_convention::FilenameCase::Camel);
         }
+
         if val.snake_case {
             cases.push(use_filenaming_convention::FilenameCase::Snake);
         }
+
         if val.pascal_case {
             cases.push(use_filenaming_convention::FilenameCase::Pascal);
         }
+
         if cases.is_empty() {
             None
         } else {

@@ -85,14 +85,21 @@ impl NoArrayIndexKeyQuery {
         Some(match self {
             NoArrayIndexKeyQuery::JsxAttribute(attribute) => {
                 let attribute_name = attribute.name().ok()?;
+
                 let name = attribute_name.as_jsx_name()?;
+
                 let name_token = name.value_token().ok()?;
+
                 name_token.text_trimmed() == "key"
             }
+
             NoArrayIndexKeyQuery::JsPropertyObjectMember(object_member) => {
                 let object_member_name = object_member.name().ok()?;
+
                 let name = object_member_name.as_js_literal_member_name()?;
+
                 let name = name.value().ok()?;
+
                 name.text_trimmed() == "key"
             }
         })
@@ -124,8 +131,11 @@ pub struct NoArrayIndexKeyState {
 
 impl Rule for NoArrayIndexKey {
     type Query = Semantic<NoArrayIndexKeyQuery>;
+
     type State = NoArrayIndexKeyState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -136,6 +146,7 @@ impl Rule for NoArrayIndexKey {
         }
 
         let model = ctx.model();
+
         let reference = node.as_js_expression()?;
 
         let mut capture_array_index = None;
@@ -144,8 +155,10 @@ impl Rule for NoArrayIndexKey {
             AnyJsExpression::JsIdentifierExpression(identifier_expression) => {
                 capture_array_index = Some(identifier_expression.name().ok()?);
             }
+
             AnyJsExpression::JsTemplateExpression(template_expression) => {
                 let template_elements = template_expression.elements();
+
                 for element in template_elements {
                     if let AnyJsTemplateElement::JsTemplateElement(template_element) = element {
                         let cap_index_value = template_element
@@ -154,13 +167,16 @@ impl Rule for NoArrayIndexKey {
                             .as_js_identifier_expression()?
                             .name()
                             .ok();
+
                         capture_array_index = cap_index_value;
                     }
                 }
             }
+
             AnyJsExpression::JsBinaryExpression(binary_expression) => {
                 let _ = cap_array_index_value(&binary_expression, &mut capture_array_index);
             }
+
             _ => {}
         };
 
@@ -173,10 +189,12 @@ impl Rule for NoArrayIndexKey {
             .binding(&reference)
             .and_then(|declaration| declaration.syntax().parent())
             .and_then(JsFormalParameter::cast)?;
+
         let function = parameter
             .parent::<JsParameterList>()
             .and_then(|list| list.parent::<JsParameters>())
             .and_then(|parameters| parameters.parent::<AnyJsFunction>())?;
+
         let call_expression = function
             .parent::<JsCallArgumentList>()
             .and_then(|arguments| arguments.parent::<JsCallArguments>())
@@ -199,11 +217,14 @@ impl Rule for NoArrayIndexKey {
                 .parent::<JsCallArgumentList>()
                 .and_then(|list| list.parent::<JsCallArguments>())
                 .and_then(|arguments| arguments.parent::<JsCallExpression>())?;
+
             let callee = call_expression.callee().ok()?.omit_parentheses();
 
             if is_react_call_api(&callee, model, ReactLibrary::React, "cloneElement") {
                 let binding = parameter.binding().ok()?;
+
                 let binding_origin = binding.as_any_js_binding()?.as_js_identifier_binding()?;
+
                 Some(NoArrayIndexKeyState {
                     binding_origin: binding_origin.range(),
                     incorrect_prop: reference.range(),
@@ -213,7 +234,9 @@ impl Rule for NoArrayIndexKey {
             }
         } else {
             let binding = parameter.binding().ok()?;
+
             let binding_origin = binding.as_any_js_binding()?.as_js_identifier_binding()?;
+
             Some(NoArrayIndexKeyState {
                 binding_origin: binding_origin.range(),
                 incorrect_prop: reference.range(),
@@ -226,6 +249,7 @@ impl Rule for NoArrayIndexKey {
             binding_origin: incorrect_key,
             incorrect_prop,
         } = state;
+
         let diagnostic = RuleDiagnostic::new(
             rule_category!(),
             incorrect_prop,
@@ -264,8 +288,11 @@ fn is_array_method_index(
 ) -> Option<bool> {
     let member_expression =
         AnyJsMemberExpression::cast(call_expression.callee().ok()?.into_syntax())?;
+
     let name = member_expression.member_name()?;
+
     let name = name.text();
+
     if matches!(
         name,
         "map" | "flatMap" | "from" | "forEach" | "filter" | "some" | "every" | "find" | "findIndex"
@@ -283,6 +310,7 @@ fn cap_array_index_value(
     capture_array_index: &mut Option<JsReferenceIdentifier>,
 ) -> Option<()> {
     let left = binary_expression.left().ok()?;
+
     let right = binary_expression.right().ok()?;
 
     // recursive call if left or right again are binary_expressions

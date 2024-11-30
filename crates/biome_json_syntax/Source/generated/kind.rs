@@ -57,18 +57,21 @@ impl JsonSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_literal(self) -> bool {
         match self {
             JSON_STRING_LITERAL | JSON_NUMBER_LITERAL => true,
             _ => false,
         }
     }
+
     pub const fn is_list(self) -> bool {
         match self {
             JSON_MEMBER_LIST | JSON_ARRAY_ELEMENT_LIST => true,
             _ => false,
         }
     }
+
     pub fn from_keyword(ident: &str) -> Option<JsonSyntaxKind> {
         let kw = match ident {
             "null" => NULL_KW,
@@ -76,8 +79,10 @@ impl JsonSyntaxKind {
             "false" => FALSE_KW,
             _ => return None,
         };
+
         Some(kw)
     }
+
     pub const fn to_string(&self) -> Option<&'static str> {
         let tok = match self {
             COLON => ":",
@@ -94,6 +99,7 @@ impl JsonSyntaxKind {
             JSON_STRING_LITERAL => "string literal",
             _ => return None,
         };
+
         Some(tok)
     }
 }

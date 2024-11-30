@@ -29,6 +29,7 @@ impl<'a> SnapshotOutput<'a> {
 
     pub fn with_index(mut self, index: usize) -> Self {
         self.index = Some(index);
+
         self
     }
 }
@@ -48,13 +49,21 @@ impl<'a> SnapshotBuilder<'a> {
 
     pub fn with_input(mut self, input: &str) -> Self {
         writeln!(self.snapshot).unwrap();
+
         writeln!(self.snapshot, "# Input").unwrap();
+
         writeln!(self.snapshot).unwrap();
+
         self.write_extension();
+
         self.snapshot.push_str(input);
+
         writeln!(self.snapshot).unwrap();
+
         writeln!(self.snapshot, "```").unwrap();
+
         writeln!(self.snapshot).unwrap();
+
         writeln!(self.snapshot).unwrap();
 
         self
@@ -62,6 +71,7 @@ impl<'a> SnapshotBuilder<'a> {
 
     pub fn with_separator(mut self) -> Self {
         writeln!(self.snapshot, "=============================").unwrap();
+
         writeln!(self.snapshot).unwrap();
 
         self
@@ -69,10 +79,15 @@ impl<'a> SnapshotBuilder<'a> {
 
     pub fn with_prettier_diff(mut self, prettier_diff: &str) -> Self {
         writeln!(self.snapshot, "# Prettier differences").unwrap();
+
         writeln!(self.snapshot).unwrap();
+
         writeln!(self.snapshot, "```diff").unwrap();
+
         self.snapshot.push_str(prettier_diff);
+
         writeln!(self.snapshot, "```").unwrap();
+
         writeln!(self.snapshot).unwrap();
 
         self
@@ -80,6 +95,7 @@ impl<'a> SnapshotBuilder<'a> {
 
     pub fn with_multiple_outputs(mut self) -> Self {
         writeln!(self.snapshot, "# Outputs").unwrap();
+
         writeln!(self.snapshot).unwrap();
 
         self
@@ -94,13 +110,19 @@ impl<'a> SnapshotBuilder<'a> {
         writeln!(self.snapshot).unwrap();
 
         writeln!(self.snapshot, "-----").unwrap();
+
         write!(self.snapshot, "{options}").unwrap();
+
         writeln!(self.snapshot, "-----").unwrap();
+
         writeln!(self.snapshot).unwrap();
 
         self.write_extension();
+
         self.snapshot.push_str(output.content);
+
         writeln!(self.snapshot, "```").unwrap();
+
         writeln!(self.snapshot).unwrap();
 
         self
@@ -112,8 +134,11 @@ impl<'a> SnapshotBuilder<'a> {
         writeln!(self.snapshot).unwrap();
 
         self.write_extension();
+
         self.snapshot.push_str(output.content);
+
         writeln!(self.snapshot, "```").unwrap();
+
         writeln!(self.snapshot).unwrap();
 
         self
@@ -122,9 +147,13 @@ impl<'a> SnapshotBuilder<'a> {
     pub fn with_unimplemented(mut self, formatted: &Printed) -> Self {
         if !formatted.verbatim_ranges().is_empty() {
             writeln!(self.snapshot).unwrap();
+
             writeln!(self.snapshot).unwrap();
+
             self.snapshot.push_str("## Unimplemented nodes/tokens");
+
             writeln!(self.snapshot).unwrap();
+
             writeln!(self.snapshot).unwrap();
 
             for (range, text) in formatted.verbatim() {
@@ -149,6 +178,7 @@ impl<'a> SnapshotBuilder<'a> {
                 .clone()
                 .with_file_path(file_name)
                 .with_file_source_code(parse_input);
+
             Formatter::new(&mut Termcolor(&mut buffer))
                 .write_markup(markup! {
                     {PrintDiagnostic::verbose(&error)}
@@ -157,14 +187,18 @@ impl<'a> SnapshotBuilder<'a> {
         }
 
         writeln!(self.snapshot, "# Errors").unwrap();
+
         writeln!(self.snapshot, "```").unwrap();
+
         writeln!(
             self.snapshot,
             "{}",
             std::str::from_utf8(buffer.as_slice()).expect("non utf8 in error buffer")
         )
         .unwrap();
+
         writeln!(self.snapshot, "```").unwrap();
+
         writeln!(self.snapshot).unwrap();
 
         self
@@ -183,13 +217,17 @@ impl<'a> SnapshotBuilder<'a> {
                 "# Lines exceeding max width of {max_width} characters"
             )
             .unwrap();
+
             writeln!(self.snapshot, "```").unwrap();
 
             for (index, line) in lines_exceeding_max_width {
                 let line_number = index + 1;
+
                 writeln!(self.snapshot, "{line_number:>5}: {line}").unwrap();
             }
+
             writeln!(self.snapshot, "```").unwrap();
+
             writeln!(self.snapshot).unwrap();
         }
 
@@ -217,6 +255,7 @@ impl<'a> SnapshotBuilder<'a> {
 impl SnapshotBuilder<'_> {
     fn write_extension(&mut self) {
         let file_extension = self.input_file.extension().unwrap().to_str().unwrap();
+
         writeln!(self.snapshot, "```{file_extension}").unwrap();
     }
 

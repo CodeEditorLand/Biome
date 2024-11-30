@@ -18,6 +18,7 @@ impl<W> HTML<W> {
 
     pub fn with_mdx(mut self) -> Self {
         self.1 = true;
+
         self
     }
 }
@@ -28,13 +29,17 @@ where
 {
     fn write_str(&mut self, elements: &MarkupElements, content: &str) -> io::Result<()> {
         push_styles(&mut self.0, elements)?;
+
         HtmlAdapter(&mut self.0, self.1).write_all(content.as_bytes())?;
+
         pop_styles(&mut self.0, elements)
     }
 
     fn write_fmt(&mut self, elements: &MarkupElements, content: fmt::Arguments) -> io::Result<()> {
         push_styles(&mut self.0, elements)?;
+
         HtmlAdapter(&mut self.0, self.1).write_fmt(content)?;
+
         pop_styles(&mut self.0, elements)
     }
 }
@@ -56,6 +61,7 @@ fn push_styles<W: io::Write>(fmt: &mut W, elements: &MarkupElements) -> io::Resu
                 MarkupElement::Inverse => {
                     write!(fmt, "<span style=\"color: #000; background-color: #ddd;\">")?
                 }
+
                 MarkupElement::Hyperlink { href } => write!(fmt, "<a href=\"{href}\">")?,
             }
         }
@@ -129,11 +135,14 @@ impl<W: io::Write> io::Write for HtmlAdapter<W> {
     fn write(&mut self, buf: &[u8]) -> io::Result<usize> {
         for byte in buf {
             let escaped = self.write_escapes(byte)?;
+
             let mdx_escaped = self.write_mdx_escapes(byte)?;
+
             if !escaped && !mdx_escaped {
                 self.0.write_all(&[*byte])?;
             }
         }
+
         Ok(buf.len())
     }
 
@@ -145,13 +154,17 @@ impl<W: io::Write> io::Write for HtmlAdapter<W> {
 #[cfg(test)]
 mod test {
     use crate as biome_console;
+
     use crate::fmt::Formatter;
+
     use biome_markup::markup;
 
     #[test]
     fn test_mdx_new_lines() {
         let mut buf = Vec::new();
+
         let mut writer = super::HTML(&mut buf, true);
+
         let mut formatter = Formatter::new(&mut writer);
 
         formatter
@@ -178,7 +191,9 @@ mod test {
     #[test]
     fn test_escapes() {
         let mut buf = Vec::new();
+
         let mut writer = super::HTML(&mut buf, false);
+
         let mut formatter = Formatter::new(&mut writer);
 
         formatter
@@ -186,6 +201,7 @@ mod test {
                 "\""
             })
             .unwrap();
+
         formatter
             .write_markup(markup! {
                 "\""
@@ -198,7 +214,9 @@ mod test {
     #[test]
     fn test_escapes_and_new_lines() {
         let mut buf = Vec::new();
+
         let mut writer = super::HTML(&mut buf, true);
+
         let mut formatter = Formatter::new(&mut writer);
 
         formatter
@@ -216,7 +234,9 @@ mod test {
     #[test]
     fn does_not_escape_curly_braces() {
         let mut buf = Vec::new();
+
         let mut writer = super::HTML(&mut buf, false);
+
         let mut formatter = Formatter::new(&mut writer);
 
         formatter
@@ -234,7 +254,9 @@ mod test {
     #[test]
     fn escape_curly_braces() {
         let mut buf = Vec::new();
+
         let mut writer = super::HTML(&mut buf, false).with_mdx();
+
         let mut formatter = Formatter::new(&mut writer);
 
         formatter
@@ -251,7 +273,9 @@ mod test {
     #[test]
     fn test_from_website() {
         let mut buf = Vec::new();
+
         let mut writer = super::HTML(&mut buf, false).with_mdx();
+
         let mut formatter = Formatter::new(&mut writer);
 
         formatter

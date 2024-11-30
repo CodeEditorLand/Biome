@@ -95,12 +95,16 @@ declare_lint_rule! {
 
 impl Rule for UseSelfClosingElements {
     type Query = Ast<JsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = Box<UseSelfClosingElementsOptions>;
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let is_html_element = node
             .opening_element()
             .is_ok_and(|node| node.name().is_ok_and(|name| name.as_jsx_name().is_some()));
@@ -126,6 +130,7 @@ impl Rule for UseSelfClosingElements {
         let mut mutation = ctx.root().begin();
 
         let open_element = ctx.query().opening_element().ok()?;
+
         let JsxOpeningElementFields {
             l_angle_token,
             name,
@@ -133,18 +138,23 @@ impl Rule for UseSelfClosingElements {
             attributes,
             r_angle_token,
         } = open_element.as_fields();
+
         let mut r_angle_token = r_angle_token.ok()?;
+
         let mut leading_trivia = vec![];
+
         let mut slash_token = String::new();
 
         for trivia in r_angle_token.leading_trivia().pieces() {
             leading_trivia.push(TriviaPiece::new(trivia.kind(), trivia.text_len()));
+
             slash_token.push_str(trivia.text());
         }
         // check if previous `open_element` have a whitespace before `>`
         // this step make sure we could convert <div></div> -> <div />
         // <div test="some""></div> -> <div test="some" />
         let prev_token = r_angle_token.prev_token();
+
         let need_extra_whitespace = prev_token
             .as_ref()
             .map_or(true, |token| !token.trailing_trivia().text().ends_with(' '));
@@ -154,6 +164,7 @@ impl Rule for UseSelfClosingElements {
 
         if leading_trivia.is_empty() && need_extra_whitespace {
             slash_token.push(' ');
+
             leading_trivia.push(TriviaPiece::whitespace(1));
         }
 
@@ -166,15 +177,19 @@ impl Rule for UseSelfClosingElements {
             JsSyntaxToken::new_detached(T![/], &slash_token, leading_trivia, []),
             r_angle_token,
         );
+
         if let Some(type_arguments) = type_arguments {
             self_closing_element_builder =
                 self_closing_element_builder.with_type_arguments(type_arguments);
         }
+
         let self_closing_element = self_closing_element_builder.build();
+
         mutation.replace_node(
             AnyJsxTag::JsxElement(ctx.query().clone()),
             AnyJsxTag::JsxSelfClosingElement(self_closing_element),
         );
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

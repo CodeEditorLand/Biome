@@ -20,7 +20,9 @@ pub(crate) struct SummaryReporter {
 impl Reporter for SummaryReporter {
     fn write(self, visitor: &mut dyn ReporterVisitor) -> io::Result<()> {
         visitor.report_diagnostics(&self.execution, self.diagnostics_payload)?;
+
         visitor.report_summary(&self.execution, self.summary)?;
+
         Ok(())
     }
 }
@@ -66,12 +68,15 @@ impl<'a> ReporterVisitor for SummaryReporterVisitor<'a> {
                 Resource::File(p) => Some(p),
                 _ => None,
             });
+
             let Some(location) = location else {
                 continue;
             };
 
             let category = diagnostic.category();
+
             let severity = &diagnostic.severity();
+
             if diagnostic.severity() >= diagnostics_payload.diagnostic_level {
                 if diagnostic.tags().is_verbose() {
                     if diagnostics_payload.verbose {
@@ -138,6 +143,7 @@ struct FileToDiagnostics {
 impl FileToDiagnostics {
     fn insert_lint(&mut self, rule_name: impl Into<RuleName>, severity: &Severity) {
         let rule_name = rule_name.into();
+
         self.lints.insert(rule_name, severity);
     }
 
@@ -186,6 +192,7 @@ struct SummaryListAdvice<'a>(&'a BTreeSet<String>);
 impl<'a> Advices for SummaryListAdvice<'a> {
     fn record(&self, visitor: &mut dyn Visit) -> io::Result<()> {
         let list: Vec<_> = self.0.iter().map(|s| s as &dyn Display).collect();
+
         visitor.record_list(&list)
     }
 }
@@ -203,6 +210,7 @@ impl Display for FileToDiagnostics {
                 list: SummaryListAdvice(&self.parse),
                 category: category!("reporter/parse"),
             };
+
             fmt.write_markup(markup! {
                 {PrintDiagnostic::simple(&diagnostic)}
             })?;
@@ -219,6 +227,7 @@ impl Display for FileToDiagnostics {
                 list: SummaryListAdvice(&self.formats),
                 category: category!("reporter/format"),
             };
+
             fmt.write_markup(markup! {
                 {PrintDiagnostic::simple(&diagnostic)}
             })?;
@@ -235,6 +244,7 @@ impl Display for FileToDiagnostics {
                 list: SummaryListAdvice(&self.organize_imports),
                 category: category!("reporter/organizeImports"),
             };
+
             fmt.write_markup(markup! {
                 {PrintDiagnostic::simple(&diagnostic)}
             })?;
@@ -244,10 +254,12 @@ impl Display for FileToDiagnostics {
             let diagnostic = SummaryTableDiagnostic {
                 tables: &self.lints,
             };
+
             fmt.write_markup(markup! {
                 {PrintDiagnostic::simple(&diagnostic)}
             })?;
         }
+
         Ok(())
     }
 }
@@ -261,7 +273,9 @@ impl LintsByCategory {
             value.track_severity(severity);
         } else {
             let mut diagnostics_by_severity = DiagnosticsBySeverity::default();
+
             diagnostics_by_severity.track_severity(severity);
+
             self.0.insert(rule, diagnostics_by_severity);
         }
     }
@@ -273,6 +287,7 @@ impl<'a> Advices for &'a LintsByCategory {
             markup!("Rule Name").to_owned(),
             markup!("Diagnostics").to_owned(),
         ];
+
         let (first, second): (Vec<_>, Vec<_>) = self
             .0
             .iter()
@@ -284,7 +299,9 @@ impl<'a> Advices for &'a LintsByCategory {
                 )
             })
             .unzip();
+
         let array = [first.as_slice(), second.as_slice()];
+
         visitor.record_table(15usize, headers, &array)
     }
 }
@@ -345,6 +362,7 @@ impl DiagnosticsBySeverity {
             Severity::Warning => {
                 self.warnings += 1;
             }
+
             Severity::Error => {
                 self.errors += 1;
             }
@@ -357,18 +375,25 @@ impl DiagnosticsBySeverity {
 impl Display for DiagnosticsBySeverity {
     fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
         let total = self.warnings + self.info + self.errors;
+
         fmt.write_str(&format!("{total}"))?;
+
         fmt.write_str(" ")?;
+
         fmt.write_str("(")?;
+
         fmt.write_markup(markup! {
             <Error>{self.errors}" error(s), "</Error>
         })?;
+
         fmt.write_markup(markup! {
             <Warn>{self.warnings}" warning(s), "</Warn>
         })?;
+
         fmt.write_markup(markup! {
             <Info>{self.info}" info(s)"</Info>
         })?;
+
         fmt.write_str(")")?;
 
         Ok(())

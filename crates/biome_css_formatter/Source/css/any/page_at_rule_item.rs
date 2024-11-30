@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssPageAtRuleItem;
 pub(crate) struct FormatAnyCssPageAtRuleItem;
 impl FormatRule<AnyCssPageAtRuleItem> for FormatAnyCssPageAtRuleItem {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssPageAtRuleItem, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssPageAtRuleItem::CssAtRule(node) => node.format().fmt(f),

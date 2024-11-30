@@ -54,6 +54,7 @@ impl NeedsParentheses for JsIdentifierAssignment {
         let Ok(name) = self.name_token() else {
             return false;
         };
+
         match name.text_trimmed() {
             "async" => self
                 .parent::<JsForOfStatement>()

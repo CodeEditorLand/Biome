@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsClass;
 pub(crate) struct FormatAnyJsClass;
 impl FormatRule<AnyJsClass> for FormatAnyJsClass {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsClass, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsClass::JsClassDeclaration(node) => node.format().fmt(f),

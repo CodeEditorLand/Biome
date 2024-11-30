@@ -23,6 +23,7 @@ impl FormatNodeRule<JsForStatement> for FormatJsForStatement {
         } = node.as_fields();
 
         let body = body?;
+
         let l_paren_token = l_paren_token?;
 
         let format_body = FormatStatementBody::new(&body);
@@ -30,7 +31,9 @@ impl FormatNodeRule<JsForStatement> for FormatJsForStatement {
         // Move dangling trivia between the `for /* this */ (` to the top of the `for` and
         // add a line break after.
         let comments = f.context().comments();
+
         let dangling_comments = comments.dangling_comments(node.syntax());
+
         if !dangling_comments.is_empty() {
             write!(
                 f,

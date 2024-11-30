@@ -25,8 +25,11 @@ declare_syntax_rule! {
 
 impl Rule for NoSuperWithoutExtends {
     type Query = Ast<JsSuperExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -39,14 +42,17 @@ impl Rule for NoSuperWithoutExtends {
                     if class_declaration.extends_clause().is_none() {
                         return Some(());
                     }
+
                     return None;
                 }
+
                 Err(syntax) => {
                     // ancestor is class expression
                     if let Some(class_expression) = JsClassExpression::cast(syntax) {
                         if class_expression.extends_clause().is_none() {
                             return Some(());
                         }
+
                         return None;
                     }
                 }

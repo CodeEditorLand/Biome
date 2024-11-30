@@ -45,12 +45,16 @@ declare_lint_rule! {
 
 impl Rule for NoConstantMathMinMaxClamp {
     type Query = Semantic<JsCallExpression>;
+
     type State = (JsNumberLiteralExpression, JsNumberLiteralExpression);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
 
         let outer_call = get_math_min_or_max_call(node, model)?;
@@ -77,6 +81,7 @@ impl Rule for NoConstantMathMinMaxClamp {
             | (MinMaxKind::Max, Some(Ordering::Greater)) => {
                 Some((outer_call.constant_argument, inner_call.constant_argument))
             }
+
             _ => None,
         }
     }
@@ -104,6 +109,7 @@ impl Rule for NoConstantMathMinMaxClamp {
         let mut mutation = ctx.root().begin();
 
         mutation.replace_node(state.0.clone(), state.1.clone());
+
         mutation.replace_node(state.1.clone(), state.0.clone());
 
         Some(JsRuleAction::new(
@@ -146,14 +152,17 @@ fn get_math_min_or_max_call(
     model: &SemanticModel,
 ) -> Option<MathMinOrMaxCall> {
     let callee = call_expression.callee().ok()?.omit_parentheses();
+
     let member_expr = AnyJsMemberExpression::cast(callee.into_syntax())?;
 
     let member_name = member_expr.member_name()?;
+
     let member_name = member_name.text();
 
     let min_or_max = MinMaxKind::from_str(member_name).ok()?;
 
     let object = member_expr.object().ok()?.omit_parentheses();
+
     let (reference, name) = global_identifier(&object)?;
 
     if name.text() != "Math" || model.binding(&reference).is_some() {
@@ -161,12 +170,15 @@ fn get_math_min_or_max_call(
     }
 
     let arguments = call_expression.arguments().ok()?.args();
+
     let mut iter = arguments.into_iter();
 
     let first_argument = iter.next()?.ok()?;
+
     let first_argument = first_argument.as_any_js_expression()?;
 
     let second_argument = iter.next()?.ok()?;
+
     let second_argument = second_argument.as_any_js_expression()?;
 
     // `Math.min` and `Math.max` are variadic functions.
@@ -201,6 +213,7 @@ fn get_math_min_or_max_call(
                 other_expression_argument: any_expression.clone(),
             })
         }
+
         _ => None,
     }
 }

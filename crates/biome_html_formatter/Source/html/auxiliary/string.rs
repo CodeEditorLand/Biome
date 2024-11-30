@@ -38,6 +38,7 @@ impl FormatNodeRule<HtmlString> for FormatHtmlString {
                 } else {
                     value.format().fmt(f)?;
                 }
+
                 return Ok(());
             }
         }

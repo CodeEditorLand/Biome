@@ -24,24 +24,28 @@ pub trait Visit {
     /// Prints a single log entry with the provided category and markup.
     fn record_log(&mut self, category: LogCategory, text: &dyn fmt::Display) -> io::Result<()> {
         let _ = (category, text);
+
         Ok(())
     }
 
     /// Prints an unordered list of items.
     fn record_list(&mut self, list: &[&dyn fmt::Display]) -> io::Result<()> {
         let _ = list;
+
         Ok(())
     }
 
     /// Prints a code frame outlining the provided source location.
     fn record_frame(&mut self, location: Location<'_>) -> io::Result<()> {
         let _ = location;
+
         Ok(())
     }
 
     /// Prints the diff between the `prev` and `next` strings.
     fn record_diff(&mut self, diff: &TextEdit) -> io::Result<()> {
         let _ = diff;
+
         Ok(())
     }
 
@@ -52,18 +56,21 @@ pub trait Visit {
         backtrace: &Backtrace,
     ) -> io::Result<()> {
         let _ = (title, backtrace);
+
         Ok(())
     }
 
     /// Prints a command to the user.
     fn record_command(&mut self, command: &str) -> io::Result<()> {
         let _ = command;
+
         Ok(())
     }
 
     /// Prints a group of advices under a common title.
     fn record_group(&mut self, title: &dyn fmt::Display, advice: &dyn Advices) -> io::Result<()> {
         let _ = (title, advice);
+
         Ok(())
     }
 
@@ -78,6 +85,7 @@ pub trait Visit {
         columns: &[&[MarkupBuf]],
     ) -> io::Result<()> {
         let _ = (headers, columns, padding);
+
         Ok(())
     }
 }

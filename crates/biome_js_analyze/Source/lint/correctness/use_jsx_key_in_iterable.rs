@@ -55,13 +55,18 @@ declare_node_union! {
 
 impl Rule for UseJsxKeyInIterable {
     type Query = Semantic<UseJsxKeyInIterableQuery>;
+
     type State = TextRange;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         match node {
             UseJsxKeyInIterableQuery::JsArrayExpression(node) => handle_collections(node, model),
             UseJsxKeyInIterableQuery::JsCallExpression(node) => {
@@ -84,6 +89,7 @@ impl Rule for UseJsxKeyInIterable {
         }).note(markup! {
             "Check the "<Hyperlink href="https://react.dev/learn/rendering-lists#why-does-react-need-keys">"React documentation"</Hyperlink>". "
         });
+
         Some(diagnostic)
     }
 }
@@ -97,6 +103,7 @@ impl Rule for UseJsxKeyInIterable {
 /// ```
 fn handle_collections(node: &JsArrayExpression, model: &SemanticModel) -> Vec<TextRange> {
     let is_inside_jsx = node.parent::<JsxExpressionChild>().is_some();
+
     node.elements()
         .iter()
         .filter_map(|node| {
@@ -104,6 +111,7 @@ fn handle_collections(node: &JsArrayExpression, model: &SemanticModel) -> Vec<Te
             // no need to handle spread case, if the spread argument is itself a list it
             // will be handled during list declaration
             let node = AnyJsExpression::cast(node.into_syntax())?;
+
             handle_potential_react_component(node, model, is_inside_jsx)
         })
         .flatten()
@@ -119,7 +127,9 @@ fn handle_collections(node: &JsArrayExpression, model: &SemanticModel) -> Vec<Te
 /// ```
 fn handle_iterators(node: &JsCallExpression, model: &SemanticModel) -> Option<Vec<TextRange>> {
     let callee = node.callee().ok()?;
+
     let member_expression = AnyJsMemberExpression::cast(callee.into_syntax())?;
+
     let arguments = node.arguments().ok()?;
 
     if !matches!(
@@ -158,22 +168,28 @@ fn handle_iterators(node: &JsCallExpression, model: &SemanticModel) -> Option<Ve
         .as_any_js_expression()?;
 
     let is_inside_jsx = node.parent::<JsxExpressionChild>().is_some();
+
     match callback_argument {
         AnyJsExpression::JsFunctionExpression(callback) => {
             let body = callback.body().ok()?;
+
             Some(handle_function_body(&body, model, is_inside_jsx))
         }
+
         AnyJsExpression::JsArrowFunctionExpression(callback) => {
             let body = callback.body().ok()?;
+
             match body {
                 AnyJsFunctionBody::AnyJsExpression(expr) => {
                     handle_potential_react_component(expr, model, is_inside_jsx)
                 }
+
                 AnyJsFunctionBody::JsFunctionBody(body) => {
                     Some(handle_function_body(&body, model, is_inside_jsx))
                 }
             }
         }
+
         _ => None,
     }
 }
@@ -189,20 +205,26 @@ fn handle_function_body(
         .statements()
         .iter()
         .find_map(|statement| statement.as_js_return_statement().cloned());
+
     let is_return_component = return_statement
         .as_ref()
         .and_then(|ret| {
             let returned_value = ret.argument()?;
+
             let returned_value = unwrap_parenthesis(returned_value)?;
+
             Some(ReactComponentExpression::can_cast(
                 returned_value.syntax().kind(),
             ))
         })
         .unwrap_or_default();
+
     let ranges = return_statement.and_then(|ret| {
         let returned_value = ret.argument()?;
+
         handle_potential_react_component(returned_value, model, is_inside_jsx)
     });
+
     if ranges.is_none() && is_return_component {
         return vec![];
     }
@@ -212,13 +234,16 @@ fn handle_function_body(
         .filter_map(|statement| {
             if let Some(statement) = statement.as_js_variable_statement() {
                 let declaration = statement.declaration().ok()?;
+
                 Some(
                     declaration
                         .declarators()
                         .iter()
                         .filter_map(|declarator| {
                             let decl = declarator.ok()?;
+
                             let init = decl.initializer()?.expression().ok()?;
+
                             handle_potential_react_component(init, model, is_inside_jsx)
                         })
                         .flatten()
@@ -226,6 +251,7 @@ fn handle_function_body(
                 )
             } else if let Some(statement) = statement.as_js_return_statement() {
                 let returned_value = statement.argument()?;
+
                 handle_potential_react_component(returned_value, model, is_inside_jsx)
             } else {
                 None
@@ -245,6 +271,7 @@ fn handle_potential_react_component(
     if let AnyJsExpression::JsConditionalExpression(node) = node {
         let consequent =
             handle_potential_react_component(node.consequent().ok()?, model, is_inside_jsx);
+
         let alternate =
             handle_potential_react_component(node.alternate().ok()?, model, is_inside_jsx);
 
@@ -259,6 +286,7 @@ fn handle_potential_react_component(
     if is_inside_jsx {
         if let Some(node) = ReactComponentExpression::cast(node.into_syntax()) {
             let range = handle_react_component(node, model)?;
+
             Some(range)
         } else {
             None
@@ -266,6 +294,7 @@ fn handle_potential_react_component(
     } else {
         let range =
             handle_react_component(ReactComponentExpression::cast(node.into_syntax())?, model)?;
+
         Some(range)
     }
 }
@@ -291,33 +320,41 @@ fn handle_react_component(
 /// ```
 fn handle_jsx_tag(node: &JsxTagExpression, model: &SemanticModel) -> Option<Vec<TextRange>> {
     let tag = node.tag().ok()?;
+
     let tag = AnyJsxChild::cast(tag.into_syntax())?;
+
     handle_jsx_child(&tag, model)
 }
 
 fn handle_jsx_child(node: &AnyJsxChild, model: &SemanticModel) -> Option<Vec<TextRange>> {
     let mut stack: Vec<AnyJsxChild> = vec![node.clone()];
+
     let mut ranges: Vec<TextRange> = vec![];
 
     while let Some(current) = stack.pop() {
         match current {
             AnyJsxChild::JsxElement(node) => {
                 let open_node = node.opening_element().ok()?;
+
                 if !has_key_attribute(&open_node.attributes()) {
                     ranges.push(open_node.range());
                 }
             }
+
             AnyJsxChild::JsxSelfClosingElement(node) => {
                 if !has_key_attribute(&node.attributes()) {
                     ranges.push(node.range());
                 }
             }
+
             AnyJsxChild::JsxExpressionChild(node) => {
                 let expr = node.expression()?;
+
                 if let Some(child_ranges) = handle_potential_react_component(expr, model, true) {
                     ranges.extend(child_ranges);
                 }
             }
+
             AnyJsxChild::JsxFragment(node) => {
                 let has_any_tags = node.children().iter().any(|child| match &child {
                     AnyJsxChild::JsxElement(_) | AnyJsxChild::JsxSelfClosingElement(_) => true,
@@ -330,11 +367,13 @@ fn handle_jsx_child(node: &AnyJsxChild, model: &SemanticModel) -> Option<Vec<Tex
 
                 if !has_any_tags {
                     ranges.push(node.range());
+
                     break;
                 }
 
                 stack.extend(node.children());
             }
+
             _ => {}
         }
     }
@@ -355,25 +394,35 @@ fn handle_jsx_child(node: &AnyJsxChild, model: &SemanticModel) -> Option<Vec<Tex
 // ```
 fn handle_react_non_jsx(node: &JsCallExpression, model: &SemanticModel) -> Option<TextRange> {
     let callee = node.callee().ok()?;
+
     let arguments = node.arguments().ok()?;
+
     if !is_react_call_api(&callee, model, ReactLibrary::React, "cloneElement")
         && !is_react_call_api(&callee, model, ReactLibrary::React, "createElement")
     {
         return None;
     }
+
     let prop_arguments = arguments.get_arguments_by_index([1]);
+
     let prop_argument = prop_arguments.first();
+
     let Some(prop_argument) = prop_argument else {
         return Some(arguments.range());
     };
+
     let Some(prop_argument) = prop_argument.as_ref() else {
         return Some(arguments.range());
     };
+
     let prop_argument = prop_argument.as_any_js_expression()?;
+
     let props = prop_argument.as_js_object_expression()?;
+
     if has_key_prop(props) {
         return Some(prop_argument.range());
     }
+
     None
 }
 
@@ -399,16 +448,22 @@ fn has_key_prop(props: &JsObjectExpression) -> bool {
         match prop {
             AnyJsObjectMember::JsPropertyObjectMember(prop) => {
                 let Ok(name) = prop.name() else { return false };
+
                 let Some(name) = name.name() else {
                     return false;
                 };
+
                 name == "text"
             }
+
             AnyJsObjectMember::JsShorthandPropertyObjectMember(prop) => {
                 let Ok(name) = prop.name() else { return false };
+
                 let Ok(name) = name.name() else { return false };
+
                 name == "text"
             }
+
             _ => false,
         }
     })
@@ -417,8 +472,10 @@ fn has_key_prop(props: &JsObjectExpression) -> bool {
 // unwrap parenthesized expression
 fn unwrap_parenthesis(expr: AnyJsExpression) -> Option<AnyJsExpression> {
     let mut inner_expr = expr;
+
     while let AnyJsExpression::JsParenthesizedExpression(parenthesized_expr) = inner_expr {
         inner_expr = parenthesized_expr.expression().ok()?;
     }
+
     Some(inner_expr)
 }

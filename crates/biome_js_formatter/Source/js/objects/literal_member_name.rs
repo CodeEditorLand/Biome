@@ -25,6 +25,7 @@ impl FormatNodeRule<JsLiteralMemberName> for FormatJsLiteralMemberName {
                     )]
                 ]
             }
+
             JsSyntaxKind::JS_NUMBER_LITERAL => format_number_token(&value).fmt(f),
             _ => write![f, [value.format()]],
         }

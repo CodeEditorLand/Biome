@@ -125,10 +125,13 @@ impl<T> Iterator for TokenAtOffset<T> {
             TokenAtOffset::None => None,
             TokenAtOffset::Single(node) => {
                 *self = TokenAtOffset::None;
+
                 Some(node)
             }
+
             TokenAtOffset::Between(left, right) => {
                 *self = TokenAtOffset::Single(right);
+
                 Some(left)
             }
         }

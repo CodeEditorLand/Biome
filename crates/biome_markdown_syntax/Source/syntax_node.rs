@@ -13,6 +13,7 @@ pub struct MarkdownLanguage;
 
 impl Language for MarkdownLanguage {
     type Kind = MarkdownSyntaxKind;
+
     type Root = MdDocument;
 }
 

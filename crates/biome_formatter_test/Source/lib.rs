@@ -13,9 +13,11 @@ pub mod utils;
 
 pub trait TestFormatLanguage {
     type ServiceLanguage: ServiceLanguage + 'static;
+
     type Context: CstFormatContext<
         Options = <Self::ServiceLanguage as ServiceLanguage>::FormatOptions,
     >;
+
     type FormatLanguage: FormatLanguage<Context = Self::Context, SyntaxLanguage = Self::ServiceLanguage>
         + 'static
         + Clone;

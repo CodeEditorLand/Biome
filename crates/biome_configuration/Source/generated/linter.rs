@@ -16,6 +16,7 @@ pub fn push_to_analyzer_rules(
             }
         }
     }
+
     if let Some(rules) = rules.complexity.as_ref() {
         for rule_name in Complexity::GROUP_RULES {
             if let Some((_, Some(rule_options))) = rules.get_rule_configuration(rule_name) {
@@ -25,6 +26,7 @@ pub fn push_to_analyzer_rules(
             }
         }
     }
+
     if let Some(rules) = rules.correctness.as_ref() {
         for rule_name in Correctness::GROUP_RULES {
             if let Some((_, Some(rule_options))) = rules.get_rule_configuration(rule_name) {
@@ -34,6 +36,7 @@ pub fn push_to_analyzer_rules(
             }
         }
     }
+
     if let Some(rules) = rules.nursery.as_ref() {
         for rule_name in Nursery::GROUP_RULES {
             if let Some((_, Some(rule_options))) = rules.get_rule_configuration(rule_name) {
@@ -43,6 +46,7 @@ pub fn push_to_analyzer_rules(
             }
         }
     }
+
     if let Some(rules) = rules.performance.as_ref() {
         for rule_name in Performance::GROUP_RULES {
             if let Some((_, Some(rule_options))) = rules.get_rule_configuration(rule_name) {
@@ -52,6 +56,7 @@ pub fn push_to_analyzer_rules(
             }
         }
     }
+
     if let Some(rules) = rules.security.as_ref() {
         for rule_name in Security::GROUP_RULES {
             if let Some((_, Some(rule_options))) = rules.get_rule_configuration(rule_name) {
@@ -61,6 +66,7 @@ pub fn push_to_analyzer_rules(
             }
         }
     }
+
     if let Some(rules) = rules.style.as_ref() {
         for rule_name in Style::GROUP_RULES {
             if let Some((_, Some(rule_options))) = rules.get_rule_configuration(rule_name) {
@@ -70,6 +76,7 @@ pub fn push_to_analyzer_rules(
             }
         }
     }
+
     if let Some(rules) = rules.suspicious.as_ref() {
         for rule_name in Suspicious::GROUP_RULES {
             if let Some((_, Some(rule_options))) = rules.get_rule_configuration(rule_name) {

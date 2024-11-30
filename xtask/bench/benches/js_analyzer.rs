@@ -18,9 +18,13 @@ static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 static GLOBAL: std::alloc::System = std::alloc::System;
 fn bench_analyzer(criterion: &mut Criterion) {
     let mut all_suites = HashMap::new();
+
     all_suites.insert("js", include_str!("analyzer-libs-js.txt"));
+
     all_suites.insert("ts", include_str!("analyzer-libs-ts.txt"));
+
     let mut libs = vec![];
+
     libs.extend(all_suites.values().flat_map(|suite| suite.lines()));
 
     let mut group = criterion.benchmark_group("js_analyzer");
@@ -31,7 +35,9 @@ fn bench_analyzer(criterion: &mut Criterion) {
         match test_case {
             Ok(test_case) => {
                 let code = test_case.code();
+
                 group.throughput(criterion::Throughput::Bytes(code.len() as u64));
+
                 group.bench_with_input(
                     BenchmarkId::from_parameter(test_case.filename()),
                     code,
@@ -42,14 +48,17 @@ fn bench_analyzer(criterion: &mut Criterion) {
 
                         match parsed.analyze() {
                             None => {}
+
                             Some(analyze) => b.iter(|| {
                                 analyze.analyze();
+
                                 criterion::black_box(());
                             }),
                         }
                     },
                 );
             }
+
             Err(e) => println!("{e:?}"),
         }
     }

@@ -57,9 +57,11 @@ impl PartialVcsConfiguration {
     pub const fn is_enabled(&self) -> bool {
         matches!(self.enabled, Some(true))
     }
+
     pub const fn is_disabled(&self) -> bool {
         !self.is_enabled()
     }
+
     pub const fn ignore_file_disabled(&self) -> bool {
         matches!(self.use_ignore_file, Some(false))
     }
@@ -80,6 +82,7 @@ impl DeserializableValidator for PartialVcsConfiguration {
                 .with_range(range)
                 .with_note("Biome will disable the VCS integration until the issue is fixed."),
             );
+
             return false;
         }
 

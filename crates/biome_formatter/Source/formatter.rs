@@ -204,7 +204,9 @@ impl<'buf, Context> Formatter<'buf, Context> {
     /// Formats `content` into an interned element without writing it to the formatter's buffer.
     pub fn intern(&mut self, content: &dyn Format<Context>) -> FormatResult<Option<FormatElement>> {
         let mut buffer = VecBuffer::new(self.state_mut());
+
         crate::write!(&mut buffer, [content])?;
+
         let elements = buffer.into_vec();
 
         Ok(self.intern_vec(elements))
@@ -238,6 +240,7 @@ where
     /// Restore the state of the formatter to a previous snapshot
     pub fn restore_state_snapshot(&mut self, snapshot: FormatterSnapshot) {
         self.state_mut().restore_snapshot(snapshot.state);
+
         self.buffer.restore_snapshot(snapshot.buffer);
     }
 }
@@ -269,6 +272,7 @@ impl<Context> Buffer for Formatter<'_, Context> {
         for argument in arguments.items() {
             argument.format(self)?;
         }
+
         Ok(())
     }
 

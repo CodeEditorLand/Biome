@@ -20,6 +20,7 @@ pub fn offset(
                 line: position.line,
                 col: position.character,
             };
+
             line_index.to_utf8(enc, line_col)
         }
     };
@@ -36,6 +37,8 @@ pub fn text_range(
     position_encoding: PositionEncoding,
 ) -> Result<TextRange> {
     let start = offset(line_index, range.start, position_encoding)?;
+
     let end = offset(line_index, range.end, position_encoding)?;
+
     Ok(TextRange::new(start, end))
 }

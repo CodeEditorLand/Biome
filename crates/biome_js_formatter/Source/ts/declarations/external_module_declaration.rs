@@ -27,12 +27,15 @@ impl FormatNodeRule<TsExternalModuleDeclaration> for FormatTsExternalModuleDecla
             )) => {
                 body.format().fmt(f)?;
             }
+
             Some(AnyTsExternalModuleDeclarationBody::TsModuleBlock(body)) => {
                 write!(f, [space(), body.format()])?;
             }
+
             None if f.options().semicolons().is_always() => {
                 write!(f, [text(";")])?;
             }
+
             None => {}
         }
 

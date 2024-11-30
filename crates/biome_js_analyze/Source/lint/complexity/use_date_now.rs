@@ -64,8 +64,11 @@ declare_lint_rule! {
 
 impl Rule for UseDateNow {
     type Query = Ast<JsNewOrCallExpression>;
+
     type State = (AnyJsExpression, UseDateNowIssueKind);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -155,6 +158,7 @@ fn get_date_method_issue(
     let callee = call_expr.callee().ok()?.omit_parentheses();
 
     let member_name = callee.get_callee_member_name()?.token_text_trimmed();
+
     if member_name != "getTime" && member_name != "valueOf"
         || call_expr.is_optional()
         || call_expr.arguments().ok()?.args().len() > 0
@@ -169,6 +173,7 @@ fn get_date_method_issue(
         .omit_parentheses();
 
     let new_expr = object.as_js_new_expression()?;
+
     let object_name = new_expr
         .callee()
         .ok()?
@@ -195,6 +200,7 @@ fn get_new_date_issue(expr: &JsNewExpression) -> Option<(AnyJsExpression, UseDat
     }
 
     let parent = get_parent_without_parenthesis(expr.syntax())?;
+
     match parent {
         AnyJsExpression::JsBinaryExpression(binary_expr) => {
             let operator = binary_expr.operator().ok()?;
@@ -211,6 +217,7 @@ fn get_new_date_issue(expr: &JsNewExpression) -> Option<(AnyJsExpression, UseDat
 
             None
         }
+
         AnyJsExpression::JsAssignmentExpression(expr) => {
             let token = expr.operator().ok()?;
 
@@ -229,6 +236,7 @@ fn get_new_date_issue(expr: &JsNewExpression) -> Option<(AnyJsExpression, UseDat
 
             None
         }
+
         AnyJsExpression::JsUnaryExpression(unary_expr) => {
             let operator = unary_expr.operator().ok()?;
 
@@ -243,6 +251,7 @@ fn get_new_date_issue(expr: &JsNewExpression) -> Option<(AnyJsExpression, UseDat
                 UseDateNowIssueKind::ReplaceConstructor,
             ))
         }
+
         AnyJsExpression::JsCallExpression(call_expr) => {
             if call_expr.is_optional() || call_expr.arguments().ok()?.args().len() != 1 {
                 return None;
@@ -264,6 +273,7 @@ fn get_new_date_issue(expr: &JsNewExpression) -> Option<(AnyJsExpression, UseDat
 
             None
         }
+
         _ => None,
     }
 }

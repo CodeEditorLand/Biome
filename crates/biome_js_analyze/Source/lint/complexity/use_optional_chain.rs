@@ -87,31 +87,42 @@ pub enum UseOptionalChainState {
 
 impl Rule for UseOptionalChain {
     type Query = Ast<JsLogicalExpression>;
+
     type State = UseOptionalChainState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let logical = ctx.query();
+
         let operator = logical.operator().ok()?;
+
         match operator {
             JsLogicalOperator::LogicalAnd => {
                 let head = logical.right().ok()?;
+
                 let chain = LogicalAndChain::from_expression(head).ok()?;
+
                 if chain.is_inside_another_chain().ok()? {
                     return None;
                 }
+
                 let optional_chain_expression_nodes = chain.optional_chain_expression_nodes()?;
+
                 Some(UseOptionalChainState::LogicalAnd(
                     optional_chain_expression_nodes,
                 ))
             }
+
             JsLogicalOperator::NullishCoalescing | JsLogicalOperator::LogicalOr => {
                 let chain = LogicalOrLikeChain::from_expression(logical)?;
 
                 if chain.is_inside_another_chain() {
                     return None;
                 }
+
                 Some(UseOptionalChainState::LogicalOrLike(chain))
             }
         }
@@ -122,6 +133,7 @@ impl Rule for UseOptionalChain {
             UseOptionalChainState::LogicalAnd(_) => ctx.query().range(),
             UseOptionalChainState::LogicalOrLike(state) => state.member.range(),
         };
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             range,
@@ -150,17 +162,21 @@ impl Rule for UseOptionalChain {
                             subject.clone().replace_node(prev_subject, prev_replacement)
                         })
                         .unwrap_or_else(|| subject.clone());
+
                     let replacement = match updated_subject {
                         AnyJsExpression::JsCallExpression(call_expression) => {
                             let optional_chain_token = call_expression
                                 .optional_chain_token()
                                 .unwrap_or_else(|| make::token(T![?.]));
+
                             call_expression
                                 .with_optional_chain_token(Some(optional_chain_token))
                                 .into()
                         }
+
                         AnyJsExpression::JsStaticMemberExpression(member_expression) => {
                             let operator = member_expression.operator_token().ok()?;
+
                             AnyJsExpression::from(make::js_static_member_expression(
                                 member_expression.object().ok()?,
                                 make::token(T![?.])
@@ -171,24 +187,30 @@ impl Rule for UseOptionalChain {
                                 member_expression.member().ok()?,
                             ))
                         }
+
                         AnyJsExpression::JsComputedMemberExpression(member_expression) => {
                             let optional_chain_token = member_expression
                                 .optional_chain_token()
                                 .unwrap_or_else(|| make::token(T![?.]));
+
                             member_expression
                                 .with_optional_chain_token(Some(optional_chain_token))
                                 .into()
                         }
+
                         _ => return None,
                     };
+
                     chain_with_replacement = Some((subject.clone(), replacement));
                 }
 
                 // At this point we have the chain and its replacement, but we
                 // still need to transform the logical expression into the chain.
                 let logical = ctx.query();
+
                 let replacement = {
                     let (chain, chain_replacement) = chain_with_replacement?;
+
                     logical
                         .right()
                         .ok()?
@@ -197,7 +219,9 @@ impl Rule for UseOptionalChain {
                 };
 
                 let mut mutation = ctx.root().begin();
+
                 mutation.replace_node(AnyJsExpression::from(logical.clone()), replacement);
+
                 Some(JsRuleAction::new(
                     ctx.metadata().action_category(ctx.category(), ctx.group()),
                     ctx.metadata().applicability(),
@@ -205,21 +229,28 @@ impl Rule for UseOptionalChain {
                     mutation,
                 ))
             }
+
             UseOptionalChainState::LogicalOrLike(chain) => {
                 let chain = chain.optional_chain_expression_nodes();
+
                 let mut prev_chain: Option<(AnyJsMemberExpression, AnyJsMemberExpression)> = None;
+
                 for (mut left, member) in chain {
                     if let Some((prev_member, next_member)) = prev_chain.take() {
                         left = left
                             .replace_node(prev_member, next_member.clone())
                             .unwrap_or_else(|| next_member.into());
                     }
+
                     left = trim_trailing_space(left)?;
+
                     let need_parenthesis =
                         left.precedence().ok()? < OperatorPrecedence::LeftHandSide;
+
                     if need_parenthesis {
                         left = make::parenthesized(left).into();
                     }
+
                     let next_member = match member.clone() {
                         AnyJsMemberExpression::JsStaticMemberExpression(expression) => {
                             let static_member_expression = make::js_static_member_expression(
@@ -227,8 +258,10 @@ impl Rule for UseOptionalChain {
                                 make::token(T![?.]),
                                 expression.member().ok()?,
                             );
+
                             AnyJsMemberExpression::from(static_member_expression)
                         }
+
                         AnyJsMemberExpression::JsComputedMemberExpression(expression) => {
                             let computed_member_expression = make::js_computed_member_expression(
                                 left,
@@ -238,14 +271,20 @@ impl Rule for UseOptionalChain {
                             )
                             .with_optional_chain_token(make::token(T![?.]))
                             .build();
+
                             computed_member_expression.into()
                         }
                     };
+
                     prev_chain = Some((member, next_member));
                 }
+
                 let (prev_member, new_member) = prev_chain?;
+
                 let mut mutation = ctx.root().begin();
+
                 mutation.replace_node(prev_member, new_member);
+
                 Some(JsRuleAction::new(
                     ctx.metadata().action_category(ctx.category(), ctx.group()),
                     ctx.metadata().applicability(),
@@ -265,6 +304,7 @@ fn normalized_optional_chain_like(expression: AnyJsExpression) -> SyntaxResult<A
             return expression.left();
         }
     }
+
     Ok(expression)
 }
 
@@ -375,34 +415,50 @@ impl LogicalAndChain {
         /// ```
         fn collect_chain(expression: AnyJsExpression) -> SyntaxResult<VecDeque<AnyJsExpression>> {
             let mut buf = VecDeque::new();
+
             let mut current_expression = Some(expression);
+
             while let Some(expression) = current_expression.take() {
                 current_expression = match &expression {
                     AnyJsExpression::JsStaticMemberExpression(member_expression) => {
                         let object = member_expression.object()?;
+
                         buf.push_front(expression);
+
                         Some(object)
                     }
+
                     AnyJsExpression::JsComputedMemberExpression(member_expression) => {
                         let object = member_expression.object()?;
+
                         buf.push_front(expression);
+
                         Some(object)
                     }
+
                     AnyJsExpression::JsCallExpression(call_expression) => {
                         let callee = call_expression.callee()?;
+
                         buf.push_front(expression);
+
                         Some(callee)
                     }
+
                     AnyJsExpression::JsIdentifierExpression(_) => {
                         buf.push_front(expression);
+
                         return Ok(buf);
                     }
+
                     _ => return Ok(buf),
                 };
             }
+
             Ok(buf)
         }
+
         let buf = collect_chain(head.clone())?;
+
         Ok(LogicalAndChain { head, buf })
     }
 
@@ -418,9 +474,11 @@ impl LogicalAndChain {
         if let Some(parent) = self.head.parent::<JsLogicalExpression>() {
             if let Some(grand_parent) = parent.parent::<JsLogicalExpression>() {
                 let grand_parent_operator = grand_parent.operator()?;
+
                 if !matches!(grand_parent_operator, JsLogicalOperator::LogicalAnd) {
                     return Ok(false);
                 }
+
                 let grand_parent_logical_left = grand_parent.left()?;
                 // Here we check that we came from the left side of the logical expression.
                 // Because only the left-hand parts can be sub-chains.
@@ -428,16 +486,20 @@ impl LogicalAndChain {
                     let grand_parent_right_chain = LogicalAndChain::from_expression(
                         normalized_optional_chain_like(grand_parent.right()?)?,
                     )?;
+
                     let result = grand_parent_right_chain.cmp_chain(self)?;
+
                     return match result {
                         LogicalAndChainOrdering::SubChain | LogicalAndChainOrdering::Equal => {
                             Ok(true)
                         }
+
                         LogicalAndChainOrdering::Different => Ok(false),
                     };
                 }
             }
         }
+
         Ok(false)
     }
 
@@ -450,6 +512,7 @@ impl LogicalAndChain {
             Ordering::Equal => LogicalAndChainOrdering::Equal,
             Ordering::Greater => LogicalAndChainOrdering::SubChain,
         };
+
         for (main_expression, branch_expression) in self.buf.iter().zip(&other.buf) {
             let (
                 main_expression,
@@ -473,6 +536,7 @@ impl LogicalAndChain {
                     None,
                 ),
             };
+
             let (main_value_token, branch_value_token) = match (main_expression, branch_expression)
             {
                 (
@@ -517,6 +581,7 @@ impl LogicalAndChain {
                 ),
                 _ => return Ok(LogicalAndChainOrdering::Different),
             };
+
             if main_value_token.token_text_trimmed() != branch_value_token.token_text_trimmed() {
                 return Ok(LogicalAndChainOrdering::Different);
             } else if let (Some(main_call_expression_args), Some(branch_call_expression_args)) =
@@ -534,6 +599,7 @@ impl LogicalAndChain {
                 }
             }
         }
+
         Ok(chain_ordering)
     }
 
@@ -550,6 +616,7 @@ impl LogicalAndChain {
         // Keep track of previous branches, so we can inspect them for optional
         // chains that were already present in said branches.
         let mut prev_branch: Option<LogicalAndChain> = None;
+
         while let Some(expression) = next_chain_head.take() {
             let expression = match expression {
                 // Extract a left `JsAnyExpression` from `JsBinaryExpression` if
@@ -567,25 +634,30 @@ impl LogicalAndChain {
                     .then_some(expression.left().ok()?)?,
                 expression => expression,
             };
+
             let head = match expression {
                 AnyJsExpression::JsLogicalExpression(logical) => {
                     if matches!(logical.operator().ok()?, JsLogicalOperator::LogicalAnd) {
                         // Here we move our sub-chain head over the chains of logical expression
                         next_chain_head = logical.left().ok();
+
                         logical.right().ok()?
                     } else {
                         return None;
                     }
                 }
+
                 AnyJsExpression::JsIdentifierExpression(_)
                 | AnyJsExpression::JsStaticMemberExpression(_)
                 | AnyJsExpression::JsComputedMemberExpression(_)
                 | AnyJsExpression::JsCallExpression(_) => expression,
                 _ => return None,
             };
+
             let branch =
                 LogicalAndChain::from_expression(normalized_optional_chain_like(head).ok()?)
                     .ok()?;
+
             match self.cmp_chain(&branch).ok()? {
                 LogicalAndChainOrdering::SubChain => {
                     // If the previous branch had other expressions that already
@@ -593,6 +665,7 @@ impl LogicalAndChain {
                     // include them as well.
                     if let Some(mut prev_branch) = prev_branch {
                         let mut parts_to_pop = prev_branch.buf.len() - branch.buf.len() - 1;
+
                         while parts_to_pop > 0 {
                             if let (Some(left_part), Some(right_part)) =
                                 (prev_branch.buf.pop_back(), self.buf.pop_back())
@@ -605,16 +678,19 @@ impl LogicalAndChain {
                                     {
                                         optional_chain_expression_nodes.push_front(right_part);
                                     }
+
                                     AnyJsExpression::JsComputedMemberExpression(ref expr)
                                         if expr.optional_chain_token().is_some() =>
                                     {
                                         optional_chain_expression_nodes.push_front(right_part);
                                     }
+
                                     AnyJsExpression::JsCallExpression(ref expr)
                                         if expr.optional_chain_token().is_some() =>
                                     {
                                         optional_chain_expression_nodes.push_front(right_part);
                                     }
+
                                     _ => {}
                                 }
                             }
@@ -630,12 +706,14 @@ impl LogicalAndChain {
                     // After splitting the main buffer will be `[foo]` and the tail will be `[bar, baz]`.
                     // It means that we need to transform `bar` (first tail expression) into the optional one.
                     let mut tail = self.buf.split_off(branch.buf.len());
+
                     if let Some(part) = tail.pop_front() {
                         optional_chain_expression_nodes.push_front(part);
                     }
 
                     prev_branch = Some(branch);
                 }
+
                 LogicalAndChainOrdering::Equal => continue,
                 LogicalAndChainOrdering::Different => return None,
             }
@@ -655,16 +733,19 @@ impl LogicalAndChain {
                     {
                         optional_chain_expression_nodes.push_front(right_part);
                     }
+
                     AnyJsExpression::JsComputedMemberExpression(ref expr)
                         if expr.optional_chain_token().is_some() =>
                     {
                         optional_chain_expression_nodes.push_front(right_part);
                     }
+
                     AnyJsExpression::JsCallExpression(ref expr)
                         if expr.optional_chain_token().is_some() =>
                     {
                         optional_chain_expression_nodes.push_front(right_part);
                     }
+
                     _ => {}
                 }
             }
@@ -673,6 +754,7 @@ impl LogicalAndChain {
         if optional_chain_expression_nodes.is_empty() {
             return None;
         }
+
         Some(optional_chain_expression_nodes)
     }
 }
@@ -738,10 +820,13 @@ impl LogicalOrLikeChain {
             .omit_parentheses()
             .as_js_object_expression()?
             .is_empty();
+
         if !is_right_empty_object {
             return None;
         }
+
         let member = LogicalOrLikeChain::get_chain_parent_member(logical)?;
+
         Some(LogicalOrLikeChain { member })
     }
 
@@ -774,6 +859,7 @@ impl LogicalOrLikeChain {
         let mut chain = VecDeque::new();
         // Start from the topmost member expression
         let mut next_member_chain = Some(self.member.clone());
+
         while let Some(member) = next_member_chain.take() {
             let object = match member.object() {
                 Ok(object) => object,
@@ -781,7 +867,9 @@ impl LogicalOrLikeChain {
             };
             // Handle case when a object expression is inside parentheses
             // E.g. (((foo || {}))).bar;
+
             let object = object.omit_parentheses();
+
             if let AnyJsExpression::JsLogicalExpression(logical) = object {
                 let is_valid_operator = logical.operator().map_or(false, |operator| {
                     matches!(
@@ -789,9 +877,11 @@ impl LogicalOrLikeChain {
                         JsLogicalOperator::NullishCoalescing | JsLogicalOperator::LogicalOr
                     )
                 });
+
                 if !is_valid_operator {
                     return chain;
                 }
+
                 let is_right_empty_object = logical
                     .right()
                     .ok()
@@ -804,9 +894,11 @@ impl LogicalOrLikeChain {
                             .map(|object| object.is_empty())
                     })
                     .unwrap_or(false);
+
                 if !is_right_empty_object {
                     return chain;
                 }
+
                 let left = match logical.left() {
                     Ok(left) => left,
                     Err(_) => return chain,
@@ -817,9 +909,11 @@ impl LogicalOrLikeChain {
                 // If current member chain is `bar` the next member chain is baz.
                 // Need to downward traversal to find first `JsAnyExpression` which we can't include in chain
                 next_member_chain = LogicalOrLikeChain::get_member(left.clone());
+
                 chain.push_front((left, member))
             }
         }
+
         chain
     }
 
@@ -838,11 +932,14 @@ impl LogicalOrLikeChain {
                 AnyJsExpression::JsComputedMemberExpression(expression) => {
                     AnyJsMemberExpression::from(expression)
                 }
+
                 AnyJsExpression::JsStaticMemberExpression(expression) => {
                     AnyJsMemberExpression::from(expression)
                 }
+
                 _ => return None,
             };
+
             Some(member)
         })
     }
@@ -885,19 +982,24 @@ impl LogicalOrLikeChain {
             AnyJsExpression::TsNonNullAssertionExpression(expression) => {
                 expression.expression().ok()
             }
+
             AnyJsExpression::TsTypeAssertionExpression(expression) => expression.expression().ok(),
             _ => None,
         })
         .last()?;
+
         let expression = match expression {
             AnyJsExpression::JsComputedMemberExpression(expression) => {
                 AnyJsMemberExpression::from(expression)
             }
+
             AnyJsExpression::JsStaticMemberExpression(expression) => {
                 AnyJsMemberExpression::from(expression)
             }
+
             _ => return None,
         };
+
         Some(expression)
     }
 }
@@ -906,6 +1008,8 @@ fn trim_trailing_space(node: AnyJsExpression) -> Option<AnyJsExpression> {
     let Some(last_token_of_left_syntax) = node.syntax().last_token() else {
         return Some(node);
     };
+
     let next_token_of_left_syntax = last_token_of_left_syntax.with_trailing_trivia([]);
+
     node.replace_token_discard_trivia(last_token_of_left_syntax, next_token_of_left_syntax)
 }

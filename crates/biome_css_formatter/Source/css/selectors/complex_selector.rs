@@ -23,6 +23,7 @@ impl FormatNodeRule<CssComplexSelector> for FormatCssComplexSelector {
                 write!(f, [combinator.format()])
             }
         });
+
         let mut has_leading_comments = false;
 
         let is_selector_list_first_child = node.syntax().parent().is_some_and(|parent| {

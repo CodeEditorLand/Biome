@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssPageSelector;
 pub(crate) struct FormatAnyCssPageSelector;
 impl FormatRule<AnyCssPageSelector> for FormatAnyCssPageSelector {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssPageSelector, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssPageSelector::CssBogusSelector(node) => node.format().fmt(f),

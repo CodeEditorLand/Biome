@@ -15,6 +15,7 @@ pub(crate) type MarkdownLosslessTreeSink<'source> =
 
 pub fn parse_markdown(source: &str) -> MarkdownParse {
     let mut cache = NodeCache::default();
+
     parse_markdown_with_cache(source, &mut cache)
 }
 
@@ -27,7 +28,9 @@ pub fn parse_markdown_with_cache(source: &str, cache: &mut NodeCache) -> Markdow
         let (events, diagnostics, trivia) = parser.finish();
 
         let mut tree_sink = MarkdownLosslessTreeSink::with_cache(source, &trivia, cache);
+
         biome_parser::event::process(&mut tree_sink, events, diagnostics);
+
         let (green, diagnostics) = tree_sink.finish();
 
         MarkdownParse::new(green, diagnostics)

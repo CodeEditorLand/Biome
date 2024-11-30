@@ -178,8 +178,11 @@ where
         }
 
         self.fmt_leading_comments(node, f)?;
+
         self.fmt_fields(node, f)?;
+
         self.fmt_dangling_comments(node, f)?;
+
         self.fmt_trailing_comments(node, f)
     }
 
@@ -243,7 +246,9 @@ impl JsonFormatLanguage {
 
 impl FormatLanguage for JsonFormatLanguage {
     type SyntaxLanguage = JsonLanguage;
+
     type Context = JsonFormatContext;
+
     type FormatRule = FormatJsonSyntaxNode;
 
     fn is_range_formatting_node(&self, node: &SyntaxNode<Self::SyntaxLanguage>) -> bool {
@@ -260,6 +265,7 @@ impl FormatLanguage for JsonFormatLanguage {
         source_map: Option<TransformSourceMap>,
     ) -> Self::Context {
         let comments = Comments::from_node(root, &JsonCommentStyle, source_map.as_ref());
+
         JsonFormatContext::new(self.options, comments).with_source_map(source_map)
     }
 }
@@ -330,7 +336,9 @@ pub fn format_sub_tree(options: JsonFormatOptions, root: &JsonSyntaxNode) -> For
 mod tests {
 
     use crate::context::JsonFormatOptions;
+
     use crate::format_node;
+
     use biome_json_parser::{parse_json, JsonParserOptions};
 
     #[test]
@@ -344,9 +352,13 @@ mod tests {
     "e": false
 }
 "#;
+
         let parse = parse_json(src, JsonParserOptions::default());
+
         let options = JsonFormatOptions::default();
+
         let formatted = format_node(options, &parse.syntax()).unwrap();
+
         assert_eq!(
             formatted.print().unwrap().as_code(),
             "{\n\t\"a\": 5,\n\t\"b\": [1, 2, 3, 4],\n\t\"c\": null,\n\t\"d\": true,\n\t\"e\": false\n}\n"

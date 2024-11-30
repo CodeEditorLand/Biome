@@ -43,12 +43,19 @@ impl<'a> From<&'a AnyJsClass> for FormatClass<'a> {
 impl Format<JsFormatContext> for FormatClass<'_> {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         let decorators = self.class.decorators();
+
         let abstract_token = self.class.abstract_token();
+
         let id = self.class.id();
+
         let extends = self.class.extends_clause();
+
         let implements_clause = self.class.implements_clause();
+
         let type_parameters = self.class.type_parameters();
+
         let class_token = self.class.class_token()?;
+
         let members = self.class.members();
 
         let group_mode = self.should_group(f.comments())?;
@@ -131,6 +138,7 @@ impl Format<JsFormatContext> for FormatClass<'_> {
             });
 
             let heritage_id = f.group_id("heritageGroup");
+
             write!(
                 f,
                 [group(&indented).with_group_id(Some(heritage_id)), space()]

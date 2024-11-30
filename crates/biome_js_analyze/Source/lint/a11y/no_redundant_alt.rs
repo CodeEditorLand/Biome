@@ -51,16 +51,22 @@ declare_lint_rule! {
 
 impl Rule for NoRedundantAlt {
     type Query = Ast<AnyJsxElement>;
+
     type State = AnyJsxAttributeValue;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.name_value_token().ok()?.text_trimmed() != "img" {
             return None;
         }
+
         let aria_hidden_attribute = node.find_attribute_by_name("aria-hidden");
+
         if let Some(aria_hidden) = aria_hidden_attribute {
             let is_false = match aria_hidden.initializer()?.value().ok()? {
                 AnyJsxAttributeValue::AnyJsxTag(_) => false,
@@ -75,6 +81,7 @@ impl Rule for NoRedundantAlt {
                         .text_trimmed()
                         == "false"
                 }
+
                 AnyJsxAttributeValue::JsxString(aria_hidden) => {
                     aria_hidden.inner_string_text().ok()?.text() == "false"
                 }
@@ -107,6 +114,7 @@ impl Rule for NoRedundantAlt {
                                             is_redundant_alt(token.text_trimmed())
                                         })
                                     }
+
                                     AnyJsTemplateElement::JsTemplateElement(_) => false,
                                 }
                             });
@@ -117,8 +125,10 @@ impl Rule for NoRedundantAlt {
                     _ => None,
                 }
             }
+
             AnyJsxAttributeValue::JsxString(ref value) => {
                 let inner_string_text = value.inner_string_text().ok()?;
+
                 is_redundant_alt(inner_string_text.text()).then_some(alt)
             }
         }

@@ -91,12 +91,16 @@ enum TsArrayKind {
 
 impl Rule for UseConsistentArrayType {
     type Query = Ast<AnyTsType>;
+
     type State = AnyTsType;
+
     type Signals = Option<Self::State>;
+
     type Options = ConsistentArrayTypeOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let query = ctx.query();
+
         let options = ctx.options();
 
         match query {
@@ -106,9 +110,12 @@ impl Rule for UseConsistentArrayType {
                 if options.syntax == ConsistentArrayType::Shorthand {
                     return None;
                 }
+
                 let array_kind = get_array_kind_by_any_type(query)?;
+
                 transform_array_type(query.to_owned(), array_kind)
             }
+
             AnyTsType::TsReferenceType(ty) => {
                 if options.syntax == ConsistentArrayType::Generic {
                     return None;
@@ -119,19 +126,23 @@ impl Rule for UseConsistentArrayType {
                     ty.syntax().ancestors().skip(1).find(|ancestor| {
                         ancestor.kind() != JsSyntaxKind::JS_PARENTHESIZED_EXPRESSION
                     });
+
                 if parent.kind() == Some(JsSyntaxKind::TS_TYPE_LIST) {
                     return None;
                 }
 
                 let array_kind = get_array_kind_by_reference(ty)?;
+
                 convert_to_array_type(&ty.type_arguments()?, array_kind)
             }
+
             _ => None,
         }
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let query = ctx.query();
+
         let options = ctx.options();
 
         match query {
@@ -143,6 +154,7 @@ impl Rule for UseConsistentArrayType {
                 }
 
                 let is_readonly = matches!(query, AnyTsType::TsTypeOperatorType(_));
+
                 let title = if is_readonly {
                     get_diagnostic_title(TsArrayKind::Readonly)
                 } else {
@@ -151,6 +163,7 @@ impl Rule for UseConsistentArrayType {
 
                 Some(RuleDiagnostic::new(rule_category!(), query.range(), title))
             }
+
             AnyTsType::TsReferenceType(ty) => {
                 if options.syntax == ConsistentArrayType::Generic {
                     return None;
@@ -166,17 +179,20 @@ impl Rule for UseConsistentArrayType {
 
                 None
             }
+
             _ => None,
         }
     }
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let query = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         match query {
             AnyTsType::TsReferenceType(ty) => {
                 mutation.replace_node(AnyTsType::TsReferenceType(ty.clone()), state.clone());
+
                 if let Some(kind) = get_array_kind_by_reference(ty) {
                     return Some(JsRuleAction::new(
                         ctx.metadata().action_category(ctx.category(), ctx.group()),
@@ -188,8 +204,10 @@ impl Rule for UseConsistentArrayType {
 
                 None
             }
+
             AnyTsType::TsTypeOperatorType(ty) => {
                 mutation.replace_node(AnyTsType::TsTypeOperatorType(ty.clone()), state.clone());
+
                 let ty = ty.ty().ok()?;
 
                 if let Some(kind) = get_array_kind_by_any_type(&ty) {
@@ -203,10 +221,12 @@ impl Rule for UseConsistentArrayType {
 
                 None
             }
+
             AnyTsType::TsArrayType(ty)
                 if query.syntax().parent().kind() != Some(JsSyntaxKind::TS_TYPE_OPERATOR_TYPE) =>
             {
                 mutation.replace_node(AnyTsType::TsArrayType(ty.clone()), state.clone());
+
                 Some(JsRuleAction::new(
                     ctx.metadata().action_category(ctx.category(), ctx.group()),
                     ctx.metadata().applicability(),
@@ -214,6 +234,7 @@ impl Rule for UseConsistentArrayType {
                     mutation,
                 ))
             }
+
             _ => None,
         }
     }
@@ -221,8 +242,10 @@ impl Rule for UseConsistentArrayType {
 
 fn get_array_kind_by_reference(ty: &TsReferenceType) -> Option<TsArrayKind> {
     let name = ty.name().ok()?;
+
     name.as_js_reference_identifier().and_then(|ident| {
         let name = ident.value_token().ok()?;
+
         match name.text_trimmed() {
             "Array" => Some(TsArrayKind::GenericArray),
             "ReadonlyArray" => Some(TsArrayKind::ReadonlyGenericArray),
@@ -234,6 +257,7 @@ fn get_array_kind_by_reference(ty: &TsReferenceType) -> Option<TsArrayKind> {
 fn get_array_kind_by_any_type(ty: &AnyTsType) -> Option<TsArrayKind> {
     if let AnyTsType::TsTypeOperatorType(ty) = ty {
         let operator_token = ty.operator_token().ok()?;
+
         let is_readonly = operator_token.text_trimmed() == "readonly";
 
         return (matches!(ty.ty(), Ok(AnyTsType::TsArrayType(_))) && is_readonly)
@@ -254,6 +278,7 @@ fn transform_array_type(ty: AnyTsType, array_kind: TsArrayKind) -> Option<AnyTsT
         return get_array_type(array_types);
     } else if let AnyTsType::TsTypeOperatorType(opt_ty) = ty {
         let ty = opt_ty.ty().ok()?;
+
         return transform_array_type(ty, array_kind);
     }
 
@@ -270,12 +295,14 @@ fn convert_to_array_type(
             .into_iter()
             .filter_map(|param| {
                 let param = param.ok()?;
+
                 transform_array_element_type(param, array_kind)
             })
             .collect::<Vec<_>>();
 
         return get_array_type(types_array);
     }
+
     None
 }
 
@@ -285,8 +312,10 @@ fn get_array_type(array_types: Vec<AnyTsType>) -> Option<AnyTsType> {
         1 => {
             // SAFETY: We know that `length` of `array_types` is 1, so unwrap the first element should be safe.
             let first_type = array_types.into_iter().next()?;
+
             Some(first_type)
         }
+
         length => {
             let ts_union_type_builder = make::ts_union_type(make::ts_union_type_variant_list(
                 array_types,
@@ -296,6 +325,7 @@ fn get_array_type(array_types: Vec<AnyTsType>) -> Option<AnyTsType> {
                         .with_trailing_trivia([(TriviaPieceKind::Whitespace, " ")])
                 }),
             ));
+
             Some(AnyTsType::TsUnionType(ts_union_type_builder.build()))
         }
     }
@@ -322,6 +352,7 @@ fn transform_array_element_type(param: AnyTsType, array_kind: TsArrayKind) -> Op
                     Some(param)
                 }
             }
+
             None => Some(param),
         },
 
@@ -379,8 +410,10 @@ fn transform_array_element_type(param: AnyTsType, array_kind: TsArrayKind) -> Op
             } else {
                 Some(element_type)
             };
+
             generate_array_type(element_type, false)
         }
+
         TsArrayKind::Readonly => {
             let element_type = if let AnyTsType::TsArrayType(array_type) = &element_type {
                 if let Ok(element_type) = array_type.element_type() {
@@ -400,12 +433,16 @@ fn transform_array_element_type(param: AnyTsType, array_kind: TsArrayKind) -> Op
                         } else {
                             None
                         };
+
                         Some(generate_array_type(ele_type, true))
                     }
+
                     Ok(AnyTsType::TsArrayType(array_type)) => {
                         let ele_type = array_type.element_type().ok();
+
                         Some(generate_array_type(ele_type, false))
                     }
+
                     _ => None,
                 }
             } else {
@@ -422,12 +459,15 @@ fn get_diagnostic_title<'a>(array_kind: TsArrayKind) -> Markup<'a> {
         TsArrayKind::GenericArray => {
             markup! {"Use "<Emphasis>"shorthand T[] syntax"</Emphasis>" instead of "<Emphasis>"Array<T> syntax."</Emphasis>}
         }
+
         TsArrayKind::ReadonlyGenericArray => {
             markup! {"Use "<Emphasis>"shorthand readonly T[] syntax"</Emphasis>" instead of "<Emphasis>"ReadonlyArray<T> syntax."</Emphasis>}
         }
+
         TsArrayKind::Shorthand => {
             markup! {"Use "<Emphasis>"Array<T> syntax"</Emphasis>" instead of "<Emphasis>"shorthand T[] syntax."</Emphasis>}
         }
+
         TsArrayKind::Readonly => {
             markup! {"Use "<Emphasis>"ReadonlyArray<T> syntax"</Emphasis>" instead of "<Emphasis>"shorthand readonly T[] syntax."</Emphasis>}
         }
@@ -439,13 +479,16 @@ fn get_action_message(array_kind: TsArrayKind) -> MarkupBuf {
         TsArrayKind::GenericArray => {
             markup! { "Use "<Emphasis>"shorthand T[] syntax"</Emphasis>" to replace" }.to_owned()
         }
+
         TsArrayKind::ReadonlyGenericArray => {
             markup! { "Use "<Emphasis>"shorthand readonly T[] syntax"</Emphasis>" to replace" }
                 .to_owned()
         }
+
         TsArrayKind::Shorthand => {
             markup! { "Use "<Emphasis>"Array<T> syntax"</Emphasis>" to replace"}.to_owned()
         }
+
         TsArrayKind::Readonly => {
             markup! { "Use "<Emphasis>"ReadonlyArray<T> syntax"</Emphasis>" to replace"}.to_owned()
         }

@@ -54,6 +54,7 @@ impl TryFrom<&Vec<Attribute>> for StructFieldAttrs {
 
     fn try_from(attrs: &Vec<Attribute>) -> Result<Self, Self::Error> {
         let mut opts = Self::default();
+
         for attr in attrs {
             if attr.path.is_ident("deserializable") {
                 parse_meta_list(&attr.parse_meta()?, |meta| {
@@ -69,12 +70,14 @@ impl TryFrom<&Vec<Attribute>> for StructFieldAttrs {
                                 opts.rest = true;
                             } else {
                                 let path_str = path.to_token_stream().to_string();
+
                                 return Err(Error::new(
                                     path.span(),
                                     format_args!("Unexpected attribute: {path_str}"),
                                 ));
                             }
                         }
+
                         Meta::NameValue(MetaNameValue {
                             path,
                             lit: Lit::Str(s),
@@ -86,8 +89,10 @@ impl TryFrom<&Vec<Attribute>> for StructFieldAttrs {
                                 opts.validate = Some(s.parse()?)
                             }
                         }
+
                         Meta::List(_) if meta.path().is_ident("deprecated") => {
                             let mut deprecated = None;
+
                             parse_meta_list(meta, |meta| {
                                 let Meta::NameValue(MetaNameValue {
                                     path,
@@ -96,11 +101,13 @@ impl TryFrom<&Vec<Attribute>> for StructFieldAttrs {
                                 }) = meta
                                 else {
                                     let meta_text = meta.to_token_stream().to_string();
+
                                     return Err(Error::new(
                                         meta.span(),
                                         format_args!("Unexpected attribute: {meta_text}"),
                                     ));
                                 };
+
                                 deprecated = if deprecated.is_some() {
                                     return Err(Error::new(
                                         meta.span(),
@@ -112,6 +119,7 @@ impl TryFrom<&Vec<Attribute>> for StructFieldAttrs {
                                     Some(DeprecatedField::UseInstead(s.value()))
                                 } else {
                                     let path_text = path.to_token_stream().to_string();
+
                                     return Err(Error::new(
                                         path.span(),
                                         format_args!(
@@ -119,18 +127,23 @@ impl TryFrom<&Vec<Attribute>> for StructFieldAttrs {
                                         ),
                                     ));
                                 };
+
                                 Ok(())
                             })?;
+
                             opts.deprecated = deprecated;
                         }
+
                         _ => {
                             let meta_text = meta.to_token_stream().to_string();
+
                             return Err(Error::new(
                                 meta.span(),
                                 format_args!("Unexpected attribute: {meta_text}"),
                             ));
                         }
                     }
+
                     Ok(())
                 })?;
             } else if attr.path.is_ident("serde") {
@@ -143,13 +156,16 @@ impl TryFrom<&Vec<Attribute>> for StructFieldAttrs {
                         }) if opts.rename.is_none() && path.is_ident("rename") => {
                             opts.rename = Some(s.value())
                         }
+
                         _ => {} // Don't fail on unrecognized Serde attrs
                     }
+
                     Ok(())
                 })
                 .ok();
             }
         }
+
         Ok(opts)
     }
 }

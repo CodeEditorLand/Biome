@@ -30,7 +30,9 @@ pub(crate) trait ParseWithDefaultPattern {
 
             // test js pattern_with_default_in_keyword
             // for ([a = "a" in {}] in []) {}
+
             parse_initializer_clause(p, ExpressionContext::default()).ok();
+
             Present(m.complete(p, Self::pattern_with_default_kind()))
         })
     }
@@ -60,7 +62,9 @@ pub(crate) trait ParseArrayPattern<P: ParseWithDefaultPattern> {
         let m = p.start();
 
         p.bump(T!['[']);
+
         let elements = p.start();
+
         let mut progress = ParserProgress::default();
 
         {
@@ -90,6 +94,7 @@ pub(crate) trait ParseArrayPattern<P: ParseWithDefaultPattern> {
         }
 
         elements.complete(p, Self::list_kind());
+
         p.expect(T![']']);
 
         Present(m.complete(p, Self::array_pattern_kind()))
@@ -119,7 +124,9 @@ pub(crate) trait ParseArrayPattern<P: ParseWithDefaultPattern> {
         }
 
         let m = p.start();
+
         let rest_end = p.cur_range().end();
+
         p.bump(T![...]);
 
         let with_default = self.pattern_with_default();
@@ -152,7 +159,9 @@ pub(crate) trait ParseObjectPattern {
         let m = p.start();
 
         p.bump(T!['{']);
+
         let elements = p.start();
+
         let mut progress = ParserProgress::default();
 
         while !p.at(T!['}']) {
@@ -161,9 +170,11 @@ pub(crate) trait ParseObjectPattern {
             if p.at(T![,]) {
                 // missing element
                 p.error(Self::expected_property_pattern_error(p, p.cur_range()));
+
                 p.bump_any(); // bump ,
                 continue;
             }
+
             let recovery_set = ParseRecoveryTokenSet::new(
                 Self::bogus_pattern_kind(),
                 token_set!(EOF, T![,], T!['}'], T![...], T![;], T![')'], T![=]),
@@ -185,6 +196,7 @@ pub(crate) trait ParseObjectPattern {
         }
 
         elements.complete(p, Self::list_kind());
+
         p.expect(T!['}']);
 
         Present(m.complete(p, Self::object_pattern_kind()))
@@ -230,14 +242,19 @@ fn validate_rest_pattern(
 
     if p.at(T![=]) {
         let kind = rest.kind(p);
+
         let rest_range = rest.range(p);
+
         let rest_marker = rest.undo_completion(p);
+
         let default_start = p.cur_range().start();
+
         p.bump(T![=]);
 
         if let Ok(recovered) = recovery.recover(p) {
             recovered.undo_completion(p).abandon(p); // append recovered content to parent
         }
+
         p.error(
             p.err_builder(
                 "rest element cannot have a default",
@@ -251,7 +268,9 @@ fn validate_rest_pattern(
         );
 
         let mut invalid = rest_marker.complete(p, kind);
+
         invalid.change_to_bogus(p);
+
         invalid
     } else if p.at(T![,]) && p.nth_at(1, end_token) {
         p.error(
@@ -259,7 +278,9 @@ fn validate_rest_pattern(
                 .with_detail(p.cur_range(), "Remove the trailing comma here")
                 .with_detail(rest.range(p), "Rest element"),
         );
+
         rest.change_to_bogus(p);
+
         rest
     } else {
         p.error(
@@ -271,7 +292,9 @@ fn validate_rest_pattern(
                     ),
                 ),
         );
+
         rest.change_to_bogus(p);
+
         rest
     }
 }

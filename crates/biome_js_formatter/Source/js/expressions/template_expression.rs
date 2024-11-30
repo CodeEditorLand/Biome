@@ -68,12 +68,14 @@ impl AnyJsTemplate {
         match self {
             AnyJsTemplate::JsTemplateExpression(template) => {
                 let is_test_each_pattern = template.is_test_each_pattern();
+
                 let options = FormatJsTemplateElementListOptions {
                     is_test_each_pattern,
                 };
 
                 write!(f, [template.elements().format().with_options(options)])
             }
+
             AnyJsTemplate::TsTemplateLiteralType(template) => {
                 write!(f, [template.elements().format()])
             }

@@ -24,9 +24,12 @@ impl NodeVisitor for BlockVisitor {
         let break_block = match node.parent::<JsLabeledStatement>() {
             Some(label) => {
                 let label = label.label_token()?;
+
                 let block = builder.append_block();
+
                 Some((label, block))
             }
+
             None => None,
         };
 
@@ -41,6 +44,7 @@ impl NodeVisitor for BlockVisitor {
     ) -> SyntaxResult<()> {
         if let Some((_, block)) = self.break_block {
             builder.append_jump(false, block);
+
             builder.set_cursor(block);
         }
 

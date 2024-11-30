@@ -63,6 +63,7 @@ pub(crate) fn is_at_ts_abstract_class_declaration(
     should_check_line_break: LineBreak,
 ) -> bool {
     let is_abstract = p.at(T![abstract]) && p.nth_at(1, T![class]);
+
     if should_check_line_break == LineBreak::DoCheck {
         is_abstract && !p.has_nth_preceding_line_break(1)
     } else {
@@ -170,6 +171,7 @@ pub(super) fn parse_class_declaration(
     if !class.kind(p).is_bogus() && context.is_single_statement() {
         // test_err js class_in_single_statement_context
         // if (true) class A {}
+
         p.error(
             p.err_builder(
                 "Classes can only be declared at top level or inside a block",
@@ -177,6 +179,7 @@ pub(super) fn parse_class_declaration(
             )
             .with_hint("wrap the class in a block statement"),
         );
+
         class.change_to_bogus(p)
     }
 
@@ -232,9 +235,11 @@ fn parse_class(p: &mut JsParser, kind: ClassKind, decorator_list: ParsedSyntax) 
     let decorator_list = decorator_list.or_else(|| empty_decorator_list(p));
 
     let m = decorator_list.precede(p);
+
     let is_abstract = p.eat(T![abstract]);
 
     let class_token_range = p.cur_range();
+
     p.expect(T![class]);
 
     let p = &mut *p.with_scoped_state(EnableStrictMode(StrictMode::Class(p.cur_range())));
@@ -242,6 +247,7 @@ fn parse_class(p: &mut JsParser, kind: ClassKind, decorator_list: ParsedSyntax) 
     // test_err ts class_decl_no_id
     // class {}
     // class implements B {}
+
     let id = match p.cur() {
         T![implements] if TypeScript.is_supported(p) => Absent,
         T![extends] => Absent,
@@ -252,11 +258,13 @@ fn parse_class(p: &mut JsParser, kind: ClassKind, decorator_list: ParsedSyntax) 
     match id {
         Present(id) => {
             let text = p.text(id.range(p));
+
             if TypeScript.is_supported(p) && is_reserved_type_name(text) {
                 // test_err ts ts_class_name_reserved_as_type
                 // class undefined {}
                 // class string {}
                 // class any {}
+
                 let err = p
                     .err_builder(format!(
                             "`{text}` cannot be used as a class name because it is already reserved as a type"
@@ -265,6 +273,7 @@ fn parse_class(p: &mut JsParser, kind: ClassKind, decorator_list: ParsedSyntax) 
                 p.error(err);
             }
         }
+
         Absent => {
             if !kind.is_id_optional() {
                 let err = p.err_builder(
@@ -282,6 +291,7 @@ fn parse_class(p: &mut JsParser, kind: ClassKind, decorator_list: ParsedSyntax) 
 
     // test_err ts ts_class_type_parameters_errors
     // class BuildError<> {}
+
     TypeScript
         .parse_exclusive_syntax(
             p,
@@ -302,10 +312,12 @@ fn parse_class(p: &mut JsParser, kind: ClassKind, decorator_list: ParsedSyntax) 
     eat_class_heritage_clause(p);
 
     p.expect(T!['{']);
+
     ClassMembersList {
         inside_abstract_class: is_abstract,
     }
     .parse_list(p);
+
     p.expect(T!['}']);
 
     m.complete(p, kind.into())
@@ -329,6 +341,7 @@ fn parse_class(p: &mut JsParser, kind: ClassKind, decorator_list: ParsedSyntax) 
 /// out of order
 fn eat_class_heritage_clause(p: &mut JsParser) {
     let mut first_extends: Option<CompletedMarker> = None;
+
     let mut first_implements: Option<CompletedMarker> = None;
 
     loop {
@@ -357,12 +370,14 @@ fn eat_class_heritage_clause(p: &mut JsParser) {
                             Some(current)
                         }
                     }
+
                     Some(first_extends) => p.error(
                         p.err_builder("'extends' clause already seen.", current.range(p))
                             .with_detail(first_extends.range(p), "first 'extends' clause"),
                     ),
                 }
             }
+
             T![implements] => {
                 let mut current = parse_ts_implements_clause(p).expect("expected 'implements' clause because parser is positioned at 'implements' keyword.");
 
@@ -374,11 +389,14 @@ fn eat_class_heritage_clause(p: &mut JsParser) {
                                     "classes can only implement interfaces in TypeScript files",
                                     current.range(p),
                                 ));
+
                                 current.change_to_bogus(p);
                             }
+
                             Some(current)
                         }
                     }
+
                     Some(first_implements) => {
                         p.error(
                             p.err_builder("'implements' clause already seen.", current.range(p))
@@ -390,6 +408,7 @@ fn eat_class_heritage_clause(p: &mut JsParser) {
                     }
                 }
             }
+
             _ => break,
         }
     }
@@ -406,7 +425,9 @@ fn parse_extends_clause(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     let extends_end = p.cur_range().end();
+
     p.expect(T![extends]);
 
     if parse_extends_expression(p).is_absent() {
@@ -423,12 +444,16 @@ fn parse_extends_clause(p: &mut JsParser) -> ParsedSyntax {
 
     while p.at(T![,]) {
         let comma_range = p.cur_range();
+
         p.bump(T![,]);
 
         let extra = p.start();
+
         if parse_extends_expression(p).is_absent() {
             p.error(p.err_builder("Trailing comma not allowed.", comma_range));
+
             extra.abandon(p);
+
             break;
         }
 
@@ -465,6 +490,7 @@ struct ClassMembersList {
 
 impl ParseNodeList for ClassMembersList {
     type Kind = JsSyntaxKind;
+
     type Parser<'source> = JsParser<'source>;
 
     const LIST_KIND: JsSyntaxKind = JS_CLASS_MEMBER_LIST;
@@ -484,6 +510,7 @@ impl ParseNodeList for ClassMembersList {
         //     let a=;
         //   };
         // };
+
         parsed_element.or_recover_with_token_set(
             p,
             &ParseRecoveryTokenSet::new(
@@ -530,6 +557,7 @@ fn parse_class_member(p: &mut JsParser, inside_abstract_class: bool) -> ParsedSy
     let member_marker = p.start();
     // test js class_empty_element
     // class foo { ;;;;;;;;;; get foo() {};;;;}
+
     if p.eat(T![;]) {
         return Present(member_marker.complete(p, JS_EMPTY_CLASS_MEMBER));
     }
@@ -549,6 +577,7 @@ fn parse_class_member(p: &mut JsParser, inside_abstract_class: bool) -> ParsedSy
     match member {
         Present(mut member) => {
             let mut valid = true;
+
             if !inside_abstract_class {
                 // test_err ts ts_concrete_class_with_abstract_members
                 // class A {
@@ -557,6 +586,7 @@ fn parse_class_member(p: &mut JsParser, inside_abstract_class: bool) -> ParsedSy
                 //    abstract get age(): number;
                 //    abstract set age(v);
                 // }
+
                 if let Some(abstract_token_range) =
                     modifiers.get_first_range(ModifierKind::Abstract)
                 {
@@ -564,7 +594,9 @@ fn parse_class_member(p: &mut JsParser, inside_abstract_class: bool) -> ParsedSy
                         "Only abstract classes can have abstract members",
                         abstract_token_range,
                     );
+
                     p.error(err);
+
                     valid = false;
                 }
             }
@@ -577,6 +609,7 @@ fn parse_class_member(p: &mut JsParser, inside_abstract_class: bool) -> ParsedSy
 
             Present(member)
         }
+
         Absent => {
             // If the modifier list contains a modifier other than a decorator, such modifiers can also be valid member names.
             debug_assert!(!modifiers
@@ -593,6 +626,7 @@ fn parse_class_member(p: &mut JsParser, inside_abstract_class: bool) -> ParsedSy
             // class @
             // class C@
             modifiers.abandon(p);
+
             Absent
         }
     }
@@ -635,6 +669,7 @@ fn parse_class_member_impl(
     modifiers: &mut ClassMemberModifiers,
 ) -> ParsedSyntax {
     let start_token_pos = p.source().position();
+
     let generator_range = p.cur_range();
 
     // Seems like we're at a generator method
@@ -663,6 +698,7 @@ fn parse_class_member_impl(
         && !p.has_nth_preceding_line_break(1)
     {
         let async_range = p.cur_range();
+
         p.expect(T![async]);
 
         let mut flags = SignatureFlags::ASYNC;
@@ -675,7 +711,9 @@ fn parse_class_member_impl(
             let err = p.err_builder("constructors cannot be async", async_range);
 
             p.error(err);
+
             parse_class_member_name(p, modifiers).unwrap();
+
             parse_constructor_class_member_body(p, member_marker, modifiers)
         } else {
             parse_method_class_member(p, member_marker, modifiers, flags)
@@ -732,8 +770,10 @@ fn parse_class_member_impl(
     // class Setters {
     //   set foo() {}
     // }
+
     if matches!(p.cur(), T![get] | T![set]) && is_at_class_member_name(p, 1) {
         let is_getter = p.at(T![get]);
+
         if is_getter {
             p.expect(T![get]);
         } else {
@@ -755,19 +795,24 @@ fn parse_class_member_impl(
         //  get a<>(): A {}
         //  set a<>(value: A) {}
         // }
+
         if let Present(type_parameters) = parse_ts_type_parameters(p, TypeContext::default()) {
             p.error(ts_accessor_type_parameters_error(p, &type_parameters))
         }
 
         let completed = if is_getter {
             p.expect(T!['(']);
+
             p.expect(T![')']);
+
             parse_ts_type_annotation_or_error(p).ok();
 
             let member_kind = expect_accessor_body(p, &member_marker, modifiers);
+
             member_marker.complete(p, member_kind.as_getter_syntax_kind())
         } else {
             let has_l_paren = p.expect(T!['(']);
+
             p.with_state(EnterParameters(SignatureFlags::empty()), |p| {
                 let decorator_list = parse_parameter_decorators(p);
 
@@ -784,6 +829,7 @@ fn parse_class_member_impl(
                 //     set val(@dec.fn() x) {}
                 //     set val(@dec() x) {}
                 // }
+
                 parse_formal_parameter(
                     p,
                     decorator_list,
@@ -804,6 +850,7 @@ fn parse_class_member_impl(
             // class Test {
             //     set a(value: string): void {}
             // }
+
             if let Present(return_type_annotation) =
                 parse_ts_return_type_annotation(p, TypeContext::default())
             {
@@ -814,6 +861,7 @@ fn parse_class_member_impl(
             }
 
             let member_kind = expect_accessor_body(p, &member_marker, modifiers);
+
             member_marker.complete(p, member_kind.as_setter_syntax_kind())
         };
 
@@ -821,6 +869,7 @@ fn parse_class_member_impl(
     }
 
     let is_constructor = is_at_constructor(p, modifiers);
+
     let member_name = parse_class_member_name(p, modifiers)
         .or_add_diagnostic(p, js_parse_error::expected_class_member_name);
 
@@ -839,6 +888,7 @@ fn parse_class_member_impl(
         //     this.b = b;
         //   }
         // }
+
         return if is_constructor {
             Present(parse_constructor_class_member_body(
                 p,
@@ -877,6 +927,7 @@ fn parse_class_member_impl(
             //   static async* static() {}
             //   static * static() {}
             // }
+
             Present(parse_method_class_member_rest(
                 p,
                 member_marker,
@@ -909,6 +960,7 @@ fn parse_class_member_impl(
 
             // test ts ts_property_class_member_can_be_named_set_or_get
             // class B { set: String; get: Number }
+
             let mut property = parse_property_class_member_body(p, member_marker, modifiers);
 
             if !property.kind(p).is_bogus() && is_constructor {
@@ -918,14 +970,17 @@ fn parse_class_member_impl(
                 );
 
                 p.error(err);
+
                 property.change_to_bogus(p);
             }
 
             Present(property)
         }
+
         None => {
             // test_err js block_stmt_in_class
             // class S{{}}
+
             debug_assert_eq!(
                 p.source().position(),
                 start_token_pos,
@@ -933,6 +988,7 @@ fn parse_class_member_impl(
             );
 
             member_marker.abandon(p);
+
             Absent
         }
     }
@@ -962,19 +1018,25 @@ fn parse_static_initialization_block_class_member(
         // class A {
         //   public static { }
         // }
+
         p.error(p.err_builder(
             "Static class blocks cannot have any modifier.",
             modifiers.list_marker.range(p),
         ));
+
         modifiers.validate_and_complete(p, JS_STATIC_INITIALIZATION_BLOCK_CLASS_MEMBER);
     }
 
     p.expect(T![static]);
+
     p.expect(T!['{']);
+
     p.with_state(EnterClassStaticInitializationBlock, |p| {
         let statement_list = p.start();
+
         parse_statements(p, true, statement_list)
     });
+
     p.expect(T!['}']);
 
     member_marker.complete(p, JS_STATIC_INITIALIZATION_BLOCK_CLASS_MEMBER)
@@ -1018,6 +1080,7 @@ fn parse_property_class_member_body(
     expect_member_semi(p, &member_marker, "class property");
 
     let is_signature = modifiers.is_signature() || p.state().in_ambient_context();
+
     let kind = if !is_signature {
         JS_PROPERTY_CLASS_MEMBER
     } else if initializer_syntax.is_present() {
@@ -1034,6 +1097,7 @@ fn parse_property_class_member_body(
             // abstract class A {
             //     abstract name: string = "";
             // }
+
             p.error(p.err_builder(
                 "Property cannot have an initializer because it is marked abstract.",
                 initializer.range(p),
@@ -1108,44 +1172,52 @@ fn parse_ts_property_annotation(
     }
 
     let m = p.start();
+
     let mut valid = true;
 
     // test ts ts_abstract_property_can_be_optional
     // abstract class A {
     //      abstract name?: string;
     // }
+
     let optional_range = match optional_member_token(p) {
         Ok(optional_range) => optional_range,
         Err(optional_range) => {
             valid = false;
+
             Some(optional_range)
         }
     };
 
     let definite_range = if p.at(T![!]) {
         let range = p.cur_range();
+
         p.bump(T![!]);
 
         if TypeScript.is_unsupported(p) {
             let error = p.err_builder("`!` modifiers can only be used in TypeScript files", range);
 
             p.error(error);
+
             valid = false;
         }
         // test_err ts ts_abstract_property_cannot_be_definite
         // abstract class A {
         //      abstract name!: string;
         // }
+
         else if modifiers.has(ModifierKind::Abstract) {
             p.error(p.err_builder(
                 "A definite assignment operator '!' cannot appear on an 'abstract' property.",
                 range,
             ));
+
             valid = false;
         } else if modifiers.has(ModifierKind::Declare) || p.state().in_ambient_context() {
             // test_err ts ts_definite_assignment_in_ambient_context
             // declare class A { prop!: string }
             // class B { declare prop!: string }
+
             p.error(p.err_builder(
                 "Definite assignment operators '!' aren't allowed in ambient contexts.",
                 range,
@@ -1160,16 +1232,19 @@ fn parse_ts_property_annotation(
     let mut annotation = match (optional_range, definite_range) {
         (Some(_), None) => {
             parse_ts_type_annotation(p, TypeContext::default()).ok();
+
             m.complete(p, TS_OPTIONAL_PROPERTY_ANNOTATION)
         }
         (None, Some(_)) => {
             parse_ts_type_annotation(p, TypeContext::default()).or_add_diagnostic(p, |p, range| {
                 p.err_builder("Properties with definite assignment assertions must also have type annotations.",range, )
             });
+
             m.complete(p, TS_DEFINITE_PROPERTY_ANNOTATION)
         }
         (Some(optional_range), Some(definite_range)) => {
             parse_ts_type_annotation(p, TypeContext::default()).ok();
+
             let error = p
                 .err_builder(
                     "class properties cannot be both optional and definite",
@@ -1198,16 +1273,19 @@ fn parse_ts_property_annotation(
 fn optional_member_token(p: &mut JsParser) -> Result<Option<TextRange>, TextRange> {
     if p.at(T![?]) {
         let range = p.cur_range();
+
         p.bump(T![?]);
 
         // test_err js optional_member
         // class B { foo?; }
+
         if TypeScript.is_supported(p) {
             Ok(Some(range))
         } else {
             let err = p.err_builder("`?` modifiers can only be used in TypeScript files", range);
 
             p.error(err);
+
             Err(range)
         }
     } else {
@@ -1223,6 +1301,7 @@ pub(crate) fn parse_initializer_clause(
 ) -> ParsedSyntax {
     if p.at(T![=]) {
         let m = p.start();
+
         p.bump(T![=]);
 
         parse_assignment_expression_or_higher(p, context)
@@ -1242,6 +1321,7 @@ fn parse_method_class_member(
 ) -> CompletedMarker {
     parse_class_member_name(p, modifiers)
         .or_add_diagnostic(p, js_parse_error::expected_class_member_name);
+
     parse_method_class_member_rest(p, m, modifiers, flags)
 }
 
@@ -1263,6 +1343,7 @@ fn parse_method_class_member_rest(
 ) -> CompletedMarker {
     // test ts ts_optional_method_class_member
     // class A { test?() {} }
+
     let optional = optional_member_token(p);
 
     TypeScript
@@ -1293,18 +1374,22 @@ fn parse_method_class_member_rest(
         .ok();
 
     let member_kind = expect_method_body(p, &m, modifiers, ClassMethodMemberKind::Method(flags));
+
     let mut member = m.complete(p, member_kind.as_method_syntax_kind());
 
     let is_async = flags.contains(SignatureFlags::ASYNC);
 
     // test_err ts typescript_abstract_classes_invalid_abstract_async_member
     // abstract class B { abstract async a(); }
+
     if modifiers.has(ModifierKind::Abstract) && is_async {
         let err = ts_parse_error::abstract_member_cannot_be_async(
             p,
             &modifiers.get_first_range_unchecked(ModifierKind::Abstract),
         );
+
         p.error(err);
+
         member.change_to_bogus(p);
     } else if flags.contains(SignatureFlags::GENERATOR) && member_kind.is_signature() {
         // test_err ts ts_method_signature_generator
@@ -1314,6 +1399,7 @@ fn parse_method_class_member_rest(
         //      * overload();
         //      * overload() {}
         // }
+
         p.error(p.err_builder(
             "A method signature cannot be declared as a generator.",
             member.range(p),
@@ -1321,10 +1407,12 @@ fn parse_method_class_member_rest(
     } else if p.state().in_ambient_context() && is_async {
         // test_err ts ts_ambient_async_method
         // declare class A { async method(); }
+
         p.error(p.err_builder(
             "'async' modifier cannot be used in an ambient context.",
             member.range(p),
         ));
+
         member.change_to_bogus(p);
     } else if optional.is_err() {
         // error already emitted by `optional_member_token()`
@@ -1467,15 +1555,18 @@ fn expect_method_body(
     //          set test(v) {}
     //      }
     // }
+
     if p.state().in_ambient_context() {
         match body {
             Present(body) => p.error(unexpected_body_inside_ambient_context(p, body.range(p))),
             Absent => {
                 // test_err ts ts_ambient_context_semi
                 // declare class A { method() method2() method3() }
+
                 expect_member_semi(p, member_marker, "method declaration")
             }
         }
+
         MemberKind::Signature
     }
     // test_err ts typescript_abstract_class_member_should_not_have_body
@@ -1486,15 +1577,18 @@ fn expect_method_body(
     //     abstract set my_name(name) { }
     //     abstract #private_name() { }
     // }
+
     else if modifiers.has(ModifierKind::Abstract) && !method_kind.is_constructor() {
         match body {
             Present(body) => p.error(unexpected_abstract_member_with_body(p, body.range(p))),
             Absent => {
                 // test_err ts ts_abstract_member_ansi
                 // abstract class A { abstract constructor() abstract method() abstract get getter() abstract set setter(value) abstract prop }
+
                 expect_member_semi(p, member_marker, "method declaration")
             }
         }
+
         MemberKind::Signature
     }
     // test ts ts_method_and_constructor_overload
@@ -1506,6 +1600,7 @@ fn expect_method_body(
     //      method(a: String): Promise<String> // ASI
     //      async method(a?: String): Promise<String> { return "test" }
     // }
+
     else if method_kind.is_body_optional()
         && TypeScript.is_supported(p)
         && body.is_absent()
@@ -1518,7 +1613,9 @@ fn expect_method_body(
         //      constructor() method() get test()
         //      set test(value)
         // }
+
         body.or_add_diagnostic(p, js_parse_error::expected_class_method_body);
+
         MemberKind::Declaration
     }
 }
@@ -1554,6 +1651,7 @@ fn parse_constructor_class_member_body(
     // test_err ts ts_constructor_type_parameters
     // class A { constructor<A>(b) {} }
     // class A { constructor<>(b) {} }
+
     if let Present(type_parameters) = parse_ts_type_parameters(p, TypeContext::default()) {
         p.error(ts_constructor_type_parameters_error(p, &type_parameters));
     }
@@ -1585,6 +1683,7 @@ fn parse_constructor_parameter_list(p: &mut JsParser) -> ParsedSyntax {
     //
     // test_err js super_expression_in_constructor_parameter_list
     // class A extends B { constructor(super()) {} }
+
     let flags = SignatureFlags::CONSTRUCTOR;
 
     parse_parameters_list(
@@ -1593,6 +1692,7 @@ fn parse_constructor_parameter_list(p: &mut JsParser) -> ParsedSyntax {
         parse_constructor_parameter,
         JS_CONSTRUCTOR_PARAMETER_LIST,
     );
+
     Present(m.complete(p, JS_CONSTRUCTOR_PARAMETERS))
 }
 
@@ -1630,6 +1730,7 @@ fn parse_constructor_parameter(p: &mut JsParser, context: ExpressionContext) -> 
     // class CCC {
     //     constructor(@foo @dec.method(arg) private readonly x: number) {}
     // }
+
     let decorator_list = parse_parameter_decorators(p);
 
     if is_nth_at_modifier(p, 0, true) {
@@ -1640,6 +1741,7 @@ fn parse_constructor_parameter(p: &mut JsParser, context: ExpressionContext) -> 
         //
         // test_err ts ts_property_parameter_pattern
         // class A { constructor(private { x, y }, protected [a, b]) {} }
+
         let property_parameter = decorator_list
             .or_else(|| empty_decorator_list(p))
             .precede(p);
@@ -1677,13 +1779,16 @@ fn parse_constructor_parameter(p: &mut JsParser, context: ExpressionContext) -> 
         .map(|mut parameter| {
             // test_err ts ts_constructor_this_parameter
             // class C { constructor(this) {} }
+
             if parameter.kind(p) == TS_THIS_PARAMETER {
                 p.error(p.err_builder(
                     "A constructor cannot have a 'this' parameter.",
                     parameter.range(p),
                 ));
+
                 parameter.change_to_bogus(p);
             }
+
             parameter
         })
     }
@@ -1696,6 +1801,7 @@ fn is_at_class_member_name(p: &mut JsParser, offset: usize) -> bool {
 /// Parses a `AnyJsClassMemberName` and returns its completion marker
 fn parse_class_member_name(p: &mut JsParser, modifiers: &mut ClassMemberModifiers) -> ParsedSyntax {
     modifiers.set_private_member_name(p.at(T![#]));
+
     match p.cur() {
         T![#] => parse_private_class_member_name(p),
         T!['['] => parse_computed_member_name(p),
@@ -1706,6 +1812,7 @@ fn parse_class_member_name(p: &mut JsParser, modifiers: &mut ClassMemberModifier
 pub(crate) fn parse_private_class_member_name(p: &mut JsParser) -> ParsedSyntax {
     parse_private_name(p).map(|mut name| {
         name.change_kind(p, JS_PRIVATE_CLASS_MEMBER_NAME);
+
         name
     })
 }
@@ -1745,7 +1852,9 @@ pub(crate) fn is_nth_at_modifier(p: &mut JsParser, n: usize, constructor_paramet
     }
 
     let followed_by_any_member = is_at_class_member_name(p, n + 1);
+
     let followed_by_class_member = !constructor_parameter && p.nth_at(n + 1, T![*]);
+
     let followed_by_parameter = constructor_parameter && matches!(p.nth(n + 1), T!['{'] | T!['[']);
 
     followed_by_any_member || followed_by_class_member || followed_by_parameter
@@ -1780,13 +1889,18 @@ fn parse_class_member_modifiers(
     constructor_parameter: bool,
 ) -> ClassMemberModifiers {
     let mut modifiers = ClassMemberModifierList::default();
+
     let list = p.start();
+
     let mut progress = ParserProgress::default();
+
     let mut flags = ModifierFlags::empty();
 
     while let Some(modifier) = parse_modifier(p, constructor_parameter) {
         progress.assert_progressing(p);
+
         flags |= modifier.kind.as_flags();
+
         modifiers.add_modifier(modifier);
     }
 
@@ -1794,6 +1908,7 @@ fn parse_class_member_modifiers(
     // Create an `JS_BOGUS` node. The list type gets changed later on by calling
     // `complete` or `abandon` when the member kind is known,
     let list = list.complete(p, JS_BOGUS);
+
     ClassMemberModifiers::new(modifiers, list, flags)
 }
 
@@ -1886,10 +2001,14 @@ fn parse_modifier(p: &mut JsParser, constructor_parameter: bool) -> Option<Class
                 kind: modifier_kind,
             })
         }
+
         _ => {
             let m = p.start();
+
             let range = p.cur_range();
+
             p.bump_any();
+
             m.complete(p, modifier_kind.as_syntax_kind());
 
             Some(ClassMemberModifier {
@@ -1925,15 +2044,25 @@ struct ModifierFlags(BitFlags<ModifierFlag>);
 
 impl ModifierFlags {
     const DECLARE: Self = Self(make_bitflags!(ModifierFlag::{Declare}));
+
     const PRIVATE: Self = Self(make_bitflags!(ModifierFlag::{Private}));
+
     const PROTECTED: Self = Self(make_bitflags!(ModifierFlag::{Protected}));
+
     const PUBLIC: Self = Self(make_bitflags!(ModifierFlag::{Public}));
+
     const STATIC: Self = Self(make_bitflags!(ModifierFlag::{Static}));
+
     const READONLY: Self = Self(make_bitflags!(ModifierFlag::{Readonly}));
+
     const ABSTRACT: Self = Self(make_bitflags!(ModifierFlag::{Abstract}));
+
     const OVERRIDE: Self = Self(make_bitflags!(ModifierFlag::{Override}));
+
     const PRIVATE_NAME: Self = Self(make_bitflags!(ModifierFlag::{PrivateName}));
+
     const ACCESSOR: Self = Self(make_bitflags!(ModifierFlag::{Accessor}));
+
     const DECORATOR: Self = Self(make_bitflags!(ModifierFlag::{Decorator}));
 
     const ACCESSIBILITY: Self = Self(make_bitflags!(ModifierFlag::{Private | Protected |  Public}));
@@ -2003,6 +2132,7 @@ impl ModifierKind {
             ModifierKind::Private | ModifierKind::Protected | ModifierKind::Public => {
                 TS_ACCESSIBILITY_MODIFIER
             }
+
             ModifierKind::Static => JS_STATIC_MODIFIER,
             ModifierKind::Accessor => JS_ACCESSOR_MODIFIER,
             ModifierKind::Readonly => TS_READONLY_MODIFIER,
@@ -2131,6 +2261,7 @@ impl ClassMemberModifiers {
     /// Abandons the marker for the modifier list
     fn abandon(mut self, p: &mut JsParser) {
         self.list_marker.undo_completion(p).abandon(p);
+
         self.bomb.defuse();
     }
 
@@ -2146,28 +2277,34 @@ impl ClassMemberModifiers {
             TS_PROPERTY_SIGNATURE_CLASS_MEMBER | TS_INITIALIZED_PROPERTY_SIGNATURE_CLASS_MEMBER => {
                 TS_PROPERTY_SIGNATURE_MODIFIER_LIST
             }
+
             JS_GETTER_CLASS_MEMBER | JS_SETTER_CLASS_MEMBER | JS_METHOD_CLASS_MEMBER => {
                 JS_METHOD_MODIFIER_LIST
             }
+
             TS_GETTER_SIGNATURE_CLASS_MEMBER
             | TS_SETTER_SIGNATURE_CLASS_MEMBER
             | TS_METHOD_SIGNATURE_CLASS_MEMBER => TS_METHOD_SIGNATURE_MODIFIER_LIST,
             JS_CONSTRUCTOR_CLASS_MEMBER | TS_CONSTRUCTOR_SIGNATURE_CLASS_MEMBER => {
                 JS_CONSTRUCTOR_MODIFIER_LIST
             }
+
             TS_INDEX_SIGNATURE_CLASS_MEMBER => TS_INDEX_SIGNATURE_MODIFIER_LIST,
             TS_PROPERTY_PARAMETER => TS_PROPERTY_PARAMETER_MODIFIER_LIST,
             JS_BOGUS_MEMBER | JS_STATIC_INITIALIZATION_BLOCK_CLASS_MEMBER => {
                 // Error recovery kicked in. There's no "right" list to pick in this case, let's just remove it
                 self.list_marker.undo_completion(p).abandon(p);
+
                 return false;
             }
+
             t => panic!("Unknown member kind {t:?}"),
         };
 
         self.list_marker.change_kind(p, list_kind);
 
         let mut preceding_modifiers = ModifierFlags::empty();
+
         let mut valid = true;
 
         for modifier in self.modifiers.iter() {
@@ -2175,6 +2312,7 @@ impl ClassMemberModifiers {
                 self.check_class_member_modifier(p, modifier, preceding_modifiers, member_kind)
             {
                 p.error(diagnostic);
+
                 valid = false;
             }
 
@@ -2262,6 +2400,7 @@ impl ClassMemberModifiers {
     // class A { public foo() {} }
     // class B { static static foo() {} }
     // class C { accessor foo() {} }
+
     fn check_class_member_modifier(
         &self,
         p: &JsParser,
@@ -2273,6 +2412,7 @@ impl ClassMemberModifiers {
         // class A {
         //     [a: number]: string;
         // }
+
         if TypeScript.is_unsupported(p) && modifier.kind.is_ts_modifier() {
             return Some(p.err_builder(
                 format!(
@@ -2332,6 +2472,7 @@ impl ClassMemberModifiers {
             //   @dec get foo();
             //   @dec set foo(a);
             // }
+
             return Some(decorators_not_allowed(p, modifier.as_text_range()));
         } else if member_kind == TS_INDEX_SIGNATURE_CLASS_MEMBER
             && !matches!(modifier.kind, ModifierKind::Static | ModifierKind::Readonly)
@@ -2345,6 +2486,7 @@ impl ClassMemberModifiers {
             // abstract class A {
             //     accessor [a: number]: string;
             // }
+
             return Some(p.err_builder(
                 format!(
                     "'{}' modifier cannot appear on an index signature.",
@@ -2371,6 +2513,7 @@ impl ClassMemberModifiers {
         //      super();
         //  }
         // }
+
         member_kind == TS_PROPERTY_PARAMETER
             && !matches!(
                 modifier.kind,
@@ -2405,9 +2548,11 @@ impl ClassMemberModifiers {
                     //   private @dec test() {}
                     //   accessor @dec test() {}
                     // }
+
                     return Some(decorator_must_precede_modifier(p, modifier.as_text_range()));
                 }
             }
+
             ModifierKind::Readonly => {
                 if preceding_modifiers.contains(ModifierFlags::READONLY) {
                     return Some(modifier_already_seen(
@@ -2431,12 +2576,14 @@ impl ClassMemberModifiers {
                     //   readonly get test() { return "a"; }
                     //   readonly set test(value: string) {}
                     // }
+
                     return Some(p.err_builder(
                         "Readonly can only appear on a property declaration or index signature.",
                         modifier.as_text_range(),
                     ));
                 }
             }
+
             ModifierKind::Declare => {
                 // test_err ts ts_class_declare_modifier_error
                 // class Test {
@@ -2447,6 +2594,7 @@ impl ClassMemberModifiers {
                 //     declare [name: string]: string;
                 //     declare accessor foo: string;
                 // }
+
                 if preceding_modifiers.contains(ModifierFlags::DECLARE) {
                     return Some(modifier_already_seen(
                         p,
@@ -2478,12 +2626,14 @@ impl ClassMemberModifiers {
                 } else if self.flags.contains(ModifierFlags::PRIVATE_NAME) {
                     // test_err ts ts_declare_property_private_name
                     // class A { declare #name(); };
+
                     return Some(p.err_builder(
                         "'declare' modifier cannot be used with a private identifier'.",
                         modifier.as_text_range(),
                     ));
                 }
             }
+
             ModifierKind::Abstract => {
                 if preceding_modifiers.contains(ModifierFlags::ABSTRACT) {
                     return Some(modifier_already_seen(
@@ -2511,6 +2661,7 @@ impl ClassMemberModifiers {
                     // test_err ts typescript_abstract_classes_invalid_static_abstract_member
                     // abstract class A { abstract static fn1(); }
                     // abstract class B { static abstract fn1(); }
+
                     return Some(modifier_cannot_be_used_with_modifier(
                         p,
                         modifier.as_text_range(),
@@ -2519,6 +2670,7 @@ impl ClassMemberModifiers {
                 } else if preceding_modifiers.contains(ModifierFlags::ACCESSOR) {
                     // test_err ts typescript_abstract_classes_abstract_accessor_precedence
                     // abstract class A { accessor abstract foo: number; }
+
                     return Some(modifier_must_precede_modifier(
                         p,
                         modifier.as_text_range(),
@@ -2533,12 +2685,14 @@ impl ClassMemberModifiers {
                 } else if self.flags.contains(ModifierFlags::PRIVATE_NAME) {
                     // test_err ts typescript_abstract_classes_invalid_abstract_private_member
                     // abstract class A { abstract #name(); };
+
                     return Some(p.err_builder(
                         "'abstract' modifier cannot be used with a private identifier'.",
                         modifier.as_text_range(),
                     ));
                 }
             }
+
             ModifierKind::Private | ModifierKind::Protected | ModifierKind::Public => {
                 if preceding_modifiers.intersects(ModifierFlags::ACCESSIBILITY) {
                     let range = if preceding_modifiers.contains(ModifierFlags::PRIVATE) {
@@ -2595,12 +2749,14 @@ impl ClassMemberModifiers {
                 } else if self.flags.contains(ModifierFlags::PRIVATE_NAME) {
                     // test_err ts typescript_classes_invalid_accessibility_modifier_private_member
                     // class A { private #name; protected #other; public #baz; };
+
                     return Some(p.err_builder(
                         "An accessibility modifier cannot be used with a private identifier.",
                         modifier.as_text_range(),
                     ));
                 }
             }
+
             ModifierKind::Static => {
                 if preceding_modifiers.contains(ModifierFlags::STATIC) {
                     return Some(modifier_already_seen(
@@ -2636,6 +2792,7 @@ impl ClassMemberModifiers {
                     ));
                 }
             }
+
             ModifierKind::Accessor => {
                 if preceding_modifiers.contains(ModifierFlags::ACCESSOR) {
                     return Some(modifier_already_seen(
@@ -2648,6 +2805,7 @@ impl ClassMemberModifiers {
                 // class A {
                 //     readonly accessor foo: number = 1;
                 // }
+
                 else if preceding_modifiers.contains(ModifierFlags::READONLY) {
                     return Some(modifier_must_precede_modifier(
                         p,
@@ -2670,6 +2828,7 @@ impl ClassMemberModifiers {
                     ));
                 }
             }
+
             ModifierKind::Override => {
                 if preceding_modifiers.contains(ModifierFlags::OVERRIDE) {
                     return Some(modifier_already_seen(
@@ -2758,6 +2917,7 @@ pub(crate) fn parse_decorators(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let decorators = p.start();
+
     let mut progress = ParserProgress::default();
 
     while p.at(T![@]) {
@@ -2779,6 +2939,7 @@ pub(crate) fn parse_parameter_decorators(p: &mut JsParser) -> ParsedSyntax {
             .add_diagnostic_if_present(p, parameter_decorators_not_allowed)
             .map(|mut decorator_list| {
                 decorator_list.change_to_bogus(p);
+
                 decorator_list
             })
             .into()
@@ -2787,6 +2948,7 @@ pub(crate) fn parse_parameter_decorators(p: &mut JsParser) -> ParsedSyntax {
 
 pub(crate) fn empty_decorator_list(p: &mut JsParser) -> ParsedSyntax {
     let m = p.start();
+
     Present(m.complete(p, JS_DECORATOR_LIST))
 }
 
@@ -2796,7 +2958,9 @@ fn parse_decorator(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![@]);
+
     if let Some(mut complete_marker) =
         parse_lhs_expr(p, ExpressionContext::default().and_in_decorator(true))
             .or_add_diagnostic(p, expected_expression)
@@ -2809,6 +2973,7 @@ fn parse_decorator(p: &mut JsParser) -> ParsedSyntax {
                 | JS_IDENTIFIER_EXPRESSION
         ) {
             p.error(invalid_decorator_error(p, complete_marker.range(p)));
+
             complete_marker.change_to_bogus(p);
         }
     }

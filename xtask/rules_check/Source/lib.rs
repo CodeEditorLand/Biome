@@ -113,9 +113,13 @@ pub fn check_rules() -> anyhow::Result<()> {
     }
 
     let mut visitor = LintRulesVisitor::default();
+
     biome_js_analyze::visit_registry(&mut visitor);
+
     biome_json_analyze::visit_registry(&mut visitor);
+
     biome_css_analyze::visit_registry(&mut visitor);
+
     biome_graphql_analyze::visit_registry(&mut visitor);
 
     let LintRulesVisitor { groups } = visitor;
@@ -236,7 +240,9 @@ impl<'a> DiagnosticWriter<'a> {
 
     pub fn write_diagnostic(&mut self, diag: biome_diagnostics::Error) -> anyhow::Result<()> {
         let group = self.group;
+
         let rule = self.rule;
+
         let code = self.code;
 
         // Record the diagnostic
@@ -246,22 +252,29 @@ impl<'a> DiagnosticWriter<'a> {
         if self.test.expect_diagnostic {
             if self.all_diagnostics.len() > 1 {
                 self.print_all_diagnostics();
+
                 self.has_error = true;
+
                 bail!("Analysis of '{group}/{rule}' on the following code block returned multiple diagnostics.\n\n{code}");
             }
         } else {
             // ...or if the analysis returns a diagnostic when it is expected to not report one.
             self.print_all_diagnostics();
+
             self.has_error = true;
+
             bail!("Analysis of '{group}/{rule}' on the following code block returned an unexpected diagnostic.\n\n{code}");
         }
+
         self.diagnostic_count += 1;
+
         Ok(())
     }
 
     /// Prints all diagnostics to help the user.
     fn print_all_diagnostics(&mut self) {
         let mut console = biome_console::EnvConsole::default();
+
         for diag in self.all_diagnostics.iter() {
             console.println(
                 biome_console::LogLevel::Error,
@@ -278,6 +291,7 @@ impl<'a> DiagnosticWriter<'a> {
         if self.subtract_offset != 0.into() {
             if let Some(span) = diag.location().span {
                 let new_span = span.checked_sub(self.subtract_offset);
+
                 diag.with_file_span(new_span)
             } else {
                 diag
@@ -297,12 +311,17 @@ where
     L: ServiceLanguage,
 {
     let path = BiomePath::new(PathBuf::from(&file_path));
+
     let file_source = &test.document_file_source();
+
     let supression_reason = None;
 
     let settings = workspace_settings.get_current_settings();
+
     let linter = settings.map(|s| &s.linter);
+
     let overrides = settings.map(|s| &s.override_settings);
+
     let language_settings = settings
         .map(|s| L::lookup_settings(&s.languages))
         .map(|result| &result.linter);
@@ -340,7 +359,9 @@ fn assert_lint(
 
     // Create a synthetic workspace configuration
     let mut settings = WorkspaceSettings::default();
+
     let key = settings.insert_project(PathBuf::new());
+
     settings.register_current_project(key);
 
     // Load settings from the preceding `json,options` block if requested
@@ -378,12 +399,14 @@ fn assert_lint(
             if parse.has_errors() {
                 for diag in parse.into_diagnostics() {
                     let error = diag.with_file_path(&file_path).with_file_source_code(code);
+
                     diagnostics.write_diagnostic(error)?;
                 }
             } else {
                 let root = parse.tree();
 
                 let rule_filter = RuleFilter::Rule(group, rule);
+
                 let filter = AnalysisFilter {
                     enabled_rules: Some(slice::from_ref(&rule_filter)),
                     ..AnalysisFilter::default()
@@ -391,13 +414,16 @@ fn assert_lint(
 
                 let options = {
                     let mut o = create_analyzer_options::<JsLanguage>(&settings, &file_path, test);
+
                     o.configuration.jsx_runtime = Some(JsxRuntime::default());
+
                     o
                 };
 
                 biome_js_analyze::analyze(&root, filter, &options, file_source, None, |signal| {
                     if let Some(mut diag) = signal.diagnostic() {
                         let category = diag.category().expect("linter diagnostic has no code");
+
                         let severity = settings.get_current_settings().expect("project").get_severity_from_rule_code(category).expect(
                                 "If you see this error, it means you need to run cargo codegen-configuration",
                             );
@@ -412,11 +438,13 @@ fn assert_lint(
                             .with_severity(severity)
                             .with_file_path(&file_path)
                             .with_file_source_code(code);
+
                         let res = diagnostics.write_diagnostic(error);
 
                         // Abort the analysis on error
                         if let Err(err) = res {
                             eprintln!("Error: {err}");
+
                             return ControlFlow::Break(err);
                         }
                     }
@@ -425,18 +453,21 @@ fn assert_lint(
                 });
             }
         }
+
         DocumentFileSource::Json(file_source) => {
             let parse = biome_json_parser::parse_json(code, JsonParserOptions::from(&file_source));
 
             if parse.has_errors() {
                 for diag in parse.into_diagnostics() {
                     let error = diag.with_file_path(&file_path).with_file_source_code(code);
+
                     diagnostics.write_diagnostic(error)?;
                 }
             } else {
                 let root = parse.tree();
 
                 let rule_filter = RuleFilter::Rule(group, rule);
+
                 let filter = AnalysisFilter {
                     enabled_rules: Some(slice::from_ref(&rule_filter)),
                     ..AnalysisFilter::default()
@@ -447,6 +478,7 @@ fn assert_lint(
                 biome_json_analyze::analyze(&root, filter, &options, file_source, |signal| {
                     if let Some(mut diag) = signal.diagnostic() {
                         let category = diag.category().expect("linter diagnostic has no code");
+
                         let severity = settings.get_current_settings().expect("project").get_severity_from_rule_code(category).expect(
                                 "If you see this error, it means you need to run cargo codegen-configuration",
                             );
@@ -461,11 +493,13 @@ fn assert_lint(
                             .with_severity(severity)
                             .with_file_path(&file_path)
                             .with_file_source_code(code);
+
                         let res = diagnostics.write_diagnostic(error);
 
                         // Abort the analysis on error
                         if let Err(err) = res {
                             eprintln!("Error: {err}");
+
                             return ControlFlow::Break(err);
                         }
                     }
@@ -474,18 +508,21 @@ fn assert_lint(
                 });
             }
         }
+
         DocumentFileSource::Css(..) => {
             let parse = biome_css_parser::parse_css(code, CssParserOptions::default());
 
             if parse.has_errors() {
                 for diag in parse.into_diagnostics() {
                     let error = diag.with_file_path(&file_path).with_file_source_code(code);
+
                     diagnostics.write_diagnostic(error)?;
                 }
             } else {
                 let root = parse.tree();
 
                 let rule_filter = RuleFilter::Rule(group, rule);
+
                 let filter = AnalysisFilter {
                     enabled_rules: Some(slice::from_ref(&rule_filter)),
                     ..AnalysisFilter::default()
@@ -496,6 +533,7 @@ fn assert_lint(
                 biome_css_analyze::analyze(&root, filter, &options, |signal| {
                     if let Some(mut diag) = signal.diagnostic() {
                         let category = diag.category().expect("linter diagnostic has no code");
+
                         let severity = settings.get_current_settings().expect("project").get_severity_from_rule_code(category).expect(
                                 "If you see this error, it means you need to run cargo codegen-configuration",
                             );
@@ -510,11 +548,13 @@ fn assert_lint(
                             .with_severity(severity)
                             .with_file_path(&file_path)
                             .with_file_source_code(code);
+
                         let res = diagnostics.write_diagnostic(error);
 
                         // Abort the analysis on error
                         if let Err(err) = res {
                             eprintln!("Error: {err}");
+
                             return ControlFlow::Break(err);
                         }
                     }
@@ -523,18 +563,21 @@ fn assert_lint(
                 });
             }
         }
+
         DocumentFileSource::Graphql(..) => {
             let parse = biome_graphql_parser::parse_graphql(code);
 
             if parse.has_errors() {
                 for diag in parse.into_diagnostics() {
                     let error = diag.with_file_path(&file_path).with_file_source_code(code);
+
                     diagnostics.write_diagnostic(error)?;
                 }
             } else {
                 let root = parse.tree();
 
                 let rule_filter = RuleFilter::Rule(group, rule);
+
                 let filter = AnalysisFilter {
                     enabled_rules: Some(slice::from_ref(&rule_filter)),
                     ..AnalysisFilter::default()
@@ -545,6 +588,7 @@ fn assert_lint(
                 biome_graphql_analyze::analyze(&root, filter, &options, |signal| {
                     if let Some(mut diag) = signal.diagnostic() {
                         let category = diag.category().expect("linter diagnostic has no code");
+
                         let severity = settings.get_current_settings().expect("project").get_severity_from_rule_code(category).expect(
                             "If you see this error, it means you need to run cargo codegen-configuration",
                         );
@@ -559,11 +603,13 @@ fn assert_lint(
                             .with_severity(severity)
                             .with_file_path(&file_path)
                             .with_file_source_code(code);
+
                         let res = diagnostics.write_diagnostic(error);
 
                         // Abort the analysis on error
                         if let Err(err) = res {
                             eprintln!("Error: {err}");
+
                             return ControlFlow::Break(err);
                         }
                     }
@@ -572,6 +618,7 @@ fn assert_lint(
                 });
             }
         }
+
         DocumentFileSource::Html(..) => todo!("HTML analysis is not yet supported"),
         DocumentFileSource::Grit(..) => todo!("Grit analysis is not yet supported"),
 
@@ -615,12 +662,14 @@ fn make_json_object_with_single_member<V: Into<AnyJsonValue>>(
 
 fn get_first_member<V: Into<AnyJsonValue>>(parent: V, expected_name: &str) -> Option<AnyJsonValue> {
     let parent_value: AnyJsonValue = parent.into();
+
     let member = parent_value
         .as_json_object_value()?
         .json_member_list()
         .into_iter()
         .next()?
         .ok()?;
+
     let member_name = member.name().ok()?.inner_string_text().ok()?.to_string();
 
     if member_name.as_str() == expected_name {
@@ -650,6 +699,7 @@ fn parse_rule_options(
             if parse.has_errors() {
                 for diag in parse.into_diagnostics() {
                     let error = diag.with_file_path(&file_path).with_file_source_code(code);
+
                     diagnostics.write_diagnostic(error)?;
                 }
                 // Parsing failed, but test.expect_diagnostic is true
@@ -657,12 +707,14 @@ fn parse_rule_options(
             }
 
             let parsed_root = parse.tree();
+
             let parsed_options = parsed_root.value()?;
 
             let root = match test.options {
                 OptionsParsingMode::NoOptions => {
                     unreachable!("parse_rule_options should only be called for options blocks")
                 }
+
                 OptionsParsingMode::RuleOptionsOnly => {
                     // By convention, the configuration blocks in the documentation
                     // only contain the settings for the lint rule itself, like so:
@@ -687,6 +739,7 @@ fn parse_rule_options(
                     //         }
                     //     }
                     // }
+
                     let synthetic_tree = make_json_object_with_single_member(
                         "linter",
                         make_json_object_with_single_member(
@@ -700,16 +753,20 @@ fn parse_rule_options(
 
                     // Create a new JsonRoot from the synthetic AST
                     let eof_token = parsed_root.eof_token()?;
+
                     let mut root_builder = make::json_root(synthetic_tree.into(), eof_token);
+
                     if let Some(bom_token) = parsed_root.bom_token() {
                         root_builder = root_builder.with_bom_token(bom_token);
                     }
+
                     let synthetic_root = root_builder.build();
 
                     // Adjust source code spans to account for the synthetic nodes
                     // so that errors are reported at the correct source code locations:
                     let original_offset =
                         parsed_root.value().ok().map(|v| AstNode::range(&v).start());
+
                     let wrapped_offset = synthetic_root
                         .value()
                         .ok()
@@ -718,6 +775,7 @@ fn parse_rule_options(
                         .and_then(|v| get_first_member(v, group))
                         .and_then(|v| get_first_member(v, rule))
                         .map(|v| AstNode::range(&v).start());
+
                     diagnostics.subtract_offset = wrapped_offset
                         .zip(original_offset)
                         .and_then(|(wrapped, original)| wrapped.checked_sub(original))
@@ -725,6 +783,7 @@ fn parse_rule_options(
 
                     synthetic_root
                 }
+
                 OptionsParsingMode::FullConfiguration => {
                     // In some rare cases, we want to be able to display full JSON configuration
                     // instead, e.t. to be able to show off per-file overrides:
@@ -747,11 +806,13 @@ fn parse_rule_options(
             // Deserialize the configuration from the partially-synthetic AST,
             // and report any errors encountered during deserialization.
             let deserialized = deserialize_from_json_ast::<PartialConfiguration>(&root, "");
+
             let (partial_configuration, deserialize_diagnostics) = deserialized.consume();
 
             if !deserialize_diagnostics.is_empty() {
                 for diag in deserialize_diagnostics {
                     let error = diag.with_file_path(&file_path).with_file_source_code(code);
+
                     diagnostics.write_diagnostic(error)?;
                 }
                 // Deserialization failed, but test.expect_diagnostic is true
@@ -764,6 +825,7 @@ fn parse_rule_options(
 
             Ok(Some(result))
         }
+
         _ => {
             // Only JSON code blocks can contain configuration options
             bail!("The following non-JSON code block for '{group}/{rule}' was marked as containing configuration options. Only JSON code blocks can used to provide configuration options.\n\n{code}");
@@ -785,14 +847,17 @@ fn parse_documentation(
     // Tracks the content of the current code block if it's using a
     // language supported for analysis
     let mut language = None;
+
     for event in parser {
         match event {
             // CodeBlock-specific handling
             Event::Start(Tag::CodeBlock(CodeBlockKind::Fenced(meta))) => {
                 // Track the content of code blocks to pass them through the analyzer
                 let test = CodeBlockTest::from_str(meta.as_ref())?;
+
                 language = Some((test, String::new()));
             }
+
             Event::End(TagEnd::CodeBlock) => {
                 if let Some((test, block)) = language.take() {
                     if test.options != OptionsParsingMode::NoOptions {
@@ -802,6 +867,7 @@ fn parse_documentation(
                     }
                 }
             }
+
             Event::Text(text) => {
                 if let Some((_, block)) = &mut language {
                     if let Some(inner_text) = text.strip_prefix("# ") {

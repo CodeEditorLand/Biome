@@ -23,6 +23,7 @@ impl FormatNodeRule<JsExtendsClause> for FormatJsExtendsClause {
                 format_with(|f| write!(f, [super_class.format(), type_arguments.format()]));
 
             let comments = f.comments();
+
             let has_trailing_comments = if let Some(type_arguments) = &type_arguments {
                 comments.has_trailing_comments(type_arguments.syntax())
             } else {
@@ -38,6 +39,7 @@ impl FormatNodeRule<JsExtendsClause> for FormatJsExtendsClause {
                     write!(f, [text("("), &content, text(")")])
                 } else {
                     let content = content.memoized();
+
                     write!(
                         f,
                         [

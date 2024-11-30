@@ -46,6 +46,7 @@ impl FormatNodeRule<TsConstructorType> for FormatTsConstructorType {
 #[cfg(test)]
 mod tests {
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::TsConstructorType;
 
     #[test]
@@ -58,12 +59,15 @@ mod tests {
             "type s = [number, ...(new () => string)]",
             TsConstructorType
         );
+
         assert_needs_parentheses!("type s = [(new () => string)?]", TsConstructorType);
 
         assert_needs_parentheses!("type s = (new () => string)[a]", TsConstructorType);
+
         assert_not_needs_parentheses!("type s = a[new () => string]", TsConstructorType);
 
         assert_needs_parentheses!("type s = (new () => string) & b", TsConstructorType);
+
         assert_needs_parentheses!("type s = a & (new () => string)", TsConstructorType);
 
         // This does require parentheses but the formatter will strip the leading `&`, leaving only the inner type
@@ -71,17 +75,21 @@ mod tests {
         assert_not_needs_parentheses!("type s = &(new () => string)", TsConstructorType);
 
         assert_needs_parentheses!("type s = (new () => string) | b", TsConstructorType);
+
         assert_needs_parentheses!("type s = a | (new () => string)", TsConstructorType);
+
         assert_not_needs_parentheses!("type s = |(new () => string)", TsConstructorType);
 
         assert_needs_parentheses!(
             "type s = (new () => string) extends string ? string : number",
             TsConstructorType
         );
+
         assert_not_needs_parentheses!(
             "type s = A extends string ? (new () => string) : number",
             TsConstructorType
         );
+
         assert_not_needs_parentheses!(
             "type s = A extends string ? string : (new () => string)",
             TsConstructorType

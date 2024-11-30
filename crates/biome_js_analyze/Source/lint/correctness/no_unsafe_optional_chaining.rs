@@ -74,8 +74,11 @@ declare_lint_rule! {
 
 impl Rule for NoUnsafeOptionalChaining {
     type Query = Ast<AnyJsOptionalChainExpression>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -85,7 +88,9 @@ impl Rule for NoUnsafeOptionalChaining {
         if !node.is_optional() {
             return None;
         }
+
         let mut node: RuleNode = RuleNode::cast_ref(node.syntax())?;
+
         let mut parent = node.parent::<RuleNode>();
         // parentheses limit the scope of short-circuiting in chains
         // (a?.b).c // here we have an error
@@ -97,19 +102,24 @@ impl Rule for NoUnsafeOptionalChaining {
                 RuleNode::JsParenthesizedExpression(expression) => {
                     // parentheses limit the scope of short-circuiting in chains
                     is_inside_parenthesis = true;
+
                     parent = expression.parent::<RuleNode>()
                 }
+
                 RuleNode::JsAwaitExpression(expression) => parent = expression.parent::<RuleNode>(),
                 RuleNode::JsExtendsClause(extends) => {
                     // class A extends obj?.foo {}
+
                     return Some(extends.syntax().text_trimmed_range());
                 }
+
                 RuleNode::JsNewExpression(expression) => {
                     // If we're here, it means we've found a error
                     // new a?.b
                     // new (a?.b)()
                     return Some(expression.syntax().text_trimmed_range());
                 }
+
                 RuleNode::JsLogicalExpression(expression) => {
                     match expression.operator().ok()? {
                         JsLogicalOperator::NullishCoalescing | JsLogicalOperator::LogicalOr => {
@@ -124,6 +134,7 @@ impl Rule for NoUnsafeOptionalChaining {
                         JsLogicalOperator::LogicalAnd => parent = expression.parent::<RuleNode>(),
                     }
                 }
+
                 RuleNode::JsSequenceExpression(expression) => {
                     let is_last_in_sequence = expression.parent::<JsSequenceExpression>().is_none();
 
@@ -133,17 +144,20 @@ impl Rule for NoUnsafeOptionalChaining {
                         parent = expression.parent::<RuleNode>()
                     }
                 }
+
                 RuleNode::JsConditionalExpression(expression) => {
                     // need to check consequent and alternate branches
                     // (a ? obj?.foo : obj?.foo)();
                     // but not test expression
                     // (obj?.foo ? a : b)();
+
                     if node.syntax() == expression.consequent().ok()?.syntax()
                         || node.syntax() == expression.alternate().ok()?.syntax()
                     {
                         parent = expression.parent::<RuleNode>()
                     }
                 }
+
                 RuleNode::JsCallExpression(expression) => {
                     if expression.is_optional() {
                         // The current optional chain is inside another optional chain which will also be processed by the rule so we can skip current optional chain
@@ -160,6 +174,7 @@ impl Rule for NoUnsafeOptionalChaining {
                     // a()...
                     parent = expression.parent::<RuleNode>()
                 }
+
                 RuleNode::JsStaticMemberExpression(expression) => {
                     if expression.is_optional() {
                         // The current optional chain is inside another optional chain which will also be processed by the rule so we can skip current optional chain
@@ -176,6 +191,7 @@ impl Rule for NoUnsafeOptionalChaining {
                     // a.b....
                     parent = expression.parent::<RuleNode>()
                 }
+
                 RuleNode::JsComputedMemberExpression(expression) => {
                     if expression.is_optional() {
                         // The current optional chain is inside another optional chain which will also be processed by the rule so we can skip current optional chain
@@ -199,6 +215,7 @@ impl Rule for NoUnsafeOptionalChaining {
                     // a[b]...
                     parent = expression.parent::<RuleNode>()
                 }
+
                 RuleNode::JsTemplateExpression(expression) => {
                     // a?.b``
                     // (a?.b)``
@@ -207,20 +224,25 @@ impl Rule for NoUnsafeOptionalChaining {
                         expression.r_tick_token().ok()?.text_trimmed_range().end(),
                     ));
                 }
+
                 RuleNode::JsForOfStatement(statement) => {
                     if node.syntax() == statement.expression().ok()?.syntax() {
                         // we can have an error only if we have an optional chain in the expression node
                         // for (foo of obj?.bar);
+
                         return Some(statement.syntax().text_trimmed_range());
                     }
                 }
+
                 RuleNode::JsWithStatement(statement) => {
                     if node.syntax() == statement.object().ok()?.syntax() {
                         // we can have an error only if we have an optional chain in the object part
                         // with (obj?.foo) {};
+
                         return Some(statement.syntax().text_trimmed_range());
                     }
                 }
+
                 RuleNode::JsInitializerClause(initializer) => {
                     if let Some(parent) = initializer.parent::<JsVariableDeclarator>() {
                         if matches!(
@@ -239,6 +261,7 @@ impl Rule for NoUnsafeOptionalChaining {
                                 | AnyJsAssignmentPattern::JsArrayAssignmentPattern(_),)
                         ) {
                             // ({bar: [ foo ] = obj?.prop} = {});
+
                             return Some(parent.range());
                         }
                     } else if let Some(parent) =
@@ -250,10 +273,12 @@ impl Rule for NoUnsafeOptionalChaining {
                                 | AnyJsAssignmentPattern::JsArrayAssignmentPattern(_))
                         ) {
                             // [{ foo } = obj?.bar] = [];
+
                             return Some(parent.range());
                         }
                     }
                 }
+
                 RuleNode::JsAssignmentExpression(expression) => {
                     if matches!(
                         expression.left(),
@@ -263,24 +288,30 @@ impl Rule for NoUnsafeOptionalChaining {
                         return Some(expression.syntax().text_trimmed_range());
                     }
                 }
+
                 RuleNode::JsSpread(spread) => {
                     // it's not an error to have a spread inside object
                     // { ...a?.b }
+
                     if spread.parent::<JsObjectMemberList>().is_none() {
                         return Some(spread.syntax().text_trimmed_range());
                     }
                 }
+
                 RuleNode::JsInExpression(expression) => {
                     if node.syntax() == expression.object().ok()?.syntax() {
                         // we can have an error only if we have an optional chain in the object part
                         // a in foo?.bar;
+
                         return Some(expression.syntax().text_trimmed_range());
                     }
                 }
+
                 RuleNode::JsInstanceofExpression(expression) => {
                     if node.syntax() == expression.right().ok()?.syntax() {
                         // we can have an error only if we have an optional chain in the right part
                         // foo instanceof obj?.prop;
+
                         return Some(expression.syntax().text_trimmed_range());
                     }
                 }
@@ -294,6 +325,7 @@ impl Rule for NoUnsafeOptionalChaining {
 
     fn diagnostic(ctx: &RuleContext<Self>, range: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -339,9 +371,11 @@ impl From<AnyJsOptionalChainExpression> for RuleNode {
             AnyJsOptionalChainExpression::JsCallExpression(expression) => {
                 RuleNode::JsCallExpression(expression)
             }
+
             AnyJsOptionalChainExpression::JsStaticMemberExpression(expression) => {
                 RuleNode::JsStaticMemberExpression(expression)
             }
+
             AnyJsOptionalChainExpression::JsComputedMemberExpression(expression) => {
                 RuleNode::JsComputedMemberExpression(expression)
             }

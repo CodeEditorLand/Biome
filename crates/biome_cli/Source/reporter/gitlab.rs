@@ -20,6 +20,7 @@ pub struct GitLabReporter {
 impl Reporter for GitLabReporter {
     fn write(self, visitor: &mut dyn ReporterVisitor) -> std::io::Result<()> {
         visitor.report_diagnostics(&self.execution, self.diagnostics)?;
+
         Ok(())
     }
 }
@@ -37,13 +38,17 @@ impl GitLabHasher {
     /// single report.
     fn rehash_until_unique(&mut self, fingerprint: u64) -> u64 {
         let mut current = fingerprint;
+
         while self.0.contains(&current) {
             let mut hasher = DefaultHasher::new();
+
             current.hash(&mut hasher);
+
             current = hasher.finish();
         }
 
         self.0.insert(current);
+
         current
     }
 }
@@ -68,8 +73,11 @@ impl<'a> ReporterVisitor for GitLabReporterVisitor<'a> {
         payload: DiagnosticsPayload,
     ) -> std::io::Result<()> {
         let hasher = RwLock::default();
+
         let diagnostics = GitLabDiagnostics(payload, &hasher, self.repository_root.as_deref());
+
         self.console.log(markup!({ diagnostics }));
+
         Ok(())
     }
 }
@@ -95,6 +103,7 @@ impl<'a> GitLabDiagnostics<'a> {
 
     fn compute_initial_fingerprint(&self, diagnostic: &Error, path: &str) -> u64 {
         let location = diagnostic.location();
+
         let code = match location.span {
             Some(span) => match location.source_code {
                 Some(source_code) => &source_code.text[span],
@@ -119,6 +128,7 @@ impl<'a> GitLabDiagnostics<'a> {
 impl<'a> Display for GitLabDiagnostics<'a> {
     fn fmt(&self, fmt: &mut Formatter) -> std::io::Result<()> {
         let mut hasher = self.1.write().unwrap();
+
         let gitlab_diagnostics: Vec<_> = self
             .0
             .diagnostics
@@ -137,13 +147,16 @@ impl<'a> Display for GitLabDiagnostics<'a> {
                     _ => None,
                 }
                 .unwrap_or_default();
+
                 let path_buf = self.attempt_to_relativize(absolute_path);
+
                 let path = match path_buf {
                     Some(buf) => buf.to_str().unwrap_or(absolute_path).to_owned(),
                     None => absolute_path.to_owned(),
                 };
 
                 let initial_fingerprint = self.compute_initial_fingerprint(biome_diagnostic, &path);
+
                 let fingerprint = hasher.rehash_until_unique(initial_fingerprint);
 
                 GitLabDiagnostic::try_from_diagnostic(
@@ -153,8 +166,11 @@ impl<'a> Display for GitLabDiagnostics<'a> {
                 )
             })
             .collect();
+
         let serialized = serde_json::to_string_pretty(&gitlab_diagnostics)?;
+
         fmt.write_str(serialized.as_str())?;
+
         Ok(())
     }
 }
@@ -182,13 +198,18 @@ impl<'a> GitLabDiagnostic<'a> {
         fingerprint: u64,
     ) -> Option<Self> {
         let location = diagnostic.location();
+
         let span = location.span?;
+
         let source_code = location.source_code?;
+
         let description = PrintDescription(diagnostic).to_string();
+
         let begin = match SourceFile::new(source_code).location(span.start()) {
             Ok(start) => start.line_number.get(),
             Err(_) => return None,
         };
+
         let check_name = diagnostic
             .category()
             .map(|category| category.name())
@@ -240,6 +261,8 @@ struct Fingerprint<'a> {
 
 fn calculate_hash<T: Hash>(t: &T) -> u64 {
     let mut s = DefaultHasher::new();
+
     t.hash(&mut s);
+
     s.finish()
 }

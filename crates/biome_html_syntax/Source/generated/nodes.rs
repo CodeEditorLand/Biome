@@ -36,15 +36,18 @@ impl HtmlAttribute {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlAttributeFields {
         HtmlAttributeFields {
             name: self.name(),
             initializer: self.initializer(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<HtmlName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn initializer(&self) -> Option<HtmlAttributeInitializerClause> {
         support::node(&self.syntax, 1usize)
     }
@@ -76,15 +79,18 @@ impl HtmlAttributeInitializerClause {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlAttributeInitializerClauseFields {
         HtmlAttributeInitializerClauseFields {
             eq_token: self.eq_token(),
             value: self.value(),
         }
     }
+
     pub fn eq_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> SyntaxResult<HtmlString> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -116,6 +122,7 @@ impl HtmlClosingElement {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlClosingElementFields {
         HtmlClosingElementFields {
             l_angle_token: self.l_angle_token(),
@@ -124,15 +131,19 @@ impl HtmlClosingElement {
             r_angle_token: self.r_angle_token(),
         }
     }
+
     pub fn l_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn slash_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<HtmlName> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -166,6 +177,7 @@ impl HtmlComment {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlCommentFields {
         HtmlCommentFields {
             comment_start_token: self.comment_start_token(),
@@ -173,12 +185,15 @@ impl HtmlComment {
             comment_end_token: self.comment_end_token(),
         }
     }
+
     pub fn comment_start_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn content_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn comment_end_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -211,11 +226,13 @@ impl HtmlContent {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlContentFields {
         HtmlContentFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -246,6 +263,7 @@ impl HtmlDirective {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlDirectiveFields {
         HtmlDirectiveFields {
             l_angle_token: self.l_angle_token(),
@@ -258,27 +276,35 @@ impl HtmlDirective {
             r_angle_token: self.r_angle_token(),
         }
     }
+
     pub fn l_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn excl_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn doctype_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
+
     pub fn html_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 3usize)
     }
+
     pub fn quirk_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 4usize)
     }
+
     pub fn public_id_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 5usize)
     }
+
     pub fn system_id_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 6usize)
     }
+
     pub fn r_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 7usize)
     }
@@ -316,6 +342,7 @@ impl HtmlElement {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlElementFields {
         HtmlElementFields {
             opening_element: self.opening_element(),
@@ -323,12 +350,15 @@ impl HtmlElement {
             closing_element: self.closing_element(),
         }
     }
+
     pub fn opening_element(&self) -> SyntaxResult<HtmlOpeningElement> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn children(&self) -> HtmlElementList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn closing_element(&self) -> SyntaxResult<HtmlClosingElement> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -361,11 +391,13 @@ impl HtmlName {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlNameFields {
         HtmlNameFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -396,6 +428,7 @@ impl HtmlOpeningElement {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlOpeningElementFields {
         HtmlOpeningElementFields {
             l_angle_token: self.l_angle_token(),
@@ -404,15 +437,19 @@ impl HtmlOpeningElement {
             r_angle_token: self.r_angle_token(),
         }
     }
+
     pub fn l_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<HtmlName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn attributes(&self) -> HtmlAttributeList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -446,6 +483,7 @@ impl HtmlRoot {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlRootFields {
         HtmlRootFields {
             bom_token: self.bom_token(),
@@ -454,15 +492,19 @@ impl HtmlRoot {
             eof_token: self.eof_token(),
         }
     }
+
     pub fn bom_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn directive(&self) -> Option<HtmlDirective> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn html(&self) -> HtmlElementList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn eof_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -496,6 +538,7 @@ impl HtmlSelfClosingElement {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlSelfClosingElementFields {
         HtmlSelfClosingElementFields {
             l_angle_token: self.l_angle_token(),
@@ -505,18 +548,23 @@ impl HtmlSelfClosingElement {
             r_angle_token: self.r_angle_token(),
         }
     }
+
     pub fn l_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<HtmlName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn attributes(&self) -> HtmlAttributeList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn slash_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 3usize)
     }
+
     pub fn r_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 4usize)
     }
@@ -551,11 +599,13 @@ impl HtmlString {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> HtmlStringFields {
         HtmlStringFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -584,6 +634,7 @@ impl AnyHtmlAttribute {
             _ => None,
         }
     }
+
     pub fn as_html_bogus_attribute(&self) -> Option<&HtmlBogusAttribute> {
         match &self {
             AnyHtmlAttribute::HtmlBogusAttribute(item) => Some(item),
@@ -606,24 +657,28 @@ impl AnyHtmlElement {
             _ => None,
         }
     }
+
     pub fn as_html_comment(&self) -> Option<&HtmlComment> {
         match &self {
             AnyHtmlElement::HtmlComment(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_html_content(&self) -> Option<&HtmlContent> {
         match &self {
             AnyHtmlElement::HtmlContent(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_html_element(&self) -> Option<&HtmlElement> {
         match &self {
             AnyHtmlElement::HtmlElement(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_html_self_closing_element(&self) -> Option<&HtmlSelfClosingElement> {
         match &self {
             AnyHtmlElement::HtmlSelfClosingElement(item) => Some(item),
@@ -633,11 +688,14 @@ impl AnyHtmlElement {
 }
 impl AstNode for HtmlAttribute {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_ATTRIBUTE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_ATTRIBUTE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -645,9 +703,11 @@ impl AstNode for HtmlAttribute {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -675,11 +735,14 @@ impl From<HtmlAttribute> for SyntaxElement {
 }
 impl AstNode for HtmlAttributeInitializerClause {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_ATTRIBUTE_INITIALIZER_CLAUSE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_ATTRIBUTE_INITIALIZER_CLAUSE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -687,9 +750,11 @@ impl AstNode for HtmlAttributeInitializerClause {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -714,11 +779,14 @@ impl From<HtmlAttributeInitializerClause> for SyntaxElement {
 }
 impl AstNode for HtmlClosingElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_CLOSING_ELEMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_CLOSING_ELEMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -726,9 +794,11 @@ impl AstNode for HtmlClosingElement {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -764,11 +834,14 @@ impl From<HtmlClosingElement> for SyntaxElement {
 }
 impl AstNode for HtmlComment {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_COMMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_COMMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -776,9 +849,11 @@ impl AstNode for HtmlComment {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -813,11 +888,14 @@ impl From<HtmlComment> for SyntaxElement {
 }
 impl AstNode for HtmlContent {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_CONTENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_CONTENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -825,9 +903,11 @@ impl AstNode for HtmlContent {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -854,11 +934,14 @@ impl From<HtmlContent> for SyntaxElement {
 }
 impl AstNode for HtmlDirective {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_DIRECTIVE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_DIRECTIVE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -866,9 +949,11 @@ impl AstNode for HtmlDirective {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -920,11 +1005,14 @@ impl From<HtmlDirective> for SyntaxElement {
 }
 impl AstNode for HtmlElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_ELEMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_ELEMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -932,9 +1020,11 @@ impl AstNode for HtmlElement {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -966,11 +1056,14 @@ impl From<HtmlElement> for SyntaxElement {
 }
 impl AstNode for HtmlName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_NAME as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_NAME
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -978,9 +1071,11 @@ impl AstNode for HtmlName {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1007,11 +1102,14 @@ impl From<HtmlName> for SyntaxElement {
 }
 impl AstNode for HtmlOpeningElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_OPENING_ELEMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_OPENING_ELEMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1019,9 +1117,11 @@ impl AstNode for HtmlOpeningElement {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1054,11 +1154,14 @@ impl From<HtmlOpeningElement> for SyntaxElement {
 }
 impl AstNode for HtmlRoot {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_ROOT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_ROOT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1066,9 +1169,11 @@ impl AstNode for HtmlRoot {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1101,11 +1206,14 @@ impl From<HtmlRoot> for SyntaxElement {
 }
 impl AstNode for HtmlSelfClosingElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_SELF_CLOSING_ELEMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_SELF_CLOSING_ELEMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1113,9 +1221,11 @@ impl AstNode for HtmlSelfClosingElement {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1152,11 +1262,14 @@ impl From<HtmlSelfClosingElement> for SyntaxElement {
 }
 impl AstNode for HtmlString {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_STRING as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_STRING
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1164,9 +1277,11 @@ impl AstNode for HtmlString {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1203,27 +1318,34 @@ impl From<HtmlBogusAttribute> for AnyHtmlAttribute {
 }
 impl AstNode for AnyHtmlAttribute {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         HtmlAttribute::KIND_SET.union(HtmlBogusAttribute::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, HTML_ATTRIBUTE | HTML_BOGUS_ATTRIBUTE)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             HTML_ATTRIBUTE => AnyHtmlAttribute::HtmlAttribute(HtmlAttribute { syntax }),
             HTML_BOGUS_ATTRIBUTE => {
                 AnyHtmlAttribute::HtmlBogusAttribute(HtmlBogusAttribute { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyHtmlAttribute::HtmlAttribute(it) => &it.syntax,
             AnyHtmlAttribute::HtmlBogusAttribute(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyHtmlAttribute::HtmlAttribute(it) => it.syntax,
@@ -1250,6 +1372,7 @@ impl From<AnyHtmlAttribute> for SyntaxNode {
 impl From<AnyHtmlAttribute> for SyntaxElement {
     fn from(n: AnyHtmlAttribute) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -1280,11 +1403,13 @@ impl From<HtmlSelfClosingElement> for AnyHtmlElement {
 }
 impl AstNode for AnyHtmlElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = HtmlBogusElement::KIND_SET
         .union(HtmlComment::KIND_SET)
         .union(HtmlContent::KIND_SET)
         .union(HtmlElement::KIND_SET)
         .union(HtmlSelfClosingElement::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -1295,6 +1420,7 @@ impl AstNode for AnyHtmlElement {
                 | HTML_SELF_CLOSING_ELEMENT
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             HTML_BOGUS_ELEMENT => AnyHtmlElement::HtmlBogusElement(HtmlBogusElement { syntax }),
@@ -1304,10 +1430,13 @@ impl AstNode for AnyHtmlElement {
             HTML_SELF_CLOSING_ELEMENT => {
                 AnyHtmlElement::HtmlSelfClosingElement(HtmlSelfClosingElement { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyHtmlElement::HtmlBogusElement(it) => &it.syntax,
@@ -1317,6 +1446,7 @@ impl AstNode for AnyHtmlElement {
             AnyHtmlElement::HtmlSelfClosingElement(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyHtmlElement::HtmlBogusElement(it) => it.syntax,
@@ -1352,6 +1482,7 @@ impl From<AnyHtmlElement> for SyntaxNode {
 impl From<AnyHtmlElement> for SyntaxElement {
     fn from(n: AnyHtmlElement) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -1439,17 +1570,21 @@ impl HtmlBogus {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for HtmlBogus {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_BOGUS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_BOGUS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1457,9 +1592,11 @@ impl AstNode for HtmlBogus {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1495,17 +1632,21 @@ impl HtmlBogusAttribute {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for HtmlBogusAttribute {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_BOGUS_ATTRIBUTE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_BOGUS_ATTRIBUTE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1513,9 +1654,11 @@ impl AstNode for HtmlBogusAttribute {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1551,17 +1694,21 @@ impl HtmlBogusElement {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for HtmlBogusElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_BOGUS_ELEMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_BOGUS_ELEMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1569,9 +1716,11 @@ impl AstNode for HtmlBogusElement {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1612,11 +1761,14 @@ impl HtmlAttributeList {
 }
 impl AstNode for HtmlAttributeList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_ATTRIBUTE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_ATTRIBUTE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<HtmlAttributeList> {
         if Self::can_cast(syntax.kind()) {
             Some(HtmlAttributeList {
@@ -1626,9 +1778,11 @@ impl AstNode for HtmlAttributeList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -1639,18 +1793,23 @@ impl Serialize for HtmlAttributeList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for HtmlAttributeList {
     type Language = Language;
+
     type Node = AnyHtmlAttribute;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -1658,19 +1817,24 @@ impl AstNodeList for HtmlAttributeList {
 impl Debug for HtmlAttributeList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("HtmlAttributeList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &HtmlAttributeList {
     type Item = AnyHtmlAttribute;
+
     type IntoIter = AstNodeListIterator<Language, AnyHtmlAttribute>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for HtmlAttributeList {
     type Item = AnyHtmlAttribute;
+
     type IntoIter = AstNodeListIterator<Language, AnyHtmlAttribute>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -1694,11 +1858,14 @@ impl HtmlElementList {
 }
 impl AstNode for HtmlElementList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(HTML_ELEMENT_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == HTML_ELEMENT_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<HtmlElementList> {
         if Self::can_cast(syntax.kind()) {
             Some(HtmlElementList {
@@ -1708,9 +1875,11 @@ impl AstNode for HtmlElementList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -1721,18 +1890,23 @@ impl Serialize for HtmlElementList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for HtmlElementList {
     type Language = Language;
+
     type Node = AnyHtmlElement;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -1740,19 +1914,24 @@ impl AstNodeList for HtmlElementList {
 impl Debug for HtmlElementList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("HtmlElementList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &HtmlElementList {
     type Item = AnyHtmlElement;
+
     type IntoIter = AstNodeListIterator<Language, AnyHtmlElement>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for HtmlElementList {
     type Item = AnyHtmlElement;
+
     type IntoIter = AstNodeListIterator<Language, AnyHtmlElement>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -1773,6 +1952,7 @@ impl Debug for DebugSyntaxElement {
             SyntaxElement::Node(node) => {
                 map_syntax_node ! (node . clone () , node => std :: fmt :: Debug :: fmt (& node , f))
             }
+
             SyntaxElement::Token(token) => Debug::fmt(token, f),
         }
     }

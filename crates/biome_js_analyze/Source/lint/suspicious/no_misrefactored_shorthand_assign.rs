@@ -59,8 +59,11 @@ declare_lint_rule! {
 
 impl Rule for NoMisrefactoredShorthandAssign {
     type Query = Ast<JsAssignmentExpression>;
+
     type State = AnyJsExpression;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -71,8 +74,11 @@ impl Rule for NoMisrefactoredShorthandAssign {
         }
 
         let right = node.right().ok()?;
+
         let operator = node.operator_token().ok()?;
+
         let operator = operator.text_trimmed();
+
         let operator = &operator[0..operator.len() - 1];
 
         let binary_expression = match right {
@@ -80,10 +86,12 @@ impl Rule for NoMisrefactoredShorthandAssign {
             AnyJsExpression::JsParenthesizedExpression(param) => {
                 JsBinaryExpression::cast(param.expression().ok()?.into_syntax())?
             }
+
             _ => return None,
         };
 
         let bin_operator = binary_expression.operator_token().ok()?;
+
         let bin_operator = bin_operator.text_trimmed();
 
         let not_same_operator_from_shorthand = operator != bin_operator;
@@ -93,7 +101,9 @@ impl Rule for NoMisrefactoredShorthandAssign {
         }
 
         let left = node.left().ok()?;
+
         let left = left.as_any_js_assignment()?;
+
         let left_text = left.text();
 
         let variable_position_in_expression =
@@ -131,9 +141,11 @@ impl Rule for NoMisrefactoredShorthandAssign {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let replacement_node = node.clone().with_right(state.clone());
+
         let replacement_text = replacement_node.clone().syntax().text_trimmed().to_string();
 
         mutation.replace_node(node.clone(), replacement_node);

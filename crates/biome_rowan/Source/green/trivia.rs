@@ -38,7 +38,9 @@ impl GreenTriviaData {
     pub(crate) fn to_owned(&self) -> GreenTrivia {
         unsafe {
             let green = GreenTrivia::from_raw(self as *const _ as *mut _);
+
             let green = ManuallyDrop::new(green);
+
             GreenTrivia::clone(&green)
         }
     }
@@ -134,7 +136,9 @@ impl GreenTrivia {
     pub(crate) unsafe fn from_raw(ptr: *mut GreenTriviaData) -> Self {
         if let Some(ptr) = ptr.as_ref() {
             let arc = Arc::from_raw(&ptr.data as *const ReprThin);
+
             let arc = mem::transmute::<Arc<ReprThin>, ThinArc<GreenTriviaHead, TriviaPiece>>(arc);
+
             Self { ptr: Some(arc) }
         } else {
             Self { ptr: None }
@@ -145,8 +149,11 @@ impl GreenTrivia {
 #[cfg(test)]
 mod tests {
     use crate::green::trivia::{GreenTrivia, GreenTriviaHead};
+
     use crate::syntax::TriviaPieceKind;
+
     use crate::TriviaPiece;
+
     use biome_text_size::TextSize;
 
     impl GreenTrivia {
@@ -169,6 +176,7 @@ mod tests {
     #[test]
     fn sizes() {
         assert_eq!(0, std::mem::size_of::<GreenTriviaHead>());
+
         assert_eq!(8, std::mem::size_of::<GreenTrivia>());
     }
 }

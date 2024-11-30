@@ -39,12 +39,14 @@ pub(crate) fn parse_any_layer(p: &mut CssParser) -> CompletedMarker {
 
     let kind = if p.at(T!['{']) {
         parse_conditional_block(p);
+
         CSS_LAYER_DECLARATION
     } else if p.expect(T![;]) {
         CSS_LAYER_REFERENCE
     } else {
         CSS_BOGUS_LAYER
     };
+
     m.complete(p, kind)
 }
 
@@ -56,7 +58,9 @@ struct LayerReferenceList;
 
 impl ParseSeparatedList for LayerReferenceList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_LAYER_REFERENCE_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -93,7 +97,9 @@ pub(crate) struct LayerNameList;
 
 impl ParseSeparatedList for LayerNameList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_LAYER_NAME_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {

@@ -163,6 +163,7 @@ impl JsonFileSource {
     #[must_use]
     pub fn with_allow_trailing_commas(mut self) -> Self {
         self.allow_trailing_commas = true;
+
         self
     }
 
@@ -174,6 +175,7 @@ impl JsonFileSource {
     #[must_use]
     pub fn with_allow_comments(mut self) -> Self {
         self.allow_comments = true;
+
         self
     }
 
@@ -207,12 +209,15 @@ impl JsonFileSource {
     /// Try to return the JSON file source corresponding to this file name from well-known files
     pub fn try_from_well_known(path: &Path) -> Result<Self, FileSourceError> {
         let file_name = path.file_name().ok_or(FileSourceError::MissingFileName)?;
+
         if Self::is_well_known_json_allow_comments_and_trailing_commas_file(file_name) {
             return Ok(Self::json_allow_comments_and_trailing_commas());
         }
+
         if Self::is_well_known_json_allow_comments_file(file_name) {
             return Ok(Self::json_allow_comments());
         }
+
         if let Some(Component::Normal(parent_dir)) = path.components().rev().nth(1) {
             if Self::is_well_known_json_allow_comments_directory(parent_dir)
                 && file_name.as_encoded_bytes().ends_with(b".json")
@@ -220,9 +225,11 @@ impl JsonFileSource {
                 return Ok(Self::json_allow_comments());
             }
         }
+
         if Self::is_well_known_json_file(file_name) {
             return Ok(Self::json());
         }
+
         Err(FileSourceError::UnknownFileName)
     }
 
@@ -300,6 +307,7 @@ fn test_order() {
             str::from_utf8(items[1]).unwrap()
         );
     }
+
     for items in JsonFileSource::WELL_KNOWN_JSON_ALLOW_COMMENTS_FILES.windows(2) {
         assert!(
             items[0] < items[1],
@@ -308,6 +316,7 @@ fn test_order() {
             str::from_utf8(items[1]).unwrap()
         );
     }
+
     for items in JsonFileSource::WELL_KNOWN_JSON_FILES.windows(2) {
         assert!(
             items[0] < items[1],
@@ -316,6 +325,7 @@ fn test_order() {
             str::from_utf8(items[1]).unwrap()
         );
     }
+
     for items in JsonFileSource::WELL_KNOWN_JSON_ALLOW_COMMENTS_DIRECTORIES.windows(2) {
         assert!(
             items[0] < items[1],

@@ -29,6 +29,7 @@ pub(crate) static HTML_WHITESPACE_CHARS: [u8; 4] = [b' ', b'\n', b'\t', b'\r'];
 /// ```
 pub fn is_meaningful_html_text(text: &str) -> bool {
     let mut has_newline = false;
+
     for byte in text.bytes() {
         // If there is a non-whitespace character
         if !HTML_WHITESPACE_CHARS.contains(&byte) {
@@ -172,6 +173,7 @@ where
     let mut builder = HtmlSplitChildrenBuilder::new();
 
     let mut prev_was_content = false;
+
     for child in children {
         match child {
             AnyHtmlElement::HtmlContent(text) => {
@@ -179,6 +181,7 @@ where
                 // Keep track if there's any leading/trailing empty line, new line or whitespace
 
                 let value_token = text.value_token()?;
+
                 let mut chunks = HtmlSplitChunksIterator::new(value_token.text()).peekable();
 
                 // Text starting with a whitespace
@@ -212,6 +215,7 @@ where
                                 builder.entry(HtmlChild::Whitespace)
                             }
                         }
+
                         _ => unreachable!(),
                     }
                 }
@@ -233,16 +237,20 @@ where
                             let text = value_token
                                 .token_text()
                                 .slice(TextRange::at(relative_start, word.text_len()));
+
                             let source_position = value_token.text_range().start() + relative_start;
 
                             builder.entry(HtmlChild::Word(HtmlWord::new(text, source_position)));
                         }
                     }
                 }
+
                 prev_was_content = true;
             }
+
             child => {
                 let text = child.to_string();
+
                 let mut chunks = HtmlSplitChunksIterator::new(&text).peekable();
 
                 // Text starting with a whitespace
@@ -271,11 +279,13 @@ where
                                 builder.entry(HtmlChild::Whitespace)
                             }
                         }
+
                         _ => unreachable!(),
                     }
                 }
 
                 builder.entry(HtmlChild::NonText(child));
+
                 prev_was_content = false;
             }
         }
@@ -308,6 +318,7 @@ impl HtmlSplitChildrenBuilder {
                     self.buffer.push(child);
                 }
             }
+
             _ => self.buffer.push(child),
         }
     }
@@ -349,6 +360,7 @@ impl<'a> Iterator for HtmlSplitChunksIterator<'a> {
         let char = self.chars.next()?;
 
         let start = self.position;
+
         self.position += char.text_len();
 
         let is_whitespace = matches!(char, ' ' | '\n' | '\t' | '\r');
@@ -361,10 +373,12 @@ impl<'a> Iterator for HtmlSplitChunksIterator<'a> {
             }
 
             self.position += next.text_len();
+
             self.chars.next();
         }
 
         let range = TextRange::new(start, self.position);
+
         let slice = &self.text[range];
 
         let chunk = if is_whitespace {
@@ -417,16 +431,19 @@ impl<I: Iterator> HtmlChildrenIterator<I> {
 
     pub fn peek(&mut self) -> Option<&I::Item> {
         let iter = &mut self.iter;
+
         self.peeked.get_or_insert_with(|| iter.next()).as_ref()
     }
 
     pub fn peek_next(&mut self) -> Option<&I::Item> {
         let iter = &mut self.iter;
+
         let peeked = &mut self.peeked;
 
         self.peeked_next
             .get_or_insert_with(|| {
                 peeked.get_or_insert_with(|| iter.next());
+
                 iter.next()
             })
             .as_ref()
@@ -434,13 +451,17 @@ impl<I: Iterator> HtmlChildrenIterator<I> {
 
     pub fn peek_next_next(&mut self) -> Option<&I::Item> {
         let iter = &mut self.iter;
+
         let peeked = &mut self.peeked;
+
         let peeked_next = &mut self.peeked_next;
 
         self.peeked_next_next
             .get_or_insert_with(|| {
                 peeked.get_or_insert_with(|| iter.next());
+
                 peeked_next.get_or_insert_with(|| iter.next());
+
                 iter.next()
             })
             .as_ref()
@@ -454,9 +475,12 @@ impl<I: Iterator> Iterator for HtmlChildrenIterator<I> {
         match self.peeked.take() {
             Some(peeked) => {
                 self.peeked = self.peeked_next.take();
+
                 self.peeked_next = self.peeked_next_next.take();
+
                 peeked
             }
+
             None => self.iter.next(),
         }
     }

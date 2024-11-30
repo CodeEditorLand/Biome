@@ -79,24 +79,30 @@ declare_node_union! {
 
 impl Rule for NoSetterReturn {
     type Query = Ast<JsReturnStatement>;
+
     type State = JsSetterMember;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let ret = ctx.query();
         // Do not take arg-less returns into account
         let _arg = ret.argument()?;
+
         let setter = ret
             .syntax()
             .ancestors()
             .find(|x| AnyJsControlFlowRoot::can_cast(x.kind()))
             .and_then(JsSetterMember::cast);
+
         setter
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, setter: &Self::State) -> Option<RuleDiagnostic> {
         let ret = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

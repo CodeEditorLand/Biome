@@ -30,6 +30,7 @@ impl AnyFunctionLike {
                     None
                 }
             }
+
             AnyFunctionLike::JsMethodClassMember(_) | AnyFunctionLike::JsMethodObjectMember(_) => {
                 None
             }
@@ -41,6 +42,7 @@ impl AnyFunctionLike {
             AnyFunctionLike::AnyJsFunction(any_js_function) => {
                 any_js_function.function_token().ok().flatten()
             }
+
             AnyFunctionLike::JsMethodClassMember(_) | AnyFunctionLike::JsMethodObjectMember(_) => {
                 None
             }
@@ -53,6 +55,7 @@ impl AnyFunctionLike {
             AnyFunctionLike::JsMethodClassMember(method_class_member) => {
                 method_class_member.star_token().is_some()
             }
+
             AnyFunctionLike::JsMethodObjectMember(method_obj_member) => {
                 method_obj_member.star_token().is_some()
             }
@@ -65,6 +68,7 @@ impl AnyFunctionLike {
             AnyFunctionLike::JsMethodClassMember(method_class_member) => {
                 method_class_member.async_token().is_some()
             }
+
             AnyFunctionLike::JsMethodObjectMember(method_obj_member) => {
                 method_obj_member.async_token().is_some()
             }
@@ -76,9 +80,11 @@ impl AnyFunctionLike {
             AnyFunctionLike::AnyJsFunction(js_function) => {
                 js_function.id().ok().flatten().map(|id| id.range())
             }
+
             AnyFunctionLike::JsMethodObjectMember(js_object_method) => {
                 js_object_method.name().ok().map(|name| name.range())
             }
+
             AnyFunctionLike::JsMethodClassMember(js_class_method) => {
                 js_class_method.name().ok().map(|name| name.range())
             }
@@ -95,6 +101,7 @@ impl AnyFunctionLike {
             AnyFunctionLike::JsMethodClassMember(method_class_member) => {
                 method_class_member.body().ok()?.statements()
             }
+
             AnyFunctionLike::JsMethodObjectMember(method_obj_member) => {
                 method_obj_member.body().ok()?.statements()
             }
@@ -117,17 +124,23 @@ impl JsCallArguments {
         debug_assert!(indices.windows(2).all(|vs| vs[0] < vs[1]));
 
         const INIT: Option<AnyJsCallArgument> = None;
+
         let mut result = [INIT; N];
+
         let mut next = 0;
+
         for (i, arg) in self.args().into_iter().flatten().enumerate() {
             if i == indices[next] {
                 result[next] = Some(arg);
+
                 next += 1;
+
                 if next == N {
                     break;
                 }
             }
         }
+
         result
     }
 }

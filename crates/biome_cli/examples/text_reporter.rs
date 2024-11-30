@@ -16,7 +16,9 @@ impl Reporter for TextReport {
             staged: false,
             changed: false,
         });
+
         visitor.report_summary(&execution, self.summary)?;
+
         Ok(())
     }
 }
@@ -29,6 +31,7 @@ impl ReporterVisitor for BufferVisitor {
     ) -> std::io::Result<()> {
         self.0
             .push_str(&format!("Total is {}", summary.changed + summary.unchanged));
+
         Ok(())
     }
 
@@ -47,8 +50,11 @@ pub fn main() {
         unchanged: 28,
         ..TraversalSummary::default()
     };
+
     let mut visitor = BufferVisitor(String::new());
+
     let reporter = TextReport { summary };
+
     reporter.write(&mut visitor).unwrap();
 
     assert_eq!(visitor.0.as_str(), "Total is 64")

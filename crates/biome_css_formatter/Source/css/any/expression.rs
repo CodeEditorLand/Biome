@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssExpression;
 pub(crate) struct FormatAnyCssExpression;
 impl FormatRule<AnyCssExpression> for FormatAnyCssExpression {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssExpression, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssExpression::CssBinaryExpression(node) => node.format().fmt(f),

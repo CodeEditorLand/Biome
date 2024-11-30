@@ -62,13 +62,18 @@ pub struct UseTrimStartEndState {
 
 impl Rule for UseTrimStartEnd {
     type Query = Ast<JsCallExpression>;
+
     type State = UseTrimStartEndState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let arguments = node.arguments().ok()?;
+
         let args = arguments.args();
 
         if !args.is_empty() {
@@ -80,20 +85,28 @@ impl Rule for UseTrimStartEnd {
         }
 
         let callee = node.callee().ok()?;
+
         let (member_name, span) = match callee {
             AnyJsExpression::JsComputedMemberExpression(callee) => {
                 let member = callee.member().ok()?;
+
                 let value = member.as_static_value()?;
+
                 let span = value.range();
+
                 let member_name = value.as_string_constant()?.to_string();
                 (member_name, span)
             }
+
             AnyJsExpression::JsStaticMemberExpression(callee) => {
                 let token = callee.member().ok()?.value_token().ok()?;
+
                 let span = token.text_range();
+
                 let member_name = token.text_trimmed().to_string();
                 (member_name, span)
             }
+
             _ => return None,
         };
 
@@ -107,6 +120,7 @@ impl Rule for UseTrimStartEnd {
             "Use "{suggested_name}" instead of "{state.member_name}"."
         }
         .to_owned();
+
         let note_message = {
             markup! {
                 ""{state.member_name}" is an alias for "{suggested_name}"."
@@ -122,14 +136,17 @@ impl Rule for UseTrimStartEnd {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let callee = node.callee().ok()?;
 
         let is_computed_member = JsComputedMemberExpression::can_cast(callee.syntax().kind());
+
         let computed_member_expression_opt = if is_computed_member {
             callee.as_js_computed_member_expression()
         } else {
             None
         };
+
         let is_template = if is_computed_member {
             if let Ok(computed_member) = computed_member_expression_opt?.member() {
                 JsTemplateExpression::can_cast(computed_member.syntax().kind())
@@ -142,12 +159,15 @@ impl Rule for UseTrimStartEnd {
         // Need to keep the original token to replace it with the new token.
         // `.as_static_value()` strips the information of tick tokens.
         let token = extract_token_from_expression(callee.clone())?;
+
         let replaced_member_name = suggested_name(&token)?;
 
         let mut elements = vec![];
+
         let template_elements = AnyJsTemplateElement::from(make::js_template_chunk_element(
             make::js_template_chunk(replaced_member_name.as_str()),
         ));
+
         elements.push(template_elements);
 
         let callee_object = match callee {
@@ -213,6 +233,7 @@ impl Rule for UseTrimStartEnd {
         };
 
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(callee, call_expression);
 
         Some(JsRuleAction::new(
@@ -228,6 +249,7 @@ impl Rule for UseTrimStartEnd {
 fn extract_token_from_expression(callee: AnyJsExpression) -> Option<SyntaxToken<JsLanguage>> {
     let token = if let AnyJsExpression::JsComputedMemberExpression(expression) = callee {
         let member = expression.member().ok()?;
+
         match member {
             AnyJsExpression::AnyJsLiteralExpression(literal) => literal.value_token().ok(),
             AnyJsExpression::JsTemplateExpression(element) => {
@@ -236,6 +258,7 @@ fn extract_token_from_expression(callee: AnyJsExpression) -> Option<SyntaxToken<
                         .and_then(|chunk| chunk.template_chunk_token().ok())
                 })
             }
+
             _ => None,
         }
     } else if let AnyJsExpression::JsStaticMemberExpression(expression) = callee {
@@ -243,6 +266,7 @@ fn extract_token_from_expression(callee: AnyJsExpression) -> Option<SyntaxToken<
     } else {
         None
     };
+
     token
 }
 
@@ -251,6 +275,7 @@ fn suggested_name(text: &SyntaxToken<JsLanguage>) -> Option<String> {
     let trimmed = text.text_trimmed();
 
     let is_single_quoted = trimmed.starts_with('\'') && trimmed.ends_with('\'');
+
     let is_double_quoted = trimmed.starts_with('"') && trimmed.ends_with('"');
 
     let unquoted = if is_single_quoted {

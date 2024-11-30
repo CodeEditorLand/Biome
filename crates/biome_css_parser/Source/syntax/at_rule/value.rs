@@ -88,7 +88,9 @@ fn parse_value_at_rule_import_clause(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     ValueAtRuleImportSpecifierList.parse_list(p);
+
     p.expect(T![from]);
+
     parse_value_at_rule_import_source(p).or_add_diagnostic(p, expected_import_source);
 
     Present(m.complete(p, CSS_VALUE_AT_RULE_IMPORT_CLAUSE))
@@ -98,7 +100,9 @@ struct ValueAtRuleImportSpecifierList;
 
 impl ParseSeparatedList for ValueAtRuleImportSpecifierList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_VALUE_AT_RULE_IMPORT_SPECIFIER_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -130,7 +134,9 @@ struct ValueAtRuleImportSpecifierListParseRecovery;
 
 impl ParseRecovery for ValueAtRuleImportSpecifierListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -151,6 +157,7 @@ fn parse_value_at_rule_import_specifier(p: &mut CssParser) -> ParsedSyntax {
 
     let kind = if p.eat(T![as]) {
         parse_regular_identifier(p).or_add_diagnostic(p, expected_identifier);
+
         CSS_VALUE_AT_RULE_NAMED_IMPORT_SPECIFIER
     } else {
         CSS_VALUE_AT_RULE_IMPORT_SPECIFIER
@@ -189,7 +196,9 @@ fn parse_value_at_rule_declaration_clause(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     ValueAtRulePropertyList.parse_list(p);
+
     Present(m.complete(p, CSS_VALUE_AT_RULE_DECLARATION_CLAUSE))
 }
 
@@ -197,7 +206,9 @@ pub(crate) struct ValueAtRulePropertyList;
 
 impl ParseSeparatedList for ValueAtRulePropertyList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_VALUE_AT_RULE_PROPERTY_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -247,6 +258,7 @@ fn parse_value_at_rule_generic_property(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     parse_regular_identifier(p).ok();
 
     p.expect(T![:]);
@@ -264,6 +276,7 @@ fn parse_value_at_rule_generic_property(p: &mut CssParser) -> ParsedSyntax {
         {
             p.bump_any();
         }
+
         m.complete(p, CSS_VALUE_AT_RULE_GENERIC_VALUE);
     }
 
@@ -275,7 +288,9 @@ struct ValueAtRulePropertyListParseRecovery;
 
 impl ParseRecovery for ValueAtRulePropertyListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_PROPERTY;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {

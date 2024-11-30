@@ -11,6 +11,7 @@ impl AfterCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<After<GritQueryContext>, CompileError> {
         let pattern = PatternCompiler::from_node(&node.pattern()?, context)?;
+
         Ok(After::new(pattern))
     }
 }

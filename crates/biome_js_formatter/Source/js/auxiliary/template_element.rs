@@ -30,6 +30,7 @@ impl FormatRuleWithOptions<JsTemplateElement> for FormatJsTemplateElement {
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.options = options;
+
         self
     }
 }
@@ -81,6 +82,7 @@ impl Format<JsFormatContext> for FormatTemplateElement {
 
                     write!(f, [expression.format().with_options(option)])
                 }
+
                 expression => write!(f, [expression.format()]),
             },
             AnyTemplateElement::TsTemplateElement(template) => {
@@ -116,6 +118,7 @@ impl Format<JsFormatContext> for FormatTemplateElement {
                     None => Ok(()),
                 }
             }
+
             TemplateElementLayout::Fit => {
                 use AnyJsExpression::*;
 
@@ -153,6 +156,7 @@ impl Format<JsFormatContext> for FormatTemplateElement {
                             ))]
                         )
                     }
+
                     Some(element) => f.write_element(element.clone()),
                     None => Ok(()),
                 }
@@ -197,6 +201,7 @@ impl AnyTemplateElement {
             AnyTemplateElement::JsTemplateElement(template) => {
                 template.expression().map(AstNode::into_syntax)
             }
+
             AnyTemplateElement::TsTemplateElement(template) => {
                 template.ty().map(AstNode::into_syntax)
             }
@@ -228,6 +233,7 @@ impl AnyTemplateElement {
                 NodeOrToken::Node(node) => has_new_line_in_node(&node),
             })
         }
+
         has_new_line_in_node(self.syntax())
     }
 }
@@ -243,6 +249,7 @@ where
     Content: Format<JsFormatContext>,
 {
     let level = indention.level(tab_width);
+
     let spaces = indention.align(tab_width);
 
     if level == 0 && spaces == 0 {

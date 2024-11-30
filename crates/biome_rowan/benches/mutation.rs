@@ -10,13 +10,16 @@ use biome_rowan::{
 /// ```
 fn tree_one(a: &str) -> (RawLanguageRoot, String) {
     let mut builder = RawSyntaxTreeBuilder::new();
+
     builder
         .start_node(RawLanguageKind::ROOT)
         .start_node(RawLanguageKind::LITERAL_EXPRESSION)
         .token(RawLanguageKind::STRING_TOKEN, a)
         .finish_node()
         .finish_node();
+
     let root = builder.finish().cast::<RawLanguageRoot>().unwrap();
+
     let s = format!("{:#?}", root.syntax());
     (root, s)
 }
@@ -42,9 +45,11 @@ fn clone_detach(root: &RawLanguageRoot, name: &str) -> LiteralExpression {
 
 fn mutation_replace_node() -> usize {
     let (before, _) = tree_one("a");
+
     let (expected, _) = tree_one("b");
 
     let a = find(&before, "a");
+
     let b = clone_detach(&expected, "b");
 
     let root = before.replace_node(a, b).unwrap();
@@ -54,13 +59,17 @@ fn mutation_replace_node() -> usize {
 
 fn mutation_batch() -> usize {
     let (before, _) = tree_one("a");
+
     let (expected, _) = tree_one("b");
 
     let a = find(&before, "a");
+
     let b = clone_detach(&expected, "b");
 
     let mut batch = before.begin();
+
     batch.replace_node(a, b);
+
     let root = batch.commit();
 
     root.descendants().count()

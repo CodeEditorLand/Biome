@@ -68,17 +68,22 @@ declare_lint_rule! {
 
 impl Rule for NoUselessSwitchCase {
     type Query = Ast<JsDefaultClause>;
+
     type State = JsCaseClause;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let default_clause = ctx.query();
+
         let it = default_clause
             .syntax()
             .siblings(Direction::Prev)
             .filter_map(JsCaseClause::cast)
             .take_while(|case| case.consequent().is_empty());
+
         if default_clause.consequent().is_empty() {
             // The default clause is directly followed by at least a case. e.g.
             //
@@ -114,6 +119,7 @@ impl Rule for NoUselessSwitchCase {
 
     fn diagnostic(ctx: &RuleContext<Self>, useless_case: &Self::State) -> Option<RuleDiagnostic> {
         let default_clause = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -133,18 +139,25 @@ impl Rule for NoUselessSwitchCase {
 
     fn action(ctx: &RuleContext<Self>, useless_case: &Self::State) -> Option<JsRuleAction> {
         let default_clause = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let consequent = useless_case.consequent();
+
         let useless_case = useless_case.clone();
+
         if consequent.len() > 0 {
             let default_clause_colon_token = default_clause.colon_token().ok()?;
+
             let new_default_clause = default_clause
                 .clone()
                 .with_consequent(consequent)
                 .with_colon_token(default_clause_colon_token.append_trivia_pieces(
                     useless_case.colon_token().ok()?.trailing_trivia().pieces(),
                 ));
+
             mutation.remove_node(default_clause.clone());
+
             mutation.replace_node(
                 AnyJsSwitchClause::from(useless_case),
                 new_default_clause.into(),
@@ -152,6 +165,7 @@ impl Rule for NoUselessSwitchCase {
         } else {
             mutation.remove_node(useless_case);
         }
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

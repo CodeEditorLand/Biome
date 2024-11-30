@@ -70,6 +70,7 @@ macro_rules! format_args {
 macro_rules! write {
     ($dst:expr, [$($arg:expr),+ $(,)?]) => {{
         let result = $dst.write_fmt($crate::format_args!($($arg),+));
+
         result
     }}
 }
@@ -101,15 +102,20 @@ macro_rules! write {
 macro_rules! dbg_write {
     ($dst:expr, [$($arg:expr),+ $(,)?]) => {{
         use $crate::BufferExtensions;
+
         let mut count = 0;
+
         let mut inspect = $dst.inspect(|element: &FormatElement| {
             std::eprintln!(
                 "[{}:{}][{}] = {element:#?}",
                 std::file!(), std::line!(), count
             );
+
             count += 1;
         });
+
         let result = inspect.write_fmt($crate::format_args!($($arg),+));
+
         result
     }}
 }
@@ -339,6 +345,7 @@ macro_rules! best_fitting {
 #[cfg(test)]
 mod tests {
     use crate::prelude::*;
+
     use crate::{write, FormatState, SimpleFormatOptions, VecBuffer};
 
     struct TestFormat;
@@ -352,6 +359,7 @@ mod tests {
     #[test]
     fn test_single_element() {
         let mut state = FormatState::new(());
+
         let mut buffer = VecBuffer::new(&mut state);
 
         write![&mut buffer, [TestFormat]].unwrap();
@@ -365,6 +373,7 @@ mod tests {
     #[test]
     fn test_multiple_elements() {
         let mut state = FormatState::new(());
+
         let mut buffer = VecBuffer::new(&mut state);
 
         write![
@@ -388,6 +397,7 @@ mod tests {
     #[test]
     fn best_fitting_variants_print_as_lists() {
         use crate::prelude::*;
+
         use crate::{format, format_args, Formatted};
 
         // The second variant below should be selected when printing at a width of 30

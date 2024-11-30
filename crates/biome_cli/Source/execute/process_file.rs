@@ -196,12 +196,15 @@ pub(crate) fn process_file(ctx: &TraversalOptions, biome_path: &BiomePath) -> Fi
                         UnhandledDiagnostic.with_file_path(biome_path.display().to_string()),
                     ));
                 }
+
                 SupportKind::FeatureNotEnabled | SupportKind::Ignored => {
                     return Ok(FileStatus::Ignored);
                 }
+
                 SupportKind::Protected => {
                     return Ok(FileStatus::Protected(biome_path.display().to_string()));
                 }
+
                 SupportKind::Supported => {}
             };
         }
@@ -222,16 +225,20 @@ pub(crate) fn process_file(ctx: &TraversalOptions, biome_path: &BiomePath) -> Fi
                     suppression_reason.as_deref(),
                 )
             }
+
             TraversalMode::Format { .. } => {
                 // the unsupported case should be handled already at this point
                 format(shared_context, biome_path)
             }
+
             TraversalMode::Check { .. } | TraversalMode::CI { .. } => {
                 check_file(shared_context, biome_path, &file_features)
             }
+
             TraversalMode::Migrate { .. } => {
                 unreachable!("The migration should not be called for this file")
             }
+
             TraversalMode::Search { ref pattern, .. } => {
                 // the unsupported case should be handled already at this point
                 search(shared_context, biome_path, pattern)

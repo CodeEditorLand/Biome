@@ -64,9 +64,11 @@ impl<'source> HtmlTokenSource<'source> {
         let lexer = HtmlLexer::from_str(source);
 
         let buffered = BufferedLexer::new(lexer);
+
         let mut source = Self::new(buffered);
 
         source.next_non_trivia_token(HtmlLexContext::Regular, true);
+
         source
     }
 
@@ -91,6 +93,7 @@ impl<'source> HtmlTokenSource<'source> {
                     // Not trivia
                     break;
                 }
+
                 Ok(trivia_kind) => {
                     if trivia_kind.is_newline() {
                         trailing = false;
@@ -138,6 +141,7 @@ impl<'src> TokenSource for HtmlTokenSource<'src> {
 
 impl<'source> BumpWithContext for HtmlTokenSource<'source> {
     type Context = HtmlLexContext;
+
     fn bump_with_context(&mut self, context: Self::Context) {
         if self.current() != EOF {
             self.next_non_trivia_token(context, false);

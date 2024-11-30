@@ -58,8 +58,11 @@ declare_lint_rule! {
 
 impl Rule for NoNamespace {
     type Query = Ast<TsModuleDeclaration>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(_: &RuleContext<Self>) -> Self::Signals {

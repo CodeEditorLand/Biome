@@ -68,6 +68,7 @@ pub(crate) fn parse_font_feature_values_at_rule(p: &mut CssParser) -> ParsedSynt
     p.bump(T![font_feature_values]);
 
     CssFontFamilyNameList.parse_list(p);
+
     FontFeatureValuesBlock.parse_block_body(p);
 
     Present(m.complete(p, CSS_FONT_FEATURE_VALUES_AT_RULE))
@@ -77,7 +78,9 @@ struct CssFontFamilyNameList;
 
 impl ParseSeparatedList for CssFontFamilyNameList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_FONT_FAMILY_NAME_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -109,7 +112,9 @@ struct CssFontFamilyNameListParseRecovery;
 
 impl ParseRecovery for CssFontFamilyNameListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_FONT_FAMILY_NAME;
     /// Determines if the parser has reached a point where it can recover from an error
     /// while parsing a font family name list.
@@ -164,7 +169,9 @@ pub(crate) fn parse_font_family_name(p: &mut CssParser) -> ParsedSyntax {
         parse_string(p)
     } else {
         let m = p.start();
+
         CssCustomIdentifierList.parse_list(p);
+
         Present(m.complete(p, CSS_FONT_FAMILY_NAME))
     }
 }
@@ -173,7 +180,9 @@ struct CssCustomIdentifierList;
 
 impl ParseNodeList for CssCustomIdentifierList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_CUSTOM_IDENTIFIER_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -201,7 +210,9 @@ struct CssCustomIdentifierListParseRecovery;
 
 impl ParseRecovery for CssCustomIdentifierListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_CUSTOM_IDENTIFIER;
     /// Determines if the parser has reached a point where it can recover from an error
     /// while parsing a custom identifier list.
@@ -244,7 +255,9 @@ struct FontFeatureValuesItemList;
 
 impl ParseNodeList for FontFeatureValuesItemList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_FONT_FEATURE_VALUES_ITEM_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -296,6 +309,7 @@ fn parse_font_feature_values_item(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![@]);
 
     if !p.eat_ts(FONT_FEATURE_VALUES_ITEM_SET) {

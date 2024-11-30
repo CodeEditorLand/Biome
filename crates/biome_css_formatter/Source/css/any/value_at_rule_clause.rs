@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssValueAtRuleClause;
 pub(crate) struct FormatAnyCssValueAtRuleClause;
 impl FormatRule<AnyCssValueAtRuleClause> for FormatAnyCssValueAtRuleClause {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssValueAtRuleClause, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssValueAtRuleClause::CssValueAtRuleDeclarationClause(node) => node.format().fmt(f),

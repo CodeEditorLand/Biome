@@ -90,6 +90,7 @@ impl MemoryFileSystem {
     /// Create or update a file in the filesystem
     pub fn insert(&mut self, path: PathBuf, content: impl Into<Vec<u8>>) {
         let files = self.files.0.get_mut();
+
         files.insert(path, Arc::new(Mutex::new(content.into())));
     }
 
@@ -105,6 +106,7 @@ impl MemoryFileSystem {
 
     pub fn files(self) -> IntoIter<PathBuf, FileEntry> {
         let files = self.files.0.into_inner();
+
         files.into_iter()
     }
 
@@ -137,18 +139,23 @@ impl FileSystem for MemoryFileSystem {
         let mut inner = if options.create || options.create_new {
             // Acquire write access to the files map if the file may need to be created
             let mut files = self.files.0.write();
+
             match files.entry(PathBuf::from(path)) {
                 Entry::Vacant(entry) => {
                     // we create an empty file
                     let file: FileEntry = Arc::new(Mutex::new(vec![]));
+
                     let entry = entry.insert(file);
+
                     entry.lock_arc()
                 }
+
                 Entry::Occupied(entry) => {
                     if options.create {
                         // If `create` is true, truncate the file
                         let entry = entry.into_mut();
                         *entry = Arc::new(Mutex::new(vec![]));
+
                         entry.lock_arc()
                     } else {
                         // This branch can only be reached if `create_new` was true,
@@ -162,6 +169,7 @@ impl FileSystem for MemoryFileSystem {
             }
         } else {
             let files = self.files.0.read();
+
             let entry = files.get(path).ok_or_else(|| {
                 io::Error::new(
                     io::ErrorKind::NotFound,
@@ -184,6 +192,7 @@ impl FileSystem for MemoryFileSystem {
             version: 0,
         }))
     }
+
     fn traversal<'scope>(&'scope self, func: BoxedTraversal<'_, 'scope>) {
         func(&MemoryTraversalScope { fs: self })
     }
@@ -198,6 +207,7 @@ impl FileSystem for MemoryFileSystem {
 
     fn path_is_file(&self, path: &Path) -> bool {
         let files = self.files.0.read();
+
         files.get(path).is_some()
     }
 
@@ -259,6 +269,7 @@ impl File for MemoryFile {
             .map_err(|err| io::Error::new(io::ErrorKind::InvalidData, err))?;
         // Append the content of the file to the buffer
         buffer.push_str(content);
+
         Ok(())
     }
 
@@ -276,6 +287,7 @@ impl File for MemoryFile {
         self.inner.copy_from_slice(content);
         // we increase its version
         self.version += 1;
+
         Ok(())
     }
 
@@ -294,11 +306,14 @@ impl<'scope> TraversalScope<'scope> for MemoryTraversalScope<'scope> {
         // those that are prefixed with the provided `base` path
         {
             let files = &self.fs.files.0.read();
+
             for path in files.keys() {
                 let should_process_file = if base.starts_with(".") || base.starts_with("./") {
                     // we simulate absolute paths, so we can correctly strips out the base path from the path
                     let absolute_base = PathBuf::from("/").join(&base);
+
                     let absolute_path = Path::new("/").join(path);
+
                     absolute_path.strip_prefix(&absolute_base).is_ok()
                 } else {
                     path.strip_prefix(&base).is_ok()
@@ -306,10 +321,13 @@ impl<'scope> TraversalScope<'scope> for MemoryTraversalScope<'scope> {
 
                 if should_process_file {
                     let _ = ctx.interner().intern_path(path.into());
+
                     let biome_path = BiomePath::new(path);
+
                     if !ctx.can_handle(&biome_path) {
                         continue;
                     }
+
                     ctx.store_path(biome_path);
                 }
             }
@@ -324,6 +342,7 @@ impl<'scope> TraversalScope<'scope> for MemoryTraversalScope<'scope> {
                         ErrorEntry::DereferencedSymlink(path) => {
                             ErrorKind::DereferencedSymlink(path.to_string_lossy().to_string())
                         }
+
                         ErrorEntry::DeeplyNestedSymlinkExpansion(path) => {
                             ErrorKind::DeeplyNestedSymlinkExpansion(
                                 path.to_string_lossy().to_string(),
@@ -344,6 +363,7 @@ impl<'scope> TraversalScope<'scope> for MemoryTraversalScope<'scope> {
 #[cfg(test)]
 mod tests {
     use std::collections::BTreeSet;
+
     use std::{
         io,
         mem::swap,
@@ -351,9 +371,11 @@ mod tests {
     };
 
     use biome_diagnostics::Error;
+
     use parking_lot::Mutex;
 
     use crate::{fs::FileSystemExt, OpenOptions};
+
     use crate::{BiomePath, FileSystem, MemoryFileSystem, PathInterner, TraversalContext};
 
     #[test]
@@ -361,6 +383,7 @@ mod tests {
         let mut fs = MemoryFileSystem::new_read_only();
 
         let path = Path::new("file.js");
+
         fs.insert(path.into(), *b"content");
 
         assert!(fs.open(path).is_ok());
@@ -392,7 +415,9 @@ mod tests {
         let mut fs = MemoryFileSystem::default();
 
         let path = Path::new("file.js");
+
         let content_1 = "content 1";
+
         let content_2 = "content 2";
 
         fs.insert(path.into(), content_1.as_bytes());
@@ -402,6 +427,7 @@ mod tests {
             .expect("the file should exist in the memory file system");
 
         let mut buffer = String::new();
+
         file.read_to_string(&mut buffer)
             .expect("the file should be read without error");
 
@@ -411,6 +437,7 @@ mod tests {
             .expect("the file should be written without error");
 
         let mut buffer = String::new();
+
         file.read_to_string(&mut buffer)
             .expect("the file should be read without error");
 
@@ -422,6 +449,7 @@ mod tests {
         let fs = MemoryFileSystem::default();
 
         let path = Path::new("file.js");
+
         let mut file = fs.create(path).expect("the file should not fail to open");
 
         file.set_content(b"content".as_slice())
@@ -433,6 +461,7 @@ mod tests {
         let mut fs = MemoryFileSystem::default();
 
         let path = Path::new("file.js");
+
         fs.insert(path.into(), b"content".as_slice());
 
         let file = fs.create(path).expect("the file should not fail to create");
@@ -442,6 +471,7 @@ mod tests {
         let mut file = fs.open(path).expect("the file should not fail to open");
 
         let mut buffer = String::new();
+
         file.read_to_string(&mut buffer)
             .expect("the file should be read without error");
 
@@ -456,6 +486,7 @@ mod tests {
         let fs = MemoryFileSystem::default();
 
         let path = Path::new("file.js");
+
         let content = "content";
 
         let mut file = fs
@@ -470,6 +501,7 @@ mod tests {
         let mut file = fs.open(path).expect("the file should not fail to open");
 
         let mut buffer = String::new();
+
         file.read_to_string(&mut buffer)
             .expect("the file should be read without error");
 
@@ -481,6 +513,7 @@ mod tests {
         let mut fs = MemoryFileSystem::default();
 
         let path = Path::new("file.js");
+
         fs.insert(path.into(), b"content".as_slice());
 
         let result = fs.create_new(path);
@@ -512,8 +545,11 @@ mod tests {
         let mut fs = MemoryFileSystem::default();
 
         fs.insert(PathBuf::from("dir1/file1"), "dir1/file1".as_bytes());
+
         fs.insert(PathBuf::from("dir1/file2"), "dir1/file1".as_bytes());
+
         fs.insert(PathBuf::from("dir2/file1"), "dir2/file1".as_bytes());
+
         fs.insert(PathBuf::from("dir2/file2"), "dir2/file1".as_bytes());
 
         struct TestContext {
@@ -544,11 +580,13 @@ mod tests {
 
             fn evaluated_paths(&self) -> BTreeSet<BiomePath> {
                 let lock = self.visited.lock();
+
                 lock.clone()
             }
         }
 
         let (interner, _) = PathInterner::new();
+
         let mut ctx = TestContext {
             interner,
             visited: Mutex::default(),
@@ -560,10 +598,13 @@ mod tests {
         }));
 
         let mut visited = BTreeSet::default();
+
         swap(&mut visited, ctx.visited.get_mut());
 
         assert_eq!(visited.len(), 2);
+
         assert!(visited.contains(&BiomePath::new("dir1/file1")));
+
         assert!(visited.contains(&BiomePath::new("dir1/file2")));
 
         // Traverse a single file
@@ -572,9 +613,11 @@ mod tests {
         }));
 
         let mut visited = BTreeSet::default();
+
         swap(&mut visited, ctx.visited.get_mut());
 
         assert_eq!(visited.len(), 1);
+
         assert!(visited.contains(&BiomePath::new("dir2/file2")));
     }
 }

@@ -11,6 +11,7 @@ impl BeforeCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Before<GritQueryContext>, CompileError> {
         let pattern = PatternCompiler::from_node(&node.pattern()?, context)?;
+
         Ok(Before::new(pattern))
     }
 }

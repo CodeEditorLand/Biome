@@ -30,6 +30,7 @@ where
         } else {
             markup!(<Dim>"unset"</Dim>).fmt(fmt)?;
         }
+
         Ok(())
     }
 }
@@ -89,6 +90,7 @@ impl Display for Padding {
         for _ in 0..self.width {
             fmt.write_str(" ")?;
         }
+
         Ok(())
     }
 }
@@ -99,6 +101,7 @@ pub struct KeyValuePair<'a>(pub &'a str, pub Markup<'a>);
 impl Display for KeyValuePair<'_> {
     fn fmt(&self, fmt: &mut Formatter) -> io::Result<()> {
         let KeyValuePair(key, value) = self;
+
         write!(fmt, "  {key}:")?;
 
         let padding_width = 30usize.saturating_sub(key.len() + 1);

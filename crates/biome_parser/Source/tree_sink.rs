@@ -57,6 +57,7 @@ where
 
     fn start_node(&mut self, kind: L::Kind) {
         self.inner.start_node(kind);
+
         self.parents_count += 1;
     }
 
@@ -128,6 +129,7 @@ where
 
         // Every trivia up to the token (including line breaks) will be the leading trivia
         self.eat_trivia(false);
+
         let trailing_start = self.trivia_pieces.len();
 
         self.text_pos = token_end;
@@ -139,10 +141,13 @@ where
         let token_range = TextRange::new(token_start, self.text_pos);
 
         let text = &self.text[token_range];
+
         let leading = &self.trivia_pieces[0..trailing_start];
+
         let trailing = &self.trivia_pieces[trailing_start..];
 
         self.inner.token_with_trivia(kind, text, leading, trailing);
+
         self.trivia_pieces.clear();
     }
 
@@ -153,9 +158,11 @@ where
             }
 
             let trivia_piece = TriviaPiece::new(trivia.kind(), trivia.len());
+
             self.trivia_pieces.push(trivia_piece);
 
             self.text_pos += trivia.len();
+
             self.trivia_pos += 1;
         }
     }

@@ -23,6 +23,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritAddOperation {
         biome_grit_syntax::GritAddOperation,
         crate::grit::patterns::add_operation::FormatGritAddOperation,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -36,6 +37,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritAddOperation {
         biome_grit_syntax::GritAddOperation,
         crate::grit::patterns::add_operation::FormatGritAddOperation,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -63,6 +65,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritAnnotation {
         biome_grit_syntax::GritAnnotation,
         crate::grit::auxiliary::annotation::FormatGritAnnotation,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -76,6 +79,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritAnnotation {
         biome_grit_syntax::GritAnnotation,
         crate::grit::auxiliary::annotation::FormatGritAnnotation,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -103,6 +107,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritAssignmentAsPattern 
         biome_grit_syntax::GritAssignmentAsPattern,
         crate::grit::patterns::assignment_as_pattern::FormatGritAssignmentAsPattern,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -116,6 +121,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritAssignmentAsPatter
         biome_grit_syntax::GritAssignmentAsPattern,
         crate::grit::patterns::assignment_as_pattern::FormatGritAssignmentAsPattern,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -143,6 +149,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBacktickSnippetLiter
         biome_grit_syntax::GritBacktickSnippetLiteral,
         crate::grit::value::backtick_snippet_literal::FormatGritBacktickSnippetLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -157,6 +164,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBacktickSnippetLit
         biome_grit_syntax::GritBacktickSnippetLiteral,
         crate::grit::value::backtick_snippet_literal::FormatGritBacktickSnippetLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -185,6 +193,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBooleanLiteral {
         biome_grit_syntax::GritBooleanLiteral,
         crate::grit::value::boolean_literal::FormatGritBooleanLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -198,6 +207,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBooleanLiteral {
         biome_grit_syntax::GritBooleanLiteral,
         crate::grit::value::boolean_literal::FormatGritBooleanLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -225,6 +235,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBracketedPattern {
         biome_grit_syntax::GritBracketedPattern,
         crate::grit::patterns::bracketed_pattern::FormatGritBracketedPattern,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -238,6 +249,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBracketedPattern {
         biome_grit_syntax::GritBracketedPattern,
         crate::grit::patterns::bracketed_pattern::FormatGritBracketedPattern,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -265,6 +277,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBracketedPredicate {
         biome_grit_syntax::GritBracketedPredicate,
         crate::grit::predicates::bracketed_predicate::FormatGritBracketedPredicate,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -278,6 +291,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBracketedPredicate
         biome_grit_syntax::GritBracketedPredicate,
         crate::grit::predicates::bracketed_predicate::FormatGritBracketedPredicate,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -301,6 +315,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBubble {
         biome_grit_syntax::GritBubble,
         crate::grit::auxiliary::bubble::FormatGritBubble,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -314,6 +329,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBubble {
         biome_grit_syntax::GritBubble,
         crate::grit::auxiliary::bubble::FormatGritBubble,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -341,6 +357,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBubbleScope {
         biome_grit_syntax::GritBubbleScope,
         crate::grit::auxiliary::bubble_scope::FormatGritBubbleScope,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -354,6 +371,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBubbleScope {
         biome_grit_syntax::GritBubbleScope,
         crate::grit::auxiliary::bubble_scope::FormatGritBubbleScope,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -381,6 +399,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritCodeSnippet {
         biome_grit_syntax::GritCodeSnippet,
         crate::grit::value::code_snippet::FormatGritCodeSnippet,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -394,6 +413,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritCodeSnippet {
         biome_grit_syntax::GritCodeSnippet,
         crate::grit::value::code_snippet::FormatGritCodeSnippet,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -421,6 +441,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritCurlyPattern {
         biome_grit_syntax::GritCurlyPattern,
         crate::grit::patterns::curly_pattern::FormatGritCurlyPattern,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -434,6 +455,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritCurlyPattern {
         biome_grit_syntax::GritCurlyPattern,
         crate::grit::patterns::curly_pattern::FormatGritCurlyPattern,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -461,6 +483,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritDivOperation {
         biome_grit_syntax::GritDivOperation,
         crate::grit::patterns::div_operation::FormatGritDivOperation,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -474,6 +497,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritDivOperation {
         biome_grit_syntax::GritDivOperation,
         crate::grit::patterns::div_operation::FormatGritDivOperation,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -495,6 +519,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritDot {
         biome_grit_syntax::GritDot,
         crate::grit::auxiliary::dot::FormatGritDot,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(self, crate::grit::auxiliary::dot::FormatGritDot::default())
@@ -503,6 +528,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritDot {
 impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritDot {
     type Format =
         FormatOwnedWithRule<biome_grit_syntax::GritDot, crate::grit::auxiliary::dot::FormatGritDot>;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(self, crate::grit::auxiliary::dot::FormatGritDot::default())
@@ -527,6 +553,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritDotdotdot {
         biome_grit_syntax::GritDotdotdot,
         crate::grit::auxiliary::dotdotdot::FormatGritDotdotdot,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -540,6 +567,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritDotdotdot {
         biome_grit_syntax::GritDotdotdot,
         crate::grit::auxiliary::dotdotdot::FormatGritDotdotdot,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -567,6 +595,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritDoubleLiteral {
         biome_grit_syntax::GritDoubleLiteral,
         crate::grit::value::double_literal::FormatGritDoubleLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -580,6 +609,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritDoubleLiteral {
         biome_grit_syntax::GritDoubleLiteral,
         crate::grit::value::double_literal::FormatGritDoubleLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -601,6 +631,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritEvery {
         biome_grit_syntax::GritEvery,
         crate::grit::auxiliary::every::FormatGritEvery,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -614,6 +645,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritEvery {
         biome_grit_syntax::GritEvery,
         crate::grit::auxiliary::every::FormatGritEvery,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -635,6 +667,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritFiles {
         biome_grit_syntax::GritFiles,
         crate::grit::auxiliary::files::FormatGritFiles,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -648,6 +681,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritFiles {
         biome_grit_syntax::GritFiles,
         crate::grit::auxiliary::files::FormatGritFiles,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -675,6 +709,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritFunctionDefinition {
         biome_grit_syntax::GritFunctionDefinition,
         crate::grit::declarations::function_definition::FormatGritFunctionDefinition,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -688,6 +723,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritFunctionDefinition
         biome_grit_syntax::GritFunctionDefinition,
         crate::grit::declarations::function_definition::FormatGritFunctionDefinition,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -715,6 +751,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritIntLiteral {
         biome_grit_syntax::GritIntLiteral,
         crate::grit::value::int_literal::FormatGritIntLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -728,6 +765,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritIntLiteral {
         biome_grit_syntax::GritIntLiteral,
         crate::grit::value::int_literal::FormatGritIntLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -755,6 +793,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritLanguageDeclaration 
         biome_grit_syntax::GritLanguageDeclaration,
         crate::grit::auxiliary::language_declaration::FormatGritLanguageDeclaration,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -768,6 +807,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritLanguageDeclaratio
         biome_grit_syntax::GritLanguageDeclaration,
         crate::grit::auxiliary::language_declaration::FormatGritLanguageDeclaration,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -795,6 +835,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritLanguageFlavor {
         biome_grit_syntax::GritLanguageFlavor,
         crate::grit::auxiliary::language_flavor::FormatGritLanguageFlavor,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -808,6 +849,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritLanguageFlavor {
         biome_grit_syntax::GritLanguageFlavor,
         crate::grit::auxiliary::language_flavor::FormatGritLanguageFlavor,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -835,6 +877,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritLanguageFlavorKind {
         biome_grit_syntax::GritLanguageFlavorKind,
         crate::grit::auxiliary::language_flavor_kind::FormatGritLanguageFlavorKind,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -848,6 +891,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritLanguageFlavorKind
         biome_grit_syntax::GritLanguageFlavorKind,
         crate::grit::auxiliary::language_flavor_kind::FormatGritLanguageFlavorKind,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -875,6 +919,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritLanguageName {
         biome_grit_syntax::GritLanguageName,
         crate::grit::auxiliary::language_name::FormatGritLanguageName,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -888,6 +933,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritLanguageName {
         biome_grit_syntax::GritLanguageName,
         crate::grit::auxiliary::language_name::FormatGritLanguageName,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -915,6 +961,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritLanguageSpecificSnip
         biome_grit_syntax::GritLanguageSpecificSnippet,
         crate::grit::auxiliary::language_specific_snippet::FormatGritLanguageSpecificSnippet,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule :: new (self , crate :: grit :: auxiliary :: language_specific_snippet :: FormatGritLanguageSpecificSnippet :: default ())
@@ -925,6 +972,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritLanguageSpecificSn
         biome_grit_syntax::GritLanguageSpecificSnippet,
         crate::grit::auxiliary::language_specific_snippet::FormatGritLanguageSpecificSnippet,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule :: new (self , crate :: grit :: auxiliary :: language_specific_snippet :: FormatGritLanguageSpecificSnippet :: default ())
@@ -943,6 +991,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritLike {
         biome_grit_syntax::GritLike,
         crate::grit::auxiliary::like::FormatGritLike,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -956,6 +1005,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritLike {
         biome_grit_syntax::GritLike,
         crate::grit::auxiliary::like::FormatGritLike,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -983,6 +1033,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritLikeThreshold {
         biome_grit_syntax::GritLikeThreshold,
         crate::grit::auxiliary::like_threshold::FormatGritLikeThreshold,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -996,6 +1047,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritLikeThreshold {
         biome_grit_syntax::GritLikeThreshold,
         crate::grit::auxiliary::like_threshold::FormatGritLikeThreshold,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1017,6 +1069,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritList {
         biome_grit_syntax::GritList,
         crate::grit::auxiliary::list::FormatGritList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1030,6 +1083,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritList {
         biome_grit_syntax::GritList,
         crate::grit::auxiliary::list::FormatGritList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1057,6 +1111,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritListAccessor {
         biome_grit_syntax::GritListAccessor,
         crate::grit::auxiliary::list_accessor::FormatGritListAccessor,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1070,6 +1125,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritListAccessor {
         biome_grit_syntax::GritListAccessor,
         crate::grit::auxiliary::list_accessor::FormatGritListAccessor,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1091,6 +1147,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritMap {
         biome_grit_syntax::GritMap,
         crate::grit::auxiliary::map::FormatGritMap,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(self, crate::grit::auxiliary::map::FormatGritMap::default())
@@ -1099,6 +1156,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritMap {
 impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritMap {
     type Format =
         FormatOwnedWithRule<biome_grit_syntax::GritMap, crate::grit::auxiliary::map::FormatGritMap>;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(self, crate::grit::auxiliary::map::FormatGritMap::default())
@@ -1123,6 +1181,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritMapAccessor {
         biome_grit_syntax::GritMapAccessor,
         crate::grit::auxiliary::map_accessor::FormatGritMapAccessor,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1136,6 +1195,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritMapAccessor {
         biome_grit_syntax::GritMapAccessor,
         crate::grit::auxiliary::map_accessor::FormatGritMapAccessor,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1163,6 +1223,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritMapElement {
         biome_grit_syntax::GritMapElement,
         crate::grit::auxiliary::map_element::FormatGritMapElement,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1176,6 +1237,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritMapElement {
         biome_grit_syntax::GritMapElement,
         crate::grit::auxiliary::map_element::FormatGritMapElement,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1203,6 +1265,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritModOperation {
         biome_grit_syntax::GritModOperation,
         crate::grit::patterns::mod_operation::FormatGritModOperation,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1216,6 +1279,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritModOperation {
         biome_grit_syntax::GritModOperation,
         crate::grit::patterns::mod_operation::FormatGritModOperation,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1243,6 +1307,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritMulOperation {
         biome_grit_syntax::GritMulOperation,
         crate::grit::patterns::mul_operation::FormatGritMulOperation,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1256,6 +1321,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritMulOperation {
         biome_grit_syntax::GritMulOperation,
         crate::grit::patterns::mul_operation::FormatGritMulOperation,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1277,6 +1343,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritName {
         biome_grit_syntax::GritName,
         crate::grit::auxiliary::name::FormatGritName,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1290,6 +1357,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritName {
         biome_grit_syntax::GritName,
         crate::grit::auxiliary::name::FormatGritName,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1317,6 +1385,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritNamedArg {
         biome_grit_syntax::GritNamedArg,
         crate::grit::auxiliary::named_arg::FormatGritNamedArg,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1330,6 +1399,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritNamedArg {
         biome_grit_syntax::GritNamedArg,
         crate::grit::auxiliary::named_arg::FormatGritNamedArg,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1357,6 +1427,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritNegativeIntLiteral {
         biome_grit_syntax::GritNegativeIntLiteral,
         crate::grit::value::negative_int_literal::FormatGritNegativeIntLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1370,6 +1441,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritNegativeIntLiteral
         biome_grit_syntax::GritNegativeIntLiteral,
         crate::grit::value::negative_int_literal::FormatGritNegativeIntLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1397,6 +1469,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritNodeLike {
         biome_grit_syntax::GritNodeLike,
         crate::grit::auxiliary::node_like::FormatGritNodeLike,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1410,6 +1483,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritNodeLike {
         biome_grit_syntax::GritNodeLike,
         crate::grit::auxiliary::node_like::FormatGritNodeLike,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1431,6 +1505,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritNot {
         biome_grit_syntax::GritNot,
         crate::grit::auxiliary::not::FormatGritNot,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(self, crate::grit::auxiliary::not::FormatGritNot::default())
@@ -1439,6 +1514,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritNot {
 impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritNot {
     type Format =
         FormatOwnedWithRule<biome_grit_syntax::GritNot, crate::grit::auxiliary::not::FormatGritNot>;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(self, crate::grit::auxiliary::not::FormatGritNot::default())
@@ -1463,6 +1539,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternAccumulate {
         biome_grit_syntax::GritPatternAccumulate,
         crate::grit::patterns::pattern_accumulate::FormatGritPatternAccumulate,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1476,6 +1553,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternAccumulate 
         biome_grit_syntax::GritPatternAccumulate,
         crate::grit::patterns::pattern_accumulate::FormatGritPatternAccumulate,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1503,6 +1581,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternAfter {
         biome_grit_syntax::GritPatternAfter,
         crate::grit::patterns::pattern_after::FormatGritPatternAfter,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1516,6 +1595,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternAfter {
         biome_grit_syntax::GritPatternAfter,
         crate::grit::patterns::pattern_after::FormatGritPatternAfter,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1543,6 +1623,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternAnd {
         biome_grit_syntax::GritPatternAnd,
         crate::grit::patterns::pattern_and::FormatGritPatternAnd,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1556,6 +1637,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternAnd {
         biome_grit_syntax::GritPatternAnd,
         crate::grit::patterns::pattern_and::FormatGritPatternAnd,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1583,6 +1665,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternAny {
         biome_grit_syntax::GritPatternAny,
         crate::grit::patterns::pattern_any::FormatGritPatternAny,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1596,6 +1679,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternAny {
         biome_grit_syntax::GritPatternAny,
         crate::grit::patterns::pattern_any::FormatGritPatternAny,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1623,6 +1707,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternAs {
         biome_grit_syntax::GritPatternAs,
         crate::grit::patterns::pattern_as::FormatGritPatternAs,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1636,6 +1721,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternAs {
         biome_grit_syntax::GritPatternAs,
         crate::grit::patterns::pattern_as::FormatGritPatternAs,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1663,6 +1749,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternBefore {
         biome_grit_syntax::GritPatternBefore,
         crate::grit::patterns::pattern_before::FormatGritPatternBefore,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1676,6 +1763,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternBefore {
         biome_grit_syntax::GritPatternBefore,
         crate::grit::patterns::pattern_before::FormatGritPatternBefore,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1703,6 +1791,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternContains {
         biome_grit_syntax::GritPatternContains,
         crate::grit::patterns::pattern_contains::FormatGritPatternContains,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1716,6 +1805,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternContains {
         biome_grit_syntax::GritPatternContains,
         crate::grit::patterns::pattern_contains::FormatGritPatternContains,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1743,6 +1833,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternContainsUntil
         biome_grit_syntax::GritPatternContainsUntilClause,
         crate::grit::patterns::pattern_contains_until_clause::FormatGritPatternContainsUntilClause,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule :: new (self , crate :: grit :: patterns :: pattern_contains_until_clause :: FormatGritPatternContainsUntilClause :: default ())
@@ -1753,6 +1844,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternContainsUnt
         biome_grit_syntax::GritPatternContainsUntilClause,
         crate::grit::patterns::pattern_contains_until_clause::FormatGritPatternContainsUntilClause,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule :: new (self , crate :: grit :: patterns :: pattern_contains_until_clause :: FormatGritPatternContainsUntilClause :: default ())
@@ -1777,6 +1869,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternDefinition {
         biome_grit_syntax::GritPatternDefinition,
         crate::grit::patterns::pattern_definition::FormatGritPatternDefinition,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1790,6 +1883,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternDefinition 
         biome_grit_syntax::GritPatternDefinition,
         crate::grit::patterns::pattern_definition::FormatGritPatternDefinition,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1817,6 +1911,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternDefinitionBod
         biome_grit_syntax::GritPatternDefinitionBody,
         crate::grit::patterns::pattern_definition_body::FormatGritPatternDefinitionBody,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule :: new (self , crate :: grit :: patterns :: pattern_definition_body :: FormatGritPatternDefinitionBody :: default ())
@@ -1827,6 +1922,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternDefinitionB
         biome_grit_syntax::GritPatternDefinitionBody,
         crate::grit::patterns::pattern_definition_body::FormatGritPatternDefinitionBody,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule :: new (self , crate :: grit :: patterns :: pattern_definition_body :: FormatGritPatternDefinitionBody :: default ())
@@ -1851,6 +1947,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternElseClause {
         biome_grit_syntax::GritPatternElseClause,
         crate::grit::patterns::pattern_else_clause::FormatGritPatternElseClause,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1864,6 +1961,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternElseClause 
         biome_grit_syntax::GritPatternElseClause,
         crate::grit::patterns::pattern_else_clause::FormatGritPatternElseClause,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1891,6 +1989,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternIfElse {
         biome_grit_syntax::GritPatternIfElse,
         crate::grit::patterns::pattern_if_else::FormatGritPatternIfElse,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1904,6 +2003,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternIfElse {
         biome_grit_syntax::GritPatternIfElse,
         crate::grit::patterns::pattern_if_else::FormatGritPatternIfElse,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1931,6 +2031,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternIncludes {
         biome_grit_syntax::GritPatternIncludes,
         crate::grit::patterns::pattern_includes::FormatGritPatternIncludes,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1944,6 +2045,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternIncludes {
         biome_grit_syntax::GritPatternIncludes,
         crate::grit::patterns::pattern_includes::FormatGritPatternIncludes,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -1971,6 +2073,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternLimit {
         biome_grit_syntax::GritPatternLimit,
         crate::grit::patterns::pattern_limit::FormatGritPatternLimit,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -1984,6 +2087,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternLimit {
         biome_grit_syntax::GritPatternLimit,
         crate::grit::patterns::pattern_limit::FormatGritPatternLimit,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2011,6 +2115,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternMaybe {
         biome_grit_syntax::GritPatternMaybe,
         crate::grit::patterns::pattern_maybe::FormatGritPatternMaybe,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2024,6 +2129,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternMaybe {
         biome_grit_syntax::GritPatternMaybe,
         crate::grit::patterns::pattern_maybe::FormatGritPatternMaybe,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2051,6 +2157,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternNot {
         biome_grit_syntax::GritPatternNot,
         crate::grit::patterns::pattern_not::FormatGritPatternNot,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2064,6 +2171,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternNot {
         biome_grit_syntax::GritPatternNot,
         crate::grit::patterns::pattern_not::FormatGritPatternNot,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2091,6 +2199,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternOr {
         biome_grit_syntax::GritPatternOr,
         crate::grit::patterns::pattern_or::FormatGritPatternOr,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2104,6 +2213,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternOr {
         biome_grit_syntax::GritPatternOr,
         crate::grit::patterns::pattern_or::FormatGritPatternOr,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2131,6 +2241,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternOrElse {
         biome_grit_syntax::GritPatternOrElse,
         crate::grit::patterns::pattern_or_else::FormatGritPatternOrElse,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2144,6 +2255,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternOrElse {
         biome_grit_syntax::GritPatternOrElse,
         crate::grit::patterns::pattern_or_else::FormatGritPatternOrElse,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2171,6 +2283,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternWhere {
         biome_grit_syntax::GritPatternWhere,
         crate::grit::patterns::pattern_where::FormatGritPatternWhere,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2184,6 +2297,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternWhere {
         biome_grit_syntax::GritPatternWhere,
         crate::grit::patterns::pattern_where::FormatGritPatternWhere,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2211,6 +2325,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateAccumulate 
         biome_grit_syntax::GritPredicateAccumulate,
         crate::grit::predicates::predicate_accumulate::FormatGritPredicateAccumulate,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2224,6 +2339,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateAccumulat
         biome_grit_syntax::GritPredicateAccumulate,
         crate::grit::predicates::predicate_accumulate::FormatGritPredicateAccumulate,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2251,6 +2367,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateAnd {
         biome_grit_syntax::GritPredicateAnd,
         crate::grit::predicates::predicate_and::FormatGritPredicateAnd,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2264,6 +2381,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateAnd {
         biome_grit_syntax::GritPredicateAnd,
         crate::grit::predicates::predicate_and::FormatGritPredicateAnd,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2291,6 +2409,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateAny {
         biome_grit_syntax::GritPredicateAny,
         crate::grit::predicates::predicate_any::FormatGritPredicateAny,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2304,6 +2423,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateAny {
         biome_grit_syntax::GritPredicateAny,
         crate::grit::predicates::predicate_any::FormatGritPredicateAny,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2331,6 +2451,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateAssignment 
         biome_grit_syntax::GritPredicateAssignment,
         crate::grit::predicates::predicate_assignment::FormatGritPredicateAssignment,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2344,6 +2465,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateAssignmen
         biome_grit_syntax::GritPredicateAssignment,
         crate::grit::predicates::predicate_assignment::FormatGritPredicateAssignment,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2371,6 +2493,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateCall {
         biome_grit_syntax::GritPredicateCall,
         crate::grit::predicates::predicate_call::FormatGritPredicateCall,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2384,6 +2507,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateCall {
         biome_grit_syntax::GritPredicateCall,
         crate::grit::predicates::predicate_call::FormatGritPredicateCall,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2411,6 +2535,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateCurly {
         biome_grit_syntax::GritPredicateCurly,
         crate::grit::predicates::predicate_curly::FormatGritPredicateCurly,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2424,6 +2549,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateCurly {
         biome_grit_syntax::GritPredicateCurly,
         crate::grit::predicates::predicate_curly::FormatGritPredicateCurly,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2451,6 +2577,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateDefinition 
         biome_grit_syntax::GritPredicateDefinition,
         crate::grit::predicates::predicate_definition::FormatGritPredicateDefinition,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2464,6 +2591,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateDefinitio
         biome_grit_syntax::GritPredicateDefinition,
         crate::grit::predicates::predicate_definition::FormatGritPredicateDefinition,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2491,6 +2619,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateElseClause 
         biome_grit_syntax::GritPredicateElseClause,
         crate::grit::predicates::predicate_else_clause::FormatGritPredicateElseClause,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2505,6 +2634,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateElseClaus
         biome_grit_syntax::GritPredicateElseClause,
         crate::grit::predicates::predicate_else_clause::FormatGritPredicateElseClause,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2533,6 +2663,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateEqual {
         biome_grit_syntax::GritPredicateEqual,
         crate::grit::predicates::predicate_equal::FormatGritPredicateEqual,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2546,6 +2677,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateEqual {
         biome_grit_syntax::GritPredicateEqual,
         crate::grit::predicates::predicate_equal::FormatGritPredicateEqual,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2573,6 +2705,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateGreater {
         biome_grit_syntax::GritPredicateGreater,
         crate::grit::predicates::predicate_greater::FormatGritPredicateGreater,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2586,6 +2719,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateGreater {
         biome_grit_syntax::GritPredicateGreater,
         crate::grit::predicates::predicate_greater::FormatGritPredicateGreater,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2613,6 +2747,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateGreaterEqua
         biome_grit_syntax::GritPredicateGreaterEqual,
         crate::grit::predicates::predicate_greater_equal::FormatGritPredicateGreaterEqual,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule :: new (self , crate :: grit :: predicates :: predicate_greater_equal :: FormatGritPredicateGreaterEqual :: default ())
@@ -2623,6 +2758,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateGreaterEq
         biome_grit_syntax::GritPredicateGreaterEqual,
         crate::grit::predicates::predicate_greater_equal::FormatGritPredicateGreaterEqual,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule :: new (self , crate :: grit :: predicates :: predicate_greater_equal :: FormatGritPredicateGreaterEqual :: default ())
@@ -2647,6 +2783,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateIfElse {
         biome_grit_syntax::GritPredicateIfElse,
         crate::grit::predicates::predicate_if_else::FormatGritPredicateIfElse,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2660,6 +2797,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateIfElse {
         biome_grit_syntax::GritPredicateIfElse,
         crate::grit::predicates::predicate_if_else::FormatGritPredicateIfElse,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2687,6 +2825,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateLess {
         biome_grit_syntax::GritPredicateLess,
         crate::grit::predicates::predicate_less::FormatGritPredicateLess,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2700,6 +2839,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateLess {
         biome_grit_syntax::GritPredicateLess,
         crate::grit::predicates::predicate_less::FormatGritPredicateLess,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2727,6 +2867,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateLessEqual {
         biome_grit_syntax::GritPredicateLessEqual,
         crate::grit::predicates::predicate_less_equal::FormatGritPredicateLessEqual,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2740,6 +2881,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateLessEqual
         biome_grit_syntax::GritPredicateLessEqual,
         crate::grit::predicates::predicate_less_equal::FormatGritPredicateLessEqual,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2767,6 +2909,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateMatch {
         biome_grit_syntax::GritPredicateMatch,
         crate::grit::predicates::predicate_match::FormatGritPredicateMatch,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2780,6 +2923,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateMatch {
         biome_grit_syntax::GritPredicateMatch,
         crate::grit::predicates::predicate_match::FormatGritPredicateMatch,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2807,6 +2951,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateMaybe {
         biome_grit_syntax::GritPredicateMaybe,
         crate::grit::predicates::predicate_maybe::FormatGritPredicateMaybe,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2820,6 +2965,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateMaybe {
         biome_grit_syntax::GritPredicateMaybe,
         crate::grit::predicates::predicate_maybe::FormatGritPredicateMaybe,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2847,6 +2993,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateNot {
         biome_grit_syntax::GritPredicateNot,
         crate::grit::predicates::predicate_not::FormatGritPredicateNot,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2860,6 +3007,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateNot {
         biome_grit_syntax::GritPredicateNot,
         crate::grit::predicates::predicate_not::FormatGritPredicateNot,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2887,6 +3035,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateNotEqual {
         biome_grit_syntax::GritPredicateNotEqual,
         crate::grit::predicates::predicate_not_equal::FormatGritPredicateNotEqual,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2900,6 +3049,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateNotEqual 
         biome_grit_syntax::GritPredicateNotEqual,
         crate::grit::predicates::predicate_not_equal::FormatGritPredicateNotEqual,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2927,6 +3077,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateOr {
         biome_grit_syntax::GritPredicateOr,
         crate::grit::predicates::predicate_or::FormatGritPredicateOr,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2940,6 +3091,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateOr {
         biome_grit_syntax::GritPredicateOr,
         crate::grit::predicates::predicate_or::FormatGritPredicateOr,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -2967,6 +3119,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateReturn {
         biome_grit_syntax::GritPredicateReturn,
         crate::grit::predicates::predicate_return::FormatGritPredicateReturn,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -2980,6 +3133,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateReturn {
         biome_grit_syntax::GritPredicateReturn,
         crate::grit::predicates::predicate_return::FormatGritPredicateReturn,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3007,6 +3161,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateRewrite {
         biome_grit_syntax::GritPredicateRewrite,
         crate::grit::predicates::predicate_rewrite::FormatGritPredicateRewrite,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3020,6 +3175,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateRewrite {
         biome_grit_syntax::GritPredicateRewrite,
         crate::grit::predicates::predicate_rewrite::FormatGritPredicateRewrite,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3047,6 +3203,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritRawBacktickSnippetLi
         biome_grit_syntax::GritRawBacktickSnippetLiteral,
         crate::grit::value::raw_backtick_snippet_literal::FormatGritRawBacktickSnippetLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule :: new (self , crate :: grit :: value :: raw_backtick_snippet_literal :: FormatGritRawBacktickSnippetLiteral :: default ())
@@ -3057,6 +3214,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritRawBacktickSnippet
         biome_grit_syntax::GritRawBacktickSnippetLiteral,
         crate::grit::value::raw_backtick_snippet_literal::FormatGritRawBacktickSnippetLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule :: new (self , crate :: grit :: value :: raw_backtick_snippet_literal :: FormatGritRawBacktickSnippetLiteral :: default ())
@@ -3081,6 +3239,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritRegexLiteral {
         biome_grit_syntax::GritRegexLiteral,
         crate::grit::value::regex_literal::FormatGritRegexLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3094,6 +3253,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritRegexLiteral {
         biome_grit_syntax::GritRegexLiteral,
         crate::grit::value::regex_literal::FormatGritRegexLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3121,6 +3281,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritRegexPattern {
         biome_grit_syntax::GritRegexPattern,
         crate::grit::patterns::regex_pattern::FormatGritRegexPattern,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3134,6 +3295,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritRegexPattern {
         biome_grit_syntax::GritRegexPattern,
         crate::grit::patterns::regex_pattern::FormatGritRegexPattern,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3161,6 +3323,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritRegexPatternVariable
         biome_grit_syntax::GritRegexPatternVariables,
         crate::grit::patterns::regex_pattern_variables::FormatGritRegexPatternVariables,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule :: new (self , crate :: grit :: patterns :: regex_pattern_variables :: FormatGritRegexPatternVariables :: default ())
@@ -3171,6 +3334,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritRegexPatternVariab
         biome_grit_syntax::GritRegexPatternVariables,
         crate::grit::patterns::regex_pattern_variables::FormatGritRegexPatternVariables,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule :: new (self , crate :: grit :: patterns :: regex_pattern_variables :: FormatGritRegexPatternVariables :: default ())
@@ -3195,6 +3359,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritRewrite {
         biome_grit_syntax::GritRewrite,
         crate::grit::auxiliary::rewrite::FormatGritRewrite,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3208,6 +3373,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritRewrite {
         biome_grit_syntax::GritRewrite,
         crate::grit::auxiliary::rewrite::FormatGritRewrite,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3229,6 +3395,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritRoot {
         biome_grit_syntax::GritRoot,
         crate::grit::auxiliary::root::FormatGritRoot,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3242,6 +3409,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritRoot {
         biome_grit_syntax::GritRoot,
         crate::grit::auxiliary::root::FormatGritRoot,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3269,6 +3437,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritSequential {
         biome_grit_syntax::GritSequential,
         crate::grit::auxiliary::sequential::FormatGritSequential,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3282,6 +3451,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritSequential {
         biome_grit_syntax::GritSequential,
         crate::grit::auxiliary::sequential::FormatGritSequential,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3309,6 +3479,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritSnippetRegexLiteral 
         biome_grit_syntax::GritSnippetRegexLiteral,
         crate::grit::value::snippet_regex_literal::FormatGritSnippetRegexLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3322,6 +3493,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritSnippetRegexLitera
         biome_grit_syntax::GritSnippetRegexLiteral,
         crate::grit::value::snippet_regex_literal::FormatGritSnippetRegexLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3343,6 +3515,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritSome {
         biome_grit_syntax::GritSome,
         crate::grit::auxiliary::some::FormatGritSome,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3356,6 +3529,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritSome {
         biome_grit_syntax::GritSome,
         crate::grit::auxiliary::some::FormatGritSome,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3383,6 +3557,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritStringLiteral {
         biome_grit_syntax::GritStringLiteral,
         crate::grit::value::string_literal::FormatGritStringLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3396,6 +3571,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritStringLiteral {
         biome_grit_syntax::GritStringLiteral,
         crate::grit::value::string_literal::FormatGritStringLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3423,6 +3599,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritSubOperation {
         biome_grit_syntax::GritSubOperation,
         crate::grit::patterns::sub_operation::FormatGritSubOperation,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3436,6 +3613,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritSubOperation {
         biome_grit_syntax::GritSubOperation,
         crate::grit::patterns::sub_operation::FormatGritSubOperation,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3463,6 +3641,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritUndefinedLiteral {
         biome_grit_syntax::GritUndefinedLiteral,
         crate::grit::value::undefined_literal::FormatGritUndefinedLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3476,6 +3655,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritUndefinedLiteral {
         biome_grit_syntax::GritUndefinedLiteral,
         crate::grit::value::undefined_literal::FormatGritUndefinedLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3503,6 +3683,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritUnderscore {
         biome_grit_syntax::GritUnderscore,
         crate::grit::auxiliary::underscore::FormatGritUnderscore,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3516,6 +3697,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritUnderscore {
         biome_grit_syntax::GritUnderscore,
         crate::grit::auxiliary::underscore::FormatGritUnderscore,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3543,6 +3725,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritVariable {
         biome_grit_syntax::GritVariable,
         crate::grit::auxiliary::variable::FormatGritVariable,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3556,6 +3739,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritVariable {
         biome_grit_syntax::GritVariable,
         crate::grit::auxiliary::variable::FormatGritVariable,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3583,6 +3767,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritVersion {
         biome_grit_syntax::GritVersion,
         crate::grit::auxiliary::version::FormatGritVersion,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3596,6 +3781,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritVersion {
         biome_grit_syntax::GritVersion,
         crate::grit::auxiliary::version::FormatGritVersion,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3619,6 +3805,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritWithin {
         biome_grit_syntax::GritWithin,
         crate::grit::auxiliary::within::FormatGritWithin,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3632,6 +3819,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritWithin {
         biome_grit_syntax::GritWithin,
         crate::grit::auxiliary::within::FormatGritWithin,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3646,6 +3834,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritDefinitionList {
         biome_grit_syntax::GritDefinitionList,
         crate::grit::lists::definition_list::FormatGritDefinitionList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3659,6 +3848,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritDefinitionList {
         biome_grit_syntax::GritDefinitionList,
         crate::grit::lists::definition_list::FormatGritDefinitionList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3673,6 +3863,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritLanguageFlavorList {
         biome_grit_syntax::GritLanguageFlavorList,
         crate::grit::lists::language_flavor_list::FormatGritLanguageFlavorList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3686,6 +3877,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritLanguageFlavorList
         biome_grit_syntax::GritLanguageFlavorList,
         crate::grit::lists::language_flavor_list::FormatGritLanguageFlavorList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3700,6 +3892,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritListPatternList {
         biome_grit_syntax::GritListPatternList,
         crate::grit::lists::list_pattern_list::FormatGritListPatternList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3713,6 +3906,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritListPatternList {
         biome_grit_syntax::GritListPatternList,
         crate::grit::lists::list_pattern_list::FormatGritListPatternList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3727,6 +3921,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritMapElementList {
         biome_grit_syntax::GritMapElementList,
         crate::grit::lists::map_element_list::FormatGritMapElementList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3740,6 +3935,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritMapElementList {
         biome_grit_syntax::GritMapElementList,
         crate::grit::lists::map_element_list::FormatGritMapElementList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3754,6 +3950,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritNamedArgList {
         biome_grit_syntax::GritNamedArgList,
         crate::grit::lists::named_arg_list::FormatGritNamedArgList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3767,6 +3964,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritNamedArgList {
         biome_grit_syntax::GritNamedArgList,
         crate::grit::lists::named_arg_list::FormatGritNamedArgList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3781,6 +3979,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPatternList {
         biome_grit_syntax::GritPatternList,
         crate::grit::lists::pattern_list::FormatGritPatternList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3794,6 +3993,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPatternList {
         biome_grit_syntax::GritPatternList,
         crate::grit::lists::pattern_list::FormatGritPatternList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3808,6 +4008,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritPredicateList {
         biome_grit_syntax::GritPredicateList,
         crate::grit::lists::predicate_list::FormatGritPredicateList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3821,6 +4022,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritPredicateList {
         biome_grit_syntax::GritPredicateList,
         crate::grit::lists::predicate_list::FormatGritPredicateList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3835,6 +4037,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritVariableList {
         biome_grit_syntax::GritVariableList,
         crate::grit::lists::variable_list::FormatGritVariableList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3848,6 +4051,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritVariableList {
         biome_grit_syntax::GritVariableList,
         crate::grit::lists::variable_list::FormatGritVariableList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3869,6 +4073,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogus {
         biome_grit_syntax::GritBogus,
         crate::grit::bogus::bogus::FormatGritBogus,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(self, crate::grit::bogus::bogus::FormatGritBogus::default())
@@ -3879,6 +4084,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogus {
         biome_grit_syntax::GritBogus,
         crate::grit::bogus::bogus::FormatGritBogus,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(self, crate::grit::bogus::bogus::FormatGritBogus::default())
@@ -3903,6 +4109,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogusContainer {
         biome_grit_syntax::GritBogusContainer,
         crate::grit::bogus::bogus_container::FormatGritBogusContainer,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3916,6 +4123,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogusContainer {
         biome_grit_syntax::GritBogusContainer,
         crate::grit::bogus::bogus_container::FormatGritBogusContainer,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3943,6 +4151,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogusDefinition {
         biome_grit_syntax::GritBogusDefinition,
         crate::grit::bogus::bogus_definition::FormatGritBogusDefinition,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -3956,6 +4165,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogusDefinition {
         biome_grit_syntax::GritBogusDefinition,
         crate::grit::bogus::bogus_definition::FormatGritBogusDefinition,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -3983,6 +4193,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogusLanguageDeclara
         biome_grit_syntax::GritBogusLanguageDeclaration,
         crate::grit::bogus::bogus_language_declaration::FormatGritBogusLanguageDeclaration,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule :: new (self , crate :: grit :: bogus :: bogus_language_declaration :: FormatGritBogusLanguageDeclaration :: default ())
@@ -3993,6 +4204,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogusLanguageDecla
         biome_grit_syntax::GritBogusLanguageDeclaration,
         crate::grit::bogus::bogus_language_declaration::FormatGritBogusLanguageDeclaration,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule :: new (self , crate :: grit :: bogus :: bogus_language_declaration :: FormatGritBogusLanguageDeclaration :: default ())
@@ -4017,6 +4229,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogusLanguageFlavorK
         biome_grit_syntax::GritBogusLanguageFlavorKind,
         crate::grit::bogus::bogus_language_flavor_kind::FormatGritBogusLanguageFlavorKind,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule :: new (self , crate :: grit :: bogus :: bogus_language_flavor_kind :: FormatGritBogusLanguageFlavorKind :: default ())
@@ -4027,6 +4240,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogusLanguageFlavo
         biome_grit_syntax::GritBogusLanguageFlavorKind,
         crate::grit::bogus::bogus_language_flavor_kind::FormatGritBogusLanguageFlavorKind,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule :: new (self , crate :: grit :: bogus :: bogus_language_flavor_kind :: FormatGritBogusLanguageFlavorKind :: default ())
@@ -4051,6 +4265,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogusLiteral {
         biome_grit_syntax::GritBogusLiteral,
         crate::grit::bogus::bogus_literal::FormatGritBogusLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4064,6 +4279,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogusLiteral {
         biome_grit_syntax::GritBogusLiteral,
         crate::grit::bogus::bogus_literal::FormatGritBogusLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4091,6 +4307,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogusMapElement {
         biome_grit_syntax::GritBogusMapElement,
         crate::grit::bogus::bogus_map_element::FormatGritBogusMapElement,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4104,6 +4321,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogusMapElement {
         biome_grit_syntax::GritBogusMapElement,
         crate::grit::bogus::bogus_map_element::FormatGritBogusMapElement,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4131,6 +4349,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogusNamedArg {
         biome_grit_syntax::GritBogusNamedArg,
         crate::grit::bogus::bogus_named_arg::FormatGritBogusNamedArg,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4144,6 +4363,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogusNamedArg {
         biome_grit_syntax::GritBogusNamedArg,
         crate::grit::bogus::bogus_named_arg::FormatGritBogusNamedArg,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4171,6 +4391,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogusPattern {
         biome_grit_syntax::GritBogusPattern,
         crate::grit::bogus::bogus_pattern::FormatGritBogusPattern,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4184,6 +4405,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogusPattern {
         biome_grit_syntax::GritBogusPattern,
         crate::grit::bogus::bogus_pattern::FormatGritBogusPattern,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4211,6 +4433,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogusPredicate {
         biome_grit_syntax::GritBogusPredicate,
         crate::grit::bogus::bogus_predicate::FormatGritBogusPredicate,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4224,6 +4447,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogusPredicate {
         biome_grit_syntax::GritBogusPredicate,
         crate::grit::bogus::bogus_predicate::FormatGritBogusPredicate,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4251,6 +4475,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::GritBogusVersion {
         biome_grit_syntax::GritBogusVersion,
         crate::grit::bogus::bogus_version::FormatGritBogusVersion,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4264,6 +4489,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::GritBogusVersion {
         biome_grit_syntax::GritBogusVersion,
         crate::grit::bogus::bogus_version::FormatGritBogusVersion,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4278,6 +4504,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritCodeSnippetSource
         biome_grit_syntax::AnyGritCodeSnippetSource,
         crate::grit::any::code_snippet_source::FormatAnyGritCodeSnippetSource,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4291,6 +4518,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritCodeSnippetSour
         biome_grit_syntax::AnyGritCodeSnippetSource,
         crate::grit::any::code_snippet_source::FormatAnyGritCodeSnippetSource,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4305,6 +4533,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritContainer {
         biome_grit_syntax::AnyGritContainer,
         crate::grit::any::container::FormatAnyGritContainer,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4318,6 +4547,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritContainer {
         biome_grit_syntax::AnyGritContainer,
         crate::grit::any::container::FormatAnyGritContainer,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4332,6 +4562,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritDefinition {
         biome_grit_syntax::AnyGritDefinition,
         crate::grit::any::definition::FormatAnyGritDefinition,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4345,6 +4576,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritDefinition {
         biome_grit_syntax::AnyGritDefinition,
         crate::grit::any::definition::FormatAnyGritDefinition,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4359,6 +4591,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritLanguageDeclarati
         biome_grit_syntax::AnyGritLanguageDeclaration,
         crate::grit::any::language_declaration::FormatAnyGritLanguageDeclaration,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4372,6 +4605,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritLanguageDeclara
         biome_grit_syntax::AnyGritLanguageDeclaration,
         crate::grit::any::language_declaration::FormatAnyGritLanguageDeclaration,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4386,6 +4620,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritLanguageFlavorKin
         biome_grit_syntax::AnyGritLanguageFlavorKind,
         crate::grit::any::language_flavor_kind::FormatAnyGritLanguageFlavorKind,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4399,6 +4634,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritLanguageFlavorK
         biome_grit_syntax::AnyGritLanguageFlavorKind,
         crate::grit::any::language_flavor_kind::FormatAnyGritLanguageFlavorKind,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4413,6 +4649,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritListAccessorSubje
         biome_grit_syntax::AnyGritListAccessorSubject,
         crate::grit::any::list_accessor_subject::FormatAnyGritListAccessorSubject,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4426,6 +4663,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritListAccessorSub
         biome_grit_syntax::AnyGritListAccessorSubject,
         crate::grit::any::list_accessor_subject::FormatAnyGritListAccessorSubject,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4440,6 +4678,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritListIndex {
         biome_grit_syntax::AnyGritListIndex,
         crate::grit::any::list_index::FormatAnyGritListIndex,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4453,6 +4692,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritListIndex {
         biome_grit_syntax::AnyGritListIndex,
         crate::grit::any::list_index::FormatAnyGritListIndex,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4467,6 +4707,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritListPattern {
         biome_grit_syntax::AnyGritListPattern,
         crate::grit::any::list_pattern::FormatAnyGritListPattern,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4480,6 +4721,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritListPattern {
         biome_grit_syntax::AnyGritListPattern,
         crate::grit::any::list_pattern::FormatAnyGritListPattern,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4494,6 +4736,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritLiteral {
         biome_grit_syntax::AnyGritLiteral,
         crate::grit::any::literal::FormatAnyGritLiteral,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4507,6 +4750,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritLiteral {
         biome_grit_syntax::AnyGritLiteral,
         crate::grit::any::literal::FormatAnyGritLiteral,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4521,6 +4765,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritMapAccessorSubjec
         biome_grit_syntax::AnyGritMapAccessorSubject,
         crate::grit::any::map_accessor_subject::FormatAnyGritMapAccessorSubject,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4534,6 +4779,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritMapAccessorSubj
         biome_grit_syntax::AnyGritMapAccessorSubject,
         crate::grit::any::map_accessor_subject::FormatAnyGritMapAccessorSubject,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4548,6 +4794,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritMapElement {
         biome_grit_syntax::AnyGritMapElement,
         crate::grit::any::map_element::FormatAnyGritMapElement,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4561,6 +4808,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritMapElement {
         biome_grit_syntax::AnyGritMapElement,
         crate::grit::any::map_element::FormatAnyGritMapElement,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4575,6 +4823,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritMapKey {
         biome_grit_syntax::AnyGritMapKey,
         crate::grit::any::map_key::FormatAnyGritMapKey,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4588,6 +4837,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritMapKey {
         biome_grit_syntax::AnyGritMapKey,
         crate::grit::any::map_key::FormatAnyGritMapKey,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4602,6 +4852,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritMaybeCurlyPattern
         biome_grit_syntax::AnyGritMaybeCurlyPattern,
         crate::grit::any::maybe_curly_pattern::FormatAnyGritMaybeCurlyPattern,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4615,6 +4866,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritMaybeCurlyPatte
         biome_grit_syntax::AnyGritMaybeCurlyPattern,
         crate::grit::any::maybe_curly_pattern::FormatAnyGritMaybeCurlyPattern,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4629,6 +4881,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritMaybeNamedArg {
         biome_grit_syntax::AnyGritMaybeNamedArg,
         crate::grit::any::maybe_named_arg::FormatAnyGritMaybeNamedArg,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4642,6 +4895,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritMaybeNamedArg {
         biome_grit_syntax::AnyGritMaybeNamedArg,
         crate::grit::any::maybe_named_arg::FormatAnyGritMaybeNamedArg,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4656,6 +4910,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritPattern {
         biome_grit_syntax::AnyGritPattern,
         crate::grit::any::pattern::FormatAnyGritPattern,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4669,6 +4924,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritPattern {
         biome_grit_syntax::AnyGritPattern,
         crate::grit::any::pattern::FormatAnyGritPattern,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4683,6 +4939,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritPredicate {
         biome_grit_syntax::AnyGritPredicate,
         crate::grit::any::predicate::FormatAnyGritPredicate,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4696,6 +4953,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritPredicate {
         biome_grit_syntax::AnyGritPredicate,
         crate::grit::any::predicate::FormatAnyGritPredicate,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4710,6 +4968,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritPredicateMatchSub
         biome_grit_syntax::AnyGritPredicateMatchSubject,
         crate::grit::any::predicate_match_subject::FormatAnyGritPredicateMatchSubject,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4724,6 +4983,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritPredicateMatchS
         biome_grit_syntax::AnyGritPredicateMatchSubject,
         crate::grit::any::predicate_match_subject::FormatAnyGritPredicateMatchSubject,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -4739,6 +4999,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritRegex {
         biome_grit_syntax::AnyGritRegex,
         crate::grit::any::regex::FormatAnyGritRegex,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(self, crate::grit::any::regex::FormatAnyGritRegex::default())
@@ -4749,6 +5010,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritRegex {
         biome_grit_syntax::AnyGritRegex,
         crate::grit::any::regex::FormatAnyGritRegex,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(self, crate::grit::any::regex::FormatAnyGritRegex::default())
@@ -4760,6 +5022,7 @@ impl AsFormat<GritFormatContext> for biome_grit_syntax::AnyGritVersion {
         biome_grit_syntax::AnyGritVersion,
         crate::grit::any::version::FormatAnyGritVersion,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -4773,6 +5036,7 @@ impl IntoFormat<GritFormatContext> for biome_grit_syntax::AnyGritVersion {
         biome_grit_syntax::AnyGritVersion,
         crate::grit::any::version::FormatAnyGritVersion,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(

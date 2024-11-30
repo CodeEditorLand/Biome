@@ -62,12 +62,16 @@ declare_lint_rule! {
 
 impl Rule for NoExplicitAny {
     type Query = Ast<TsAnyType>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if TsTypeConstraintClause::can_cast(node.syntax().parent()?.kind()) {
             // Ignore `<T extends any>`.
             // This use is inoffensive and already triggers the rule `noUselessTypeConstraint`.

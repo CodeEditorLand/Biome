@@ -83,10 +83,13 @@ impl NoUselessFragmentsQuery {
         match self {
             NoUselessFragmentsQuery::JsxFragment(fragment) => {
                 let old_node = AnyJsxChild::JsxFragment(fragment.clone());
+
                 mutation.replace_node(old_node, new_node);
             }
+
             NoUselessFragmentsQuery::JsxElement(element) => {
                 let old_node = AnyJsxChild::JsxElement(element.clone());
+
                 mutation.replace_node(old_node, new_node);
             }
         }
@@ -96,10 +99,13 @@ impl NoUselessFragmentsQuery {
         match self {
             NoUselessFragmentsQuery::JsxFragment(fragment) => {
                 let old_node = AnyJsxChild::JsxFragment(fragment.clone());
+
                 mutation.remove_node(old_node);
             }
+
             NoUselessFragmentsQuery::JsxElement(element) => {
                 let old_node = AnyJsxChild::JsxElement(element.clone());
+
                 mutation.remove_node(old_node);
             }
         }
@@ -115,16 +121,24 @@ impl NoUselessFragmentsQuery {
 
 impl Rule for NoUselessFragments {
     type Query = Semantic<NoUselessFragmentsQuery>;
+
     type State = NoUselessFragmentsState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let mut in_jsx_attr_expr = false;
+
         let mut in_js_logical_expr = false;
+
         let mut in_jsx_expr = false;
+
         match node {
             NoUselessFragmentsQuery::JsxFragment(fragment) => {
                 let parents_where_fragments_must_be_preserved = node.syntax().parent().map_or(
@@ -137,16 +151,20 @@ impl Rule for NoUselessFragments {
                                 if JsxExpressionAttributeValue::can_cast(parent.kind()) {
                                     in_jsx_attr_expr = true;
                                 }
+
                                 if JsLogicalExpression::can_cast(parent.kind()) {
                                     in_js_logical_expr = true;
                                 }
+
                                 if JsxExpressionChild::can_cast(parent.kind()) {
                                     in_jsx_expr = true;
                                 }
+
                                 match JsParenthesizedExpression::try_cast(parent) {
                                     Ok(parenthesized_expression) => {
                                         parenthesized_expression.syntax().parent()
                                     }
+
                                     Err(parent) => Some(parent),
                                 }
                             })
@@ -170,7 +188,9 @@ impl Rule for NoUselessFragments {
 
                 if !parents_where_fragments_must_be_preserved {
                     let mut significant_children = 0;
+
                     let mut first_significant_child = None;
+
                     let mut children_where_fragments_must_preserved = false;
 
                     for child in child_list.iter() {
@@ -178,6 +198,7 @@ impl Rule for NoUselessFragments {
                             JsSyntaxKind::JSX_EXPRESSION_CHILD => {
                                 if !in_js_logical_expr {
                                     significant_children += 1;
+
                                     if first_significant_child.is_none() {
                                         first_significant_child = Some(child);
                                     }
@@ -185,36 +206,44 @@ impl Rule for NoUselessFragments {
                                     children_where_fragments_must_preserved = true;
                                 }
                             }
+
                             JsSyntaxKind::JSX_SELF_CLOSING_ELEMENT
                             | JsSyntaxKind::JSX_ELEMENT
                             | JsSyntaxKind::JSX_FRAGMENT => {
                                 significant_children += 1;
+
                                 if first_significant_child.is_none() {
                                     first_significant_child = Some(child);
                                 }
                             }
+
                             JsSyntaxKind::JSX_TEXT => {
                                 // We need to whitespaces and newlines from the original string.
                                 // Since in the JSX newlines aren't trivia, we require to allocate a string to trim from those characters.
                                 let original_text = child.text();
+
                                 let child_text = original_text.trim();
 
                                 if (in_jsx_expr || in_js_logical_expr)
                                     && contains_html_character_references(child_text)
                                 {
                                     children_where_fragments_must_preserved = true;
+
                                     break;
                                 }
 
                                 if !child_text.is_empty() {
                                     significant_children += 1;
+
                                     if first_significant_child.is_none() {
                                         first_significant_child = Some(child);
                                     }
                                 }
                             }
+
                             _ => {}
                         }
+
                         if significant_children > 1 || children_where_fragments_must_preserved {
                             break;
                         }
@@ -237,23 +266,28 @@ impl Rule for NoUselessFragments {
                                 None
                             }
                         }
+
                         _ => None,
                     }
                 } else {
                     None
                 }
             }
+
             NoUselessFragmentsQuery::JsxElement(element) => {
                 let opening_element = element.opening_element().ok()?;
+
                 let name = opening_element.name().ok()?;
 
                 let is_valid_react_fragment = match name {
                     AnyJsxElementName::JsxMemberName(member_name) => {
                         jsx_member_name_is_react_fragment(&member_name, model)?
                     }
+
                     AnyJsxElementName::JsxReferenceIdentifier(identifier) => {
                         jsx_reference_identifier_is_fragment(&identifier, model)?
                     }
+
                     AnyJsxElementName::JsxName(_) | AnyJsxElementName::JsxNamespaceName(_) => false,
                 };
 
@@ -267,7 +301,9 @@ impl Rule for NoUselessFragments {
                             .into_iter()
                             .find_map(|attribute| {
                                 let attribute = attribute.as_jsx_attribute()?;
+
                                 let attribute_name = attribute.name().ok()?;
+
                                 let attribute_name = attribute_name.as_jsx_name()?;
 
                                 if attribute_name.value_token().ok()?.text_trimmed() == "key" {
@@ -276,11 +312,13 @@ impl Rule for NoUselessFragments {
                                     None
                                 }
                             });
+
                     if attribute_key.is_none() {
                         return match child_list.first() {
                             Some(first) if child_list.len() == 1 => {
                                 Some(NoUselessFragmentsState::Child(first))
                             }
+
                             None => Some(NoUselessFragmentsState::Empty),
                             _ => None,
                         };
@@ -294,6 +332,7 @@ impl Rule for NoUselessFragments {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let in_jsx_attr = node.syntax().grand_parent().map_or(false, |parent| {
@@ -339,15 +378,19 @@ impl Rule for NoUselessFragments {
                     AnyJsxChild::JsxElement(node) => {
                         Some(jsx_tag_expression(AnyJsxTag::JsxElement(node)).into_syntax())
                     }
+
                     AnyJsxChild::JsxFragment(node) => {
                         Some(jsx_tag_expression(AnyJsxTag::JsxFragment(node)).into_syntax())
                     }
+
                     AnyJsxChild::JsxSelfClosingElement(node) => Some(
                         jsx_tag_expression(AnyJsxTag::JsxSelfClosingElement(node)).into_syntax(),
                     ),
                     AnyJsxChild::JsxText(text) => {
                         let new_value = text.value_token().ok()?.token_text();
+
                         let new_value = new_value.trim();
+
                         if parent.kind() == JsSyntaxKind::JSX_EXPRESSION_ATTRIBUTE_VALUE {
                             Some(jsx_string(jsx_string_literal(new_value)).into_syntax())
                         } else {
@@ -357,6 +400,7 @@ impl Rule for NoUselessFragments {
                             )
                         }
                     }
+
                     AnyJsxChild::JsxExpressionChild(child) => {
                         if in_jsx_attr
                             || !JsxTagExpression::can_cast(node.syntax().parent()?.kind())
@@ -364,6 +408,7 @@ impl Rule for NoUselessFragments {
                             child.expression().map(|expression| {
                                 let jsx_expr_child =
                                     jsx_expression_child(token(T!['{']), token(T!['}']));
+
                                 JsxExpressionChildBuilder::with_expression(
                                     jsx_expr_child,
                                     expression,
@@ -383,6 +428,7 @@ impl Rule for NoUselessFragments {
                     // a syntax error
                     AnyJsxChild::JsxSpreadChild(_) => return None,
                 };
+
                 if let Some(new_node) = new_node {
                     mutation.replace_element(parent.into(), new_node.into());
                 } else {
@@ -406,6 +452,7 @@ impl Rule for NoUselessFragments {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.syntax().text_trimmed_range(),
@@ -420,6 +467,8 @@ impl Rule for NoUselessFragments {
 
 fn contains_html_character_references(s: &str) -> bool {
     let and = s.find('&');
+
     let semi = s.find(';');
+
     matches!((and, semi), (Some(and), Some(semi)) if and < semi)
 }

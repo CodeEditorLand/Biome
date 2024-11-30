@@ -157,6 +157,7 @@ pub struct Specificity(pub u32, pub u32, pub u32);
 /// More details https://drafts.csswg.org/selectors/#example-d97bd125
 impl std::ops::Add for Specificity {
     type Output = Specificity;
+
     fn add(self, rhs: Self) -> Self::Output {
         Self(self.0 + rhs.0, self.1 + rhs.1, self.2 + rhs.2)
     }
@@ -165,7 +166,9 @@ impl std::ops::Add for Specificity {
 impl std::ops::AddAssign for Specificity {
     fn add_assign(&mut self, rhs: Self) {
         self.0 = rhs.0;
+
         self.1 = rhs.1;
+
         self.2 = rhs.2;
     }
 }

@@ -49,9 +49,13 @@ declare_lint_rule! {
 
 impl Rule for UseDefaultSwitchClause {
     type Query = Ast<JsSwitchStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
+
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
 
@@ -60,11 +64,13 @@ impl Rule for UseDefaultSwitchClause {
             .into_iter()
             .any(|clause| clause.as_js_default_clause().is_some())
             .not();
+
         is_missing_default_case.then_some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

@@ -59,6 +59,7 @@ impl UseKeyWithMouseEventsState {
             UseKeyWithMouseEventsState::MissingOnBlur => {
                 markup! {"onMouseOut must be accompanied by onBlur for accessibility."}.to_owned()
             }
+
             UseKeyWithMouseEventsState::MissingOnFocus => {
                 markup! {"onMouseOver must be accompanied by onFocus for accessibility."}.to_owned()
             }
@@ -68,8 +69,11 @@ impl UseKeyWithMouseEventsState {
 
 impl Rule for UseKeyWithMouseEvents {
     type Query = Semantic<AnyJsxElement>;
+
     type State = UseKeyWithMouseEventsState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -90,6 +94,7 @@ impl Rule for UseKeyWithMouseEvents {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let footer_note_text = markup! {"Actions triggered using mouse events should have corresponding events to account for keyboard-only navigation."};
 
         Some(
@@ -112,6 +117,7 @@ fn has_valid_focus_attributes(elem: &AnyJsxElement) -> bool {
             });
         }
     }
+
     true
 }
 
@@ -124,5 +130,6 @@ fn has_valid_blur_attributes(elem: &AnyJsxElement) -> bool {
             });
         }
     }
+
     true
 }

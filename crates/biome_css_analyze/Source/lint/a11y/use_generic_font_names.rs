@@ -71,13 +71,18 @@ declare_lint_rule! {
 
 impl Rule for UseGenericFontNames {
     type Query = Ast<CssGenericProperty>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let property_name = node.name().ok()?.text();
+
         let property_name = property_name.to_ascii_lowercase_cow();
 
         // Ignore `@font-face`. See more detail: https://drafts.csswg.org/css-fonts/#font-face-rule
@@ -86,6 +91,7 @@ impl Rule for UseGenericFontNames {
         }
 
         let is_font_family = property_name == "font-family";
+
         let is_font = property_name == "font";
 
         if !is_font_family && !is_font {
@@ -94,7 +100,9 @@ impl Rule for UseGenericFontNames {
 
         // handle shorthand font property with special value
         // e.g: { font: caption }, { font: inherit }
+
         let properties = node.value();
+
         if is_font && is_shorthand_font_property_with_keyword(&properties) {
             return None;
         }
@@ -115,6 +123,7 @@ impl Rule for UseGenericFontNames {
 
         // Ignore the last value if it's a CSS variable now.
         let last_value = font_families.last()?;
+
         if is_css_variable(&last_value.text()) {
             return None;
         }

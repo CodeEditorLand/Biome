@@ -68,9 +68,12 @@ impl SemanticEventExtractor {
                 || kind == CSS_MEDIA_AT_RULE =>
             {
                 let range = node.text_range();
+
                 self.stash.push_back(SemanticEvent::RuleStart(range));
+
                 self.current_rule_stack.push(range);
             }
+
             CSS_SELECTOR_LIST => {
                 if !matches!(
                     node.parent().kind(),
@@ -78,10 +81,12 @@ impl SemanticEventExtractor {
                 ) {
                     return;
                 };
+
                 node.children()
                     .filter_map(AnyCssSelector::cast)
                     .for_each(|s| self.process_selector(s));
             }
+
             CSS_RELATIVE_SELECTOR_LIST => {
                 if !matches!(
                     node.parent().kind(),
@@ -89,11 +94,13 @@ impl SemanticEventExtractor {
                 ) {
                     return;
                 };
+
                 node.children()
                     .filter_map(CssRelativeSelector::cast)
                     .filter_map(|s| s.selector().ok())
                     .for_each(|s| self.process_selector(s));
             }
+
             CSS_DECLARATION => {
                 if let Some(property_name) = node.first_child().and_then(|p| p.first_child()) {
                     if let Some(value) = property_name.next_sibling() {
@@ -111,9 +118,11 @@ impl SemanticEventExtractor {
                     }
                 }
             }
+
             CSS_PROPERTY_AT_RULE => {
                 self.process_at_property(node);
             }
+
             _ => {}
         }
     }
@@ -123,6 +132,7 @@ impl SemanticEventExtractor {
         match selector {
             AnyCssSelector::CssComplexSelector(s) => {
                 let specificity = evaluate_complex_selector(&s);
+
                 self.add_selector_event(
                     Cow::Borrowed(&s.text()),
                     s.range(),
@@ -133,11 +143,15 @@ impl SemanticEventExtractor {
 
             AnyCssSelector::CssCompoundSelector(selector) => {
                 let selector_text = selector.text();
+
                 if selector_text == ROOT_SELECTOR {
                     self.stash.push_back(SemanticEvent::RootSelectorStart);
+
                     self.is_in_root_selector = true;
                 }
+
                 let specificity = evaluate_compound_selector(&selector);
+
                 self.add_selector_event(
                     Cow::Borrowed(&selector_text),
                     selector.range(),
@@ -145,6 +159,7 @@ impl SemanticEventExtractor {
                     specificity,
                 )
             }
+
             _ => {}
         }
     }
@@ -177,7 +192,9 @@ impl SemanticEventExtractor {
         };
 
         let mut initial_value = None;
+
         let mut syntax = None;
+
         let mut inherits = None;
 
         for declaration in decls
@@ -202,6 +219,7 @@ impl SemanticEventExtractor {
                         "inherits" => {
                             inherits = Some(prop.value().text() == "true");
                         }
+
                         _ => {}
                     }
                 }
@@ -241,9 +259,12 @@ impl SemanticEventExtractor {
             CSS_QUALIFIED_RULE | CSS_NESTED_QUALIFIED_RULE | CSS_MEDIA_AT_RULE
         ) {
             self.current_rule_stack.pop();
+
             self.stash.push_back(SemanticEvent::RuleEnd);
+
             if self.is_in_root_selector {
                 self.stash.push_back(SemanticEvent::RootSelectorEnd);
+
                 self.is_in_root_selector = false;
             }
         }

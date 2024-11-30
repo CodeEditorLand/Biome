@@ -56,8 +56,11 @@ declare_lint_rule! {
 
 impl Rule for NoImplicitBoolean {
     type Query = Ast<JsxAttribute>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -84,6 +87,7 @@ impl Rule for NoImplicitBoolean {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let n = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let JsxAttributeFields {
@@ -107,6 +111,7 @@ impl Rule for NoImplicitBoolean {
             last_token_of_name_syntax,
             next_last_token_of_name_syntax,
         )?;
+
         let attr_value = make::jsx_expression_attribute_value(
             make::token(JsSyntaxKind::L_CURLY),
             biome_js_syntax::AnyJsExpression::AnyJsLiteralExpression(
@@ -116,12 +121,14 @@ impl Rule for NoImplicitBoolean {
             ),
             make::token(JsSyntaxKind::R_CURLY),
         );
+
         let next_attr = make::jsx_attribute(next_name).with_initializer(
             make::jsx_attribute_initializer_clause(
                 make::token(T![=]),
                 AnyJsxAttributeValue::JsxExpressionAttributeValue(attr_value),
             ),
         );
+
         let next_attr = next_attr.build();
 
         mutation.replace_node(n.clone(), next_attr);

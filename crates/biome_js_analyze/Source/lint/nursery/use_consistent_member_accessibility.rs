@@ -341,8 +341,11 @@ pub enum Accessibility {
 
 impl Rule for UseConsistentMemberAccessibility {
     type Query = Ast<AnyJsMemberWithAccessibility>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ConsistentMemberAccessibilityOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -351,8 +354,11 @@ impl Rule for UseConsistentMemberAccessibility {
         if node.has_private_class_member_name() {
             return None;
         }
+
         let accessibility = node.accessibility_modifier();
+
         let options = ctx.options();
+
         match &options.accessibility {
             Accessibility::NoPublic => accessibility
                 .filter(|accessibility| accessibility.is_public())
@@ -368,6 +374,7 @@ impl Rule for UseConsistentMemberAccessibility {
         //     None => &Accessibility::default(),
         //     Some(option) => option,
         // };
+
         let (diag_msg, note_msg) = match &options.accessibility {
             Accessibility::NoPublic => (
                 markup! {
@@ -390,6 +397,7 @@ impl Rule for UseConsistentMemberAccessibility {
                 markup! {"Remove the accessibility modifier."},
             ),
         };
+
         Some(RuleDiagnostic::new(rule_category!(), range, diag_msg).note(note_msg))
     }
 }
@@ -416,6 +424,7 @@ impl AnyJsMemberWithAccessibility {
             | Self::TsPropertyParameter(_) => {
                 return false;
             }
+
             Self::JsPropertyClassMember(member) => member.name(),
             Self::JsMethodClassMember(member) => member.name(),
             Self::JsGetterClassMember(member) => member.name(),
@@ -425,6 +434,7 @@ impl AnyJsMemberWithAccessibility {
             Self::TsGetterSignatureClassMember(member) => member.name(),
             Self::TsSetterSignatureClassMember(member) => member.name(),
         };
+
         matches!(name, Ok(AnyJsClassMemberName::JsPrivateClassMemberName(_)))
     }
 

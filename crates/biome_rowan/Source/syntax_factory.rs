@@ -73,7 +73,9 @@ pub trait SyntaxFactory: fmt::Debug {
         F: Fn(Self::Kind) -> bool,
     {
         let mut next_node = true;
+
         let mut missing_count = 0;
+
         let mut valid = true;
 
         for child in &children {
@@ -88,6 +90,7 @@ pub trait SyntaxFactory: fmt::Debug {
                 } else {
                     // an invalid element
                     valid = false;
+
                     break;
                 }
             } else if kind == separator {
@@ -145,24 +148,30 @@ impl<'a, K: SyntaxKind> Iterator for SeparatedListWithMissingNodesOrSeparatorSlo
 
             if self.next_node {
                 self.next_node = false;
+
                 if !is_separator {
                     Some(self.inner.next())
                 } else {
                     self.missing_count -= 1;
+
                     Some(None) // Missing separator
                 }
             } else if is_separator {
                 self.next_node = true;
+
                 Some(self.inner.next())
             } else {
                 // Missing node
                 self.missing_count -= 1;
+
                 self.next_node = true;
+
                 Some(None)
             }
         } else if self.missing_count > 0 {
             // at a trailing comma in a list that doesn't allow trailing commas.
             self.missing_count -= 1;
+
             Some(None)
         } else {
             None
@@ -262,6 +271,7 @@ impl<'a, K: SyntaxKind> Iterator for RawNodeSlotIterator<'a, K> {
                     "Expected a present node according to the slot description",
                 )))
             }
+
             SlotContent::Absent => Some(None),
         }
     }

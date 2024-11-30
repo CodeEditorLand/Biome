@@ -74,6 +74,7 @@ pub(super) fn parse_function_declaration(
     }
 
     let m = p.start();
+
     let mut function = if p.state().in_ambient_context() {
         parse_ambient_function(p, m, AmbientFunctionKind::Declaration)
     } else {
@@ -92,7 +93,9 @@ pub(super) fn parse_function_declaration(
             // if (true) function a() {}
             // label1: function b() {}
             // while (true) function c() {}
+
             p.error(p.err_builder("In strict mode code, functions can only be declared at top level or inside a block", function.range(p)).with_hint( "wrap the function in a block statement"));
+
             function.change_to_bogus(p);
         } else if !matches!(context, StatementContext::If | StatementContext::Label) {
             // test js function_in_if_or_labelled_stmt_loose_mode
@@ -101,7 +104,9 @@ pub(super) fn parse_function_declaration(
             // if (true) function b() {} else function c() {}
             // if (true) function d() {}
             // if (true) "test"; else function e() {}
+
             p.error(p.err_builder("In non-strict mode code, functions can only be declared at top level, inside a block, or as the body of an if or labelled statement", function.range(p)).with_hint( "wrap the function in a block statement"));
+
             function.change_to_bogus(p);
         }
     }
@@ -115,6 +120,7 @@ pub(super) fn parse_function_expression(p: &mut JsParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     Present(parse_function(p, m, FunctionKind::Expression))
 }
 
@@ -206,18 +212,25 @@ fn parse_function(p: &mut JsParser, m: Marker, kind: FunctionKind) -> CompletedM
     let mut flags = SignatureFlags::empty();
 
     let in_async = is_at_async_function(p, LineBreak::DoNotCheck);
+
     if in_async {
         // test_err js function_escaped_async
         // void \u0061sync function f(){}
+
         p.eat(T![async]);
+
         flags |= SignatureFlags::ASYNC;
     }
 
     p.expect(T![function]);
+
     let generator_range = if p.at(T![*]) {
         let range = p.cur_range();
+
         p.bump(T![*]);
+
         flags |= SignatureFlags::GENERATOR;
+
         Some(range)
     } else {
         None
@@ -282,6 +295,7 @@ fn parse_function(p: &mut JsParser, m: Marker, kind: FunctionKind) -> CompletedM
     // function no_semi(a: string) {}
     // async function async_overload(a: string)
     // async function async_overload(a: string) {}
+
     if body.is_absent()
         && TypeScript.is_supported(p)
         && is_semi(p, 0)
@@ -293,6 +307,7 @@ fn parse_function(p: &mut JsParser, m: Marker, kind: FunctionKind) -> CompletedM
         // test_err ts ts_function_overload_generator
         // function* test(a: string);
         // function* test(a: string) {}
+
         if let Some(generator_range) = generator_range {
             p.error(p.err_builder(
                 "An overload signature cannot be declared as a generator.",
@@ -313,8 +328,10 @@ fn parse_function(p: &mut JsParser, m: Marker, kind: FunctionKind) -> CompletedM
         // test_err js async_or_generator_in_single_statement_context
         // if (true) async function t() {}
         // if (true) function* t() {}
+
         if kind.is_in_single_statement_context() && (in_async || generator_range.is_some()) {
             p.error(p.err_builder("`async` and generator functions can only be declared at top level or inside a block", function.range(p) ));
+
             function.change_to_bogus(p);
         }
 
@@ -349,6 +366,7 @@ fn parse_function_id(p: &mut JsParser, kind: FunctionKind, flags: SignatureFlags
             // (async function await() {});
             // (function* yield() {});
             // function* test() { function yield() {} }
+
             p.with_state(EnterFunction(flags), parse_binding)
         }
         // Inherits the async and generator from the parent
@@ -366,6 +384,7 @@ fn parse_function_id(p: &mut JsParser, kind: FunctionKind, flags: SignatureFlags
             // function* test() {
             //   function yield(test) {}
             // }
+
             parse_binding(p)
         }
     }
@@ -393,35 +412,43 @@ fn parse_ambient_function(
 
     // test_err ts ts_declare_async_function
     // declare async function test();
+
     let is_async = p.at(T![async]);
+
     if is_async {
         p.error(p.err_builder(
             "'async' modifier cannot be used in an ambient context.",
             p.cur_range(),
         ));
+
         p.bump(T![async]);
     }
 
     p.expect(T![function]);
 
     let is_generator = p.at(T![*]);
+
     if is_generator {
         // test_err ts ts_declare_generator_function
         // declare function* test(): void;
         // declare module 'x' {
         //   export default function* test(): void
         // }
+
         p.error(p.err_builder(
             "Generators are not allowed in an ambient context.",
             p.cur_range(),
         ));
+
         p.bump(T![*]);
     }
 
     let binding = parse_binding(p);
+
     let binding_range = p.cur_range();
 
     parse_ts_type_parameters(p, TypeContext::default().and_allow_const_modifier(true)).ok();
+
     parse_parameter_list(
         p,
         ParameterContext::Declaration,
@@ -429,6 +456,7 @@ fn parse_ambient_function(
         SignatureFlags::empty(),
     )
     .or_add_diagnostic(p, expected_parameters);
+
     parse_ts_return_type_annotation(p, TypeContext::default()).ok();
 
     if let Present(body) = parse_function_body(p, SignatureFlags::empty()) {
@@ -453,12 +481,14 @@ fn parse_ambient_function(
         // declare module 'y' {
         //   export default function test(option: any): void
         // }
+
         m.complete(p, TS_DECLARE_FUNCTION_EXPORT_DEFAULT_DECLARATION)
     } else {
         // test_err ts ts_declare_function_export_declaration_missing_id
         // declare module 'x' {
         //   export function(option: any): void
         // }
+
         if binding.is_absent() {
             p.error(expected_binding(p, binding_range));
         }
@@ -466,6 +496,7 @@ fn parse_ambient_function(
         // declare module 'x' {
         //   export function test(option: any): void
         // }
+
         m.complete(p, TS_DECLARE_FUNCTION_DECLARATION)
     }
 }
@@ -497,6 +528,7 @@ pub(crate) enum LineBreak {
 /// Checks if the parser is inside a "async function"
 pub(super) fn is_at_async_function(p: &mut JsParser, should_check_line_break: LineBreak) -> bool {
     let async_function_tokens = p.at(T![async]) && p.nth_at(1, T![function]);
+
     if should_check_line_break == LineBreak::DoCheck {
         async_function_tokens && !p.has_nth_preceding_line_break(1)
     } else {
@@ -552,6 +584,7 @@ fn try_parse_parenthesized_arrow_function_head(
 
     // test_err js arrow_escaped_async
     // \u0061sync () => {}
+
     let flags = if p.eat(T![async]) {
         SignatureFlags::ASYNC
     } else {
@@ -574,6 +607,7 @@ fn try_parse_parenthesized_arrow_function_head(
     // const method = (@dec x, second, @dec third = 'default') => {};
     // const method = (@dec.fn() x, second, @dec.fn() third = 'default') => {};
     // const method = (@dec() x, second, @dec() third = 'default') => {};
+
     parse_parameter_list(
         p,
         ParameterContext::Arrow,
@@ -625,12 +659,14 @@ fn parse_possible_parenthesized_arrow_function_expression(p: &mut JsParser) -> P
 
             Present(m.complete(p, JS_ARROW_FUNCTION_EXPRESSION))
         }
+
         Err(m) => {
             // SAFETY: Abandoning the marker here is safe because `try_parse` rewinds if
             // the callback returns `Err` (which is the case that this branch is handling).
             m.abandon(p);
 
             p.state_mut().not_parenthesized_arrow.insert(start_pos);
+
             Absent
         }
     }
@@ -638,15 +674,20 @@ fn parse_possible_parenthesized_arrow_function_expression(p: &mut JsParser) -> P
 
 fn parse_parenthesized_arrow_function_expression(p: &mut JsParser) -> ParsedSyntax {
     let is_parenthesized = is_parenthesized_arrow_function_expression(p);
+
     match is_parenthesized {
         IsParenthesizedArrowFunctionExpression::True => {
             let (m, flags) = try_parse_parenthesized_arrow_function_head(p, Ambiguity::Allowed).expect("'CompletedMarker' because function should never return 'Err' if called with 'Ambiguity::Allowed'.");
+
             parse_arrow_body(p, flags).or_add_diagnostic(p, js_parse_error::expected_arrow_body);
+
             Present(m.complete(p, JS_ARROW_FUNCTION_EXPRESSION))
         }
+
         IsParenthesizedArrowFunctionExpression::Unknown => {
             parse_possible_parenthesized_arrow_function_expression(p)
         }
+
         IsParenthesizedArrowFunctionExpression::False => Absent,
     }
 }
@@ -681,6 +722,7 @@ fn is_parenthesized_arrow_function_expression(
         T!['('] | T![<] => {
             is_parenthesized_arrow_function_expression_impl(p, SignatureFlags::empty())
         }
+
         T![async] => {
             // test js async_arrow_expr
             // let a = async foo => {}
@@ -745,12 +787,15 @@ fn is_parenthesized_arrow_function_expression_impl(
                                 T![:] | T![,] | T![=] | T![')'] => {
                                     IsParenthesizedArrowFunctionExpression::True
                                 }
+
                                 _ => IsParenthesizedArrowFunctionExpression::False,
                             }
                         }
+
                         _ => IsParenthesizedArrowFunctionExpression::False,
                     }
                 }
+
                 _ => IsParenthesizedArrowFunctionExpression::False,
             }
         }
@@ -778,10 +823,12 @@ fn is_parenthesized_arrow_function_expression_impl(
                 // Disambiguate between JSX and type parameters
                 // Type parameters of arrow functions accept only the `const` modifier.
                 let n = if p.nth_at(n + 1, T![const]) { n + 1 } else { n };
+
                 if !is_nth_at_identifier(p, n + 1) {
                     // <5...
                     return IsParenthesizedArrowFunctionExpression::False;
                 };
+
                 match p.nth(n + 2) {
                     T![extends] => {
                         // `<a extends=` OR `<a extends/>` OR `<a extends>` is a JSX element
@@ -812,6 +859,7 @@ fn is_parenthesized_arrow_function_expression_impl(
                 IsParenthesizedArrowFunctionExpression::Unknown
             }
         }
+
         _ => IsParenthesizedArrowFunctionExpression::False,
     }
 }
@@ -846,10 +894,12 @@ fn parse_arrow_function_with_single_parameter(p: &mut JsParser) -> ParsedSyntax 
     }
 
     let m = p.start();
+
     let is_async = p.at(T![async]) && is_nth_at_identifier_binding(p, 1);
 
     let flags = if is_async {
         p.eat(T![async]);
+
         SignatureFlags::ASYNC
     } else {
         SignatureFlags::empty()
@@ -859,10 +909,12 @@ fn parse_arrow_function_with_single_parameter(p: &mut JsParser) -> ParsedSyntax 
     // let a = async await => {}
     // async() => { (a = await) => {} };
     // async() => { (a = await 10) => {} };
+
     p.with_state(EnterParameters(arrow_function_parameter_flags(p, flags)), parse_binding)
         .expect("Expected function parameter to be present as guaranteed by is_arrow_function_with_simple_parameter");
 
     p.bump(T![=>]);
+
     parse_arrow_body(p, flags).or_add_diagnostic(p, js_parse_error::expected_arrow_body);
 
     Present(m.complete(p, JS_ARROW_FUNCTION_EXPRESSION))
@@ -873,6 +925,7 @@ fn is_arrow_function_with_single_parameter(p: &mut JsParser) -> bool {
     if p.nth_at(1, T![=>]) {
         // test js single_parameter_arrow_function_with_parameter_named_async
         // let id = async => async;
+
         is_at_identifier_binding(p) && !p.has_nth_preceding_line_break(1)
     }
     // async ident => ...
@@ -893,6 +946,7 @@ fn parse_arrow_body(p: &mut JsParser, mut flags: SignatureFlags) -> ParsedSyntax
     //     () => super();
     //  }
     // }
+
     if p.state().in_constructor() {
         flags |= SignatureFlags::CONSTRUCTOR
     }
@@ -922,14 +976,18 @@ pub(crate) fn parse_any_parameter(
             //   method(@dec(val) this) {}
             //   method(@dec.fn(val) this) {}
             // }
+
             decorator_list
                 .add_diagnostic_if_present(p, decorators_not_allowed)
                 .map(|mut decorator_list| {
                     decorator_list.change_to_bogus(p);
+
                     decorator_list
                 });
+
             parse_ts_this_parameter(p, type_context)
         }
+
         _ => parse_formal_parameter(
             p,
             decorator_list,
@@ -943,6 +1001,7 @@ pub(crate) fn parse_any_parameter(
         if parameter.kind(p) == TS_THIS_PARAMETER {
             if TypeScript.is_unsupported(p) {
                 parameter.change_to_bogus(p);
+
                 p.error(ts_only_syntax_error(
                     p,
                     "this parameter",
@@ -951,7 +1010,9 @@ pub(crate) fn parse_any_parameter(
             } else if parameter_context.is_arrow_function() {
                 // test_err ts ts_arrow_function_this_parameter
                 // let a = (this: string) => {}
+
                 parameter.change_to_bogus(p);
+
                 p.error(p.err_builder(
                     "An arrow function cannot have a 'this' parameter.",
                     parameter.range(p),
@@ -976,7 +1037,9 @@ pub(crate) fn parse_rest_parameter(
     let m = decorator_list
         .or_else(|| empty_decorator_list(p))
         .precede(p);
+
     p.bump(T![...]);
+
     parse_binding_pattern(p, expression_context).or_add_diagnostic(p, expected_binding);
 
     let mut valid = true;
@@ -985,6 +1048,7 @@ pub(crate) fn parse_rest_parameter(
         let err = p.err_builder("rest patterns cannot be optional", p.cur_range());
 
         p.error(err);
+
         valid = false;
     }
 
@@ -1000,12 +1064,14 @@ pub(crate) fn parse_rest_parameter(
     if let Present(initializer) = parse_initializer_clause(p, ExpressionContext::default()) {
         // test_err js arrow_rest_in_expr_in_initializer
         // for ((...a = "b" in {}) => {};;) {}
+
         let err = p.err_builder(
             "rest elements may not have default initializers",
             initializer.range(p),
         );
 
         p.error(err);
+
         valid = false;
     }
 
@@ -1018,6 +1084,7 @@ pub(crate) fn parse_rest_parameter(
         );
 
         p.error(err);
+
         valid = false;
     }
 
@@ -1037,8 +1104,11 @@ pub(crate) fn parse_ts_this_parameter(p: &mut JsParser, context: TypeContext) ->
     }
 
     let parameter = p.start();
+
     p.expect(T![this]);
+
     parse_ts_type_annotation(p, context).ok();
+
     Present(parameter.complete(p, TS_THIS_PARAMETER))
 }
 
@@ -1140,6 +1210,7 @@ pub(crate) fn parse_formal_parameter(
 
     if let Present(binding) = parse_binding_pattern(p, expression_context) {
         let binding_kind = binding.kind(p);
+
         let binding_range = binding.range(p);
 
         let mut valid = true;
@@ -1151,16 +1222,19 @@ pub(crate) fn parse_formal_parameter(
                     "optional parameters",
                     p.cur_range(),
                 ));
+
                 valid = false;
             } else if parameter_context.is_any_setter() {
                 p.error(p.err_builder(
                     "A 'set' accessor cannot have an optional parameter.",
                     p.cur_range(),
                 ));
+
                 valid = false;
             }
 
             p.bump(T![?]);
+
             true
         } else {
             false
@@ -1172,6 +1246,7 @@ pub(crate) fn parse_formal_parameter(
         //     errorsText(errors?: string[] | null | undefined, { separator, dataVar }?: ErrorsTextOptions): string;
         //   }
         // }
+
         if valid
             && matches!(
                 binding_kind,
@@ -1180,6 +1255,7 @@ pub(crate) fn parse_formal_parameter(
             && parameter_context.is_parameter_property()
         {
             valid = false;
+
             p.error(p.err_builder(
                 "A parameter property may not be declared using a binding pattern.",
                 binding_range,
@@ -1217,7 +1293,9 @@ pub(crate) fn parse_formal_parameter(
         Present(parameter)
     } else {
         m.abandon(p);
+
         p.rewind(checkpoint);
+
         Absent
     }
 }
@@ -1229,13 +1307,16 @@ pub(crate) fn parse_formal_parameter(
 pub(super) fn skip_parameter_start(p: &mut JsParser) -> bool {
     if is_at_identifier_binding(p) || p.at(T![this]) {
         p.bump_any();
+
         return true;
     }
 
     if p.at(T!['[']) || p.at(T!['{']) {
         // Array or object pattern. Try to parse it and return true if there were no parsing errors
         let previous_error_count = p.context().diagnostics().len();
+
         let pattern = parse_binding_pattern(p, ExpressionContext::default());
+
         pattern.is_present() && p.context().diagnostics().len() == previous_error_count
     } else {
         false
@@ -1254,7 +1335,9 @@ pub(super) fn parse_parameter_list(
     if !p.at(T!['(']) {
         return Absent;
     }
+
     let m = p.start();
+
     parse_parameters_list(
         p,
         flags,
@@ -1281,6 +1364,7 @@ pub(super) fn parse_parameter_list(
                 //     static method(@dec.fn() x, second, @dec.fn() third = 'default') {}
                 //     static method(@dec() x, second, @dec() third = 'default') {}
                 // }
+
                 decorator_list
             } else {
                 // test_err ts ts_decorator_on_function_declaration { "parse_class_parameter_decorators": true }
@@ -1324,6 +1408,7 @@ pub(super) fn parse_parameter_list(
                     .add_diagnostic_if_present(p, decorators_not_allowed)
                     .map(|mut decorator_list| {
                         decorator_list.change_to_bogus(p);
+
                         decorator_list
                     })
                     .into()
@@ -1351,10 +1436,12 @@ pub(super) fn parse_parameters_list(
     list_kind: JsSyntaxKind,
 ) {
     let mut first = true;
+
     let has_l_paren = p.expect(T!['(']);
 
     p.with_state(EnterParameters(flags), |p| {
         let parameters_list = p.start();
+
         let mut progress = ParserProgress::default();
 
         while !p.at(EOF) && !p.at(T![')']) {
@@ -1382,6 +1469,7 @@ pub(super) fn parse_parameters_list(
             if parameter.is_absent() && p.at(T![,]) {
                 // a missing parameter,
                 parameter.or_add_diagnostic(p, expected_parameter);
+
                 continue;
             }
 
@@ -1390,6 +1478,7 @@ pub(super) fn parse_parameters_list(
 
             // test_err js formal_params_invalid
             // function (a++, c) {}
+
             let recovered_result = parameter.or_recover_with_token_set(
                 p,
                 &ParseRecoveryTokenSet::new(

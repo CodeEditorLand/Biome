@@ -6,6 +6,7 @@ use biome_js_syntax::AnyTsMethodSignatureModifier;
 pub(crate) struct FormatAnyTsMethodSignatureModifier;
 impl FormatRule<AnyTsMethodSignatureModifier> for FormatAnyTsMethodSignatureModifier {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyTsMethodSignatureModifier, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyTsMethodSignatureModifier::JsDecorator(node) => node.format().fmt(f),

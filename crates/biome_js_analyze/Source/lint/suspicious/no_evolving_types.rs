@@ -56,12 +56,16 @@ declare_lint_rule! {
 
 impl Rule for NoEvolvingTypes {
     type Query = Ast<JsVariableDeclaration>;
+
     type State = JsVariableDeclarator;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let source_type = ctx.source_type::<JsFileSource>().language();
+
         let node = ctx.query();
 
         if !source_type.is_typescript() || source_type.is_definition_file() {
@@ -72,6 +76,7 @@ impl Rule for NoEvolvingTypes {
             let variable = declarator.ok()?;
 
             let is_initialized = variable.initializer().is_some();
+
             let is_type_annotated = variable.variable_annotation().is_some();
 
             if !is_initialized && !is_type_annotated {
@@ -80,7 +85,9 @@ impl Rule for NoEvolvingTypes {
 
             if is_initialized {
                 let initializer = variable.initializer()?;
+
                 let expression = initializer.expression().ok()?;
+
                 match expression {
                     AnyJsExpression::AnyJsLiteralExpression(literal_expr) => {
                         if literal_expr.as_js_null_literal_expression().is_some()
@@ -89,12 +96,14 @@ impl Rule for NoEvolvingTypes {
                             return Some(variable);
                         }
                     }
+
                     AnyJsExpression::JsArrayExpression(array_expr) => {
                         if array_expr.elements().into_iter().next().is_none() && !is_type_annotated
                         {
                             return Some(variable);
                         }
                     }
+
                     _ => continue,
                 };
             }
@@ -111,6 +120,7 @@ impl Rule for NoEvolvingTypes {
             .as_js_identifier_binding()?
             .name_token()
             .ok()?;
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

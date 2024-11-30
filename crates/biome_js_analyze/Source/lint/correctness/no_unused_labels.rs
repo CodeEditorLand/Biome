@@ -115,6 +115,7 @@ impl Visitor for UnusedLabelVisitor {
                     }
                 }
             }
+
             WalkEvent::Leave(node) => {
                 if AnyJsControlFlowRoot::can_cast(node.kind()) {
                     self.root_id -= 1;
@@ -140,8 +141,11 @@ impl QueryMatch for UnusedLabel {
 
 impl Queryable for UnusedLabel {
     type Input = Self;
+
     type Language = JsLanguage;
+
     type Output = JsLabeledStatement;
+
     type Services = ();
 
     fn build_visitor(
@@ -159,13 +163,18 @@ impl Queryable for UnusedLabel {
 
 impl Rule for NoUnusedLabels {
     type Query = UnusedLabel;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let label = ctx.query().label_token().ok()?;
+
         let label = label.text_trimmed();
+
         if label == "$"
             && ctx
                 .source_type::<JsFileSource>()
@@ -174,11 +183,13 @@ impl Rule for NoUnusedLabels {
         {
             return None;
         }
+
         Some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let unused_label = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             unused_label.label_token().ok()?.text_trimmed_range(),
@@ -192,9 +203,13 @@ impl Rule for NoUnusedLabels {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let unused_label = ctx.query();
+
         let body = unused_label.body().ok()?;
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(unused_label.clone().into(), body);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

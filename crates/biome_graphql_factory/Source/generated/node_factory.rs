@@ -99,8 +99,10 @@ pub struct GraphqlDirectiveBuilder {
 impl GraphqlDirectiveBuilder {
     pub fn with_arguments(mut self, arguments: GraphqlArguments) -> Self {
         self.arguments = Some(arguments);
+
         self
     }
+
     pub fn build(self) -> GraphqlDirective {
         GraphqlDirective::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_DIRECTIVE,
@@ -146,20 +148,28 @@ pub struct GraphqlDirectiveDefinitionBuilder {
 impl GraphqlDirectiveDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn with_arguments(mut self, arguments: GraphqlArgumentsDefinition) -> Self {
         self.arguments = Some(arguments);
+
         self
     }
+
     pub fn with_repeatable_token(mut self, repeatable_token: SyntaxToken) -> Self {
         self.repeatable_token = Some(repeatable_token);
+
         self
     }
+
     pub fn with_bitwise_or_token(mut self, bitwise_or_token: SyntaxToken) -> Self {
         self.bitwise_or_token = Some(bitwise_or_token);
+
         self
     }
+
     pub fn build(self) -> GraphqlDirectiveDefinition {
         GraphqlDirectiveDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_DIRECTIVE_DEFINITION,
@@ -210,12 +220,16 @@ pub struct GraphqlEnumTypeDefinitionBuilder {
 impl GraphqlEnumTypeDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn with_enum_values(mut self, enum_values: GraphqlEnumValuesDefinition) -> Self {
         self.enum_values = Some(enum_values);
+
         self
     }
+
     pub fn build(self) -> GraphqlEnumTypeDefinition {
         GraphqlEnumTypeDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_ENUM_TYPE_DEFINITION,
@@ -255,8 +269,10 @@ pub struct GraphqlEnumTypeExtensionBuilder {
 impl GraphqlEnumTypeExtensionBuilder {
     pub fn with_enum_values(mut self, enum_values: GraphqlEnumValuesDefinition) -> Self {
         self.enum_values = Some(enum_values);
+
         self
     }
+
     pub fn build(self) -> GraphqlEnumTypeExtension {
         GraphqlEnumTypeExtension::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_ENUM_TYPE_EXTENSION,
@@ -295,8 +311,10 @@ pub struct GraphqlEnumValueDefinitionBuilder {
 impl GraphqlEnumValueDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn build(self) -> GraphqlEnumValueDefinition {
         GraphqlEnumValueDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_ENUM_VALUE_DEFINITION,
@@ -345,16 +363,22 @@ pub struct GraphqlFieldBuilder {
 impl GraphqlFieldBuilder {
     pub fn with_alias(mut self, alias: GraphqlAlias) -> Self {
         self.alias = Some(alias);
+
         self
     }
+
     pub fn with_arguments(mut self, arguments: GraphqlArguments) -> Self {
         self.arguments = Some(arguments);
+
         self
     }
+
     pub fn with_selection_set(mut self, selection_set: GraphqlSelectionSet) -> Self {
         self.selection_set = Some(selection_set);
+
         self
     }
+
     pub fn build(self) -> GraphqlField {
         GraphqlField::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_FIELD,
@@ -397,12 +421,16 @@ pub struct GraphqlFieldDefinitionBuilder {
 impl GraphqlFieldDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn with_arguments(mut self, arguments: GraphqlArgumentsDefinition) -> Self {
         self.arguments = Some(arguments);
+
         self
     }
+
     pub fn build(self) -> GraphqlFieldDefinition {
         GraphqlFieldDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_FIELD_DEFINITION,
@@ -489,8 +517,10 @@ pub struct GraphqlImplementsInterfacesBuilder {
 impl GraphqlImplementsInterfacesBuilder {
     pub fn with_amp_token(mut self, amp_token: SyntaxToken) -> Self {
         self.amp_token = Some(amp_token);
+
         self
     }
+
     pub fn build(self) -> GraphqlImplementsInterfaces {
         GraphqlImplementsInterfaces::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_IMPLEMENTS_INTERFACES,
@@ -523,8 +553,10 @@ pub struct GraphqlInlineFragmentBuilder {
 impl GraphqlInlineFragmentBuilder {
     pub fn with_type_condition(mut self, type_condition: GraphqlTypeCondition) -> Self {
         self.type_condition = Some(type_condition);
+
         self
     }
+
     pub fn build(self) -> GraphqlInlineFragment {
         GraphqlInlineFragment::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_INLINE_FRAGMENT,
@@ -575,12 +607,16 @@ pub struct GraphqlInputObjectTypeDefinitionBuilder {
 impl GraphqlInputObjectTypeDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn with_input_fields(mut self, input_fields: GraphqlInputFieldsDefinition) -> Self {
         self.input_fields = Some(input_fields);
+
         self
     }
+
     pub fn build(self) -> GraphqlInputObjectTypeDefinition {
         GraphqlInputObjectTypeDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_INPUT_OBJECT_TYPE_DEFINITION,
@@ -620,8 +656,10 @@ pub struct GraphqlInputObjectTypeExtensionBuilder {
 impl GraphqlInputObjectTypeExtensionBuilder {
     pub fn with_input_fields(mut self, input_fields: GraphqlInputFieldsDefinition) -> Self {
         self.input_fields = Some(input_fields);
+
         self
     }
+
     pub fn build(self) -> GraphqlInputObjectTypeExtension {
         GraphqlInputObjectTypeExtension::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_INPUT_OBJECT_TYPE_EXTENSION,
@@ -662,12 +700,16 @@ pub struct GraphqlInputValueDefinitionBuilder {
 impl GraphqlInputValueDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn with_default(mut self, default: GraphqlDefaultValue) -> Self {
         self.default = Some(default);
+
         self
     }
+
     pub fn build(self) -> GraphqlInputValueDefinition {
         GraphqlInputValueDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_INPUT_VALUE_DEFINITION,
@@ -715,16 +757,22 @@ pub struct GraphqlInterfaceTypeDefinitionBuilder {
 impl GraphqlInterfaceTypeDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn with_implements(mut self, implements: GraphqlImplementsInterfaces) -> Self {
         self.implements = Some(implements);
+
         self
     }
+
     pub fn with_fields(mut self, fields: GraphqlFieldsDefinition) -> Self {
         self.fields = Some(fields);
+
         self
     }
+
     pub fn build(self) -> GraphqlInterfaceTypeDefinition {
         GraphqlInterfaceTypeDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_INTERFACE_TYPE_DEFINITION,
@@ -768,12 +816,16 @@ pub struct GraphqlInterfaceTypeExtensionBuilder {
 impl GraphqlInterfaceTypeExtensionBuilder {
     pub fn with_implements(mut self, implements: GraphqlImplementsInterfaces) -> Self {
         self.implements = Some(implements);
+
         self
     }
+
     pub fn with_fields(mut self, fields: GraphqlFieldsDefinition) -> Self {
         self.fields = Some(fields);
+
         self
     }
+
     pub fn build(self) -> GraphqlInterfaceTypeExtension {
         GraphqlInterfaceTypeExtension::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_INTERFACE_TYPE_EXTENSION,
@@ -893,16 +945,22 @@ pub struct GraphqlObjectTypeDefinitionBuilder {
 impl GraphqlObjectTypeDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn with_implements(mut self, implements: GraphqlImplementsInterfaces) -> Self {
         self.implements = Some(implements);
+
         self
     }
+
     pub fn with_fields(mut self, fields: GraphqlFieldsDefinition) -> Self {
         self.fields = Some(fields);
+
         self
     }
+
     pub fn build(self) -> GraphqlObjectTypeDefinition {
         GraphqlObjectTypeDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_OBJECT_TYPE_DEFINITION,
@@ -946,12 +1004,16 @@ pub struct GraphqlObjectTypeExtensionBuilder {
 impl GraphqlObjectTypeExtensionBuilder {
     pub fn with_implements(mut self, implements: GraphqlImplementsInterfaces) -> Self {
         self.implements = Some(implements);
+
         self
     }
+
     pub fn with_fields(mut self, fields: GraphqlFieldsDefinition) -> Self {
         self.fields = Some(fields);
+
         self
     }
+
     pub fn build(self) -> GraphqlObjectTypeExtension {
         GraphqlObjectTypeExtension::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_OBJECT_TYPE_EXTENSION,
@@ -1005,12 +1067,16 @@ pub struct GraphqlOperationDefinitionBuilder {
 impl GraphqlOperationDefinitionBuilder {
     pub fn with_name(mut self, name: GraphqlNameBinding) -> Self {
         self.name = Some(name);
+
         self
     }
+
     pub fn with_variables(mut self, variables: GraphqlVariableDefinitions) -> Self {
         self.variables = Some(variables);
+
         self
     }
+
     pub fn build(self) -> GraphqlOperationDefinition {
         GraphqlOperationDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_OPERATION_DEFINITION,
@@ -1050,8 +1116,10 @@ pub struct GraphqlRootBuilder {
 impl GraphqlRootBuilder {
     pub fn with_bom_token(mut self, bom_token: SyntaxToken) -> Self {
         self.bom_token = Some(bom_token);
+
         self
     }
+
     pub fn build(self) -> GraphqlRoot {
         GraphqlRoot::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_ROOT,
@@ -1112,8 +1180,10 @@ pub struct GraphqlScalarTypeDefinitionBuilder {
 impl GraphqlScalarTypeDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn build(self) -> GraphqlScalarTypeDefinition {
         GraphqlScalarTypeDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_SCALAR_TYPE_DEFINITION,
@@ -1164,8 +1234,10 @@ pub struct GraphqlSchemaDefinitionBuilder {
 impl GraphqlSchemaDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn build(self) -> GraphqlSchemaDefinition {
         GraphqlSchemaDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_SCHEMA_DEFINITION,
@@ -1203,8 +1275,10 @@ impl GraphqlSchemaExtensionBuilder {
         root_operation_types: GraphqlRootOperationTypes,
     ) -> Self {
         self.root_operation_types = Some(root_operation_types);
+
         self
     }
+
     pub fn build(self) -> GraphqlSchemaExtension {
         GraphqlSchemaExtension::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_SCHEMA_EXTENSION,
@@ -1268,8 +1342,10 @@ pub struct GraphqlUnionMemberTypesBuilder {
 impl GraphqlUnionMemberTypesBuilder {
     pub fn with_bitwise_or_token(mut self, bitwise_or_token: SyntaxToken) -> Self {
         self.bitwise_or_token = Some(bitwise_or_token);
+
         self
     }
+
     pub fn build(self) -> GraphqlUnionMemberTypes {
         GraphqlUnionMemberTypes::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_UNION_MEMBER_TYPES,
@@ -1305,12 +1381,16 @@ pub struct GraphqlUnionTypeDefinitionBuilder {
 impl GraphqlUnionTypeDefinitionBuilder {
     pub fn with_description(mut self, description: GraphqlDescription) -> Self {
         self.description = Some(description);
+
         self
     }
+
     pub fn with_union_members(mut self, union_members: GraphqlUnionMemberTypes) -> Self {
         self.union_members = Some(union_members);
+
         self
     }
+
     pub fn build(self) -> GraphqlUnionTypeDefinition {
         GraphqlUnionTypeDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_UNION_TYPE_DEFINITION,
@@ -1350,8 +1430,10 @@ pub struct GraphqlUnionTypeExtensionBuilder {
 impl GraphqlUnionTypeExtensionBuilder {
     pub fn with_union_members(mut self, union_members: GraphqlUnionMemberTypes) -> Self {
         self.union_members = Some(union_members);
+
         self
     }
+
     pub fn build(self) -> GraphqlUnionTypeExtension {
         GraphqlUnionTypeExtension::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_UNION_TYPE_EXTENSION,
@@ -1402,8 +1484,10 @@ pub struct GraphqlVariableDefinitionBuilder {
 impl GraphqlVariableDefinitionBuilder {
     pub fn with_default(mut self, default: GraphqlDefaultValue) -> Self {
         self.default = Some(default);
+
         self
     }
+
     pub fn build(self) -> GraphqlVariableDefinition {
         GraphqlVariableDefinition::unwrap_cast(SyntaxNode::new_detached(
             GraphqlSyntaxKind::GRAPHQL_VARIABLE_DEFINITION,
@@ -1503,8 +1587,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GraphqlDirectiveLocationList::unwrap_cast(SyntaxNode::new_detached(
         GraphqlSyntaxKind::GRAPHQL_DIRECTIVE_LOCATION_LIST,
         (0..length).map(|index| {
@@ -1551,8 +1638,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GraphqlImplementsInterfaceList::unwrap_cast(SyntaxNode::new_detached(
         GraphqlSyntaxKind::GRAPHQL_IMPLEMENTS_INTERFACE_LIST,
         (0..length).map(|index| {
@@ -1634,8 +1724,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GraphqlUnionMemberTypeList::unwrap_cast(SyntaxNode::new_detached(
         GraphqlSyntaxKind::GRAPHQL_UNION_MEMBER_TYPE_LIST,
         (0..length).map(|index| {

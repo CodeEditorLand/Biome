@@ -63,8 +63,11 @@ declare_lint_rule! {
 
 impl Rule for NoExcessiveNestedTestSuites {
     type Query = NestedTest;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(_: &RuleContext<Self>) -> Self::Signals {
@@ -73,6 +76,7 @@ impl Rule for NoExcessiveNestedTestSuites {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -119,6 +123,7 @@ impl Visitor for NestedTestVisitor {
                     if let Ok(callee) = node.callee() {
                         if callee.contains_describe_call() && !is_member(&node) {
                             self.curr_count += 1;
+
                             if self.curr_count == self.max_count + 1 {
                                 ctx.match_query(NestedTest(node.clone()));
                             }
@@ -126,6 +131,7 @@ impl Visitor for NestedTestVisitor {
                     }
                 }
             }
+
             WalkEvent::Leave(node) => {
                 if let Some(node) = JsCallExpression::cast_ref(node) {
                     if let Ok(callee) = node.callee() {
@@ -170,9 +176,11 @@ impl QueryMatch for NestedTest {
 impl Queryable for NestedTest {
     // `Input` is the type that `ctx.match_query()` is called with in the visitor
     type Input = Self;
+
     type Language = JsLanguage;
     // `Output` if the type that `ctx.query()` will return in the rule
     type Output = JsCallExpression;
+
     type Services = ();
 
     fn build_visitor(

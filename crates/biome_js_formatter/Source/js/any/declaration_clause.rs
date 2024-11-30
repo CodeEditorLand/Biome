@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsDeclarationClause;
 pub(crate) struct FormatAnyJsDeclarationClause;
 impl FormatRule<AnyJsDeclarationClause> for FormatAnyJsDeclarationClause {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsDeclarationClause, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsDeclarationClause::JsClassDeclaration(node) => node.format().fmt(f),

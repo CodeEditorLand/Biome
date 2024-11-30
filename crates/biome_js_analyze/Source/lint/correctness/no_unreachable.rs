@@ -58,8 +58,11 @@ declare_lint_rule! {
 
 impl Rule for NoUnreachable {
     type Query = ControlFlowGraph;
+
     type State = UnreachableRange;
+
     type Signals = UnreachableRanges;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -215,22 +218,26 @@ fn exceeds_complexity_threshold(cfg: &JsControlFlowGraph) -> bool {
     let nodes = cfg.blocks.len() as u32;
 
     let mut edges: u32 = 0;
+
     let mut conditionals: u32 = 0;
 
     for block in &cfg.blocks {
         let mut exception_handlers = NonZeroU32::new(block.exception_handlers.len() as u32);
+
         let mut cleanup_handlers = NonZeroU32::new(block.cleanup_handlers.len() as u32);
 
         for inst in &block.instructions {
             if has_side_effects(inst) {
                 if let Some(handlers) = exception_handlers.take() {
                     edges += handlers.get();
+
                     conditionals += 1;
                 }
             }
 
             match inst.kind {
                 InstructionKind::Statement => {}
+
                 InstructionKind::Jump { conditional, .. } => {
                     edges += 1;
 
@@ -238,15 +245,18 @@ fn exceeds_complexity_threshold(cfg: &JsControlFlowGraph) -> bool {
                         conditionals += 1;
                     }
                 }
+
                 InstructionKind::Return => {
                     if let Some(handlers) = cleanup_handlers.take() {
                         edges += handlers.get();
+
                         conditionals += 1;
                     }
                 }
             }
 
             let complexity = edges.saturating_sub(nodes) + conditionals / 2;
+
             if complexity > COMPLEXITY_THRESHOLD {
                 return true;
             }
@@ -263,10 +273,12 @@ fn analyze_simple(cfg: &JsControlFlowGraph, signals: &mut UnreachableRanges) {
     // Perform a simple reachability analysis on the control flow graph by
     // traversing the function starting at the entry point
     let mut reachable_blocks = RoaringBitmap::new();
+
     let mut queue = VecDeque::new();
 
     if !cfg.blocks.is_empty() {
         reachable_blocks.insert(ROOT_BLOCK_ID.index());
+
         queue.push_back((ROOT_BLOCK_ID, None));
     }
 
@@ -288,6 +300,7 @@ fn analyze_simple(cfg: &JsControlFlowGraph, signals: &mut UnreachableRanges) {
                 if let Some(node) = &inst.node {
                     signals.push(node, None);
                 }
+
                 continue;
             }
 
@@ -305,6 +318,7 @@ fn analyze_simple(cfg: &JsControlFlowGraph, signals: &mut UnreachableRanges) {
 
             match inst.kind {
                 InstructionKind::Statement => {}
+
                 InstructionKind::Jump {
                     conditional,
                     block,
@@ -332,6 +346,7 @@ fn analyze_simple(cfg: &JsControlFlowGraph, signals: &mut UnreachableRanges) {
                         has_terminator = true;
                     }
                 }
+
                 InstructionKind::Return => {
                     if let Some((handler, handlers)) = block.cleanup_handlers.split_first() {
                         if reachable_blocks.insert(handler.target.index()) {
@@ -348,6 +363,7 @@ fn analyze_simple(cfg: &JsControlFlowGraph, signals: &mut UnreachableRanges) {
     // Detect blocks that were never reached by the above traversal
     for (index, block) in cfg.blocks.iter().enumerate() {
         let index = index as u32;
+
         if reachable_blocks.contains(index) {
             continue;
         }
@@ -376,6 +392,7 @@ fn analyze_fine(cfg: &JsControlFlowGraph, signals: &mut UnreachableRanges) {
             // have a dominating terminator intruction
             Some(paths) => {
                 let mut terminators = Vec::new();
+
                 for path in paths {
                     if let Some(terminator) = *path {
                         terminators.push(terminator);
@@ -492,6 +509,7 @@ fn traverse_cfg(
 
             match inst.kind {
                 InstructionKind::Statement => {}
+
                 InstructionKind::Jump {
                     conditional,
                     block,
@@ -505,9 +523,11 @@ fn traverse_cfg(
                             kind: node.kind(),
                             range: node.text_trimmed_range(),
                         }));
+
                         has_direct_terminator = true;
                     }
                 }
+
                 InstructionKind::Return => {
                     handle_return(&mut queue, &path, &block.cleanup_handlers);
 
@@ -516,6 +536,7 @@ fn traverse_cfg(
                             kind: node.kind(),
                             range: node.text_trimmed_range(),
                         }));
+
                         has_direct_terminator = true;
                     }
                 }
@@ -542,8 +563,10 @@ fn has_side_effects(inst: &Instruction<JsLanguage>) -> bool {
     match node.kind() {
         JsSyntaxKind::JS_RETURN_STATEMENT => {
             let node = JsReturnStatement::unwrap_cast(node.clone());
+
             node.argument().is_some()
         }
+
         JsSyntaxKind::JS_BREAK_STATEMENT | JsSyntaxKind::JS_CONTINUE_STATEMENT => false,
         kind => !kind.is_literal(),
     }
@@ -632,6 +655,7 @@ impl UnreachableRanges {
 
     fn push(&mut self, node: &JsSyntaxElement, terminator: Option<PathTerminator>) {
         let text_range = node.text_range();
+
         let text_trimmed_range = node.text_trimmed_range();
 
         // Perform a binary search on the ranges already in storage to find an
@@ -651,7 +675,9 @@ impl UnreachableRanges {
             // cover the incoming range
             Ok(index) => {
                 let entry = &mut self.ranges[index];
+
                 entry.text_range = entry.text_range.cover(text_range);
+
                 entry.text_trimmed_range = entry.text_trimmed_range.cover(text_trimmed_range);
 
                 if let Some(terminator) = terminator {
@@ -709,6 +735,7 @@ impl UnreachableRanges {
 
                 JsControlFlowNode::JsBlockStatement(stmt) => {
                     let statements = stmt.statements().into_syntax();
+
                     if statements.text_trimmed_range().is_empty() {
                         vec![]
                     } else {
@@ -718,6 +745,7 @@ impl UnreachableRanges {
 
                 JsControlFlowNode::JsVariableStatement(stmt) => {
                     let declaration = stmt.declaration().ok()?;
+
                     declaration
                         .declarators()
                         .into_iter()
@@ -731,9 +759,11 @@ impl UnreachableRanges {
                         .collect::<Result<Vec<_>, _>>()
                         .ok()?
                 }
+
                 JsControlFlowNode::JsLabeledStatement(stmt) => {
                     vec![stmt.body().ok()?.syntax().text_range()]
                 }
+
                 JsControlFlowNode::JsDoWhileStatement(stmt) => vec![
                     stmt.body().ok()?.syntax().text_range(),
                     stmt.test().ok()?.syntax().text_range(),
@@ -762,8 +792,10 @@ impl UnreachableRanges {
                     }
 
                     res.push(stmt.body().ok()?.syntax().text_range());
+
                     res
                 }
+
                 JsControlFlowNode::JsIfStatement(stmt) => {
                     let mut res = vec![
                         stmt.test().ok()?.syntax().text_range(),
@@ -776,16 +808,19 @@ impl UnreachableRanges {
 
                     res
                 }
+
                 JsControlFlowNode::JsSwitchStatement(stmt) => {
                     let mut res = vec![stmt.discriminant().ok()?.syntax().text_range()];
 
                     let cases = stmt.cases().into_syntax();
+
                     if !cases.text_trimmed_range().is_empty() {
                         res.push(cases.text_range());
                     }
 
                     res
                 }
+
                 JsControlFlowNode::JsTryStatement(stmt) => vec![
                     stmt.body().ok()?.syntax().text_range(),
                     stmt.catch_clause().ok()?.body().ok()?.syntax().text_range(),
@@ -808,6 +843,7 @@ impl UnreachableRanges {
 
                     res
                 }
+
                 JsControlFlowNode::JsWhileStatement(stmt) => vec![
                     stmt.test().ok()?.syntax().text_range(),
                     stmt.body().ok()?.syntax().text_range(),
@@ -816,16 +852,19 @@ impl UnreachableRanges {
                     let mut res = vec![stmt.test().ok()?.syntax().text_range()];
 
                     let consequent = stmt.consequent().into_syntax();
+
                     if !consequent.text_trimmed_range().is_empty() {
                         res.push(consequent.text_range());
                     }
 
                     res
                 }
+
                 JsControlFlowNode::JsDefaultClause(stmt) => {
                     let mut res = vec![stmt.default_token().ok()?.text_range()];
 
                     let consequent = stmt.consequent().into_syntax();
+
                     if !consequent.text_trimmed_range().is_empty() {
                         res.push(consequent.text_range());
                     }
@@ -838,12 +877,15 @@ impl UnreachableRanges {
 
             // Extend the range at the specific index to cover the whole parent node
             let entry = &mut self.ranges[next_index];
+
             entry.text_range = entry.text_range.cover(parent.syntax().text_range());
+
             entry.text_trimmed_range = entry
                 .text_trimmed_range
                 .cover(parent.syntax().text_trimmed_range());
 
             index = next_index;
+
             node = parent.syntax().parent()?;
         }
 
@@ -856,6 +898,7 @@ impl UnreachableRanges {
     /// Merge adjacent unreachable ranges into a single entry
     fn merge_adjacent_ranges(&mut self) {
         let mut index = 0;
+
         while index < self.ranges.len().saturating_sub(1) {
             let text_range = self.ranges[index].text_range;
 
@@ -863,7 +906,9 @@ impl UnreachableRanges {
                 let prev_entry = self.ranges.remove(index + 1);
 
                 let entry = &mut self.ranges[index];
+
                 entry.text_range = entry.text_range.cover(prev_entry.text_range);
+
                 entry.text_trimmed_range = entry
                     .text_trimmed_range
                     .cover(prev_entry.text_trimmed_range);
@@ -912,11 +957,14 @@ fn check_neighbors(
     }
 
     let fields_end = fields.len().saturating_sub(1);
+
     let min_start = index.saturating_sub(fields_end);
+
     let max_start = (min_start + fields.len()).min(ranges.len().saturating_sub(fields_end));
 
     for start in min_start..max_start {
         let end = start + fields.len();
+
         let slice = &ranges[start..end];
 
         let is_matching = slice
@@ -934,6 +982,7 @@ fn check_neighbors(
 
 impl IntoIterator for UnreachableRanges {
     type Item = UnreachableRange;
+
     type IntoIter = IntoIter<UnreachableRange>;
 
     fn into_iter(self) -> Self::IntoIter {

@@ -347,8 +347,11 @@ where
         }
 
         self.fmt_leading_comments(node, f)?;
+
         self.fmt_node(node, f)?;
+
         self.fmt_dangling_comments(node, f)?;
+
         self.fmt_trailing_comments(node, f)
     }
 
@@ -375,6 +378,7 @@ where
     /// Returns whether the node requires parens.
     fn needs_parentheses(&self, item: &N) -> bool {
         let _ = item;
+
         false
     }
 
@@ -454,7 +458,9 @@ impl JsFormatLanguage {
 
 impl FormatLanguage for JsFormatLanguage {
     type SyntaxLanguage = JsLanguage;
+
     type Context = JsFormatContext;
+
     type FormatRule = FormatJsSyntaxNode;
 
     fn transform(
@@ -490,6 +496,7 @@ impl FormatLanguage for JsFormatLanguage {
         source_map: Option<TransformSourceMap>,
     ) -> Self::Context {
         let comments = Comments::from_node(root, &JsCommentStyle, source_map.as_ref());
+
         JsFormatContext::new(self.options, comments).with_source_map(source_map)
     }
 }
@@ -560,9 +567,13 @@ mod tests {
     use super::format_range;
 
     use crate::context::JsFormatOptions;
+
     use biome_formatter::IndentStyle;
+
     use biome_js_parser::{parse, parse_script, JsParserOptions};
+
     use biome_js_syntax::JsFileSource;
+
     use biome_rowan::{TextRange, TextSize};
 
     #[test]
@@ -593,9 +604,11 @@ while(
         // Start the formatting range two characters before the "let" keywords,
         // in the middle of the indentation whitespace for the line
         let range_start = TextSize::try_from(input.find("let").unwrap() - 2).unwrap();
+
         let range_end = TextSize::try_from(input.find("const").unwrap()).unwrap();
 
         let tree = parse_script(input, JsParserOptions::default());
+
         let result = format_range(
             JsFormatOptions::new(JsFileSource::js_script())
                 .with_indent_style(IndentStyle::Space)
@@ -605,10 +618,12 @@ while(
         );
 
         let result = result.expect("range formatting failed");
+
         assert_eq!(
             result.as_code(),
             "function func() {\n        func(/* comment */);\n\n        let array = [1, 2];\n    }\n\n    function func2() {\n        const no_format = () => {};\n    }"
         );
+
         assert_eq!(
             result.range(),
             Some(TextRange::new(
@@ -627,9 +642,11 @@ function() {
 ";
 
         let range_start = TextSize::try_from(input.find("const").unwrap()).unwrap();
+
         let range_end = TextSize::try_from(input.find('}').unwrap()).unwrap();
 
         let tree = parse_script(input, JsParserOptions::default());
+
         let result = format_range(
             JsFormatOptions::new(JsFileSource::js_script())
                 .with_indent_style(IndentStyle::Space)
@@ -645,6 +662,7 @@ function() {
             result.as_code(),
             "const veryLongIdentifierToCauseALineBreak = {\n            veryLongKeyToCauseALineBreak: \"veryLongValueToCauseALineBreak\",\n        };"
         );
+
         assert_eq!(
             result.range(),
             Some(TextRange::new(range_start, range_end + TextSize::from(1)))
@@ -656,9 +674,11 @@ function() {
         let input = "               ";
 
         let range_start = TextSize::from(5);
+
         let range_end = TextSize::from(5);
 
         let tree = parse_script(input, JsParserOptions::default());
+
         let result = format_range(
             JsFormatOptions::new(JsFileSource::js_script())
                 .with_indent_style(IndentStyle::Space)
@@ -668,7 +688,9 @@ function() {
         );
 
         let result = result.expect("range formatting failed");
+
         assert_eq!(result.as_code(), "");
+
         assert_eq!(result.range(), Some(TextRange::new(range_start, range_end)));
     }
 
@@ -689,6 +711,7 @@ function() {
         );
 
         let tree = parse_script(input, JsParserOptions::default());
+
         let result = format_range(
             JsFormatOptions::new(JsFileSource::js_script())
                 .with_indent_style(IndentStyle::Space)
@@ -704,6 +727,7 @@ function() {
     /**/
 }"#
         );
+
         assert_eq!(
             result.range(),
             Some(TextRange::new(TextSize::from(0), TextSize::from(28)))
@@ -722,6 +746,7 @@ function() {
         debug_assert_eq!(&input[range], r#"  quux (); //"#);
 
         let tree = parse_script(input, JsParserOptions::default());
+
         let result = format_range(
             JsFormatOptions::new(JsFileSource::js_script())
                 .with_indent_style(IndentStyle::Space)
@@ -732,6 +757,7 @@ function() {
         .expect("Range formatting failed");
 
         assert_eq!(result.as_code(), r#"quux(); //"#);
+
         assert_eq!(
             result.range(),
             Some(TextRange::new(TextSize::from(30), TextSize::from(41)))
@@ -743,6 +769,7 @@ function() {
         let src = "statement();";
 
         let syntax = JsFileSource::js_module();
+
         let tree = parse(src, syntax, JsParserOptions::default());
 
         let result = format_range(

@@ -20,6 +20,7 @@ pub fn position(
             let line_col = line_index
                 .to_wide(enc, line_col)
                 .with_context(|| format!("could not convert {line_col:?} into wide line column"))?;
+
             lsp_types::Position::new(line_col.line, line_col.col)
         }
     };
@@ -34,6 +35,8 @@ pub fn range(
     position_encoding: PositionEncoding,
 ) -> Result<lsp_types::Range> {
     let start = position(line_index, range.start(), position_encoding)?;
+
     let end = position(line_index, range.end(), position_encoding)?;
+
     Ok(lsp_types::Range::new(start, end))
 }

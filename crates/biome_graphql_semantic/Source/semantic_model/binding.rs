@@ -42,8 +42,11 @@ impl Binding {
     /// Returns the typed AST node associated with this binding.
     pub fn tree(&self) -> GraphqlNameBinding {
         let node = self.syntax();
+
         let binding = GraphqlNameBinding::cast_ref(node);
+
         debug_assert!(binding.is_some());
+
         binding.unwrap()
     }
 
@@ -71,11 +74,13 @@ impl ReferenceExtensions for GraphqlNameBinding {
 
 pub trait IsBindingAstNode {
     type ReferenceAstNode;
+
     fn all_reference_nodes(&self, model: &SemanticModel) -> Vec<Self::ReferenceAstNode>;
 }
 
 impl IsBindingAstNode for GraphqlNameBinding {
     type ReferenceAstNode = GraphqlNameReference;
+
     fn all_reference_nodes(&self, model: &SemanticModel) -> Vec<Self::ReferenceAstNode> {
         self.all_references(model)
             .iter()
@@ -86,10 +91,12 @@ impl IsBindingAstNode for GraphqlNameBinding {
 
 impl IsBindingAstNode for GraphqlDirectiveDefinition {
     type ReferenceAstNode = GraphqlDirective;
+
     fn all_reference_nodes(&self, model: &SemanticModel) -> Vec<Self::ReferenceAstNode> {
         let Ok(name) = self.name() else {
             return vec![];
         };
+
         name.all_reference_nodes(model)
             .into_iter()
             .filter_map(|r| r.syntax().parent()?.cast())
@@ -99,10 +106,12 @@ impl IsBindingAstNode for GraphqlDirectiveDefinition {
 
 impl IsBindingAstNode for GraphqlFragmentDefinition {
     type ReferenceAstNode = GraphqlFragmentSpread;
+
     fn all_reference_nodes(&self, model: &SemanticModel) -> Vec<Self::ReferenceAstNode> {
         let Ok(name) = self.name() else {
             return vec![];
         };
+
         name.all_reference_nodes(model)
             .into_iter()
             .filter_map(|r| r.syntax().parent()?.cast())

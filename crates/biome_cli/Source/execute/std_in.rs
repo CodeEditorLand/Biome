@@ -23,7 +23,9 @@ pub(crate) fn run<'a>(
     verbose: bool,
 ) -> Result<(), CliDiagnostic> {
     let workspace = &*session.app.workspace;
+
     let console = &mut *session.app.console;
+
     let mut version = 0;
 
     if mode.is_format() {
@@ -31,9 +33,11 @@ pub(crate) fn run<'a>(
             path: biome_path.clone(),
             features: FeaturesBuilder::new().with_formatter().build(),
         })?;
+
         if file_features.is_protected() {
             let protected_diagnostic =
                 WorkspaceError::protected_file(biome_path.display().to_string());
+
             if protected_diagnostic.tags().is_verbose() {
                 if verbose {
                     console.error(markup! {{PrintDiagnostic::verbose(&protected_diagnostic)}})
@@ -41,9 +45,12 @@ pub(crate) fn run<'a>(
             } else {
                 console.error(markup! {{PrintDiagnostic::simple(&protected_diagnostic)}})
             }
+
             console.append(markup! {{content}});
+
             return Ok(());
         };
+
         if file_features.supports_format() {
             workspace.open_file(OpenFileParams {
                 path: biome_path.clone(),
@@ -51,17 +58,20 @@ pub(crate) fn run<'a>(
                 content: content.into(),
                 document_file_source: None,
             })?;
+
             let printed = workspace.format_file(FormatFileParams {
                 path: biome_path.clone(),
             })?;
 
             let code = printed.into_code();
+
             let output = match biome_path.extension().map(|ext| ext.as_encoded_bytes()) {
                 Some(b"astro") => AstroFileHandler::output(content, code.as_str()),
                 Some(b"vue") => VueFileHandler::output(content, code.as_str()),
                 Some(b"svelte") => SvelteFileHandler::output(content, code.as_str()),
                 _ => code,
             };
+
             console.append(markup! {
                 {output}
             });
@@ -69,9 +79,11 @@ pub(crate) fn run<'a>(
             console.append(markup! {
                 {content}
             });
+
             console.error(markup! {
                 <Warn>"The content was not formatted because the formatter is currently disabled."</Warn>
             });
+
             return Err(CliDiagnostic::stdin());
         }
     } else if mode.is_check() || mode.is_lint() {
@@ -96,6 +108,7 @@ pub(crate) fn run<'a>(
         if file_features.is_protected() {
             let protected_diagnostic =
                 WorkspaceError::protected_file(biome_path.display().to_string());
+
             if protected_diagnostic.tags().is_verbose() {
                 if verbose {
                     console.error(markup! {{PrintDiagnostic::verbose(&protected_diagnostic)}})
@@ -103,7 +116,9 @@ pub(crate) fn run<'a>(
             } else {
                 console.error(markup! {{PrintDiagnostic::simple(&protected_diagnostic)}})
             }
+
             console.append(markup! {{content}});
+
             return Ok(());
         };
 
@@ -127,20 +142,25 @@ pub(crate) fn run<'a>(
                         .with_lint()
                         .build(),
                 })?;
+
                 let code = fix_file_result.code;
+
                 let output = match biome_path.extension().map(|ext| ext.as_encoded_bytes()) {
                     Some(b"astro") => AstroFileHandler::output(&new_content, code.as_str()),
                     Some(b"vue") => VueFileHandler::output(&new_content, code.as_str()),
                     Some(b"svelte") => SvelteFileHandler::output(&new_content, code.as_str()),
                     _ => code,
                 };
+
                 if output != new_content {
                     version += 1;
+
                     workspace.change_file(ChangeFileParams {
                         content: output.clone(),
                         path: biome_path.clone(),
                         version,
                     })?;
+
                     new_content = Cow::Owned(output);
                 }
             }
@@ -149,20 +169,25 @@ pub(crate) fn run<'a>(
                 let result = workspace.organize_imports(OrganizeImportsParams {
                     path: biome_path.clone(),
                 })?;
+
                 let code = result.code;
+
                 let output = match biome_path.extension().map(|ext| ext.as_encoded_bytes()) {
                     Some(b"astro") => AstroFileHandler::output(&new_content, code.as_str()),
                     Some(b"vue") => VueFileHandler::output(&new_content, code.as_str()),
                     Some(b"svelte") => SvelteFileHandler::output(&new_content, code.as_str()),
                     _ => code,
                 };
+
                 if output != new_content {
                     version += 1;
+
                     workspace.change_file(ChangeFileParams {
                         content: output.clone(),
                         path: biome_path.clone(),
                         version,
                     })?;
+
                     new_content = Cow::Owned(output);
                 }
             }
@@ -172,13 +197,16 @@ pub(crate) fn run<'a>(
             let printed = workspace.format_file(FormatFileParams {
                 path: biome_path.clone(),
             })?;
+
             let code = printed.into_code();
+
             let output = match biome_path.extension().map(|ext| ext.as_encoded_bytes()) {
                 Some(b"astro") => AstroFileHandler::output(&new_content, code.as_str()),
                 Some(b"vue") => VueFileHandler::output(&new_content, code.as_str()),
                 Some(b"svelte") => SvelteFileHandler::output(&new_content, code.as_str()),
                 _ => code,
             };
+
             if (mode.is_check_apply() || mode.is_check_apply_unsafe()) && output != new_content {
                 new_content = Cow::Owned(output);
             }
@@ -194,6 +222,7 @@ pub(crate) fn run<'a>(
                     return Err(CliDiagnostic::stdin());
                 }
             }
+
             Cow::Owned(ref new_content) => {
                 console.append(markup! {
                     {new_content}
@@ -210,5 +239,6 @@ pub(crate) fn run<'a>(
     } else {
         console.append(markup! {{content}});
     }
+
     Ok(())
 }

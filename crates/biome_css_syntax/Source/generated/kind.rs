@@ -494,6 +494,7 @@ impl CssSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_literal(self) -> bool {
         match self {
             CSS_STRING_LITERAL
@@ -510,6 +511,7 @@ impl CssSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_list(self) -> bool {
         match self {
             CSS_RULE_LIST
@@ -552,6 +554,7 @@ impl CssSyntaxKind {
             _ => false,
         }
     }
+
     pub fn from_keyword(ident: &str) -> Option<CssSyntaxKind> {
         let kw = match ident {
             "media" => MEDIA_KW,
@@ -733,8 +736,10 @@ impl CssSyntaxKind {
             "font-face" => FONT_FACE_KW,
             _ => return None,
         };
+
         Some(kw)
     }
+
     pub const fn to_string(&self) -> Option<&'static str> {
         let tok = match self {
             SEMICOLON => ";",
@@ -959,6 +964,7 @@ impl CssSyntaxKind {
             CSS_STRING_LITERAL => "string literal",
             _ => return None,
         };
+
         Some(tok)
     }
 }

@@ -90,7 +90,9 @@ impl<'source> JsParser<'source> {
         F: FnOnce(&mut JsParser) -> R,
     {
         let checkpoint = self.checkpoint();
+
         let result = op(self);
+
         self.rewind(checkpoint);
 
         result
@@ -103,6 +105,7 @@ impl<'source> JsParser<'source> {
         change: C,
     ) -> ParserStateGuard<'p, 'source, C> {
         let snapshot = change.apply(self.state_mut());
+
         ParserStateGuard::new(self, snapshot)
     }
 
@@ -115,8 +118,11 @@ impl<'source> JsParser<'source> {
         F: FnOnce(&mut JsParser) -> R,
     {
         let snapshot = change.apply(self.state_mut());
+
         let result = func(self);
+
         C::restore(self.state_mut(), snapshot);
+
         result
     }
 
@@ -136,12 +142,15 @@ impl<'source> JsParser<'source> {
         } = checkpoint;
 
         self.context.rewind(context);
+
         self.source.rewind(source);
+
         self.state.restore(state);
     }
 
     pub fn finish(self) -> (Vec<Event<JsSyntaxKind>>, Vec<Trivia>, Vec<ParseDiagnostic>) {
         let (trivia, source_diagnostics) = self.source.finish();
+
         let (events, parse_diagnostics) = self.context.finish();
 
         let diagnostics = merge_diagnostics(source_diagnostics, parse_diagnostics);
@@ -152,6 +161,7 @@ impl<'source> JsParser<'source> {
 
 impl<'source> Parser for JsParser<'source> {
     type Kind = JsSyntaxKind;
+
     type Source = JsTokenSource<'source>;
 
     fn context(&self) -> &ParserContext<Self::Kind> {
@@ -189,12 +199,14 @@ impl<'source> Parser for JsParser<'source> {
                 ),
                 self.cur_range(),
             ));
+
             JsSyntaxKind::ERROR_TOKEN
         } else {
             kind
         };
 
         let end = self.cur_range().end();
+
         self.context_mut().push_token(kind, end);
 
         if self.context().is_skipping() {
@@ -218,7 +230,9 @@ pub struct JsParserCheckpoint {
 #[cfg(test)]
 mod tests {
     use crate::prelude::*;
+
     use crate::JsParserOptions;
+
     use biome_js_syntax::{JsFileSource, JsSyntaxKind};
 
     #[test]
@@ -245,7 +259,9 @@ mod tests {
         );
 
         let m = p.start();
+
         p.expect(JsSyntaxKind::JS_STRING_LITERAL);
+
         m.complete(&mut p, JsSyntaxKind::JS_STRING_LITERAL_EXPRESSION);
     }
 
@@ -258,6 +274,7 @@ mod tests {
         );
 
         let m = p.start();
+
         m.abandon(&mut p);
     }
 }

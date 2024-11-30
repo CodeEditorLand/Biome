@@ -14,16 +14,20 @@ pub struct TestCase {
 
 fn calculate_hash<T: Hash>(t: &T) -> u64 {
     let mut s = DefaultHasher::new();
+
     t.hash(&mut s);
+
     s.finish()
 }
 
 impl TestCase {
     pub fn try_from(file_url: &str) -> Result<TestCase, String> {
         let url = url::Url::from_str(file_url).map_err(err_to_string)?;
+
         let segments = url
             .path_segments()
             .ok_or_else(|| "lib url has no segments".to_string())?;
+
         let filename = segments
             .last()
             .ok_or_else(|| "lib url has no segments".to_string())
@@ -32,6 +36,7 @@ impl TestCase {
                 let filename_path = PathBuf::from(filename);
 
                 let file_stem = filename_path.file_stem().unwrap().to_str().unwrap();
+
                 let file_extension = if filename.ends_with(".d.ts") {
                     "d.ts"
                 } else {
@@ -60,18 +65,24 @@ impl TestCase {
                     file_url,
                     path.display()
                 );
+
                 match ureq::get(file_url).call() {
                     Ok(response) => {
                         let mut reader = response.into_reader();
 
                         let mut writer = std::fs::File::create(&path).map_err(err_to_string)?;
+
                         if let Err(err) = std::io::copy(&mut reader, &mut writer) {
                             drop(writer);
+
                             std::fs::remove_file(&path).ok();
+
                             return Err(err_to_string(err));
                         }
+
                         std::fs::read_to_string(&path).map_err(err_to_string)
                     }
+
                     Err(e) => Err(err_to_string(e)),
                 }
             });
@@ -82,6 +93,7 @@ impl TestCase {
                 filename.clone().fg(red()),
                 path.display()
             );
+
             TestCase {
                 id: filename.to_string(),
                 code,
@@ -114,5 +126,6 @@ impl TestCase {
 #[test]
 fn file_extension() {
     let path = PathBuf::from("io.d.ts");
+
     dbg!(path.extension().unwrap());
 }

@@ -17,6 +17,7 @@ impl ListIndexCompiler {
             AnyGritListAccessorSubject::AnyGritContainer(container) => {
                 ListOrContainer::Container(ContainerCompiler::from_node(&container, context)?)
             }
+
             AnyGritListAccessorSubject::GritList(list) => {
                 ListOrContainer::List(ListCompiler::from_node(&list, context)?)
             }
@@ -26,6 +27,7 @@ impl ListIndexCompiler {
             AnyGritListIndex::AnyGritContainer(container) => {
                 ContainerOrIndex::Container(ContainerCompiler::from_node(&container, context)?)
             }
+
             AnyGritListIndex::GritIntLiteral(int) => ContainerOrIndex::Index(
                 int.value_token()?.text_trimmed().parse().map_err(|err| {
                     CompileError::LiteralOutOfRange(format!("Error parsing list index: {err}"))

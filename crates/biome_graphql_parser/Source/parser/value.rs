@@ -24,7 +24,9 @@ struct ListValueElementListParseRecovery;
 
 impl ParseRecovery for ListValueElementListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS_VALUE;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -37,6 +39,7 @@ struct ListValueElementList;
 
 impl ParseNodeList for ListValueElementList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_LIST_VALUE_ELEMENT_LIST;
@@ -62,7 +65,9 @@ struct ObjectValueMemberListParseRecovery;
 
 impl ParseRecovery for ObjectValueMemberListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_OBJECT_FIELD;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -75,6 +80,7 @@ struct ObjectValueMemberList;
 
 impl ParseNodeList for ObjectValueMemberList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_OBJECT_VALUE_MEMBER_LIST;
@@ -107,8 +113,11 @@ pub(crate) fn parse_default_value(p: &mut GraphqlParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![=]);
+
     parse_value(p).or_add_diagnostic(p, expected_value);
+
     Present(m.complete(p, GRAPHQL_DEFAULT_VALUE))
 }
 
@@ -142,8 +151,11 @@ fn parse_int(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_int(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump(GRAPHQL_INT_LITERAL);
+
     Present(m.complete(p, GRAPHQL_INT_VALUE))
 }
 
@@ -152,8 +164,11 @@ fn parse_float(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_float(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump(GRAPHQL_FLOAT_LITERAL);
+
     Present(m.complete(p, GRAPHQL_FLOAT_VALUE))
 }
 
@@ -162,8 +177,11 @@ pub(crate) fn parse_string(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_string(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump(GRAPHQL_STRING_LITERAL);
+
     Present(m.complete(p, GRAPHQL_STRING_VALUE))
 }
 
@@ -172,8 +190,11 @@ fn parse_boolean(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_boolean(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump_ts(BOOLEAN_VALUE_SET);
+
     Present(m.complete(p, GRAPHQL_BOOLEAN_VALUE))
 }
 
@@ -182,8 +203,11 @@ fn parse_null(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_null(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump(T![null]);
+
     Present(m.complete(p, GRAPHQL_NULL_VALUE))
 }
 
@@ -192,8 +216,11 @@ fn parse_enum_value(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_enum(p) {
         return Absent;
     }
+
     let m = p.start();
+
     parse_literal_name(p).ok();
+
     Present(m.complete(p, GRAPHQL_ENUM_VALUE))
 }
 
@@ -202,10 +229,15 @@ fn parse_list(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_list(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump(T!['[']);
+
     ListValueElementList.parse_list(p);
+
     p.expect(T![']']);
+
     Present(m.complete(p, GRAPHQL_LIST_VALUE))
 }
 
@@ -214,10 +246,15 @@ fn parse_object(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_object(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump(T!['{']);
+
     ObjectValueMemberList.parse_list(p);
+
     p.expect(T!['}']);
+
     Present(m.complete(p, GRAPHQL_OBJECT_VALUE))
 }
 
@@ -226,10 +263,15 @@ fn parse_object_field(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_object_field(p) {
         return Absent;
     }
+
     let m = p.start();
+
     parse_literal_name(p).ok();
+
     p.expect(T![:]);
+
     parse_value(p).or_add_diagnostic(p, expected_value);
+
     Present(m.complete(p, GRAPHQL_OBJECT_FIELD))
 }
 

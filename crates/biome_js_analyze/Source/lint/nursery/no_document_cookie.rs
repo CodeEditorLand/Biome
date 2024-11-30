@@ -77,15 +77,22 @@ fn is_global_document(expr: &AnyJsExpression, model: &SemanticModel) -> Option<(
     } else {
         // Check binding declaration recursively
         let bind = model.binding(&reference)?;
+
         let decl = bind.tree().declaration()?;
+
         let decl = decl.parent_binding_pattern_declaration().unwrap_or(decl);
+
         match decl {
             // const foo = documnet;
+
             AnyJsBindingDeclaration::JsVariableDeclarator(declarator) => {
                 let initializer = declarator.initializer()?;
+
                 let right_expr = initializer.expression().ok()?;
+
                 is_global_document(&right_expr, model)
             }
+
             _ => None,
         }
     }
@@ -94,6 +101,7 @@ fn is_global_document(expr: &AnyJsExpression, model: &SemanticModel) -> Option<(
 /// Check member is `cookie`
 fn is_cookie(assignment: &AnyJsAssignment) -> Option<()> {
     const COOKIE: &str = "cookie";
+
     match assignment {
         // `document.cookie`
         AnyJsAssignment::JsStaticMemberAssignment(static_assignment) => {
@@ -106,15 +114,18 @@ fn is_cookie(assignment: &AnyJsAssignment) -> Option<()> {
         // `document["cookie"]`
         AnyJsAssignment::JsComputedMemberAssignment(computed_assignment) => {
             let any_expr = computed_assignment.member().ok()?;
+
             let string_literal = any_expr
                 .as_any_js_literal_expression()?
                 .as_js_string_literal_expression()?;
+
             let inner_string = string_literal.inner_string_text().ok()?;
 
             if inner_string.text() != COOKIE {
                 return None;
             }
         }
+
         _ => {
             return None;
         }
@@ -125,8 +136,11 @@ fn is_cookie(assignment: &AnyJsAssignment) -> Option<()> {
 
 impl Rule for NoDocumentCookie {
     type Query = Semantic<JsAssignmentExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -153,6 +167,7 @@ impl Rule for NoDocumentCookie {
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

@@ -33,13 +33,16 @@ pub(crate) fn parse_pseudo_class_function_compound_selector_list(
     let m = p.start();
 
     p.bump_ts(PSEUDO_CLASS_FUNCTION_COMPOUND_SELECTOR_LIST_SET);
+
     p.bump(T!['(']);
 
     let list = CompoundSelectorList.parse_list(p);
+
     let list_range = list.range(p);
 
     if list_range.is_empty() {
         let diagnostic = expected_compound_selector(p, list_range);
+
         p.error(diagnostic);
     }
 
@@ -58,6 +61,7 @@ struct CompoundSelectorList;
 
 impl ParseSeparatedList for CompoundSelectorList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
 
     const LIST_KIND: CssSyntaxKind = CSS_COMPOUND_SELECTOR_LIST;

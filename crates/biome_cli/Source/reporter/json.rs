@@ -23,6 +23,7 @@ impl JsonReporterVisitor {
 impl biome_console::fmt::Display for JsonReporterVisitor {
     fn fmt(&self, fmt: &mut Formatter) -> std::io::Result<()> {
         let content = serde_json::to_string(&self)?;
+
         fmt.write_str(content.as_str())
     }
 }
@@ -36,6 +37,7 @@ pub struct JsonReporter {
 impl Reporter for JsonReporter {
     fn write(self, visitor: &mut dyn ReporterVisitor) -> std::io::Result<()> {
         visitor.report_summary(&self.execution, self.summary)?;
+
         visitor.report_diagnostics(&self.execution, self.diagnostics)?;
 
         Ok(())
@@ -49,6 +51,7 @@ impl ReporterVisitor for JsonReporterVisitor {
         summary: TraversalSummary,
     ) -> std::io::Result<()> {
         self.summary = summary;
+
         self.command = format!("{}", execution.traversal_mode());
 
         Ok(())
@@ -72,6 +75,7 @@ impl ReporterVisitor for JsonReporterVisitor {
                 }
             }
         }
+
         Ok(())
     }
 }

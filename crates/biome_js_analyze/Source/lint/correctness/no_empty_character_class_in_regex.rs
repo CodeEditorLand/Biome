@@ -51,50 +51,68 @@ declare_lint_rule! {
 
 impl Rule for NoEmptyCharacterClassInRegex {
     type Query = Ast<JsRegexLiteralExpression>;
+
     type State = Range<usize>;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let mut empty_classes = vec![];
+
         let regex = ctx.query();
+
         let Ok((pattern, flags)) = regex.decompose() else {
             return empty_classes.into_boxed_slice();
         };
+
         let has_v_flag = flags.text().contains('v');
+
         let trimmed_text = pattern.text();
+
         let mut class_start_index = None;
+
         let mut is_negated_class = false;
+
         let mut enumerated_char_iter = trimmed_text.bytes().enumerate();
+
         while let Some((i, ch)) = enumerated_char_iter.next() {
             match ch {
                 b'\\' => {
                     // We eat the next character because it is escaped with `\`
                     enumerated_char_iter.next();
                 }
+
                 b'[' => {
                     // The `v` flag allows to embed a class in another class.
                     if class_start_index.is_none() || has_v_flag {
                         class_start_index = Some(i);
+
                         is_negated_class = false;
                     }
                 }
+
                 b'^' => {
                     if let Some(class_start_index) = class_start_index {
                         is_negated_class = (i - class_start_index) == 1;
                     }
                 }
+
                 b']' => {
                     if let Some(class_start_index) = class_start_index.take() {
                         let empty_class_len = if is_negated_class { 2 } else { 1 };
+
                         if (i - class_start_index) == empty_class_len {
                             empty_classes.push(class_start_index..i)
                         }
                     }
                 }
+
                 _ => {}
             }
         }
+
         empty_classes.into_boxed_slice()
     }
 
@@ -103,15 +121,21 @@ impl Rule for NoEmptyCharacterClassInRegex {
         empty_class_range: &Self::State,
     ) -> Option<RuleDiagnostic> {
         let regex = ctx.query();
+
         let regex_token = regex.value_token().ok()?;
+
         let regex_token_range = regex_token.text_trimmed_range();
+
         let is_negated = empty_class_range.len() > 1;
+
         let maybe_negated = if is_negated { "negated " } else { "" };
+
         let specific_note = if is_negated {
             "Negated empty character classes match anything."
         } else {
             "Empty character classes don't match anything."
         };
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

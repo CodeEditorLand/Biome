@@ -62,12 +62,16 @@ declare_lint_rule! {
 
 impl Rule for UseGuardForIn {
     type Query = Ast<JsForInStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let body = node.body().ok()?;
 
         match body {
@@ -79,14 +83,17 @@ impl Rule for UseGuardForIn {
                     0 => None,
                     1 => {
                         let first_statement = statements.first()?;
+
                         if first_statement.as_js_if_statement().is_none() {
                             Some(())
                         } else {
                             None
                         }
                     }
+
                     _ => {
                         let first_statement = statements.first()?;
+
                         if let Some(first_if_statement) = first_statement.as_js_if_statement() {
                             match first_if_statement.consequent().ok()? {
                                 AnyJsStatement::JsBlockStatement(block)
@@ -103,6 +110,7 @@ impl Rule for UseGuardForIn {
                                         None
                                     }
                                 }
+
                                 AnyJsStatement::JsContinueStatement(_) => None,
                                 _ => Some(()),
                             }
@@ -112,12 +120,14 @@ impl Rule for UseGuardForIn {
                     }
                 }
             }
+
             _ => Some(()),
         }
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

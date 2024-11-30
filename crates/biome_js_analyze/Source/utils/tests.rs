@@ -18,6 +18,7 @@ pub fn assert_rename_binding_a_to_b_ok(before: &str, expected: &str) {
         JsFileSource::js_module(),
         JsParserOptions::default(),
     );
+
     let model = semantic_model(&r.tree(), SemanticModelOptions::default());
 
     let bindings: Vec<JsIdentifierBinding> = r
@@ -28,6 +29,7 @@ pub fn assert_rename_binding_a_to_b_ok(before: &str, expected: &str) {
         .collect();
 
     let mut batch = r.tree().begin();
+
     for binding in bindings {
         let new_name = binding
             .name_token()
@@ -39,7 +41,9 @@ pub fn assert_rename_binding_a_to_b_ok(before: &str, expected: &str) {
     }
 
     let root = batch.commit();
+
     let after = root.to_string();
+
     assert_eq!(expected, after.as_str());
 
     assert!(!biome_test_utils::has_bogus_nodes_or_empty_slots(&root));
@@ -47,6 +51,7 @@ pub fn assert_rename_binding_a_to_b_ok(before: &str, expected: &str) {
 
 pub fn assert_rename_ts_binding_a_to_b_ok(before: &str, expected: &str) {
     let r = biome_js_parser::parse(before, JsFileSource::tsx(), JsParserOptions::default());
+
     let model = semantic_model(&r.tree(), SemanticModelOptions::default());
 
     let bindings: Vec<TsIdentifierBinding> = r
@@ -57,6 +62,7 @@ pub fn assert_rename_ts_binding_a_to_b_ok(before: &str, expected: &str) {
         .collect();
 
     let mut batch = r.tree().begin();
+
     for binding in bindings {
         let new_name = binding
             .name_token()
@@ -68,7 +74,9 @@ pub fn assert_rename_ts_binding_a_to_b_ok(before: &str, expected: &str) {
     }
 
     let root = batch.commit();
+
     let after = root.to_string();
+
     assert_eq!(expected, after.as_str());
 
     assert!(!biome_test_utils::has_bogus_nodes_or_empty_slots(&root));
@@ -82,6 +90,7 @@ pub fn assert_rename_binding_a_to_b_nok(before: &str) {
         JsFileSource::js_module(),
         JsParserOptions::default(),
     );
+
     let model = semantic_model(&r.tree(), SemanticModelOptions::default());
 
     let binding_a = r
@@ -92,6 +101,7 @@ pub fn assert_rename_binding_a_to_b_nok(before: &str) {
         .unwrap();
 
     let mut batch = r.tree().begin();
+
     assert!(!batch.rename_node_declaration(&model, &binding_a, "b"));
 }
 
@@ -112,6 +122,7 @@ pub fn assert_remove_identifier_a_ok<Anc: AstNode<Language = JsLanguage> + Debug
         .descendants()
         .filter(|x| x.tokens().any(|token| token.text_trimmed() == "a"))
         .collect();
+
     let node_to_remove = match identifiers_a.as_slice() {
         [identifier_a] => identifier_a
             .ancestors()
@@ -126,6 +137,7 @@ pub fn assert_remove_identifier_a_ok<Anc: AstNode<Language = JsLanguage> + Debug
     };
 
     let mut batch = r.tree().begin();
+
     let batch_result = if let Some(parameter) = JsFormalParameter::cast_ref(node_to_remove.syntax())
     {
         batch.remove_js_formal_parameter(&parameter)
@@ -136,10 +148,13 @@ pub fn assert_remove_identifier_a_ok<Anc: AstNode<Language = JsLanguage> + Debug
     } else {
         panic!("Don't know how to remove this node: {node_to_remove:?}");
     };
+
     assert!(batch_result);
+
     let root = batch.commit();
 
     let after = root.to_string();
+
     assert_eq!(expected, after.as_str());
 }
 
@@ -190,12 +205,15 @@ pub fn ok_find_attributes_by_name() {
         JsFileSource::jsx(),
         JsParserOptions::default(),
     );
+
     let list = r
         .syntax()
         .descendants()
         .find_map(biome_js_syntax::JsxAttributeList::cast)
         .unwrap();
+
     let [a, c, d] = list.find_by_names(["a", "c", "d"]);
+
     assert_eq!(
         a.unwrap()
             .initializer()
@@ -205,6 +223,7 @@ pub fn ok_find_attributes_by_name() {
             .to_string(),
         "\"A\" "
     );
+
     assert_eq!(
         c.unwrap()
             .initializer()
@@ -214,5 +233,6 @@ pub fn ok_find_attributes_by_name() {
             .to_string(),
         "\"C\" "
     );
+
     assert!(d.is_none());
 }

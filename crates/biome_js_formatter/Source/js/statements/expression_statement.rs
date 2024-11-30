@@ -17,6 +17,7 @@ pub(crate) struct FormatJsExpressionStatement;
 impl FormatNodeRule<JsExpressionStatement> for FormatJsExpressionStatement {
     fn fmt_node(&self, node: &JsExpressionStatement, f: &mut JsFormatter) -> FormatResult<()> {
         let needs_parentheses = self.needs_parentheses(node);
+
         let is_after_bogus = f
             .elements()
             .start_tag(TagKind::Verbatim)

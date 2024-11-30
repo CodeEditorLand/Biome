@@ -21,6 +21,7 @@ impl FormatRuleWithOptions<JsTemplateElementList> for FormatJsTemplateElementLis
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.options = options;
+
         self
     }
 }
@@ -50,6 +51,7 @@ pub(crate) enum AnyTemplateElementList {
 impl Format<JsFormatContext> for AnyTemplateElementList {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         let mut indention = TemplateElementIndention::default();
+
         let mut after_new_line = false;
 
         for element in self.elements() {
@@ -64,22 +66,26 @@ impl Format<JsFormatContext> for AnyTemplateElementList {
                         AnyTemplateElement::JsTemplateElement(element) => {
                             element.format().with_options(options).fmt(f)?;
                         }
+
                         AnyTemplateElement::TsTemplateElement(element) => {
                             element.format().with_options(options).fmt(f)?;
                         }
                     }
                 }
+
                 AnyTemplateElementOrChunk::AnyTemplateChunkElement(chunk) => {
                     match &chunk {
                         AnyTemplateChunkElement::JsTemplateChunkElement(chunk) => {
                             chunk.format().fmt(f)?;
                         }
+
                         AnyTemplateChunkElement::TsTemplateChunkElement(chunk) => {
                             chunk.format().fmt(f)?;
                         }
                     }
 
                     let chunk_token = chunk.template_chunk_token()?;
+
                     let chunk_text = chunk_token.text();
 
                     let tab_width = f.options().tab_width();
@@ -87,6 +93,7 @@ impl Format<JsFormatContext> for AnyTemplateElementList {
                     indention = TemplateElementIndention::after_last_new_line(
                         chunk_text, tab_width, indention,
                     );
+
                     after_new_line = chunk_text.ends_with('\n');
                 }
             }
@@ -102,6 +109,7 @@ impl AnyTemplateElementList {
             AnyTemplateElementList::JsTemplateElementList(list) => {
                 TemplateElementIterator::JsTemplateElementList(list.iter())
             }
+
             AnyTemplateElementList::TsTemplateElementList(list) => {
                 TemplateElementIterator::TsTemplateElementList(list.iter())
             }
@@ -128,17 +136,21 @@ impl Iterator for TemplateElementIterator {
                     AnyJsTemplateElement::JsTemplateChunkElement(chunk) => {
                         AnyTemplateElementOrChunk::from(AnyTemplateChunkElement::from(chunk))
                     }
+
                     AnyJsTemplateElement::JsTemplateElement(element) => {
                         AnyTemplateElementOrChunk::from(AnyTemplateElement::from(element))
                     }
                 };
+
                 Some(result)
             }
+
             TemplateElementIterator::TsTemplateElementList(inner) => {
                 let result = match inner.next()? {
                     AnyTsTemplateElement::TsTemplateChunkElement(chunk) => {
                         AnyTemplateElementOrChunk::from(AnyTemplateChunkElement::from(chunk))
                     }
+
                     AnyTsTemplateElement::TsTemplateElement(element) => {
                         AnyTemplateElementOrChunk::from(AnyTemplateElement::from(element))
                     }
@@ -188,6 +200,7 @@ impl TemplateElementIndention {
             None => previous_indention.0,
             Some((_, after_new_line)) => {
                 let tab_width: u32 = u8::from(tab_width).into();
+
                 let mut size: u32 = 0;
 
                 for byte in after_new_line.bytes() {
@@ -201,9 +214,11 @@ impl TemplateElementIndention {
                             // Or in other words, it clips the size to the next multiple of tab width.
                             size = size + tab_width - (size % tab_width);
                         }
+
                         b' ' => {
                             size += 1;
                         }
+
                         _ => break,
                     };
                 }

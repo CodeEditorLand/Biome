@@ -13,16 +13,22 @@ pub mod tests;
 /// and tokens (same kind and inner token text).
 pub(crate) fn is_node_equal(a_node: &JsSyntaxNode, b_node: &JsSyntaxNode) -> bool {
     let a_tree = a_node.preorder_with_tokens(Direction::Next);
+
     let b_tree = b_node.preorder_with_tokens(Direction::Next);
+
     for (a_event, b_event) in iter::zip(a_tree, b_tree) {
         let (WalkEvent::Enter(a_child), WalkEvent::Enter(b_child)) = (a_event, b_event) else {
             continue;
         };
+
         if a_child.kind() != b_child.kind() {
             return false;
         }
+
         let a_token = a_child.as_token();
+
         let b_token = b_child.as_token();
+
         match (a_token, b_token) {
             // both are nodes
             (None, None) => continue,
@@ -33,10 +39,12 @@ pub(crate) fn is_node_equal(a_node: &JsSyntaxNode, b_node: &JsSyntaxNode) -> boo
                 if inner_string_text(a) != inner_string_text(b) {
                     return false;
                 }
+
                 continue;
             }
         }
     }
+
     true
 }
 
@@ -84,13 +92,17 @@ pub(crate) fn find_variable_position(
 #[cfg(test)]
 mod test {
     use crate::utils::{find_variable_position, VariablePosition};
+
     use biome_js_parser::{parse, JsParserOptions};
+
     use biome_js_syntax::{JsBinaryExpression, JsFileSource};
+
     use biome_rowan::AstNode;
 
     #[test]
     fn find_variable_position_matches_on_left() {
         let source = "(a) + b";
+
         let parsed = parse(
             source,
             JsFileSource::js_module(),
@@ -103,6 +115,7 @@ mod test {
             .find_map(JsBinaryExpression::cast);
 
         let variable = "a";
+
         let position = find_variable_position(
             &binary_expression.expect("valid binary expression"),
             variable,
@@ -114,6 +127,7 @@ mod test {
     #[test]
     fn find_variable_position_matches_on_right() {
         let source = "a + b";
+
         let parsed = parse(
             source,
             JsFileSource::js_module(),
@@ -126,6 +140,7 @@ mod test {
             .find_map(JsBinaryExpression::cast);
 
         let variable = "b";
+
         let position = find_variable_position(
             &binary_expression.expect("valid binary expression"),
             variable,
@@ -137,6 +152,7 @@ mod test {
     #[test]
     fn find_variable_position_not_match() {
         let source = "a + b";
+
         let parsed = parse(
             source,
             JsFileSource::js_module(),
@@ -149,6 +165,7 @@ mod test {
             .find_map(JsBinaryExpression::cast);
 
         let variable = "c";
+
         let position = find_variable_position(
             &binary_expression.expect("valid binary expression"),
             variable,
@@ -160,6 +177,7 @@ mod test {
     #[test]
     fn find_variable_position_when_the_operator_has_no_spaces_around() {
         let source = "l-c";
+
         let parsed = parse(
             source,
             JsFileSource::js_module(),
@@ -172,6 +190,7 @@ mod test {
             .find_map(JsBinaryExpression::cast);
 
         let variable = "l";
+
         let position = find_variable_position(
             &binary_expression.expect("valid binary expression"),
             variable,

@@ -49,8 +49,11 @@ declare_lint_rule! {
 
 impl Rule for NoIrregularWhitespace {
     type Query = Ast<AnyJsRoot>;
+
     type State = TextRange;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -78,12 +81,14 @@ impl Rule for NoIrregularWhitespace {
 
 fn get_irregular_whitespace(syntax: &JsSyntaxNode) -> Vec<TextRange> {
     let mut all_whitespaces_trivia: Vec<SyntaxTriviaPiece<JsLanguage>> = vec![];
+
     let is_whitespace = |trivia: &SyntaxTriviaPiece<JsLanguage>| {
         trivia.is_whitespace() && !trivia.text().replace(' ', "").is_empty()
     };
 
     for token in syntax.descendants_tokens(Direction::Next) {
         let leading_trivia_pieces = token.leading_trivia().pieces();
+
         let trailing_trivia_pieces = token.trailing_trivia().pieces();
 
         for trivia in leading_trivia_pieces {
@@ -107,6 +112,7 @@ fn get_irregular_whitespace(syntax: &JsSyntaxNode) -> Vec<TextRange> {
                     .iter()
                     .any(|irregular_whitespace| &char == irregular_whitespace)
             });
+
             has_irregular_whitespace.then(|| trivia.text_range())
         })
         .collect::<Vec<TextRange>>()

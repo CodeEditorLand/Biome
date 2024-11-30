@@ -31,6 +31,7 @@ impl<'source> HtmlParser<'source> {
         Vec<Trivia>,
     ) {
         let (trivia, lexer_diagnostics) = self.source.finish();
+
         let (events, parse_diagnostics) = self.context.finish();
 
         let diagnostics = merge_diagnostics(lexer_diagnostics, parse_diagnostics);
@@ -41,6 +42,7 @@ impl<'source> HtmlParser<'source> {
 
 impl<'src> Parser for HtmlParser<'src> {
     type Kind = HtmlSyntaxKind;
+
     type Source = HtmlTokenSource<'src>;
 
     fn context(&self) -> &ParserContext<Self::Kind> {

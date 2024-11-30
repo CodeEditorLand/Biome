@@ -404,18 +404,23 @@ fn test_order() {
     for items in ES_BUILTIN.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in ES_5.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in ES_2015.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in ES_2017.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in ES_2020.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in ES_2021.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }

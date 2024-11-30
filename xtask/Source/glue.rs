@@ -18,38 +18,46 @@ pub mod fs2 {
 
     pub fn read_dir<P: AsRef<Path>>(path: P) -> Result<fs::ReadDir> {
         let path = path.as_ref();
+
         fs::read_dir(path).with_context(|| format!("Failed to read {}", path.display()))
     }
 
     pub fn read_to_string<P: AsRef<Path>>(path: P) -> Result<String> {
         let path = path.as_ref();
+
         fs::read_to_string(path).with_context(|| format!("Failed to read {}", path.display()))
     }
 
     pub fn write<P: AsRef<Path>, C: AsRef<[u8]>>(path: P, contents: C) -> Result<()> {
         let path = path.as_ref();
+
         fs::write(path, contents).with_context(|| format!("Failed to write {}", path.display()))
     }
 
     pub fn copy<P: AsRef<Path>, Q: AsRef<Path>>(from: P, to: Q) -> Result<u64> {
         let from = from.as_ref();
+
         let to = to.as_ref();
+
         fs::copy(from, to)
             .with_context(|| format!("Failed to copy {} to {}", from.display(), to.display()))
     }
 
     pub fn remove_file<P: AsRef<Path>>(path: P) -> Result<()> {
         let path = path.as_ref();
+
         fs::remove_file(path).with_context(|| format!("Failed to remove file {}", path.display()))
     }
 
     pub fn remove_dir_all<P: AsRef<Path>>(path: P) -> Result<()> {
         let path = path.as_ref();
+
         fs::remove_dir_all(path).with_context(|| format!("Failed to remove dir {}", path.display()))
     }
 
     pub fn create_dir_all<P: AsRef<Path>>(path: P) -> Result<()> {
         let path = path.as_ref();
+
         fs::create_dir_all(path).with_context(|| format!("Failed to create dir {}", path.display()))
     }
 }
@@ -74,6 +82,7 @@ pub struct Pushd {
 
 pub fn pushd(path: impl Into<PathBuf>) -> Pushd {
     Env::with(|env| env.pushd(path.into()));
+
     Pushd { _p: () }
 }
 
@@ -89,6 +98,7 @@ pub struct Pushenv {
 
 pub fn pushenv(var: &str, value: &str) -> Pushenv {
     Env::with(|env| env.pushenv(var.into(), value.into()));
+
     Pushenv { _p: () }
 }
 
@@ -100,9 +110,11 @@ impl Drop for Pushenv {
 
 pub fn rm_rf(path: impl AsRef<Path>) -> Result<()> {
     let path = path.as_ref();
+
     if !path.exists() {
         return Ok(());
     }
+
     if path.is_file() {
         fs2::remove_file(path)
     } else {
@@ -121,7 +133,9 @@ pub fn date_iso() -> Result<String> {
 
 fn run_process_inner(cmd: &str, echo: bool, stdin: Option<&[u8]>) -> Result<String> {
     let mut args = shelx(cmd);
+
     let binary = args.remove(0);
+
     let current_dir = Env::with(|it| it.cwd().to_path_buf());
 
     if echo {
@@ -129,19 +143,25 @@ fn run_process_inner(cmd: &str, echo: bool, stdin: Option<&[u8]>) -> Result<Stri
     }
 
     let mut command = Command::new(binary);
+
     command
         .args(args)
         .current_dir(current_dir)
         .stderr(Stdio::inherit());
+
     let output = match stdin {
         None => command.stdin(Stdio::null()).output(),
         Some(stdin) => {
             command.stdin(Stdio::piped()).stdout(Stdio::piped());
+
             let mut process = command.spawn()?;
+
             process.stdin.take().unwrap().write_all(stdin)?;
+
             process.wait_with_output()
         }
     }?;
+
     let stdout = String::from_utf8(output.stdout)?;
 
     if echo {
@@ -157,6 +177,7 @@ fn run_process_inner(cmd: &str, echo: bool, stdin: Option<&[u8]>) -> Result<Stri
 
 fn shelx(cmd: &str) -> Vec<String> {
     let mut res = Vec::new();
+
     for (string_piece, in_quotes) in cmd.split('\'').zip([false, true].iter().copied().cycle()) {
         if in_quotes {
             res.push(string_piece.to_string())
@@ -168,6 +189,7 @@ fn shelx(cmd: &str) -> Vec<String> {
             )
         }
     }
+
     res
 }
 
@@ -184,29 +206,39 @@ impl Env {
                 pushenv_stack: vec![],
             });
         }
+
         ENV.with(|it| f(&mut it.borrow_mut()))
     }
 
     fn pushd(&mut self, dir: PathBuf) {
         let dir = self.cwd().join(dir);
+
         self.pushd_stack.push(dir);
+
         env::set_current_dir(self.cwd()).unwrap();
     }
+
     fn popd(&mut self) {
         self.pushd_stack.pop().unwrap();
+
         env::set_current_dir(self.cwd()).unwrap();
     }
+
     fn pushenv(&mut self, var: OsString, value: OsString) {
         self.pushenv_stack.push((var.clone(), env::var_os(&var)));
+
         env::set_var(var, value)
     }
+
     fn popenv(&mut self) {
         let (var, value) = self.pushenv_stack.pop().unwrap();
+
         match value {
             None => env::remove_var(var),
             Some(value) => env::set_var(var, value),
         }
     }
+
     fn cwd(&self) -> &Path {
         self.pushd_stack.last().unwrap()
     }

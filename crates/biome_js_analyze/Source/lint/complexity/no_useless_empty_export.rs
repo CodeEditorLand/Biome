@@ -54,26 +54,33 @@ impl Rule for NoUselessEmptyExport {
     type Query = Ast<JsExport>;
     /// The first import or export that makes useless the empty export.
     type State = JsSyntaxToken;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if is_empty_export(node) {
             let module_item_list = JsModuleItemList::cast(node.syntax().parent()?)?;
             // allow reporting an empty export that precedes another empty export.
             let mut ignore_empty_export = true;
+
             for module_item in module_item_list {
                 match module_item {
                     AnyJsModuleItem::AnyJsStatement(_) => {}
+
                     AnyJsModuleItem::JsImport(import) => return import.import_token().ok(),
                     AnyJsModuleItem::JsExport(export) => {
                         if !is_empty_export(&export) {
                             return export.export_token().ok();
                         }
+
                         if !ignore_empty_export {
                             return export.export_token().ok();
                         }
+
                         if node == &export {
                             ignore_empty_export = false
                         }
@@ -81,6 +88,7 @@ impl Rule for NoUselessEmptyExport {
                 }
             }
         }
+
         None
     }
 
@@ -100,7 +108,9 @@ impl Rule for NoUselessEmptyExport {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         mutation.remove_node(ctx.query().clone());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

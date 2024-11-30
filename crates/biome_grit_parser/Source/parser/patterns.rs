@@ -28,6 +28,7 @@ fn parse_pattern_with_precedence(p: &mut GritParser, min_precedence: isize) -> P
                 match $parse {
                     Present(syntax) => {
                         left = syntax;
+
                         continue;
                     }
                     // This should never happen, but if it does we cannot uphold
@@ -119,6 +120,7 @@ fn parse_assignment_as_pattern(p: &mut GritParser, left: CompletedMarker) -> Par
     }
 
     let m = left.precede(p);
+
     p.bump(T![=]);
 
     parse_expected_pattern_with_precedence(p, PRECEDENCE_PATTERN_AS);
@@ -133,6 +135,7 @@ fn parse_bracketed_pattern(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['(']);
 
     parse_expected_pattern_with_precedence(p, PRECEDENCE_PATTERN);
@@ -149,6 +152,7 @@ fn parse_bubble(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(BUBBLE_KW);
 
     parse_bubble_scope(p).ok();
@@ -165,6 +169,7 @@ fn parse_bubble_scope(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['(']);
 
     VariableList.parse_list(p);
@@ -203,6 +208,7 @@ fn parse_curly_pattern(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['{']);
 
     parse_expected_pattern_with_precedence(p, PRECEDENCE_PATTERN);
@@ -219,7 +225,9 @@ fn parse_dot(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![.]);
+
     Present(m.complete(p, GRIT_DOT))
 }
 
@@ -230,6 +238,7 @@ fn parse_every(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(EVERY_KW);
 
     parse_maybe_curly_pattern(p)
@@ -261,6 +270,7 @@ fn parse_files(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(MULTIFILE_KW);
 
     p.expect(T!['{']);
@@ -279,7 +289,9 @@ fn parse_grit_undescore(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(GRIT_UNDERSCORE);
+
     Present(m.complete(p, GRIT_UNDERSCORE))
 }
 
@@ -290,6 +302,7 @@ fn parse_like(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(LIKE_KW);
 
     parse_like_threshold(p).ok();
@@ -310,6 +323,7 @@ fn parse_like_threshold(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['(']);
 
     parse_expected_pattern_with_precedence(p, PRECEDENCE_PATTERN);
@@ -326,6 +340,7 @@ pub(crate) fn parse_list_accessor(p: &mut GritParser, left: CompletedMarker) -> 
     }
 
     let m = left.precede(p);
+
     p.bump(T!['[']);
 
     parse_list_index(p).ok();
@@ -357,6 +372,7 @@ pub(crate) fn parse_map_accessor(p: &mut GritParser, left: CompletedMarker) -> P
     }
 
     let m = left.precede(p);
+
     p.bump(T![.]);
 
     parse_map_key(p).ok();
@@ -392,6 +408,7 @@ impl MathOperator {
     #[inline]
     fn from_token(token_kind: GritSyntaxKind) -> Option<Self> {
         use MathOperator::*;
+
         match token_kind {
             T![*] => Some(Mul),
             T![/] => Some(Div),
@@ -405,6 +422,7 @@ impl MathOperator {
     #[inline]
     fn operation_kind(self) -> GritSyntaxKind {
         use MathOperator::*;
+
         match self {
             Mul => GRIT_MUL_OPERATION,
             Div => GRIT_DIV_OPERATION,
@@ -417,6 +435,7 @@ impl MathOperator {
     #[inline]
     fn precedence(self) -> isize {
         use MathOperator::*;
+
         match self {
             Mul => PRECEDENCE_MUL,
             Div => PRECEDENCE_DIV,
@@ -429,6 +448,7 @@ impl MathOperator {
     #[inline]
     fn token_kind(self) -> GritSyntaxKind {
         use MathOperator::*;
+
         match self {
             Mul => T![*],
             Div => T![/],
@@ -467,6 +487,7 @@ fn parse_math_pattern(
     let min_precedence = operator.precedence();
 
     let mut lookahead = MathOperator::from_token(p.cur());
+
     while let Some(operator) = lookahead.with_min_precedence(min_precedence) {
         let m = left.precede(p);
 
@@ -474,6 +495,7 @@ fn parse_math_pattern(
 
         if let Present(mut right) = parse_pattern_non_greedy(p) {
             lookahead = MathOperator::from_token(p.cur());
+
             while let Some(tighter_operator) =
                 lookahead.with_min_precedence(operator.precedence() + 1)
             {
@@ -504,6 +526,7 @@ pub(crate) struct NodeArgList;
 
 impl ParseSeparatedList for NodeArgList {
     type Kind = GritSyntaxKind;
+
     type Parser<'source> = GritParser<'source>;
 
     const LIST_KIND: Self::Kind = GRIT_NAMED_ARG_LIST;
@@ -544,7 +567,9 @@ fn parse_node_like(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     parse_name(p).ok();
+
     p.expect(T!['(']);
 
     NodeArgList.parse_list(p);
@@ -561,6 +586,7 @@ fn parse_pattern_accumulate(p: &mut GritParser, left: CompletedMarker) -> Parsed
     }
 
     let m = left.precede(p);
+
     p.bump(T![+=]);
 
     parse_expected_pattern_with_precedence(p, PRECEDENCE_ACCUMULATE);
@@ -575,6 +601,7 @@ fn parse_pattern_after(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(AFTER_KW);
 
     parse_expected_pattern_with_precedence(p, PRECEDENCE_PATTERN);
@@ -589,7 +616,9 @@ fn parse_pattern_and(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(AND_KW);
+
     p.expect(T!['{']);
 
     PatternList.parse_list(p);
@@ -606,7 +635,9 @@ fn parse_pattern_any(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(ANY_KW);
+
     p.expect(T!['{']);
 
     PatternList.parse_list(p);
@@ -623,6 +654,7 @@ fn parse_pattern_as(p: &mut GritParser, left: CompletedMarker) -> ParsedSyntax {
     }
 
     let m = left.precede(p);
+
     p.bump(AS_KW);
 
     if parse_variable(p) == Absent {
@@ -639,6 +671,7 @@ fn parse_pattern_before(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(BEFORE_KW);
 
     parse_expected_pattern_with_precedence(p, PRECEDENCE_PATTERN);
@@ -653,6 +686,7 @@ fn parse_pattern_contains(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(CONTAINS_KW);
 
     parse_maybe_curly_pattern(p)
@@ -662,6 +696,7 @@ fn parse_pattern_contains(p: &mut GritParser) -> ParsedSyntax {
             expected_pattern,
         )
         .ok();
+
     parse_pattern_contains_until_clause(p).ok();
 
     Present(m.complete(p, GRIT_PATTERN_CONTAINS))
@@ -674,6 +709,7 @@ fn parse_pattern_contains_until_clause(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(UNTIL_KW);
 
     parse_expected_pattern_with_precedence(p, PRECEDENCE_PATTERN);
@@ -688,7 +724,9 @@ fn parse_pattern_if_else(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(IF_KW);
+
     p.expect(T!['(']);
 
     parse_expected_predicate(p);
@@ -702,6 +740,7 @@ fn parse_pattern_if_else(p: &mut GritParser) -> ParsedSyntax {
             expected_pattern,
         )
         .ok();
+
     parse_pattern_else_clause(p).ok();
 
     Present(m.complete(p, GRIT_PATTERN_IF_ELSE))
@@ -714,6 +753,7 @@ fn parse_pattern_else_clause(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(ELSE_KW);
 
     parse_maybe_curly_pattern(p)
@@ -734,6 +774,7 @@ fn parse_pattern_includes(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(INCLUDES_KW);
 
     parse_maybe_curly_pattern(p)
@@ -754,6 +795,7 @@ fn parse_pattern_limit(p: &mut GritParser, left: CompletedMarker) -> ParsedSynta
     }
 
     let m = left.precede(p);
+
     p.bump(LIMIT_KW);
 
     if parse_int_literal(p) == Absent {
@@ -767,6 +809,7 @@ pub(crate) struct PatternList;
 
 impl ParseSeparatedList for PatternList {
     type Kind = GritSyntaxKind;
+
     type Parser<'source> = GritParser<'source>;
 
     const LIST_KIND: Self::Kind = GRIT_PATTERN_LIST;
@@ -807,7 +850,9 @@ fn parse_pattern_maybe(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(MAYBE_KW);
+
     parse_maybe_curly_pattern(p)
         .or_recover_with_token_set(
             p,
@@ -844,7 +889,9 @@ fn parse_pattern_or(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(OR_KW);
+
     p.eat(T!['{']);
 
     PatternList.parse_list(p);
@@ -861,7 +908,9 @@ fn parse_pattern_orelse(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(ORELSE_KW);
+
     p.eat(T!['{']);
 
     PatternList.parse_list(p);
@@ -878,6 +927,7 @@ fn parse_pattern_where(p: &mut GritParser, left: CompletedMarker) -> ParsedSynta
     }
 
     let m = left.precede(p);
+
     p.bump(WHERE_KW);
 
     parse_expected_predicate(p);
@@ -892,6 +942,7 @@ fn parse_pattern_within(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(WITHIN_KW);
 
     parse_maybe_curly_pattern(p)
@@ -912,13 +963,18 @@ fn parse_regex_pattern(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     if p.cur() == GRIT_REGEX {
         let m = p.start();
+
         p.bump(GRIT_REGEX);
+
         m.complete(p, GRIT_REGEX_LITERAL);
     } else {
         let m = p.start();
+
         p.expect(GRIT_SNIPPET_REGEX);
+
         m.complete(p, GRIT_SNIPPET_REGEX_LITERAL);
     }
 
@@ -934,6 +990,7 @@ fn parse_regex_pattern_variables(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['(']);
 
     parse_variable_list(p);
@@ -950,6 +1007,7 @@ fn parse_rewrite(p: &mut GritParser, left: CompletedMarker) -> ParsedSyntax {
     }
 
     let m = left.precede(p);
+
     p.bump(T![=>]);
 
     parse_pattern_with_precedence(p, PRECEDENCE_REWRITE)
@@ -970,6 +1028,7 @@ fn parse_sequential(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(SEQUENTIAL_KW);
 
     p.eat(T!['{']);
@@ -988,6 +1047,7 @@ fn parse_some(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(SOME_KW);
 
     parse_maybe_curly_pattern(p).ok();

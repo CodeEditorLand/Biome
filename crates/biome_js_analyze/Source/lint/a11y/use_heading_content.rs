@@ -68,12 +68,16 @@ const HEADING_ELEMENTS: [&str; 6] = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
 impl Rule for UseHeadingContent {
     type Query = Ast<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let name = node.name().ok()?.name_value_token().ok()?;
 
         if HEADING_ELEMENTS.contains(&name.text_trimmed()) {
@@ -96,6 +100,7 @@ impl Rule for UseHeadingContent {
                         return Some(());
                     }
                 }
+
                 AnyJsxElement::JsxSelfClosingElement(_) => return Some(()),
             }
         }
@@ -108,8 +113,10 @@ impl Rule for UseHeadingContent {
             AnyJsxElement::JsxOpeningElement(node) => {
                 node.parent::<JsxElement>()?.syntax().text_range()
             }
+
             AnyJsxElement::JsxSelfClosingElement(node) => node.syntax().text_trimmed_range(),
         };
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             range,
@@ -132,6 +139,7 @@ fn has_valid_heading_content(node: &AnyJsxElement) -> bool {
                 if attribute.initializer().is_none() {
                     return false;
                 }
+
                 attribute
                     .as_static_value()
                     .map_or(true, |attribute| !attribute.is_falsy())

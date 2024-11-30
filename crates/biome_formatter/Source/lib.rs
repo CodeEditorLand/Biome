@@ -230,14 +230,17 @@ impl Deserializable for IndentWidth {
         diagnostics: &mut Vec<DeserializationDiagnostic>,
     ) -> Option<Self> {
         let value_text = TextNumber::deserialize(value, name, diagnostics)?;
+
         if let Ok(value) = value_text.parse::<Self>() {
             return Some(value);
         }
+
         diagnostics.push(DeserializationDiagnostic::new_out_of_bound_integer(
             Self::MIN,
             Self::MAX,
             value.range(),
         ));
+
         None
     }
 }
@@ -249,7 +252,9 @@ impl<'de> serde::Deserialize<'de> for IndentWidth {
         D: serde::Deserializer<'de>,
     {
         let value: u8 = serde::Deserialize::deserialize(deserializer)?;
+
         let indent_width = IndentWidth::try_from(value).map_err(serde::de::Error::custom)?;
+
         Ok(indent_width)
     }
 }
@@ -259,7 +264,9 @@ impl FromStr for IndentWidth {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let value = u8::from_str(s).map_err(ParseFormatNumberError::ParseError)?;
+
         let value = Self::try_from(value).map_err(ParseFormatNumberError::TryFromU8Error)?;
+
         Ok(value)
     }
 }
@@ -285,6 +292,7 @@ impl biome_console::fmt::Display for IndentWidth {
 impl Display for IndentWidth {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let value = self.value();
+
         f.write_str(&std::format!("{value}"))
     }
 }
@@ -331,14 +339,17 @@ impl Deserializable for LineWidth {
         diagnostics: &mut Vec<DeserializationDiagnostic>,
     ) -> Option<Self> {
         let value_text = TextNumber::deserialize(value, name, diagnostics)?;
+
         if let Ok(value) = value_text.parse::<Self>() {
             return Some(value);
         }
+
         diagnostics.push(DeserializationDiagnostic::new_out_of_bound_integer(
             Self::MIN,
             Self::MAX,
             value.range(),
         ));
+
         None
     }
 }
@@ -350,7 +361,9 @@ impl<'de> serde::Deserialize<'de> for LineWidth {
         D: serde::Deserializer<'de>,
     {
         let value: u16 = serde::Deserialize::deserialize(deserializer)?;
+
         let line_width = LineWidth::try_from(value).map_err(serde::de::Error::custom)?;
+
         Ok(line_width)
     }
 }
@@ -364,6 +377,7 @@ impl biome_console::fmt::Display for LineWidth {
 impl Display for LineWidth {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let value = self.value();
+
         f.write_str(&std::format!("{value}"))
     }
 }
@@ -435,7 +449,9 @@ impl FromStr for LineWidth {
 
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         let value = u16::from_str(s).map_err(ParseFormatNumberError::ParseError)?;
+
         let value = Self::try_from(value).map_err(ParseFormatNumberError::TryFromU16Error)?;
+
         Ok(value)
     }
 }
@@ -678,6 +694,7 @@ pub trait FormatOptions {
 /// The context customizes the comments formatting and stores the comments of the CST.
 pub trait CstFormatContext: FormatContext {
     type Language: Language;
+
     type Style: CommentStyle<Language = Self::Language>;
 
     /// Rule for formatting comments.
@@ -821,6 +838,7 @@ where
 
     pub fn print_with_indent(&self, indent: u16) -> PrintResult<Printed> {
         let print_options = self.context.options().as_print_options();
+
         let printed = Printer::new(print_options).print_with_indent(&self.document, indent)?;
 
         let printed = match self.context.source_map() {
@@ -1131,6 +1149,7 @@ where
 {
     pub fn with_options(mut self, options: O) -> Self {
         self.rule = self.rule.with_options(options);
+
         self
     }
 }
@@ -1176,6 +1195,7 @@ where
 
     pub fn with_item(mut self, item: T) -> Self {
         self.item = item;
+
         self
     }
 
@@ -1200,6 +1220,7 @@ where
 {
     pub fn with_options(mut self, options: O) -> Self {
         self.rule = self.rule.with_options(options);
+
         self
     }
 }
@@ -1306,11 +1327,13 @@ where
     Context: FormatContext,
 {
     let mut state = FormatState::new(context);
+
     let mut buffer = VecBuffer::with_capacity(arguments.items().len(), &mut state);
 
     buffer.write_fmt(arguments)?;
 
     let mut document = Document::from(buffer.into_vec());
+
     document.propagate_expand();
 
     Ok(Formatted::new(document, state.into_context()))
@@ -1382,12 +1405,14 @@ pub fn format_node<L: FormatLanguage>(
                         Some(top_root) => {
                             // we have to return transformed node back into subtree
                             let transformed_range = transformed.text_range();
+
                             let root_range = root.text_range();
 
                             let transformed_root = top_root
                                 .replace_child(root.clone().into(), transformed.into())
                                 // SAFETY: Calling `unwrap` is safe because we know that `root` is part of the `top_root` subtree.
                                 .unwrap();
+
                             let transformed = transformed_root.covering_element(TextRange::new(
                                 root_range.start(),
                                 root_range.start() + transformed_range.len(),
@@ -1406,26 +1431,32 @@ pub fn format_node<L: FormatLanguage>(
                     }
                 }
             }
+
             None => (root.clone(), None),
         };
 
         let context = language.create_context(&root, source_map);
+
         let format_node = FormatRefWithRule::new(&root, L::FormatRule::default());
 
         let mut state = FormatState::new(context);
+
         let mut buffer = VecBuffer::new(&mut state);
 
         write!(buffer, [format_node])?;
 
         let mut document = Document::from(buffer.into_vec());
+
         document.propagate_expand();
 
         state.assert_formatted_all_tokens(&root);
 
         let context = state.into_context();
+
         let comments = context.comments();
 
         comments.assert_checked_all_suppressions(&root);
+
         comments.assert_formatted_all_comments();
 
         Ok(Formatted::new(document, context))
@@ -1496,6 +1527,7 @@ pub fn format_range<Language: FormatLanguage>(
     }
 
     let root_range = root.text_range();
+
     if range.start() < root_range.start() || range.end() > root_range.end() {
         return Err(FormatError::RangeError {
             input: range,
@@ -1505,6 +1537,7 @@ pub fn format_range<Language: FormatLanguage>(
 
     // Find the tokens corresponding to the start and end of the range
     let start_token = root.token_at_offset(range.start());
+
     let end_token = root.token_at_offset(range.end());
 
     // If these tokens were not found this means either:
@@ -1523,6 +1556,7 @@ pub fn format_range<Language: FormatLanguage>(
             None => return Ok(Printed::new_empty()),
         },
     };
+
     let mut end_token = match end_token {
         // If the end of the range lies between two tokens,
         // end at the leftmost one
@@ -1539,7 +1573,9 @@ pub fn format_range<Language: FormatLanguage>(
     let mut trimmed_start = range.start();
 
     let start_token_range = text_non_whitespace_range(&start_token);
+
     let start_token_trimmed_start = start_token_range.start();
+
     let start_token_trimmed_end = start_token_range.end();
 
     if start_token_trimmed_start >= range.start() && start_token_trimmed_start <= range.end() {
@@ -1551,14 +1587,17 @@ pub fn format_range<Language: FormatLanguage>(
         // start to the trimmed start of the next token if it exists
         if let Some(next_token) = start_token.next_token() {
             let next_token_start = text_non_whitespace_range(&next_token).start();
+
             if next_token_start <= range.end() {
                 trimmed_start = next_token_start;
+
                 start_token = next_token;
             }
         }
     }
 
     let end_token_range = text_non_whitespace_range(&end_token);
+
     let end_token_trimmed_start = end_token_range.start();
 
     // If the range ends before the trimmed start of the token, move the
@@ -1566,6 +1605,7 @@ pub fn format_range<Language: FormatLanguage>(
     if end_token_trimmed_start >= range.end() {
         if let Some(next_token) = end_token.prev_token() {
             let next_token_end = text_non_whitespace_range(&next_token).end();
+
             if next_token_end >= trimmed_start {
                 end_token = next_token;
             }
@@ -1578,6 +1618,7 @@ pub fn format_range<Language: FormatLanguage>(
         .ancestors()
         .find(|node| language.is_range_formatting_node(node))
         .unwrap_or_else(|| root.clone());
+
     let end_node = end_token
         .ancestors()
         .find(|node| language.is_range_formatting_node(node))
@@ -1585,6 +1626,7 @@ pub fn format_range<Language: FormatLanguage>(
 
     let common_root = if start_node == end_node {
         range = text_non_whitespace_range(&start_node);
+
         Some(start_node)
     } else {
         // Find the two highest sibling nodes that satisfy the formatting range
@@ -1592,6 +1634,7 @@ pub fn format_range<Language: FormatLanguage>(
         // same algorithm as the findSiblingAncestors function in Prettier, see
         // https://github.com/prettier/prettier/blob/cae195187f524dd74e60849e0a4392654423415b/src/main/range-util.js#L36)
         let start_node_start = start_node.text_range().start();
+
         let end_node_end = end_node.text_range().end();
 
         let result_end_node = end_node
@@ -1640,9 +1683,11 @@ pub fn format_range<Language: FormatLanguage>(
     // marker to the end of the source range starting after or at
     // said ending point respectively
     let mut range_start: Option<&SourceMarker> = None;
+
     let mut range_end: Option<&SourceMarker> = None;
 
     let sourcemap = printed.sourcemap();
+
     for marker in sourcemap {
         if marker.source <= range.start() {
             range_start = match range_start {
@@ -1670,6 +1715,7 @@ pub fn format_range<Language: FormatLanguage>(
                         Some(prev_marker)
                     }
                 }
+
                 None => Some(marker),
             }
         }
@@ -1697,6 +1743,7 @@ pub fn format_range<Language: FormatLanguage>(
                         Some(prev_marker)
                     }
                 }
+
                 None => Some(marker),
             }
         }
@@ -1710,6 +1757,7 @@ pub fn format_range<Language: FormatLanguage>(
         Some(start_marker) => (start_marker.source, start_marker.dest),
         None => (common_root.text_range().start(), TextSize::from(0)),
     };
+
     let (end_source, end_dest) = match range_end {
         Some(end_marker) => (end_marker.source, end_marker.dest),
         None => (
@@ -1719,10 +1767,15 @@ pub fn format_range<Language: FormatLanguage>(
     };
 
     let input_range = TextRange::new(start_source, end_source);
+
     let output_range = TextRange::new(start_dest, end_dest);
+
     let sourcemap = printed.take_sourcemap();
+
     let verbatim_ranges = printed.take_verbatim_ranges();
+
     let code = &printed.into_code()[output_range];
+
     Ok(Printed::new(
         code.into(),
         Some(input_range),
@@ -1753,6 +1806,7 @@ pub fn format_sub_tree<L: FormatLanguage>(
     // reversed, starting from the last trailing trivia towards the first leading trivia).
     // The first token is handled specially as we only wan to consider its leading trivia pieces
     let first_token = tokens.next();
+
     let first_token_trivias = first_token
         .into_iter()
         .flat_map(|token| token.leading_trivia().pieces().rev());
@@ -1770,12 +1824,15 @@ pub fn format_sub_tree<L: FormatLanguage>(
         .filter(|piece| {
             // We're only interested in newline and whitespace trivias, skip over comments
             let is_newline = piece.is_newline();
+
             let is_whitespace = piece.is_whitespace();
+
             is_newline || is_whitespace
         });
 
     // Finally run the iterator until a newline trivia is found, and get the last whitespace trivia before it
     let last_whitespace = trivias.map_while(|piece| piece.as_whitespace()).last();
+
     let initial_indent = match last_whitespace {
         Some(trivia) => {
             // This logic is based on the formatting options passed in
@@ -1783,7 +1840,9 @@ pub fn format_sub_tree<L: FormatLanguage>(
             // of indentation type detection yet. Unfortunately this
             // may not actually match the current content of the file
             let length = trivia.text().len() as u16;
+
             let width = language.options().indent_width().value();
+
             match language.options().indent_style() {
                 IndentStyle::Tab => length,
                 IndentStyle::Space => length / u16::from(width),
@@ -1795,8 +1854,11 @@ pub fn format_sub_tree<L: FormatLanguage>(
     };
 
     let formatted = format_node(root, language)?;
+
     let mut printed = formatted.print_with_indent(initial_indent)?;
+
     let sourcemap = printed.take_sourcemap();
+
     let verbatim_ranges = printed.take_verbatim_ranges();
 
     Ok(Printed::new(
@@ -1813,7 +1875,9 @@ impl<L: Language, Context> Format<Context> for SyntaxTriviaPiece<L> {
 
         // Trim start/end and update the range
         let trimmed = self.text().trim_start();
+
         let trimmed_start = range.start() + (range.len() - trimmed.text_len());
+
         let trimmed = trimmed.trim_end();
 
         write!(
@@ -1968,8 +2032,11 @@ pub struct FormatStateSnapshot {
 #[cfg(test)]
 mod tests {
     use super::LineWidth;
+
     use biome_deserialize::json::deserialize_from_json_str;
+
     use biome_deserialize_macros::Deserializable;
+
     use biome_diagnostics::Error;
 
     #[test]
@@ -1994,16 +2061,20 @@ mod tests {
                 for diagnostic in self.diagnostics {
                     diagnostic.description(f)?;
                 }
+
                 Ok(())
             }
         }
 
         let source = r#"{ "lineWidth": 500 }"#;
+
         let deserialized = deserialize_from_json_str::<TestConfig>(source, Default::default(), "");
+
         assert_eq!(
             format!("{}", DiagnosticPrinter::new(deserialized.diagnostics())),
             "The number should be an integer between 1 and 320."
         );
+
         assert_eq!(
             deserialized.into_deserialized().unwrap(),
             TestConfig {

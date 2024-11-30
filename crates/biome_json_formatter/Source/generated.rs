@@ -23,6 +23,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonArrayValue {
         biome_json_syntax::JsonArrayValue,
         crate::json::value::array_value::FormatJsonArrayValue,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -36,6 +37,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonArrayValue {
         biome_json_syntax::JsonArrayValue,
         crate::json::value::array_value::FormatJsonArrayValue,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -63,6 +65,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonBooleanValue {
         biome_json_syntax::JsonBooleanValue,
         crate::json::value::boolean_value::FormatJsonBooleanValue,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -76,6 +79,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonBooleanValue {
         biome_json_syntax::JsonBooleanValue,
         crate::json::value::boolean_value::FormatJsonBooleanValue,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -99,6 +103,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonMember {
         biome_json_syntax::JsonMember,
         crate::json::auxiliary::member::FormatJsonMember,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -112,6 +117,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonMember {
         biome_json_syntax::JsonMember,
         crate::json::auxiliary::member::FormatJsonMember,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -139,6 +145,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonMemberName {
         biome_json_syntax::JsonMemberName,
         crate::json::auxiliary::member_name::FormatJsonMemberName,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -152,6 +159,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonMemberName {
         biome_json_syntax::JsonMemberName,
         crate::json::auxiliary::member_name::FormatJsonMemberName,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -179,6 +187,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonNullValue {
         biome_json_syntax::JsonNullValue,
         crate::json::value::null_value::FormatJsonNullValue,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -192,6 +201,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonNullValue {
         biome_json_syntax::JsonNullValue,
         crate::json::value::null_value::FormatJsonNullValue,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -219,6 +229,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonNumberValue {
         biome_json_syntax::JsonNumberValue,
         crate::json::value::number_value::FormatJsonNumberValue,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -232,6 +243,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonNumberValue {
         biome_json_syntax::JsonNumberValue,
         crate::json::value::number_value::FormatJsonNumberValue,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -259,6 +271,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonObjectValue {
         biome_json_syntax::JsonObjectValue,
         crate::json::value::object_value::FormatJsonObjectValue,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -272,6 +285,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonObjectValue {
         biome_json_syntax::JsonObjectValue,
         crate::json::value::object_value::FormatJsonObjectValue,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -293,6 +307,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonRoot {
         biome_json_syntax::JsonRoot,
         crate::json::auxiliary::root::FormatJsonRoot,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -306,6 +321,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonRoot {
         biome_json_syntax::JsonRoot,
         crate::json::auxiliary::root::FormatJsonRoot,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -333,6 +349,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonStringValue {
         biome_json_syntax::JsonStringValue,
         crate::json::value::string_value::FormatJsonStringValue,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -346,6 +363,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonStringValue {
         biome_json_syntax::JsonStringValue,
         crate::json::value::string_value::FormatJsonStringValue,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -360,6 +378,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonArrayElementList {
         biome_json_syntax::JsonArrayElementList,
         crate::json::lists::array_element_list::FormatJsonArrayElementList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -373,6 +392,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonArrayElementList {
         biome_json_syntax::JsonArrayElementList,
         crate::json::lists::array_element_list::FormatJsonArrayElementList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -387,6 +407,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonMemberList {
         biome_json_syntax::JsonMemberList,
         crate::json::lists::member_list::FormatJsonMemberList,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -400,6 +421,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonMemberList {
         biome_json_syntax::JsonMemberList,
         crate::json::lists::member_list::FormatJsonMemberList,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -421,6 +443,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonBogus {
         biome_json_syntax::JsonBogus,
         crate::json::bogus::bogus::FormatJsonBogus,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(self, crate::json::bogus::bogus::FormatJsonBogus::default())
@@ -431,6 +454,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonBogus {
         biome_json_syntax::JsonBogus,
         crate::json::bogus::bogus::FormatJsonBogus,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(self, crate::json::bogus::bogus::FormatJsonBogus::default())
@@ -455,6 +479,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::JsonBogusValue {
         biome_json_syntax::JsonBogusValue,
         crate::json::bogus::bogus_value::FormatJsonBogusValue,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(
@@ -468,6 +493,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::JsonBogusValue {
         biome_json_syntax::JsonBogusValue,
         crate::json::bogus::bogus_value::FormatJsonBogusValue,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(
@@ -482,6 +508,7 @@ impl AsFormat<JsonFormatContext> for biome_json_syntax::AnyJsonValue {
         biome_json_syntax::AnyJsonValue,
         crate::json::any::value::FormatAnyJsonValue,
     >;
+
     fn format(&self) -> Self::Format<'_> {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatRefWithRule::new(self, crate::json::any::value::FormatAnyJsonValue::default())
@@ -492,6 +519,7 @@ impl IntoFormat<JsonFormatContext> for biome_json_syntax::AnyJsonValue {
         biome_json_syntax::AnyJsonValue,
         crate::json::any::value::FormatAnyJsonValue,
     >;
+
     fn into_format(self) -> Self::Format {
         #![allow(clippy::default_constructed_unit_structs)]
         FormatOwnedWithRule::new(self, crate::json::any::value::FormatAnyJsonValue::default())

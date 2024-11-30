@@ -32,6 +32,7 @@ use self::parse_error::{expected_component_value, expected_declaration_item};
 
 pub(crate) fn parse_root(p: &mut CssParser) {
     let m = p.start();
+
     p.eat(UNICODE_BOM);
 
     RuleList::new(EOF).parse_list(p);
@@ -66,7 +67,9 @@ impl RuleListParseRecovery {
 
 impl ParseRecovery for RuleListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_RULE;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -76,7 +79,9 @@ impl ParseRecovery for RuleListParseRecovery {
 
 impl ParseNodeList for RuleList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_RULE_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -158,7 +163,9 @@ pub(crate) struct DeclarationList;
 
 impl ParseNodeList for DeclarationList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_DECLARATION_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -194,6 +201,7 @@ pub(crate) fn parse_declaration(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     parse_any_property(p).ok();
+
     parse_declaration_important(p).ok();
 
     Present(m.complete(p, CSS_DECLARATION))
@@ -221,6 +229,7 @@ pub(crate) fn parse_declaration_with_semicolon(p: &mut CssParser) -> ParsedSynta
     // Otherwise, a semicolon is expected and the parser will enforce its presence.
     // div { color: red; }
     // div { color: red }
+
     if !p.at(T!['}']) {
         if p.nth_at(1, T!['}']) {
             p.eat(T![;]);
@@ -236,7 +245,9 @@ pub(crate) fn parse_declaration_with_semicolon(p: &mut CssParser) -> ParsedSynta
 pub(crate) fn parse_empty_declaration(p: &mut CssParser) -> ParsedSyntax {
     if p.at(T![;]) {
         let m = p.start();
+
         p.bump_any(); // bump ;
+
         m.complete(p, CSS_EMPTY_DECLARATION).into()
     } else {
         Absent
@@ -258,9 +269,13 @@ fn parse_declaration_important(p: &mut CssParser) -> ParsedSyntax {
     if !is_at_declaration_important(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump(T![!]);
+
     p.bump(T![important]);
+
     Present(m.complete(p, CSS_DECLARATION_IMPORTANT))
 }
 
@@ -279,8 +294,11 @@ fn parse_metavariable(p: &mut CssParser) -> ParsedSyntax {
     if !is_at_metavariable(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump(GRIT_METAVARIABLE);
+
     Present(m.complete(p, CSS_METAVARIABLE))
 }
 
@@ -330,7 +348,9 @@ pub(crate) fn parse_any_value(p: &mut CssParser) -> ParsedSyntax {
 struct CssComponentValueList;
 impl ParseNodeList for CssComponentValueList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_COMPONENT_VALUE_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -364,10 +384,15 @@ pub(crate) fn parse_ratio(p: &mut CssParser) -> ParsedSyntax {
     if !is_at_ratio(p) {
         return Absent;
     }
+
     let m = p.start();
+
     parse_regular_number(p).ok();
+
     p.bump(T![/]);
+
     parse_regular_number(p).ok();
+
     Present(m.complete(p, CSS_RATIO))
 }
 
@@ -401,7 +426,9 @@ pub(crate) fn parse_identifier(p: &mut CssParser, context: CssLexContext) -> Par
     }
 
     let m = p.start();
+
     p.bump_remap_with_context(T![ident], context);
+
     let identifier = m.complete(p, CSS_IDENTIFIER);
 
     Present(identifier)
@@ -447,7 +474,9 @@ pub(crate) fn parse_custom_identifier_with_keywords(
     }
 
     let m = p.start();
+
     p.bump_remap_with_context(T![ident], context);
+
     let identifier = m.complete(p, CSS_CUSTOM_IDENTIFIER);
 
     Present(identifier)
@@ -468,7 +497,9 @@ pub(crate) fn parse_dashed_identifier(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![ident]);
+
     Present(m.complete(p, CSS_DASHED_IDENTIFIER))
 }
 
@@ -528,7 +559,9 @@ pub(crate) fn parse_bracketed_value(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T!['[']);
+
     BracketedValueList.parse_list(p);
+
     p.expect(T![']']);
 
     Present(m.complete(p, CSS_BRACKETED_VALUE))
@@ -541,7 +574,9 @@ pub(crate) struct BracketedValueList;
 
 impl ParseNodeList for BracketedValueList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_BRACKETED_VALUE_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -572,7 +607,9 @@ struct BracketedValueListRecovery;
 
 impl ParseRecovery for BracketedValueListRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_CUSTOM_IDENTIFIER;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -592,9 +629,11 @@ pub(crate) fn try_parse<T, E>(
     func: impl FnOnce(&mut CssParser) -> Result<T, E>,
 ) -> Result<T, E> {
     let checkpoint = p.checkpoint();
+
     let old_speculative_parsing = std::mem::replace(&mut p.state_mut().speculative_parsing, true);
 
     let res = func(p);
+
     p.state_mut().speculative_parsing = old_speculative_parsing;
 
     if res.is_err() {
@@ -607,8 +646,11 @@ pub(crate) fn try_parse<T, E>(
 #[cfg(test)]
 mod tests {
     use crate::{parser::CssParser, CssParserOptions};
+
     use biome_css_syntax::{CssSyntaxKind, T};
+
     use biome_parser::prelude::ParsedSyntax::{Absent, Present};
+
     use biome_parser::Parser;
 
     use super::{parse_regular_identifier, parse_regular_number, try_parse};
@@ -618,6 +660,7 @@ mod tests {
         let mut p = CssParser::new("width: blue;", CssParserOptions::default());
 
         let pre_try_range = p.cur_range();
+
         let result = try_parse(&mut p, |p| {
             // advance the parser within the attempt
             // parse `width`
@@ -635,6 +678,7 @@ mod tests {
         assert!(result.is_err());
         // The parser should've rewound back to the start.
         assert_eq!(p.cur_range(), pre_try_range);
+
         assert_eq!(p.cur_text(), "width");
     }
 
@@ -643,6 +687,7 @@ mod tests {
         let mut p = CssParser::new("width: 100;", CssParserOptions::default());
 
         let pre_try_range = p.cur_range();
+
         let result = try_parse(&mut p, |p| {
             // advance the parser within the attempt
             // parse `width`
@@ -658,9 +703,11 @@ mod tests {
         });
 
         assert!(result.is_ok());
+
         assert_eq!(result.unwrap().kind(&p), Some(CssSyntaxKind::CSS_NUMBER));
         // The parser should not have rewound and is now at the semicolon
         assert_ne!(p.cur_range(), pre_try_range);
+
         assert_eq!(p.cur_text(), ";");
     }
 }

@@ -57,6 +57,7 @@ impl FileSystem for OsFileSystem {
         tracing::debug_span!("OsFileSystem::open_with_options", path = ?path, options = ?options)
             .in_scope(move || -> io::Result<Box<dyn File>> {
                 let mut fs_options = fs::File::options();
+
                 Ok(Box::new(OsFile {
                     inner: options.into_fs_options(&mut fs_options).open(path)?,
                     version: 0,
@@ -151,6 +152,7 @@ impl File for OsFile {
             self.inner.rewind()?;
             // Read the file content
             self.inner.read_to_string(buffer)?;
+
             Ok(())
         })
     }
@@ -165,6 +167,7 @@ impl File for OsFile {
             self.inner.write_all(content)?;
             // new version stored
             self.version += 1;
+
             Ok(())
         })
     }
@@ -203,9 +206,11 @@ impl<'scope> TraversalScope<'scope> for OsTraversalScope<'scope> {
                 ctx.push_diagnostic(
                     IoError::from(err).with_file_path(path.to_string_lossy().to_string()),
                 );
+
                 return;
             }
         };
+
         handle_any_file(&self.scope, ctx, path, file_type, None);
     }
 
@@ -234,10 +239,12 @@ fn handle_dir<'scope>(
             return;
         }
     }
+
     let iter = match fs::read_dir(path) {
         Ok(iter) => iter,
         Err(err) => {
             ctx.push_diagnostic(IoError::from(err).with_file_path(path.display().to_string()));
+
             return;
         }
     };
@@ -262,15 +269,18 @@ fn handle_dir_entry<'scope>(
     origin_path: Option<PathBuf>,
 ) {
     let path = entry.path();
+
     let file_type = match entry.file_type() {
         Ok(file_type) => file_type,
         Err(err) => {
             ctx.push_diagnostic(
                 IoError::from(err).with_file_path(path.to_string_lossy().to_string()),
             );
+
             return;
         }
     };
+
     handle_any_file(scope, ctx, path, file_type, origin_path);
 }
 
@@ -292,6 +302,7 @@ fn handle_any_file<'scope>(
         if !ctx.can_handle(&BiomePath::new(path.clone())) {
             return;
         }
+
         let Ok((target_path, target_file_type)) = expand_symbolic_link(path.clone(), ctx) else {
             return;
         };
@@ -306,10 +317,12 @@ fn handle_any_file<'scope>(
             scope.spawn(move |scope| {
                 handle_dir(scope, ctx, &target_path, Some(path));
             });
+
             return;
         }
 
         path = target_path;
+
         file_type = target_file_type;
     }
 
@@ -319,7 +332,9 @@ fn handle_any_file<'scope>(
     let biome_path = if let Some(old_origin_path) = &origin_path {
         if let Some(file_name) = path.file_name() {
             let new_origin_path = old_origin_path.join(file_name);
+
             origin_path = Some(new_origin_path.clone());
+
             BiomePath::new(new_origin_path)
         } else {
             ctx.push_diagnostic(Error::from(FileSystemDiagnostic {
@@ -327,6 +342,7 @@ fn handle_any_file<'scope>(
                 error_kind: ErrorKind::UnknownFileType,
                 severity: Severity::Warning,
             }));
+
             return;
         }
     } else {
@@ -346,6 +362,7 @@ fn handle_any_file<'scope>(
         scope.spawn(move |scope| {
             handle_dir(scope, ctx, &path, origin_path);
         });
+
         return;
     }
 
@@ -353,6 +370,7 @@ fn handle_any_file<'scope>(
         scope.spawn(move |_| {
             ctx.store_path(BiomePath::new(path));
         });
+
         return;
     }
 
@@ -381,15 +399,19 @@ fn expand_symbolic_link(
     ctx: &dyn TraversalContext,
 ) -> Result<(PathBuf, FileType), SymlinkExpansionError> {
     let mut symlink_depth = 0;
+
     loop {
         symlink_depth += 1;
+
         if symlink_depth > MAX_SYMLINK_DEPTH {
             let path = path.to_string_lossy().to_string();
+
             ctx.push_diagnostic(Error::from(FileSystemDiagnostic {
                 path: path.clone(),
                 error_kind: ErrorKind::DeeplyNestedSymlinkExpansion(path),
                 severity: Severity::Warning,
             }));
+
             return Err(SymlinkExpansionError);
         }
 
@@ -397,6 +419,7 @@ fn expand_symbolic_link(
 
         if target_file_type.is_symlink() {
             path = target_path;
+
             continue;
         }
 
@@ -412,6 +435,7 @@ fn follow_symlink(
 
     let target_path = fs::read_link(path).map_err(|err| {
         ctx.push_diagnostic(IoError::from(err).with_file_path(path.to_string_lossy().to_string()));
+
         SymlinkExpansionError
     })?;
 
@@ -426,6 +450,7 @@ fn follow_symlink(
         Err(err) => {
             if err.kind() == IoErrorKind::NotFound {
                 let path = path.to_string_lossy().to_string();
+
                 ctx.push_diagnostic(Error::from(FileSystemDiagnostic {
                     path: path.clone(),
                     error_kind: ErrorKind::DereferencedSymlink(path),
@@ -436,6 +461,7 @@ fn follow_symlink(
                     IoError::from(err).with_file_path(path.to_string_lossy().to_string()),
                 );
             }
+
             return Err(SymlinkExpansionError);
         }
     };

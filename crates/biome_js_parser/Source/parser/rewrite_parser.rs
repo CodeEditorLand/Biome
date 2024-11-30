@@ -44,15 +44,20 @@ impl<'parser, 'source> RewriteParser<'parser, 'source> {
     /// Starts a marker for a new node.
     pub fn start(&mut self) -> RewriteMarker {
         let pos = self.inner.context().events().len() as u32;
+
         self.skip_trivia(false);
+
         self.inner.context_mut().push_event(Event::tombstone());
+
         RewriteMarker(Marker::new(pos, self.offset))
     }
 
     /// Bumps the passed in token
     pub fn bump(&mut self, token: RewriteToken) {
         self.skip_trivia(false);
+
         debug_assert!(self.offset < token.end);
+
         self.inner.context_mut().push_token(token.kind, token.end);
 
         // test ts ts_decorator_assignment
@@ -67,11 +72,13 @@ impl<'parser, 'source> RewriteParser<'parser, 'source> {
         }
 
         self.offset = token.end;
+
         self.skip_trivia(true);
     }
 
     fn skip_trivia(&mut self, trailing: bool) {
         let remaining_trivia = &self.inner.source().trivia_list[self.trivia_offset..];
+
         for trivia in remaining_trivia {
             // Don't skip over any "skipped token trivia". These get consumed when bumping the token.
             if trailing != trivia.trailing()
@@ -82,6 +89,7 @@ impl<'parser, 'source> RewriteParser<'parser, 'source> {
             }
 
             self.trivia_offset += 1;
+
             self.offset += trivia.len();
         }
     }

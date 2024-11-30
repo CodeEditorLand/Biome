@@ -36,15 +36,18 @@ impl CssAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssAtRuleFields {
         CssAtRuleFields {
             at_token: self.at_token(),
             rule: self.rule(),
         }
     }
+
     pub fn at_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn rule(&self) -> SyntaxResult<AnyCssAtRule> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -76,6 +79,7 @@ impl CssAttributeMatcher {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssAttributeMatcherFields {
         CssAttributeMatcherFields {
             operator: self.operator(),
@@ -83,12 +87,15 @@ impl CssAttributeMatcher {
             modifier: self.modifier(),
         }
     }
+
     pub fn operator(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> SyntaxResult<CssAttributeMatcherValue> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn modifier(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 2usize)
     }
@@ -121,9 +128,11 @@ impl CssAttributeMatcherValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssAttributeMatcherValueFields {
         CssAttributeMatcherValueFields { name: self.name() }
     }
+
     pub fn name(&self) -> SyntaxResult<AnyCssAttributeMatcherValue> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -154,15 +163,18 @@ impl CssAttributeName {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssAttributeNameFields {
         CssAttributeNameFields {
             namespace: self.namespace(),
             name: self.name(),
         }
     }
+
     pub fn namespace(&self) -> Option<CssNamespace> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -194,6 +206,7 @@ impl CssAttributeSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssAttributeSelectorFields {
         CssAttributeSelectorFields {
             l_brack_token: self.l_brack_token(),
@@ -202,15 +215,19 @@ impl CssAttributeSelector {
             r_brack_token: self.r_brack_token(),
         }
     }
+
     pub fn l_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<CssAttributeName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn matcher(&self) -> Option<CssAttributeMatcher> {
         support::node(&self.syntax, 2usize)
     }
+
     pub fn r_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -244,6 +261,7 @@ impl CssBinaryExpression {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssBinaryExpressionFields {
         CssBinaryExpressionFields {
             left: self.left(),
@@ -251,12 +269,15 @@ impl CssBinaryExpression {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyCssExpression> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn operator_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssExpression> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -289,6 +310,7 @@ impl CssBracketedValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssBracketedValueFields {
         CssBracketedValueFields {
             l_brack_token: self.l_brack_token(),
@@ -296,12 +318,15 @@ impl CssBracketedValue {
             r_brack_token: self.r_brack_token(),
         }
     }
+
     pub fn l_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn items(&self) -> CssBracketedValueList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -334,6 +359,7 @@ impl CssCharsetAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssCharsetAtRuleFields {
         CssCharsetAtRuleFields {
             charset_token: self.charset_token(),
@@ -341,12 +367,15 @@ impl CssCharsetAtRule {
             semicolon_token: self.semicolon_token(),
         }
     }
+
     pub fn charset_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn encoding(&self) -> SyntaxResult<CssString> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn semicolon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -379,15 +408,18 @@ impl CssClassSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssClassSelectorFields {
         CssClassSelectorFields {
             dot_token: self.dot_token(),
             name: self.name(),
         }
     }
+
     pub fn dot_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<CssCustomIdentifier> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -419,15 +451,18 @@ impl CssColor {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssColorFields {
         CssColorFields {
             hash_token: self.hash_token(),
             value_token: self.value_token(),
         }
     }
+
     pub fn hash_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -459,6 +494,7 @@ impl CssColorProfileAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssColorProfileAtRuleFields {
         CssColorProfileAtRuleFields {
             color_profile_token: self.color_profile_token(),
@@ -466,12 +502,15 @@ impl CssColorProfileAtRule {
             block: self.block(),
         }
     }
+
     pub fn color_profile_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<CssCustomIdentifier> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -504,6 +543,7 @@ impl CssComplexSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssComplexSelectorFields {
         CssComplexSelectorFields {
             left: self.left(),
@@ -511,12 +551,15 @@ impl CssComplexSelector {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyCssSelector> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn combinator(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssSelector> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -549,15 +592,18 @@ impl CssComposesImportSpecifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssComposesImportSpecifierFields {
         CssComposesImportSpecifierFields {
             from_token: self.from_token(),
             source: self.source(),
         }
     }
+
     pub fn from_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn source(&self) -> SyntaxResult<AnyCssComposesImportSource> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -589,6 +635,7 @@ impl CssComposesProperty {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssComposesPropertyFields {
         CssComposesPropertyFields {
             name: self.name(),
@@ -596,12 +643,15 @@ impl CssComposesProperty {
             value: self.value(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn value(&self) -> SyntaxResult<CssComposesPropertyValue> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -634,15 +684,18 @@ impl CssComposesPropertyValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssComposesPropertyValueFields {
         CssComposesPropertyValueFields {
             classes: self.classes(),
             specifier: self.specifier(),
         }
     }
+
     pub fn classes(&self) -> CssComposesClassList {
         support::list(&self.syntax, 0usize)
     }
+
     pub fn specifier(&self) -> Option<CssComposesImportSpecifier> {
         support::node(&self.syntax, 1usize)
     }
@@ -674,6 +727,7 @@ impl CssCompoundSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssCompoundSelectorFields {
         CssCompoundSelectorFields {
             nesting_selectors: self.nesting_selectors(),
@@ -681,12 +735,15 @@ impl CssCompoundSelector {
             sub_selectors: self.sub_selectors(),
         }
     }
+
     pub fn nesting_selectors(&self) -> CssNestedSelectorList {
         support::list(&self.syntax, 0usize)
     }
+
     pub fn simple_selector(&self) -> Option<AnyCssSimpleSelector> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn sub_selectors(&self) -> CssSubSelectorList {
         support::list(&self.syntax, 2usize)
     }
@@ -719,6 +776,7 @@ impl CssContainerAndQuery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerAndQueryFields {
         CssContainerAndQueryFields {
             left: self.left(),
@@ -726,12 +784,15 @@ impl CssContainerAndQuery {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyCssContainerQueryInParens> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn and_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssContainerAndCombinableQuery> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -764,6 +825,7 @@ impl CssContainerAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerAtRuleFields {
         CssContainerAtRuleFields {
             container_token: self.container_token(),
@@ -772,15 +834,19 @@ impl CssContainerAtRule {
             block: self.block(),
         }
     }
+
     pub fn container_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> Option<CssCustomIdentifier> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn query(&self) -> SyntaxResult<AnyCssContainerQuery> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssConditionalBlock> {
         support::required_node(&self.syntax, 3usize)
     }
@@ -814,15 +880,18 @@ impl CssContainerNotQuery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerNotQueryFields {
         CssContainerNotQueryFields {
             not_token: self.not_token(),
             query: self.query(),
         }
     }
+
     pub fn not_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn query(&self) -> SyntaxResult<AnyCssContainerQueryInParens> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -854,6 +923,7 @@ impl CssContainerOrQuery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerOrQueryFields {
         CssContainerOrQueryFields {
             left: self.left(),
@@ -861,12 +931,15 @@ impl CssContainerOrQuery {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyCssContainerQueryInParens> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn or_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssContainerOrCombinableQuery> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -899,6 +972,7 @@ impl CssContainerQueryInParens {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerQueryInParensFields {
         CssContainerQueryInParensFields {
             l_paren_token: self.l_paren_token(),
@@ -906,12 +980,15 @@ impl CssContainerQueryInParens {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn query(&self) -> SyntaxResult<AnyCssContainerQuery> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -944,6 +1021,7 @@ impl CssContainerSizeFeatureInParens {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerSizeFeatureInParensFields {
         CssContainerSizeFeatureInParensFields {
             l_paren_token: self.l_paren_token(),
@@ -951,12 +1029,15 @@ impl CssContainerSizeFeatureInParens {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn feature(&self) -> SyntaxResult<AnyCssQueryFeature> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -989,6 +1070,7 @@ impl CssContainerStyleAndQuery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerStyleAndQueryFields {
         CssContainerStyleAndQueryFields {
             left: self.left(),
@@ -996,12 +1078,15 @@ impl CssContainerStyleAndQuery {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<CssContainerStyleInParens> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn and_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssContainerStyleAndCombinableQuery> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1034,6 +1119,7 @@ impl CssContainerStyleInParens {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerStyleInParensFields {
         CssContainerStyleInParensFields {
             l_paren_token: self.l_paren_token(),
@@ -1041,12 +1127,15 @@ impl CssContainerStyleInParens {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn query(&self) -> SyntaxResult<AnyCssContainerStyleInParens> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1079,15 +1168,18 @@ impl CssContainerStyleNotQuery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerStyleNotQueryFields {
         CssContainerStyleNotQueryFields {
             not_token: self.not_token(),
             query: self.query(),
         }
     }
+
     pub fn not_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn query(&self) -> SyntaxResult<CssContainerStyleInParens> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -1119,6 +1211,7 @@ impl CssContainerStyleOrQuery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerStyleOrQueryFields {
         CssContainerStyleOrQueryFields {
             left: self.left(),
@@ -1126,12 +1219,15 @@ impl CssContainerStyleOrQuery {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<CssContainerStyleInParens> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn or_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssContainerStyleOrCombinableQuery> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1164,6 +1260,7 @@ impl CssContainerStyleQueryInParens {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssContainerStyleQueryInParensFields {
         CssContainerStyleQueryInParensFields {
             style_token: self.style_token(),
@@ -1172,15 +1269,19 @@ impl CssContainerStyleQueryInParens {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn style_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn query(&self) -> SyntaxResult<AnyCssContainerStyleQuery> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -1214,6 +1315,7 @@ impl CssCounterStyleAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssCounterStyleAtRuleFields {
         CssCounterStyleAtRuleFields {
             counter_style_token: self.counter_style_token(),
@@ -1221,12 +1323,15 @@ impl CssCounterStyleAtRule {
             block: self.block(),
         }
     }
+
     pub fn counter_style_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<CssCustomIdentifier> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1259,11 +1364,13 @@ impl CssCustomIdentifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssCustomIdentifierFields {
         CssCustomIdentifierFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1294,11 +1401,13 @@ impl CssDashedIdentifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssDashedIdentifierFields {
         CssDashedIdentifierFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1329,15 +1438,18 @@ impl CssDeclaration {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssDeclarationFields {
         CssDeclarationFields {
             property: self.property(),
             important: self.important(),
         }
     }
+
     pub fn property(&self) -> SyntaxResult<AnyCssProperty> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn important(&self) -> Option<CssDeclarationImportant> {
         support::node(&self.syntax, 1usize)
     }
@@ -1369,6 +1481,7 @@ impl CssDeclarationBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssDeclarationBlockFields {
         CssDeclarationBlockFields {
             l_curly_token: self.l_curly_token(),
@@ -1376,12 +1489,15 @@ impl CssDeclarationBlock {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn declarations(&self) -> CssDeclarationList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1414,15 +1530,18 @@ impl CssDeclarationImportant {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssDeclarationImportantFields {
         CssDeclarationImportantFields {
             excl_token: self.excl_token(),
             important_token: self.important_token(),
         }
     }
+
     pub fn excl_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn important_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -1454,6 +1573,7 @@ impl CssDeclarationOrAtRuleBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssDeclarationOrAtRuleBlockFields {
         CssDeclarationOrAtRuleBlockFields {
             l_curly_token: self.l_curly_token(),
@@ -1461,12 +1581,15 @@ impl CssDeclarationOrAtRuleBlock {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn items(&self) -> CssDeclarationOrAtRuleList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1499,6 +1622,7 @@ impl CssDeclarationOrRuleBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssDeclarationOrRuleBlockFields {
         CssDeclarationOrRuleBlockFields {
             l_curly_token: self.l_curly_token(),
@@ -1506,12 +1630,15 @@ impl CssDeclarationOrRuleBlock {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn items(&self) -> CssDeclarationOrRuleList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1544,15 +1671,18 @@ impl CssDeclarationWithSemicolon {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssDeclarationWithSemicolonFields {
         CssDeclarationWithSemicolonFields {
             declaration: self.declaration(),
             semicolon_token: self.semicolon_token(),
         }
     }
+
     pub fn declaration(&self) -> SyntaxResult<CssDeclaration> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn semicolon_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 1usize)
     }
@@ -1584,6 +1714,7 @@ impl CssDocumentAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssDocumentAtRuleFields {
         CssDocumentAtRuleFields {
             document_token: self.document_token(),
@@ -1591,12 +1722,15 @@ impl CssDocumentAtRule {
             block: self.block(),
         }
     }
+
     pub fn document_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn matchers(&self) -> CssDocumentMatcherList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssRuleBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1629,6 +1763,7 @@ impl CssDocumentCustomMatcher {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssDocumentCustomMatcherFields {
         CssDocumentCustomMatcherFields {
             name: self.name(),
@@ -1637,15 +1772,19 @@ impl CssDocumentCustomMatcher {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn value(&self) -> Option<AnyCssUrlValue> {
         support::node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -1679,11 +1818,13 @@ impl CssEmptyDeclaration {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssEmptyDeclarationFields {
         CssEmptyDeclarationFields {
             semicolon_token: self.semicolon_token(),
         }
     }
+
     pub fn semicolon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -1714,15 +1855,18 @@ impl CssFontFaceAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssFontFaceAtRuleFields {
         CssFontFaceAtRuleFields {
             font_face_token: self.font_face_token(),
             block: self.block(),
         }
     }
+
     pub fn font_face_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationBlock> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -1754,11 +1898,13 @@ impl CssFontFamilyName {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssFontFamilyNameFields {
         CssFontFamilyNameFields {
             names: self.names(),
         }
     }
+
     pub fn names(&self) -> CssCustomIdentifierList {
         support::list(&self.syntax, 0usize)
     }
@@ -1789,6 +1935,7 @@ impl CssFontFeatureValuesAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssFontFeatureValuesAtRuleFields {
         CssFontFeatureValuesAtRuleFields {
             font_feature_values_token: self.font_feature_values_token(),
@@ -1796,12 +1943,15 @@ impl CssFontFeatureValuesAtRule {
             block: self.block(),
         }
     }
+
     pub fn font_feature_values_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn names(&self) -> CssFontFamilyNameList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssFontFeatureValuesBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1834,6 +1984,7 @@ impl CssFontFeatureValuesBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssFontFeatureValuesBlockFields {
         CssFontFeatureValuesBlockFields {
             l_curly_token: self.l_curly_token(),
@@ -1841,12 +1992,15 @@ impl CssFontFeatureValuesBlock {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn items(&self) -> CssFontFeatureValuesItemList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -1879,6 +2033,7 @@ impl CssFontFeatureValuesItem {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssFontFeatureValuesItemFields {
         CssFontFeatureValuesItemFields {
             at_token: self.at_token(),
@@ -1886,12 +2041,15 @@ impl CssFontFeatureValuesItem {
             block: self.block(),
         }
     }
+
     pub fn at_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1924,6 +2082,7 @@ impl CssFontPaletteValuesAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssFontPaletteValuesAtRuleFields {
         CssFontPaletteValuesAtRuleFields {
             font_palette_values_token: self.font_palette_values_token(),
@@ -1931,12 +2090,15 @@ impl CssFontPaletteValuesAtRule {
             block: self.block(),
         }
     }
+
     pub fn font_palette_values_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<CssDashedIdentifier> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -1969,6 +2131,7 @@ impl CssFunction {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssFunctionFields {
         CssFunctionFields {
             name: self.name(),
@@ -1977,15 +2140,19 @@ impl CssFunction {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn items(&self) -> CssParameterList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -2019,11 +2186,13 @@ impl CssGenericDelimiter {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssGenericDelimiterFields {
         CssGenericDelimiterFields {
             value: self.value(),
         }
     }
+
     pub fn value(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -2054,6 +2223,7 @@ impl CssGenericProperty {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssGenericPropertyFields {
         CssGenericPropertyFields {
             name: self.name(),
@@ -2061,12 +2231,15 @@ impl CssGenericProperty {
             value: self.value(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<AnyCssDeclarationName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn value(&self) -> CssGenericComponentValueList {
         support::list(&self.syntax, 2usize)
     }
@@ -2099,15 +2272,18 @@ impl CssIdSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssIdSelectorFields {
         CssIdSelectorFields {
             hash_token: self.hash_token(),
             name: self.name(),
         }
     }
+
     pub fn hash_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<CssCustomIdentifier> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2139,11 +2315,13 @@ impl CssIdentifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssIdentifierFields {
         CssIdentifierFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -2174,11 +2352,13 @@ impl CssImportAnonymousLayer {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssImportAnonymousLayerFields {
         CssImportAnonymousLayerFields {
             layer_token: self.layer_token(),
         }
     }
+
     pub fn layer_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -2209,6 +2389,7 @@ impl CssImportAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssImportAtRuleFields {
         CssImportAtRuleFields {
             import_token: self.import_token(),
@@ -2219,21 +2400,27 @@ impl CssImportAtRule {
             semicolon_token: self.semicolon_token(),
         }
     }
+
     pub fn import_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn url(&self) -> SyntaxResult<AnyCssImportUrl> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn layer(&self) -> Option<AnyCssImportLayer> {
         support::node(&self.syntax, 2usize)
     }
+
     pub fn supports(&self) -> Option<CssImportSupports> {
         support::node(&self.syntax, 3usize)
     }
+
     pub fn media(&self) -> CssMediaQueryList {
         support::list(&self.syntax, 4usize)
     }
+
     pub fn semicolon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 5usize)
     }
@@ -2269,6 +2456,7 @@ impl CssImportNamedLayer {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssImportNamedLayerFields {
         CssImportNamedLayerFields {
             layer_token: self.layer_token(),
@@ -2277,15 +2465,19 @@ impl CssImportNamedLayer {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn layer_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> CssLayerNameList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -2319,6 +2511,7 @@ impl CssImportSupports {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssImportSupportsFields {
         CssImportSupportsFields {
             supports_token: self.supports_token(),
@@ -2327,15 +2520,19 @@ impl CssImportSupports {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn supports_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn condition(&self) -> SyntaxResult<AnyCssImportSupportsCondition> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -2369,6 +2566,7 @@ impl CssKeyframesAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssKeyframesAtRuleFields {
         CssKeyframesAtRuleFields {
             keyframes_token: self.keyframes_token(),
@@ -2376,12 +2574,15 @@ impl CssKeyframesAtRule {
             block: self.block(),
         }
     }
+
     pub fn keyframes_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<AnyCssKeyframesName> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssKeyframesBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -2414,6 +2615,7 @@ impl CssKeyframesBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssKeyframesBlockFields {
         CssKeyframesBlockFields {
             l_curly_token: self.l_curly_token(),
@@ -2421,12 +2623,15 @@ impl CssKeyframesBlock {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn items(&self) -> CssKeyframesItemList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -2459,11 +2664,13 @@ impl CssKeyframesIdentSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssKeyframesIdentSelectorFields {
         CssKeyframesIdentSelectorFields {
             selector: self.selector(),
         }
     }
+
     pub fn selector(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -2494,15 +2701,18 @@ impl CssKeyframesItem {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssKeyframesItemFields {
         CssKeyframesItemFields {
             selectors: self.selectors(),
             block: self.block(),
         }
     }
+
     pub fn selectors(&self) -> CssKeyframesSelectorList {
         support::list(&self.syntax, 0usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationBlock> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2534,11 +2744,13 @@ impl CssKeyframesPercentageSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssKeyframesPercentageSelectorFields {
         CssKeyframesPercentageSelectorFields {
             selector: self.selector(),
         }
     }
+
     pub fn selector(&self) -> SyntaxResult<CssPercentage> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -2569,6 +2781,7 @@ impl CssKeyframesScopeFunction {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssKeyframesScopeFunctionFields {
         CssKeyframesScopeFunctionFields {
             scope: self.scope(),
@@ -2577,15 +2790,19 @@ impl CssKeyframesScopeFunction {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn scope(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<AnyCssKeyframesIdentifier> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -2619,15 +2836,18 @@ impl CssKeyframesScopePrefix {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssKeyframesScopePrefixFields {
         CssKeyframesScopePrefixFields {
             scope: self.scope(),
             name: self.name(),
         }
     }
+
     pub fn scope(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<AnyCssKeyframesIdentifier> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2659,15 +2879,18 @@ impl CssKeyframesScopedName {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssKeyframesScopedNameFields {
         CssKeyframesScopedNameFields {
             colon_token: self.colon_token(),
             scope: self.scope(),
         }
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn scope(&self) -> SyntaxResult<AnyCssKeyframesScope> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2699,15 +2922,18 @@ impl CssLayerAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssLayerAtRuleFields {
         CssLayerAtRuleFields {
             layer_token: self.layer_token(),
             layer: self.layer(),
         }
     }
+
     pub fn layer_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn layer(&self) -> SyntaxResult<AnyCssLayer> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2739,15 +2965,18 @@ impl CssLayerDeclaration {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssLayerDeclarationFields {
         CssLayerDeclarationFields {
             references: self.references(),
             block: self.block(),
         }
     }
+
     pub fn references(&self) -> CssLayerReferenceList {
         support::list(&self.syntax, 0usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssConditionalBlock> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -2779,15 +3008,18 @@ impl CssLayerReference {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssLayerReferenceFields {
         CssLayerReferenceFields {
             references: self.references(),
             semicolon_token: self.semicolon_token(),
         }
     }
+
     pub fn references(&self) -> CssLayerReferenceList {
         support::list(&self.syntax, 0usize)
     }
+
     pub fn semicolon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -2819,11 +3051,13 @@ impl CssListOfComponentValuesExpression {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssListOfComponentValuesExpressionFields {
         CssListOfComponentValuesExpressionFields {
             css_component_value_list: self.css_component_value_list(),
         }
     }
+
     pub fn css_component_value_list(&self) -> CssComponentValueList {
         support::list(&self.syntax, 0usize)
     }
@@ -2854,6 +3088,7 @@ impl CssMarginAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMarginAtRuleFields {
         CssMarginAtRuleFields {
             at_token: self.at_token(),
@@ -2861,12 +3096,15 @@ impl CssMarginAtRule {
             block: self.block(),
         }
     }
+
     pub fn at_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationOrAtRuleBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -2899,6 +3137,7 @@ impl CssMediaAndCondition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMediaAndConditionFields {
         CssMediaAndConditionFields {
             left: self.left(),
@@ -2906,12 +3145,15 @@ impl CssMediaAndCondition {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyCssMediaInParens> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn and_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssMediaAndCombinableCondition> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -2944,6 +3186,7 @@ impl CssMediaAndTypeQuery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMediaAndTypeQueryFields {
         CssMediaAndTypeQueryFields {
             left: self.left(),
@@ -2951,12 +3194,15 @@ impl CssMediaAndTypeQuery {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<CssMediaTypeQuery> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn and_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssMediaTypeCondition> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -2989,6 +3235,7 @@ impl CssMediaAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMediaAtRuleFields {
         CssMediaAtRuleFields {
             media_token: self.media_token(),
@@ -2996,12 +3243,15 @@ impl CssMediaAtRule {
             block: self.block(),
         }
     }
+
     pub fn media_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn queries(&self) -> CssMediaQueryList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssConditionalBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3034,6 +3284,7 @@ impl CssMediaConditionInParens {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMediaConditionInParensFields {
         CssMediaConditionInParensFields {
             l_paren_token: self.l_paren_token(),
@@ -3041,12 +3292,15 @@ impl CssMediaConditionInParens {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn condition(&self) -> SyntaxResult<AnyCssMediaCondition> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -3079,11 +3333,13 @@ impl CssMediaConditionQuery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMediaConditionQueryFields {
         CssMediaConditionQueryFields {
             condition: self.condition(),
         }
     }
+
     pub fn condition(&self) -> SyntaxResult<AnyCssMediaCondition> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -3114,6 +3370,7 @@ impl CssMediaFeatureInParens {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMediaFeatureInParensFields {
         CssMediaFeatureInParensFields {
             l_paren_token: self.l_paren_token(),
@@ -3121,12 +3378,15 @@ impl CssMediaFeatureInParens {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn feature(&self) -> SyntaxResult<AnyCssQueryFeature> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -3159,15 +3419,18 @@ impl CssMediaNotCondition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMediaNotConditionFields {
         CssMediaNotConditionFields {
             not_token: self.not_token(),
             condition: self.condition(),
         }
     }
+
     pub fn not_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn condition(&self) -> SyntaxResult<AnyCssMediaInParens> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -3199,6 +3462,7 @@ impl CssMediaOrCondition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMediaOrConditionFields {
         CssMediaOrConditionFields {
             left: self.left(),
@@ -3206,12 +3470,15 @@ impl CssMediaOrCondition {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyCssMediaInParens> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn or_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssMediaOrCombinableCondition> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3244,11 +3511,13 @@ impl CssMediaType {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMediaTypeFields {
         CssMediaTypeFields {
             value: self.value(),
         }
     }
+
     pub fn value(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -3279,15 +3548,18 @@ impl CssMediaTypeQuery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMediaTypeQueryFields {
         CssMediaTypeQueryFields {
             modifier: self.modifier(),
             ty: self.ty(),
         }
     }
+
     pub fn modifier(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn ty(&self) -> SyntaxResult<CssMediaType> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -3319,11 +3591,13 @@ impl CssMetavariable {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssMetavariableFields {
         CssMetavariableFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -3354,9 +3628,11 @@ impl CssNamedNamespacePrefix {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssNamedNamespacePrefixFields {
         CssNamedNamespacePrefixFields { name: self.name() }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -3387,15 +3663,18 @@ impl CssNamespace {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssNamespaceFields {
         CssNamespaceFields {
             prefix: self.prefix(),
             bitwise_or_token: self.bitwise_or_token(),
         }
     }
+
     pub fn prefix(&self) -> Option<AnyCssNamespacePrefix> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn bitwise_or_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -3427,6 +3706,7 @@ impl CssNamespaceAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssNamespaceAtRuleFields {
         CssNamespaceAtRuleFields {
             namespace_token: self.namespace_token(),
@@ -3435,15 +3715,19 @@ impl CssNamespaceAtRule {
             semicolon_token: self.semicolon_token(),
         }
     }
+
     pub fn namespace_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn prefix(&self) -> Option<CssIdentifier> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn url(&self) -> SyntaxResult<AnyCssNamespaceUrl> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn semicolon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -3477,15 +3761,18 @@ impl CssNestedQualifiedRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssNestedQualifiedRuleFields {
         CssNestedQualifiedRuleFields {
             prelude: self.prelude(),
             block: self.block(),
         }
     }
+
     pub fn prelude(&self) -> CssRelativeSelectorList {
         support::list(&self.syntax, 0usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationOrRuleBlock> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -3517,11 +3804,13 @@ impl CssNestedSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssNestedSelectorFields {
         CssNestedSelectorFields {
             amp_token: self.amp_token(),
         }
     }
+
     pub fn amp_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -3552,15 +3841,18 @@ impl CssNthOffset {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssNthOffsetFields {
         CssNthOffsetFields {
             sign: self.sign(),
             value: self.value(),
         }
     }
+
     pub fn sign(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> SyntaxResult<CssNumber> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -3592,11 +3884,13 @@ impl CssNumber {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssNumberFields {
         CssNumberFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -3627,6 +3921,7 @@ impl CssPageAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPageAtRuleFields {
         CssPageAtRuleFields {
             page_token: self.page_token(),
@@ -3634,12 +3929,15 @@ impl CssPageAtRule {
             block: self.block(),
         }
     }
+
     pub fn page_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn selectors(&self) -> CssPageSelectorList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssPageAtRuleBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3672,6 +3970,7 @@ impl CssPageAtRuleBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPageAtRuleBlockFields {
         CssPageAtRuleBlockFields {
             l_curly_token: self.l_curly_token(),
@@ -3679,12 +3978,15 @@ impl CssPageAtRuleBlock {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn items(&self) -> CssPageAtRuleItemList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -3717,15 +4019,18 @@ impl CssPageSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPageSelectorFields {
         CssPageSelectorFields {
             ty: self.ty(),
             pseudos: self.pseudos(),
         }
     }
+
     pub fn ty(&self) -> Option<CssCustomIdentifier> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn pseudos(&self) -> CssPageSelectorPseudoList {
         support::list(&self.syntax, 1usize)
     }
@@ -3757,15 +4062,18 @@ impl CssPageSelectorPseudo {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPageSelectorPseudoFields {
         CssPageSelectorPseudoFields {
             colon_token: self.colon_token(),
             selector: self.selector(),
         }
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn selector(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -3797,11 +4105,13 @@ impl CssParameter {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssParameterFields {
         CssParameterFields {
             any_css_expression: self.any_css_expression(),
         }
     }
+
     pub fn any_css_expression(&self) -> SyntaxResult<AnyCssExpression> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -3832,6 +4142,7 @@ impl CssParenthesizedExpression {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssParenthesizedExpressionFields {
         CssParenthesizedExpressionFields {
             l_paren_token: self.l_paren_token(),
@@ -3839,12 +4150,15 @@ impl CssParenthesizedExpression {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn expression(&self) -> Option<AnyCssExpression> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -3877,15 +4191,18 @@ impl CssPercentage {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPercentageFields {
         CssPercentageFields {
             value_token: self.value_token(),
             percent_token: self.percent_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn percent_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -3917,6 +4234,7 @@ impl CssPropertyAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPropertyAtRuleFields {
         CssPropertyAtRuleFields {
             property_token: self.property_token(),
@@ -3924,12 +4242,15 @@ impl CssPropertyAtRule {
             block: self.block(),
         }
     }
+
     pub fn property_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn name(&self) -> SyntaxResult<CssDashedIdentifier> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -3962,6 +4283,7 @@ impl CssPseudoClassFunctionCompoundSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassFunctionCompoundSelectorFields {
         CssPseudoClassFunctionCompoundSelectorFields {
             name: self.name(),
@@ -3970,15 +4292,19 @@ impl CssPseudoClassFunctionCompoundSelector {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn selector(&self) -> SyntaxResult<AnyCssCompoundSelector> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -4012,6 +4338,7 @@ impl CssPseudoClassFunctionCompoundSelectorList {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassFunctionCompoundSelectorListFields {
         CssPseudoClassFunctionCompoundSelectorListFields {
             name: self.name(),
@@ -4020,15 +4347,19 @@ impl CssPseudoClassFunctionCompoundSelectorList {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn compound_selectors(&self) -> CssCompoundSelectorList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -4062,6 +4393,7 @@ impl CssPseudoClassFunctionIdentifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassFunctionIdentifierFields {
         CssPseudoClassFunctionIdentifierFields {
             name_token: self.name_token(),
@@ -4070,15 +4402,19 @@ impl CssPseudoClassFunctionIdentifier {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn ident(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -4112,6 +4448,7 @@ impl CssPseudoClassFunctionNth {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassFunctionNthFields {
         CssPseudoClassFunctionNthFields {
             name: self.name(),
@@ -4120,15 +4457,19 @@ impl CssPseudoClassFunctionNth {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn selector(&self) -> SyntaxResult<AnyCssPseudoClassNthSelector> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -4162,6 +4503,7 @@ impl CssPseudoClassFunctionRelativeSelectorList {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassFunctionRelativeSelectorListFields {
         CssPseudoClassFunctionRelativeSelectorListFields {
             name_token: self.name_token(),
@@ -4170,15 +4512,19 @@ impl CssPseudoClassFunctionRelativeSelectorList {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn relative_selectors(&self) -> CssRelativeSelectorList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -4212,6 +4558,7 @@ impl CssPseudoClassFunctionSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassFunctionSelectorFields {
         CssPseudoClassFunctionSelectorFields {
             name: self.name(),
@@ -4220,15 +4567,19 @@ impl CssPseudoClassFunctionSelector {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn selector(&self) -> SyntaxResult<AnyCssSelector> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -4262,6 +4613,7 @@ impl CssPseudoClassFunctionSelectorList {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassFunctionSelectorListFields {
         CssPseudoClassFunctionSelectorListFields {
             name: self.name(),
@@ -4270,15 +4622,19 @@ impl CssPseudoClassFunctionSelectorList {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn selectors(&self) -> CssSelectorList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -4312,6 +4668,7 @@ impl CssPseudoClassFunctionValueList {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassFunctionValueListFields {
         CssPseudoClassFunctionValueListFields {
             name_token: self.name_token(),
@@ -4320,15 +4677,19 @@ impl CssPseudoClassFunctionValueList {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn values(&self) -> CssPseudoValueList {
         support::list(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -4362,9 +4723,11 @@ impl CssPseudoClassIdentifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassIdentifierFields {
         CssPseudoClassIdentifierFields { name: self.name() }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -4395,6 +4758,7 @@ impl CssPseudoClassNth {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassNthFields {
         CssPseudoClassNthFields {
             sign: self.sign(),
@@ -4403,15 +4767,19 @@ impl CssPseudoClassNth {
             offset: self.offset(),
         }
     }
+
     pub fn sign(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> Option<CssNumber> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn symbol_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
+
     pub fn offset(&self) -> Option<CssNthOffset> {
         support::node(&self.syntax, 3usize)
     }
@@ -4445,11 +4813,13 @@ impl CssPseudoClassNthIdentifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassNthIdentifierFields {
         CssPseudoClassNthIdentifierFields {
             value: self.value(),
         }
     }
+
     pub fn value(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -4480,15 +4850,18 @@ impl CssPseudoClassNthNumber {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassNthNumberFields {
         CssPseudoClassNthNumberFields {
             sign: self.sign(),
             value: self.value(),
         }
     }
+
     pub fn sign(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> SyntaxResult<CssNumber> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -4520,15 +4893,18 @@ impl CssPseudoClassNthSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassNthSelectorFields {
         CssPseudoClassNthSelectorFields {
             nth: self.nth(),
             of_selector: self.of_selector(),
         }
     }
+
     pub fn nth(&self) -> SyntaxResult<AnyCssPseudoClassNth> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn of_selector(&self) -> Option<CssPseudoClassOfNthSelector> {
         support::node(&self.syntax, 1usize)
     }
@@ -4560,15 +4936,18 @@ impl CssPseudoClassOfNthSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassOfNthSelectorFields {
         CssPseudoClassOfNthSelectorFields {
             of_token: self.of_token(),
             selectors: self.selectors(),
         }
     }
+
     pub fn of_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn selectors(&self) -> CssSelectorList {
         support::list(&self.syntax, 1usize)
     }
@@ -4600,15 +4979,18 @@ impl CssPseudoClassSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoClassSelectorFields {
         CssPseudoClassSelectorFields {
             colon_token: self.colon_token(),
             class: self.class(),
         }
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn class(&self) -> SyntaxResult<AnyCssPseudoClass> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -4640,6 +5022,7 @@ impl CssPseudoElementFunctionIdentifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoElementFunctionIdentifierFields {
         CssPseudoElementFunctionIdentifierFields {
             name: self.name(),
@@ -4648,15 +5031,19 @@ impl CssPseudoElementFunctionIdentifier {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn ident(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -4690,6 +5077,7 @@ impl CssPseudoElementFunctionSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoElementFunctionSelectorFields {
         CssPseudoElementFunctionSelectorFields {
             name: self.name(),
@@ -4698,15 +5086,19 @@ impl CssPseudoElementFunctionSelector {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn selector(&self) -> SyntaxResult<AnyCssSelector> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -4740,9 +5132,11 @@ impl CssPseudoElementIdentifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoElementIdentifierFields {
         CssPseudoElementIdentifierFields { name: self.name() }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -4773,15 +5167,18 @@ impl CssPseudoElementSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssPseudoElementSelectorFields {
         CssPseudoElementSelectorFields {
             double_colon_token: self.double_colon_token(),
             element: self.element(),
         }
     }
+
     pub fn double_colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn element(&self) -> SyntaxResult<AnyCssPseudoElement> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -4813,15 +5210,18 @@ impl CssQualifiedRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssQualifiedRuleFields {
         CssQualifiedRuleFields {
             prelude: self.prelude(),
             block: self.block(),
         }
     }
+
     pub fn prelude(&self) -> CssSelectorList {
         support::list(&self.syntax, 0usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationOrRuleBlock> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -4853,9 +5253,11 @@ impl CssQueryFeatureBoolean {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssQueryFeatureBooleanFields {
         CssQueryFeatureBooleanFields { name: self.name() }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -4886,6 +5288,7 @@ impl CssQueryFeaturePlain {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssQueryFeaturePlainFields {
         CssQueryFeaturePlainFields {
             name: self.name(),
@@ -4893,12 +5296,15 @@ impl CssQueryFeaturePlain {
             value: self.value(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn value(&self) -> SyntaxResult<AnyCssQueryFeatureValue> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -4931,6 +5337,7 @@ impl CssQueryFeatureRange {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssQueryFeatureRangeFields {
         CssQueryFeatureRangeFields {
             left: self.left(),
@@ -4938,12 +5345,15 @@ impl CssQueryFeatureRange {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn comparison(&self) -> SyntaxResult<CssQueryFeatureRangeComparison> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssQueryFeatureValue> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -4976,11 +5386,13 @@ impl CssQueryFeatureRangeComparison {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssQueryFeatureRangeComparisonFields {
         CssQueryFeatureRangeComparisonFields {
             operator: self.operator(),
         }
     }
+
     pub fn operator(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -5011,6 +5423,7 @@ impl CssQueryFeatureRangeInterval {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssQueryFeatureRangeIntervalFields {
         CssQueryFeatureRangeIntervalFields {
             left: self.left(),
@@ -5020,18 +5433,23 @@ impl CssQueryFeatureRangeInterval {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyCssQueryFeatureValue> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn left_comparison(&self) -> SyntaxResult<CssQueryFeatureRangeComparison> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn right_comparison(&self) -> SyntaxResult<CssQueryFeatureRangeComparison> {
         support::required_node(&self.syntax, 3usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssQueryFeatureValue> {
         support::required_node(&self.syntax, 4usize)
     }
@@ -5066,6 +5484,7 @@ impl CssQueryFeatureReverseRange {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssQueryFeatureReverseRangeFields {
         CssQueryFeatureReverseRangeFields {
             left: self.left(),
@@ -5073,12 +5492,15 @@ impl CssQueryFeatureReverseRange {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyCssQueryFeatureValue> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn comparison(&self) -> SyntaxResult<CssQueryFeatureRangeComparison> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -5111,6 +5533,7 @@ impl CssRatio {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssRatioFields {
         CssRatioFields {
             numerator: self.numerator(),
@@ -5118,12 +5541,15 @@ impl CssRatio {
             denominator: self.denominator(),
         }
     }
+
     pub fn numerator(&self) -> SyntaxResult<CssNumber> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn slash_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn denominator(&self) -> SyntaxResult<CssNumber> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -5156,15 +5582,18 @@ impl CssRegularDimension {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssRegularDimensionFields {
         CssRegularDimensionFields {
             value_token: self.value_token(),
             unit_token: self.unit_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn unit_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -5196,15 +5625,18 @@ impl CssRelativeSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssRelativeSelectorFields {
         CssRelativeSelectorFields {
             combinator: self.combinator(),
             selector: self.selector(),
         }
     }
+
     pub fn combinator(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn selector(&self) -> SyntaxResult<AnyCssSelector> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -5236,6 +5668,7 @@ impl CssRoot {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssRootFields {
         CssRootFields {
             bom_token: self.bom_token(),
@@ -5243,12 +5676,15 @@ impl CssRoot {
             eof_token: self.eof_token(),
         }
     }
+
     pub fn bom_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn rules(&self) -> CssRuleList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn eof_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -5281,6 +5717,7 @@ impl CssRuleBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssRuleBlockFields {
         CssRuleBlockFields {
             l_curly_token: self.l_curly_token(),
@@ -5288,12 +5725,15 @@ impl CssRuleBlock {
             r_curly_token: self.r_curly_token(),
         }
     }
+
     pub fn l_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn rules(&self) -> CssRuleList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_curly_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -5326,6 +5766,7 @@ impl CssScopeAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssScopeAtRuleFields {
         CssScopeAtRuleFields {
             scope_token: self.scope_token(),
@@ -5333,12 +5774,15 @@ impl CssScopeAtRule {
             block: self.block(),
         }
     }
+
     pub fn scope_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn range(&self) -> Option<AnyCssScopeRange> {
         support::node(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssConditionalBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -5371,6 +5815,7 @@ impl CssScopeEdge {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssScopeEdgeFields {
         CssScopeEdgeFields {
             l_paren_token: self.l_paren_token(),
@@ -5378,12 +5823,15 @@ impl CssScopeEdge {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn selectors(&self) -> CssSelectorList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -5416,15 +5864,18 @@ impl CssScopeRangeEnd {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssScopeRangeEndFields {
         CssScopeRangeEndFields {
             to_token: self.to_token(),
             end: self.end(),
         }
     }
+
     pub fn to_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn end(&self) -> SyntaxResult<CssScopeEdge> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -5456,6 +5907,7 @@ impl CssScopeRangeInterval {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssScopeRangeIntervalFields {
         CssScopeRangeIntervalFields {
             start: self.start(),
@@ -5463,12 +5915,15 @@ impl CssScopeRangeInterval {
             end: self.end(),
         }
     }
+
     pub fn start(&self) -> SyntaxResult<CssScopeEdge> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn to_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn end(&self) -> SyntaxResult<CssScopeEdge> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -5501,11 +5956,13 @@ impl CssScopeRangeStart {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssScopeRangeStartFields {
         CssScopeRangeStartFields {
             start: self.start(),
         }
     }
+
     pub fn start(&self) -> SyntaxResult<CssScopeEdge> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -5536,15 +5993,18 @@ impl CssStartingStyleAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssStartingStyleAtRuleFields {
         CssStartingStyleAtRuleFields {
             starting_style_token: self.starting_style_token(),
             block: self.block(),
         }
     }
+
     pub fn starting_style_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssStartingStyleBlock> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -5576,11 +6036,13 @@ impl CssString {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssStringFields {
         CssStringFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -5611,6 +6073,7 @@ impl CssSupportsAndCondition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssSupportsAndConditionFields {
         CssSupportsAndConditionFields {
             left: self.left(),
@@ -5618,12 +6081,15 @@ impl CssSupportsAndCondition {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyCssSupportsInParens> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn and_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssSupportsAndCombinableCondition> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -5656,6 +6122,7 @@ impl CssSupportsAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssSupportsAtRuleFields {
         CssSupportsAtRuleFields {
             supports_token: self.supports_token(),
@@ -5663,12 +6130,15 @@ impl CssSupportsAtRule {
             block: self.block(),
         }
     }
+
     pub fn supports_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn condition(&self) -> SyntaxResult<AnyCssSupportsCondition> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssConditionalBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -5701,6 +6171,7 @@ impl CssSupportsConditionInParens {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssSupportsConditionInParensFields {
         CssSupportsConditionInParensFields {
             l_paren_token: self.l_paren_token(),
@@ -5708,12 +6179,15 @@ impl CssSupportsConditionInParens {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn condition(&self) -> SyntaxResult<AnyCssSupportsCondition> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -5746,6 +6220,7 @@ impl CssSupportsFeatureDeclaration {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssSupportsFeatureDeclarationFields {
         CssSupportsFeatureDeclarationFields {
             l_paren_token: self.l_paren_token(),
@@ -5753,12 +6228,15 @@ impl CssSupportsFeatureDeclaration {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn declaration(&self) -> SyntaxResult<CssDeclaration> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -5791,6 +6269,7 @@ impl CssSupportsFeatureSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssSupportsFeatureSelectorFields {
         CssSupportsFeatureSelectorFields {
             selector_token: self.selector_token(),
@@ -5799,15 +6278,19 @@ impl CssSupportsFeatureSelector {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn selector_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn selector(&self) -> SyntaxResult<AnyCssSelector> {
         support::required_node(&self.syntax, 2usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 3usize)
     }
@@ -5841,15 +6324,18 @@ impl CssSupportsNotCondition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssSupportsNotConditionFields {
         CssSupportsNotConditionFields {
             not_token: self.not_token(),
             query: self.query(),
         }
     }
+
     pub fn not_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn query(&self) -> SyntaxResult<AnyCssSupportsInParens> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -5881,6 +6367,7 @@ impl CssSupportsOrCondition {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssSupportsOrConditionFields {
         CssSupportsOrConditionFields {
             left: self.left(),
@@ -5888,12 +6375,15 @@ impl CssSupportsOrCondition {
             right: self.right(),
         }
     }
+
     pub fn left(&self) -> SyntaxResult<AnyCssSupportsInParens> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn or_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn right(&self) -> SyntaxResult<AnyCssSupportsOrCombinableCondition> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -5926,15 +6416,18 @@ impl CssTypeSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssTypeSelectorFields {
         CssTypeSelectorFields {
             namespace: self.namespace(),
             ident: self.ident(),
         }
     }
+
     pub fn namespace(&self) -> Option<CssNamespace> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn ident(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -5966,11 +6459,13 @@ impl CssUnicodeCodepoint {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUnicodeCodepointFields {
         CssUnicodeCodepointFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -6001,15 +6496,18 @@ impl CssUnicodeRange {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUnicodeRangeFields {
         CssUnicodeRangeFields {
             prefix_token: self.prefix_token(),
             value: self.value(),
         }
     }
+
     pub fn prefix_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> SyntaxResult<AnyCssUnicodeValue> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -6041,6 +6539,7 @@ impl CssUnicodeRangeInterval {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUnicodeRangeIntervalFields {
         CssUnicodeRangeIntervalFields {
             start: self.start(),
@@ -6048,12 +6547,15 @@ impl CssUnicodeRangeInterval {
             end: self.end(),
         }
     }
+
     pub fn start(&self) -> SyntaxResult<CssUnicodeCodepoint> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn minus_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn end(&self) -> SyntaxResult<CssUnicodeCodepoint> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -6086,11 +6588,13 @@ impl CssUnicodeRangeWildcard {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUnicodeRangeWildcardFields {
         CssUnicodeRangeWildcardFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -6121,11 +6625,13 @@ impl CssUniversalNamespacePrefix {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUniversalNamespacePrefixFields {
         CssUniversalNamespacePrefixFields {
             star_token: self.star_token(),
         }
     }
+
     pub fn star_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -6156,15 +6662,18 @@ impl CssUniversalSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUniversalSelectorFields {
         CssUniversalSelectorFields {
             namespace: self.namespace(),
             star_token: self.star_token(),
         }
     }
+
     pub fn namespace(&self) -> Option<CssNamespace> {
         support::node(&self.syntax, 0usize)
     }
+
     pub fn star_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -6196,6 +6705,7 @@ impl CssUnknownBlockAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUnknownBlockAtRuleFields {
         CssUnknownBlockAtRuleFields {
             name: self.name(),
@@ -6203,12 +6713,15 @@ impl CssUnknownBlockAtRule {
             block: self.block(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn components(&self) -> SyntaxResult<CssUnknownAtRuleComponentList> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn block(&self) -> SyntaxResult<AnyCssDeclarationOrRuleBlock> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -6241,15 +6754,18 @@ impl CssUnknownDimension {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUnknownDimensionFields {
         CssUnknownDimensionFields {
             value_token: self.value_token(),
             unit_token: self.unit_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn unit_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
@@ -6281,6 +6797,7 @@ impl CssUnknownValueAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUnknownValueAtRuleFields {
         CssUnknownValueAtRuleFields {
             name: self.name(),
@@ -6288,12 +6805,15 @@ impl CssUnknownValueAtRule {
             semicolon_token: self.semicolon_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn components(&self) -> SyntaxResult<CssUnknownAtRuleComponentList> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn semicolon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -6326,6 +6846,7 @@ impl CssUrlFunction {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUrlFunctionFields {
         CssUrlFunctionFields {
             name: self.name(),
@@ -6335,18 +6856,23 @@ impl CssUrlFunction {
             r_paren_token: self.r_paren_token(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn l_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn value(&self) -> Option<AnyCssUrlValue> {
         support::node(&self.syntax, 2usize)
     }
+
     pub fn modifiers(&self) -> CssUrlModifierList {
         support::list(&self.syntax, 3usize)
     }
+
     pub fn r_paren_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 4usize)
     }
@@ -6381,11 +6907,13 @@ impl CssUrlValueRaw {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssUrlValueRawFields {
         CssUrlValueRawFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -6416,6 +6944,7 @@ impl CssValueAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssValueAtRuleFields {
         CssValueAtRuleFields {
             value_token: self.value_token(),
@@ -6423,12 +6952,15 @@ impl CssValueAtRule {
             semicolon_token: self.semicolon_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn clause(&self) -> SyntaxResult<AnyCssValueAtRuleClause> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn semicolon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -6461,11 +6993,13 @@ impl CssValueAtRuleDeclarationClause {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssValueAtRuleDeclarationClauseFields {
         CssValueAtRuleDeclarationClauseFields {
             properties: self.properties(),
         }
     }
+
     pub fn properties(&self) -> CssValueAtRulePropertyList {
         support::list(&self.syntax, 0usize)
     }
@@ -6496,6 +7030,7 @@ impl CssValueAtRuleGenericProperty {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssValueAtRuleGenericPropertyFields {
         CssValueAtRuleGenericPropertyFields {
             name: self.name(),
@@ -6503,12 +7038,15 @@ impl CssValueAtRuleGenericProperty {
             value: self.value(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<AnyCssDeclarationName> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn value(&self) -> SyntaxResult<CssValueAtRuleGenericValue> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -6541,6 +7079,7 @@ impl CssValueAtRuleImportClause {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssValueAtRuleImportClauseFields {
         CssValueAtRuleImportClauseFields {
             specifiers: self.specifiers(),
@@ -6548,12 +7087,15 @@ impl CssValueAtRuleImportClause {
             source: self.source(),
         }
     }
+
     pub fn specifiers(&self) -> CssValueAtRuleImportSpecifierList {
         support::list(&self.syntax, 0usize)
     }
+
     pub fn from_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn source(&self) -> SyntaxResult<AnyCssValueAtRuleImportSource> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -6586,9 +7128,11 @@ impl CssValueAtRuleImportSpecifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssValueAtRuleImportSpecifierFields {
         CssValueAtRuleImportSpecifierFields { name: self.name() }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
@@ -6619,6 +7163,7 @@ impl CssValueAtRuleNamedImportSpecifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> CssValueAtRuleNamedImportSpecifierFields {
         CssValueAtRuleNamedImportSpecifierFields {
             name: self.name(),
@@ -6626,12 +7171,15 @@ impl CssValueAtRuleNamedImportSpecifier {
             local_name: self.local_name(),
         }
     }
+
     pub fn name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn as_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn local_name(&self) -> SyntaxResult<CssIdentifier> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -6682,126 +7230,147 @@ impl AnyCssAtRule {
             _ => None,
         }
     }
+
     pub fn as_css_charset_at_rule(&self) -> Option<&CssCharsetAtRule> {
         match &self {
             AnyCssAtRule::CssCharsetAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_color_profile_at_rule(&self) -> Option<&CssColorProfileAtRule> {
         match &self {
             AnyCssAtRule::CssColorProfileAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_container_at_rule(&self) -> Option<&CssContainerAtRule> {
         match &self {
             AnyCssAtRule::CssContainerAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_counter_style_at_rule(&self) -> Option<&CssCounterStyleAtRule> {
         match &self {
             AnyCssAtRule::CssCounterStyleAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_document_at_rule(&self) -> Option<&CssDocumentAtRule> {
         match &self {
             AnyCssAtRule::CssDocumentAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_font_face_at_rule(&self) -> Option<&CssFontFaceAtRule> {
         match &self {
             AnyCssAtRule::CssFontFaceAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_font_feature_values_at_rule(&self) -> Option<&CssFontFeatureValuesAtRule> {
         match &self {
             AnyCssAtRule::CssFontFeatureValuesAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_font_palette_values_at_rule(&self) -> Option<&CssFontPaletteValuesAtRule> {
         match &self {
             AnyCssAtRule::CssFontPaletteValuesAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_import_at_rule(&self) -> Option<&CssImportAtRule> {
         match &self {
             AnyCssAtRule::CssImportAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_keyframes_at_rule(&self) -> Option<&CssKeyframesAtRule> {
         match &self {
             AnyCssAtRule::CssKeyframesAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_layer_at_rule(&self) -> Option<&CssLayerAtRule> {
         match &self {
             AnyCssAtRule::CssLayerAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_media_at_rule(&self) -> Option<&CssMediaAtRule> {
         match &self {
             AnyCssAtRule::CssMediaAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_namespace_at_rule(&self) -> Option<&CssNamespaceAtRule> {
         match &self {
             AnyCssAtRule::CssNamespaceAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_page_at_rule(&self) -> Option<&CssPageAtRule> {
         match &self {
             AnyCssAtRule::CssPageAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_property_at_rule(&self) -> Option<&CssPropertyAtRule> {
         match &self {
             AnyCssAtRule::CssPropertyAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_scope_at_rule(&self) -> Option<&CssScopeAtRule> {
         match &self {
             AnyCssAtRule::CssScopeAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_starting_style_at_rule(&self) -> Option<&CssStartingStyleAtRule> {
         match &self {
             AnyCssAtRule::CssStartingStyleAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_supports_at_rule(&self) -> Option<&CssSupportsAtRule> {
         match &self {
             AnyCssAtRule::CssSupportsAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_unknown_block_at_rule(&self) -> Option<&CssUnknownBlockAtRule> {
         match &self {
             AnyCssAtRule::CssUnknownBlockAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_unknown_value_at_rule(&self) -> Option<&CssUnknownValueAtRule> {
         match &self {
             AnyCssAtRule::CssUnknownValueAtRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_value_at_rule(&self) -> Option<&CssValueAtRule> {
         match &self {
             AnyCssAtRule::CssValueAtRule(item) => Some(item),
@@ -6821,6 +7390,7 @@ impl AnyCssAttributeMatcherValue {
             _ => None,
         }
     }
+
     pub fn as_css_string(&self) -> Option<&CssString> {
         match &self {
             AnyCssAttributeMatcherValue::CssString(item) => Some(item),
@@ -6840,6 +7410,7 @@ impl AnyCssComposesImportSource {
             _ => None,
         }
     }
+
     pub fn as_css_string(&self) -> Option<&CssString> {
         match &self {
             AnyCssComposesImportSource::CssString(item) => Some(item),
@@ -6859,6 +7430,7 @@ impl AnyCssCompoundSelector {
             _ => None,
         }
     }
+
     pub fn as_css_compound_selector(&self) -> Option<&CssCompoundSelector> {
         match &self {
             AnyCssCompoundSelector::CssCompoundSelector(item) => Some(item),
@@ -6879,12 +7451,14 @@ impl AnyCssConditionalBlock {
             _ => None,
         }
     }
+
     pub fn as_css_declaration_or_rule_block(&self) -> Option<&CssDeclarationOrRuleBlock> {
         match &self {
             AnyCssConditionalBlock::CssDeclarationOrRuleBlock(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_rule_block(&self) -> Option<&CssRuleBlock> {
         match &self {
             AnyCssConditionalBlock::CssRuleBlock(item) => Some(item),
@@ -6904,6 +7478,7 @@ impl AnyCssContainerAndCombinableQuery {
             _ => None,
         }
     }
+
     pub fn as_css_container_and_query(&self) -> Option<&CssContainerAndQuery> {
         match &self {
             AnyCssContainerAndCombinableQuery::CssContainerAndQuery(item) => Some(item),
@@ -6923,6 +7498,7 @@ impl AnyCssContainerOrCombinableQuery {
             _ => None,
         }
     }
+
     pub fn as_css_container_or_query(&self) -> Option<&CssContainerOrQuery> {
         match &self {
             AnyCssContainerOrCombinableQuery::CssContainerOrQuery(item) => Some(item),
@@ -6944,18 +7520,21 @@ impl AnyCssContainerQuery {
             _ => None,
         }
     }
+
     pub fn as_css_container_and_query(&self) -> Option<&CssContainerAndQuery> {
         match &self {
             AnyCssContainerQuery::CssContainerAndQuery(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_container_not_query(&self) -> Option<&CssContainerNotQuery> {
         match &self {
             AnyCssContainerQuery::CssContainerNotQuery(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_container_or_query(&self) -> Option<&CssContainerOrQuery> {
         match &self {
             AnyCssContainerQuery::CssContainerOrQuery(item) => Some(item),
@@ -6976,6 +7555,7 @@ impl AnyCssContainerQueryInParens {
             _ => None,
         }
     }
+
     pub fn as_css_container_size_feature_in_parens(
         &self,
     ) -> Option<&CssContainerSizeFeatureInParens> {
@@ -6984,6 +7564,7 @@ impl AnyCssContainerQueryInParens {
             _ => None,
         }
     }
+
     pub fn as_css_container_style_query_in_parens(
         &self,
     ) -> Option<&CssContainerStyleQueryInParens> {
@@ -7005,6 +7586,7 @@ impl AnyCssContainerStyleAndCombinableQuery {
             _ => None,
         }
     }
+
     pub fn as_css_container_style_in_parens(&self) -> Option<&CssContainerStyleInParens> {
         match &self {
             AnyCssContainerStyleAndCombinableQuery::CssContainerStyleInParens(item) => Some(item),
@@ -7024,6 +7606,7 @@ impl AnyCssContainerStyleInParens {
             _ => None,
         }
     }
+
     pub fn as_css_declaration(&self) -> Option<&CssDeclaration> {
         match &self {
             AnyCssContainerStyleInParens::CssDeclaration(item) => Some(item),
@@ -7043,6 +7626,7 @@ impl AnyCssContainerStyleOrCombinableQuery {
             _ => None,
         }
     }
+
     pub fn as_css_container_style_or_query(&self) -> Option<&CssContainerStyleOrQuery> {
         match &self {
             AnyCssContainerStyleOrCombinableQuery::CssContainerStyleOrQuery(item) => Some(item),
@@ -7065,24 +7649,28 @@ impl AnyCssContainerStyleQuery {
             _ => None,
         }
     }
+
     pub fn as_css_container_style_in_parens(&self) -> Option<&CssContainerStyleInParens> {
         match &self {
             AnyCssContainerStyleQuery::CssContainerStyleInParens(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_container_style_not_query(&self) -> Option<&CssContainerStyleNotQuery> {
         match &self {
             AnyCssContainerStyleQuery::CssContainerStyleNotQuery(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_container_style_or_query(&self) -> Option<&CssContainerStyleOrQuery> {
         match &self {
             AnyCssContainerStyleQuery::CssContainerStyleOrQuery(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_declaration(&self) -> Option<&CssDeclaration> {
         match &self {
             AnyCssContainerStyleQuery::CssDeclaration(item) => Some(item),
@@ -7102,6 +7690,7 @@ impl AnyCssCustomIdentifier {
             _ => None,
         }
     }
+
     pub fn as_css_custom_identifier(&self) -> Option<&CssCustomIdentifier> {
         match &self {
             AnyCssCustomIdentifier::CssCustomIdentifier(item) => Some(item),
@@ -7121,6 +7710,7 @@ impl AnyCssDeclarationBlock {
             _ => None,
         }
     }
+
     pub fn as_css_declaration_block(&self) -> Option<&CssDeclarationBlock> {
         match &self {
             AnyCssDeclarationBlock::CssDeclarationBlock(item) => Some(item),
@@ -7140,6 +7730,7 @@ impl AnyCssDeclarationName {
             _ => None,
         }
     }
+
     pub fn as_css_identifier(&self) -> Option<&CssIdentifier> {
         match &self {
             AnyCssDeclarationName::CssIdentifier(item) => Some(item),
@@ -7159,6 +7750,7 @@ impl AnyCssDeclarationOrAtRule {
             _ => None,
         }
     }
+
     pub fn as_css_declaration_with_semicolon(&self) -> Option<&CssDeclarationWithSemicolon> {
         match &self {
             AnyCssDeclarationOrAtRule::CssDeclarationWithSemicolon(item) => Some(item),
@@ -7178,6 +7770,7 @@ impl AnyCssDeclarationOrAtRuleBlock {
             _ => None,
         }
     }
+
     pub fn as_css_declaration_or_at_rule_block(&self) -> Option<&CssDeclarationOrAtRuleBlock> {
         match &self {
             AnyCssDeclarationOrAtRuleBlock::CssDeclarationOrAtRuleBlock(item) => Some(item),
@@ -7200,24 +7793,28 @@ impl AnyCssDeclarationOrRule {
             _ => None,
         }
     }
+
     pub fn as_css_bogus(&self) -> Option<&CssBogus> {
         match &self {
             AnyCssDeclarationOrRule::CssBogus(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_declaration_with_semicolon(&self) -> Option<&CssDeclarationWithSemicolon> {
         match &self {
             AnyCssDeclarationOrRule::CssDeclarationWithSemicolon(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_empty_declaration(&self) -> Option<&CssEmptyDeclaration> {
         match &self {
             AnyCssDeclarationOrRule::CssEmptyDeclaration(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_metavariable(&self) -> Option<&CssMetavariable> {
         match &self {
             AnyCssDeclarationOrRule::CssMetavariable(item) => Some(item),
@@ -7237,6 +7834,7 @@ impl AnyCssDeclarationOrRuleBlock {
             _ => None,
         }
     }
+
     pub fn as_css_declaration_or_rule_block(&self) -> Option<&CssDeclarationOrRuleBlock> {
         match &self {
             AnyCssDeclarationOrRuleBlock::CssDeclarationOrRuleBlock(item) => Some(item),
@@ -7257,12 +7855,14 @@ impl AnyCssDimension {
             _ => None,
         }
     }
+
     pub fn as_css_regular_dimension(&self) -> Option<&CssRegularDimension> {
         match &self {
             AnyCssDimension::CssRegularDimension(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_unknown_dimension(&self) -> Option<&CssUnknownDimension> {
         match &self {
             AnyCssDimension::CssUnknownDimension(item) => Some(item),
@@ -7283,12 +7883,14 @@ impl AnyCssDocumentMatcher {
             _ => None,
         }
     }
+
     pub fn as_css_document_custom_matcher(&self) -> Option<&CssDocumentCustomMatcher> {
         match &self {
             AnyCssDocumentMatcher::CssDocumentCustomMatcher(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_url_function(&self) -> Option<&CssUrlFunction> {
         match &self {
             AnyCssDocumentMatcher::CssUrlFunction(item) => Some(item),
@@ -7309,6 +7911,7 @@ impl AnyCssExpression {
             _ => None,
         }
     }
+
     pub fn as_css_list_of_component_values_expression(
         &self,
     ) -> Option<&CssListOfComponentValuesExpression> {
@@ -7317,6 +7920,7 @@ impl AnyCssExpression {
             _ => None,
         }
     }
+
     pub fn as_css_parenthesized_expression(&self) -> Option<&CssParenthesizedExpression> {
         match &self {
             AnyCssExpression::CssParenthesizedExpression(item) => Some(item),
@@ -7337,12 +7941,14 @@ impl AnyCssFontFamilyName {
             _ => None,
         }
     }
+
     pub fn as_css_font_family_name(&self) -> Option<&CssFontFamilyName> {
         match &self {
             AnyCssFontFamilyName::CssFontFamilyName(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_string(&self) -> Option<&CssString> {
         match &self {
             AnyCssFontFamilyName::CssString(item) => Some(item),
@@ -7362,6 +7968,7 @@ impl AnyCssFontFeatureValuesBlock {
             _ => None,
         }
     }
+
     pub fn as_css_font_feature_values_block(&self) -> Option<&CssFontFeatureValuesBlock> {
         match &self {
             AnyCssFontFeatureValuesBlock::CssFontFeatureValuesBlock(item) => Some(item),
@@ -7381,6 +7988,7 @@ impl AnyCssFontFeatureValuesItem {
             _ => None,
         }
     }
+
     pub fn as_css_font_feature_values_item(&self) -> Option<&CssFontFeatureValuesItem> {
         match &self {
             AnyCssFontFeatureValuesItem::CssFontFeatureValuesItem(item) => Some(item),
@@ -7400,6 +8008,7 @@ impl AnyCssFunction {
             _ => None,
         }
     }
+
     pub fn as_css_url_function(&self) -> Option<&CssUrlFunction> {
         match &self {
             AnyCssFunction::CssUrlFunction(item) => Some(item),
@@ -7419,6 +8028,7 @@ impl AnyCssGenericComponentValue {
             _ => None,
         }
     }
+
     pub fn as_css_generic_delimiter(&self) -> Option<&CssGenericDelimiter> {
         match &self {
             AnyCssGenericComponentValue::CssGenericDelimiter(item) => Some(item),
@@ -7438,6 +8048,7 @@ impl AnyCssImportLayer {
             _ => None,
         }
     }
+
     pub fn as_css_import_named_layer(&self) -> Option<&CssImportNamedLayer> {
         match &self {
             AnyCssImportLayer::CssImportNamedLayer(item) => Some(item),
@@ -7457,6 +8068,7 @@ impl AnyCssImportSupportsCondition {
             _ => None,
         }
     }
+
     pub fn as_css_declaration(&self) -> Option<&CssDeclaration> {
         match &self {
             AnyCssImportSupportsCondition::CssDeclaration(item) => Some(item),
@@ -7476,6 +8088,7 @@ impl AnyCssImportUrl {
             _ => None,
         }
     }
+
     pub fn as_css_url_function(&self) -> Option<&CssUrlFunction> {
         match &self {
             AnyCssImportUrl::CssUrlFunction(item) => Some(item),
@@ -7495,6 +8108,7 @@ impl AnyCssKeyframesBlock {
             _ => None,
         }
     }
+
     pub fn as_css_keyframes_block(&self) -> Option<&CssKeyframesBlock> {
         match &self {
             AnyCssKeyframesBlock::CssKeyframesBlock(item) => Some(item),
@@ -7514,6 +8128,7 @@ impl AnyCssKeyframesIdentifier {
             _ => None,
         }
     }
+
     pub fn as_css_string(&self) -> Option<&CssString> {
         match &self {
             AnyCssKeyframesIdentifier::CssString(item) => Some(item),
@@ -7533,6 +8148,7 @@ impl AnyCssKeyframesItem {
             _ => None,
         }
     }
+
     pub fn as_css_keyframes_item(&self) -> Option<&CssKeyframesItem> {
         match &self {
             AnyCssKeyframesItem::CssKeyframesItem(item) => Some(item),
@@ -7553,12 +8169,14 @@ impl AnyCssKeyframesName {
             _ => None,
         }
     }
+
     pub fn as_css_bogus_keyframes_name(&self) -> Option<&CssBogusKeyframesName> {
         match &self {
             AnyCssKeyframesName::CssBogusKeyframesName(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_keyframes_scoped_name(&self) -> Option<&CssKeyframesScopedName> {
         match &self {
             AnyCssKeyframesName::CssKeyframesScopedName(item) => Some(item),
@@ -7578,6 +8196,7 @@ impl AnyCssKeyframesScope {
             _ => None,
         }
     }
+
     pub fn as_css_keyframes_scope_prefix(&self) -> Option<&CssKeyframesScopePrefix> {
         match &self {
             AnyCssKeyframesScope::CssKeyframesScopePrefix(item) => Some(item),
@@ -7598,12 +8217,14 @@ impl AnyCssKeyframesSelector {
             _ => None,
         }
     }
+
     pub fn as_css_keyframes_ident_selector(&self) -> Option<&CssKeyframesIdentSelector> {
         match &self {
             AnyCssKeyframesSelector::CssKeyframesIdentSelector(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_keyframes_percentage_selector(&self) -> Option<&CssKeyframesPercentageSelector> {
         match &self {
             AnyCssKeyframesSelector::CssKeyframesPercentageSelector(item) => Some(item),
@@ -7624,12 +8245,14 @@ impl AnyCssLayer {
             _ => None,
         }
     }
+
     pub fn as_css_layer_declaration(&self) -> Option<&CssLayerDeclaration> {
         match &self {
             AnyCssLayer::CssLayerDeclaration(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_layer_reference(&self) -> Option<&CssLayerReference> {
         match &self {
             AnyCssLayer::CssLayerReference(item) => Some(item),
@@ -7649,6 +8272,7 @@ impl AnyCssMediaAndCombinableCondition {
             _ => None,
         }
     }
+
     pub fn as_css_media_and_condition(&self) -> Option<&CssMediaAndCondition> {
         match &self {
             AnyCssMediaAndCombinableCondition::CssMediaAndCondition(item) => Some(item),
@@ -7670,18 +8294,21 @@ impl AnyCssMediaCondition {
             _ => None,
         }
     }
+
     pub fn as_css_media_and_condition(&self) -> Option<&CssMediaAndCondition> {
         match &self {
             AnyCssMediaCondition::CssMediaAndCondition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_media_not_condition(&self) -> Option<&CssMediaNotCondition> {
         match &self {
             AnyCssMediaCondition::CssMediaNotCondition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_media_or_condition(&self) -> Option<&CssMediaOrCondition> {
         match &self {
             AnyCssMediaCondition::CssMediaOrCondition(item) => Some(item),
@@ -7701,6 +8328,7 @@ impl AnyCssMediaInParens {
             _ => None,
         }
     }
+
     pub fn as_css_media_feature_in_parens(&self) -> Option<&CssMediaFeatureInParens> {
         match &self {
             AnyCssMediaInParens::CssMediaFeatureInParens(item) => Some(item),
@@ -7720,6 +8348,7 @@ impl AnyCssMediaOrCombinableCondition {
             _ => None,
         }
     }
+
     pub fn as_css_media_or_condition(&self) -> Option<&CssMediaOrCondition> {
         match &self {
             AnyCssMediaOrCombinableCondition::CssMediaOrCondition(item) => Some(item),
@@ -7741,18 +8370,21 @@ impl AnyCssMediaQuery {
             _ => None,
         }
     }
+
     pub fn as_css_bogus_media_query(&self) -> Option<&CssBogusMediaQuery> {
         match &self {
             AnyCssMediaQuery::CssBogusMediaQuery(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_media_condition_query(&self) -> Option<&CssMediaConditionQuery> {
         match &self {
             AnyCssMediaQuery::CssMediaConditionQuery(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_metavariable(&self) -> Option<&CssMetavariable> {
         match &self {
             AnyCssMediaQuery::CssMetavariable(item) => Some(item),
@@ -7773,12 +8405,14 @@ impl AnyCssMediaTypeCondition {
             _ => None,
         }
     }
+
     pub fn as_css_media_and_condition(&self) -> Option<&CssMediaAndCondition> {
         match &self {
             AnyCssMediaTypeCondition::CssMediaAndCondition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_media_not_condition(&self) -> Option<&CssMediaNotCondition> {
         match &self {
             AnyCssMediaTypeCondition::CssMediaNotCondition(item) => Some(item),
@@ -7798,6 +8432,7 @@ impl AnyCssMediaTypeQuery {
             _ => None,
         }
     }
+
     pub fn as_css_media_type_query(&self) -> Option<&CssMediaTypeQuery> {
         match &self {
             AnyCssMediaTypeQuery::CssMediaTypeQuery(item) => Some(item),
@@ -7817,6 +8452,7 @@ impl AnyCssNamespacePrefix {
             _ => None,
         }
     }
+
     pub fn as_css_universal_namespace_prefix(&self) -> Option<&CssUniversalNamespacePrefix> {
         match &self {
             AnyCssNamespacePrefix::CssUniversalNamespacePrefix(item) => Some(item),
@@ -7836,6 +8472,7 @@ impl AnyCssNamespaceUrl {
             _ => None,
         }
     }
+
     pub fn as_css_url_function(&self) -> Option<&CssUrlFunction> {
         match &self {
             AnyCssNamespaceUrl::CssUrlFunction(item) => Some(item),
@@ -7855,6 +8492,7 @@ impl AnyCssPageAtRuleBlock {
             _ => None,
         }
     }
+
     pub fn as_css_page_at_rule_block(&self) -> Option<&CssPageAtRuleBlock> {
         match &self {
             AnyCssPageAtRuleBlock::CssPageAtRuleBlock(item) => Some(item),
@@ -7875,12 +8513,14 @@ impl AnyCssPageAtRuleItem {
             _ => None,
         }
     }
+
     pub fn as_css_declaration_with_semicolon(&self) -> Option<&CssDeclarationWithSemicolon> {
         match &self {
             AnyCssPageAtRuleItem::CssDeclarationWithSemicolon(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_margin_at_rule(&self) -> Option<&CssMarginAtRule> {
         match &self {
             AnyCssPageAtRuleItem::CssMarginAtRule(item) => Some(item),
@@ -7900,6 +8540,7 @@ impl AnyCssPageSelector {
             _ => None,
         }
     }
+
     pub fn as_css_page_selector(&self) -> Option<&CssPageSelector> {
         match &self {
             AnyCssPageSelector::CssPageSelector(item) => Some(item),
@@ -7919,6 +8560,7 @@ impl AnyCssPageSelectorPseudo {
             _ => None,
         }
     }
+
     pub fn as_css_page_selector_pseudo(&self) -> Option<&CssPageSelectorPseudo> {
         match &self {
             AnyCssPageSelectorPseudo::CssPageSelectorPseudo(item) => Some(item),
@@ -7939,12 +8581,14 @@ impl AnyCssProperty {
             _ => None,
         }
     }
+
     pub fn as_css_composes_property(&self) -> Option<&CssComposesProperty> {
         match &self {
             AnyCssProperty::CssComposesProperty(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_generic_property(&self) -> Option<&CssGenericProperty> {
         match &self {
             AnyCssProperty::CssGenericProperty(item) => Some(item),
@@ -7972,6 +8616,7 @@ impl AnyCssPseudoClass {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_function_compound_selector(
         &self,
     ) -> Option<&CssPseudoClassFunctionCompoundSelector> {
@@ -7980,6 +8625,7 @@ impl AnyCssPseudoClass {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_function_compound_selector_list(
         &self,
     ) -> Option<&CssPseudoClassFunctionCompoundSelectorList> {
@@ -7988,6 +8634,7 @@ impl AnyCssPseudoClass {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_function_identifier(
         &self,
     ) -> Option<&CssPseudoClassFunctionIdentifier> {
@@ -7996,12 +8643,14 @@ impl AnyCssPseudoClass {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_function_nth(&self) -> Option<&CssPseudoClassFunctionNth> {
         match &self {
             AnyCssPseudoClass::CssPseudoClassFunctionNth(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_function_relative_selector_list(
         &self,
     ) -> Option<&CssPseudoClassFunctionRelativeSelectorList> {
@@ -8010,12 +8659,14 @@ impl AnyCssPseudoClass {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_function_selector(&self) -> Option<&CssPseudoClassFunctionSelector> {
         match &self {
             AnyCssPseudoClass::CssPseudoClassFunctionSelector(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_function_selector_list(
         &self,
     ) -> Option<&CssPseudoClassFunctionSelectorList> {
@@ -8024,6 +8675,7 @@ impl AnyCssPseudoClass {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_function_value_list(
         &self,
     ) -> Option<&CssPseudoClassFunctionValueList> {
@@ -8032,6 +8684,7 @@ impl AnyCssPseudoClass {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_identifier(&self) -> Option<&CssPseudoClassIdentifier> {
         match &self {
             AnyCssPseudoClass::CssPseudoClassIdentifier(item) => Some(item),
@@ -8052,12 +8705,14 @@ impl AnyCssPseudoClassNth {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_nth_identifier(&self) -> Option<&CssPseudoClassNthIdentifier> {
         match &self {
             AnyCssPseudoClassNth::CssPseudoClassNthIdentifier(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_nth_number(&self) -> Option<&CssPseudoClassNthNumber> {
         match &self {
             AnyCssPseudoClassNth::CssPseudoClassNthNumber(item) => Some(item),
@@ -8077,6 +8732,7 @@ impl AnyCssPseudoClassNthSelector {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_nth_selector(&self) -> Option<&CssPseudoClassNthSelector> {
         match &self {
             AnyCssPseudoClassNthSelector::CssPseudoClassNthSelector(item) => Some(item),
@@ -8098,6 +8754,7 @@ impl AnyCssPseudoElement {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_element_function_identifier(
         &self,
     ) -> Option<&CssPseudoElementFunctionIdentifier> {
@@ -8106,6 +8763,7 @@ impl AnyCssPseudoElement {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_element_function_selector(
         &self,
     ) -> Option<&CssPseudoElementFunctionSelector> {
@@ -8114,6 +8772,7 @@ impl AnyCssPseudoElement {
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_element_identifier(&self) -> Option<&CssPseudoElementIdentifier> {
         match &self {
             AnyCssPseudoElement::CssPseudoElementIdentifier(item) => Some(item),
@@ -8133,6 +8792,7 @@ impl AnyCssPseudoValue {
             _ => None,
         }
     }
+
     pub fn as_css_string(&self) -> Option<&CssString> {
         match &self {
             AnyCssPseudoValue::CssString(item) => Some(item),
@@ -8155,24 +8815,28 @@ impl AnyCssQueryFeature {
             _ => None,
         }
     }
+
     pub fn as_css_query_feature_plain(&self) -> Option<&CssQueryFeaturePlain> {
         match &self {
             AnyCssQueryFeature::CssQueryFeaturePlain(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_query_feature_range(&self) -> Option<&CssQueryFeatureRange> {
         match &self {
             AnyCssQueryFeature::CssQueryFeatureRange(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_query_feature_range_interval(&self) -> Option<&CssQueryFeatureRangeInterval> {
         match &self {
             AnyCssQueryFeature::CssQueryFeatureRangeInterval(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_query_feature_reverse_range(&self) -> Option<&CssQueryFeatureReverseRange> {
         match &self {
             AnyCssQueryFeature::CssQueryFeatureReverseRange(item) => Some(item),
@@ -8195,24 +8859,28 @@ impl AnyCssQueryFeatureValue {
             _ => None,
         }
     }
+
     pub fn as_any_css_function(&self) -> Option<&AnyCssFunction> {
         match &self {
             AnyCssQueryFeatureValue::AnyCssFunction(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_identifier(&self) -> Option<&CssIdentifier> {
         match &self {
             AnyCssQueryFeatureValue::CssIdentifier(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_number(&self) -> Option<&CssNumber> {
         match &self {
             AnyCssQueryFeatureValue::CssNumber(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_ratio(&self) -> Option<&CssRatio> {
         match &self {
             AnyCssQueryFeatureValue::CssRatio(item) => Some(item),
@@ -8232,6 +8900,7 @@ impl AnyCssRelativeSelector {
             _ => None,
         }
     }
+
     pub fn as_css_relative_selector(&self) -> Option<&CssRelativeSelector> {
         match &self {
             AnyCssRelativeSelector::CssRelativeSelector(item) => Some(item),
@@ -8253,18 +8922,21 @@ impl AnyCssRule {
             _ => None,
         }
     }
+
     pub fn as_css_bogus_rule(&self) -> Option<&CssBogusRule> {
         match &self {
             AnyCssRule::CssBogusRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_nested_qualified_rule(&self) -> Option<&CssNestedQualifiedRule> {
         match &self {
             AnyCssRule::CssNestedQualifiedRule(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_qualified_rule(&self) -> Option<&CssQualifiedRule> {
         match &self {
             AnyCssRule::CssQualifiedRule(item) => Some(item),
@@ -8284,6 +8956,7 @@ impl AnyCssRuleBlock {
             _ => None,
         }
     }
+
     pub fn as_css_rule_block(&self) -> Option<&CssRuleBlock> {
         match &self {
             AnyCssRuleBlock::CssRuleBlock(item) => Some(item),
@@ -8305,18 +8978,21 @@ impl AnyCssScopeRange {
             _ => None,
         }
     }
+
     pub fn as_css_scope_range_end(&self) -> Option<&CssScopeRangeEnd> {
         match &self {
             AnyCssScopeRange::CssScopeRangeEnd(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_scope_range_interval(&self) -> Option<&CssScopeRangeInterval> {
         match &self {
             AnyCssScopeRange::CssScopeRangeInterval(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_scope_range_start(&self) -> Option<&CssScopeRangeStart> {
         match &self {
             AnyCssScopeRange::CssScopeRangeStart(item) => Some(item),
@@ -8338,18 +9014,21 @@ impl AnyCssSelector {
             _ => None,
         }
     }
+
     pub fn as_css_complex_selector(&self) -> Option<&CssComplexSelector> {
         match &self {
             AnyCssSelector::CssComplexSelector(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_compound_selector(&self) -> Option<&CssCompoundSelector> {
         match &self {
             AnyCssSelector::CssCompoundSelector(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_metavariable(&self) -> Option<&CssMetavariable> {
         match &self {
             AnyCssSelector::CssMetavariable(item) => Some(item),
@@ -8369,6 +9048,7 @@ impl AnyCssSimpleSelector {
             _ => None,
         }
     }
+
     pub fn as_css_universal_selector(&self) -> Option<&CssUniversalSelector> {
         match &self {
             AnyCssSimpleSelector::CssUniversalSelector(item) => Some(item),
@@ -8389,12 +9069,14 @@ impl AnyCssStartingStyleBlock {
             _ => None,
         }
     }
+
     pub fn as_css_declaration_block(&self) -> Option<&CssDeclarationBlock> {
         match &self {
             AnyCssStartingStyleBlock::CssDeclarationBlock(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_rule_block(&self) -> Option<&CssRuleBlock> {
         match &self {
             AnyCssStartingStyleBlock::CssRuleBlock(item) => Some(item),
@@ -8418,30 +9100,35 @@ impl AnyCssSubSelector {
             _ => None,
         }
     }
+
     pub fn as_css_bogus_sub_selector(&self) -> Option<&CssBogusSubSelector> {
         match &self {
             AnyCssSubSelector::CssBogusSubSelector(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_class_selector(&self) -> Option<&CssClassSelector> {
         match &self {
             AnyCssSubSelector::CssClassSelector(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_id_selector(&self) -> Option<&CssIdSelector> {
         match &self {
             AnyCssSubSelector::CssIdSelector(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_class_selector(&self) -> Option<&CssPseudoClassSelector> {
         match &self {
             AnyCssSubSelector::CssPseudoClassSelector(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_pseudo_element_selector(&self) -> Option<&CssPseudoElementSelector> {
         match &self {
             AnyCssSubSelector::CssPseudoElementSelector(item) => Some(item),
@@ -8461,6 +9148,7 @@ impl AnyCssSupportsAndCombinableCondition {
             _ => None,
         }
     }
+
     pub fn as_css_supports_and_condition(&self) -> Option<&CssSupportsAndCondition> {
         match &self {
             AnyCssSupportsAndCombinableCondition::CssSupportsAndCondition(item) => Some(item),
@@ -8482,18 +9170,21 @@ impl AnyCssSupportsCondition {
             _ => None,
         }
     }
+
     pub fn as_css_supports_and_condition(&self) -> Option<&CssSupportsAndCondition> {
         match &self {
             AnyCssSupportsCondition::CssSupportsAndCondition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_supports_not_condition(&self) -> Option<&CssSupportsNotCondition> {
         match &self {
             AnyCssSupportsCondition::CssSupportsNotCondition(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_supports_or_condition(&self) -> Option<&CssSupportsOrCondition> {
         match &self {
             AnyCssSupportsCondition::CssSupportsOrCondition(item) => Some(item),
@@ -8516,24 +9207,28 @@ impl AnyCssSupportsInParens {
             _ => None,
         }
     }
+
     pub fn as_css_function(&self) -> Option<&CssFunction> {
         match &self {
             AnyCssSupportsInParens::CssFunction(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_supports_condition_in_parens(&self) -> Option<&CssSupportsConditionInParens> {
         match &self {
             AnyCssSupportsInParens::CssSupportsConditionInParens(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_supports_feature_declaration(&self) -> Option<&CssSupportsFeatureDeclaration> {
         match &self {
             AnyCssSupportsInParens::CssSupportsFeatureDeclaration(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_supports_feature_selector(&self) -> Option<&CssSupportsFeatureSelector> {
         match &self {
             AnyCssSupportsInParens::CssSupportsFeatureSelector(item) => Some(item),
@@ -8553,6 +9248,7 @@ impl AnyCssSupportsOrCombinableCondition {
             _ => None,
         }
     }
+
     pub fn as_css_supports_or_condition(&self) -> Option<&CssSupportsOrCondition> {
         match &self {
             AnyCssSupportsOrCombinableCondition::CssSupportsOrCondition(item) => Some(item),
@@ -8574,18 +9270,21 @@ impl AnyCssUnicodeValue {
             _ => None,
         }
     }
+
     pub fn as_css_unicode_codepoint(&self) -> Option<&CssUnicodeCodepoint> {
         match &self {
             AnyCssUnicodeValue::CssUnicodeCodepoint(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_unicode_range_interval(&self) -> Option<&CssUnicodeRangeInterval> {
         match &self {
             AnyCssUnicodeValue::CssUnicodeRangeInterval(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_unicode_range_wildcard(&self) -> Option<&CssUnicodeRangeWildcard> {
         match &self {
             AnyCssUnicodeValue::CssUnicodeRangeWildcard(item) => Some(item),
@@ -8606,12 +9305,14 @@ impl AnyCssUrlModifier {
             _ => None,
         }
     }
+
     pub fn as_css_function(&self) -> Option<&CssFunction> {
         match &self {
             AnyCssUrlModifier::CssFunction(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_identifier(&self) -> Option<&CssIdentifier> {
         match &self {
             AnyCssUrlModifier::CssIdentifier(item) => Some(item),
@@ -8631,6 +9332,7 @@ impl AnyCssUrlValue {
             _ => None,
         }
     }
+
     pub fn as_css_url_value_raw(&self) -> Option<&CssUrlValueRaw> {
         match &self {
             AnyCssUrlValue::CssUrlValueRaw(item) => Some(item),
@@ -8660,66 +9362,77 @@ impl AnyCssValue {
             _ => None,
         }
     }
+
     pub fn as_any_css_function(&self) -> Option<&AnyCssFunction> {
         match &self {
             AnyCssValue::AnyCssFunction(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_bracketed_value(&self) -> Option<&CssBracketedValue> {
         match &self {
             AnyCssValue::CssBracketedValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_color(&self) -> Option<&CssColor> {
         match &self {
             AnyCssValue::CssColor(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_custom_identifier(&self) -> Option<&CssCustomIdentifier> {
         match &self {
             AnyCssValue::CssCustomIdentifier(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_dashed_identifier(&self) -> Option<&CssDashedIdentifier> {
         match &self {
             AnyCssValue::CssDashedIdentifier(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_identifier(&self) -> Option<&CssIdentifier> {
         match &self {
             AnyCssValue::CssIdentifier(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_metavariable(&self) -> Option<&CssMetavariable> {
         match &self {
             AnyCssValue::CssMetavariable(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_number(&self) -> Option<&CssNumber> {
         match &self {
             AnyCssValue::CssNumber(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_ratio(&self) -> Option<&CssRatio> {
         match &self {
             AnyCssValue::CssRatio(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_string(&self) -> Option<&CssString> {
         match &self {
             AnyCssValue::CssString(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_css_unicode_range(&self) -> Option<&CssUnicodeRange> {
         match &self {
             AnyCssValue::CssUnicodeRange(item) => Some(item),
@@ -8741,6 +9454,7 @@ impl AnyCssValueAtRuleClause {
             _ => None,
         }
     }
+
     pub fn as_css_value_at_rule_import_clause(&self) -> Option<&CssValueAtRuleImportClause> {
         match &self {
             AnyCssValueAtRuleClause::CssValueAtRuleImportClause(item) => Some(item),
@@ -8760,6 +9474,7 @@ impl AnyCssValueAtRuleImportSource {
             _ => None,
         }
     }
+
     pub fn as_css_string(&self) -> Option<&CssString> {
         match &self {
             AnyCssValueAtRuleImportSource::CssString(item) => Some(item),
@@ -8779,6 +9494,7 @@ impl AnyCssValueAtRuleImportSpecifier {
             _ => None,
         }
     }
+
     pub fn as_css_value_at_rule_named_import_specifier(
         &self,
     ) -> Option<&CssValueAtRuleNamedImportSpecifier> {
@@ -8786,6 +9502,7 @@ impl AnyCssValueAtRuleImportSpecifier {
             AnyCssValueAtRuleImportSpecifier::CssValueAtRuleNamedImportSpecifier(item) => {
                 Some(item)
             }
+
             _ => None,
         }
     }
@@ -8802,6 +9519,7 @@ impl AnyCssValueAtRuleProperty {
             _ => None,
         }
     }
+
     pub fn as_css_value_at_rule_generic_property(&self) -> Option<&CssValueAtRuleGenericProperty> {
         match &self {
             AnyCssValueAtRuleProperty::CssValueAtRuleGenericProperty(item) => Some(item),
@@ -8811,11 +9529,14 @@ impl AnyCssValueAtRuleProperty {
 }
 impl AstNode for CssAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8823,9 +9544,11 @@ impl AstNode for CssAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8850,11 +9573,14 @@ impl From<CssAtRule> for SyntaxElement {
 }
 impl AstNode for CssAttributeMatcher {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_ATTRIBUTE_MATCHER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_ATTRIBUTE_MATCHER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8862,9 +9588,11 @@ impl AstNode for CssAttributeMatcher {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8890,11 +9618,14 @@ impl From<CssAttributeMatcher> for SyntaxElement {
 }
 impl AstNode for CssAttributeMatcherValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_ATTRIBUTE_MATCHER_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_ATTRIBUTE_MATCHER_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8902,9 +9633,11 @@ impl AstNode for CssAttributeMatcherValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8928,11 +9661,14 @@ impl From<CssAttributeMatcherValue> for SyntaxElement {
 }
 impl AstNode for CssAttributeName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_ATTRIBUTE_NAME as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_ATTRIBUTE_NAME
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8940,9 +9676,11 @@ impl AstNode for CssAttributeName {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -8970,11 +9708,14 @@ impl From<CssAttributeName> for SyntaxElement {
 }
 impl AstNode for CssAttributeSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_ATTRIBUTE_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_ATTRIBUTE_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -8982,9 +9723,11 @@ impl AstNode for CssAttributeSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9017,11 +9760,14 @@ impl From<CssAttributeSelector> for SyntaxElement {
 }
 impl AstNode for CssBinaryExpression {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BINARY_EXPRESSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BINARY_EXPRESSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9029,9 +9775,11 @@ impl AstNode for CssBinaryExpression {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9060,11 +9808,14 @@ impl From<CssBinaryExpression> for SyntaxElement {
 }
 impl AstNode for CssBracketedValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BRACKETED_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BRACKETED_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9072,9 +9823,11 @@ impl AstNode for CssBracketedValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9106,11 +9859,14 @@ impl From<CssBracketedValue> for SyntaxElement {
 }
 impl AstNode for CssCharsetAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CHARSET_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CHARSET_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9118,9 +9874,11 @@ impl AstNode for CssCharsetAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9152,11 +9910,14 @@ impl From<CssCharsetAtRule> for SyntaxElement {
 }
 impl AstNode for CssClassSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CLASS_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CLASS_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9164,9 +9925,11 @@ impl AstNode for CssClassSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9191,11 +9954,14 @@ impl From<CssClassSelector> for SyntaxElement {
 }
 impl AstNode for CssColor {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COLOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COLOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9203,9 +9969,11 @@ impl AstNode for CssColor {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9233,11 +10001,14 @@ impl From<CssColor> for SyntaxElement {
 }
 impl AstNode for CssColorProfileAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COLOR_PROFILE_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COLOR_PROFILE_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9245,9 +10016,11 @@ impl AstNode for CssColorProfileAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9276,11 +10049,14 @@ impl From<CssColorProfileAtRule> for SyntaxElement {
 }
 impl AstNode for CssComplexSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COMPLEX_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COMPLEX_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9288,9 +10064,11 @@ impl AstNode for CssComplexSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9316,11 +10094,14 @@ impl From<CssComplexSelector> for SyntaxElement {
 }
 impl AstNode for CssComposesImportSpecifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COMPOSES_IMPORT_SPECIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COMPOSES_IMPORT_SPECIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9328,9 +10109,11 @@ impl AstNode for CssComposesImportSpecifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9355,11 +10138,14 @@ impl From<CssComposesImportSpecifier> for SyntaxElement {
 }
 impl AstNode for CssComposesProperty {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COMPOSES_PROPERTY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COMPOSES_PROPERTY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9367,9 +10153,11 @@ impl AstNode for CssComposesProperty {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9398,11 +10186,14 @@ impl From<CssComposesProperty> for SyntaxElement {
 }
 impl AstNode for CssComposesPropertyValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COMPOSES_PROPERTY_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COMPOSES_PROPERTY_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9410,9 +10201,11 @@ impl AstNode for CssComposesPropertyValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9440,11 +10233,14 @@ impl From<CssComposesPropertyValue> for SyntaxElement {
 }
 impl AstNode for CssCompoundSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COMPOUND_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COMPOUND_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9452,9 +10248,11 @@ impl AstNode for CssCompoundSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9483,11 +10281,14 @@ impl From<CssCompoundSelector> for SyntaxElement {
 }
 impl AstNode for CssContainerAndQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_AND_QUERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_AND_QUERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9495,9 +10296,11 @@ impl AstNode for CssContainerAndQuery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9523,11 +10326,14 @@ impl From<CssContainerAndQuery> for SyntaxElement {
 }
 impl AstNode for CssContainerAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9535,9 +10341,11 @@ impl AstNode for CssContainerAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9567,11 +10375,14 @@ impl From<CssContainerAtRule> for SyntaxElement {
 }
 impl AstNode for CssContainerNotQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_NOT_QUERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_NOT_QUERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9579,9 +10390,11 @@ impl AstNode for CssContainerNotQuery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9606,11 +10419,14 @@ impl From<CssContainerNotQuery> for SyntaxElement {
 }
 impl AstNode for CssContainerOrQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_OR_QUERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_OR_QUERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9618,9 +10434,11 @@ impl AstNode for CssContainerOrQuery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9646,11 +10464,14 @@ impl From<CssContainerOrQuery> for SyntaxElement {
 }
 impl AstNode for CssContainerQueryInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_QUERY_IN_PARENS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_QUERY_IN_PARENS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9658,9 +10479,11 @@ impl AstNode for CssContainerQueryInParens {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9692,11 +10515,14 @@ impl From<CssContainerQueryInParens> for SyntaxElement {
 }
 impl AstNode for CssContainerSizeFeatureInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_SIZE_FEATURE_IN_PARENS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_SIZE_FEATURE_IN_PARENS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9704,9 +10530,11 @@ impl AstNode for CssContainerSizeFeatureInParens {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9738,11 +10566,14 @@ impl From<CssContainerSizeFeatureInParens> for SyntaxElement {
 }
 impl AstNode for CssContainerStyleAndQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_STYLE_AND_QUERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_STYLE_AND_QUERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9750,9 +10581,11 @@ impl AstNode for CssContainerStyleAndQuery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9778,11 +10611,14 @@ impl From<CssContainerStyleAndQuery> for SyntaxElement {
 }
 impl AstNode for CssContainerStyleInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_STYLE_IN_PARENS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_STYLE_IN_PARENS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9790,9 +10626,11 @@ impl AstNode for CssContainerStyleInParens {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9824,11 +10662,14 @@ impl From<CssContainerStyleInParens> for SyntaxElement {
 }
 impl AstNode for CssContainerStyleNotQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_STYLE_NOT_QUERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_STYLE_NOT_QUERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9836,9 +10677,11 @@ impl AstNode for CssContainerStyleNotQuery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9863,11 +10706,14 @@ impl From<CssContainerStyleNotQuery> for SyntaxElement {
 }
 impl AstNode for CssContainerStyleOrQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_STYLE_OR_QUERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_STYLE_OR_QUERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9875,9 +10721,11 @@ impl AstNode for CssContainerStyleOrQuery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9903,11 +10751,14 @@ impl From<CssContainerStyleOrQuery> for SyntaxElement {
 }
 impl AstNode for CssContainerStyleQueryInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CONTAINER_STYLE_QUERY_IN_PARENS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CONTAINER_STYLE_QUERY_IN_PARENS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9915,9 +10766,11 @@ impl AstNode for CssContainerStyleQueryInParens {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9953,11 +10806,14 @@ impl From<CssContainerStyleQueryInParens> for SyntaxElement {
 }
 impl AstNode for CssCounterStyleAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COUNTER_STYLE_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COUNTER_STYLE_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -9965,9 +10821,11 @@ impl AstNode for CssCounterStyleAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -9996,11 +10854,14 @@ impl From<CssCounterStyleAtRule> for SyntaxElement {
 }
 impl AstNode for CssCustomIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CUSTOM_IDENTIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CUSTOM_IDENTIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10008,9 +10869,11 @@ impl AstNode for CssCustomIdentifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10037,11 +10900,14 @@ impl From<CssCustomIdentifier> for SyntaxElement {
 }
 impl AstNode for CssDashedIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DASHED_IDENTIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DASHED_IDENTIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10049,9 +10915,11 @@ impl AstNode for CssDashedIdentifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10078,11 +10946,14 @@ impl From<CssDashedIdentifier> for SyntaxElement {
 }
 impl AstNode for CssDeclaration {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DECLARATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DECLARATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10090,9 +10961,11 @@ impl AstNode for CssDeclaration {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10120,11 +10993,14 @@ impl From<CssDeclaration> for SyntaxElement {
 }
 impl AstNode for CssDeclarationBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DECLARATION_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DECLARATION_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10132,9 +11008,11 @@ impl AstNode for CssDeclarationBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10166,11 +11044,14 @@ impl From<CssDeclarationBlock> for SyntaxElement {
 }
 impl AstNode for CssDeclarationImportant {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DECLARATION_IMPORTANT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DECLARATION_IMPORTANT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10178,9 +11059,11 @@ impl AstNode for CssDeclarationImportant {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10208,11 +11091,14 @@ impl From<CssDeclarationImportant> for SyntaxElement {
 }
 impl AstNode for CssDeclarationOrAtRuleBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DECLARATION_OR_AT_RULE_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DECLARATION_OR_AT_RULE_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10220,9 +11106,11 @@ impl AstNode for CssDeclarationOrAtRuleBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10254,11 +11142,14 @@ impl From<CssDeclarationOrAtRuleBlock> for SyntaxElement {
 }
 impl AstNode for CssDeclarationOrRuleBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DECLARATION_OR_RULE_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DECLARATION_OR_RULE_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10266,9 +11157,11 @@ impl AstNode for CssDeclarationOrRuleBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10300,11 +11193,14 @@ impl From<CssDeclarationOrRuleBlock> for SyntaxElement {
 }
 impl AstNode for CssDeclarationWithSemicolon {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DECLARATION_WITH_SEMICOLON as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DECLARATION_WITH_SEMICOLON
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10312,9 +11208,11 @@ impl AstNode for CssDeclarationWithSemicolon {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10345,11 +11243,14 @@ impl From<CssDeclarationWithSemicolon> for SyntaxElement {
 }
 impl AstNode for CssDocumentAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DOCUMENT_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DOCUMENT_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10357,9 +11258,11 @@ impl AstNode for CssDocumentAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10388,11 +11291,14 @@ impl From<CssDocumentAtRule> for SyntaxElement {
 }
 impl AstNode for CssDocumentCustomMatcher {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DOCUMENT_CUSTOM_MATCHER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DOCUMENT_CUSTOM_MATCHER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10400,9 +11306,11 @@ impl AstNode for CssDocumentCustomMatcher {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10435,11 +11343,14 @@ impl From<CssDocumentCustomMatcher> for SyntaxElement {
 }
 impl AstNode for CssEmptyDeclaration {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_EMPTY_DECLARATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_EMPTY_DECLARATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10447,9 +11358,11 @@ impl AstNode for CssEmptyDeclaration {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10476,11 +11389,14 @@ impl From<CssEmptyDeclaration> for SyntaxElement {
 }
 impl AstNode for CssFontFaceAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_FONT_FACE_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_FONT_FACE_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10488,9 +11404,11 @@ impl AstNode for CssFontFaceAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10518,11 +11436,14 @@ impl From<CssFontFaceAtRule> for SyntaxElement {
 }
 impl AstNode for CssFontFamilyName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_FONT_FAMILY_NAME as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_FONT_FAMILY_NAME
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10530,9 +11451,11 @@ impl AstNode for CssFontFamilyName {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10556,11 +11479,14 @@ impl From<CssFontFamilyName> for SyntaxElement {
 }
 impl AstNode for CssFontFeatureValuesAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_FONT_FEATURE_VALUES_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_FONT_FEATURE_VALUES_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10568,9 +11494,11 @@ impl AstNode for CssFontFeatureValuesAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10599,11 +11527,14 @@ impl From<CssFontFeatureValuesAtRule> for SyntaxElement {
 }
 impl AstNode for CssFontFeatureValuesBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_FONT_FEATURE_VALUES_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_FONT_FEATURE_VALUES_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10611,9 +11542,11 @@ impl AstNode for CssFontFeatureValuesBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10645,11 +11578,14 @@ impl From<CssFontFeatureValuesBlock> for SyntaxElement {
 }
 impl AstNode for CssFontFeatureValuesItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_FONT_FEATURE_VALUES_ITEM as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_FONT_FEATURE_VALUES_ITEM
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10657,9 +11593,11 @@ impl AstNode for CssFontFeatureValuesItem {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10685,11 +11623,14 @@ impl From<CssFontFeatureValuesItem> for SyntaxElement {
 }
 impl AstNode for CssFontPaletteValuesAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_FONT_PALETTE_VALUES_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_FONT_PALETTE_VALUES_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10697,9 +11638,11 @@ impl AstNode for CssFontPaletteValuesAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10728,11 +11671,14 @@ impl From<CssFontPaletteValuesAtRule> for SyntaxElement {
 }
 impl AstNode for CssFunction {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_FUNCTION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_FUNCTION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10740,9 +11686,11 @@ impl AstNode for CssFunction {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10775,11 +11723,14 @@ impl From<CssFunction> for SyntaxElement {
 }
 impl AstNode for CssGenericDelimiter {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_GENERIC_DELIMITER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_GENERIC_DELIMITER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10787,9 +11738,11 @@ impl AstNode for CssGenericDelimiter {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10813,11 +11766,14 @@ impl From<CssGenericDelimiter> for SyntaxElement {
 }
 impl AstNode for CssGenericProperty {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_GENERIC_PROPERTY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_GENERIC_PROPERTY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10825,9 +11781,11 @@ impl AstNode for CssGenericProperty {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10856,11 +11814,14 @@ impl From<CssGenericProperty> for SyntaxElement {
 }
 impl AstNode for CssIdSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_ID_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_ID_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10868,9 +11829,11 @@ impl AstNode for CssIdSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10895,11 +11858,14 @@ impl From<CssIdSelector> for SyntaxElement {
 }
 impl AstNode for CssIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_IDENTIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_IDENTIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10907,9 +11873,11 @@ impl AstNode for CssIdentifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10936,11 +11904,14 @@ impl From<CssIdentifier> for SyntaxElement {
 }
 impl AstNode for CssImportAnonymousLayer {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_IMPORT_ANONYMOUS_LAYER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_IMPORT_ANONYMOUS_LAYER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10948,9 +11919,11 @@ impl AstNode for CssImportAnonymousLayer {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -10977,11 +11950,14 @@ impl From<CssImportAnonymousLayer> for SyntaxElement {
 }
 impl AstNode for CssImportAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_IMPORT_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_IMPORT_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -10989,9 +11965,11 @@ impl AstNode for CssImportAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11026,11 +12004,14 @@ impl From<CssImportAtRule> for SyntaxElement {
 }
 impl AstNode for CssImportNamedLayer {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_IMPORT_NAMED_LAYER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_IMPORT_NAMED_LAYER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11038,9 +12019,11 @@ impl AstNode for CssImportNamedLayer {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11076,11 +12059,14 @@ impl From<CssImportNamedLayer> for SyntaxElement {
 }
 impl AstNode for CssImportSupports {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_IMPORT_SUPPORTS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_IMPORT_SUPPORTS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11088,9 +12074,11 @@ impl AstNode for CssImportSupports {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11126,11 +12114,14 @@ impl From<CssImportSupports> for SyntaxElement {
 }
 impl AstNode for CssKeyframesAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_KEYFRAMES_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_KEYFRAMES_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11138,9 +12129,11 @@ impl AstNode for CssKeyframesAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11169,11 +12162,14 @@ impl From<CssKeyframesAtRule> for SyntaxElement {
 }
 impl AstNode for CssKeyframesBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_KEYFRAMES_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_KEYFRAMES_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11181,9 +12177,11 @@ impl AstNode for CssKeyframesBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11215,11 +12213,14 @@ impl From<CssKeyframesBlock> for SyntaxElement {
 }
 impl AstNode for CssKeyframesIdentSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_KEYFRAMES_IDENT_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_KEYFRAMES_IDENT_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11227,9 +12228,11 @@ impl AstNode for CssKeyframesIdentSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11253,11 +12256,14 @@ impl From<CssKeyframesIdentSelector> for SyntaxElement {
 }
 impl AstNode for CssKeyframesItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_KEYFRAMES_ITEM as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_KEYFRAMES_ITEM
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11265,9 +12271,11 @@ impl AstNode for CssKeyframesItem {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11292,11 +12300,14 @@ impl From<CssKeyframesItem> for SyntaxElement {
 }
 impl AstNode for CssKeyframesPercentageSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_KEYFRAMES_PERCENTAGE_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_KEYFRAMES_PERCENTAGE_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11304,9 +12315,11 @@ impl AstNode for CssKeyframesPercentageSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11330,11 +12343,14 @@ impl From<CssKeyframesPercentageSelector> for SyntaxElement {
 }
 impl AstNode for CssKeyframesScopeFunction {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_KEYFRAMES_SCOPE_FUNCTION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_KEYFRAMES_SCOPE_FUNCTION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11342,9 +12358,11 @@ impl AstNode for CssKeyframesScopeFunction {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11377,11 +12395,14 @@ impl From<CssKeyframesScopeFunction> for SyntaxElement {
 }
 impl AstNode for CssKeyframesScopePrefix {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_KEYFRAMES_SCOPE_PREFIX as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_KEYFRAMES_SCOPE_PREFIX
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11389,9 +12410,11 @@ impl AstNode for CssKeyframesScopePrefix {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11416,11 +12439,14 @@ impl From<CssKeyframesScopePrefix> for SyntaxElement {
 }
 impl AstNode for CssKeyframesScopedName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_KEYFRAMES_SCOPED_NAME as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_KEYFRAMES_SCOPED_NAME
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11428,9 +12454,11 @@ impl AstNode for CssKeyframesScopedName {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11458,11 +12486,14 @@ impl From<CssKeyframesScopedName> for SyntaxElement {
 }
 impl AstNode for CssLayerAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_LAYER_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_LAYER_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11470,9 +12501,11 @@ impl AstNode for CssLayerAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11500,11 +12533,14 @@ impl From<CssLayerAtRule> for SyntaxElement {
 }
 impl AstNode for CssLayerDeclaration {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_LAYER_DECLARATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_LAYER_DECLARATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11512,9 +12548,11 @@ impl AstNode for CssLayerDeclaration {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11539,11 +12577,14 @@ impl From<CssLayerDeclaration> for SyntaxElement {
 }
 impl AstNode for CssLayerReference {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_LAYER_REFERENCE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_LAYER_REFERENCE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11551,9 +12592,11 @@ impl AstNode for CssLayerReference {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11581,12 +12624,15 @@ impl From<CssLayerReference> for SyntaxElement {
 }
 impl AstNode for CssListOfComponentValuesExpression {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = SyntaxKindSet::from_raw(RawSyntaxKind(
         CSS_LIST_OF_COMPONENT_VALUES_EXPRESSION as u16,
     ));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_LIST_OF_COMPONENT_VALUES_EXPRESSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11594,9 +12640,11 @@ impl AstNode for CssListOfComponentValuesExpression {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11620,11 +12668,14 @@ impl From<CssListOfComponentValuesExpression> for SyntaxElement {
 }
 impl AstNode for CssMarginAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MARGIN_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MARGIN_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11632,9 +12683,11 @@ impl AstNode for CssMarginAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11660,11 +12713,14 @@ impl From<CssMarginAtRule> for SyntaxElement {
 }
 impl AstNode for CssMediaAndCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_AND_CONDITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_AND_CONDITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11672,9 +12728,11 @@ impl AstNode for CssMediaAndCondition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11700,11 +12758,14 @@ impl From<CssMediaAndCondition> for SyntaxElement {
 }
 impl AstNode for CssMediaAndTypeQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_AND_TYPE_QUERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_AND_TYPE_QUERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11712,9 +12773,11 @@ impl AstNode for CssMediaAndTypeQuery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11740,11 +12803,14 @@ impl From<CssMediaAndTypeQuery> for SyntaxElement {
 }
 impl AstNode for CssMediaAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11752,9 +12818,11 @@ impl AstNode for CssMediaAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11783,11 +12851,14 @@ impl From<CssMediaAtRule> for SyntaxElement {
 }
 impl AstNode for CssMediaConditionInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_CONDITION_IN_PARENS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_CONDITION_IN_PARENS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11795,9 +12866,11 @@ impl AstNode for CssMediaConditionInParens {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11829,11 +12902,14 @@ impl From<CssMediaConditionInParens> for SyntaxElement {
 }
 impl AstNode for CssMediaConditionQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_CONDITION_QUERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_CONDITION_QUERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11841,9 +12917,11 @@ impl AstNode for CssMediaConditionQuery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11867,11 +12945,14 @@ impl From<CssMediaConditionQuery> for SyntaxElement {
 }
 impl AstNode for CssMediaFeatureInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_FEATURE_IN_PARENS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_FEATURE_IN_PARENS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11879,9 +12960,11 @@ impl AstNode for CssMediaFeatureInParens {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11913,11 +12996,14 @@ impl From<CssMediaFeatureInParens> for SyntaxElement {
 }
 impl AstNode for CssMediaNotCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_NOT_CONDITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_NOT_CONDITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11925,9 +13011,11 @@ impl AstNode for CssMediaNotCondition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11952,11 +13040,14 @@ impl From<CssMediaNotCondition> for SyntaxElement {
 }
 impl AstNode for CssMediaOrCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_OR_CONDITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_OR_CONDITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -11964,9 +13055,11 @@ impl AstNode for CssMediaOrCondition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -11992,11 +13085,14 @@ impl From<CssMediaOrCondition> for SyntaxElement {
 }
 impl AstNode for CssMediaType {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_TYPE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_TYPE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12004,9 +13100,11 @@ impl AstNode for CssMediaType {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12030,11 +13128,14 @@ impl From<CssMediaType> for SyntaxElement {
 }
 impl AstNode for CssMediaTypeQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_TYPE_QUERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_TYPE_QUERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12042,9 +13143,11 @@ impl AstNode for CssMediaTypeQuery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12069,11 +13172,14 @@ impl From<CssMediaTypeQuery> for SyntaxElement {
 }
 impl AstNode for CssMetavariable {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_METAVARIABLE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_METAVARIABLE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12081,9 +13187,11 @@ impl AstNode for CssMetavariable {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12110,11 +13218,14 @@ impl From<CssMetavariable> for SyntaxElement {
 }
 impl AstNode for CssNamedNamespacePrefix {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_NAMED_NAMESPACE_PREFIX as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_NAMED_NAMESPACE_PREFIX
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12122,9 +13233,11 @@ impl AstNode for CssNamedNamespacePrefix {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12148,11 +13261,14 @@ impl From<CssNamedNamespacePrefix> for SyntaxElement {
 }
 impl AstNode for CssNamespace {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_NAMESPACE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_NAMESPACE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12160,9 +13276,11 @@ impl AstNode for CssNamespace {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12190,11 +13308,14 @@ impl From<CssNamespace> for SyntaxElement {
 }
 impl AstNode for CssNamespaceAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_NAMESPACE_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_NAMESPACE_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12202,9 +13323,11 @@ impl AstNode for CssNamespaceAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12237,11 +13360,14 @@ impl From<CssNamespaceAtRule> for SyntaxElement {
 }
 impl AstNode for CssNestedQualifiedRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_NESTED_QUALIFIED_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_NESTED_QUALIFIED_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12249,9 +13375,11 @@ impl AstNode for CssNestedQualifiedRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12276,11 +13404,14 @@ impl From<CssNestedQualifiedRule> for SyntaxElement {
 }
 impl AstNode for CssNestedSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_NESTED_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_NESTED_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12288,9 +13419,11 @@ impl AstNode for CssNestedSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12314,11 +13447,14 @@ impl From<CssNestedSelector> for SyntaxElement {
 }
 impl AstNode for CssNthOffset {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_NTH_OFFSET as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_NTH_OFFSET
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12326,9 +13462,11 @@ impl AstNode for CssNthOffset {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12353,11 +13491,14 @@ impl From<CssNthOffset> for SyntaxElement {
 }
 impl AstNode for CssNumber {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_NUMBER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_NUMBER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12365,9 +13506,11 @@ impl AstNode for CssNumber {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12394,11 +13537,14 @@ impl From<CssNumber> for SyntaxElement {
 }
 impl AstNode for CssPageAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PAGE_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PAGE_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12406,9 +13552,11 @@ impl AstNode for CssPageAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12434,11 +13582,14 @@ impl From<CssPageAtRule> for SyntaxElement {
 }
 impl AstNode for CssPageAtRuleBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PAGE_AT_RULE_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PAGE_AT_RULE_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12446,9 +13597,11 @@ impl AstNode for CssPageAtRuleBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12480,11 +13633,14 @@ impl From<CssPageAtRuleBlock> for SyntaxElement {
 }
 impl AstNode for CssPageSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PAGE_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PAGE_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12492,9 +13648,11 @@ impl AstNode for CssPageSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12519,11 +13677,14 @@ impl From<CssPageSelector> for SyntaxElement {
 }
 impl AstNode for CssPageSelectorPseudo {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PAGE_SELECTOR_PSEUDO as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PAGE_SELECTOR_PSEUDO
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12531,9 +13692,11 @@ impl AstNode for CssPageSelectorPseudo {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12561,11 +13724,14 @@ impl From<CssPageSelectorPseudo> for SyntaxElement {
 }
 impl AstNode for CssParameter {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PARAMETER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PARAMETER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12573,9 +13739,11 @@ impl AstNode for CssParameter {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12602,11 +13770,14 @@ impl From<CssParameter> for SyntaxElement {
 }
 impl AstNode for CssParenthesizedExpression {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PARENTHESIZED_EXPRESSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PARENTHESIZED_EXPRESSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12614,9 +13785,11 @@ impl AstNode for CssParenthesizedExpression {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12651,11 +13824,14 @@ impl From<CssParenthesizedExpression> for SyntaxElement {
 }
 impl AstNode for CssPercentage {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PERCENTAGE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PERCENTAGE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12663,9 +13839,11 @@ impl AstNode for CssPercentage {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12696,11 +13874,14 @@ impl From<CssPercentage> for SyntaxElement {
 }
 impl AstNode for CssPropertyAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PROPERTY_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PROPERTY_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12708,9 +13889,11 @@ impl AstNode for CssPropertyAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12739,12 +13922,15 @@ impl From<CssPropertyAtRule> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassFunctionCompoundSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = SyntaxKindSet::from_raw(RawSyntaxKind(
         CSS_PSEUDO_CLASS_FUNCTION_COMPOUND_SELECTOR as u16,
     ));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_FUNCTION_COMPOUND_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12752,9 +13938,11 @@ impl AstNode for CssPseudoClassFunctionCompoundSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12787,12 +13975,15 @@ impl From<CssPseudoClassFunctionCompoundSelector> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassFunctionCompoundSelectorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = SyntaxKindSet::from_raw(RawSyntaxKind(
         CSS_PSEUDO_CLASS_FUNCTION_COMPOUND_SELECTOR_LIST as u16,
     ));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_FUNCTION_COMPOUND_SELECTOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12800,9 +13991,11 @@ impl AstNode for CssPseudoClassFunctionCompoundSelectorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12835,11 +14028,14 @@ impl From<CssPseudoClassFunctionCompoundSelectorList> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassFunctionIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_FUNCTION_IDENTIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_FUNCTION_IDENTIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12847,9 +14043,11 @@ impl AstNode for CssPseudoClassFunctionIdentifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12882,11 +14080,14 @@ impl From<CssPseudoClassFunctionIdentifier> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassFunctionNth {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_FUNCTION_NTH as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_FUNCTION_NTH
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12894,9 +14095,11 @@ impl AstNode for CssPseudoClassFunctionNth {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12929,12 +14132,15 @@ impl From<CssPseudoClassFunctionNth> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassFunctionRelativeSelectorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = SyntaxKindSet::from_raw(RawSyntaxKind(
         CSS_PSEUDO_CLASS_FUNCTION_RELATIVE_SELECTOR_LIST as u16,
     ));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_FUNCTION_RELATIVE_SELECTOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12942,9 +14148,11 @@ impl AstNode for CssPseudoClassFunctionRelativeSelectorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -12977,11 +14185,14 @@ impl From<CssPseudoClassFunctionRelativeSelectorList> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassFunctionSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_FUNCTION_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_FUNCTION_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -12989,9 +14200,11 @@ impl AstNode for CssPseudoClassFunctionSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13024,12 +14237,15 @@ impl From<CssPseudoClassFunctionSelector> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassFunctionSelectorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = SyntaxKindSet::from_raw(RawSyntaxKind(
         CSS_PSEUDO_CLASS_FUNCTION_SELECTOR_LIST as u16,
     ));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_FUNCTION_SELECTOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13037,9 +14253,11 @@ impl AstNode for CssPseudoClassFunctionSelectorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13072,11 +14290,14 @@ impl From<CssPseudoClassFunctionSelectorList> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassFunctionValueList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_FUNCTION_VALUE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_FUNCTION_VALUE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13084,9 +14305,11 @@ impl AstNode for CssPseudoClassFunctionValueList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13119,11 +14342,14 @@ impl From<CssPseudoClassFunctionValueList> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_IDENTIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_IDENTIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13131,9 +14357,11 @@ impl AstNode for CssPseudoClassIdentifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13157,11 +14385,14 @@ impl From<CssPseudoClassIdentifier> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassNth {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_NTH as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_NTH
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13169,9 +14400,11 @@ impl AstNode for CssPseudoClassNth {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13201,11 +14434,14 @@ impl From<CssPseudoClassNth> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassNthIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_NTH_IDENTIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_NTH_IDENTIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13213,9 +14449,11 @@ impl AstNode for CssPseudoClassNthIdentifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13239,11 +14477,14 @@ impl From<CssPseudoClassNthIdentifier> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassNthNumber {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_NTH_NUMBER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_NTH_NUMBER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13251,9 +14492,11 @@ impl AstNode for CssPseudoClassNthNumber {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13278,11 +14521,14 @@ impl From<CssPseudoClassNthNumber> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassNthSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_NTH_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_NTH_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13290,9 +14536,11 @@ impl AstNode for CssPseudoClassNthSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13320,11 +14568,14 @@ impl From<CssPseudoClassNthSelector> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassOfNthSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_OF_NTH_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_OF_NTH_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13332,9 +14583,11 @@ impl AstNode for CssPseudoClassOfNthSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13359,11 +14612,14 @@ impl From<CssPseudoClassOfNthSelector> for SyntaxElement {
 }
 impl AstNode for CssPseudoClassSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_CLASS_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_CLASS_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13371,9 +14627,11 @@ impl AstNode for CssPseudoClassSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13401,11 +14659,14 @@ impl From<CssPseudoClassSelector> for SyntaxElement {
 }
 impl AstNode for CssPseudoElementFunctionIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_ELEMENT_FUNCTION_IDENTIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_ELEMENT_FUNCTION_IDENTIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13413,9 +14674,11 @@ impl AstNode for CssPseudoElementFunctionIdentifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13448,11 +14711,14 @@ impl From<CssPseudoElementFunctionIdentifier> for SyntaxElement {
 }
 impl AstNode for CssPseudoElementFunctionSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_ELEMENT_FUNCTION_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_ELEMENT_FUNCTION_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13460,9 +14726,11 @@ impl AstNode for CssPseudoElementFunctionSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13495,11 +14763,14 @@ impl From<CssPseudoElementFunctionSelector> for SyntaxElement {
 }
 impl AstNode for CssPseudoElementIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_ELEMENT_IDENTIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_ELEMENT_IDENTIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13507,9 +14778,11 @@ impl AstNode for CssPseudoElementIdentifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13533,11 +14806,14 @@ impl From<CssPseudoElementIdentifier> for SyntaxElement {
 }
 impl AstNode for CssPseudoElementSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_ELEMENT_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_ELEMENT_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13545,9 +14821,11 @@ impl AstNode for CssPseudoElementSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13575,11 +14853,14 @@ impl From<CssPseudoElementSelector> for SyntaxElement {
 }
 impl AstNode for CssQualifiedRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_QUALIFIED_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_QUALIFIED_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13587,9 +14868,11 @@ impl AstNode for CssQualifiedRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13614,11 +14897,14 @@ impl From<CssQualifiedRule> for SyntaxElement {
 }
 impl AstNode for CssQueryFeatureBoolean {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_QUERY_FEATURE_BOOLEAN as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_QUERY_FEATURE_BOOLEAN
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13626,9 +14912,11 @@ impl AstNode for CssQueryFeatureBoolean {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13652,11 +14940,14 @@ impl From<CssQueryFeatureBoolean> for SyntaxElement {
 }
 impl AstNode for CssQueryFeaturePlain {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_QUERY_FEATURE_PLAIN as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_QUERY_FEATURE_PLAIN
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13664,9 +14955,11 @@ impl AstNode for CssQueryFeaturePlain {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13695,11 +14988,14 @@ impl From<CssQueryFeaturePlain> for SyntaxElement {
 }
 impl AstNode for CssQueryFeatureRange {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_QUERY_FEATURE_RANGE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_QUERY_FEATURE_RANGE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13707,9 +15003,11 @@ impl AstNode for CssQueryFeatureRange {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13735,11 +15033,14 @@ impl From<CssQueryFeatureRange> for SyntaxElement {
 }
 impl AstNode for CssQueryFeatureRangeComparison {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_QUERY_FEATURE_RANGE_COMPARISON as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_QUERY_FEATURE_RANGE_COMPARISON
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13747,9 +15048,11 @@ impl AstNode for CssQueryFeatureRangeComparison {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13773,11 +15076,14 @@ impl From<CssQueryFeatureRangeComparison> for SyntaxElement {
 }
 impl AstNode for CssQueryFeatureRangeInterval {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_QUERY_FEATURE_RANGE_INTERVAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_QUERY_FEATURE_RANGE_INTERVAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13785,9 +15091,11 @@ impl AstNode for CssQueryFeatureRangeInterval {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13821,11 +15129,14 @@ impl From<CssQueryFeatureRangeInterval> for SyntaxElement {
 }
 impl AstNode for CssQueryFeatureReverseRange {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_QUERY_FEATURE_REVERSE_RANGE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_QUERY_FEATURE_REVERSE_RANGE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13833,9 +15144,11 @@ impl AstNode for CssQueryFeatureReverseRange {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13861,11 +15174,14 @@ impl From<CssQueryFeatureReverseRange> for SyntaxElement {
 }
 impl AstNode for CssRatio {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_RATIO as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_RATIO
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13873,9 +15189,11 @@ impl AstNode for CssRatio {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13907,11 +15225,14 @@ impl From<CssRatio> for SyntaxElement {
 }
 impl AstNode for CssRegularDimension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_REGULAR_DIMENSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_REGULAR_DIMENSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13919,9 +15240,11 @@ impl AstNode for CssRegularDimension {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13949,11 +15272,14 @@ impl From<CssRegularDimension> for SyntaxElement {
 }
 impl AstNode for CssRelativeSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_RELATIVE_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_RELATIVE_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -13961,9 +15287,11 @@ impl AstNode for CssRelativeSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -13991,11 +15319,14 @@ impl From<CssRelativeSelector> for SyntaxElement {
 }
 impl AstNode for CssRoot {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_ROOT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_ROOT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14003,9 +15334,11 @@ impl AstNode for CssRoot {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14034,11 +15367,14 @@ impl From<CssRoot> for SyntaxElement {
 }
 impl AstNode for CssRuleBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_RULE_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_RULE_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14046,9 +15382,11 @@ impl AstNode for CssRuleBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14080,11 +15418,14 @@ impl From<CssRuleBlock> for SyntaxElement {
 }
 impl AstNode for CssScopeAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SCOPE_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SCOPE_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14092,9 +15433,11 @@ impl AstNode for CssScopeAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14123,11 +15466,14 @@ impl From<CssScopeAtRule> for SyntaxElement {
 }
 impl AstNode for CssScopeEdge {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SCOPE_EDGE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SCOPE_EDGE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14135,9 +15481,11 @@ impl AstNode for CssScopeEdge {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14169,11 +15517,14 @@ impl From<CssScopeEdge> for SyntaxElement {
 }
 impl AstNode for CssScopeRangeEnd {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SCOPE_RANGE_END as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SCOPE_RANGE_END
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14181,9 +15532,11 @@ impl AstNode for CssScopeRangeEnd {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14208,11 +15561,14 @@ impl From<CssScopeRangeEnd> for SyntaxElement {
 }
 impl AstNode for CssScopeRangeInterval {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SCOPE_RANGE_INTERVAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SCOPE_RANGE_INTERVAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14220,9 +15576,11 @@ impl AstNode for CssScopeRangeInterval {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14248,11 +15606,14 @@ impl From<CssScopeRangeInterval> for SyntaxElement {
 }
 impl AstNode for CssScopeRangeStart {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SCOPE_RANGE_START as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SCOPE_RANGE_START
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14260,9 +15621,11 @@ impl AstNode for CssScopeRangeStart {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14286,11 +15649,14 @@ impl From<CssScopeRangeStart> for SyntaxElement {
 }
 impl AstNode for CssStartingStyleAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_STARTING_STYLE_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_STARTING_STYLE_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14298,9 +15664,11 @@ impl AstNode for CssStartingStyleAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14328,11 +15696,14 @@ impl From<CssStartingStyleAtRule> for SyntaxElement {
 }
 impl AstNode for CssString {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_STRING as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_STRING
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14340,9 +15711,11 @@ impl AstNode for CssString {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14369,11 +15742,14 @@ impl From<CssString> for SyntaxElement {
 }
 impl AstNode for CssSupportsAndCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SUPPORTS_AND_CONDITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SUPPORTS_AND_CONDITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14381,9 +15757,11 @@ impl AstNode for CssSupportsAndCondition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14409,11 +15787,14 @@ impl From<CssSupportsAndCondition> for SyntaxElement {
 }
 impl AstNode for CssSupportsAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SUPPORTS_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SUPPORTS_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14421,9 +15802,11 @@ impl AstNode for CssSupportsAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14452,11 +15835,14 @@ impl From<CssSupportsAtRule> for SyntaxElement {
 }
 impl AstNode for CssSupportsConditionInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SUPPORTS_CONDITION_IN_PARENS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SUPPORTS_CONDITION_IN_PARENS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14464,9 +15850,11 @@ impl AstNode for CssSupportsConditionInParens {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14498,11 +15886,14 @@ impl From<CssSupportsConditionInParens> for SyntaxElement {
 }
 impl AstNode for CssSupportsFeatureDeclaration {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SUPPORTS_FEATURE_DECLARATION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SUPPORTS_FEATURE_DECLARATION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14510,9 +15901,11 @@ impl AstNode for CssSupportsFeatureDeclaration {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14547,11 +15940,14 @@ impl From<CssSupportsFeatureDeclaration> for SyntaxElement {
 }
 impl AstNode for CssSupportsFeatureSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SUPPORTS_FEATURE_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SUPPORTS_FEATURE_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14559,9 +15955,11 @@ impl AstNode for CssSupportsFeatureSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14597,11 +15995,14 @@ impl From<CssSupportsFeatureSelector> for SyntaxElement {
 }
 impl AstNode for CssSupportsNotCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SUPPORTS_NOT_CONDITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SUPPORTS_NOT_CONDITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14609,9 +16010,11 @@ impl AstNode for CssSupportsNotCondition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14636,11 +16039,14 @@ impl From<CssSupportsNotCondition> for SyntaxElement {
 }
 impl AstNode for CssSupportsOrCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SUPPORTS_OR_CONDITION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SUPPORTS_OR_CONDITION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14648,9 +16054,11 @@ impl AstNode for CssSupportsOrCondition {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14676,11 +16084,14 @@ impl From<CssSupportsOrCondition> for SyntaxElement {
 }
 impl AstNode for CssTypeSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_TYPE_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_TYPE_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14688,9 +16099,11 @@ impl AstNode for CssTypeSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14718,11 +16131,14 @@ impl From<CssTypeSelector> for SyntaxElement {
 }
 impl AstNode for CssUnicodeCodepoint {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_UNICODE_CODEPOINT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_UNICODE_CODEPOINT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14730,9 +16146,11 @@ impl AstNode for CssUnicodeCodepoint {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14759,11 +16177,14 @@ impl From<CssUnicodeCodepoint> for SyntaxElement {
 }
 impl AstNode for CssUnicodeRange {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_UNICODE_RANGE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_UNICODE_RANGE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14771,9 +16192,11 @@ impl AstNode for CssUnicodeRange {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14801,11 +16224,14 @@ impl From<CssUnicodeRange> for SyntaxElement {
 }
 impl AstNode for CssUnicodeRangeInterval {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_UNICODE_RANGE_INTERVAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_UNICODE_RANGE_INTERVAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14813,9 +16239,11 @@ impl AstNode for CssUnicodeRangeInterval {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14844,11 +16272,14 @@ impl From<CssUnicodeRangeInterval> for SyntaxElement {
 }
 impl AstNode for CssUnicodeRangeWildcard {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_UNICODE_RANGE_WILDCARD as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_UNICODE_RANGE_WILDCARD
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14856,9 +16287,11 @@ impl AstNode for CssUnicodeRangeWildcard {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14885,11 +16318,14 @@ impl From<CssUnicodeRangeWildcard> for SyntaxElement {
 }
 impl AstNode for CssUniversalNamespacePrefix {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_UNIVERSAL_NAMESPACE_PREFIX as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_UNIVERSAL_NAMESPACE_PREFIX
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14897,9 +16333,11 @@ impl AstNode for CssUniversalNamespacePrefix {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14923,11 +16361,14 @@ impl From<CssUniversalNamespacePrefix> for SyntaxElement {
 }
 impl AstNode for CssUniversalSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_UNIVERSAL_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_UNIVERSAL_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14935,9 +16376,11 @@ impl AstNode for CssUniversalSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -14965,11 +16408,14 @@ impl From<CssUniversalSelector> for SyntaxElement {
 }
 impl AstNode for CssUnknownBlockAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_UNKNOWN_BLOCK_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_UNKNOWN_BLOCK_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -14977,9 +16423,11 @@ impl AstNode for CssUnknownBlockAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15005,11 +16453,14 @@ impl From<CssUnknownBlockAtRule> for SyntaxElement {
 }
 impl AstNode for CssUnknownDimension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_UNKNOWN_DIMENSION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_UNKNOWN_DIMENSION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -15017,9 +16468,11 @@ impl AstNode for CssUnknownDimension {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15047,11 +16500,14 @@ impl From<CssUnknownDimension> for SyntaxElement {
 }
 impl AstNode for CssUnknownValueAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_UNKNOWN_VALUE_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_UNKNOWN_VALUE_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -15059,9 +16515,11 @@ impl AstNode for CssUnknownValueAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15090,11 +16548,14 @@ impl From<CssUnknownValueAtRule> for SyntaxElement {
 }
 impl AstNode for CssUrlFunction {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_URL_FUNCTION as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_URL_FUNCTION
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -15102,9 +16563,11 @@ impl AstNode for CssUrlFunction {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15138,11 +16601,14 @@ impl From<CssUrlFunction> for SyntaxElement {
 }
 impl AstNode for CssUrlValueRaw {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_URL_VALUE_RAW as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_URL_VALUE_RAW
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -15150,9 +16616,11 @@ impl AstNode for CssUrlValueRaw {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15179,11 +16647,14 @@ impl From<CssUrlValueRaw> for SyntaxElement {
 }
 impl AstNode for CssValueAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_VALUE_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_VALUE_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -15191,9 +16662,11 @@ impl AstNode for CssValueAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15225,11 +16698,14 @@ impl From<CssValueAtRule> for SyntaxElement {
 }
 impl AstNode for CssValueAtRuleDeclarationClause {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_VALUE_AT_RULE_DECLARATION_CLAUSE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_VALUE_AT_RULE_DECLARATION_CLAUSE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -15237,9 +16713,11 @@ impl AstNode for CssValueAtRuleDeclarationClause {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15263,11 +16741,14 @@ impl From<CssValueAtRuleDeclarationClause> for SyntaxElement {
 }
 impl AstNode for CssValueAtRuleGenericProperty {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_VALUE_AT_RULE_GENERIC_PROPERTY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_VALUE_AT_RULE_GENERIC_PROPERTY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -15275,9 +16756,11 @@ impl AstNode for CssValueAtRuleGenericProperty {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15306,11 +16789,14 @@ impl From<CssValueAtRuleGenericProperty> for SyntaxElement {
 }
 impl AstNode for CssValueAtRuleImportClause {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_VALUE_AT_RULE_IMPORT_CLAUSE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_VALUE_AT_RULE_IMPORT_CLAUSE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -15318,9 +16804,11 @@ impl AstNode for CssValueAtRuleImportClause {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15346,11 +16834,14 @@ impl From<CssValueAtRuleImportClause> for SyntaxElement {
 }
 impl AstNode for CssValueAtRuleImportSpecifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_VALUE_AT_RULE_IMPORT_SPECIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_VALUE_AT_RULE_IMPORT_SPECIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -15358,9 +16849,11 @@ impl AstNode for CssValueAtRuleImportSpecifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15384,12 +16877,15 @@ impl From<CssValueAtRuleImportSpecifier> for SyntaxElement {
 }
 impl AstNode for CssValueAtRuleNamedImportSpecifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = SyntaxKindSet::from_raw(RawSyntaxKind(
         CSS_VALUE_AT_RULE_NAMED_IMPORT_SPECIFIER as u16,
     ));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_VALUE_AT_RULE_NAMED_IMPORT_SPECIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -15397,9 +16893,11 @@ impl AstNode for CssValueAtRuleNamedImportSpecifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -15535,6 +17033,7 @@ impl From<CssValueAtRule> for AnyCssAtRule {
 }
 impl AstNode for AnyCssAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusAtRule::KIND_SET
         .union(CssCharsetAtRule::KIND_SET)
         .union(CssColorProfileAtRule::KIND_SET)
@@ -15557,6 +17056,7 @@ impl AstNode for AnyCssAtRule {
         .union(CssUnknownBlockAtRule::KIND_SET)
         .union(CssUnknownValueAtRule::KIND_SET)
         .union(CssValueAtRule::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -15584,6 +17084,7 @@ impl AstNode for AnyCssAtRule {
                 | CSS_VALUE_AT_RULE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_AT_RULE => AnyCssAtRule::CssBogusAtRule(CssBogusAtRule { syntax }),
@@ -15591,47 +17092,59 @@ impl AstNode for AnyCssAtRule {
             CSS_COLOR_PROFILE_AT_RULE => {
                 AnyCssAtRule::CssColorProfileAtRule(CssColorProfileAtRule { syntax })
             }
+
             CSS_CONTAINER_AT_RULE => {
                 AnyCssAtRule::CssContainerAtRule(CssContainerAtRule { syntax })
             }
+
             CSS_COUNTER_STYLE_AT_RULE => {
                 AnyCssAtRule::CssCounterStyleAtRule(CssCounterStyleAtRule { syntax })
             }
+
             CSS_DOCUMENT_AT_RULE => AnyCssAtRule::CssDocumentAtRule(CssDocumentAtRule { syntax }),
             CSS_FONT_FACE_AT_RULE => AnyCssAtRule::CssFontFaceAtRule(CssFontFaceAtRule { syntax }),
             CSS_FONT_FEATURE_VALUES_AT_RULE => {
                 AnyCssAtRule::CssFontFeatureValuesAtRule(CssFontFeatureValuesAtRule { syntax })
             }
+
             CSS_FONT_PALETTE_VALUES_AT_RULE => {
                 AnyCssAtRule::CssFontPaletteValuesAtRule(CssFontPaletteValuesAtRule { syntax })
             }
+
             CSS_IMPORT_AT_RULE => AnyCssAtRule::CssImportAtRule(CssImportAtRule { syntax }),
             CSS_KEYFRAMES_AT_RULE => {
                 AnyCssAtRule::CssKeyframesAtRule(CssKeyframesAtRule { syntax })
             }
+
             CSS_LAYER_AT_RULE => AnyCssAtRule::CssLayerAtRule(CssLayerAtRule { syntax }),
             CSS_MEDIA_AT_RULE => AnyCssAtRule::CssMediaAtRule(CssMediaAtRule { syntax }),
             CSS_NAMESPACE_AT_RULE => {
                 AnyCssAtRule::CssNamespaceAtRule(CssNamespaceAtRule { syntax })
             }
+
             CSS_PAGE_AT_RULE => AnyCssAtRule::CssPageAtRule(CssPageAtRule { syntax }),
             CSS_PROPERTY_AT_RULE => AnyCssAtRule::CssPropertyAtRule(CssPropertyAtRule { syntax }),
             CSS_SCOPE_AT_RULE => AnyCssAtRule::CssScopeAtRule(CssScopeAtRule { syntax }),
             CSS_STARTING_STYLE_AT_RULE => {
                 AnyCssAtRule::CssStartingStyleAtRule(CssStartingStyleAtRule { syntax })
             }
+
             CSS_SUPPORTS_AT_RULE => AnyCssAtRule::CssSupportsAtRule(CssSupportsAtRule { syntax }),
             CSS_UNKNOWN_BLOCK_AT_RULE => {
                 AnyCssAtRule::CssUnknownBlockAtRule(CssUnknownBlockAtRule { syntax })
             }
+
             CSS_UNKNOWN_VALUE_AT_RULE => {
                 AnyCssAtRule::CssUnknownValueAtRule(CssUnknownValueAtRule { syntax })
             }
+
             CSS_VALUE_AT_RULE => AnyCssAtRule::CssValueAtRule(CssValueAtRule { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssAtRule::CssBogusAtRule(it) => &it.syntax,
@@ -15658,6 +17171,7 @@ impl AstNode for AnyCssAtRule {
             AnyCssAtRule::CssValueAtRule(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssAtRule::CssBogusAtRule(it) => it.syntax,
@@ -15744,6 +17258,7 @@ impl From<AnyCssAtRule> for SyntaxNode {
 impl From<AnyCssAtRule> for SyntaxElement {
     fn from(n: AnyCssAtRule) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -15759,24 +17274,30 @@ impl From<CssString> for AnyCssAttributeMatcherValue {
 }
 impl AstNode for AnyCssAttributeMatcherValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssIdentifier::KIND_SET.union(CssString::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_IDENTIFIER | CSS_STRING)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_IDENTIFIER => AnyCssAttributeMatcherValue::CssIdentifier(CssIdentifier { syntax }),
             CSS_STRING => AnyCssAttributeMatcherValue::CssString(CssString { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssAttributeMatcherValue::CssIdentifier(it) => &it.syntax,
             AnyCssAttributeMatcherValue::CssString(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssAttributeMatcherValue::CssIdentifier(it) => it.syntax,
@@ -15803,6 +17324,7 @@ impl From<AnyCssAttributeMatcherValue> for SyntaxNode {
 impl From<AnyCssAttributeMatcherValue> for SyntaxElement {
     fn from(n: AnyCssAttributeMatcherValue) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -15818,24 +17340,30 @@ impl From<CssString> for AnyCssComposesImportSource {
 }
 impl AstNode for AnyCssComposesImportSource {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssIdentifier::KIND_SET.union(CssString::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_IDENTIFIER | CSS_STRING)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_IDENTIFIER => AnyCssComposesImportSource::CssIdentifier(CssIdentifier { syntax }),
             CSS_STRING => AnyCssComposesImportSource::CssString(CssString { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssComposesImportSource::CssIdentifier(it) => &it.syntax,
             AnyCssComposesImportSource::CssString(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssComposesImportSource::CssIdentifier(it) => it.syntax,
@@ -15862,6 +17390,7 @@ impl From<AnyCssComposesImportSource> for SyntaxNode {
 impl From<AnyCssComposesImportSource> for SyntaxElement {
     fn from(n: AnyCssComposesImportSource) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -15877,29 +17406,37 @@ impl From<CssCompoundSelector> for AnyCssCompoundSelector {
 }
 impl AstNode for AnyCssCompoundSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusSelector::KIND_SET.union(CssCompoundSelector::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_SELECTOR | CSS_COMPOUND_SELECTOR)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_SELECTOR => {
                 AnyCssCompoundSelector::CssBogusSelector(CssBogusSelector { syntax })
             }
+
             CSS_COMPOUND_SELECTOR => {
                 AnyCssCompoundSelector::CssCompoundSelector(CssCompoundSelector { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssCompoundSelector::CssBogusSelector(it) => &it.syntax,
             AnyCssCompoundSelector::CssCompoundSelector(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssCompoundSelector::CssBogusSelector(it) => it.syntax,
@@ -15926,6 +17463,7 @@ impl From<AnyCssCompoundSelector> for SyntaxNode {
 impl From<AnyCssCompoundSelector> for SyntaxElement {
     fn from(n: AnyCssCompoundSelector) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -15946,15 +17484,18 @@ impl From<CssRuleBlock> for AnyCssConditionalBlock {
 }
 impl AstNode for AnyCssConditionalBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusBlock::KIND_SET
         .union(CssDeclarationOrRuleBlock::KIND_SET)
         .union(CssRuleBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_BLOCK | CSS_DECLARATION_OR_RULE_BLOCK | CSS_RULE_BLOCK
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_BLOCK => AnyCssConditionalBlock::CssBogusBlock(CssBogusBlock { syntax }),
@@ -15963,11 +17504,14 @@ impl AstNode for AnyCssConditionalBlock {
                     syntax,
                 })
             }
+
             CSS_RULE_BLOCK => AnyCssConditionalBlock::CssRuleBlock(CssRuleBlock { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssConditionalBlock::CssBogusBlock(it) => &it.syntax,
@@ -15975,6 +17519,7 @@ impl AstNode for AnyCssConditionalBlock {
             AnyCssConditionalBlock::CssRuleBlock(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssConditionalBlock::CssBogusBlock(it) => it.syntax,
@@ -16004,6 +17549,7 @@ impl From<AnyCssConditionalBlock> for SyntaxNode {
 impl From<AnyCssConditionalBlock> for SyntaxElement {
     fn from(n: AnyCssConditionalBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16014,8 +17560,10 @@ impl From<CssContainerAndQuery> for AnyCssContainerAndCombinableQuery {
 }
 impl AstNode for AnyCssContainerAndCombinableQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyCssContainerQueryInParens::KIND_SET.union(CssContainerAndQuery::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_CONTAINER_AND_QUERY => true,
@@ -16023,6 +17571,7 @@ impl AstNode for AnyCssContainerAndCombinableQuery {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_CONTAINER_AND_QUERY => {
@@ -16030,6 +17579,7 @@ impl AstNode for AnyCssContainerAndCombinableQuery {
                     syntax,
                 })
             }
+
             _ => {
                 if let Some(any_css_container_query_in_parens) =
                     AnyCssContainerQueryInParens::cast(syntax)
@@ -16040,17 +17590,21 @@ impl AstNode for AnyCssContainerAndCombinableQuery {
                         ),
                     );
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssContainerAndCombinableQuery::CssContainerAndQuery(it) => &it.syntax,
             AnyCssContainerAndCombinableQuery::AnyCssContainerQueryInParens(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssContainerAndCombinableQuery::CssContainerAndQuery(it) => it.syntax,
@@ -16064,6 +17618,7 @@ impl std::fmt::Debug for AnyCssContainerAndCombinableQuery {
             AnyCssContainerAndCombinableQuery::AnyCssContainerQueryInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssContainerAndCombinableQuery::CssContainerAndQuery(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -16081,6 +17636,7 @@ impl From<AnyCssContainerAndCombinableQuery> for SyntaxNode {
 impl From<AnyCssContainerAndCombinableQuery> for SyntaxElement {
     fn from(n: AnyCssContainerAndCombinableQuery) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16091,8 +17647,10 @@ impl From<CssContainerOrQuery> for AnyCssContainerOrCombinableQuery {
 }
 impl AstNode for AnyCssContainerOrCombinableQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyCssContainerQueryInParens::KIND_SET.union(CssContainerOrQuery::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_CONTAINER_OR_QUERY => true,
@@ -16100,6 +17658,7 @@ impl AstNode for AnyCssContainerOrCombinableQuery {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_CONTAINER_OR_QUERY => {
@@ -16107,6 +17666,7 @@ impl AstNode for AnyCssContainerOrCombinableQuery {
                     syntax,
                 })
             }
+
             _ => {
                 if let Some(any_css_container_query_in_parens) =
                     AnyCssContainerQueryInParens::cast(syntax)
@@ -16117,17 +17677,21 @@ impl AstNode for AnyCssContainerOrCombinableQuery {
                         ),
                     );
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssContainerOrCombinableQuery::CssContainerOrQuery(it) => &it.syntax,
             AnyCssContainerOrCombinableQuery::AnyCssContainerQueryInParens(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssContainerOrCombinableQuery::CssContainerOrQuery(it) => it.syntax,
@@ -16141,6 +17705,7 @@ impl std::fmt::Debug for AnyCssContainerOrCombinableQuery {
             AnyCssContainerOrCombinableQuery::AnyCssContainerQueryInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssContainerOrCombinableQuery::CssContainerOrQuery(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -16158,6 +17723,7 @@ impl From<AnyCssContainerOrCombinableQuery> for SyntaxNode {
 impl From<AnyCssContainerOrCombinableQuery> for SyntaxElement {
     fn from(n: AnyCssContainerOrCombinableQuery) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16178,10 +17744,12 @@ impl From<CssContainerOrQuery> for AnyCssContainerQuery {
 }
 impl AstNode for AnyCssContainerQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCssContainerQueryInParens::KIND_SET
         .union(CssContainerAndQuery::KIND_SET)
         .union(CssContainerNotQuery::KIND_SET)
         .union(CssContainerOrQuery::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_CONTAINER_AND_QUERY | CSS_CONTAINER_NOT_QUERY | CSS_CONTAINER_OR_QUERY => true,
@@ -16189,17 +17757,21 @@ impl AstNode for AnyCssContainerQuery {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_CONTAINER_AND_QUERY => {
                 AnyCssContainerQuery::CssContainerAndQuery(CssContainerAndQuery { syntax })
             }
+
             CSS_CONTAINER_NOT_QUERY => {
                 AnyCssContainerQuery::CssContainerNotQuery(CssContainerNotQuery { syntax })
             }
+
             CSS_CONTAINER_OR_QUERY => {
                 AnyCssContainerQuery::CssContainerOrQuery(CssContainerOrQuery { syntax })
             }
+
             _ => {
                 if let Some(any_css_container_query_in_parens) =
                     AnyCssContainerQueryInParens::cast(syntax)
@@ -16208,11 +17780,14 @@ impl AstNode for AnyCssContainerQuery {
                         any_css_container_query_in_parens,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssContainerQuery::CssContainerAndQuery(it) => &it.syntax,
@@ -16221,6 +17796,7 @@ impl AstNode for AnyCssContainerQuery {
             AnyCssContainerQuery::AnyCssContainerQueryInParens(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssContainerQuery::CssContainerAndQuery(it) => it.syntax,
@@ -16253,6 +17829,7 @@ impl From<AnyCssContainerQuery> for SyntaxNode {
 impl From<AnyCssContainerQuery> for SyntaxElement {
     fn from(n: AnyCssContainerQuery) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16273,9 +17850,11 @@ impl From<CssContainerStyleQueryInParens> for AnyCssContainerQueryInParens {
 }
 impl AstNode for AnyCssContainerQueryInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssContainerQueryInParens::KIND_SET
         .union(CssContainerSizeFeatureInParens::KIND_SET)
         .union(CssContainerStyleQueryInParens::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -16284,6 +17863,7 @@ impl AstNode for AnyCssContainerQueryInParens {
                 | CSS_CONTAINER_STYLE_QUERY_IN_PARENS
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_CONTAINER_QUERY_IN_PARENS => {
@@ -16291,20 +17871,25 @@ impl AstNode for AnyCssContainerQueryInParens {
                     syntax,
                 })
             }
+
             CSS_CONTAINER_SIZE_FEATURE_IN_PARENS => {
                 AnyCssContainerQueryInParens::CssContainerSizeFeatureInParens(
                     CssContainerSizeFeatureInParens { syntax },
                 )
             }
+
             CSS_CONTAINER_STYLE_QUERY_IN_PARENS => {
                 AnyCssContainerQueryInParens::CssContainerStyleQueryInParens(
                     CssContainerStyleQueryInParens { syntax },
                 )
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssContainerQueryInParens::CssContainerQueryInParens(it) => &it.syntax,
@@ -16312,6 +17897,7 @@ impl AstNode for AnyCssContainerQueryInParens {
             AnyCssContainerQueryInParens::CssContainerStyleQueryInParens(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssContainerQueryInParens::CssContainerQueryInParens(it) => it.syntax,
@@ -16326,9 +17912,11 @@ impl std::fmt::Debug for AnyCssContainerQueryInParens {
             AnyCssContainerQueryInParens::CssContainerQueryInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssContainerQueryInParens::CssContainerSizeFeatureInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssContainerQueryInParens::CssContainerStyleQueryInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -16347,6 +17935,7 @@ impl From<AnyCssContainerQueryInParens> for SyntaxNode {
 impl From<AnyCssContainerQueryInParens> for SyntaxElement {
     fn from(n: AnyCssContainerQueryInParens) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16362,14 +17951,17 @@ impl From<CssContainerStyleInParens> for AnyCssContainerStyleAndCombinableQuery 
 }
 impl AstNode for AnyCssContainerStyleAndCombinableQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssContainerStyleAndQuery::KIND_SET.union(CssContainerStyleInParens::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_CONTAINER_STYLE_AND_QUERY | CSS_CONTAINER_STYLE_IN_PARENS
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_CONTAINER_STYLE_AND_QUERY => {
@@ -16377,21 +17969,26 @@ impl AstNode for AnyCssContainerStyleAndCombinableQuery {
                     CssContainerStyleAndQuery { syntax },
                 )
             }
+
             CSS_CONTAINER_STYLE_IN_PARENS => {
                 AnyCssContainerStyleAndCombinableQuery::CssContainerStyleInParens(
                     CssContainerStyleInParens { syntax },
                 )
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssContainerStyleAndCombinableQuery::CssContainerStyleAndQuery(it) => &it.syntax,
             AnyCssContainerStyleAndCombinableQuery::CssContainerStyleInParens(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssContainerStyleAndCombinableQuery::CssContainerStyleAndQuery(it) => it.syntax,
@@ -16405,6 +18002,7 @@ impl std::fmt::Debug for AnyCssContainerStyleAndCombinableQuery {
             AnyCssContainerStyleAndCombinableQuery::CssContainerStyleAndQuery(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssContainerStyleAndCombinableQuery::CssContainerStyleInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -16422,6 +18020,7 @@ impl From<AnyCssContainerStyleAndCombinableQuery> for SyntaxNode {
 impl From<AnyCssContainerStyleAndCombinableQuery> for SyntaxElement {
     fn from(n: AnyCssContainerStyleAndCombinableQuery) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16432,8 +18031,10 @@ impl From<CssDeclaration> for AnyCssContainerStyleInParens {
 }
 impl AstNode for AnyCssContainerStyleInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyCssContainerStyleQuery::KIND_SET.union(CssDeclaration::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_DECLARATION => true,
@@ -16441,11 +18042,13 @@ impl AstNode for AnyCssContainerStyleInParens {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_DECLARATION => {
                 AnyCssContainerStyleInParens::CssDeclaration(CssDeclaration { syntax })
             }
+
             _ => {
                 if let Some(any_css_container_style_query) = AnyCssContainerStyleQuery::cast(syntax)
                 {
@@ -16453,17 +18056,21 @@ impl AstNode for AnyCssContainerStyleInParens {
                         any_css_container_style_query,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssContainerStyleInParens::CssDeclaration(it) => &it.syntax,
             AnyCssContainerStyleInParens::AnyCssContainerStyleQuery(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssContainerStyleInParens::CssDeclaration(it) => it.syntax,
@@ -16477,6 +18084,7 @@ impl std::fmt::Debug for AnyCssContainerStyleInParens {
             AnyCssContainerStyleInParens::AnyCssContainerStyleQuery(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssContainerStyleInParens::CssDeclaration(it) => std::fmt::Debug::fmt(it, f),
         }
     }
@@ -16492,6 +18100,7 @@ impl From<AnyCssContainerStyleInParens> for SyntaxNode {
 impl From<AnyCssContainerStyleInParens> for SyntaxElement {
     fn from(n: AnyCssContainerStyleInParens) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16507,14 +18116,17 @@ impl From<CssContainerStyleOrQuery> for AnyCssContainerStyleOrCombinableQuery {
 }
 impl AstNode for AnyCssContainerStyleOrCombinableQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssContainerStyleInParens::KIND_SET.union(CssContainerStyleOrQuery::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_CONTAINER_STYLE_IN_PARENS | CSS_CONTAINER_STYLE_OR_QUERY
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_CONTAINER_STYLE_IN_PARENS => {
@@ -16522,21 +18134,26 @@ impl AstNode for AnyCssContainerStyleOrCombinableQuery {
                     CssContainerStyleInParens { syntax },
                 )
             }
+
             CSS_CONTAINER_STYLE_OR_QUERY => {
                 AnyCssContainerStyleOrCombinableQuery::CssContainerStyleOrQuery(
                     CssContainerStyleOrQuery { syntax },
                 )
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssContainerStyleOrCombinableQuery::CssContainerStyleInParens(it) => &it.syntax,
             AnyCssContainerStyleOrCombinableQuery::CssContainerStyleOrQuery(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssContainerStyleOrCombinableQuery::CssContainerStyleInParens(it) => it.syntax,
@@ -16550,6 +18167,7 @@ impl std::fmt::Debug for AnyCssContainerStyleOrCombinableQuery {
             AnyCssContainerStyleOrCombinableQuery::CssContainerStyleInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssContainerStyleOrCombinableQuery::CssContainerStyleOrQuery(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -16567,6 +18185,7 @@ impl From<AnyCssContainerStyleOrCombinableQuery> for SyntaxNode {
 impl From<AnyCssContainerStyleOrCombinableQuery> for SyntaxElement {
     fn from(n: AnyCssContainerStyleOrCombinableQuery) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16597,11 +18216,13 @@ impl From<CssDeclaration> for AnyCssContainerStyleQuery {
 }
 impl AstNode for AnyCssContainerStyleQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssContainerStyleAndQuery::KIND_SET
         .union(CssContainerStyleInParens::KIND_SET)
         .union(CssContainerStyleNotQuery::KIND_SET)
         .union(CssContainerStyleOrQuery::KIND_SET)
         .union(CssDeclaration::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -16612,6 +18233,7 @@ impl AstNode for AnyCssContainerStyleQuery {
                 | CSS_DECLARATION
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_CONTAINER_STYLE_AND_QUERY => {
@@ -16619,26 +18241,32 @@ impl AstNode for AnyCssContainerStyleQuery {
                     syntax,
                 })
             }
+
             CSS_CONTAINER_STYLE_IN_PARENS => {
                 AnyCssContainerStyleQuery::CssContainerStyleInParens(CssContainerStyleInParens {
                     syntax,
                 })
             }
+
             CSS_CONTAINER_STYLE_NOT_QUERY => {
                 AnyCssContainerStyleQuery::CssContainerStyleNotQuery(CssContainerStyleNotQuery {
                     syntax,
                 })
             }
+
             CSS_CONTAINER_STYLE_OR_QUERY => {
                 AnyCssContainerStyleQuery::CssContainerStyleOrQuery(CssContainerStyleOrQuery {
                     syntax,
                 })
             }
+
             CSS_DECLARATION => AnyCssContainerStyleQuery::CssDeclaration(CssDeclaration { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssContainerStyleQuery::CssContainerStyleAndQuery(it) => &it.syntax,
@@ -16648,6 +18276,7 @@ impl AstNode for AnyCssContainerStyleQuery {
             AnyCssContainerStyleQuery::CssDeclaration(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssContainerStyleQuery::CssContainerStyleAndQuery(it) => it.syntax,
@@ -16683,6 +18312,7 @@ impl From<AnyCssContainerStyleQuery> for SyntaxNode {
 impl From<AnyCssContainerStyleQuery> for SyntaxElement {
     fn from(n: AnyCssContainerStyleQuery) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16698,11 +18328,14 @@ impl From<CssCustomIdentifier> for AnyCssCustomIdentifier {
 }
 impl AstNode for AnyCssCustomIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusCustomIdentifier::KIND_SET.union(CssCustomIdentifier::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_CUSTOM_IDENTIFIER | CSS_CUSTOM_IDENTIFIER)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_CUSTOM_IDENTIFIER => {
@@ -16710,19 +18343,24 @@ impl AstNode for AnyCssCustomIdentifier {
                     syntax,
                 })
             }
+
             CSS_CUSTOM_IDENTIFIER => {
                 AnyCssCustomIdentifier::CssCustomIdentifier(CssCustomIdentifier { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssCustomIdentifier::CssBogusCustomIdentifier(it) => &it.syntax,
             AnyCssCustomIdentifier::CssCustomIdentifier(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssCustomIdentifier::CssBogusCustomIdentifier(it) => it.syntax,
@@ -16749,6 +18387,7 @@ impl From<AnyCssCustomIdentifier> for SyntaxNode {
 impl From<AnyCssCustomIdentifier> for SyntaxElement {
     fn from(n: AnyCssCustomIdentifier) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16764,27 +18403,34 @@ impl From<CssDeclarationBlock> for AnyCssDeclarationBlock {
 }
 impl AstNode for AnyCssDeclarationBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusBlock::KIND_SET.union(CssDeclarationBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_BLOCK | CSS_DECLARATION_BLOCK)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_BLOCK => AnyCssDeclarationBlock::CssBogusBlock(CssBogusBlock { syntax }),
             CSS_DECLARATION_BLOCK => {
                 AnyCssDeclarationBlock::CssDeclarationBlock(CssDeclarationBlock { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssDeclarationBlock::CssBogusBlock(it) => &it.syntax,
             AnyCssDeclarationBlock::CssDeclarationBlock(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssDeclarationBlock::CssBogusBlock(it) => it.syntax,
@@ -16811,6 +18457,7 @@ impl From<AnyCssDeclarationBlock> for SyntaxNode {
 impl From<AnyCssDeclarationBlock> for SyntaxElement {
     fn from(n: AnyCssDeclarationBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16826,27 +18473,34 @@ impl From<CssIdentifier> for AnyCssDeclarationName {
 }
 impl AstNode for AnyCssDeclarationName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssDashedIdentifier::KIND_SET.union(CssIdentifier::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_DASHED_IDENTIFIER | CSS_IDENTIFIER)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_DASHED_IDENTIFIER => {
                 AnyCssDeclarationName::CssDashedIdentifier(CssDashedIdentifier { syntax })
             }
+
             CSS_IDENTIFIER => AnyCssDeclarationName::CssIdentifier(CssIdentifier { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssDeclarationName::CssDashedIdentifier(it) => &it.syntax,
             AnyCssDeclarationName::CssIdentifier(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssDeclarationName::CssDashedIdentifier(it) => it.syntax,
@@ -16873,6 +18527,7 @@ impl From<AnyCssDeclarationName> for SyntaxNode {
 impl From<AnyCssDeclarationName> for SyntaxElement {
     fn from(n: AnyCssDeclarationName) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16888,11 +18543,14 @@ impl From<CssDeclarationWithSemicolon> for AnyCssDeclarationOrAtRule {
 }
 impl AstNode for AnyCssDeclarationOrAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssAtRule::KIND_SET.union(CssDeclarationWithSemicolon::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_AT_RULE | CSS_DECLARATION_WITH_SEMICOLON)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_AT_RULE => AnyCssDeclarationOrAtRule::CssAtRule(CssAtRule { syntax }),
@@ -16901,16 +18559,20 @@ impl AstNode for AnyCssDeclarationOrAtRule {
                     CssDeclarationWithSemicolon { syntax },
                 )
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssDeclarationOrAtRule::CssAtRule(it) => &it.syntax,
             AnyCssDeclarationOrAtRule::CssDeclarationWithSemicolon(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssDeclarationOrAtRule::CssAtRule(it) => it.syntax,
@@ -16939,6 +18601,7 @@ impl From<AnyCssDeclarationOrAtRule> for SyntaxNode {
 impl From<AnyCssDeclarationOrAtRule> for SyntaxElement {
     fn from(n: AnyCssDeclarationOrAtRule) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -16954,31 +18617,39 @@ impl From<CssDeclarationOrAtRuleBlock> for AnyCssDeclarationOrAtRuleBlock {
 }
 impl AstNode for AnyCssDeclarationOrAtRuleBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusBlock::KIND_SET.union(CssDeclarationOrAtRuleBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_BLOCK | CSS_DECLARATION_OR_AT_RULE_BLOCK)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_BLOCK => {
                 AnyCssDeclarationOrAtRuleBlock::CssBogusBlock(CssBogusBlock { syntax })
             }
+
             CSS_DECLARATION_OR_AT_RULE_BLOCK => {
                 AnyCssDeclarationOrAtRuleBlock::CssDeclarationOrAtRuleBlock(
                     CssDeclarationOrAtRuleBlock { syntax },
                 )
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssDeclarationOrAtRuleBlock::CssBogusBlock(it) => &it.syntax,
             AnyCssDeclarationOrAtRuleBlock::CssDeclarationOrAtRuleBlock(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssDeclarationOrAtRuleBlock::CssBogusBlock(it) => it.syntax,
@@ -17007,6 +18678,7 @@ impl From<AnyCssDeclarationOrAtRuleBlock> for SyntaxNode {
 impl From<AnyCssDeclarationOrAtRuleBlock> for SyntaxElement {
     fn from(n: AnyCssDeclarationOrAtRuleBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17032,11 +18704,13 @@ impl From<CssMetavariable> for AnyCssDeclarationOrRule {
 }
 impl AstNode for AnyCssDeclarationOrRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCssRule::KIND_SET
         .union(CssBogus::KIND_SET)
         .union(CssDeclarationWithSemicolon::KIND_SET)
         .union(CssEmptyDeclaration::KIND_SET)
         .union(CssMetavariable::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_BOGUS
@@ -17047,6 +18721,7 @@ impl AstNode for AnyCssDeclarationOrRule {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS => AnyCssDeclarationOrRule::CssBogus(CssBogus { syntax }),
@@ -17055,21 +18730,27 @@ impl AstNode for AnyCssDeclarationOrRule {
                     syntax,
                 })
             }
+
             CSS_EMPTY_DECLARATION => {
                 AnyCssDeclarationOrRule::CssEmptyDeclaration(CssEmptyDeclaration { syntax })
             }
+
             CSS_METAVARIABLE => {
                 AnyCssDeclarationOrRule::CssMetavariable(CssMetavariable { syntax })
             }
+
             _ => {
                 if let Some(any_css_rule) = AnyCssRule::cast(syntax) {
                     return Some(AnyCssDeclarationOrRule::AnyCssRule(any_css_rule));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssDeclarationOrRule::CssBogus(it) => &it.syntax,
@@ -17079,6 +18760,7 @@ impl AstNode for AnyCssDeclarationOrRule {
             AnyCssDeclarationOrRule::AnyCssRule(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssDeclarationOrRule::CssBogus(it) => it.syntax,
@@ -17114,6 +18796,7 @@ impl From<AnyCssDeclarationOrRule> for SyntaxNode {
 impl From<AnyCssDeclarationOrRule> for SyntaxElement {
     fn from(n: AnyCssDeclarationOrRule) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17129,31 +18812,39 @@ impl From<CssDeclarationOrRuleBlock> for AnyCssDeclarationOrRuleBlock {
 }
 impl AstNode for AnyCssDeclarationOrRuleBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusBlock::KIND_SET.union(CssDeclarationOrRuleBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_BLOCK | CSS_DECLARATION_OR_RULE_BLOCK)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_BLOCK => {
                 AnyCssDeclarationOrRuleBlock::CssBogusBlock(CssBogusBlock { syntax })
             }
+
             CSS_DECLARATION_OR_RULE_BLOCK => {
                 AnyCssDeclarationOrRuleBlock::CssDeclarationOrRuleBlock(CssDeclarationOrRuleBlock {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssDeclarationOrRuleBlock::CssBogusBlock(it) => &it.syntax,
             AnyCssDeclarationOrRuleBlock::CssDeclarationOrRuleBlock(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssDeclarationOrRuleBlock::CssBogusBlock(it) => it.syntax,
@@ -17182,6 +18873,7 @@ impl From<AnyCssDeclarationOrRuleBlock> for SyntaxNode {
 impl From<AnyCssDeclarationOrRuleBlock> for SyntaxElement {
     fn from(n: AnyCssDeclarationOrRuleBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17202,28 +18894,35 @@ impl From<CssUnknownDimension> for AnyCssDimension {
 }
 impl AstNode for AnyCssDimension {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssPercentage::KIND_SET
         .union(CssRegularDimension::KIND_SET)
         .union(CssUnknownDimension::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_PERCENTAGE | CSS_REGULAR_DIMENSION | CSS_UNKNOWN_DIMENSION
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_PERCENTAGE => AnyCssDimension::CssPercentage(CssPercentage { syntax }),
             CSS_REGULAR_DIMENSION => {
                 AnyCssDimension::CssRegularDimension(CssRegularDimension { syntax })
             }
+
             CSS_UNKNOWN_DIMENSION => {
                 AnyCssDimension::CssUnknownDimension(CssUnknownDimension { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssDimension::CssPercentage(it) => &it.syntax,
@@ -17231,6 +18930,7 @@ impl AstNode for AnyCssDimension {
             AnyCssDimension::CssUnknownDimension(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssDimension::CssPercentage(it) => it.syntax,
@@ -17260,6 +18960,7 @@ impl From<AnyCssDimension> for SyntaxNode {
 impl From<AnyCssDimension> for SyntaxElement {
     fn from(n: AnyCssDimension) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17280,28 +18981,35 @@ impl From<CssUrlFunction> for AnyCssDocumentMatcher {
 }
 impl AstNode for AnyCssDocumentMatcher {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusDocumentMatcher::KIND_SET
         .union(CssDocumentCustomMatcher::KIND_SET)
         .union(CssUrlFunction::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_DOCUMENT_MATCHER | CSS_DOCUMENT_CUSTOM_MATCHER | CSS_URL_FUNCTION
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_DOCUMENT_MATCHER => {
                 AnyCssDocumentMatcher::CssBogusDocumentMatcher(CssBogusDocumentMatcher { syntax })
             }
+
             CSS_DOCUMENT_CUSTOM_MATCHER => {
                 AnyCssDocumentMatcher::CssDocumentCustomMatcher(CssDocumentCustomMatcher { syntax })
             }
+
             CSS_URL_FUNCTION => AnyCssDocumentMatcher::CssUrlFunction(CssUrlFunction { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssDocumentMatcher::CssBogusDocumentMatcher(it) => &it.syntax,
@@ -17309,6 +19017,7 @@ impl AstNode for AnyCssDocumentMatcher {
             AnyCssDocumentMatcher::CssUrlFunction(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssDocumentMatcher::CssBogusDocumentMatcher(it) => it.syntax,
@@ -17338,6 +19047,7 @@ impl From<AnyCssDocumentMatcher> for SyntaxNode {
 impl From<AnyCssDocumentMatcher> for SyntaxElement {
     fn from(n: AnyCssDocumentMatcher) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17358,9 +19068,11 @@ impl From<CssParenthesizedExpression> for AnyCssExpression {
 }
 impl AstNode for AnyCssExpression {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBinaryExpression::KIND_SET
         .union(CssListOfComponentValuesExpression::KIND_SET)
         .union(CssParenthesizedExpression::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -17369,23 +19081,29 @@ impl AstNode for AnyCssExpression {
                 | CSS_PARENTHESIZED_EXPRESSION
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BINARY_EXPRESSION => {
                 AnyCssExpression::CssBinaryExpression(CssBinaryExpression { syntax })
             }
+
             CSS_LIST_OF_COMPONENT_VALUES_EXPRESSION => {
                 AnyCssExpression::CssListOfComponentValuesExpression(
                     CssListOfComponentValuesExpression { syntax },
                 )
             }
+
             CSS_PARENTHESIZED_EXPRESSION => {
                 AnyCssExpression::CssParenthesizedExpression(CssParenthesizedExpression { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssExpression::CssBinaryExpression(it) => &it.syntax,
@@ -17393,6 +19111,7 @@ impl AstNode for AnyCssExpression {
             AnyCssExpression::CssParenthesizedExpression(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssExpression::CssBinaryExpression(it) => it.syntax,
@@ -17422,6 +19141,7 @@ impl From<AnyCssExpression> for SyntaxNode {
 impl From<AnyCssExpression> for SyntaxElement {
     fn from(n: AnyCssExpression) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17442,28 +19162,35 @@ impl From<CssString> for AnyCssFontFamilyName {
 }
 impl AstNode for AnyCssFontFamilyName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusFontFamilyName::KIND_SET
         .union(CssFontFamilyName::KIND_SET)
         .union(CssString::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_FONT_FAMILY_NAME | CSS_FONT_FAMILY_NAME | CSS_STRING
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_FONT_FAMILY_NAME => {
                 AnyCssFontFamilyName::CssBogusFontFamilyName(CssBogusFontFamilyName { syntax })
             }
+
             CSS_FONT_FAMILY_NAME => {
                 AnyCssFontFamilyName::CssFontFamilyName(CssFontFamilyName { syntax })
             }
+
             CSS_STRING => AnyCssFontFamilyName::CssString(CssString { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssFontFamilyName::CssBogusFontFamilyName(it) => &it.syntax,
@@ -17471,6 +19198,7 @@ impl AstNode for AnyCssFontFamilyName {
             AnyCssFontFamilyName::CssString(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssFontFamilyName::CssBogusFontFamilyName(it) => it.syntax,
@@ -17500,6 +19228,7 @@ impl From<AnyCssFontFamilyName> for SyntaxNode {
 impl From<AnyCssFontFamilyName> for SyntaxElement {
     fn from(n: AnyCssFontFamilyName) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17515,31 +19244,39 @@ impl From<CssFontFeatureValuesBlock> for AnyCssFontFeatureValuesBlock {
 }
 impl AstNode for AnyCssFontFeatureValuesBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusBlock::KIND_SET.union(CssFontFeatureValuesBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_BLOCK | CSS_FONT_FEATURE_VALUES_BLOCK)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_BLOCK => {
                 AnyCssFontFeatureValuesBlock::CssBogusBlock(CssBogusBlock { syntax })
             }
+
             CSS_FONT_FEATURE_VALUES_BLOCK => {
                 AnyCssFontFeatureValuesBlock::CssFontFeatureValuesBlock(CssFontFeatureValuesBlock {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssFontFeatureValuesBlock::CssBogusBlock(it) => &it.syntax,
             AnyCssFontFeatureValuesBlock::CssFontFeatureValuesBlock(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssFontFeatureValuesBlock::CssBogusBlock(it) => it.syntax,
@@ -17568,6 +19305,7 @@ impl From<AnyCssFontFeatureValuesBlock> for SyntaxNode {
 impl From<AnyCssFontFeatureValuesBlock> for SyntaxElement {
     fn from(n: AnyCssFontFeatureValuesBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17583,14 +19321,17 @@ impl From<CssFontFeatureValuesItem> for AnyCssFontFeatureValuesItem {
 }
 impl AstNode for AnyCssFontFeatureValuesItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusFontFeatureValuesItem::KIND_SET.union(CssFontFeatureValuesItem::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_FONT_FEATURE_VALUES_ITEM | CSS_FONT_FEATURE_VALUES_ITEM
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_FONT_FEATURE_VALUES_ITEM => {
@@ -17598,21 +19339,26 @@ impl AstNode for AnyCssFontFeatureValuesItem {
                     CssBogusFontFeatureValuesItem { syntax },
                 )
             }
+
             CSS_FONT_FEATURE_VALUES_ITEM => {
                 AnyCssFontFeatureValuesItem::CssFontFeatureValuesItem(CssFontFeatureValuesItem {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssFontFeatureValuesItem::CssBogusFontFeatureValuesItem(it) => &it.syntax,
             AnyCssFontFeatureValuesItem::CssFontFeatureValuesItem(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssFontFeatureValuesItem::CssBogusFontFeatureValuesItem(it) => it.syntax,
@@ -17626,6 +19372,7 @@ impl std::fmt::Debug for AnyCssFontFeatureValuesItem {
             AnyCssFontFeatureValuesItem::CssBogusFontFeatureValuesItem(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssFontFeatureValuesItem::CssFontFeatureValuesItem(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -17643,6 +19390,7 @@ impl From<AnyCssFontFeatureValuesItem> for SyntaxNode {
 impl From<AnyCssFontFeatureValuesItem> for SyntaxElement {
     fn from(n: AnyCssFontFeatureValuesItem) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17658,24 +19406,30 @@ impl From<CssUrlFunction> for AnyCssFunction {
 }
 impl AstNode for AnyCssFunction {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssFunction::KIND_SET.union(CssUrlFunction::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_FUNCTION | CSS_URL_FUNCTION)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_FUNCTION => AnyCssFunction::CssFunction(CssFunction { syntax }),
             CSS_URL_FUNCTION => AnyCssFunction::CssUrlFunction(CssUrlFunction { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssFunction::CssFunction(it) => &it.syntax,
             AnyCssFunction::CssUrlFunction(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssFunction::CssFunction(it) => it.syntax,
@@ -17702,6 +19456,7 @@ impl From<AnyCssFunction> for SyntaxNode {
 impl From<AnyCssFunction> for SyntaxElement {
     fn from(n: AnyCssFunction) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17712,8 +19467,10 @@ impl From<CssGenericDelimiter> for AnyCssGenericComponentValue {
 }
 impl AstNode for AnyCssGenericComponentValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyCssValue::KIND_SET.union(CssGenericDelimiter::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_GENERIC_DELIMITER => true,
@@ -17721,26 +19478,32 @@ impl AstNode for AnyCssGenericComponentValue {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_GENERIC_DELIMITER => {
                 AnyCssGenericComponentValue::CssGenericDelimiter(CssGenericDelimiter { syntax })
             }
+
             _ => {
                 if let Some(any_css_value) = AnyCssValue::cast(syntax) {
                     return Some(AnyCssGenericComponentValue::AnyCssValue(any_css_value));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssGenericComponentValue::CssGenericDelimiter(it) => &it.syntax,
             AnyCssGenericComponentValue::AnyCssValue(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssGenericComponentValue::CssGenericDelimiter(it) => it.syntax,
@@ -17767,6 +19530,7 @@ impl From<AnyCssGenericComponentValue> for SyntaxNode {
 impl From<AnyCssGenericComponentValue> for SyntaxElement {
     fn from(n: AnyCssGenericComponentValue) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17782,29 +19546,37 @@ impl From<CssImportNamedLayer> for AnyCssImportLayer {
 }
 impl AstNode for AnyCssImportLayer {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssImportAnonymousLayer::KIND_SET.union(CssImportNamedLayer::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_IMPORT_ANONYMOUS_LAYER | CSS_IMPORT_NAMED_LAYER)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_IMPORT_ANONYMOUS_LAYER => {
                 AnyCssImportLayer::CssImportAnonymousLayer(CssImportAnonymousLayer { syntax })
             }
+
             CSS_IMPORT_NAMED_LAYER => {
                 AnyCssImportLayer::CssImportNamedLayer(CssImportNamedLayer { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssImportLayer::CssImportAnonymousLayer(it) => &it.syntax,
             AnyCssImportLayer::CssImportNamedLayer(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssImportLayer::CssImportAnonymousLayer(it) => it.syntax,
@@ -17831,6 +19603,7 @@ impl From<AnyCssImportLayer> for SyntaxNode {
 impl From<AnyCssImportLayer> for SyntaxElement {
     fn from(n: AnyCssImportLayer) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17841,8 +19614,10 @@ impl From<CssDeclaration> for AnyCssImportSupportsCondition {
 }
 impl AstNode for AnyCssImportSupportsCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyCssSupportsCondition::KIND_SET.union(CssDeclaration::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_DECLARATION => true,
@@ -17850,28 +19625,34 @@ impl AstNode for AnyCssImportSupportsCondition {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_DECLARATION => {
                 AnyCssImportSupportsCondition::CssDeclaration(CssDeclaration { syntax })
             }
+
             _ => {
                 if let Some(any_css_supports_condition) = AnyCssSupportsCondition::cast(syntax) {
                     return Some(AnyCssImportSupportsCondition::AnyCssSupportsCondition(
                         any_css_supports_condition,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssImportSupportsCondition::CssDeclaration(it) => &it.syntax,
             AnyCssImportSupportsCondition::AnyCssSupportsCondition(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssImportSupportsCondition::CssDeclaration(it) => it.syntax,
@@ -17885,6 +19666,7 @@ impl std::fmt::Debug for AnyCssImportSupportsCondition {
             AnyCssImportSupportsCondition::AnyCssSupportsCondition(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssImportSupportsCondition::CssDeclaration(it) => std::fmt::Debug::fmt(it, f),
         }
     }
@@ -17900,6 +19682,7 @@ impl From<AnyCssImportSupportsCondition> for SyntaxNode {
 impl From<AnyCssImportSupportsCondition> for SyntaxElement {
     fn from(n: AnyCssImportSupportsCondition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17915,24 +19698,30 @@ impl From<CssUrlFunction> for AnyCssImportUrl {
 }
 impl AstNode for AnyCssImportUrl {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssString::KIND_SET.union(CssUrlFunction::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_STRING | CSS_URL_FUNCTION)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_STRING => AnyCssImportUrl::CssString(CssString { syntax }),
             CSS_URL_FUNCTION => AnyCssImportUrl::CssUrlFunction(CssUrlFunction { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssImportUrl::CssString(it) => &it.syntax,
             AnyCssImportUrl::CssUrlFunction(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssImportUrl::CssString(it) => it.syntax,
@@ -17959,6 +19748,7 @@ impl From<AnyCssImportUrl> for SyntaxNode {
 impl From<AnyCssImportUrl> for SyntaxElement {
     fn from(n: AnyCssImportUrl) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -17974,27 +19764,34 @@ impl From<CssKeyframesBlock> for AnyCssKeyframesBlock {
 }
 impl AstNode for AnyCssKeyframesBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusBlock::KIND_SET.union(CssKeyframesBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_BLOCK | CSS_KEYFRAMES_BLOCK)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_BLOCK => AnyCssKeyframesBlock::CssBogusBlock(CssBogusBlock { syntax }),
             CSS_KEYFRAMES_BLOCK => {
                 AnyCssKeyframesBlock::CssKeyframesBlock(CssKeyframesBlock { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssKeyframesBlock::CssBogusBlock(it) => &it.syntax,
             AnyCssKeyframesBlock::CssKeyframesBlock(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssKeyframesBlock::CssBogusBlock(it) => it.syntax,
@@ -18021,6 +19818,7 @@ impl From<AnyCssKeyframesBlock> for SyntaxNode {
 impl From<AnyCssKeyframesBlock> for SyntaxElement {
     fn from(n: AnyCssKeyframesBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18036,27 +19834,34 @@ impl From<CssString> for AnyCssKeyframesIdentifier {
 }
 impl AstNode for AnyCssKeyframesIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssCustomIdentifier::KIND_SET.union(CssString::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_CUSTOM_IDENTIFIER | CSS_STRING)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_CUSTOM_IDENTIFIER => {
                 AnyCssKeyframesIdentifier::CssCustomIdentifier(CssCustomIdentifier { syntax })
             }
+
             CSS_STRING => AnyCssKeyframesIdentifier::CssString(CssString { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssKeyframesIdentifier::CssCustomIdentifier(it) => &it.syntax,
             AnyCssKeyframesIdentifier::CssString(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssKeyframesIdentifier::CssCustomIdentifier(it) => it.syntax,
@@ -18083,6 +19888,7 @@ impl From<AnyCssKeyframesIdentifier> for SyntaxNode {
 impl From<AnyCssKeyframesIdentifier> for SyntaxElement {
     fn from(n: AnyCssKeyframesIdentifier) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18098,29 +19904,37 @@ impl From<CssKeyframesItem> for AnyCssKeyframesItem {
 }
 impl AstNode for AnyCssKeyframesItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusKeyframesItem::KIND_SET.union(CssKeyframesItem::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_KEYFRAMES_ITEM | CSS_KEYFRAMES_ITEM)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_KEYFRAMES_ITEM => {
                 AnyCssKeyframesItem::CssBogusKeyframesItem(CssBogusKeyframesItem { syntax })
             }
+
             CSS_KEYFRAMES_ITEM => {
                 AnyCssKeyframesItem::CssKeyframesItem(CssKeyframesItem { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssKeyframesItem::CssBogusKeyframesItem(it) => &it.syntax,
             AnyCssKeyframesItem::CssKeyframesItem(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssKeyframesItem::CssBogusKeyframesItem(it) => it.syntax,
@@ -18147,6 +19961,7 @@ impl From<AnyCssKeyframesItem> for SyntaxNode {
 impl From<AnyCssKeyframesItem> for SyntaxElement {
     fn from(n: AnyCssKeyframesItem) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18162,9 +19977,11 @@ impl From<CssKeyframesScopedName> for AnyCssKeyframesName {
 }
 impl AstNode for AnyCssKeyframesName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCssKeyframesIdentifier::KIND_SET
         .union(CssBogusKeyframesName::KIND_SET)
         .union(CssKeyframesScopedName::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_BOGUS_KEYFRAMES_NAME | CSS_KEYFRAMES_SCOPED_NAME => true,
@@ -18172,14 +19989,17 @@ impl AstNode for AnyCssKeyframesName {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_KEYFRAMES_NAME => {
                 AnyCssKeyframesName::CssBogusKeyframesName(CssBogusKeyframesName { syntax })
             }
+
             CSS_KEYFRAMES_SCOPED_NAME => {
                 AnyCssKeyframesName::CssKeyframesScopedName(CssKeyframesScopedName { syntax })
             }
+
             _ => {
                 if let Some(any_css_keyframes_identifier) = AnyCssKeyframesIdentifier::cast(syntax)
                 {
@@ -18187,11 +20007,14 @@ impl AstNode for AnyCssKeyframesName {
                         any_css_keyframes_identifier,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssKeyframesName::CssBogusKeyframesName(it) => &it.syntax,
@@ -18199,6 +20022,7 @@ impl AstNode for AnyCssKeyframesName {
             AnyCssKeyframesName::AnyCssKeyframesIdentifier(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssKeyframesName::CssBogusKeyframesName(it) => it.syntax,
@@ -18228,6 +20052,7 @@ impl From<AnyCssKeyframesName> for SyntaxNode {
 impl From<AnyCssKeyframesName> for SyntaxElement {
     fn from(n: AnyCssKeyframesName) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18243,14 +20068,17 @@ impl From<CssKeyframesScopePrefix> for AnyCssKeyframesScope {
 }
 impl AstNode for AnyCssKeyframesScope {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssKeyframesScopeFunction::KIND_SET.union(CssKeyframesScopePrefix::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_KEYFRAMES_SCOPE_FUNCTION | CSS_KEYFRAMES_SCOPE_PREFIX
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_KEYFRAMES_SCOPE_FUNCTION => {
@@ -18258,19 +20086,24 @@ impl AstNode for AnyCssKeyframesScope {
                     syntax,
                 })
             }
+
             CSS_KEYFRAMES_SCOPE_PREFIX => {
                 AnyCssKeyframesScope::CssKeyframesScopePrefix(CssKeyframesScopePrefix { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssKeyframesScope::CssKeyframesScopeFunction(it) => &it.syntax,
             AnyCssKeyframesScope::CssKeyframesScopePrefix(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssKeyframesScope::CssKeyframesScopeFunction(it) => it.syntax,
@@ -18297,6 +20130,7 @@ impl From<AnyCssKeyframesScope> for SyntaxNode {
 impl From<AnyCssKeyframesScope> for SyntaxElement {
     fn from(n: AnyCssKeyframesScope) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18317,34 +20151,42 @@ impl From<CssKeyframesPercentageSelector> for AnyCssKeyframesSelector {
 }
 impl AstNode for AnyCssKeyframesSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusSelector::KIND_SET
         .union(CssKeyframesIdentSelector::KIND_SET)
         .union(CssKeyframesPercentageSelector::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_SELECTOR | CSS_KEYFRAMES_IDENT_SELECTOR | CSS_KEYFRAMES_PERCENTAGE_SELECTOR
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_SELECTOR => {
                 AnyCssKeyframesSelector::CssBogusSelector(CssBogusSelector { syntax })
             }
+
             CSS_KEYFRAMES_IDENT_SELECTOR => {
                 AnyCssKeyframesSelector::CssKeyframesIdentSelector(CssKeyframesIdentSelector {
                     syntax,
                 })
             }
+
             CSS_KEYFRAMES_PERCENTAGE_SELECTOR => {
                 AnyCssKeyframesSelector::CssKeyframesPercentageSelector(
                     CssKeyframesPercentageSelector { syntax },
                 )
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssKeyframesSelector::CssBogusSelector(it) => &it.syntax,
@@ -18352,6 +20194,7 @@ impl AstNode for AnyCssKeyframesSelector {
             AnyCssKeyframesSelector::CssKeyframesPercentageSelector(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssKeyframesSelector::CssBogusSelector(it) => it.syntax,
@@ -18383,6 +20226,7 @@ impl From<AnyCssKeyframesSelector> for SyntaxNode {
 impl From<AnyCssKeyframesSelector> for SyntaxElement {
     fn from(n: AnyCssKeyframesSelector) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18403,26 +20247,32 @@ impl From<CssLayerReference> for AnyCssLayer {
 }
 impl AstNode for AnyCssLayer {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusLayer::KIND_SET
         .union(CssLayerDeclaration::KIND_SET)
         .union(CssLayerReference::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_LAYER | CSS_LAYER_DECLARATION | CSS_LAYER_REFERENCE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_LAYER => AnyCssLayer::CssBogusLayer(CssBogusLayer { syntax }),
             CSS_LAYER_DECLARATION => {
                 AnyCssLayer::CssLayerDeclaration(CssLayerDeclaration { syntax })
             }
+
             CSS_LAYER_REFERENCE => AnyCssLayer::CssLayerReference(CssLayerReference { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssLayer::CssBogusLayer(it) => &it.syntax,
@@ -18430,6 +20280,7 @@ impl AstNode for AnyCssLayer {
             AnyCssLayer::CssLayerReference(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssLayer::CssBogusLayer(it) => it.syntax,
@@ -18459,6 +20310,7 @@ impl From<AnyCssLayer> for SyntaxNode {
 impl From<AnyCssLayer> for SyntaxElement {
     fn from(n: AnyCssLayer) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18469,8 +20321,10 @@ impl From<CssMediaAndCondition> for AnyCssMediaAndCombinableCondition {
 }
 impl AstNode for AnyCssMediaAndCombinableCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyCssMediaInParens::KIND_SET.union(CssMediaAndCondition::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_MEDIA_AND_CONDITION => true,
@@ -18478,6 +20332,7 @@ impl AstNode for AnyCssMediaAndCombinableCondition {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_MEDIA_AND_CONDITION => {
@@ -18485,23 +20340,28 @@ impl AstNode for AnyCssMediaAndCombinableCondition {
                     syntax,
                 })
             }
+
             _ => {
                 if let Some(any_css_media_in_parens) = AnyCssMediaInParens::cast(syntax) {
                     return Some(AnyCssMediaAndCombinableCondition::AnyCssMediaInParens(
                         any_css_media_in_parens,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssMediaAndCombinableCondition::CssMediaAndCondition(it) => &it.syntax,
             AnyCssMediaAndCombinableCondition::AnyCssMediaInParens(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssMediaAndCombinableCondition::CssMediaAndCondition(it) => it.syntax,
@@ -18515,6 +20375,7 @@ impl std::fmt::Debug for AnyCssMediaAndCombinableCondition {
             AnyCssMediaAndCombinableCondition::AnyCssMediaInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssMediaAndCombinableCondition::CssMediaAndCondition(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -18532,6 +20393,7 @@ impl From<AnyCssMediaAndCombinableCondition> for SyntaxNode {
 impl From<AnyCssMediaAndCombinableCondition> for SyntaxElement {
     fn from(n: AnyCssMediaAndCombinableCondition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18552,10 +20414,12 @@ impl From<CssMediaOrCondition> for AnyCssMediaCondition {
 }
 impl AstNode for AnyCssMediaCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCssMediaInParens::KIND_SET
         .union(CssMediaAndCondition::KIND_SET)
         .union(CssMediaNotCondition::KIND_SET)
         .union(CssMediaOrCondition::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_MEDIA_AND_CONDITION | CSS_MEDIA_NOT_CONDITION | CSS_MEDIA_OR_CONDITION => true,
@@ -18563,28 +20427,35 @@ impl AstNode for AnyCssMediaCondition {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_MEDIA_AND_CONDITION => {
                 AnyCssMediaCondition::CssMediaAndCondition(CssMediaAndCondition { syntax })
             }
+
             CSS_MEDIA_NOT_CONDITION => {
                 AnyCssMediaCondition::CssMediaNotCondition(CssMediaNotCondition { syntax })
             }
+
             CSS_MEDIA_OR_CONDITION => {
                 AnyCssMediaCondition::CssMediaOrCondition(CssMediaOrCondition { syntax })
             }
+
             _ => {
                 if let Some(any_css_media_in_parens) = AnyCssMediaInParens::cast(syntax) {
                     return Some(AnyCssMediaCondition::AnyCssMediaInParens(
                         any_css_media_in_parens,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssMediaCondition::CssMediaAndCondition(it) => &it.syntax,
@@ -18593,6 +20464,7 @@ impl AstNode for AnyCssMediaCondition {
             AnyCssMediaCondition::AnyCssMediaInParens(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssMediaCondition::CssMediaAndCondition(it) => it.syntax,
@@ -18625,6 +20497,7 @@ impl From<AnyCssMediaCondition> for SyntaxNode {
 impl From<AnyCssMediaCondition> for SyntaxElement {
     fn from(n: AnyCssMediaCondition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18640,32 +20513,40 @@ impl From<CssMediaFeatureInParens> for AnyCssMediaInParens {
 }
 impl AstNode for AnyCssMediaInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssMediaConditionInParens::KIND_SET.union(CssMediaFeatureInParens::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_MEDIA_CONDITION_IN_PARENS | CSS_MEDIA_FEATURE_IN_PARENS
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_MEDIA_CONDITION_IN_PARENS => {
                 AnyCssMediaInParens::CssMediaConditionInParens(CssMediaConditionInParens { syntax })
             }
+
             CSS_MEDIA_FEATURE_IN_PARENS => {
                 AnyCssMediaInParens::CssMediaFeatureInParens(CssMediaFeatureInParens { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssMediaInParens::CssMediaConditionInParens(it) => &it.syntax,
             AnyCssMediaInParens::CssMediaFeatureInParens(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssMediaInParens::CssMediaConditionInParens(it) => it.syntax,
@@ -18692,6 +20573,7 @@ impl From<AnyCssMediaInParens> for SyntaxNode {
 impl From<AnyCssMediaInParens> for SyntaxElement {
     fn from(n: AnyCssMediaInParens) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18702,8 +20584,10 @@ impl From<CssMediaOrCondition> for AnyCssMediaOrCombinableCondition {
 }
 impl AstNode for AnyCssMediaOrCombinableCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyCssMediaInParens::KIND_SET.union(CssMediaOrCondition::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_MEDIA_OR_CONDITION => true,
@@ -18711,6 +20595,7 @@ impl AstNode for AnyCssMediaOrCombinableCondition {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_MEDIA_OR_CONDITION => {
@@ -18718,23 +20603,28 @@ impl AstNode for AnyCssMediaOrCombinableCondition {
                     syntax,
                 })
             }
+
             _ => {
                 if let Some(any_css_media_in_parens) = AnyCssMediaInParens::cast(syntax) {
                     return Some(AnyCssMediaOrCombinableCondition::AnyCssMediaInParens(
                         any_css_media_in_parens,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssMediaOrCombinableCondition::CssMediaOrCondition(it) => &it.syntax,
             AnyCssMediaOrCombinableCondition::AnyCssMediaInParens(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssMediaOrCombinableCondition::CssMediaOrCondition(it) => it.syntax,
@@ -18748,6 +20638,7 @@ impl std::fmt::Debug for AnyCssMediaOrCombinableCondition {
             AnyCssMediaOrCombinableCondition::AnyCssMediaInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssMediaOrCombinableCondition::CssMediaOrCondition(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -18765,6 +20656,7 @@ impl From<AnyCssMediaOrCombinableCondition> for SyntaxNode {
 impl From<AnyCssMediaOrCombinableCondition> for SyntaxElement {
     fn from(n: AnyCssMediaOrCombinableCondition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18785,10 +20677,12 @@ impl From<CssMetavariable> for AnyCssMediaQuery {
 }
 impl AstNode for AnyCssMediaQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCssMediaTypeQuery::KIND_SET
         .union(CssBogusMediaQuery::KIND_SET)
         .union(CssMediaConditionQuery::KIND_SET)
         .union(CssMetavariable::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_BOGUS_MEDIA_QUERY | CSS_MEDIA_CONDITION_QUERY | CSS_METAVARIABLE => true,
@@ -18796,14 +20690,17 @@ impl AstNode for AnyCssMediaQuery {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_MEDIA_QUERY => {
                 AnyCssMediaQuery::CssBogusMediaQuery(CssBogusMediaQuery { syntax })
             }
+
             CSS_MEDIA_CONDITION_QUERY => {
                 AnyCssMediaQuery::CssMediaConditionQuery(CssMediaConditionQuery { syntax })
             }
+
             CSS_METAVARIABLE => AnyCssMediaQuery::CssMetavariable(CssMetavariable { syntax }),
             _ => {
                 if let Some(any_css_media_type_query) = AnyCssMediaTypeQuery::cast(syntax) {
@@ -18811,11 +20708,14 @@ impl AstNode for AnyCssMediaQuery {
                         any_css_media_type_query,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssMediaQuery::CssBogusMediaQuery(it) => &it.syntax,
@@ -18824,6 +20724,7 @@ impl AstNode for AnyCssMediaQuery {
             AnyCssMediaQuery::AnyCssMediaTypeQuery(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssMediaQuery::CssBogusMediaQuery(it) => it.syntax,
@@ -18856,6 +20757,7 @@ impl From<AnyCssMediaQuery> for SyntaxNode {
 impl From<AnyCssMediaQuery> for SyntaxElement {
     fn from(n: AnyCssMediaQuery) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18871,9 +20773,11 @@ impl From<CssMediaNotCondition> for AnyCssMediaTypeCondition {
 }
 impl AstNode for AnyCssMediaTypeCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCssMediaInParens::KIND_SET
         .union(CssMediaAndCondition::KIND_SET)
         .union(CssMediaNotCondition::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_MEDIA_AND_CONDITION | CSS_MEDIA_NOT_CONDITION => true,
@@ -18881,25 +20785,31 @@ impl AstNode for AnyCssMediaTypeCondition {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_MEDIA_AND_CONDITION => {
                 AnyCssMediaTypeCondition::CssMediaAndCondition(CssMediaAndCondition { syntax })
             }
+
             CSS_MEDIA_NOT_CONDITION => {
                 AnyCssMediaTypeCondition::CssMediaNotCondition(CssMediaNotCondition { syntax })
             }
+
             _ => {
                 if let Some(any_css_media_in_parens) = AnyCssMediaInParens::cast(syntax) {
                     return Some(AnyCssMediaTypeCondition::AnyCssMediaInParens(
                         any_css_media_in_parens,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssMediaTypeCondition::CssMediaAndCondition(it) => &it.syntax,
@@ -18907,6 +20817,7 @@ impl AstNode for AnyCssMediaTypeCondition {
             AnyCssMediaTypeCondition::AnyCssMediaInParens(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssMediaTypeCondition::CssMediaAndCondition(it) => it.syntax,
@@ -18936,6 +20847,7 @@ impl From<AnyCssMediaTypeCondition> for SyntaxNode {
 impl From<AnyCssMediaTypeCondition> for SyntaxElement {
     fn from(n: AnyCssMediaTypeCondition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -18951,29 +20863,37 @@ impl From<CssMediaTypeQuery> for AnyCssMediaTypeQuery {
 }
 impl AstNode for AnyCssMediaTypeQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssMediaAndTypeQuery::KIND_SET.union(CssMediaTypeQuery::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_MEDIA_AND_TYPE_QUERY | CSS_MEDIA_TYPE_QUERY)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_MEDIA_AND_TYPE_QUERY => {
                 AnyCssMediaTypeQuery::CssMediaAndTypeQuery(CssMediaAndTypeQuery { syntax })
             }
+
             CSS_MEDIA_TYPE_QUERY => {
                 AnyCssMediaTypeQuery::CssMediaTypeQuery(CssMediaTypeQuery { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssMediaTypeQuery::CssMediaAndTypeQuery(it) => &it.syntax,
             AnyCssMediaTypeQuery::CssMediaTypeQuery(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssMediaTypeQuery::CssMediaAndTypeQuery(it) => it.syntax,
@@ -19000,6 +20920,7 @@ impl From<AnyCssMediaTypeQuery> for SyntaxNode {
 impl From<AnyCssMediaTypeQuery> for SyntaxElement {
     fn from(n: AnyCssMediaTypeQuery) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19015,34 +20936,42 @@ impl From<CssUniversalNamespacePrefix> for AnyCssNamespacePrefix {
 }
 impl AstNode for AnyCssNamespacePrefix {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssNamedNamespacePrefix::KIND_SET.union(CssUniversalNamespacePrefix::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_NAMED_NAMESPACE_PREFIX | CSS_UNIVERSAL_NAMESPACE_PREFIX
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_NAMED_NAMESPACE_PREFIX => {
                 AnyCssNamespacePrefix::CssNamedNamespacePrefix(CssNamedNamespacePrefix { syntax })
             }
+
             CSS_UNIVERSAL_NAMESPACE_PREFIX => {
                 AnyCssNamespacePrefix::CssUniversalNamespacePrefix(CssUniversalNamespacePrefix {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssNamespacePrefix::CssNamedNamespacePrefix(it) => &it.syntax,
             AnyCssNamespacePrefix::CssUniversalNamespacePrefix(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssNamespacePrefix::CssNamedNamespacePrefix(it) => it.syntax,
@@ -19069,6 +20998,7 @@ impl From<AnyCssNamespacePrefix> for SyntaxNode {
 impl From<AnyCssNamespacePrefix> for SyntaxElement {
     fn from(n: AnyCssNamespacePrefix) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19084,24 +21014,30 @@ impl From<CssUrlFunction> for AnyCssNamespaceUrl {
 }
 impl AstNode for AnyCssNamespaceUrl {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssString::KIND_SET.union(CssUrlFunction::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_STRING | CSS_URL_FUNCTION)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_STRING => AnyCssNamespaceUrl::CssString(CssString { syntax }),
             CSS_URL_FUNCTION => AnyCssNamespaceUrl::CssUrlFunction(CssUrlFunction { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssNamespaceUrl::CssString(it) => &it.syntax,
             AnyCssNamespaceUrl::CssUrlFunction(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssNamespaceUrl::CssString(it) => it.syntax,
@@ -19128,6 +21064,7 @@ impl From<AnyCssNamespaceUrl> for SyntaxNode {
 impl From<AnyCssNamespaceUrl> for SyntaxElement {
     fn from(n: AnyCssNamespaceUrl) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19143,27 +21080,34 @@ impl From<CssPageAtRuleBlock> for AnyCssPageAtRuleBlock {
 }
 impl AstNode for AnyCssPageAtRuleBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusBlock::KIND_SET.union(CssPageAtRuleBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_BLOCK | CSS_PAGE_AT_RULE_BLOCK)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_BLOCK => AnyCssPageAtRuleBlock::CssBogusBlock(CssBogusBlock { syntax }),
             CSS_PAGE_AT_RULE_BLOCK => {
                 AnyCssPageAtRuleBlock::CssPageAtRuleBlock(CssPageAtRuleBlock { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssPageAtRuleBlock::CssBogusBlock(it) => &it.syntax,
             AnyCssPageAtRuleBlock::CssPageAtRuleBlock(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssPageAtRuleBlock::CssBogusBlock(it) => it.syntax,
@@ -19190,6 +21134,7 @@ impl From<AnyCssPageAtRuleBlock> for SyntaxNode {
 impl From<AnyCssPageAtRuleBlock> for SyntaxElement {
     fn from(n: AnyCssPageAtRuleBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19210,15 +21155,18 @@ impl From<CssMarginAtRule> for AnyCssPageAtRuleItem {
 }
 impl AstNode for AnyCssPageAtRuleItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssAtRule::KIND_SET
         .union(CssDeclarationWithSemicolon::KIND_SET)
         .union(CssMarginAtRule::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_AT_RULE | CSS_DECLARATION_WITH_SEMICOLON | CSS_MARGIN_AT_RULE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_AT_RULE => AnyCssPageAtRuleItem::CssAtRule(CssAtRule { syntax }),
@@ -19227,11 +21175,14 @@ impl AstNode for AnyCssPageAtRuleItem {
                     syntax,
                 })
             }
+
             CSS_MARGIN_AT_RULE => AnyCssPageAtRuleItem::CssMarginAtRule(CssMarginAtRule { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssPageAtRuleItem::CssAtRule(it) => &it.syntax,
@@ -19239,6 +21190,7 @@ impl AstNode for AnyCssPageAtRuleItem {
             AnyCssPageAtRuleItem::CssMarginAtRule(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssPageAtRuleItem::CssAtRule(it) => it.syntax,
@@ -19268,6 +21220,7 @@ impl From<AnyCssPageAtRuleItem> for SyntaxNode {
 impl From<AnyCssPageAtRuleItem> for SyntaxElement {
     fn from(n: AnyCssPageAtRuleItem) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19283,25 +21236,31 @@ impl From<CssPageSelector> for AnyCssPageSelector {
 }
 impl AstNode for AnyCssPageSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusSelector::KIND_SET.union(CssPageSelector::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_SELECTOR | CSS_PAGE_SELECTOR)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_SELECTOR => AnyCssPageSelector::CssBogusSelector(CssBogusSelector { syntax }),
             CSS_PAGE_SELECTOR => AnyCssPageSelector::CssPageSelector(CssPageSelector { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssPageSelector::CssBogusSelector(it) => &it.syntax,
             AnyCssPageSelector::CssPageSelector(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssPageSelector::CssBogusSelector(it) => it.syntax,
@@ -19328,6 +21287,7 @@ impl From<AnyCssPageSelector> for SyntaxNode {
 impl From<AnyCssPageSelector> for SyntaxElement {
     fn from(n: AnyCssPageSelector) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19343,14 +21303,17 @@ impl From<CssPageSelectorPseudo> for AnyCssPageSelectorPseudo {
 }
 impl AstNode for AnyCssPageSelectorPseudo {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusPageSelectorPseudo::KIND_SET.union(CssPageSelectorPseudo::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_PAGE_SELECTOR_PSEUDO | CSS_PAGE_SELECTOR_PSEUDO
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_PAGE_SELECTOR_PSEUDO => {
@@ -19358,19 +21321,24 @@ impl AstNode for AnyCssPageSelectorPseudo {
                     syntax,
                 })
             }
+
             CSS_PAGE_SELECTOR_PSEUDO => {
                 AnyCssPageSelectorPseudo::CssPageSelectorPseudo(CssPageSelectorPseudo { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssPageSelectorPseudo::CssBogusPageSelectorPseudo(it) => &it.syntax,
             AnyCssPageSelectorPseudo::CssPageSelectorPseudo(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssPageSelectorPseudo::CssBogusPageSelectorPseudo(it) => it.syntax,
@@ -19397,6 +21365,7 @@ impl From<AnyCssPageSelectorPseudo> for SyntaxNode {
 impl From<AnyCssPageSelectorPseudo> for SyntaxElement {
     fn from(n: AnyCssPageSelectorPseudo) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19417,28 +21386,35 @@ impl From<CssGenericProperty> for AnyCssProperty {
 }
 impl AstNode for AnyCssProperty {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusProperty::KIND_SET
         .union(CssComposesProperty::KIND_SET)
         .union(CssGenericProperty::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_PROPERTY | CSS_COMPOSES_PROPERTY | CSS_GENERIC_PROPERTY
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_PROPERTY => AnyCssProperty::CssBogusProperty(CssBogusProperty { syntax }),
             CSS_COMPOSES_PROPERTY => {
                 AnyCssProperty::CssComposesProperty(CssComposesProperty { syntax })
             }
+
             CSS_GENERIC_PROPERTY => {
                 AnyCssProperty::CssGenericProperty(CssGenericProperty { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssProperty::CssBogusProperty(it) => &it.syntax,
@@ -19446,6 +21422,7 @@ impl AstNode for AnyCssProperty {
             AnyCssProperty::CssGenericProperty(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssProperty::CssBogusProperty(it) => it.syntax,
@@ -19475,6 +21452,7 @@ impl From<AnyCssProperty> for SyntaxNode {
 impl From<AnyCssProperty> for SyntaxElement {
     fn from(n: AnyCssProperty) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19530,6 +21508,7 @@ impl From<CssPseudoClassIdentifier> for AnyCssPseudoClass {
 }
 impl AstNode for AnyCssPseudoClass {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusPseudoClass::KIND_SET
         .union(CssPseudoClassFunctionCompoundSelector::KIND_SET)
         .union(CssPseudoClassFunctionCompoundSelectorList::KIND_SET)
@@ -19540,6 +21519,7 @@ impl AstNode for AnyCssPseudoClass {
         .union(CssPseudoClassFunctionSelectorList::KIND_SET)
         .union(CssPseudoClassFunctionValueList::KIND_SET)
         .union(CssPseudoClassIdentifier::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -19555,56 +21535,69 @@ impl AstNode for AnyCssPseudoClass {
                 | CSS_PSEUDO_CLASS_IDENTIFIER
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_PSEUDO_CLASS => {
                 AnyCssPseudoClass::CssBogusPseudoClass(CssBogusPseudoClass { syntax })
             }
+
             CSS_PSEUDO_CLASS_FUNCTION_COMPOUND_SELECTOR => {
                 AnyCssPseudoClass::CssPseudoClassFunctionCompoundSelector(
                     CssPseudoClassFunctionCompoundSelector { syntax },
                 )
             }
+
             CSS_PSEUDO_CLASS_FUNCTION_COMPOUND_SELECTOR_LIST => {
                 AnyCssPseudoClass::CssPseudoClassFunctionCompoundSelectorList(
                     CssPseudoClassFunctionCompoundSelectorList { syntax },
                 )
             }
+
             CSS_PSEUDO_CLASS_FUNCTION_IDENTIFIER => {
                 AnyCssPseudoClass::CssPseudoClassFunctionIdentifier(
                     CssPseudoClassFunctionIdentifier { syntax },
                 )
             }
+
             CSS_PSEUDO_CLASS_FUNCTION_NTH => {
                 AnyCssPseudoClass::CssPseudoClassFunctionNth(CssPseudoClassFunctionNth { syntax })
             }
+
             CSS_PSEUDO_CLASS_FUNCTION_RELATIVE_SELECTOR_LIST => {
                 AnyCssPseudoClass::CssPseudoClassFunctionRelativeSelectorList(
                     CssPseudoClassFunctionRelativeSelectorList { syntax },
                 )
             }
+
             CSS_PSEUDO_CLASS_FUNCTION_SELECTOR => {
                 AnyCssPseudoClass::CssPseudoClassFunctionSelector(CssPseudoClassFunctionSelector {
                     syntax,
                 })
             }
+
             CSS_PSEUDO_CLASS_FUNCTION_SELECTOR_LIST => {
                 AnyCssPseudoClass::CssPseudoClassFunctionSelectorList(
                     CssPseudoClassFunctionSelectorList { syntax },
                 )
             }
+
             CSS_PSEUDO_CLASS_FUNCTION_VALUE_LIST => {
                 AnyCssPseudoClass::CssPseudoClassFunctionValueList(
                     CssPseudoClassFunctionValueList { syntax },
                 )
             }
+
             CSS_PSEUDO_CLASS_IDENTIFIER => {
                 AnyCssPseudoClass::CssPseudoClassIdentifier(CssPseudoClassIdentifier { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssPseudoClass::CssBogusPseudoClass(it) => &it.syntax,
@@ -19619,6 +21612,7 @@ impl AstNode for AnyCssPseudoClass {
             AnyCssPseudoClass::CssPseudoClassIdentifier(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssPseudoClass::CssBogusPseudoClass(it) => it.syntax,
@@ -19641,18 +21635,22 @@ impl std::fmt::Debug for AnyCssPseudoClass {
             AnyCssPseudoClass::CssPseudoClassFunctionCompoundSelector(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssPseudoClass::CssPseudoClassFunctionCompoundSelectorList(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssPseudoClass::CssPseudoClassFunctionIdentifier(it) => std::fmt::Debug::fmt(it, f),
             AnyCssPseudoClass::CssPseudoClassFunctionNth(it) => std::fmt::Debug::fmt(it, f),
             AnyCssPseudoClass::CssPseudoClassFunctionRelativeSelectorList(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssPseudoClass::CssPseudoClassFunctionSelector(it) => std::fmt::Debug::fmt(it, f),
             AnyCssPseudoClass::CssPseudoClassFunctionSelectorList(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssPseudoClass::CssPseudoClassFunctionValueList(it) => std::fmt::Debug::fmt(it, f),
             AnyCssPseudoClass::CssPseudoClassIdentifier(it) => std::fmt::Debug::fmt(it, f),
         }
@@ -19677,6 +21675,7 @@ impl From<AnyCssPseudoClass> for SyntaxNode {
 impl From<AnyCssPseudoClass> for SyntaxElement {
     fn from(n: AnyCssPseudoClass) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19697,32 +21696,40 @@ impl From<CssPseudoClassNthNumber> for AnyCssPseudoClassNth {
 }
 impl AstNode for AnyCssPseudoClassNth {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssPseudoClassNth::KIND_SET
         .union(CssPseudoClassNthIdentifier::KIND_SET)
         .union(CssPseudoClassNthNumber::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_PSEUDO_CLASS_NTH | CSS_PSEUDO_CLASS_NTH_IDENTIFIER | CSS_PSEUDO_CLASS_NTH_NUMBER
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_PSEUDO_CLASS_NTH => {
                 AnyCssPseudoClassNth::CssPseudoClassNth(CssPseudoClassNth { syntax })
             }
+
             CSS_PSEUDO_CLASS_NTH_IDENTIFIER => {
                 AnyCssPseudoClassNth::CssPseudoClassNthIdentifier(CssPseudoClassNthIdentifier {
                     syntax,
                 })
             }
+
             CSS_PSEUDO_CLASS_NTH_NUMBER => {
                 AnyCssPseudoClassNth::CssPseudoClassNthNumber(CssPseudoClassNthNumber { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssPseudoClassNth::CssPseudoClassNth(it) => &it.syntax,
@@ -19730,6 +21737,7 @@ impl AstNode for AnyCssPseudoClassNth {
             AnyCssPseudoClassNth::CssPseudoClassNthNumber(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssPseudoClassNth::CssPseudoClassNth(it) => it.syntax,
@@ -19759,6 +21767,7 @@ impl From<AnyCssPseudoClassNth> for SyntaxNode {
 impl From<AnyCssPseudoClassNth> for SyntaxElement {
     fn from(n: AnyCssPseudoClassNth) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19774,31 +21783,39 @@ impl From<CssPseudoClassNthSelector> for AnyCssPseudoClassNthSelector {
 }
 impl AstNode for AnyCssPseudoClassNthSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusSelector::KIND_SET.union(CssPseudoClassNthSelector::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_SELECTOR | CSS_PSEUDO_CLASS_NTH_SELECTOR)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_SELECTOR => {
                 AnyCssPseudoClassNthSelector::CssBogusSelector(CssBogusSelector { syntax })
             }
+
             CSS_PSEUDO_CLASS_NTH_SELECTOR => {
                 AnyCssPseudoClassNthSelector::CssPseudoClassNthSelector(CssPseudoClassNthSelector {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssPseudoClassNthSelector::CssBogusSelector(it) => &it.syntax,
             AnyCssPseudoClassNthSelector::CssPseudoClassNthSelector(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssPseudoClassNthSelector::CssBogusSelector(it) => it.syntax,
@@ -19827,6 +21844,7 @@ impl From<AnyCssPseudoClassNthSelector> for SyntaxNode {
 impl From<AnyCssPseudoClassNthSelector> for SyntaxElement {
     fn from(n: AnyCssPseudoClassNthSelector) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19852,10 +21870,12 @@ impl From<CssPseudoElementIdentifier> for AnyCssPseudoElement {
 }
 impl AstNode for AnyCssPseudoElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusPseudoElement::KIND_SET
         .union(CssPseudoElementFunctionIdentifier::KIND_SET)
         .union(CssPseudoElementFunctionSelector::KIND_SET)
         .union(CssPseudoElementIdentifier::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -19865,30 +21885,37 @@ impl AstNode for AnyCssPseudoElement {
                 | CSS_PSEUDO_ELEMENT_IDENTIFIER
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_PSEUDO_ELEMENT => {
                 AnyCssPseudoElement::CssBogusPseudoElement(CssBogusPseudoElement { syntax })
             }
+
             CSS_PSEUDO_ELEMENT_FUNCTION_IDENTIFIER => {
                 AnyCssPseudoElement::CssPseudoElementFunctionIdentifier(
                     CssPseudoElementFunctionIdentifier { syntax },
                 )
             }
+
             CSS_PSEUDO_ELEMENT_FUNCTION_SELECTOR => {
                 AnyCssPseudoElement::CssPseudoElementFunctionSelector(
                     CssPseudoElementFunctionSelector { syntax },
                 )
             }
+
             CSS_PSEUDO_ELEMENT_IDENTIFIER => {
                 AnyCssPseudoElement::CssPseudoElementIdentifier(CssPseudoElementIdentifier {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssPseudoElement::CssBogusPseudoElement(it) => &it.syntax,
@@ -19897,6 +21924,7 @@ impl AstNode for AnyCssPseudoElement {
             AnyCssPseudoElement::CssPseudoElementIdentifier(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssPseudoElement::CssBogusPseudoElement(it) => it.syntax,
@@ -19913,9 +21941,11 @@ impl std::fmt::Debug for AnyCssPseudoElement {
             AnyCssPseudoElement::CssPseudoElementFunctionIdentifier(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssPseudoElement::CssPseudoElementFunctionSelector(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssPseudoElement::CssPseudoElementIdentifier(it) => std::fmt::Debug::fmt(it, f),
         }
     }
@@ -19933,6 +21963,7 @@ impl From<AnyCssPseudoElement> for SyntaxNode {
 impl From<AnyCssPseudoElement> for SyntaxElement {
     fn from(n: AnyCssPseudoElement) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -19948,24 +21979,30 @@ impl From<CssString> for AnyCssPseudoValue {
 }
 impl AstNode for AnyCssPseudoValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssIdentifier::KIND_SET.union(CssString::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_IDENTIFIER | CSS_STRING)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_IDENTIFIER => AnyCssPseudoValue::CssIdentifier(CssIdentifier { syntax }),
             CSS_STRING => AnyCssPseudoValue::CssString(CssString { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssPseudoValue::CssIdentifier(it) => &it.syntax,
             AnyCssPseudoValue::CssString(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssPseudoValue::CssIdentifier(it) => it.syntax,
@@ -19992,6 +22029,7 @@ impl From<AnyCssPseudoValue> for SyntaxNode {
 impl From<AnyCssPseudoValue> for SyntaxElement {
     fn from(n: AnyCssPseudoValue) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20022,11 +22060,13 @@ impl From<CssQueryFeatureReverseRange> for AnyCssQueryFeature {
 }
 impl AstNode for AnyCssQueryFeature {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssQueryFeatureBoolean::KIND_SET
         .union(CssQueryFeaturePlain::KIND_SET)
         .union(CssQueryFeatureRange::KIND_SET)
         .union(CssQueryFeatureRangeInterval::KIND_SET)
         .union(CssQueryFeatureReverseRange::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -20037,31 +22077,39 @@ impl AstNode for AnyCssQueryFeature {
                 | CSS_QUERY_FEATURE_REVERSE_RANGE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_QUERY_FEATURE_BOOLEAN => {
                 AnyCssQueryFeature::CssQueryFeatureBoolean(CssQueryFeatureBoolean { syntax })
             }
+
             CSS_QUERY_FEATURE_PLAIN => {
                 AnyCssQueryFeature::CssQueryFeaturePlain(CssQueryFeaturePlain { syntax })
             }
+
             CSS_QUERY_FEATURE_RANGE => {
                 AnyCssQueryFeature::CssQueryFeatureRange(CssQueryFeatureRange { syntax })
             }
+
             CSS_QUERY_FEATURE_RANGE_INTERVAL => {
                 AnyCssQueryFeature::CssQueryFeatureRangeInterval(CssQueryFeatureRangeInterval {
                     syntax,
                 })
             }
+
             CSS_QUERY_FEATURE_REVERSE_RANGE => {
                 AnyCssQueryFeature::CssQueryFeatureReverseRange(CssQueryFeatureReverseRange {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssQueryFeature::CssQueryFeatureBoolean(it) => &it.syntax,
@@ -20071,6 +22119,7 @@ impl AstNode for AnyCssQueryFeature {
             AnyCssQueryFeature::CssQueryFeatureReverseRange(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssQueryFeature::CssQueryFeatureBoolean(it) => it.syntax,
@@ -20106,6 +22155,7 @@ impl From<AnyCssQueryFeature> for SyntaxNode {
 impl From<AnyCssQueryFeature> for SyntaxElement {
     fn from(n: AnyCssQueryFeature) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20126,11 +22176,13 @@ impl From<CssRatio> for AnyCssQueryFeatureValue {
 }
 impl AstNode for AnyCssQueryFeatureValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCssDimension::KIND_SET
         .union(AnyCssFunction::KIND_SET)
         .union(CssIdentifier::KIND_SET)
         .union(CssNumber::KIND_SET)
         .union(CssRatio::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_IDENTIFIER | CSS_NUMBER | CSS_RATIO => true,
@@ -20139,6 +22191,7 @@ impl AstNode for AnyCssQueryFeatureValue {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_IDENTIFIER => AnyCssQueryFeatureValue::CssIdentifier(CssIdentifier { syntax }),
@@ -20149,16 +22202,21 @@ impl AstNode for AnyCssQueryFeatureValue {
                     Ok(any_css_dimension) => {
                         return Some(AnyCssQueryFeatureValue::AnyCssDimension(any_css_dimension));
                     }
+
                     Err(syntax) => syntax,
                 };
+
                 if let Some(any_css_function) = AnyCssFunction::cast(syntax) {
                     return Some(AnyCssQueryFeatureValue::AnyCssFunction(any_css_function));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssQueryFeatureValue::CssIdentifier(it) => &it.syntax,
@@ -20168,6 +22226,7 @@ impl AstNode for AnyCssQueryFeatureValue {
             AnyCssQueryFeatureValue::AnyCssFunction(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssQueryFeatureValue::CssIdentifier(it) => it.syntax,
@@ -20203,6 +22262,7 @@ impl From<AnyCssQueryFeatureValue> for SyntaxNode {
 impl From<AnyCssQueryFeatureValue> for SyntaxElement {
     fn from(n: AnyCssQueryFeatureValue) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20218,29 +22278,37 @@ impl From<CssRelativeSelector> for AnyCssRelativeSelector {
 }
 impl AstNode for AnyCssRelativeSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusSelector::KIND_SET.union(CssRelativeSelector::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_SELECTOR | CSS_RELATIVE_SELECTOR)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_SELECTOR => {
                 AnyCssRelativeSelector::CssBogusSelector(CssBogusSelector { syntax })
             }
+
             CSS_RELATIVE_SELECTOR => {
                 AnyCssRelativeSelector::CssRelativeSelector(CssRelativeSelector { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssRelativeSelector::CssBogusSelector(it) => &it.syntax,
             AnyCssRelativeSelector::CssRelativeSelector(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssRelativeSelector::CssBogusSelector(it) => it.syntax,
@@ -20267,6 +22335,7 @@ impl From<AnyCssRelativeSelector> for SyntaxNode {
 impl From<AnyCssRelativeSelector> for SyntaxElement {
     fn from(n: AnyCssRelativeSelector) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20292,16 +22361,19 @@ impl From<CssQualifiedRule> for AnyCssRule {
 }
 impl AstNode for AnyCssRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssAtRule::KIND_SET
         .union(CssBogusRule::KIND_SET)
         .union(CssNestedQualifiedRule::KIND_SET)
         .union(CssQualifiedRule::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_AT_RULE | CSS_BOGUS_RULE | CSS_NESTED_QUALIFIED_RULE | CSS_QUALIFIED_RULE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_AT_RULE => AnyCssRule::CssAtRule(CssAtRule { syntax }),
@@ -20309,11 +22381,14 @@ impl AstNode for AnyCssRule {
             CSS_NESTED_QUALIFIED_RULE => {
                 AnyCssRule::CssNestedQualifiedRule(CssNestedQualifiedRule { syntax })
             }
+
             CSS_QUALIFIED_RULE => AnyCssRule::CssQualifiedRule(CssQualifiedRule { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssRule::CssAtRule(it) => &it.syntax,
@@ -20322,6 +22397,7 @@ impl AstNode for AnyCssRule {
             AnyCssRule::CssQualifiedRule(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssRule::CssAtRule(it) => it.syntax,
@@ -20354,6 +22430,7 @@ impl From<AnyCssRule> for SyntaxNode {
 impl From<AnyCssRule> for SyntaxElement {
     fn from(n: AnyCssRule) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20369,24 +22446,30 @@ impl From<CssRuleBlock> for AnyCssRuleBlock {
 }
 impl AstNode for AnyCssRuleBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusBlock::KIND_SET.union(CssRuleBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_BLOCK | CSS_RULE_BLOCK)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_BLOCK => AnyCssRuleBlock::CssBogusBlock(CssBogusBlock { syntax }),
             CSS_RULE_BLOCK => AnyCssRuleBlock::CssRuleBlock(CssRuleBlock { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssRuleBlock::CssBogusBlock(it) => &it.syntax,
             AnyCssRuleBlock::CssRuleBlock(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssRuleBlock::CssBogusBlock(it) => it.syntax,
@@ -20413,6 +22496,7 @@ impl From<AnyCssRuleBlock> for SyntaxNode {
 impl From<AnyCssRuleBlock> for SyntaxElement {
     fn from(n: AnyCssRuleBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20438,10 +22522,12 @@ impl From<CssScopeRangeStart> for AnyCssScopeRange {
 }
 impl AstNode for AnyCssScopeRange {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusScopeRange::KIND_SET
         .union(CssScopeRangeEnd::KIND_SET)
         .union(CssScopeRangeInterval::KIND_SET)
         .union(CssScopeRangeStart::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -20451,22 +22537,28 @@ impl AstNode for AnyCssScopeRange {
                 | CSS_SCOPE_RANGE_START
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_SCOPE_RANGE => {
                 AnyCssScopeRange::CssBogusScopeRange(CssBogusScopeRange { syntax })
             }
+
             CSS_SCOPE_RANGE_END => AnyCssScopeRange::CssScopeRangeEnd(CssScopeRangeEnd { syntax }),
             CSS_SCOPE_RANGE_INTERVAL => {
                 AnyCssScopeRange::CssScopeRangeInterval(CssScopeRangeInterval { syntax })
             }
+
             CSS_SCOPE_RANGE_START => {
                 AnyCssScopeRange::CssScopeRangeStart(CssScopeRangeStart { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssScopeRange::CssBogusScopeRange(it) => &it.syntax,
@@ -20475,6 +22567,7 @@ impl AstNode for AnyCssScopeRange {
             AnyCssScopeRange::CssScopeRangeStart(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssScopeRange::CssBogusScopeRange(it) => it.syntax,
@@ -20507,6 +22600,7 @@ impl From<AnyCssScopeRange> for SyntaxNode {
 impl From<AnyCssScopeRange> for SyntaxElement {
     fn from(n: AnyCssScopeRange) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20532,30 +22626,37 @@ impl From<CssMetavariable> for AnyCssSelector {
 }
 impl AstNode for AnyCssSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusSelector::KIND_SET
         .union(CssComplexSelector::KIND_SET)
         .union(CssCompoundSelector::KIND_SET)
         .union(CssMetavariable::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_SELECTOR | CSS_COMPLEX_SELECTOR | CSS_COMPOUND_SELECTOR | CSS_METAVARIABLE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_SELECTOR => AnyCssSelector::CssBogusSelector(CssBogusSelector { syntax }),
             CSS_COMPLEX_SELECTOR => {
                 AnyCssSelector::CssComplexSelector(CssComplexSelector { syntax })
             }
+
             CSS_COMPOUND_SELECTOR => {
                 AnyCssSelector::CssCompoundSelector(CssCompoundSelector { syntax })
             }
+
             CSS_METAVARIABLE => AnyCssSelector::CssMetavariable(CssMetavariable { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssSelector::CssBogusSelector(it) => &it.syntax,
@@ -20564,6 +22665,7 @@ impl AstNode for AnyCssSelector {
             AnyCssSelector::CssMetavariable(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssSelector::CssBogusSelector(it) => it.syntax,
@@ -20596,6 +22698,7 @@ impl From<AnyCssSelector> for SyntaxNode {
 impl From<AnyCssSelector> for SyntaxElement {
     fn from(n: AnyCssSelector) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20611,27 +22714,34 @@ impl From<CssUniversalSelector> for AnyCssSimpleSelector {
 }
 impl AstNode for AnyCssSimpleSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssTypeSelector::KIND_SET.union(CssUniversalSelector::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_TYPE_SELECTOR | CSS_UNIVERSAL_SELECTOR)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_TYPE_SELECTOR => AnyCssSimpleSelector::CssTypeSelector(CssTypeSelector { syntax }),
             CSS_UNIVERSAL_SELECTOR => {
                 AnyCssSimpleSelector::CssUniversalSelector(CssUniversalSelector { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssSimpleSelector::CssTypeSelector(it) => &it.syntax,
             AnyCssSimpleSelector::CssUniversalSelector(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssSimpleSelector::CssTypeSelector(it) => it.syntax,
@@ -20658,6 +22768,7 @@ impl From<AnyCssSimpleSelector> for SyntaxNode {
 impl From<AnyCssSimpleSelector> for SyntaxElement {
     fn from(n: AnyCssSimpleSelector) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20678,26 +22789,32 @@ impl From<CssRuleBlock> for AnyCssStartingStyleBlock {
 }
 impl AstNode for AnyCssStartingStyleBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusBlock::KIND_SET
         .union(CssDeclarationBlock::KIND_SET)
         .union(CssRuleBlock::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_BLOCK | CSS_DECLARATION_BLOCK | CSS_RULE_BLOCK
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_BLOCK => AnyCssStartingStyleBlock::CssBogusBlock(CssBogusBlock { syntax }),
             CSS_DECLARATION_BLOCK => {
                 AnyCssStartingStyleBlock::CssDeclarationBlock(CssDeclarationBlock { syntax })
             }
+
             CSS_RULE_BLOCK => AnyCssStartingStyleBlock::CssRuleBlock(CssRuleBlock { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssStartingStyleBlock::CssBogusBlock(it) => &it.syntax,
@@ -20705,6 +22822,7 @@ impl AstNode for AnyCssStartingStyleBlock {
             AnyCssStartingStyleBlock::CssRuleBlock(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssStartingStyleBlock::CssBogusBlock(it) => it.syntax,
@@ -20734,6 +22852,7 @@ impl From<AnyCssStartingStyleBlock> for SyntaxNode {
 impl From<AnyCssStartingStyleBlock> for SyntaxElement {
     fn from(n: AnyCssStartingStyleBlock) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20769,12 +22888,14 @@ impl From<CssPseudoElementSelector> for AnyCssSubSelector {
 }
 impl AstNode for AnyCssSubSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssAttributeSelector::KIND_SET
         .union(CssBogusSubSelector::KIND_SET)
         .union(CssClassSelector::KIND_SET)
         .union(CssIdSelector::KIND_SET)
         .union(CssPseudoClassSelector::KIND_SET)
         .union(CssPseudoElementSelector::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -20786,26 +22907,33 @@ impl AstNode for AnyCssSubSelector {
                 | CSS_PSEUDO_ELEMENT_SELECTOR
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_ATTRIBUTE_SELECTOR => {
                 AnyCssSubSelector::CssAttributeSelector(CssAttributeSelector { syntax })
             }
+
             CSS_BOGUS_SUB_SELECTOR => {
                 AnyCssSubSelector::CssBogusSubSelector(CssBogusSubSelector { syntax })
             }
+
             CSS_CLASS_SELECTOR => AnyCssSubSelector::CssClassSelector(CssClassSelector { syntax }),
             CSS_ID_SELECTOR => AnyCssSubSelector::CssIdSelector(CssIdSelector { syntax }),
             CSS_PSEUDO_CLASS_SELECTOR => {
                 AnyCssSubSelector::CssPseudoClassSelector(CssPseudoClassSelector { syntax })
             }
+
             CSS_PSEUDO_ELEMENT_SELECTOR => {
                 AnyCssSubSelector::CssPseudoElementSelector(CssPseudoElementSelector { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssSubSelector::CssAttributeSelector(it) => &it.syntax,
@@ -20816,6 +22944,7 @@ impl AstNode for AnyCssSubSelector {
             AnyCssSubSelector::CssPseudoElementSelector(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssSubSelector::CssAttributeSelector(it) => it.syntax,
@@ -20854,6 +22983,7 @@ impl From<AnyCssSubSelector> for SyntaxNode {
 impl From<AnyCssSubSelector> for SyntaxElement {
     fn from(n: AnyCssSubSelector) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20864,8 +22994,10 @@ impl From<CssSupportsAndCondition> for AnyCssSupportsAndCombinableCondition {
 }
 impl AstNode for AnyCssSupportsAndCombinableCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyCssSupportsInParens::KIND_SET.union(CssSupportsAndCondition::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_SUPPORTS_AND_CONDITION => true,
@@ -20873,6 +23005,7 @@ impl AstNode for AnyCssSupportsAndCombinableCondition {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_SUPPORTS_AND_CONDITION => {
@@ -20880,6 +23013,7 @@ impl AstNode for AnyCssSupportsAndCombinableCondition {
                     CssSupportsAndCondition { syntax },
                 )
             }
+
             _ => {
                 if let Some(any_css_supports_in_parens) = AnyCssSupportsInParens::cast(syntax) {
                     return Some(
@@ -20888,17 +23022,21 @@ impl AstNode for AnyCssSupportsAndCombinableCondition {
                         ),
                     );
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssSupportsAndCombinableCondition::CssSupportsAndCondition(it) => &it.syntax,
             AnyCssSupportsAndCombinableCondition::AnyCssSupportsInParens(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssSupportsAndCombinableCondition::CssSupportsAndCondition(it) => it.syntax,
@@ -20912,6 +23050,7 @@ impl std::fmt::Debug for AnyCssSupportsAndCombinableCondition {
             AnyCssSupportsAndCombinableCondition::AnyCssSupportsInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssSupportsAndCombinableCondition::CssSupportsAndCondition(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -20929,6 +23068,7 @@ impl From<AnyCssSupportsAndCombinableCondition> for SyntaxNode {
 impl From<AnyCssSupportsAndCombinableCondition> for SyntaxElement {
     fn from(n: AnyCssSupportsAndCombinableCondition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -20949,41 +23089,51 @@ impl From<CssSupportsOrCondition> for AnyCssSupportsCondition {
 }
 impl AstNode for AnyCssSupportsCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCssSupportsInParens::KIND_SET
         .union(CssSupportsAndCondition::KIND_SET)
         .union(CssSupportsNotCondition::KIND_SET)
         .union(CssSupportsOrCondition::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_SUPPORTS_AND_CONDITION | CSS_SUPPORTS_NOT_CONDITION | CSS_SUPPORTS_OR_CONDITION => {
                 true
             }
+
             k if AnyCssSupportsInParens::can_cast(k) => true,
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_SUPPORTS_AND_CONDITION => {
                 AnyCssSupportsCondition::CssSupportsAndCondition(CssSupportsAndCondition { syntax })
             }
+
             CSS_SUPPORTS_NOT_CONDITION => {
                 AnyCssSupportsCondition::CssSupportsNotCondition(CssSupportsNotCondition { syntax })
             }
+
             CSS_SUPPORTS_OR_CONDITION => {
                 AnyCssSupportsCondition::CssSupportsOrCondition(CssSupportsOrCondition { syntax })
             }
+
             _ => {
                 if let Some(any_css_supports_in_parens) = AnyCssSupportsInParens::cast(syntax) {
                     return Some(AnyCssSupportsCondition::AnyCssSupportsInParens(
                         any_css_supports_in_parens,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssSupportsCondition::CssSupportsAndCondition(it) => &it.syntax,
@@ -20992,6 +23142,7 @@ impl AstNode for AnyCssSupportsCondition {
             AnyCssSupportsCondition::AnyCssSupportsInParens(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssSupportsCondition::CssSupportsAndCondition(it) => it.syntax,
@@ -21024,6 +23175,7 @@ impl From<AnyCssSupportsCondition> for SyntaxNode {
 impl From<AnyCssSupportsCondition> for SyntaxElement {
     fn from(n: AnyCssSupportsCondition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -21049,11 +23201,13 @@ impl From<CssSupportsFeatureSelector> for AnyCssSupportsInParens {
 }
 impl AstNode for AnyCssSupportsInParens {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCssValue::KIND_SET
         .union(CssFunction::KIND_SET)
         .union(CssSupportsConditionInParens::KIND_SET)
         .union(CssSupportsFeatureDeclaration::KIND_SET)
         .union(CssSupportsFeatureSelector::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_FUNCTION
@@ -21064,6 +23218,7 @@ impl AstNode for AnyCssSupportsInParens {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_FUNCTION => AnyCssSupportsInParens::CssFunction(CssFunction { syntax }),
@@ -21072,25 +23227,31 @@ impl AstNode for AnyCssSupportsInParens {
                     syntax,
                 })
             }
+
             CSS_SUPPORTS_FEATURE_DECLARATION => {
                 AnyCssSupportsInParens::CssSupportsFeatureDeclaration(
                     CssSupportsFeatureDeclaration { syntax },
                 )
             }
+
             CSS_SUPPORTS_FEATURE_SELECTOR => {
                 AnyCssSupportsInParens::CssSupportsFeatureSelector(CssSupportsFeatureSelector {
                     syntax,
                 })
             }
+
             _ => {
                 if let Some(any_css_value) = AnyCssValue::cast(syntax) {
                     return Some(AnyCssSupportsInParens::AnyCssValue(any_css_value));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssSupportsInParens::CssFunction(it) => &it.syntax,
@@ -21100,6 +23261,7 @@ impl AstNode for AnyCssSupportsInParens {
             AnyCssSupportsInParens::AnyCssValue(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssSupportsInParens::CssFunction(it) => it.syntax,
@@ -21119,6 +23281,7 @@ impl std::fmt::Debug for AnyCssSupportsInParens {
             AnyCssSupportsInParens::CssSupportsFeatureDeclaration(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssSupportsInParens::CssSupportsFeatureSelector(it) => std::fmt::Debug::fmt(it, f),
         }
     }
@@ -21137,6 +23300,7 @@ impl From<AnyCssSupportsInParens> for SyntaxNode {
 impl From<AnyCssSupportsInParens> for SyntaxElement {
     fn from(n: AnyCssSupportsInParens) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -21147,8 +23311,10 @@ impl From<CssSupportsOrCondition> for AnyCssSupportsOrCombinableCondition {
 }
 impl AstNode for AnyCssSupportsOrCombinableCondition {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         AnyCssSupportsInParens::KIND_SET.union(CssSupportsOrCondition::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_SUPPORTS_OR_CONDITION => true,
@@ -21156,6 +23322,7 @@ impl AstNode for AnyCssSupportsOrCombinableCondition {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_SUPPORTS_OR_CONDITION => {
@@ -21163,23 +23330,28 @@ impl AstNode for AnyCssSupportsOrCombinableCondition {
                     CssSupportsOrCondition { syntax },
                 )
             }
+
             _ => {
                 if let Some(any_css_supports_in_parens) = AnyCssSupportsInParens::cast(syntax) {
                     return Some(AnyCssSupportsOrCombinableCondition::AnyCssSupportsInParens(
                         any_css_supports_in_parens,
                     ));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssSupportsOrCombinableCondition::CssSupportsOrCondition(it) => &it.syntax,
             AnyCssSupportsOrCombinableCondition::AnyCssSupportsInParens(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssSupportsOrCombinableCondition::CssSupportsOrCondition(it) => it.syntax,
@@ -21193,6 +23365,7 @@ impl std::fmt::Debug for AnyCssSupportsOrCombinableCondition {
             AnyCssSupportsOrCombinableCondition::AnyCssSupportsInParens(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssSupportsOrCombinableCondition::CssSupportsOrCondition(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -21210,6 +23383,7 @@ impl From<AnyCssSupportsOrCombinableCondition> for SyntaxNode {
 impl From<AnyCssSupportsOrCombinableCondition> for SyntaxElement {
     fn from(n: AnyCssSupportsOrCombinableCondition) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -21235,10 +23409,12 @@ impl From<CssUnicodeRangeWildcard> for AnyCssUnicodeValue {
 }
 impl AstNode for AnyCssUnicodeValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusUnicodeRangeValue::KIND_SET
         .union(CssUnicodeCodepoint::KIND_SET)
         .union(CssUnicodeRangeInterval::KIND_SET)
         .union(CssUnicodeRangeWildcard::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
@@ -21248,24 +23424,31 @@ impl AstNode for AnyCssUnicodeValue {
                 | CSS_UNICODE_RANGE_WILDCARD
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_UNICODE_RANGE_VALUE => {
                 AnyCssUnicodeValue::CssBogusUnicodeRangeValue(CssBogusUnicodeRangeValue { syntax })
             }
+
             CSS_UNICODE_CODEPOINT => {
                 AnyCssUnicodeValue::CssUnicodeCodepoint(CssUnicodeCodepoint { syntax })
             }
+
             CSS_UNICODE_RANGE_INTERVAL => {
                 AnyCssUnicodeValue::CssUnicodeRangeInterval(CssUnicodeRangeInterval { syntax })
             }
+
             CSS_UNICODE_RANGE_WILDCARD => {
                 AnyCssUnicodeValue::CssUnicodeRangeWildcard(CssUnicodeRangeWildcard { syntax })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssUnicodeValue::CssBogusUnicodeRangeValue(it) => &it.syntax,
@@ -21274,6 +23457,7 @@ impl AstNode for AnyCssUnicodeValue {
             AnyCssUnicodeValue::CssUnicodeRangeWildcard(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssUnicodeValue::CssBogusUnicodeRangeValue(it) => it.syntax,
@@ -21306,6 +23490,7 @@ impl From<AnyCssUnicodeValue> for SyntaxNode {
 impl From<AnyCssUnicodeValue> for SyntaxElement {
     fn from(n: AnyCssUnicodeValue) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -21326,23 +23511,29 @@ impl From<CssIdentifier> for AnyCssUrlModifier {
 }
 impl AstNode for AnyCssUrlModifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssBogusUrlModifier::KIND_SET
         .union(CssFunction::KIND_SET)
         .union(CssIdentifier::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_BOGUS_URL_MODIFIER | CSS_FUNCTION | CSS_IDENTIFIER)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_URL_MODIFIER => {
                 AnyCssUrlModifier::CssBogusUrlModifier(CssBogusUrlModifier { syntax })
             }
+
             CSS_FUNCTION => AnyCssUrlModifier::CssFunction(CssFunction { syntax }),
             CSS_IDENTIFIER => AnyCssUrlModifier::CssIdentifier(CssIdentifier { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssUrlModifier::CssBogusUrlModifier(it) => &it.syntax,
@@ -21350,6 +23541,7 @@ impl AstNode for AnyCssUrlModifier {
             AnyCssUrlModifier::CssIdentifier(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssUrlModifier::CssBogusUrlModifier(it) => it.syntax,
@@ -21379,6 +23571,7 @@ impl From<AnyCssUrlModifier> for SyntaxNode {
 impl From<AnyCssUrlModifier> for SyntaxElement {
     fn from(n: AnyCssUrlModifier) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -21394,24 +23587,30 @@ impl From<CssUrlValueRaw> for AnyCssUrlValue {
 }
 impl AstNode for AnyCssUrlValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssString::KIND_SET.union(CssUrlValueRaw::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_STRING | CSS_URL_VALUE_RAW)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_STRING => AnyCssUrlValue::CssString(CssString { syntax }),
             CSS_URL_VALUE_RAW => AnyCssUrlValue::CssUrlValueRaw(CssUrlValueRaw { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssUrlValue::CssString(it) => &it.syntax,
             AnyCssUrlValue::CssUrlValueRaw(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssUrlValue::CssString(it) => it.syntax,
@@ -21438,6 +23637,7 @@ impl From<AnyCssUrlValue> for SyntaxNode {
 impl From<AnyCssUrlValue> for SyntaxElement {
     fn from(n: AnyCssUrlValue) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -21493,6 +23693,7 @@ impl From<CssUnicodeRange> for AnyCssValue {
 }
 impl AstNode for AnyCssValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyCssDimension::KIND_SET
         .union(AnyCssFunction::KIND_SET)
         .union(CssBracketedValue::KIND_SET)
@@ -21505,6 +23706,7 @@ impl AstNode for AnyCssValue {
         .union(CssRatio::KIND_SET)
         .union(CssString::KIND_SET)
         .union(CssUnicodeRange::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             CSS_BRACKETED_VALUE
@@ -21522,6 +23724,7 @@ impl AstNode for AnyCssValue {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BRACKETED_VALUE => AnyCssValue::CssBracketedValue(CssBracketedValue { syntax }),
@@ -21529,9 +23732,11 @@ impl AstNode for AnyCssValue {
             CSS_CUSTOM_IDENTIFIER => {
                 AnyCssValue::CssCustomIdentifier(CssCustomIdentifier { syntax })
             }
+
             CSS_DASHED_IDENTIFIER => {
                 AnyCssValue::CssDashedIdentifier(CssDashedIdentifier { syntax })
             }
+
             CSS_IDENTIFIER => AnyCssValue::CssIdentifier(CssIdentifier { syntax }),
             CSS_METAVARIABLE => AnyCssValue::CssMetavariable(CssMetavariable { syntax }),
             CSS_NUMBER => AnyCssValue::CssNumber(CssNumber { syntax }),
@@ -21543,16 +23748,21 @@ impl AstNode for AnyCssValue {
                     Ok(any_css_dimension) => {
                         return Some(AnyCssValue::AnyCssDimension(any_css_dimension));
                     }
+
                     Err(syntax) => syntax,
                 };
+
                 if let Some(any_css_function) = AnyCssFunction::cast(syntax) {
                     return Some(AnyCssValue::AnyCssFunction(any_css_function));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssValue::CssBracketedValue(it) => &it.syntax,
@@ -21569,6 +23779,7 @@ impl AstNode for AnyCssValue {
             AnyCssValue::AnyCssFunction(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssValue::CssBracketedValue(it) => it.syntax,
@@ -21625,6 +23836,7 @@ impl From<AnyCssValue> for SyntaxNode {
 impl From<AnyCssValue> for SyntaxElement {
     fn from(n: AnyCssValue) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -21640,14 +23852,17 @@ impl From<CssValueAtRuleImportClause> for AnyCssValueAtRuleClause {
 }
 impl AstNode for AnyCssValueAtRuleClause {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssValueAtRuleDeclarationClause::KIND_SET.union(CssValueAtRuleImportClause::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_VALUE_AT_RULE_DECLARATION_CLAUSE | CSS_VALUE_AT_RULE_IMPORT_CLAUSE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_VALUE_AT_RULE_DECLARATION_CLAUSE => {
@@ -21655,21 +23870,26 @@ impl AstNode for AnyCssValueAtRuleClause {
                     CssValueAtRuleDeclarationClause { syntax },
                 )
             }
+
             CSS_VALUE_AT_RULE_IMPORT_CLAUSE => {
                 AnyCssValueAtRuleClause::CssValueAtRuleImportClause(CssValueAtRuleImportClause {
                     syntax,
                 })
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssValueAtRuleClause::CssValueAtRuleDeclarationClause(it) => &it.syntax,
             AnyCssValueAtRuleClause::CssValueAtRuleImportClause(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssValueAtRuleClause::CssValueAtRuleDeclarationClause(it) => it.syntax,
@@ -21683,6 +23903,7 @@ impl std::fmt::Debug for AnyCssValueAtRuleClause {
             AnyCssValueAtRuleClause::CssValueAtRuleDeclarationClause(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssValueAtRuleClause::CssValueAtRuleImportClause(it) => std::fmt::Debug::fmt(it, f),
         }
     }
@@ -21698,6 +23919,7 @@ impl From<AnyCssValueAtRuleClause> for SyntaxNode {
 impl From<AnyCssValueAtRuleClause> for SyntaxElement {
     fn from(n: AnyCssValueAtRuleClause) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -21713,26 +23935,33 @@ impl From<CssString> for AnyCssValueAtRuleImportSource {
 }
 impl AstNode for AnyCssValueAtRuleImportSource {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = CssIdentifier::KIND_SET.union(CssString::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(kind, CSS_IDENTIFIER | CSS_STRING)
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_IDENTIFIER => {
                 AnyCssValueAtRuleImportSource::CssIdentifier(CssIdentifier { syntax })
             }
+
             CSS_STRING => AnyCssValueAtRuleImportSource::CssString(CssString { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssValueAtRuleImportSource::CssIdentifier(it) => &it.syntax,
             AnyCssValueAtRuleImportSource::CssString(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssValueAtRuleImportSource::CssIdentifier(it) => it.syntax,
@@ -21759,6 +23988,7 @@ impl From<AnyCssValueAtRuleImportSource> for SyntaxNode {
 impl From<AnyCssValueAtRuleImportSource> for SyntaxElement {
     fn from(n: AnyCssValueAtRuleImportSource) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -21774,14 +24004,17 @@ impl From<CssValueAtRuleNamedImportSpecifier> for AnyCssValueAtRuleImportSpecifi
 }
 impl AstNode for AnyCssValueAtRuleImportSpecifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssValueAtRuleImportSpecifier::KIND_SET.union(CssValueAtRuleNamedImportSpecifier::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_VALUE_AT_RULE_IMPORT_SPECIFIER | CSS_VALUE_AT_RULE_NAMED_IMPORT_SPECIFIER
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_VALUE_AT_RULE_IMPORT_SPECIFIER => {
@@ -21789,21 +24022,26 @@ impl AstNode for AnyCssValueAtRuleImportSpecifier {
                     CssValueAtRuleImportSpecifier { syntax },
                 )
             }
+
             CSS_VALUE_AT_RULE_NAMED_IMPORT_SPECIFIER => {
                 AnyCssValueAtRuleImportSpecifier::CssValueAtRuleNamedImportSpecifier(
                     CssValueAtRuleNamedImportSpecifier { syntax },
                 )
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssValueAtRuleImportSpecifier::CssValueAtRuleImportSpecifier(it) => &it.syntax,
             AnyCssValueAtRuleImportSpecifier::CssValueAtRuleNamedImportSpecifier(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssValueAtRuleImportSpecifier::CssValueAtRuleImportSpecifier(it) => it.syntax,
@@ -21817,6 +24055,7 @@ impl std::fmt::Debug for AnyCssValueAtRuleImportSpecifier {
             AnyCssValueAtRuleImportSpecifier::CssValueAtRuleImportSpecifier(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
+
             AnyCssValueAtRuleImportSpecifier::CssValueAtRuleNamedImportSpecifier(it) => {
                 std::fmt::Debug::fmt(it, f)
             }
@@ -21834,6 +24073,7 @@ impl From<AnyCssValueAtRuleImportSpecifier> for SyntaxNode {
 impl From<AnyCssValueAtRuleImportSpecifier> for SyntaxElement {
     fn from(n: AnyCssValueAtRuleImportSpecifier) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -21849,34 +24089,42 @@ impl From<CssValueAtRuleGenericProperty> for AnyCssValueAtRuleProperty {
 }
 impl AstNode for AnyCssValueAtRuleProperty {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         CssBogusProperty::KIND_SET.union(CssValueAtRuleGenericProperty::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             CSS_BOGUS_PROPERTY | CSS_VALUE_AT_RULE_GENERIC_PROPERTY
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             CSS_BOGUS_PROPERTY => {
                 AnyCssValueAtRuleProperty::CssBogusProperty(CssBogusProperty { syntax })
             }
+
             CSS_VALUE_AT_RULE_GENERIC_PROPERTY => {
                 AnyCssValueAtRuleProperty::CssValueAtRuleGenericProperty(
                     CssValueAtRuleGenericProperty { syntax },
                 )
             }
+
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyCssValueAtRuleProperty::CssBogusProperty(it) => &it.syntax,
             AnyCssValueAtRuleProperty::CssValueAtRuleGenericProperty(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyCssValueAtRuleProperty::CssBogusProperty(it) => it.syntax,
@@ -21905,6 +24153,7 @@ impl From<AnyCssValueAtRuleProperty> for SyntaxNode {
 impl From<AnyCssValueAtRuleProperty> for SyntaxElement {
     fn from(n: AnyCssValueAtRuleProperty) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -23097,17 +25346,21 @@ impl CssBogus {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogus {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23115,9 +25368,11 @@ impl AstNode for CssBogus {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23153,17 +25408,21 @@ impl CssBogusAtRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusAtRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_AT_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_AT_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23171,9 +25430,11 @@ impl AstNode for CssBogusAtRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23209,17 +25470,21 @@ impl CssBogusBlock {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusBlock {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_BLOCK as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_BLOCK
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23227,9 +25492,11 @@ impl AstNode for CssBogusBlock {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23265,17 +25532,21 @@ impl CssBogusCustomIdentifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusCustomIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_CUSTOM_IDENTIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_CUSTOM_IDENTIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23283,9 +25554,11 @@ impl AstNode for CssBogusCustomIdentifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23321,17 +25594,21 @@ impl CssBogusDeclarationItem {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusDeclarationItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_DECLARATION_ITEM as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_DECLARATION_ITEM
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23339,9 +25616,11 @@ impl AstNode for CssBogusDeclarationItem {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23377,17 +25656,21 @@ impl CssBogusDocumentMatcher {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusDocumentMatcher {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_DOCUMENT_MATCHER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_DOCUMENT_MATCHER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23395,9 +25678,11 @@ impl AstNode for CssBogusDocumentMatcher {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23433,17 +25718,21 @@ impl CssBogusFontFamilyName {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusFontFamilyName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_FONT_FAMILY_NAME as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_FONT_FAMILY_NAME
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23451,9 +25740,11 @@ impl AstNode for CssBogusFontFamilyName {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23489,17 +25780,21 @@ impl CssBogusFontFeatureValuesItem {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusFontFeatureValuesItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_FONT_FEATURE_VALUES_ITEM as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_FONT_FEATURE_VALUES_ITEM
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23507,9 +25802,11 @@ impl AstNode for CssBogusFontFeatureValuesItem {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23545,17 +25842,21 @@ impl CssBogusKeyframesItem {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusKeyframesItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_KEYFRAMES_ITEM as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_KEYFRAMES_ITEM
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23563,9 +25864,11 @@ impl AstNode for CssBogusKeyframesItem {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23601,17 +25904,21 @@ impl CssBogusKeyframesName {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusKeyframesName {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_KEYFRAMES_NAME as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_KEYFRAMES_NAME
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23619,9 +25926,11 @@ impl AstNode for CssBogusKeyframesName {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23657,17 +25966,21 @@ impl CssBogusLayer {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusLayer {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_LAYER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_LAYER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23675,9 +25988,11 @@ impl AstNode for CssBogusLayer {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23713,17 +26028,21 @@ impl CssBogusMediaQuery {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusMediaQuery {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_MEDIA_QUERY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_MEDIA_QUERY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23731,9 +26050,11 @@ impl AstNode for CssBogusMediaQuery {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23769,17 +26090,21 @@ impl CssBogusPageSelectorPseudo {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusPageSelectorPseudo {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_PAGE_SELECTOR_PSEUDO as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_PAGE_SELECTOR_PSEUDO
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23787,9 +26112,11 @@ impl AstNode for CssBogusPageSelectorPseudo {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23825,17 +26152,21 @@ impl CssBogusParameter {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusParameter {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_PARAMETER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_PARAMETER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23843,9 +26174,11 @@ impl AstNode for CssBogusParameter {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23881,17 +26214,21 @@ impl CssBogusProperty {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusProperty {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_PROPERTY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_PROPERTY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23899,9 +26236,11 @@ impl AstNode for CssBogusProperty {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23937,17 +26276,21 @@ impl CssBogusPropertyValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusPropertyValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_PROPERTY_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_PROPERTY_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -23955,9 +26298,11 @@ impl AstNode for CssBogusPropertyValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -23993,17 +26338,21 @@ impl CssBogusPseudoClass {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusPseudoClass {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_PSEUDO_CLASS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_PSEUDO_CLASS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24011,9 +26360,11 @@ impl AstNode for CssBogusPseudoClass {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -24049,17 +26400,21 @@ impl CssBogusPseudoElement {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusPseudoElement {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_PSEUDO_ELEMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_PSEUDO_ELEMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24067,9 +26422,11 @@ impl AstNode for CssBogusPseudoElement {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -24105,17 +26462,21 @@ impl CssBogusRule {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusRule {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_RULE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_RULE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24123,9 +26484,11 @@ impl AstNode for CssBogusRule {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -24161,17 +26524,21 @@ impl CssBogusScopeRange {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusScopeRange {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_SCOPE_RANGE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_SCOPE_RANGE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24179,9 +26546,11 @@ impl AstNode for CssBogusScopeRange {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -24217,17 +26586,21 @@ impl CssBogusSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24235,9 +26608,11 @@ impl AstNode for CssBogusSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -24273,17 +26648,21 @@ impl CssBogusSubSelector {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusSubSelector {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_SUB_SELECTOR as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_SUB_SELECTOR
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24291,9 +26670,11 @@ impl AstNode for CssBogusSubSelector {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -24329,17 +26710,21 @@ impl CssBogusUnicodeRangeValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusUnicodeRangeValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_UNICODE_RANGE_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_UNICODE_RANGE_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24347,9 +26732,11 @@ impl AstNode for CssBogusUnicodeRangeValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -24385,17 +26772,21 @@ impl CssBogusUrlModifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssBogusUrlModifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BOGUS_URL_MODIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BOGUS_URL_MODIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24403,9 +26794,11 @@ impl AstNode for CssBogusUrlModifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -24441,17 +26834,21 @@ impl CssUnknownAtRuleComponentList {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssUnknownAtRuleComponentList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_UNKNOWN_AT_RULE_COMPONENT_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_UNKNOWN_AT_RULE_COMPONENT_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24459,9 +26856,11 @@ impl AstNode for CssUnknownAtRuleComponentList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -24497,17 +26896,21 @@ impl CssValueAtRuleGenericValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for CssValueAtRuleGenericValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_VALUE_AT_RULE_GENERIC_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_VALUE_AT_RULE_GENERIC_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -24515,9 +26918,11 @@ impl AstNode for CssValueAtRuleGenericValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -24558,11 +26963,14 @@ impl CssBracketedValueList {
 }
 impl AstNode for CssBracketedValueList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_BRACKETED_VALUE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_BRACKETED_VALUE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssBracketedValueList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssBracketedValueList {
@@ -24572,9 +26980,11 @@ impl AstNode for CssBracketedValueList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -24585,18 +26995,23 @@ impl Serialize for CssBracketedValueList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssBracketedValueList {
     type Language = Language;
+
     type Node = AnyCssCustomIdentifier;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -24604,19 +27019,24 @@ impl AstNodeList for CssBracketedValueList {
 impl Debug for CssBracketedValueList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssBracketedValueList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssBracketedValueList {
     type Item = AnyCssCustomIdentifier;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssCustomIdentifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssBracketedValueList {
     type Item = AnyCssCustomIdentifier;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssCustomIdentifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -24640,11 +27060,14 @@ impl CssComponentValueList {
 }
 impl AstNode for CssComponentValueList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COMPONENT_VALUE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COMPONENT_VALUE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssComponentValueList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssComponentValueList {
@@ -24654,9 +27077,11 @@ impl AstNode for CssComponentValueList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -24667,18 +27092,23 @@ impl Serialize for CssComponentValueList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssComponentValueList {
     type Language = Language;
+
     type Node = AnyCssValue;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -24686,19 +27116,24 @@ impl AstNodeList for CssComponentValueList {
 impl Debug for CssComponentValueList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssComponentValueList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssComponentValueList {
     type Item = AnyCssValue;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssValue>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssComponentValueList {
     type Item = AnyCssValue;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssValue>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -24722,11 +27157,14 @@ impl CssComposesClassList {
 }
 impl AstNode for CssComposesClassList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COMPOSES_CLASS_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COMPOSES_CLASS_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssComposesClassList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssComposesClassList {
@@ -24736,9 +27174,11 @@ impl AstNode for CssComposesClassList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -24749,18 +27189,23 @@ impl Serialize for CssComposesClassList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssComposesClassList {
     type Language = Language;
+
     type Node = CssCustomIdentifier;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -24768,19 +27213,24 @@ impl AstNodeList for CssComposesClassList {
 impl Debug for CssComposesClassList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssComposesClassList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssComposesClassList {
     type Item = CssCustomIdentifier;
+
     type IntoIter = AstNodeListIterator<Language, CssCustomIdentifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssComposesClassList {
     type Item = CssCustomIdentifier;
+
     type IntoIter = AstNodeListIterator<Language, CssCustomIdentifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -24804,11 +27254,14 @@ impl CssCompoundSelectorList {
 }
 impl AstNode for CssCompoundSelectorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_COMPOUND_SELECTOR_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_COMPOUND_SELECTOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssCompoundSelectorList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssCompoundSelectorList {
@@ -24818,9 +27271,11 @@ impl AstNode for CssCompoundSelectorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -24831,18 +27286,23 @@ impl Serialize for CssCompoundSelectorList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssCompoundSelectorList {
     type Language = Language;
+
     type Node = AnyCssCompoundSelector;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -24850,19 +27310,24 @@ impl AstSeparatedList for CssCompoundSelectorList {
 impl Debug for CssCompoundSelectorList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssCompoundSelectorList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssCompoundSelectorList {
     type Item = SyntaxResult<AnyCssCompoundSelector>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssCompoundSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssCompoundSelectorList {
     type Item = SyntaxResult<AnyCssCompoundSelector>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssCompoundSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -24886,11 +27351,14 @@ impl CssCustomIdentifierList {
 }
 impl AstNode for CssCustomIdentifierList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_CUSTOM_IDENTIFIER_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_CUSTOM_IDENTIFIER_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssCustomIdentifierList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssCustomIdentifierList {
@@ -24900,9 +27368,11 @@ impl AstNode for CssCustomIdentifierList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -24913,18 +27383,23 @@ impl Serialize for CssCustomIdentifierList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssCustomIdentifierList {
     type Language = Language;
+
     type Node = AnyCssCustomIdentifier;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -24932,19 +27407,24 @@ impl AstNodeList for CssCustomIdentifierList {
 impl Debug for CssCustomIdentifierList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssCustomIdentifierList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssCustomIdentifierList {
     type Item = AnyCssCustomIdentifier;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssCustomIdentifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssCustomIdentifierList {
     type Item = AnyCssCustomIdentifier;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssCustomIdentifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -24968,11 +27448,14 @@ impl CssDeclarationList {
 }
 impl AstNode for CssDeclarationList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DECLARATION_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DECLARATION_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssDeclarationList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssDeclarationList {
@@ -24982,9 +27465,11 @@ impl AstNode for CssDeclarationList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -24995,18 +27480,23 @@ impl Serialize for CssDeclarationList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssDeclarationList {
     type Language = Language;
+
     type Node = CssDeclarationWithSemicolon;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25014,19 +27504,24 @@ impl AstNodeList for CssDeclarationList {
 impl Debug for CssDeclarationList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssDeclarationList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssDeclarationList {
     type Item = CssDeclarationWithSemicolon;
+
     type IntoIter = AstNodeListIterator<Language, CssDeclarationWithSemicolon>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssDeclarationList {
     type Item = CssDeclarationWithSemicolon;
+
     type IntoIter = AstNodeListIterator<Language, CssDeclarationWithSemicolon>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25050,11 +27545,14 @@ impl CssDeclarationOrAtRuleList {
 }
 impl AstNode for CssDeclarationOrAtRuleList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DECLARATION_OR_AT_RULE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DECLARATION_OR_AT_RULE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssDeclarationOrAtRuleList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssDeclarationOrAtRuleList {
@@ -25064,9 +27562,11 @@ impl AstNode for CssDeclarationOrAtRuleList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25077,18 +27577,23 @@ impl Serialize for CssDeclarationOrAtRuleList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssDeclarationOrAtRuleList {
     type Language = Language;
+
     type Node = AnyCssDeclarationOrAtRule;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25096,19 +27601,24 @@ impl AstNodeList for CssDeclarationOrAtRuleList {
 impl Debug for CssDeclarationOrAtRuleList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssDeclarationOrAtRuleList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssDeclarationOrAtRuleList {
     type Item = AnyCssDeclarationOrAtRule;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssDeclarationOrAtRule>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssDeclarationOrAtRuleList {
     type Item = AnyCssDeclarationOrAtRule;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssDeclarationOrAtRule>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25132,11 +27642,14 @@ impl CssDeclarationOrRuleList {
 }
 impl AstNode for CssDeclarationOrRuleList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DECLARATION_OR_RULE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DECLARATION_OR_RULE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssDeclarationOrRuleList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssDeclarationOrRuleList {
@@ -25146,9 +27659,11 @@ impl AstNode for CssDeclarationOrRuleList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25159,18 +27674,23 @@ impl Serialize for CssDeclarationOrRuleList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssDeclarationOrRuleList {
     type Language = Language;
+
     type Node = AnyCssDeclarationOrRule;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25178,19 +27698,24 @@ impl AstNodeList for CssDeclarationOrRuleList {
 impl Debug for CssDeclarationOrRuleList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssDeclarationOrRuleList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssDeclarationOrRuleList {
     type Item = AnyCssDeclarationOrRule;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssDeclarationOrRule>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssDeclarationOrRuleList {
     type Item = AnyCssDeclarationOrRule;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssDeclarationOrRule>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25214,11 +27739,14 @@ impl CssDocumentMatcherList {
 }
 impl AstNode for CssDocumentMatcherList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_DOCUMENT_MATCHER_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_DOCUMENT_MATCHER_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssDocumentMatcherList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssDocumentMatcherList {
@@ -25228,9 +27756,11 @@ impl AstNode for CssDocumentMatcherList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25241,18 +27771,23 @@ impl Serialize for CssDocumentMatcherList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssDocumentMatcherList {
     type Language = Language;
+
     type Node = AnyCssDocumentMatcher;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25260,19 +27795,24 @@ impl AstSeparatedList for CssDocumentMatcherList {
 impl Debug for CssDocumentMatcherList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssDocumentMatcherList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssDocumentMatcherList {
     type Item = SyntaxResult<AnyCssDocumentMatcher>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssDocumentMatcher>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssDocumentMatcherList {
     type Item = SyntaxResult<AnyCssDocumentMatcher>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssDocumentMatcher>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25296,11 +27836,14 @@ impl CssFontFamilyNameList {
 }
 impl AstNode for CssFontFamilyNameList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_FONT_FAMILY_NAME_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_FONT_FAMILY_NAME_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssFontFamilyNameList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssFontFamilyNameList {
@@ -25310,9 +27853,11 @@ impl AstNode for CssFontFamilyNameList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25323,18 +27868,23 @@ impl Serialize for CssFontFamilyNameList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssFontFamilyNameList {
     type Language = Language;
+
     type Node = AnyCssFontFamilyName;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25342,19 +27892,24 @@ impl AstSeparatedList for CssFontFamilyNameList {
 impl Debug for CssFontFamilyNameList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssFontFamilyNameList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssFontFamilyNameList {
     type Item = SyntaxResult<AnyCssFontFamilyName>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssFontFamilyName>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssFontFamilyNameList {
     type Item = SyntaxResult<AnyCssFontFamilyName>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssFontFamilyName>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25378,11 +27933,14 @@ impl CssFontFeatureValuesItemList {
 }
 impl AstNode for CssFontFeatureValuesItemList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_FONT_FEATURE_VALUES_ITEM_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_FONT_FEATURE_VALUES_ITEM_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssFontFeatureValuesItemList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssFontFeatureValuesItemList {
@@ -25392,9 +27950,11 @@ impl AstNode for CssFontFeatureValuesItemList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25405,18 +27965,23 @@ impl Serialize for CssFontFeatureValuesItemList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssFontFeatureValuesItemList {
     type Language = Language;
+
     type Node = AnyCssFontFeatureValuesItem;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25424,19 +27989,24 @@ impl AstNodeList for CssFontFeatureValuesItemList {
 impl Debug for CssFontFeatureValuesItemList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssFontFeatureValuesItemList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssFontFeatureValuesItemList {
     type Item = AnyCssFontFeatureValuesItem;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssFontFeatureValuesItem>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssFontFeatureValuesItemList {
     type Item = AnyCssFontFeatureValuesItem;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssFontFeatureValuesItem>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25460,11 +28030,14 @@ impl CssGenericComponentValueList {
 }
 impl AstNode for CssGenericComponentValueList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_GENERIC_COMPONENT_VALUE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_GENERIC_COMPONENT_VALUE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssGenericComponentValueList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssGenericComponentValueList {
@@ -25474,9 +28047,11 @@ impl AstNode for CssGenericComponentValueList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25487,18 +28062,23 @@ impl Serialize for CssGenericComponentValueList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssGenericComponentValueList {
     type Language = Language;
+
     type Node = AnyCssGenericComponentValue;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25506,19 +28086,24 @@ impl AstNodeList for CssGenericComponentValueList {
 impl Debug for CssGenericComponentValueList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssGenericComponentValueList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssGenericComponentValueList {
     type Item = AnyCssGenericComponentValue;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssGenericComponentValue>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssGenericComponentValueList {
     type Item = AnyCssGenericComponentValue;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssGenericComponentValue>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25542,11 +28127,14 @@ impl CssKeyframesItemList {
 }
 impl AstNode for CssKeyframesItemList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_KEYFRAMES_ITEM_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_KEYFRAMES_ITEM_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssKeyframesItemList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssKeyframesItemList {
@@ -25556,9 +28144,11 @@ impl AstNode for CssKeyframesItemList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25569,18 +28159,23 @@ impl Serialize for CssKeyframesItemList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssKeyframesItemList {
     type Language = Language;
+
     type Node = AnyCssKeyframesItem;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25588,19 +28183,24 @@ impl AstNodeList for CssKeyframesItemList {
 impl Debug for CssKeyframesItemList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssKeyframesItemList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssKeyframesItemList {
     type Item = AnyCssKeyframesItem;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssKeyframesItem>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssKeyframesItemList {
     type Item = AnyCssKeyframesItem;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssKeyframesItem>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25624,11 +28224,14 @@ impl CssKeyframesSelectorList {
 }
 impl AstNode for CssKeyframesSelectorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_KEYFRAMES_SELECTOR_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_KEYFRAMES_SELECTOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssKeyframesSelectorList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssKeyframesSelectorList {
@@ -25638,9 +28241,11 @@ impl AstNode for CssKeyframesSelectorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25651,18 +28256,23 @@ impl Serialize for CssKeyframesSelectorList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssKeyframesSelectorList {
     type Language = Language;
+
     type Node = AnyCssKeyframesSelector;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25670,19 +28280,24 @@ impl AstSeparatedList for CssKeyframesSelectorList {
 impl Debug for CssKeyframesSelectorList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssKeyframesSelectorList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssKeyframesSelectorList {
     type Item = SyntaxResult<AnyCssKeyframesSelector>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssKeyframesSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssKeyframesSelectorList {
     type Item = SyntaxResult<AnyCssKeyframesSelector>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssKeyframesSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25706,11 +28321,14 @@ impl CssLayerNameList {
 }
 impl AstNode for CssLayerNameList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_LAYER_NAME_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_LAYER_NAME_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssLayerNameList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssLayerNameList {
@@ -25720,9 +28338,11 @@ impl AstNode for CssLayerNameList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25733,18 +28353,23 @@ impl Serialize for CssLayerNameList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssLayerNameList {
     type Language = Language;
+
     type Node = CssIdentifier;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25752,19 +28377,24 @@ impl AstSeparatedList for CssLayerNameList {
 impl Debug for CssLayerNameList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssLayerNameList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssLayerNameList {
     type Item = SyntaxResult<CssIdentifier>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, CssIdentifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssLayerNameList {
     type Item = SyntaxResult<CssIdentifier>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, CssIdentifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25788,11 +28418,14 @@ impl CssLayerReferenceList {
 }
 impl AstNode for CssLayerReferenceList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_LAYER_REFERENCE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_LAYER_REFERENCE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssLayerReferenceList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssLayerReferenceList {
@@ -25802,9 +28435,11 @@ impl AstNode for CssLayerReferenceList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25815,18 +28450,23 @@ impl Serialize for CssLayerReferenceList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssLayerReferenceList {
     type Language = Language;
+
     type Node = CssLayerNameList;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25834,19 +28474,24 @@ impl AstSeparatedList for CssLayerReferenceList {
 impl Debug for CssLayerReferenceList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssLayerReferenceList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssLayerReferenceList {
     type Item = SyntaxResult<CssLayerNameList>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, CssLayerNameList>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssLayerReferenceList {
     type Item = SyntaxResult<CssLayerNameList>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, CssLayerNameList>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25870,11 +28515,14 @@ impl CssMediaQueryList {
 }
 impl AstNode for CssMediaQueryList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_MEDIA_QUERY_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_MEDIA_QUERY_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssMediaQueryList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssMediaQueryList {
@@ -25884,9 +28532,11 @@ impl AstNode for CssMediaQueryList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25897,18 +28547,23 @@ impl Serialize for CssMediaQueryList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssMediaQueryList {
     type Language = Language;
+
     type Node = AnyCssMediaQuery;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25916,19 +28571,24 @@ impl AstSeparatedList for CssMediaQueryList {
 impl Debug for CssMediaQueryList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssMediaQueryList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssMediaQueryList {
     type Item = SyntaxResult<AnyCssMediaQuery>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssMediaQuery>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssMediaQueryList {
     type Item = SyntaxResult<AnyCssMediaQuery>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssMediaQuery>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -25952,11 +28612,14 @@ impl CssNestedSelectorList {
 }
 impl AstNode for CssNestedSelectorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_NESTED_SELECTOR_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_NESTED_SELECTOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssNestedSelectorList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssNestedSelectorList {
@@ -25966,9 +28629,11 @@ impl AstNode for CssNestedSelectorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -25979,18 +28644,23 @@ impl Serialize for CssNestedSelectorList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssNestedSelectorList {
     type Language = Language;
+
     type Node = CssNestedSelector;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -25998,19 +28668,24 @@ impl AstNodeList for CssNestedSelectorList {
 impl Debug for CssNestedSelectorList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssNestedSelectorList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssNestedSelectorList {
     type Item = CssNestedSelector;
+
     type IntoIter = AstNodeListIterator<Language, CssNestedSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssNestedSelectorList {
     type Item = CssNestedSelector;
+
     type IntoIter = AstNodeListIterator<Language, CssNestedSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26034,11 +28709,14 @@ impl CssPageAtRuleItemList {
 }
 impl AstNode for CssPageAtRuleItemList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PAGE_AT_RULE_ITEM_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PAGE_AT_RULE_ITEM_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssPageAtRuleItemList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssPageAtRuleItemList {
@@ -26048,9 +28726,11 @@ impl AstNode for CssPageAtRuleItemList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26061,18 +28741,23 @@ impl Serialize for CssPageAtRuleItemList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssPageAtRuleItemList {
     type Language = Language;
+
     type Node = AnyCssPageAtRuleItem;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26080,19 +28765,24 @@ impl AstNodeList for CssPageAtRuleItemList {
 impl Debug for CssPageAtRuleItemList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssPageAtRuleItemList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssPageAtRuleItemList {
     type Item = AnyCssPageAtRuleItem;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssPageAtRuleItem>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssPageAtRuleItemList {
     type Item = AnyCssPageAtRuleItem;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssPageAtRuleItem>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26116,11 +28806,14 @@ impl CssPageSelectorList {
 }
 impl AstNode for CssPageSelectorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PAGE_SELECTOR_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PAGE_SELECTOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssPageSelectorList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssPageSelectorList {
@@ -26130,9 +28823,11 @@ impl AstNode for CssPageSelectorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26143,18 +28838,23 @@ impl Serialize for CssPageSelectorList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssPageSelectorList {
     type Language = Language;
+
     type Node = AnyCssPageSelector;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26162,19 +28862,24 @@ impl AstSeparatedList for CssPageSelectorList {
 impl Debug for CssPageSelectorList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssPageSelectorList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssPageSelectorList {
     type Item = SyntaxResult<AnyCssPageSelector>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssPageSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssPageSelectorList {
     type Item = SyntaxResult<AnyCssPageSelector>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssPageSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26198,11 +28903,14 @@ impl CssPageSelectorPseudoList {
 }
 impl AstNode for CssPageSelectorPseudoList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PAGE_SELECTOR_PSEUDO_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PAGE_SELECTOR_PSEUDO_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssPageSelectorPseudoList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssPageSelectorPseudoList {
@@ -26212,9 +28920,11 @@ impl AstNode for CssPageSelectorPseudoList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26225,18 +28935,23 @@ impl Serialize for CssPageSelectorPseudoList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssPageSelectorPseudoList {
     type Language = Language;
+
     type Node = AnyCssPageSelectorPseudo;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26244,19 +28959,24 @@ impl AstNodeList for CssPageSelectorPseudoList {
 impl Debug for CssPageSelectorPseudoList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssPageSelectorPseudoList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssPageSelectorPseudoList {
     type Item = AnyCssPageSelectorPseudo;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssPageSelectorPseudo>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssPageSelectorPseudoList {
     type Item = AnyCssPageSelectorPseudo;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssPageSelectorPseudo>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26280,11 +29000,14 @@ impl CssParameterList {
 }
 impl AstNode for CssParameterList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PARAMETER_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PARAMETER_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssParameterList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssParameterList {
@@ -26294,9 +29017,11 @@ impl AstNode for CssParameterList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26307,18 +29032,23 @@ impl Serialize for CssParameterList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssParameterList {
     type Language = Language;
+
     type Node = CssParameter;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26326,19 +29056,24 @@ impl AstSeparatedList for CssParameterList {
 impl Debug for CssParameterList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssParameterList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssParameterList {
     type Item = SyntaxResult<CssParameter>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, CssParameter>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssParameterList {
     type Item = SyntaxResult<CssParameter>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, CssParameter>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26362,11 +29097,14 @@ impl CssPseudoValueList {
 }
 impl AstNode for CssPseudoValueList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_PSEUDO_VALUE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_PSEUDO_VALUE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssPseudoValueList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssPseudoValueList {
@@ -26376,9 +29114,11 @@ impl AstNode for CssPseudoValueList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26389,18 +29129,23 @@ impl Serialize for CssPseudoValueList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssPseudoValueList {
     type Language = Language;
+
     type Node = AnyCssPseudoValue;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26408,19 +29153,24 @@ impl AstSeparatedList for CssPseudoValueList {
 impl Debug for CssPseudoValueList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssPseudoValueList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssPseudoValueList {
     type Item = SyntaxResult<AnyCssPseudoValue>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssPseudoValue>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssPseudoValueList {
     type Item = SyntaxResult<AnyCssPseudoValue>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssPseudoValue>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26444,11 +29194,14 @@ impl CssRelativeSelectorList {
 }
 impl AstNode for CssRelativeSelectorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_RELATIVE_SELECTOR_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_RELATIVE_SELECTOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssRelativeSelectorList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssRelativeSelectorList {
@@ -26458,9 +29211,11 @@ impl AstNode for CssRelativeSelectorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26471,18 +29226,23 @@ impl Serialize for CssRelativeSelectorList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssRelativeSelectorList {
     type Language = Language;
+
     type Node = AnyCssRelativeSelector;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26490,19 +29250,24 @@ impl AstSeparatedList for CssRelativeSelectorList {
 impl Debug for CssRelativeSelectorList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssRelativeSelectorList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssRelativeSelectorList {
     type Item = SyntaxResult<AnyCssRelativeSelector>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssRelativeSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssRelativeSelectorList {
     type Item = SyntaxResult<AnyCssRelativeSelector>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssRelativeSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26526,11 +29291,14 @@ impl CssRuleList {
 }
 impl AstNode for CssRuleList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_RULE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_RULE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssRuleList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssRuleList {
@@ -26540,9 +29308,11 @@ impl AstNode for CssRuleList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26553,18 +29323,23 @@ impl Serialize for CssRuleList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssRuleList {
     type Language = Language;
+
     type Node = AnyCssRule;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26572,19 +29347,24 @@ impl AstNodeList for CssRuleList {
 impl Debug for CssRuleList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssRuleList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssRuleList {
     type Item = AnyCssRule;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssRule>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssRuleList {
     type Item = AnyCssRule;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssRule>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26608,11 +29388,14 @@ impl CssSelectorList {
 }
 impl AstNode for CssSelectorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SELECTOR_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SELECTOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssSelectorList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssSelectorList {
@@ -26622,9 +29405,11 @@ impl AstNode for CssSelectorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26635,18 +29420,23 @@ impl Serialize for CssSelectorList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssSelectorList {
     type Language = Language;
+
     type Node = AnyCssSelector;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26654,19 +29444,24 @@ impl AstSeparatedList for CssSelectorList {
 impl Debug for CssSelectorList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssSelectorList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssSelectorList {
     type Item = SyntaxResult<AnyCssSelector>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssSelectorList {
     type Item = SyntaxResult<AnyCssSelector>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26690,11 +29485,14 @@ impl CssSubSelectorList {
 }
 impl AstNode for CssSubSelectorList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_SUB_SELECTOR_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_SUB_SELECTOR_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssSubSelectorList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssSubSelectorList {
@@ -26704,9 +29502,11 @@ impl AstNode for CssSubSelectorList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26717,18 +29517,23 @@ impl Serialize for CssSubSelectorList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssSubSelectorList {
     type Language = Language;
+
     type Node = AnyCssSubSelector;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26736,19 +29541,24 @@ impl AstNodeList for CssSubSelectorList {
 impl Debug for CssSubSelectorList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssSubSelectorList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssSubSelectorList {
     type Item = AnyCssSubSelector;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssSubSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssSubSelectorList {
     type Item = AnyCssSubSelector;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssSubSelector>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26772,11 +29582,14 @@ impl CssUrlModifierList {
 }
 impl AstNode for CssUrlModifierList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_URL_MODIFIER_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_URL_MODIFIER_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssUrlModifierList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssUrlModifierList {
@@ -26786,9 +29599,11 @@ impl AstNode for CssUrlModifierList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26799,18 +29614,23 @@ impl Serialize for CssUrlModifierList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for CssUrlModifierList {
     type Language = Language;
+
     type Node = AnyCssUrlModifier;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26818,19 +29638,24 @@ impl AstNodeList for CssUrlModifierList {
 impl Debug for CssUrlModifierList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssUrlModifierList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &CssUrlModifierList {
     type Item = AnyCssUrlModifier;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssUrlModifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for CssUrlModifierList {
     type Item = AnyCssUrlModifier;
+
     type IntoIter = AstNodeListIterator<Language, AnyCssUrlModifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26854,12 +29679,15 @@ impl CssValueAtRuleImportSpecifierList {
 }
 impl AstNode for CssValueAtRuleImportSpecifierList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = SyntaxKindSet::from_raw(RawSyntaxKind(
         CSS_VALUE_AT_RULE_IMPORT_SPECIFIER_LIST as u16,
     ));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_VALUE_AT_RULE_IMPORT_SPECIFIER_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssValueAtRuleImportSpecifierList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssValueAtRuleImportSpecifierList {
@@ -26869,9 +29697,11 @@ impl AstNode for CssValueAtRuleImportSpecifierList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26882,18 +29712,23 @@ impl Serialize for CssValueAtRuleImportSpecifierList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssValueAtRuleImportSpecifierList {
     type Language = Language;
+
     type Node = AnyCssValueAtRuleImportSpecifier;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26901,19 +29736,24 @@ impl AstSeparatedList for CssValueAtRuleImportSpecifierList {
 impl Debug for CssValueAtRuleImportSpecifierList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssValueAtRuleImportSpecifierList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssValueAtRuleImportSpecifierList {
     type Item = SyntaxResult<AnyCssValueAtRuleImportSpecifier>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssValueAtRuleImportSpecifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssValueAtRuleImportSpecifierList {
     type Item = SyntaxResult<AnyCssValueAtRuleImportSpecifier>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssValueAtRuleImportSpecifier>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -26937,11 +29777,14 @@ impl CssValueAtRulePropertyList {
 }
 impl AstNode for CssValueAtRulePropertyList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(CSS_VALUE_AT_RULE_PROPERTY_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == CSS_VALUE_AT_RULE_PROPERTY_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<CssValueAtRulePropertyList> {
         if Self::can_cast(syntax.kind()) {
             Some(CssValueAtRulePropertyList {
@@ -26951,9 +29794,11 @@ impl AstNode for CssValueAtRulePropertyList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -26964,18 +29809,23 @@ impl Serialize for CssValueAtRulePropertyList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for CssValueAtRulePropertyList {
     type Language = Language;
+
     type Node = AnyCssValueAtRuleProperty;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -26983,19 +29833,24 @@ impl AstSeparatedList for CssValueAtRulePropertyList {
 impl Debug for CssValueAtRulePropertyList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("CssValueAtRulePropertyList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for CssValueAtRulePropertyList {
     type Item = SyntaxResult<AnyCssValueAtRuleProperty>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssValueAtRuleProperty>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &CssValueAtRulePropertyList {
     type Item = SyntaxResult<AnyCssValueAtRuleProperty>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyCssValueAtRuleProperty>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -27016,6 +29871,7 @@ impl Debug for DebugSyntaxElement {
             SyntaxElement::Node(node) => {
                 map_syntax_node ! (node . clone () , node => std :: fmt :: Debug :: fmt (& node , f))
             }
+
             SyntaxElement::Token(token) => Debug::fmt(token, f),
         }
     }

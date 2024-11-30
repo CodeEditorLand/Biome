@@ -25,6 +25,7 @@ impl FormatNodeRule<GritLike> for FormatGritLike {
         )?;
 
         let should_insert_space_around_brackets = f.options().bracket_spacing().value();
+
         write!(
             f,
             [group(&soft_block_indent_with_maybe_space(

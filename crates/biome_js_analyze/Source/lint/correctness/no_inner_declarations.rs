@@ -98,12 +98,16 @@ declare_lint_rule! {
 
 impl Rule for NoInnerDeclarations {
     type Query = Ast<AnyJsDeclaration>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let decl = ctx.query();
+
         let parent = match decl {
             AnyJsDeclaration::TsDeclareFunctionDeclaration(x) => {
                 if ctx.source_type::<JsFileSource>().is_module() {
@@ -113,18 +117,23 @@ impl Rule for NoInnerDeclarations {
                 // ignore TsDeclareStatement
                 x.syntax().parent()?.parent()?
             }
+
             AnyJsDeclaration::JsFunctionDeclaration(x) => {
                 if ctx.source_type::<JsFileSource>().is_module() {
                     // In strict mode (implied by esm), function declarations are block-scoped.
                     return None;
                 }
+
                 x.syntax().parent()?
             }
+
             AnyJsDeclaration::JsVariableDeclaration(x) => {
                 if !x.is_var() {
                     return None;
                 }
+
                 let mut parent = x.syntax().parent()?;
+
                 while matches!(
                     parent.kind(),
                     JsSyntaxKind::JS_VARIABLE_STATEMENT
@@ -133,12 +142,15 @@ impl Rule for NoInnerDeclarations {
                 ) {
                     parent = parent.parent()?;
                 }
+
                 parent
             }
+
             _ => {
                 return None;
             }
         };
+
         if matches!(
             parent.kind(),
             JsSyntaxKind::JS_EXPORT
@@ -147,6 +159,7 @@ impl Rule for NoInnerDeclarations {
         ) {
             return None;
         }
+
         if JsStatementList::can_cast(parent.kind())
             && matches!(
                 parent.parent()?.kind(),
@@ -157,26 +170,31 @@ impl Rule for NoInnerDeclarations {
         {
             return None;
         }
+
         Some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let decl = ctx.query();
+
         let decl_type = match decl {
             AnyJsDeclaration::JsFunctionDeclaration(_) => "function",
             _ => "var",
         };
+
         let nearest_root = decl
             .syntax()
             .ancestors()
             .skip(1)
             .find_map(AnyJsControlFlowRoot::cast)?;
+
         let nearest_root_type = match nearest_root {
             AnyJsControlFlowRoot::JsModule(_) => "module",
             AnyJsControlFlowRoot::JsScript(_) => "script",
             AnyJsControlFlowRoot::JsStaticInitializationBlockClassMember(_) => "static block",
             _ => "enclosing function",
         };
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             decl.range(),

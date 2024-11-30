@@ -15,6 +15,7 @@ impl FormatNodeRule<JsxClosingFragment> for FormatJsxClosingFragment {
         } = node.as_fields();
 
         let mut has_own_line_comment = false;
+
         let mut has_comment = false;
 
         for comment in f
@@ -22,6 +23,7 @@ impl FormatNodeRule<JsxClosingFragment> for FormatJsxClosingFragment {
             .leading_dangling_trailing_comments(node.syntax())
         {
             has_comment = true;
+
             has_own_line_comment = has_own_line_comment || comment.kind().is_line()
         }
 

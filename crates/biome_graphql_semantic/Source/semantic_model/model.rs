@@ -117,8 +117,11 @@ impl SemanticModel {
     /// ```
     pub fn binding(&self, reference: &GraphqlNameReference) -> Option<Binding> {
         let range = reference.syntax().text_range();
+
         let reference_id = self.data.references_by_start.get(&range.start())?;
+
         debug_assert!(self.data.references_to_bindings[*reference_id].len() <= 1);
+
         self.data.references_to_bindings[*reference_id]
             .iter()
             .map(|&x| Binding {
@@ -153,9 +156,11 @@ impl SemanticModel {
     /// ```
     pub fn bindings(&self, reference: &GraphqlVariableReference) -> Vec<Binding> {
         let range = reference.syntax().text_range();
+
         let Some(reference_id) = self.data.references_by_start.get(&range.start()) else {
             return Vec::new();
         };
+
         self.data.references_to_bindings[*reference_id]
             .iter()
             .map(|&x| Binding {
@@ -190,7 +195,9 @@ impl SemanticModel {
 
     pub fn as_binding(&self, binding: &GraphqlNameBinding) -> Binding {
         let range = binding.syntax().text_range();
+
         let id = self.data.bindings_by_start[&range.start()];
+
         Binding {
             data: self.data.clone(),
             index: id.into(),

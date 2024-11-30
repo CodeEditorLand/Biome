@@ -26,13 +26,16 @@ pub(crate) fn parse_pseudo_class_function_value_list(p: &mut CssParser) -> Parse
     let m = p.start();
 
     p.bump_ts(PSEUDO_CLASS_FUNCTION_VALUE_LIST_SET);
+
     p.bump(T!['(']);
 
     let list = PseudoValueList.parse_list(p);
+
     let list_range = list.range(p);
 
     if list_range.is_empty() {
         let diagnostic = expected_identifier(p, list_range);
+
         p.error(diagnostic);
     }
 
@@ -51,6 +54,7 @@ struct PseudoValueList;
 
 impl ParseSeparatedList for PseudoValueList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
 
     const LIST_KIND: CssSyntaxKind = CSS_PSEUDO_VALUE_LIST;

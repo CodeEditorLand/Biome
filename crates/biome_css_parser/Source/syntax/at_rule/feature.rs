@@ -54,7 +54,9 @@ fn parse_query_feature_range(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     parse_regular_identifier(p).ok();
+
     parse_query_feature_range_comparison(p).ok();
+
     parse_any_query_feature_value(p).ok(); // TODO handle error
 
     Present(m.complete(p, CSS_QUERY_FEATURE_RANGE))
@@ -74,11 +76,14 @@ fn parse_query_feature_reverse_or_interval_range(p: &mut CssParser) -> ParsedSyn
     let m = p.start();
 
     parse_any_query_feature_value(p).ok();
+
     parse_query_feature_range_comparison(p).ok();
+
     parse_regular_identifier(p).ok(); // TODO handle error
 
     if is_at_query_feature_range_comparison(p) {
         parse_query_feature_range_comparison(p).ok();
+
         parse_any_query_feature_value(p).ok(); // TODO handle error
 
         Present(m.complete(p, CSS_QUERY_FEATURE_RANGE_INTERVAL))
@@ -122,7 +127,9 @@ fn parse_query_feature_plain(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     parse_regular_identifier(p).or_add_diagnostic(p, expected_identifier);
+
     p.bump(T![:]);
+
     parse_any_query_feature_value(p).ok(); // TODO handle error
 
     Present(m.complete(p, CSS_QUERY_FEATURE_PLAIN))

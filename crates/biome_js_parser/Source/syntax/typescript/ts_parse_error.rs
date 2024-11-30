@@ -26,6 +26,7 @@ pub(crate) fn ts_member_cannot_be(
     modifier_name: &str,
 ) -> ParseDiagnostic {
     let msg = format!("{member_type_name} members cannot be {modifier_name}");
+
     p.err_builder(msg, range)
 }
 
@@ -34,6 +35,7 @@ pub(crate) fn ts_modifier_cannot_appear_on_a_constructor_declaration(
     modifier_range: TextRange,
 ) -> ParseDiagnostic {
     let modifier = p.text(modifier_range);
+
     p.err_builder(
         format!("'{modifier}' cannot appear on a constructor declaration."),
         modifier_range,
@@ -45,6 +47,7 @@ pub(crate) fn ts_modifier_cannot_appear_on_a_parameter(
     modifier_range: TextRange,
 ) -> ParseDiagnostic {
     let modifier = p.text(modifier_range);
+
     p.err_builder(
         format!("'{modifier}' cannot appear on a parameter."),
         modifier_range,
@@ -56,6 +59,7 @@ pub(crate) fn ts_in_out_modifier_cannot_appear_on_a_type_parameter(
     modifier_range: TextRange,
 ) -> ParseDiagnostic {
     let modifier = p.text(modifier_range);
+
     p.err_builder(
         format!("'{modifier}' modifier can only appear on a type parameter of a class, interface or type alias.",),
         modifier_range,

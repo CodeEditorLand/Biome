@@ -74,19 +74,24 @@ impl std::fmt::Debug for FormatElement {
             FormatElement::StaticText { text } => {
                 fmt.debug_tuple("StaticText").field(text).finish()
             }
+
             FormatElement::DynamicText { text, .. } => {
                 fmt.debug_tuple("DynamicText").field(text).finish()
             }
+
             FormatElement::LocatedTokenText { slice, .. } => {
                 fmt.debug_tuple("LocatedTokenText").field(slice).finish()
             }
+
             FormatElement::LineSuffixBoundary => write!(fmt, "LineSuffixBoundary"),
             FormatElement::BestFitting(best_fitting) => {
                 fmt.debug_tuple("BestFitting").field(&best_fitting).finish()
             }
+
             FormatElement::Interned(interned) => {
                 fmt.debug_list().entries(interned.deref()).finish()
             }
+
             FormatElement::Tag(tag) => fmt.debug_tuple("Tag").field(tag).finish(),
         }
     }
@@ -176,10 +181,12 @@ pub const LINE_TERMINATORS: [char; 3] = ['\r', LINE_SEPARATOR, PARAGRAPH_SEPARAT
 /// since its the only line break type supported by the printer
 pub fn normalize_newlines<const N: usize>(text: &str, terminators: [char; N]) -> Cow<str> {
     let mut result = String::new();
+
     let mut last_end = 0;
 
     for (start, part) in text.match_indices(terminators) {
         result.push_str(&text[last_end..start]);
+
         result.push('\n');
 
         last_end = start + part.len();
@@ -196,6 +203,7 @@ pub fn normalize_newlines<const N: usize>(text: &str, terminators: [char; N]) ->
         Cow::Borrowed(text)
     } else {
         result.push_str(&text[last_end..text.len()]);
+
         Cow::Owned(result)
     }
 }
@@ -382,14 +390,20 @@ mod tests {
     #[test]
     fn test_normalize_newlines() {
         assert_eq!(normalize_newlines("a\nb", LINE_TERMINATORS), "a\nb");
+
         assert_eq!(normalize_newlines("a\n\n\nb", LINE_TERMINATORS), "a\n\n\nb");
+
         assert_eq!(normalize_newlines("a\rb", LINE_TERMINATORS), "a\nb");
+
         assert_eq!(normalize_newlines("a\r\nb", LINE_TERMINATORS), "a\nb");
+
         assert_eq!(
             normalize_newlines("a\r\n\r\n\r\nb", LINE_TERMINATORS),
             "a\n\n\nb"
         );
+
         assert_eq!(normalize_newlines("a\u{2028}b", LINE_TERMINATORS), "a\nb");
+
         assert_eq!(normalize_newlines("a\u{2029}b", LINE_TERMINATORS), "a\nb");
     }
 }

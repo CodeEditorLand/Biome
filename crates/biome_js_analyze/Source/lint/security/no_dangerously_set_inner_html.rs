@@ -53,16 +53,22 @@ impl NoDangerState {
 
 impl Rule for NoDangerouslySetInnerHtml {
     type Query = Semantic<AnyJsCreateElement>;
+
     type State = NoDangerState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         match node {
             AnyJsCreateElement::JsxAttribute(jsx_attribute) => {
                 let name = jsx_attribute.name().ok()?;
+
                 match name {
                     AnyJsxAttributeName::JsxName(jsx_name) => {
                         if jsx_name.syntax().text_trimmed() == "dangerouslySetInnerHTML" {
@@ -71,9 +77,11 @@ impl Rule for NoDangerouslySetInnerHtml {
                             ));
                         }
                     }
+
                     AnyJsxAttributeName::JsxNamespaceName(_) => return None,
                 }
             }
+
             AnyJsCreateElement::JsCallExpression(call_expression) => {
                 if let Some(react_create_element) =
                     ReactCreateElementCall::from_call_expression(call_expression, model)
@@ -84,10 +92,13 @@ impl Rule for NoDangerouslySetInnerHtml {
                     // "dangerouslySetInnerHTML"
                     if let Some(props) = props {
                         let members = props.members();
+
                         for member in members {
                             let member = member.ok()?;
+
                             let property_member =
                                 member.as_js_property_object_member()?.name().ok()?;
+
                             let name = property_member.as_js_literal_member_name()?;
 
                             if name.syntax().text_trimmed() == "dangerouslySetInnerHTML" {
@@ -112,6 +123,7 @@ impl Rule for NoDangerouslySetInnerHtml {
         ).warning(
             "Setting content using code can expose users to cross-site scripting (XSS) attacks",
         );
+
         Some(diagnostic)
     }
 }

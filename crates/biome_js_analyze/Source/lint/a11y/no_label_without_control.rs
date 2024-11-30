@@ -94,15 +94,22 @@ declare_lint_rule! {
 
 impl Rule for NoLabelWithoutControl {
     type Query = Ast<AnyJsxTag>;
+
     type State = NoLabelWithoutControlState;
+
     type Signals = Option<Self::State>;
+
     type Options = NoLabelWithoutControlOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let options = ctx.options();
+
         let element_name = node.name()?.name_value_token().ok()?;
+
         let element_name = element_name.text_trimmed();
+
         let is_allowed_element = options.has_element_name(element_name)
             || DEFAULT_LABEL_COMPONENTS.contains(&element_name);
 
@@ -111,6 +118,7 @@ impl Rule for NoLabelWithoutControl {
         }
 
         let has_text_content = options.has_accessible_label(node);
+
         let has_control_association = has_for_attribute(node) || options.has_nested_control(node);
 
         if has_text_content && has_control_association {
@@ -125,6 +133,7 @@ impl Rule for NoLabelWithoutControl {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let mut diagnostic = RuleDiagnostic::new(
             rule_category!(),
             node.range(),
@@ -169,7 +178,9 @@ impl NoLabelWithoutControlOptions {
         let Ok(attribute_name) = attribute.name().and_then(|name| name.name_token()) else {
             return false;
         };
+
         let attribute_name = attribute_name.text_trimmed();
+
         if !DEFAULT_LABEL_ATTRIBUTES.contains(&attribute_name)
             && !self
                 .label_attributes
@@ -178,6 +189,7 @@ impl NoLabelWithoutControlOptions {
         {
             return false;
         }
+
         attribute
             .initializer()
             .and_then(|init| init.value().ok())
@@ -190,6 +202,7 @@ impl NoLabelWithoutControlOptions {
     /// - Has a child that acts as a label
     fn has_accessible_label(&self, jsx_tag: &AnyJsxTag) -> bool {
         let mut child_iter = jsx_tag.syntax().preorder();
+
         while let Some(event) = child_iter.next() {
             match event {
                 WalkEvent::Enter(child) => match child.kind() {
@@ -198,18 +211,23 @@ impl NoLabelWithoutControlOptions {
                     | JsSyntaxKind::JSX_TEXT => {
                         return true;
                     }
+
                     JsSyntaxKind::JSX_ELEMENT
                     | JsSyntaxKind::JSX_OPENING_ELEMENT
                     | JsSyntaxKind::JSX_CHILD_LIST
                     | JsSyntaxKind::JSX_SELF_CLOSING_ELEMENT
                     | JsSyntaxKind::JSX_ATTRIBUTE_LIST => {}
+
                     JsSyntaxKind::JSX_ATTRIBUTE => {
                         let attribute = JsxAttribute::unwrap_cast(child);
+
                         if self.has_label_attribute(&attribute) {
                             return true;
                         }
+
                         child_iter.skip_subtree();
                     }
+
                     _ => {
                         child_iter.skip_subtree();
                     }
@@ -217,6 +235,7 @@ impl NoLabelWithoutControlOptions {
                 WalkEvent::Leave(_) => {}
             }
         }
+
         false
     }
 
@@ -224,6 +243,7 @@ impl NoLabelWithoutControlOptions {
     /// according to the passed `input_components` parameter
     fn has_nested_control(&self, jsx_tag: &AnyJsxTag) -> bool {
         let mut child_iter = jsx_tag.syntax().preorder();
+
         while let Some(event) = child_iter.next() {
             match event {
                 WalkEvent::Enter(child) => match child.kind() {
@@ -231,15 +251,20 @@ impl NoLabelWithoutControlOptions {
                     | JsSyntaxKind::JSX_OPENING_ELEMENT
                     | JsSyntaxKind::JSX_CHILD_LIST
                     | JsSyntaxKind::JSX_SELF_CLOSING_ELEMENT => {}
+
                     _ => {
                         let Some(element_name) = AnyJsxElementName::cast(child) else {
                             child_iter.skip_subtree();
+
                             continue;
                         };
+
                         let Ok(element_name) = element_name.name_value_token() else {
                             continue;
                         };
+
                         let element_name = element_name.text_trimmed();
+
                         if DEFAULT_INPUT_COMPONENTS.contains(&element_name)
                             || self
                                 .input_components
@@ -253,6 +278,7 @@ impl NoLabelWithoutControlOptions {
                 WalkEvent::Leave(_) => {}
             }
         }
+
         false
     }
 
@@ -276,9 +302,11 @@ const DEFAULT_INPUT_COMPONENTS: [&str; 6] =
 /// Returns whether the passed `AnyJsxTag` have a `for` or `htmlFor` attribute
 fn has_for_attribute(jsx_tag: &AnyJsxTag) -> bool {
     let for_attributes = ["for", "htmlFor"];
+
     let Some(attributes) = jsx_tag.attributes() else {
         return false;
     };
+
     attributes.into_iter().any(|attribute| match attribute {
         AnyJsxAttribute::JsxAttribute(jsx_attribute) => jsx_attribute
             .name()

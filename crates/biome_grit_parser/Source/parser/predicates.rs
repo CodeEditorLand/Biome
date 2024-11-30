@@ -34,6 +34,7 @@ fn parse_bracketed_predicate(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['(']);
 
     parse_expected_predicate(p);
@@ -75,10 +76,12 @@ fn parse_infix_predicate(p: &mut GritParser) -> ParsedSyntax {
 
     let Present(mut subject) = parse_container(p).or_else(|| parse_literal(p)) else {
         m.abandon(p);
+
         return Absent;
     };
 
     use InfixPredicateKind::*;
+
     let kind = match p.cur() {
         T![+=] => Accumulate,
         T![=] => Assignment,
@@ -92,10 +95,13 @@ fn parse_infix_predicate(p: &mut GritParser) -> ParsedSyntax {
         T![=>] => Rewrite,
         T![,] | T!['}'] => {
             p.error(expected_node("operator", p.cur_range(), p));
+
             return Present(m.complete(p, GRIT_BOGUS_PREDICATE));
         }
+
         _ => {
             p.error(expected_predicate_infix_operator(p, p.cur_range()));
+
             Bogus
         }
     };
@@ -109,8 +115,10 @@ fn parse_infix_predicate(p: &mut GritParser) -> ParsedSyntax {
                 ParseDiagnostic::new("Expected a variable.", subject.range(p))
                     .with_detail(p.cur_range(), "This operator only works on variables."),
             );
+
             subject.change_to_bogus(p);
         }
+
         Assignment if !CONTAINER_SET.contains(subject.kind(p)) => {
             p.error(
                 ParseDiagnostic::new("Expected a variable or container.", subject.range(p))
@@ -119,8 +127,10 @@ fn parse_infix_predicate(p: &mut GritParser) -> ParsedSyntax {
                         "Assignment only works on variables and containers.",
                     ),
             );
+
             subject.change_to_bogus(p);
         }
+
         _ => {}
     }
 
@@ -147,6 +157,7 @@ fn parse_infix_predicate(p: &mut GritParser) -> ParsedSyntax {
         Rewrite => GRIT_PREDICATE_REWRITE,
         Bogus => GRIT_BOGUS_PREDICATE,
     };
+
     Present(m.complete(p, kind))
 }
 
@@ -157,7 +168,9 @@ fn parse_predicate_and(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.eat(AND_KW);
+
     p.expect(T!['{']);
 
     PredicateList.parse_list(p);
@@ -174,7 +187,9 @@ fn parse_predicate_any(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(ANY_KW);
+
     p.expect(T!['{']);
 
     PredicateList.parse_list(p);
@@ -188,6 +203,7 @@ pub(crate) struct PredicateCallArgList;
 
 impl ParseSeparatedList for PredicateCallArgList {
     type Kind = GritSyntaxKind;
+
     type Parser<'source> = GritParser<'source>;
 
     const LIST_KIND: Self::Kind = GRIT_NAMED_ARG_LIST;
@@ -230,6 +246,7 @@ fn parse_predicate_call(p: &mut GritParser) -> ParsedSyntax {
     let m = p.start();
 
     parse_name(p).ok();
+
     p.expect(T!['(']);
 
     PredicateCallArgList.parse_list(p);
@@ -246,7 +263,9 @@ fn parse_predicate_if_else(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(IF_KW);
+
     p.expect(T!['(']);
 
     parse_expected_predicate(p);
@@ -267,6 +286,7 @@ fn parse_predicate_else_clause(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(ELSE_KW);
 
     parse_expected_predicate(p);
@@ -278,6 +298,7 @@ pub(crate) struct PredicateList;
 
 impl ParseSeparatedList for PredicateList {
     type Kind = GritSyntaxKind;
+
     type Parser<'source> = GritParser<'source>;
 
     const LIST_KIND: Self::Kind = GRIT_PREDICATE_LIST;
@@ -296,7 +317,9 @@ impl ParseSeparatedList for PredicateList {
         parsed_element: ParsedSyntax,
     ) -> biome_parser::parse_recovery::RecoveryResult {
         let current_token = p.cur();
+
         let current_range = p.cur_range();
+
         parsed_element.or_recover_with_token_set(
             p,
             &ParseRecoveryTokenSet::new(GRIT_BOGUS_PREDICATE, PREDICATE_RECOVERY_SET),
@@ -327,6 +350,7 @@ fn parse_predicate_maybe(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(MAYBE_KW);
 
     parse_expected_predicate(p);
@@ -353,7 +377,9 @@ fn parse_predicate_or(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(OR_KW);
+
     p.expect(T!['{']);
 
     PredicateList.parse_list(p);
@@ -370,6 +396,7 @@ fn parse_predicate_return(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(RETURN_KW);
 
     parse_pattern(p)

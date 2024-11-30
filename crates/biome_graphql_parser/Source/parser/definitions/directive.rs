@@ -45,7 +45,9 @@ pub(crate) fn parse_directive_definition(p: &mut GraphqlParser) -> ParsedSyntax 
     parse_description(p).ok();
 
     p.bump(T![directive]);
+
     p.expect(T![@]);
+
     parse_binding(p).or_add_diagnostic(p, expected_name);
 
     // arguments are optional
@@ -53,12 +55,14 @@ pub(crate) fn parse_directive_definition(p: &mut GraphqlParser) -> ParsedSyntax 
 
     // repeatable is optional
     p.eat(T![repeatable]);
+
     p.expect(T![on]);
 
     // | is optional
     p.eat(T![|]);
 
     let position = p.source().position();
+
     DirectiveLocationList.parse_list(p);
 
     // has not progressed, meaning no directive locations were parsed
@@ -74,6 +78,7 @@ struct DirectiveLocationList;
 
 impl ParseSeparatedList for DirectiveLocationList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_DIRECTIVE_LOCATION_LIST;
@@ -111,7 +116,9 @@ struct DirectiveLocationListParseRecovery;
 
 impl ParseRecovery for DirectiveLocationListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -124,7 +131,10 @@ fn parse_directive_location(p: &mut GraphqlParser) -> ParsedSyntax {
     if !p.at_ts(DIRECTIVE_LOCATION_SET) {
         return Absent;
     }
+
     let m = p.start();
+
     p.bump_ts(DIRECTIVE_LOCATION_SET);
+
     Present(m.complete(p, GRAPHQL_DIRECTIVE_LOCATION))
 }

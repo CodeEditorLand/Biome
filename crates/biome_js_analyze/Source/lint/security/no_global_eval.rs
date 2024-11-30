@@ -60,22 +60,30 @@ declare_lint_rule! {
 
 impl Rule for NoGlobalEval {
     type Query = Semantic<AnyJsExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let (reference, name) = global_identifier(node)?;
+
         if name.text() != "eval" {
             return None;
         }
+
         model.binding(&reference).is_none().then_some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),

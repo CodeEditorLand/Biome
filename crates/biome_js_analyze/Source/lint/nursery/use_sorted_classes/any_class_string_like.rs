@@ -46,10 +46,13 @@ fn inspect_string_literal(
     options: &UtilityClassSortingOptions,
 ) -> Option<bool> {
     let mut in_arguments = false;
+
     let mut in_function = false;
+
     for ancestor in node.ancestors().skip(1) {
         if let Some(jsx_attribute) = JsxAttribute::cast_ref(&ancestor) {
             let attribute_name = get_attribute_name(&jsx_attribute)?;
+
             if options.has_attribute(attribute_name.text()) {
                 return Some(true);
             }
@@ -77,22 +80,27 @@ impl AnyClassStringLike {
             AnyClassStringLike::JsStringLiteralExpression(string_literal) => {
                 inspect_string_literal(string_literal.syntax(), options)
             }
+
             AnyClassStringLike::JsLiteralMemberName(literal_name) => {
                 inspect_string_literal(literal_name.syntax(), options)
             }
+
             AnyClassStringLike::JsxString(jsx_string) => {
                 let jsx_attribute = jsx_string
                     .syntax()
                     .ancestors()
                     .skip(1)
                     .find_map(JsxAttribute::cast)?;
+
                 let name = get_attribute_name(&jsx_attribute)?;
+
                 if options.has_attribute(name.text()) {
                     return Some(true);
                 }
 
                 None
             }
+
             AnyClassStringLike::JsTemplateChunkElement(template) => {
                 for ancestor in template.syntax().ancestors().skip(1) {
                     if let Some(template_expression) = JsTemplateExpression::cast_ref(&ancestor) {
@@ -100,12 +108,14 @@ impl AnyClassStringLike {
                             template_expression.tag()
                         {
                             let name = tag.name().ok()?.name().ok()?;
+
                             if options.has_function(name.text()) {
                                 return Some(true);
                             }
                         }
                     } else if let Some(jsx_attribute) = JsxAttribute::cast_ref(&ancestor) {
                         let attribute_name = get_attribute_name(&jsx_attribute)?;
+
                         if options.has_attribute(attribute_name.text()) {
                             return Some(true);
                         }
@@ -124,6 +134,7 @@ impl AnyClassStringLike {
             AnyClassStringLike::JsTemplateChunkElement(template_chunk) => {
                 Some(template_chunk.template_chunk_token().ok()?.token_text())
             }
+
             AnyClassStringLike::JsLiteralMemberName(node) => node.name().ok(),
         }
     }

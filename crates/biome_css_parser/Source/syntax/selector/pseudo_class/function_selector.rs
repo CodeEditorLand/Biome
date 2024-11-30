@@ -59,6 +59,7 @@ pub(crate) fn parse_pseudo_class_function_selector(p: &mut CssParser) -> ParsedS
     let m = p.start();
 
     p.bump_ts(CSS_MODULES_SCOPE_SET);
+
     p.bump(T!['(']);
 
     let kind = match parse_selector(p) {
@@ -69,9 +70,12 @@ pub(crate) fn parse_pseudo_class_function_selector(p: &mut CssParser) -> ParsedS
                 CSS_BOGUS_PSEUDO_CLASS
             }
         }
+
         Absent => {
             recover_selector_function_parameter(p, expected_selector);
+
             p.expect(T![')']);
+
             CSS_BOGUS_PSEUDO_CLASS
         }
     };

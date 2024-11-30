@@ -45,17 +45,22 @@ declare_lint_rule! {
 
 impl Rule for NoConstEnum {
     type Query = Ast<TsEnumDeclaration>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let enum_decl = ctx.query();
+
         enum_decl.const_token().and(Some(()))
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let enum_decl = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             enum_decl.range(),
@@ -71,15 +76,22 @@ impl Rule for NoConstEnum {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let enum_decl = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let const_token = enum_decl.const_token()?;
+
         let enum_token = enum_decl.enum_token().ok()?;
+
         let new_enum_token = enum_token.prepend_trivia_pieces(chain_trivia_pieces(
             const_token.leading_trivia().pieces(),
             trim_leading_trivia_pieces(const_token.trailing_trivia().pieces()),
         ));
+
         mutation.remove_token(const_token);
+
         mutation.replace_token_discard_trivia(enum_token, new_enum_token);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

@@ -19,6 +19,7 @@ use GritSyntaxKind::*;
 impl From<u16> for GritSyntaxKind {
     fn from(d: u16) -> GritSyntaxKind {
         assert!(d <= (GritSyntaxKind::__LAST as u16));
+
         unsafe { std::mem::transmute::<u16, GritSyntaxKind>(d) }
     }
 }
@@ -40,6 +41,7 @@ impl GritSyntaxKind {
 
 impl biome_rowan::SyntaxKind for GritSyntaxKind {
     const TOMBSTONE: Self = TOMBSTONE;
+
     const EOF: Self = EOF;
 
     fn is_bogus(&self) -> bool {

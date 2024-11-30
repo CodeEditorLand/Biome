@@ -67,14 +67,18 @@ impl Format<JsFormatContext> for FormatJsAnyParameterList<'_> {
                         ))
                     )
                 });
+
                 let mut joiner = if has_modifiers {
                     f.join_nodes_with_hardline()
                 } else {
                     f.join_nodes_with_soft_line()
                 };
+
                 join_parameter_list(&mut joiner, self.list, trailing_separator)?;
+
                 joiner.finish()
             }
+
             Some(ParameterLayout::Hug) => {
                 let mut join = f.join_with(space());
 
@@ -114,6 +118,7 @@ where
                 joiner.entry(node?.syntax(), &format_entry);
             }
         }
+
         AnyJsParameterList::JsConstructorParameterList(list) => {
             let entries = list
                 .format_separated(",")

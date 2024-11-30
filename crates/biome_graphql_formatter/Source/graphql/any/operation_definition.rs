@@ -6,6 +6,7 @@ use biome_graphql_syntax::AnyGraphqlOperationDefinition;
 pub(crate) struct FormatAnyGraphqlOperationDefinition;
 impl FormatRule<AnyGraphqlOperationDefinition> for FormatAnyGraphqlOperationDefinition {
     type Context = GraphqlFormatContext;
+
     fn fmt(
         &self,
         node: &AnyGraphqlOperationDefinition,

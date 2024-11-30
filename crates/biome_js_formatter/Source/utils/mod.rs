@@ -52,6 +52,7 @@ pub(crate) fn is_long_curried_call(expression: Option<&JsCallExpression>) -> boo
                     parent_call.syntax().kind(),
                     JsSyntaxKind::JS_CALL_EXPRESSION | JsSyntaxKind::JS_NEW_EXPRESSION
                 );
+
                 return is_callee
                     && arguments.args().len() > parent_arguments.args().len()
                     && !parent_arguments.args().is_empty();
@@ -126,8 +127,11 @@ impl Format<JsFormatContext> for FormatInterpreterToken<'_> {
         if let Some(interpreter) = self.token {
             // Trim trailing spaces of the interpreter
             let interpreter_text = interpreter.text_trimmed();
+
             let trimmed_interpreter_text = interpreter_text.trim_end();
+
             let diff = (interpreter_text.len() - trimmed_interpreter_text.len()) as u32;
+
             let trimmed_range = interpreter
                 .text_trimmed_range()
                 .sub_end(TextSize::from(diff));
@@ -173,6 +177,7 @@ impl<'a> FormatStatementBody<'a> {
     /// instead gets separated by a space.
     pub fn with_forced_space(mut self, forced: bool) -> Self {
         self.force_space = forced;
+
         self
     }
 }
@@ -298,6 +303,7 @@ where
     I: Iterator<Item = S>,
 {
     let mut iterator = separated.peekable();
+
     let mut join_with = f.join_with(soft_line_break_or_space());
 
     while let Some(element) = iterator.next() {

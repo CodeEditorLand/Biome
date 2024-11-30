@@ -104,18 +104,25 @@ declare_lint_rule! {
 
 impl Rule for NoInferrableTypes {
     type Query = Ast<JsInitializerClause>;
+
     type State = TsTypeAnnotation;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let init = ctx.query();
+
         let init_expr = init.expression().ok()?.omit_parentheses();
+
         if has_trivially_inferrable_type(&init_expr).is_some() {
             // `is_const` signals a const context (const declarations, readonly properties)
             // non const contexts are other situations (let/var declarations, mutable properties, formal parameters)
             let mut is_const = false;
+
             let mut type_annotation = None;
+
             if let Some(param) = init.parent::<JsFormalParameter>() {
                 if let Some(prop_param) = param.parent::<TsPropertyParameter>() {
                     is_const = prop_param
@@ -123,12 +130,14 @@ impl Rule for NoInferrableTypes {
                         .into_iter()
                         .any(|x| TsReadonlyModifier::can_cast(x.syntax().kind()));
                 }
+
                 type_annotation = param.type_annotation();
             } else if let Some(prop) = init.parent::<JsPropertyClassMember>() {
                 is_const = prop
                     .modifiers()
                     .into_iter()
                     .any(|x| TsReadonlyModifier::can_cast(x.syntax().kind()));
+
                 type_annotation = match prop.property_annotation()? {
                     AnyTsPropertyAnnotation::TsTypeAnnotation(annotation) => Some(annotation),
                     _ => None,
@@ -138,11 +147,13 @@ impl Rule for NoInferrableTypes {
                     .parent::<JsVariableDeclaratorList>()?
                     .parent::<JsVariableDeclaration>()?
                     .is_const();
+
                 type_annotation = match declarator.variable_annotation()? {
                     AnyTsVariableAnnotation::TsTypeAnnotation(annotation) => Some(annotation),
                     _ => None,
                 };
             }
+
             if let Some(type_annotation) = type_annotation {
                 let ty = type_annotation.ty().ok()?.omit_parentheses();
                 // In const contexts, literal type annotations are rejected.
@@ -170,6 +181,7 @@ impl Rule for NoInferrableTypes {
                 }
             }
         }
+
         None
     }
 
@@ -185,16 +197,26 @@ impl Rule for NoInferrableTypes {
 
     fn action(ctx: &RuleContext<Self>, annotation: &Self::State) -> Option<JsRuleAction> {
         let mut mutation = ctx.root().begin();
+
         let first_token = annotation.syntax().first_token()?;
+
         let prev_token = first_token.prev_token()?;
+
         let new_prev_token = prev_token.append_trivia_pieces(first_token.leading_trivia().pieces());
+
         let last_token = annotation.syntax().last_token()?;
+
         let next_token = last_token.next_token()?;
+
         let new_next_token =
             next_token.prepend_trivia_pieces(last_token.trailing_trivia().pieces());
+
         mutation.replace_token_discard_trivia(prev_token, new_prev_token);
+
         mutation.replace_token_discard_trivia(next_token, new_next_token);
+
         mutation.remove_node(annotation.clone());
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -217,6 +239,7 @@ fn has_trivially_inferrable_type(expr: &AnyJsExpression) -> Option<()> {
                 _ => None,
             }
         }
+
         _ => None,
     }
 }

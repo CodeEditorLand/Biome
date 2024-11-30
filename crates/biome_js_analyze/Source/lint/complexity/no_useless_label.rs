@@ -43,18 +43,24 @@ declare_lint_rule! {
 
 impl Rule for NoUselessLabel {
     type Query = Ast<AnyJsStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let stmt = ctx.query();
+
         let label_token = match stmt {
             AnyJsStatement::JsBreakStatement(x) => x.label_token(),
             AnyJsStatement::JsContinueStatement(x) => x.label_token(),
             _ => None,
         }?;
+
         let label = label_token.text_trimmed();
+
         for parent in stmt.syntax().ancestors() {
             if is_breakable_statement_kind(parent.kind()) {
                 if let Some(labeled_stmt) = JsLabeledStatement::cast(parent.parent()?) {
@@ -62,6 +68,7 @@ impl Rule for NoUselessLabel {
                         return Some(());
                     }
                 }
+
                 break;
             } else if let Some(labeled_stmt) = JsLabeledStatement::cast(parent) {
                 if labeled_stmt.label_token().ok()?.text_trimmed() == label {
@@ -69,16 +76,19 @@ impl Rule for NoUselessLabel {
                 }
             }
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let stmt = ctx.query();
+
         let label_token = match stmt {
             AnyJsStatement::JsBreakStatement(x) => x.label_token(),
             AnyJsStatement::JsContinueStatement(x) => x.label_token(),
             _ => None,
         }?;
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             label_token.text_trimmed_range(),
@@ -90,6 +100,7 @@ impl Rule for NoUselessLabel {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let stmt = ctx.query();
+
         let (stmt_token, label_token) = match stmt {
             AnyJsStatement::JsBreakStatement(x) => (x.break_token().ok()?, x.label_token()?),
             AnyJsStatement::JsContinueStatement(x) => (x.continue_token().ok()?, x.label_token()?),
@@ -104,9 +115,13 @@ impl Rule for NoUselessLabel {
         let new_stmt_token = stmt_token
             .trim_trailing_trivia()
             .append_trivia_pieces(label_token.trailing_trivia().pieces());
+
         let mut mutation = ctx.root().begin();
+
         mutation.remove_token(label_token);
+
         mutation.replace_token_discard_trivia(stmt_token, new_stmt_token);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

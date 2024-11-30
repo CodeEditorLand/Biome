@@ -13,6 +13,7 @@ pub struct HtmlLanguage;
 
 impl Language for HtmlLanguage {
     type Kind = HtmlSyntaxKind;
+
     type Root = HtmlRoot;
 }
 

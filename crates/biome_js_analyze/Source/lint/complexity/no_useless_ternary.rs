@@ -63,14 +63,18 @@ declare_lint_rule! {
 
 impl Rule for NoUselessTernary {
     type Query = Ast<JsConditionalExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
 
         let alternate = node.alternate().ok()?;
+
         let consequent = node.consequent().ok()?;
 
         if is_boolean_literal(&alternate) && is_boolean_literal(&consequent) {
@@ -82,6 +86,7 @@ impl Rule for NoUselessTernary {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -101,7 +106,9 @@ impl Rule for NoUselessTernary {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let node_expression_kind = node.test().ok()?.syntax().kind();
+
         let alternate = node
             .alternate()
             .ok()?
@@ -109,6 +116,7 @@ impl Rule for NoUselessTernary {
             .as_js_boolean_literal_expression()?
             .value_token()
             .ok()?;
+
         let consequent = node
             .consequent()
             .ok()?
@@ -118,6 +126,7 @@ impl Rule for NoUselessTernary {
             .ok()?;
 
         let new_node;
+
         let mut mutation = ctx.root().begin();
 
         if alternate.text_trimmed() == consequent.text_trimmed() {
@@ -142,7 +151,9 @@ impl Rule for NoUselessTernary {
             match node_expression_kind {
                 JsSyntaxKind::JS_BINARY_EXPRESSION => {
                     let left = node.test().ok()?.as_js_binary_expression()?.left().ok()?;
+
                     let right = node.test().ok()?.as_js_binary_expression()?.right().ok()?;
+
                     let operator = node
                         .test()
                         .ok()?
@@ -157,6 +168,7 @@ impl Rule for NoUselessTernary {
                         right,
                     ));
                 }
+
                 JsSyntaxKind::JS_INSTANCEOF_EXPRESSION => {
                     let left = node
                         .test()
@@ -164,12 +176,14 @@ impl Rule for NoUselessTernary {
                         .as_js_instanceof_expression()?
                         .left()
                         .ok()?;
+
                     let right = node
                         .test()
                         .ok()?
                         .as_js_instanceof_expression()?
                         .right()
                         .ok()?;
+
                     new_node = make::js_instanceof_expression(
                         left,
                         make::token_decorated_with_space(T![instanceof]),
@@ -177,9 +191,12 @@ impl Rule for NoUselessTernary {
                     )
                     .into();
                 }
+
                 JsSyntaxKind::JS_IN_EXPRESSION => {
                     let property = node.test().ok()?.as_js_in_expression()?.property().ok()?;
+
                     let object = node.test().ok()?.as_js_in_expression()?.object().ok()?;
+
                     new_node = make::js_in_expression(
                         property,
                         make::token_decorated_with_space(T![in]),
@@ -187,6 +204,7 @@ impl Rule for NoUselessTernary {
                     )
                     .into();
                 }
+
                 JsSyntaxKind::JS_UNARY_EXPRESSION => {
                     let argument = node
                         .test()
@@ -194,16 +212,20 @@ impl Rule for NoUselessTernary {
                         .as_js_unary_expression()?
                         .argument()
                         .ok()?;
+
                     new_node = make::js_unary_expression(make::token(T![!]), argument).into();
                 }
+
                 _ => return None,
             }
         } else {
             let new_expression = invert_expression(&node.test().ok()?)?;
+
             new_node = make::js_unary_expression(make::token(T![!]), new_expression).into();
         }
 
         mutation.replace_element(node.clone().into(), new_node.into());
+
         return Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -215,9 +237,11 @@ impl Rule for NoUselessTernary {
 
 fn is_boolean_literal(expression: &AnyJsExpression) -> bool {
     let expr_kind = expression.syntax().kind();
+
     if expr_kind == JsSyntaxKind::JS_BOOLEAN_LITERAL_EXPRESSION {
         return true;
     }
+
     false
 }
 
@@ -231,15 +255,19 @@ fn is_boolean_expression(expression: &AnyJsExpression) -> Option<bool> {
                 return Some(true);
             }
         }
+
         JsSyntaxKind::JS_UNARY_EXPRESSION => {
             let operator = expression.as_js_unary_expression()?.operator_token().ok()?;
+
             if operator.kind() == JsSyntaxKind::BANG {
                 return Some(true);
             }
         }
+
         JsSyntaxKind::JS_INSTANCEOF_EXPRESSION | JsSyntaxKind::JS_IN_EXPRESSION => {
             return Some(true);
         }
+
         _ => return Some(false),
     };
 
@@ -252,6 +280,7 @@ fn invert_expression(expression: &AnyJsExpression) -> Option<AnyJsExpression> {
             .as_js_binary_expression()?
             .operator_token()
             .ok()?;
+
         let suggested_operator = match operator.kind() {
             JsSyntaxKind::EQ2 => Some(T![!=]),
             JsSyntaxKind::EQ3 => Some(T![!==]),
@@ -262,7 +291,9 @@ fn invert_expression(expression: &AnyJsExpression) -> Option<AnyJsExpression> {
 
         if let Some(operator) = suggested_operator {
             let left = expression.as_js_binary_expression()?.left().ok()?;
+
             let right = expression.as_js_binary_expression()?.right().ok()?;
+
             let new_node = AnyJsExpression::from(make::js_binary_expression(
                 left,
                 make::token(operator),
@@ -275,7 +306,9 @@ fn invert_expression(expression: &AnyJsExpression) -> Option<AnyJsExpression> {
 
     if expression.precedence().ok()? < OperatorPrecedence::Unary {
         let new_node = make::parenthesized(expression.clone()).into();
+
         let new_node = make::js_unary_expression(make::token(T![!]), new_node).into();
+
         return Some(new_node);
     }
 

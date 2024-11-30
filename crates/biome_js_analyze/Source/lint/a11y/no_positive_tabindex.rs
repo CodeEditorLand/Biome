@@ -86,6 +86,7 @@ impl NoPositiveTabindexQuery {
             NoPositiveTabindexQuery::JsCallExpression(expression) => {
                 let react_create_element =
                     ReactCreateElementCall::from_call_expression(expression, model)?;
+
                 react_create_element
                     .find_prop_by_name("tabIndex")
                     .map(TabindexProp::from)
@@ -103,9 +104,11 @@ impl AnyNumberLikeExpression {
             AnyNumberLikeExpression::JsStringLiteralExpression(string_literal) => {
                 return Some(string_literal.inner_string_text().ok()?.to_string());
             }
+
             AnyNumberLikeExpression::JsNumberLiteralExpression(number_literal) => {
                 return Some(number_literal.value_token().ok()?.to_string());
             }
+
             AnyNumberLikeExpression::JsUnaryExpression(unary_expression) => {
                 if unary_expression.is_signed_numeric_literal().ok()? {
                     return Some(unary_expression.text());
@@ -119,13 +122,18 @@ impl AnyNumberLikeExpression {
 
 impl Rule for NoPositiveTabindex {
     type Query = Semantic<NoPositiveTabindexQuery>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let tabindex_attribute = node.find_tabindex_attribute(model)?;
 
         match tabindex_attribute {
@@ -136,11 +144,15 @@ impl Rule for NoPositiveTabindex {
                     return Some(jsx_any_attribute_value.syntax().text_trimmed_range());
                 }
             }
+
             TabindexProp::JsPropertyObjectMember(js_object_member) => {
                 let expression = js_object_member.value().ok()?;
+
                 let range = expression.range();
+
                 let expression_value =
                     AnyNumberLikeExpression::cast(expression.into_syntax())?.value()?;
+
                 if !is_tabindex_valid(&expression_value) {
                     return Some(range);
                 }
@@ -172,23 +184,31 @@ impl Rule for NoPositiveTabindex {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let element = ctx.query();
+
         let model = ctx.model();
+
         let tabindex_attribute = element.find_tabindex_attribute(model)?;
 
         let mut mutation = ctx.root().begin();
+
         match tabindex_attribute {
             TabindexProp::JsxAttribute(jsx_attribute) => {
                 let prev_val = jsx_attribute.initializer()?.value().ok()?;
+
                 let new_val = AnyJsxAttributeValue::JsxString(jsx_string(jsx_string_literal("0")));
+
                 mutation.replace_node(prev_val, new_val);
             }
+
             TabindexProp::JsPropertyObjectMember(js_object_member) => {
                 let prev_val = js_object_member.value().ok()?;
+
                 let new_val = biome_js_syntax::AnyJsExpression::AnyJsLiteralExpression(
                     AnyJsLiteralExpression::JsStringLiteralExpression(
                         make::js_string_literal_expression(jsx_string_literal("0")),
                     ),
                 );
+
                 mutation.replace_node(prev_val, new_val);
             }
         };
@@ -208,15 +228,19 @@ fn attribute_has_valid_tabindex(jsx_any_attribute_value: &AnyJsxAttributeValue) 
     match jsx_any_attribute_value {
         AnyJsxAttributeValue::JsxString(jsx_string) => {
             let value = jsx_string.inner_string_text().ok()?.to_string();
+
             Some(is_tabindex_valid(&value))
         }
+
         AnyJsxAttributeValue::JsxExpressionAttributeValue(value) => {
             let expression = value.expression().ok()?;
+
             let expression_value =
                 AnyNumberLikeExpression::cast(expression.into_syntax())?.value()?;
 
             Some(is_tabindex_valid(&expression_value))
         }
+
         _ => None,
     }
 }

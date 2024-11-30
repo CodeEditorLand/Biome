@@ -106,7 +106,9 @@ impl<K: SyntaxKind> ParserContext<K> {
             event_pos,
             errors_pos,
         } = checkpoint;
+
         self.drain_events(self.cur_event_pos() - event_pos);
+
         self.diagnostics.truncate(errors_pos as usize);
     }
 
@@ -142,6 +144,7 @@ impl ParserContextCheckpoint {
 
 pub trait Parser: Sized {
     type Kind: SyntaxKind;
+
     type Source: TokenSource<Kind = Self::Kind>;
 
     /// Returns a reference to the [ParserContext].
@@ -283,6 +286,7 @@ pub trait Parser: Sized {
     /// Bumps the current token regardless of its kind and advances to the next token.
     fn bump_any(&mut self) {
         let kind = self.cur();
+
         assert_ne!(kind, Self::Kind::EOF);
 
         self.do_bump(kind);
@@ -317,6 +321,7 @@ pub trait Parser: Sized {
         Self::Source: BumpWithContext,
     {
         let end = self.cur_range().end();
+
         self.context_mut().push_token(kind, end);
 
         if self.context().skipping {
@@ -329,6 +334,7 @@ pub trait Parser: Sized {
     #[doc(hidden)]
     fn do_bump(&mut self, kind: Self::Kind) {
         let end = self.cur_range().end();
+
         self.context_mut().push_token(kind, end);
 
         if self.context().skipping {
@@ -410,6 +416,7 @@ pub trait Parser: Sized {
             true
         } else {
             self.error(expected_token(kind));
+
             false
         }
     }
@@ -420,6 +427,7 @@ pub trait Parser: Sized {
             true
         } else {
             self.error(expected_token(kind));
+
             false
         }
     }
@@ -430,8 +438,11 @@ pub trait Parser: Sized {
         P: FnOnce(&mut Self),
     {
         let events_pos = self.context().events.len();
+
         self.context_mut().skipping = true;
+
         parse(self);
+
         self.context_mut().skipping = false;
 
         // Truncate any start/finish events
@@ -450,9 +461,11 @@ pub trait Parser: Sized {
                 {
                     return;
                 }
+
                 _ => {}
             }
         }
+
         self.context_mut().diagnostics.push(err)
     }
 
@@ -465,8 +478,11 @@ pub trait Parser: Sized {
     /// Bump and add an error event
     fn err_and_bump(&mut self, err: impl ToDiagnostic<Self>, unknown_syntax_kind: Self::Kind) {
         let m = self.start();
+
         self.bump_any();
+
         m.complete(self, unknown_syntax_kind);
+
         self.error(err);
     }
 
@@ -499,8 +515,11 @@ pub trait Parser: Sized {
     /// belong to the same node.
     fn start(&mut self) -> Marker {
         let pos = self.context().events.len() as u32;
+
         let start = self.source().position();
+
         self.context_mut().push_event(Event::tombstone());
+
         Marker::new(pos, start)
     }
 }
@@ -574,8 +593,11 @@ pub trait SyntaxFeature: Sized {
         syntax.into().map(|mut syntax| {
             if self.is_unsupported(p) {
                 let error = error_builder(p, &syntax);
+
                 p.error(error);
+
                 syntax.change_to_bogus(p);
+
                 syntax
             } else {
                 syntax
@@ -601,16 +623,22 @@ pub trait SyntaxFeature: Sized {
             parse(p)
         } else {
             let diagnostics_checkpoint = p.context().diagnostics().len();
+
             let syntax = parse(p);
+
             p.context_mut().truncate_diagnostics(diagnostics_checkpoint);
 
             match syntax {
                 Present(mut syntax) => {
                     let diagnostic = error_builder(p, &syntax);
+
                     p.error(diagnostic);
+
                     syntax.change_to_bogus(p);
+
                     Present(syntax)
                 }
+
                 _ => Absent,
             }
         }
@@ -635,8 +663,11 @@ pub trait SyntaxFeature: Sized {
                 syntax
             } else {
                 let error = error_builder(p, &syntax);
+
                 p.error(error);
+
                 syntax.change_to_bogus(p);
+
                 syntax
             }
         })

@@ -20,6 +20,7 @@ impl FormatNodeRule<GritPatternDefinition> for FormatGritPatternDefinition {
         if let Some(visibility) = visibility_token {
             write!(f, [visibility.format(), space()])?;
         }
+
         write!(
             f,
             [

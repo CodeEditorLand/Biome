@@ -36,11 +36,13 @@ impl YamlArray {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlArrayFields {
         YamlArrayFields {
             items: self.items(),
         }
     }
+
     pub fn items(&self) -> YamlArrayItemList {
         support::list(&self.syntax, 0usize)
     }
@@ -71,6 +73,7 @@ impl YamlArrayInline {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlArrayInlineFields {
         YamlArrayInlineFields {
             l_brack_token: self.l_brack_token(),
@@ -78,12 +81,15 @@ impl YamlArrayInline {
             r_brack_token: self.r_brack_token(),
         }
     }
+
     pub fn l_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn items(&self) -> YamlArrayInlineList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn r_brack_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -116,15 +122,18 @@ impl YamlArrayItem {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlArrayItemFields {
         YamlArrayItemFields {
             minus_token: self.minus_token(),
             item: self.item(),
         }
     }
+
     pub fn minus_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn item(&self) -> SyntaxResult<AnyYamlValue> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -156,15 +165,18 @@ impl YamlBlockFolded {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlBlockFoldedFields {
         YamlBlockFoldedFields {
             r_angle_token: self.r_angle_token(),
             value: self.value(),
         }
     }
+
     pub fn r_angle_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> SyntaxResult<YamlBlockValue> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -196,15 +208,18 @@ impl YamlBlockLiteral {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlBlockLiteralFields {
         YamlBlockLiteralFields {
             bitwise_or_token: self.bitwise_or_token(),
             value: self.value(),
         }
     }
+
     pub fn bitwise_or_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
+
     pub fn value(&self) -> SyntaxResult<YamlBlockValue> {
         support::required_node(&self.syntax, 1usize)
     }
@@ -236,11 +251,13 @@ impl YamlBlockValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlBlockValueFields {
         YamlBlockValueFields {
             yaml_block_value_token: self.yaml_block_value_token(),
         }
     }
+
     pub fn yaml_block_value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -271,11 +288,13 @@ impl YamlBooleanValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlBooleanValueFields {
         YamlBooleanValueFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -306,6 +325,7 @@ impl YamlDocument {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlDocumentFields {
         YamlDocumentFields {
             dashdashdash_token: self.dashdashdash_token(),
@@ -313,12 +333,15 @@ impl YamlDocument {
             dotdotdot_token: self.dotdotdot_token(),
         }
     }
+
     pub fn dashdashdash_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn body(&self) -> SyntaxResult<AnyYamlValue> {
         support::required_node(&self.syntax, 1usize)
     }
+
     pub fn dotdotdot_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 2usize)
     }
@@ -351,11 +374,13 @@ impl YamlIdentifier {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlIdentifierFields {
         YamlIdentifierFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -386,11 +411,13 @@ impl YamlNullValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlNullValueFields {
         YamlNullValueFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -421,11 +448,13 @@ impl YamlNumberValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlNumberValueFields {
         YamlNumberValueFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -456,11 +485,13 @@ impl YamlObject {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlObjectFields {
         YamlObjectFields {
             members: self.members(),
         }
     }
+
     pub fn members(&self) -> YamlObjectMemberList {
         support::list(&self.syntax, 0usize)
     }
@@ -491,6 +522,7 @@ impl YamlObjectMember {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlObjectMemberFields {
         YamlObjectMemberFields {
             key: self.key(),
@@ -498,12 +530,15 @@ impl YamlObjectMember {
             value: self.value(),
         }
     }
+
     pub fn key(&self) -> SyntaxResult<YamlIdentifier> {
         support::required_node(&self.syntax, 0usize)
     }
+
     pub fn colon_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 1usize)
     }
+
     pub fn value(&self) -> SyntaxResult<AnyYamlValue> {
         support::required_node(&self.syntax, 2usize)
     }
@@ -536,6 +571,7 @@ impl YamlRoot {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlRootFields {
         YamlRootFields {
             bom_token: self.bom_token(),
@@ -543,12 +579,15 @@ impl YamlRoot {
             eof_token: self.eof_token(),
         }
     }
+
     pub fn bom_token(&self) -> Option<SyntaxToken> {
         support::token(&self.syntax, 0usize)
     }
+
     pub fn documents(&self) -> YamlDocumentList {
         support::list(&self.syntax, 1usize)
     }
+
     pub fn eof_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 2usize)
     }
@@ -581,11 +620,13 @@ impl YamlStringValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn as_fields(&self) -> YamlStringValueFields {
         YamlStringValueFields {
             value_token: self.value_token(),
         }
     }
+
     pub fn value_token(&self) -> SyntaxResult<SyntaxToken> {
         support::required_token(&self.syntax, 0usize)
     }
@@ -616,18 +657,21 @@ impl AnyYamlScalar {
             _ => None,
         }
     }
+
     pub fn as_yaml_null_value(&self) -> Option<&YamlNullValue> {
         match &self {
             AnyYamlScalar::YamlNullValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_yaml_number_value(&self) -> Option<&YamlNumberValue> {
         match &self {
             AnyYamlScalar::YamlNumberValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_yaml_string_value(&self) -> Option<&YamlStringValue> {
         match &self {
             AnyYamlScalar::YamlStringValue(item) => Some(item),
@@ -650,24 +694,28 @@ impl AnyYamlValue {
             _ => None,
         }
     }
+
     pub fn as_yaml_array(&self) -> Option<&YamlArray> {
         match &self {
             AnyYamlValue::YamlArray(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_yaml_array_inline(&self) -> Option<&YamlArrayInline> {
         match &self {
             AnyYamlValue::YamlArrayInline(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_yaml_bogus_value(&self) -> Option<&YamlBogusValue> {
         match &self {
             AnyYamlValue::YamlBogusValue(item) => Some(item),
             _ => None,
         }
     }
+
     pub fn as_yaml_object(&self) -> Option<&YamlObject> {
         match &self {
             AnyYamlValue::YamlObject(item) => Some(item),
@@ -677,11 +725,14 @@ impl AnyYamlValue {
 }
 impl AstNode for YamlArray {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_ARRAY as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_ARRAY
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -689,9 +740,11 @@ impl AstNode for YamlArray {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -715,11 +768,14 @@ impl From<YamlArray> for SyntaxElement {
 }
 impl AstNode for YamlArrayInline {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_ARRAY_INLINE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_ARRAY_INLINE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -727,9 +783,11 @@ impl AstNode for YamlArrayInline {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -761,11 +819,14 @@ impl From<YamlArrayInline> for SyntaxElement {
 }
 impl AstNode for YamlArrayItem {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_ARRAY_ITEM as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_ARRAY_ITEM
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -773,9 +834,11 @@ impl AstNode for YamlArrayItem {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -803,11 +866,14 @@ impl From<YamlArrayItem> for SyntaxElement {
 }
 impl AstNode for YamlBlockFolded {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_BLOCK_FOLDED as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_BLOCK_FOLDED
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -815,9 +881,11 @@ impl AstNode for YamlBlockFolded {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -845,11 +913,14 @@ impl From<YamlBlockFolded> for SyntaxElement {
 }
 impl AstNode for YamlBlockLiteral {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_BLOCK_LITERAL as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_BLOCK_LITERAL
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -857,9 +928,11 @@ impl AstNode for YamlBlockLiteral {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -887,11 +960,14 @@ impl From<YamlBlockLiteral> for SyntaxElement {
 }
 impl AstNode for YamlBlockValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_BLOCK_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_BLOCK_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -899,9 +975,11 @@ impl AstNode for YamlBlockValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -928,11 +1006,14 @@ impl From<YamlBlockValue> for SyntaxElement {
 }
 impl AstNode for YamlBooleanValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_BOOLEAN_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_BOOLEAN_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -940,9 +1021,11 @@ impl AstNode for YamlBooleanValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -969,11 +1052,14 @@ impl From<YamlBooleanValue> for SyntaxElement {
 }
 impl AstNode for YamlDocument {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_DOCUMENT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_DOCUMENT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -981,9 +1067,11 @@ impl AstNode for YamlDocument {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1015,11 +1103,14 @@ impl From<YamlDocument> for SyntaxElement {
 }
 impl AstNode for YamlIdentifier {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_IDENTIFIER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_IDENTIFIER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1027,9 +1118,11 @@ impl AstNode for YamlIdentifier {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1056,11 +1149,14 @@ impl From<YamlIdentifier> for SyntaxElement {
 }
 impl AstNode for YamlNullValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_NULL_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_NULL_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1068,9 +1164,11 @@ impl AstNode for YamlNullValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1097,11 +1195,14 @@ impl From<YamlNullValue> for SyntaxElement {
 }
 impl AstNode for YamlNumberValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_NUMBER_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_NUMBER_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1109,9 +1210,11 @@ impl AstNode for YamlNumberValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1138,11 +1241,14 @@ impl From<YamlNumberValue> for SyntaxElement {
 }
 impl AstNode for YamlObject {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_OBJECT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_OBJECT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1150,9 +1256,11 @@ impl AstNode for YamlObject {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1176,11 +1284,14 @@ impl From<YamlObject> for SyntaxElement {
 }
 impl AstNode for YamlObjectMember {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_OBJECT_MEMBER as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_OBJECT_MEMBER
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1188,9 +1299,11 @@ impl AstNode for YamlObjectMember {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1219,11 +1332,14 @@ impl From<YamlObjectMember> for SyntaxElement {
 }
 impl AstNode for YamlRoot {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_ROOT as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_ROOT
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1231,9 +1347,11 @@ impl AstNode for YamlRoot {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1262,11 +1380,14 @@ impl From<YamlRoot> for SyntaxElement {
 }
 impl AstNode for YamlStringValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_STRING_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_STRING_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1274,9 +1395,11 @@ impl AstNode for YamlStringValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1323,16 +1446,19 @@ impl From<YamlStringValue> for AnyYamlScalar {
 }
 impl AstNode for AnyYamlScalar {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = YamlBooleanValue::KIND_SET
         .union(YamlNullValue::KIND_SET)
         .union(YamlNumberValue::KIND_SET)
         .union(YamlStringValue::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         matches!(
             kind,
             YAML_BOOLEAN_VALUE | YAML_NULL_VALUE | YAML_NUMBER_VALUE | YAML_STRING_VALUE
         )
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             YAML_BOOLEAN_VALUE => AnyYamlScalar::YamlBooleanValue(YamlBooleanValue { syntax }),
@@ -1341,8 +1467,10 @@ impl AstNode for AnyYamlScalar {
             YAML_STRING_VALUE => AnyYamlScalar::YamlStringValue(YamlStringValue { syntax }),
             _ => return None,
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyYamlScalar::YamlBooleanValue(it) => &it.syntax,
@@ -1351,6 +1479,7 @@ impl AstNode for AnyYamlScalar {
             AnyYamlScalar::YamlStringValue(it) => &it.syntax,
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyYamlScalar::YamlBooleanValue(it) => it.syntax,
@@ -1383,6 +1512,7 @@ impl From<AnyYamlScalar> for SyntaxNode {
 impl From<AnyYamlScalar> for SyntaxElement {
     fn from(n: AnyYamlScalar) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -1408,11 +1538,13 @@ impl From<YamlObject> for AnyYamlValue {
 }
 impl AstNode for AnyYamlValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> = AnyYamlScalar::KIND_SET
         .union(YamlArray::KIND_SET)
         .union(YamlArrayInline::KIND_SET)
         .union(YamlBogusValue::KIND_SET)
         .union(YamlObject::KIND_SET);
+
     fn can_cast(kind: SyntaxKind) -> bool {
         match kind {
             YAML_ARRAY | YAML_ARRAY_INLINE | YAML_BOGUS_VALUE | YAML_OBJECT => true,
@@ -1420,6 +1552,7 @@ impl AstNode for AnyYamlValue {
             _ => false,
         }
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         let res = match syntax.kind() {
             YAML_ARRAY => AnyYamlValue::YamlArray(YamlArray { syntax }),
@@ -1430,11 +1563,14 @@ impl AstNode for AnyYamlValue {
                 if let Some(any_yaml_scalar) = AnyYamlScalar::cast(syntax) {
                     return Some(AnyYamlValue::AnyYamlScalar(any_yaml_scalar));
                 }
+
                 return None;
             }
         };
+
         Some(res)
     }
+
     fn syntax(&self) -> &SyntaxNode {
         match self {
             AnyYamlValue::YamlArray(it) => &it.syntax,
@@ -1444,6 +1580,7 @@ impl AstNode for AnyYamlValue {
             AnyYamlValue::AnyYamlScalar(it) => it.syntax(),
         }
     }
+
     fn into_syntax(self) -> SyntaxNode {
         match self {
             AnyYamlValue::YamlArray(it) => it.syntax,
@@ -1479,6 +1616,7 @@ impl From<AnyYamlValue> for SyntaxNode {
 impl From<AnyYamlValue> for SyntaxElement {
     fn from(n: AnyYamlValue) -> SyntaxElement {
         let node: SyntaxNode = n.into();
+
         node.into()
     }
 }
@@ -1581,17 +1719,21 @@ impl YamlBogus {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for YamlBogus {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_BOGUS as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_BOGUS
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1599,9 +1741,11 @@ impl AstNode for YamlBogus {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1637,17 +1781,21 @@ impl YamlBogusValue {
     pub const unsafe fn new_unchecked(syntax: SyntaxNode) -> Self {
         Self { syntax }
     }
+
     pub fn items(&self) -> SyntaxElementChildren {
         support::elements(&self.syntax)
     }
 }
 impl AstNode for YamlBogusValue {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_BOGUS_VALUE as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_BOGUS_VALUE
     }
+
     fn cast(syntax: SyntaxNode) -> Option<Self> {
         if Self::can_cast(syntax.kind()) {
             Some(Self { syntax })
@@ -1655,9 +1803,11 @@ impl AstNode for YamlBogusValue {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         &self.syntax
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax
     }
@@ -1698,11 +1848,14 @@ impl YamlArrayInlineList {
 }
 impl AstNode for YamlArrayInlineList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_ARRAY_INLINE_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_ARRAY_INLINE_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<YamlArrayInlineList> {
         if Self::can_cast(syntax.kind()) {
             Some(YamlArrayInlineList {
@@ -1712,9 +1865,11 @@ impl AstNode for YamlArrayInlineList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -1725,18 +1880,23 @@ impl Serialize for YamlArrayInlineList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstSeparatedList for YamlArrayInlineList {
     type Language = Language;
+
     type Node = AnyYamlScalar;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -1744,19 +1904,24 @@ impl AstSeparatedList for YamlArrayInlineList {
 impl Debug for YamlArrayInlineList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("YamlArrayInlineList ")?;
+
         f.debug_list().entries(self.elements()).finish()
     }
 }
 impl IntoIterator for YamlArrayInlineList {
     type Item = SyntaxResult<AnyYamlScalar>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyYamlScalar>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for &YamlArrayInlineList {
     type Item = SyntaxResult<AnyYamlScalar>;
+
     type IntoIter = AstSeparatedListNodesIterator<Language, AnyYamlScalar>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -1780,11 +1945,14 @@ impl YamlArrayItemList {
 }
 impl AstNode for YamlArrayItemList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_ARRAY_ITEM_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_ARRAY_ITEM_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<YamlArrayItemList> {
         if Self::can_cast(syntax.kind()) {
             Some(YamlArrayItemList {
@@ -1794,9 +1962,11 @@ impl AstNode for YamlArrayItemList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -1807,18 +1977,23 @@ impl Serialize for YamlArrayItemList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for YamlArrayItemList {
     type Language = Language;
+
     type Node = YamlArrayItem;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -1826,19 +2001,24 @@ impl AstNodeList for YamlArrayItemList {
 impl Debug for YamlArrayItemList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("YamlArrayItemList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &YamlArrayItemList {
     type Item = YamlArrayItem;
+
     type IntoIter = AstNodeListIterator<Language, YamlArrayItem>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for YamlArrayItemList {
     type Item = YamlArrayItem;
+
     type IntoIter = AstNodeListIterator<Language, YamlArrayItem>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -1862,11 +2042,14 @@ impl YamlDocumentList {
 }
 impl AstNode for YamlDocumentList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_DOCUMENT_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_DOCUMENT_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<YamlDocumentList> {
         if Self::can_cast(syntax.kind()) {
             Some(YamlDocumentList {
@@ -1876,9 +2059,11 @@ impl AstNode for YamlDocumentList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -1889,18 +2074,23 @@ impl Serialize for YamlDocumentList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for YamlDocumentList {
     type Language = Language;
+
     type Node = YamlDocument;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -1908,19 +2098,24 @@ impl AstNodeList for YamlDocumentList {
 impl Debug for YamlDocumentList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("YamlDocumentList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &YamlDocumentList {
     type Item = YamlDocument;
+
     type IntoIter = AstNodeListIterator<Language, YamlDocument>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for YamlDocumentList {
     type Item = YamlDocument;
+
     type IntoIter = AstNodeListIterator<Language, YamlDocument>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -1944,11 +2139,14 @@ impl YamlObjectMemberList {
 }
 impl AstNode for YamlObjectMemberList {
     type Language = Language;
+
     const KIND_SET: SyntaxKindSet<Language> =
         SyntaxKindSet::from_raw(RawSyntaxKind(YAML_OBJECT_MEMBER_LIST as u16));
+
     fn can_cast(kind: SyntaxKind) -> bool {
         kind == YAML_OBJECT_MEMBER_LIST
     }
+
     fn cast(syntax: SyntaxNode) -> Option<YamlObjectMemberList> {
         if Self::can_cast(syntax.kind()) {
             Some(YamlObjectMemberList {
@@ -1958,9 +2156,11 @@ impl AstNode for YamlObjectMemberList {
             None
         }
     }
+
     fn syntax(&self) -> &SyntaxNode {
         self.syntax_list.node()
     }
+
     fn into_syntax(self) -> SyntaxNode {
         self.syntax_list.into_node()
     }
@@ -1971,18 +2171,23 @@ impl Serialize for YamlObjectMemberList {
         S: Serializer,
     {
         let mut seq = serializer.serialize_seq(Some(self.len()))?;
+
         for e in self.iter() {
             seq.serialize_element(&e)?;
         }
+
         seq.end()
     }
 }
 impl AstNodeList for YamlObjectMemberList {
     type Language = Language;
+
     type Node = YamlObjectMember;
+
     fn syntax_list(&self) -> &SyntaxList {
         &self.syntax_list
     }
+
     fn into_syntax_list(self) -> SyntaxList {
         self.syntax_list
     }
@@ -1990,19 +2195,24 @@ impl AstNodeList for YamlObjectMemberList {
 impl Debug for YamlObjectMemberList {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
         f.write_str("YamlObjectMemberList ")?;
+
         f.debug_list().entries(self.iter()).finish()
     }
 }
 impl IntoIterator for &YamlObjectMemberList {
     type Item = YamlObjectMember;
+
     type IntoIter = AstNodeListIterator<Language, YamlObjectMember>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
 }
 impl IntoIterator for YamlObjectMemberList {
     type Item = YamlObjectMember;
+
     type IntoIter = AstNodeListIterator<Language, YamlObjectMember>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.iter()
     }
@@ -2023,6 +2233,7 @@ impl Debug for DebugSyntaxElement {
             SyntaxElement::Node(node) => {
                 map_syntax_node ! (node . clone () , node => std :: fmt :: Debug :: fmt (& node , f))
             }
+
             SyntaxElement::Token(token) => Debug::fmt(token, f),
         }
     }

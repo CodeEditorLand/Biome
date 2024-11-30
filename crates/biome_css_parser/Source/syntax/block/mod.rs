@@ -39,6 +39,7 @@ pub(crate) trait ParseBlockBody {
 
         if is_open_brace_missing && (!self.is_at_element(p) || p.state().speculative_parsing) {
             p.error(expected_block(p, p.cur_range()));
+
             return m.complete(p, CSS_BOGUS_BLOCK);
         }
 

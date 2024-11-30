@@ -33,6 +33,7 @@ impl FormatRule<SourceComment<CssLanguage>> for FormatCssLeadingComment {
 
             // SAFETY: Safe, `is_doc_comment` only returns `true` for multiline comments
             let first_line = lines.next().unwrap();
+
             write!(f, [dynamic_text(first_line.trim_end(), source_offset)])?;
 
             source_offset += first_line.text_len();
@@ -118,6 +119,7 @@ fn handle_declaration_name_comment(
                 CommentPlacement::leading(following_node.clone(), comment)
             }
         }
+
         _ => CommentPlacement::Default(comment),
     }
 }
@@ -132,7 +134,9 @@ fn handle_function_comment(
     };
 
     let is_inside_function = CssFunction::can_cast(comment.enclosing_node().kind());
+
     let is_after_name = CssIdentifier::can_cast(preceding_node.kind());
+
     if is_inside_function && is_after_name {
         CommentPlacement::leading(following_node.clone(), comment)
     } else {
@@ -148,5 +152,6 @@ fn handle_complex_selector_comment(
             return CommentPlacement::leading(right.into_syntax(), comment);
         }
     }
+
     CommentPlacement::Default(comment)
 }

@@ -14,13 +14,18 @@ include!("src/categories.rs");
 
 pub fn main() -> io::Result<()> {
     let mut metadata = Vec::with_capacity(CATEGORIES.len());
+
     let mut macro_arms = Vec::with_capacity(CATEGORIES.len());
+
     let mut parse_arms = Vec::with_capacity(CATEGORIES.len());
+
     let mut enum_variants = Vec::with_capacity(CATEGORIES.len());
+
     let mut concat_macro_arms = Vec::with_capacity(CATEGORIES.len());
 
     for (name, link) in CATEGORIES {
         let meta_name = name.replace('/', "_").to_uppercase();
+
         let meta_ident = format_ident!("{meta_name}");
 
         let link = if let Some(link) = link {
@@ -47,6 +52,7 @@ pub fn main() -> io::Result<()> {
         enum_variants.push(*name);
 
         let parts = name.split('/');
+
         concat_macro_arms.push(quote! {
             ( #( #parts ),* ) => { &$crate::registry::#meta_ident };
         });
@@ -126,6 +132,7 @@ pub fn main() -> io::Result<()> {
     };
 
     let out_dir = env::var("OUT_DIR").unwrap();
+
     fs::write(
         PathBuf::from(out_dir).join("categories.rs"),
         tokens.to_string(),

@@ -31,20 +31,26 @@ pub fn compile_definitions(
     context: &mut NodeCompilationContext,
 ) -> Result<Definitions, CompileError> {
     let mut patterns = Vec::new();
+
     let mut predicates = Vec::new();
+
     let mut functions = Vec::new();
+
     for definition in definitions {
         match definition? {
             AnyGritDefinition::AnyGritPattern(_) => continue, // Handled separately.
             AnyGritDefinition::GritPatternDefinition(node) => {
                 patterns.push(PatternDefinitionCompiler::from_node(node, context)?);
             }
+
             AnyGritDefinition::GritPredicateDefinition(node) => {
                 predicates.push(PredicateDefinitionCompiler::from_node(node, context)?);
             }
+
             AnyGritDefinition::GritFunctionDefinition(node) => {
                 functions.push(FunctionDefinitionCompiler::from_node(node, context)?);
             }
+
             AnyGritDefinition::GritBogusDefinition(_) => {
                 unreachable!(); // Should be handled in `scan_definitions()`.
             }
@@ -70,12 +76,15 @@ pub fn scan_definitions(
     definitions: GritDefinitionList,
 ) -> Result<ScannedDefinitionInfo, CompileError> {
     let mut pattern_definition_info = BTreeMap::new();
+
     let mut pattern_index = 0;
 
     let mut predicate_definition_info = BTreeMap::new();
+
     let mut predicate_index = 0;
 
     let mut function_definition_info = BTreeMap::new();
+
     let mut function_index = 0;
 
     for definition in definitions {
@@ -83,7 +92,9 @@ pub fn scan_definitions(
             AnyGritDefinition::AnyGritPattern(_) => continue, // Handled separately.
             AnyGritDefinition::GritPatternDefinition(node) => {
                 let name = node.name()?.text();
+
                 let name = name.trim();
+
                 if pattern_definition_info.contains_key(name) {
                     return Err(CompileError::DuplicatePatternDefinition(name.to_owned()));
                 }
@@ -98,9 +109,12 @@ pub fn scan_definitions(
 
                 pattern_index += 1;
             }
+
             AnyGritDefinition::GritPredicateDefinition(node) => {
                 let name = node.name()?.text();
+
                 let name = name.trim();
+
                 if predicate_definition_info.contains_key(name) {
                     return Err(CompileError::DuplicatePredicateDefinition(name.to_owned()));
                 }
@@ -115,9 +129,12 @@ pub fn scan_definitions(
 
                 predicate_index += 1;
             }
+
             AnyGritDefinition::GritFunctionDefinition(node) => {
                 let name = node.name()?.text();
+
                 let name = name.trim();
+
                 if function_definition_info.contains_key(name) {
                     return Err(CompileError::DuplicateFunctionDefinition(name.to_owned()));
                 }
@@ -132,6 +149,7 @@ pub fn scan_definitions(
 
                 function_index += 1;
             }
+
             AnyGritDefinition::GritBogusDefinition(bogus) => {
                 return Err(CompileError::UnexpectedKind(
                     bogus
@@ -158,6 +176,7 @@ fn collect_variables(
         .into_iter()
         .map(|var| {
             let token = var?.value_token()?;
+
             Ok((
                 token.text_trimmed().to_string(),
                 token.text_trimmed_range().to_byte_range(),

@@ -139,12 +139,15 @@ impl AnyClassMemberDefinition {
             AnyClassMemberDefinition::JsGetterClassMember(node) => {
                 node.modifiers().into_syntax_list()
             }
+
             AnyClassMemberDefinition::JsMethodClassMember(node) => {
                 node.modifiers().into_syntax_list()
             }
+
             AnyClassMemberDefinition::JsPropertyClassMember(node) => {
                 node.modifiers().into_syntax_list()
             }
+
             AnyClassMemberDefinition::JsSetterClassMember(node) => {
                 node.modifiers().into_syntax_list()
             }
@@ -178,8 +181,11 @@ struct MemberState {
 
 impl Rule for NoDuplicateClassMembers {
     type Query = Ast<JsClassMemberList>;
+
     type State = AnyClassMemberDefinition;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -187,16 +193,20 @@ impl Rule for NoDuplicateClassMembers {
             FxHashMap::default();
 
         let node = ctx.query();
+
         node.into_iter()
             .filter_map(|member| {
                 let member = AnyClassMemberDefinition::cast(member.into_syntax())?;
+
                 let member_name_node = member.name()?;
+
                 let member_state = MemberState {
                     name: get_member_name(&member_name_node)?.to_string(),
                     is_static: is_static_member(member.modifiers_list()),
                 };
 
                 let member_type = member.member_type();
+
                 if let Some(stored_members) = defined_members.get_mut(&member_state) {
                     if stored_members.contains(&MemberType::Normal)
                         || stored_members.contains(&member_type)

@@ -49,16 +49,22 @@ declare_lint_rule! {
 
 impl Rule for NoTemplateCurlyInString {
     type Query = Ast<JsStringLiteralExpression>;
+
     type State = (u32, u32);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let token = node.value_token().ok()?;
+
         let text = token.text();
 
         let mut byte_iter = text.bytes().enumerate();
+
         while let Some((i, byte)) = byte_iter.next() {
             if byte == b'$' {
                 if let Some((_, b'{')) = byte_iter.next() {
@@ -70,12 +76,15 @@ impl Rule for NoTemplateCurlyInString {
                 }
             }
         }
+
         None
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, range: &Self::State) -> Option<RuleDiagnostic> {
         let value_token = ctx.query().value_token().ok()?;
+
         let value_token_range = value_token.text_trimmed_range();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

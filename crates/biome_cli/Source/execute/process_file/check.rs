@@ -13,26 +13,34 @@ pub(crate) fn check_file<'ctx>(
     file_features: &'ctx FileFeaturesResult,
 ) -> FileResult {
     let mut has_failures = false;
+
     let mut workspace_file = WorkspaceFile::new(ctx, path)?;
+
     let mut changed = false;
+
     tracing::info_span!("Process check", path =? workspace_file.path.display()).in_scope(
         move || {
             if file_features.supports_lint() {
                 let lint_result = lint_with_guard(ctx, &mut workspace_file, false, None);
+
                 match lint_result {
                     Ok(status) => {
                         if status.is_changed() {
                             changed = true
                         }
+
                         if let FileStatus::Message(msg) = status {
                             if msg.is_failure() {
                                 has_failures = true;
                             }
+
                             ctx.push_message(msg);
                         }
                     }
+
                     Err(err) => {
                         ctx.push_message(err);
+
                         has_failures = true;
                     }
                 }
@@ -40,20 +48,25 @@ pub(crate) fn check_file<'ctx>(
 
             if file_features.supports_organize_imports() {
                 let organize_imports_result = organize_imports_with_guard(ctx, &mut workspace_file);
+
                 match organize_imports_result {
                     Ok(status) => {
                         if status.is_changed() {
                             changed = true
                         }
+
                         if let FileStatus::Message(msg) = status {
                             if msg.is_failure() {
                                 has_failures = true;
                             }
+
                             ctx.push_message(msg);
                         }
                     }
+
                     Err(err) => {
                         ctx.push_message(err);
+
                         has_failures = true;
                     }
                 }
@@ -61,20 +74,25 @@ pub(crate) fn check_file<'ctx>(
 
             if file_features.supports_assists() {
                 let assists_result = assists_with_guard(ctx, &mut workspace_file);
+
                 match assists_result {
                     Ok(status) => {
                         if status.is_changed() {
                             changed = true
                         }
+
                         if let FileStatus::Message(msg) = status {
                             if msg.is_failure() {
                                 has_failures = true;
                             }
+
                             ctx.push_message(msg);
                         }
                     }
+
                     Err(err) => {
                         ctx.push_message(err);
+
                         has_failures = true;
                     }
                 }
@@ -82,20 +100,25 @@ pub(crate) fn check_file<'ctx>(
 
             if file_features.supports_format() {
                 let format_result = format_with_guard(ctx, &mut workspace_file);
+
                 match format_result {
                     Ok(status) => {
                         if status.is_changed() {
                             changed = true
                         }
+
                         if let FileStatus::Message(msg) = status {
                             if msg.is_failure() {
                                 has_failures = true;
                             }
+
                             ctx.push_message(msg);
                         }
                     }
+
                     Err(err) => {
                         ctx.push_message(err);
+
                         has_failures = true;
                     }
                 }

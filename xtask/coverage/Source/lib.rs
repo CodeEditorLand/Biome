@@ -85,9 +85,13 @@ impl TestResults {
 
     pub fn store_results(&mut self, results: Vec<TestResult>) {
         self.details = results;
+
         let passed = self.passed_tests() as u32;
+
         let tests_ran = self.details.len();
+
         let coverage = (f64::from(passed) / tests_ran as f64) * 100.0;
+
         self.summary = Summary {
             tests_ran: self.details.len() as u32,
             passed,
@@ -129,6 +133,7 @@ pub fn run(
 
     let output_target = if json {
         reporters.add(Box::<JsonReporter>::default());
+
         OutputTarget::stderr()
     } else {
         OutputTarget::stdout()
@@ -147,8 +152,10 @@ pub fn run(
     };
 
     let mut ran_any_tests = false;
+
     for test_suite in get_test_suites(suites) {
         let result = run_test_suite(test_suite.as_ref(), &mut context);
+
         ran_any_tests = ran_any_tests || result.summary.tests_ran > 0
     }
 
@@ -167,6 +174,7 @@ const ALL_SYMBOLS_SUITES: &str = "symbols";
 
 fn get_test_suites(suites: Option<&str>) -> Vec<Box<dyn TestSuite>> {
     let suites = suites.unwrap_or("*").to_lowercase_cow();
+
     let mut ids: Vec<_> = suites.split(',').collect();
 
     let mut suites: Vec<Box<dyn TestSuite>> = vec![];
@@ -194,6 +202,7 @@ fn get_test_suites(suites: Option<&str>) -> Vec<Box<dyn TestSuite>> {
 
 fn check_file_encoding(path: &std::path::Path) -> Option<String> {
     let buffer = std::fs::read(path).unwrap();
+
     decode_maybe_utf16_string(&buffer)
         .ok()
         .map(|decoded| decoded.to_string())

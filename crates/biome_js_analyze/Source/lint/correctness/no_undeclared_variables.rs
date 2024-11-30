@@ -55,8 +55,11 @@ declare_lint_rule! {
 
 impl Rule for NoUndeclaredVariables {
     type Query = SemanticServices;
+
     type State = (TextRange, Box<str>);
+
     type Signals = Box<[Self::State]>;
+
     type Options = UndeclaredVariablesOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -64,12 +67,14 @@ impl Rule for NoUndeclaredVariables {
             .all_unresolved_references()
             .filter_map(|reference| {
                 let identifier = reference.tree();
+
                 let under_as_expression = identifier
                     .parent::<TsReferenceType>()
                     .and_then(|ty| ty.parent::<TsAsExpression>())
                     .is_some();
 
                 let token = identifier.value_token().ok()?;
+
                 let text = token.text_trimmed();
 
                 let source_type = ctx.source_type::<JsFileSource>();
@@ -92,6 +97,7 @@ impl Rule for NoUndeclaredVariables {
                                 None | Some(AnyJsFunction::JsArrowFunctionExpression(_))
                             )
                         });
+
                     if is_in_non_arrow_function {
                         return None;
                     }
@@ -106,7 +112,9 @@ impl Rule for NoUndeclaredVariables {
                 }
 
                 let span = token.text_trimmed_range();
+
                 let text = text.to_string().into_boxed_str();
+
                 Some((span, text))
             })
             .collect::<Vec<_>>()

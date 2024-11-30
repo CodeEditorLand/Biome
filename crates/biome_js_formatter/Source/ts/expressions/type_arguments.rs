@@ -34,6 +34,7 @@ impl FormatNodeRule<TsTypeArguments> for FormatTsTypeArguments {
                 Some(Ok(ty)) if is_object_like_type(&ty) && ts_type_argument_list.len() == 1 => {
                     false
                 }
+
                 Some(Ok(ty)) => {
                     // we then go up until we can find a potential type annotation,
                     // meaning four levels up
@@ -55,6 +56,7 @@ impl FormatNodeRule<TsTypeArguments> for FormatTsTypeArguments {
                     if let Some(initializer) = initializer {
                         // we verify if we have an arrow function expression
                         let expression = initializer.expression()?;
+
                         matches!(expression, AnyJsExpression::JsArrowFunctionExpression(_))
                     } else {
                         false

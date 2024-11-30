@@ -92,6 +92,7 @@ impl JsVariableDeclaration {
 
     pub fn variable_kind(&self) -> SyntaxResult<JsVariableKind> {
         let kind_token = self.kind()?;
+
         Ok(match kind_token.kind() {
             T![const] => JsVariableKind::Const,
             T![let] => JsVariableKind::Let,
@@ -120,6 +121,7 @@ impl JsForVariableDeclaration {
 
     pub fn variable_kind(&self) -> SyntaxResult<JsVariableKind> {
         let kind_token = self.kind_token()?;
+
         Ok(match kind_token.kind() {
             T![const] => JsVariableKind::Const,
             T![let] => JsVariableKind::Let,
@@ -217,19 +219,27 @@ impl JsContinueStatement {
 #[cfg(test)]
 mod tests {
     use biome_js_factory::syntax::{JsSyntaxKind::*, JsVariableDeclaration};
+
     use biome_js_factory::JsSyntaxTreeBuilder;
+
     use biome_rowan::AstNode;
 
     #[test]
     fn is_var_check() {
         let mut tree_builder = JsSyntaxTreeBuilder::new();
+
         tree_builder.start_node(JS_VARIABLE_DECLARATION);
+
         tree_builder.token(VAR_KW, "var");
+
         tree_builder.start_node(JS_VARIABLE_DECLARATOR_LIST);
+
         tree_builder.start_node(JS_VARIABLE_DECLARATOR);
 
         tree_builder.start_node(JS_IDENTIFIER_BINDING);
+
         tree_builder.token(IDENT, "a");
+
         tree_builder.finish_node();
 
         tree_builder.finish_node(); // declarator

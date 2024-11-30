@@ -48,8 +48,11 @@ declare_lint_rule! {
 
 impl Rule for NoDuplicateParameters {
     type Query = Ast<AnyJsParameters>;
+
     type State = JsIdentifierBinding;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -59,6 +62,7 @@ impl Rule for NoDuplicateParameters {
             AnyJsParameters::JsParameters(parameters) => {
                 AnyJsParameterList::from(parameters.items())
             }
+
             AnyJsParameters::JsConstructorParameters(parameters) => {
                 AnyJsParameterList::from(parameters.parameters())
             }
@@ -68,12 +72,14 @@ impl Rule for NoDuplicateParameters {
         // Traversing the parameters of the function in preorder and checking for duplicates,
         list.iter().find_map(|parameter| {
             let parameter = parameter.ok()?;
+
             traverse_parameter(&parameter, &mut set)
         })
     }
 
     fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let binding_syntax_node = state;
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -113,23 +119,28 @@ fn traverse_binding(
                     return Some(id_binding);
                 }
             }
+
             AnyJsBinding::JsBogusBinding(_) | AnyJsBinding::JsMetavariable(_) => {}
         },
         AnyJsBindingPattern::JsArrayBindingPattern(inner_binding) => {
             return inner_binding.elements().into_iter().find_map(|element| {
                 let element = element.ok()?;
+
                 match element {
                     AnyJsArrayBindingPatternElement::JsArrayBindingPatternRestElement(
                         binding_rest,
                     ) => {
                         let binding_pattern = binding_rest.pattern().ok()?;
+
                         traverse_binding(binding_pattern, tracked_bindings)
                     }
+
                     AnyJsArrayBindingPatternElement::JsArrayHole(_) => None,
                     AnyJsArrayBindingPatternElement::JsArrayBindingPatternElement(
                         binding_with_default,
                     ) => {
                         let pattern = binding_with_default.pattern().ok()?;
+
                         traverse_binding(pattern, tracked_bindings)
                     }
                 }
@@ -139,28 +150,35 @@ fn traverse_binding(
         AnyJsBindingPattern::JsObjectBindingPattern(pattern) => {
             return pattern.properties().into_iter().find_map(|prop| {
                 let prop = prop.ok()?;
+
                 match prop {
                     AnyJsObjectBindingPatternMember::JsObjectBindingPatternProperty(pattern) => {
                         let pattern = pattern.pattern().ok()?;
+
                         traverse_binding(pattern, tracked_bindings)
                     }
+
                     AnyJsObjectBindingPatternMember::JsObjectBindingPatternRest(rest) => {
                         let pattern = rest.binding().ok()?;
+
                         match pattern {
                             AnyJsBinding::JsIdentifierBinding(binding) => {
                                 track_binding(&binding, tracked_bindings).then_some(binding)
                             }
+
                             AnyJsBinding::JsBogusBinding(_) | AnyJsBinding::JsMetavariable(_) => {
                                 None
                             }
                         }
                     }
+
                     AnyJsObjectBindingPatternMember::JsObjectBindingPatternShorthandProperty(
                         shorthand_binding,
                     ) => match shorthand_binding.identifier().ok()? {
                         AnyJsBinding::JsIdentifierBinding(id_binding) => {
                             track_binding(&id_binding, tracked_bindings).then_some(id_binding)
                         }
+
                         AnyJsBinding::JsBogusBinding(_) | AnyJsBinding::JsMetavariable(_) => None,
                     },
                     AnyJsObjectBindingPatternMember::JsBogusBinding(_)
@@ -169,6 +187,7 @@ fn traverse_binding(
             })
         }
     }
+
     None
 }
 
@@ -180,10 +199,12 @@ fn track_binding(
     tracked_bindings: &mut FxHashSet<String>,
 ) -> bool {
     let binding_text = id_binding.text();
+
     if tracked_bindings.contains(&binding_text) {
         true
     } else {
         tracked_bindings.insert(binding_text);
+
         false
     }
 }

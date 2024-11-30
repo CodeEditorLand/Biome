@@ -88,7 +88,9 @@ impl ToOwned for GreenNodeData {
     fn to_owned(&self) -> GreenNode {
         unsafe {
             let green = GreenNode::from_raw(ptr::NonNull::from(self));
+
             let green = ManuallyDrop::new(green);
+
             GreenNode::clone(&green)
         }
     }
@@ -128,6 +130,7 @@ impl fmt::Debug for GreenNodeData {
 impl fmt::Debug for GreenNode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let data: &GreenNodeData = self;
+
         fmt::Debug::fmt(data, f)
     }
 }
@@ -135,6 +138,7 @@ impl fmt::Debug for GreenNode {
 impl fmt::Display for GreenNode {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let data: &GreenNodeData = self;
+
         fmt::Display::fmt(data, f)
     }
 }
@@ -144,6 +148,7 @@ impl fmt::Display for GreenNodeData {
         for child in self.slots() {
             write!(f, "{child}")?;
         }
+
         Ok(())
     }
 }
@@ -194,14 +199,17 @@ impl GreenNodeData {
             .slice()
             .binary_search_by(|it| {
                 let child_range = it.rel_range();
+
                 TextRange::ordering(child_range, rel_range)
             })
             // XXX: this handles empty ranges
             .unwrap_or_else(|it| it.saturating_sub(1));
+
         let slot = &self
             .slice()
             .get(idx)
             .filter(|it| it.rel_range().contains_range(rel_range))?;
+
         Some((idx, slot.rel_offset(), slot))
     }
 
@@ -221,6 +229,7 @@ impl GreenNodeData {
             .collect();
 
         slots.splice(range, replace_with);
+
         GreenNode::new(self.kind(), slots)
     }
 }
@@ -234,6 +243,7 @@ impl ops::Deref for GreenNode {
             let repr: &Repr = &self.ptr;
             #[allow(invalid_reference_casting)]
             let repr: &ReprThin = &*(repr as *const Repr as *const ReprThin);
+
             mem::transmute::<&ReprThin, &GreenNodeData>(repr)
         }
     }
@@ -248,16 +258,20 @@ impl GreenNode {
         I::IntoIter: ExactSizeIterator,
     {
         let mut text_len: TextSize = 0.into();
+
         let slots = slots.into_iter().map(|el| {
             let rel_offset = text_len;
+
             match el {
                 Some(el) => {
                     text_len += el.text_len();
+
                     match el {
                         NodeOrToken::Node(node) => Slot::Node { rel_offset, node },
                         NodeOrToken::Token(token) => Slot::Token { rel_offset, token },
                     }
                 }
+
                 None => Slot::Empty { rel_offset },
             }
         });
@@ -275,7 +289,9 @@ impl GreenNode {
         // `slots` twice.
         let data = {
             let mut data = Arc::from_thin(data);
+
             Arc::get_mut(&mut data).unwrap().header.text_len = text_len;
+
             Arc::into_thin(data)
         };
 
@@ -292,7 +308,9 @@ impl GreenNode {
     #[inline]
     pub(crate) unsafe fn from_raw(ptr: ptr::NonNull<GreenNodeData>) -> GreenNode {
         let arc = Arc::from_raw(&ptr.as_ref().data as *const ReprThin);
+
         let arc = mem::transmute::<Arc<ReprThin>, ThinArc<GreenNodeHead, Slot>>(arc);
+
         GreenNode { ptr: arc }
     }
 }
@@ -378,9 +396,11 @@ impl<'a> Iterator for Slots<'a> {
         Fold: FnMut(Acc, Self::Item) -> Acc,
     {
         let mut accum = init;
+
         for x in self {
             accum = f(accum, x);
         }
+
         accum
     }
 }
@@ -402,9 +422,11 @@ impl<'a> DoubleEndedIterator for Slots<'a> {
         Fold: FnMut(Acc, Self::Item) -> Acc,
     {
         let mut accum = init;
+
         while let Some(x) = self.next_back() {
             accum = f(accum, x);
         }
+
         accum
     }
 }
@@ -422,9 +444,11 @@ impl<'a> Child<'a> {
     pub fn slot(&self) -> u32 {
         self.slot
     }
+
     pub fn rel_offset(&self) -> TextSize {
         self.rel_offset
     }
+
     pub fn element(&self) -> GreenElementRef<'a> {
         self.element
     }
@@ -490,6 +514,7 @@ impl FusedIterator for Children<'_> {}
 #[cfg(test)]
 mod tests {
     use crate::raw_language::{RawLanguageKind, RawSyntaxTreeBuilder};
+
     use crate::GreenNode;
 
     fn build_test_list() -> GreenNode {
@@ -500,14 +525,18 @@ mod tests {
 
         // element 1
         builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
         builder.token(RawLanguageKind::STRING_TOKEN, "a");
+
         builder.finish_node();
 
         // Missing ,
 
         // element 2
         builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
+
         builder.token(RawLanguageKind::STRING_TOKEN, "b");
+
         builder.finish_node();
 
         builder.finish_node();
@@ -521,6 +550,7 @@ mod tests {
 
         // Test that children skips missing
         assert_eq!(root.children().count(), 2);
+
         assert_eq!(
             root.children()
                 .map(|child| child.element.to_string())

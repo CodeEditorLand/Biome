@@ -13,6 +13,7 @@ pub(crate) fn parse_thematic_break_block(p: &mut MarkdownParser) -> ParsedSyntax
     if !at_thematic_break_block(p) {
         return Absent;
     }
+
     let m = p.start();
 
     p.expect(MD_THEMATIC_BREAK_LITERAL);

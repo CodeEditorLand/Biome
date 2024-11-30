@@ -13,6 +13,7 @@ impl FormatNodeRule<TsArrayType> for FormatTsArrayType {
             element_type,
             r_brack_token,
         } = node.as_fields();
+
         write![
             f,
             [

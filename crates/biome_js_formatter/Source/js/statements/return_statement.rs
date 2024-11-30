@@ -43,6 +43,7 @@ impl Format<JsFormatContext> for AnyJsStatementWithArgument {
             }
 
             let comments = f.context().comments();
+
             let has_dangling_comments = comments.has_dangling_comments(self.syntax());
 
             let is_last_comment_line = comments
@@ -102,6 +103,7 @@ pub(super) struct FormatReturnOrThrowArgument<'a>(&'a AnyJsExpression);
 impl Format<JsFormatContext> for FormatReturnOrThrowArgument<'_> {
     fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
         let argument = self.0;
+
         let is_suppressed = f.comments().is_suppressed(argument.syntax());
 
         if has_argument_leading_comments(argument, f.context().comments())

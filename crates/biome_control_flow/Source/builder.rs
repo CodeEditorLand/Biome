@@ -45,6 +45,7 @@ impl<L: Language> FunctionBuilder<L> {
         // Append the implicit return instruction that resumes execution of the
         // parent procedure when control flow reaches the end of a function
         self.append_return();
+
         self.result
     }
 
@@ -58,6 +59,7 @@ impl<L: Language> FunctionBuilder<L> {
             .expect("BlockId overflow");
 
         let mut has_catch_handler = false;
+
         self.result.blocks.push(BasicBlock::new(
             // The exception handlers for a block are all the handlers in the
             // current exception stack up to the first catch handler
@@ -67,6 +69,7 @@ impl<L: Language> FunctionBuilder<L> {
                 .copied()
                 .take_while(|handler| {
                     let has_previous_catch = has_catch_handler;
+
                     has_catch_handler |= matches!(handler.kind, ExceptionHandlerKind::Catch);
                     !has_previous_catch
                 }),
@@ -92,6 +95,7 @@ impl<L: Language> FunctionBuilder<L> {
     /// Move the cursor to the end of `block`
     pub fn set_cursor(&mut self, block: BlockId) {
         debug_assert!(block.index < self.result.blocks.len() as u32);
+
         self.block_cursor = block;
     }
 
@@ -111,9 +115,11 @@ impl<L: Language> FunctionBuilder<L> {
     /// Insert an instruction at the current position of the cursor
     fn append_instruction(&mut self, kind: InstructionKind) -> InstructionBuilder<L> {
         let index = self.block_cursor.index as usize;
+
         let block = &mut self.result.blocks[index];
 
         let index = block.instructions.len();
+
         block.instructions.push(Instruction { kind, node: None });
 
         InstructionBuilder(&mut block.instructions[index])
@@ -149,6 +155,7 @@ pub struct InstructionBuilder<'a, L: Language>(&'a mut Instruction<L>);
 impl<L: Language> InstructionBuilder<'_, L> {
     pub fn with_node(self, node: impl Into<SyntaxElement<L>>) -> Self {
         self.0.node = Some(node.into());
+
         self
     }
 }

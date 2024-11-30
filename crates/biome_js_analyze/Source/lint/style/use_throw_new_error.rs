@@ -55,8 +55,11 @@ declare_lint_rule! {
 
 impl Rule for UseThrowNewError {
     type Query = Ast<JsCallExpression>;
+
     type State = TokenText;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -67,6 +70,7 @@ impl Rule for UseThrowNewError {
         }
 
         let callee = &node.callee().ok()?.omit_parentheses();
+
         let name = match callee {
             AnyJsExpression::JsIdentifierExpression(ident_expr) => Some(
                 ident_expr
@@ -96,6 +100,7 @@ impl Rule for UseThrowNewError {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let name = state.text();
 
         Some(RuleDiagnostic::new(
@@ -111,6 +116,7 @@ impl Rule for UseThrowNewError {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         let new_expression = convert_call_expression_to_new_expression(node)?;
@@ -146,6 +152,7 @@ pub(crate) fn convert_call_expression_to_new_expression(
     expr: &JsCallExpression,
 ) -> Option<JsNewExpression> {
     let mut callee = expr.callee().ok()?;
+
     let leading_trivia_pieces = callee.syntax().first_leading_trivia()?.pieces();
 
     // To use `new` keyword, we need to wrap the callee in parentheses if it contains a call expression.

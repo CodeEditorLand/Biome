@@ -71,6 +71,7 @@ impl SvelteFileHandler {
             .and_then(|captures| {
                 let (language, variant) =
                     parse_lang_from_script_opening_tag(captures.name("opening")?.as_str());
+
                 Some(
                     JsFileSource::from(language)
                         .with_variant(variant)
@@ -116,6 +117,7 @@ fn parse(
     cache: &mut NodeCache,
 ) -> ParseResult {
     let script = SvelteFileHandler::input(text);
+
     let file_source = SvelteFileHandler::file_source(text);
 
     debug!("Parsing file with language {:?}", file_source);

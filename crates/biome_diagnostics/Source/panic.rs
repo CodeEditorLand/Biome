@@ -13,6 +13,7 @@ thread_local! {
 impl std::fmt::Display for PanicError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let r = f.write_fmt(format_args!("{}\n", self.info));
+
         if let Some(backtrace) = &self.backtrace {
             f.write_fmt(format_args!("Backtrace: {backtrace}"))
         } else {
@@ -30,9 +31,12 @@ where
     F: FnOnce() -> R + UnwindSafe,
 {
     let prev = std::panic::take_hook();
+
     std::panic::set_hook(Box::new(|info| {
         let info = info.to_string();
+
         let backtrace = std::backtrace::Backtrace::capture();
+
         LAST_PANIC.with(|cell| {
             cell.set(Some(PanicError {
                 info,

@@ -534,6 +534,7 @@ impl JsSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_literal(self) -> bool {
         match self {
             JS_NUMBER_LITERAL | JS_BIGINT_LITERAL | JS_STRING_LITERAL | JS_REGEX_LITERAL
@@ -541,6 +542,7 @@ impl JsSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_list(self) -> bool {
         match self {
             JS_MODULE_ITEM_LIST
@@ -586,6 +588,7 @@ impl JsSyntaxKind {
             _ => false,
         }
     }
+
     pub fn from_keyword(ident: &str) -> Option<JsSyntaxKind> {
         let kw = match ident {
             "break" => BREAK_KW,
@@ -673,8 +676,10 @@ impl JsSyntaxKind {
             "meta" => META_KW,
             _ => return None,
         };
+
         Some(kw)
     }
+
     pub const fn to_string(&self) -> Option<&'static str> {
         let tok = match self {
             SEMICOLON => ";",
@@ -822,6 +827,7 @@ impl JsSyntaxKind {
             JS_STRING_LITERAL => "string literal",
             _ => return None,
         };
+
         Some(tok)
     }
 }

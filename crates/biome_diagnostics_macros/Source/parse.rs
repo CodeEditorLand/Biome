@@ -84,6 +84,7 @@ impl DeriveStructInput {
         for attr in attrs {
             if attr.path.is_ident("diagnostic") {
                 let tokens = attr.tokens.into();
+
                 let attrs = match DiagnosticAttrs::parse.parse(tokens) {
                     Ok(attrs) => attrs,
                     Err(err) => abort!(
@@ -98,19 +99,27 @@ impl DeriveStructInput {
                         DiagnosticAttr::Severity(attr) => {
                             result.severity = Some(StaticOrDynamic::Static(attr.value));
                         }
+
                         DiagnosticAttr::Category(attr) => {
                             result.category = Some(StaticOrDynamic::Static(attr.value));
                         }
+
                         DiagnosticAttr::Message(MessageAttr::SingleString { value, .. }) => {
                             let value = StringOrMarkup::from(value);
+
                             result.description = Some(StaticOrDynamic::Static(value.clone()));
+
                             result.message = Some(StaticOrDynamic::Static(value));
                         }
+
                         DiagnosticAttr::Message(MessageAttr::SingleMarkup { markup, .. }) => {
                             let value = StringOrMarkup::from(markup);
+
                             result.description = Some(StaticOrDynamic::Static(value.clone()));
+
                             result.message = Some(StaticOrDynamic::Static(value));
                         }
+
                         DiagnosticAttr::Message(MessageAttr::Split(attr)) => {
                             for item in attr.attrs {
                                 match item {
@@ -118,6 +127,7 @@ impl DeriveStructInput {
                                         result.description =
                                             Some(StaticOrDynamic::Static(value.into()));
                                     }
+
                                     SplitMessageAttr::Message { markup, .. } => {
                                         result.message =
                                             Some(StaticOrDynamic::Static(markup.into()));
@@ -125,6 +135,7 @@ impl DeriveStructInput {
                                 }
                             }
                         }
+
                         DiagnosticAttr::Tags(attr) => {
                             result.tags = Some(StaticOrDynamic::Static(attr.tags));
                         }
@@ -144,36 +155,43 @@ impl DeriveStructInput {
             for attr in field.attrs {
                 if attr.path.is_ident("category") {
                     result.category = Some(StaticOrDynamic::Dynamic(ident.clone()));
+
                     continue;
                 }
 
                 if attr.path.is_ident("severity") {
                     result.severity = Some(StaticOrDynamic::Dynamic(ident.clone()));
+
                     continue;
                 }
 
                 if attr.path.is_ident("description") {
                     result.description = Some(StaticOrDynamic::Dynamic(ident.clone()));
+
                     continue;
                 }
 
                 if attr.path.is_ident("message") {
                     result.message = Some(StaticOrDynamic::Dynamic(ident.clone()));
+
                     continue;
                 }
 
                 if attr.path.is_ident("advice") {
                     result.advices.push(ident.clone());
+
                     continue;
                 }
 
                 if attr.path.is_ident("verbose_advice") {
                     result.verbose_advices.push(ident.clone());
+
                     continue;
                 }
 
                 if attr.path.is_ident("location") {
                     let tokens = attr.tokens.into();
+
                     let attr = match LocationAttr::parse.parse(tokens) {
                         Ok(attr) => attr,
                         Err(err) => abort!(
@@ -184,16 +202,19 @@ impl DeriveStructInput {
                     };
 
                     result.location.push((ident.clone(), attr.field));
+
                     continue;
                 }
 
                 if attr.path.is_ident("tags") {
                     result.tags = Some(StaticOrDynamic::Dynamic(ident.clone()));
+
                     continue;
                 }
 
                 if attr.path.is_ident("source") {
                     result.source = Some(ident.clone());
+
                     continue;
                 }
             }
@@ -259,6 +280,7 @@ struct DiagnosticAttrs {
 impl Parse for DiagnosticAttrs {
     fn parse(input: ParseStream) -> Result<Self> {
         let content;
+
         Ok(Self {
             _paren_token: syn::parenthesized!(content in input),
             attrs: content.parse_terminated(DiagnosticAttr::parse)?,
@@ -349,12 +371,15 @@ impl Parse for MessageAttr {
         }
 
         let fork = input.fork();
+
         if let Ok(attr) = fork.parse() {
             input.advance_to(&fork);
+
             return Ok(Self::Split(attr));
         }
 
         let content;
+
         Ok(Self::SingleMarkup {
             _paren_token: syn::parenthesized!(content in input),
             markup: content.parse()?,
@@ -370,6 +395,7 @@ struct SplitMessageAttrs {
 impl Parse for SplitMessageAttrs {
     fn parse(input: ParseStream) -> Result<Self> {
         let content;
+
         Ok(Self {
             _paren_token: syn::parenthesized!(content in input),
             attrs: content.parse_terminated(SplitMessageAttr::parse)?,
@@ -401,6 +427,7 @@ impl Parse for SplitMessageAttr {
 
         if name == "message" {
             let content;
+
             return Ok(Self::Message {
                 _paren_token: syn::parenthesized!(content in input),
                 markup: content.parse()?,
@@ -419,6 +446,7 @@ struct TagsAttr {
 impl Parse for TagsAttr {
     fn parse(input: ParseStream) -> Result<Self> {
         let content;
+
         Ok(Self {
             _paren_token: syn::parenthesized!(content in input),
             tags: content.parse_terminated(Ident::parse)?,
@@ -440,7 +468,9 @@ pub(crate) enum LocationField {
 impl Parse for LocationAttr {
     fn parse(input: ParseStream) -> Result<Self> {
         let content;
+
         let _paren_token = syn::parenthesized!(content in input);
+
         let ident: Ident = content.parse()?;
 
         let field = if ident == "resource" {

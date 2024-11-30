@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsModuleSource;
 pub(crate) struct FormatAnyJsModuleSource;
 impl FormatRule<AnyJsModuleSource> for FormatAnyJsModuleSource {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsModuleSource, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsModuleSource::JsMetavariable(node) => node.format().fmt(f),

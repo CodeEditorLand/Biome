@@ -19,6 +19,7 @@ pub struct LineIndex {
 impl LineIndex {
     pub fn new(text: &str) -> LineIndex {
         let mut line_wide_chars = FxHashMap::default();
+
         let mut wide_chars = Vec::new();
 
         let mut newlines = vec![TextSize::from(0)];
@@ -26,6 +27,7 @@ impl LineIndex {
         let mut current_col = TextSize::from(0);
 
         let mut line = 0;
+
         for (offset, char) in text.char_indices() {
             let char_size = TextSize::of(char);
 
@@ -33,6 +35,7 @@ impl LineIndex {
                 // SAFETY: the conversion from `usize` to `TextSize` can fail if `offset`
                 // is larger than 2^32. We don't support such large files.
                 let char_offset = TextSize::try_from(offset).expect("TextSize overflow");
+
                 newlines.push(char_offset + char_size);
 
                 // Save any utf-16 characters seen in the previous line
@@ -42,7 +45,9 @@ impl LineIndex {
 
                 // Prepare for processing the next line
                 current_col = TextSize::from(0);
+
                 line += 1;
+
                 continue;
             }
 
@@ -79,7 +84,9 @@ impl LineIndex {
 
     pub fn line_col(&self, offset: TextSize) -> Option<LineCol> {
         let line = self.newlines.partition_point(|&it| it <= offset) - 1;
+
         let line_start_offset = self.newlines.get(line)?;
+
         let col = offset - line_start_offset;
 
         Some(LineCol {
@@ -96,6 +103,7 @@ impl LineIndex {
 
     pub fn to_wide(&self, enc: WideEncoding, line_col: LineCol) -> Option<WideLineCol> {
         let col = self.utf8_to_wide_col(enc, line_col.line, line_col.col.into());
+
         Some(WideLineCol {
             line: line_col.line,
             col: u32::try_from(col).ok()?,
@@ -104,6 +112,7 @@ impl LineIndex {
 
     pub fn to_utf8(&self, enc: WideEncoding, line_col: WideLineCol) -> LineCol {
         let col = self.wide_to_utf8_col(enc, line_col.line, line_col.col);
+
         LineCol {
             line: line_col.line,
             col: col.into(),
@@ -112,6 +121,7 @@ impl LineIndex {
 
     fn utf8_to_wide_col(&self, enc: WideEncoding, line: u32, col: TextSize) -> usize {
         let mut res: usize = col.into();
+
         if let Some(wide_chars) = self.line_wide_chars.get(&line) {
             for c in wide_chars {
                 if c.end <= col {
@@ -123,6 +133,7 @@ impl LineIndex {
                 }
             }
         }
+
         res
     }
 

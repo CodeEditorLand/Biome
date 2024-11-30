@@ -75,6 +75,7 @@ impl<K: std::hash::Hash + Eq, V> CommentsMap<K, V> {
         match self.index.get_mut(&key) {
             None => {
                 let start = self.parts.len();
+
                 self.parts.push(part);
 
                 self.index.insert(
@@ -88,17 +89,20 @@ impl<K: std::hash::Hash + Eq, V> CommentsMap<K, V> {
                 if entry.trailing_start.is_none() && self.parts.len() == entry.range().end =>
             {
                 self.parts.push(part);
+
                 entry.increment_leading_range();
             }
 
             Some(Entry::OutOfOrder(entry)) => {
                 let leading = &mut self.out_of_order[entry.leading_index()];
+
                 leading.push(part);
             }
 
             Some(entry) => {
                 let out_of_order =
                     Self::entry_to_out_of_order(entry, &self.parts, &mut self.out_of_order);
+
                 self.out_of_order[out_of_order.leading_index()].push(part);
             }
         }
@@ -112,6 +116,7 @@ impl<K: std::hash::Hash + Eq, V> CommentsMap<K, V> {
         match self.index.get_mut(&key) {
             None => {
                 let start = self.parts.len();
+
                 self.parts.push(part);
 
                 self.index.insert(
@@ -125,17 +130,20 @@ impl<K: std::hash::Hash + Eq, V> CommentsMap<K, V> {
                 if entry.trailing_end.is_none() && self.parts.len() == entry.range().end =>
             {
                 self.parts.push(part);
+
                 entry.increment_dangling_range();
             }
 
             Some(Entry::OutOfOrder(entry)) => {
                 let dangling = &mut self.out_of_order[entry.dangling_index()];
+
                 dangling.push(part);
             }
 
             Some(entry) => {
                 let out_of_order =
                     Self::entry_to_out_of_order(entry, &self.parts, &mut self.out_of_order);
+
                 self.out_of_order[out_of_order.dangling_index()].push(part);
             }
         }
@@ -149,6 +157,7 @@ impl<K: std::hash::Hash + Eq, V> CommentsMap<K, V> {
         match self.index.get_mut(&key) {
             None => {
                 let start = self.parts.len();
+
                 self.parts.push(part);
 
                 self.index.insert(
@@ -160,17 +169,20 @@ impl<K: std::hash::Hash + Eq, V> CommentsMap<K, V> {
             // Its comments are at the end
             Some(Entry::InOrder(entry)) if entry.range().end == self.parts.len() => {
                 self.parts.push(part);
+
                 entry.increment_trailing_range();
             }
 
             Some(Entry::OutOfOrder(entry)) => {
                 let trailing = &mut self.out_of_order[entry.trailing_index()];
+
                 trailing.push(part);
             }
 
             Some(entry) => {
                 let out_of_order =
                     Self::entry_to_out_of_order(entry, &self.parts, &mut self.out_of_order);
+
                 self.out_of_order[out_of_order.trailing_index()].push(part);
             }
         }
@@ -190,7 +202,9 @@ impl<K: std::hash::Hash + Eq, V> CommentsMap<K, V> {
                 let index = out_of_order.len();
 
                 out_of_order.push(parts[in_order.leading_range()].to_vec());
+
                 out_of_order.push(parts[in_order.dangling_range()].to_vec());
+
                 out_of_order.push(parts[in_order.trailing_range()].to_vec());
 
                 *entry = Entry::OutOfOrder(OutOfOrderEntry {
@@ -203,6 +217,7 @@ impl<K: std::hash::Hash + Eq, V> CommentsMap<K, V> {
                     Entry::OutOfOrder(out_of_order) => out_of_order,
                 }
             }
+
             Entry::OutOfOrder(entry) => entry,
         }
     }
@@ -328,17 +343,22 @@ impl<'a, V> Iterator for PartsIterator<'a, V> {
                 Some(next) => Some(next),
                 None if !dangling.is_empty() => {
                     let mut dangling_iterator = dangling.iter();
+
                     let next = dangling_iterator.next().unwrap();
                     *self = PartsIterator::Dangling {
                         dangling: dangling_iterator,
                         trailing,
                     };
+
                     Some(next)
                 }
+
                 None => {
                     let mut trailing_iterator = trailing.iter();
+
                     let next = trailing_iterator.next();
                     *self = PartsIterator::Slice(trailing_iterator);
+
                     next
                 }
             },
@@ -347,8 +367,10 @@ impl<'a, V> Iterator for PartsIterator<'a, V> {
                 Some(next) => Some(next),
                 None => {
                     let mut trailing_iterator = trailing.iter();
+
                     let next = trailing_iterator.next();
                     *self = PartsIterator::Slice(trailing_iterator);
+
                     next
                 }
             },
@@ -367,6 +389,7 @@ impl<'a, V> Iterator for PartsIterator<'a, V> {
 
                 (len, Some(len))
             }
+
             PartsIterator::Dangling { dangling, trailing } => {
                 let len = dangling.len() + trailing.len();
                 (len, Some(len))
@@ -434,7 +457,9 @@ where
         let mut list = f.debug_list();
 
         list.entries(leading.iter().map(DebugValue::Leading));
+
         list.entries(dangling.iter().map(DebugValue::Dangling));
+
         list.entries(trailing.iter().map(DebugValue::Trailing));
 
         list.finish()
@@ -490,6 +515,7 @@ impl InOrderEntry {
 
     fn dangling(range: Range<usize>) -> Self {
         let start = PartIndex::from_len(range.start);
+
         InOrderEntry {
             leading_start: start,
             dangling_start: start,
@@ -501,6 +527,7 @@ impl InOrderEntry {
 
     fn trailing(range: Range<usize>) -> Self {
         let start = PartIndex::from_len(range.start);
+
         InOrderEntry {
             leading_start: start,
             dangling_start: start,
@@ -540,6 +567,7 @@ impl InOrderEntry {
             // Has leading comments only
             (None, None) => {
                 self.trailing_start = Some(self.dangling_start);
+
                 self.trailing_end = Some(self.dangling_start.incremented())
             }
             (None, Some(_)) => {
@@ -645,14 +673,19 @@ mod tests {
         let mut map = CommentsMap::new();
 
         map.push_leading("a", 1);
+
         map.push_dangling("a", 2);
+
         map.push_dangling("a", 3);
+
         map.push_trailing("a", 4);
 
         assert_eq!(map.parts, vec![1, 2, 3, 4]);
 
         assert_eq!(map.leading(&"a"), &[1]);
+
         assert_eq!(map.dangling(&"a"), &[2, 3]);
+
         assert_eq!(map.trailing(&"a"), &[4]);
 
         assert!(map.has(&"a"));
@@ -668,13 +701,17 @@ mod tests {
         let mut map = CommentsMap::new();
 
         map.push_dangling("a", 1);
+
         map.push_dangling("a", 2);
+
         map.push_trailing("a", 3);
 
         assert_eq!(map.parts, vec![1, 2, 3]);
 
         assert_eq!(map.leading(&"a"), &EMPTY);
+
         assert_eq!(map.dangling(&"a"), &[1, 2]);
+
         assert_eq!(map.trailing(&"a"), &[3]);
 
         assert!(map.has(&"a"));
@@ -687,12 +724,15 @@ mod tests {
         let mut map = CommentsMap::new();
 
         map.push_trailing("a", 1);
+
         map.push_trailing("a", 2);
 
         assert_eq!(map.parts, vec![1, 2]);
 
         assert_eq!(map.leading(&"a"), &EMPTY);
+
         assert_eq!(map.dangling(&"a"), &EMPTY);
+
         assert_eq!(map.trailing(&"a"), &[1, 2]);
 
         assert!(map.has(&"a"));
@@ -707,7 +747,9 @@ mod tests {
         assert_eq!(map.parts, Vec::<i32>::new());
 
         assert_eq!(map.leading(&"a"), &EMPTY);
+
         assert_eq!(map.dangling(&"a"), &EMPTY);
+
         assert_eq!(map.trailing(&"a"), &EMPTY);
 
         assert!(!map.has(&"a"));
@@ -723,32 +765,49 @@ mod tests {
         let mut map = CommentsMap::new();
 
         map.push_leading("a", 1);
+
         map.push_dangling("b", 2);
+
         map.push_trailing("c", 3);
+
         map.push_leading("d", 4);
+
         map.push_dangling("d", 5);
+
         map.push_trailing("d", 6);
 
         assert_eq!(map.parts, &[1, 2, 3, 4, 5, 6]);
 
         assert_eq!(map.leading(&"a"), &[1]);
+
         assert_eq!(map.dangling(&"a"), &EMPTY);
+
         assert_eq!(map.trailing(&"a"), &EMPTY);
+
         assert_eq!(map.parts(&"a").copied().collect::<Vec<_>>(), vec![1]);
 
         assert_eq!(map.leading(&"b"), &EMPTY);
+
         assert_eq!(map.dangling(&"b"), &[2]);
+
         assert_eq!(map.trailing(&"b"), &EMPTY);
+
         assert_eq!(map.parts(&"b").copied().collect::<Vec<_>>(), vec![2]);
 
         assert_eq!(map.leading(&"c"), &EMPTY);
+
         assert_eq!(map.dangling(&"c"), &EMPTY);
+
         assert_eq!(map.trailing(&"c"), &[3]);
+
         assert_eq!(map.parts(&"c").copied().collect::<Vec<_>>(), vec![3]);
 
         assert_eq!(map.leading(&"d"), &[4]);
+
         assert_eq!(map.dangling(&"d"), &[5]);
+
         assert_eq!(map.trailing(&"d"), &[6]);
+
         assert_eq!(map.parts(&"d").copied().collect::<Vec<_>>(), vec![4, 5, 6]);
     }
 
@@ -757,12 +816,17 @@ mod tests {
         let mut map = CommentsMap::new();
 
         map.push_dangling("a", 1);
+
         map.push_leading("a", 2);
+
         map.push_dangling("a", 3);
+
         map.push_trailing("a", 4);
 
         assert_eq!(map.leading(&"a"), [2]);
+
         assert_eq!(map.dangling(&"a"), [1, 3]);
+
         assert_eq!(map.trailing(&"a"), [4]);
 
         assert_eq!(
@@ -778,12 +842,17 @@ mod tests {
         let mut map = CommentsMap::new();
 
         map.push_trailing("a", 1);
+
         map.push_leading("a", 2);
+
         map.push_dangling("a", 3);
+
         map.push_trailing("a", 4);
 
         assert_eq!(map.leading(&"a"), [2]);
+
         assert_eq!(map.dangling(&"a"), [3]);
+
         assert_eq!(map.trailing(&"a"), [1, 4]);
 
         assert_eq!(
@@ -799,11 +868,15 @@ mod tests {
         let mut map = CommentsMap::new();
 
         map.push_trailing("a", 1);
+
         map.push_dangling("a", 2);
+
         map.push_trailing("a", 3);
 
         assert_eq!(map.leading(&"a"), &EMPTY);
+
         assert_eq!(map.dangling(&"a"), &[2]);
+
         assert_eq!(map.trailing(&"a"), &[1, 3]);
 
         assert_eq!(map.parts(&"a").copied().collect::<Vec<_>>(), vec![2, 1, 3]);
@@ -816,21 +889,29 @@ mod tests {
         let mut map = CommentsMap::new();
 
         map.push_leading("a", 1);
+
         map.push_dangling("b", 2);
+
         map.push_leading("a", 3);
 
         map.push_trailing("c", 4);
+
         map.push_dangling("b", 5);
 
         map.push_leading("d", 6);
+
         map.push_trailing("c", 7);
 
         assert_eq!(map.leading(&"a"), &[1, 3]);
+
         assert_eq!(map.dangling(&"b"), &[2, 5]);
+
         assert_eq!(map.trailing(&"c"), &[4, 7]);
 
         assert!(map.has(&"a"));
+
         assert!(map.has(&"b"));
+
         assert!(map.has(&"c"));
     }
 }

@@ -17,6 +17,7 @@ impl FormatNodeRule<JsImportCombinedClause> for FormatJsImportCombinedClause {
             source,
             assertion,
         } = node.as_fields();
+
         write![
             f,
             [

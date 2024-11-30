@@ -10,6 +10,7 @@ impl FormatNodeRule<CssStartingStyleAtRule> for FormatCssStartingStyleAtRule {
             starting_style_token,
             block,
         } = node.as_fields();
+
         write!(f, [starting_style_token.format(), space(), block.format()])
     }
 }

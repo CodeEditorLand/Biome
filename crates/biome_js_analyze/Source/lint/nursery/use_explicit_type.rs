@@ -217,17 +217,22 @@ declare_node_union! {
 
 impl Rule for UseExplicitType {
     type Query = Ast<AnyJsFunctionWithReturnType>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let source_type = ctx.source_type::<JsFileSource>().language();
+
         if !source_type.is_typescript() || source_type.is_definition_file() {
             return None;
         }
 
         let node = ctx.query();
+
         match node {
             AnyJsFunctionWithReturnType::AnyJsFunction(func) => {
                 if func.return_type_annotation().is_some() {
@@ -255,6 +260,7 @@ impl Rule for UseExplicitType {
                 }
 
                 let func_range = func.syntax().text_range();
+
                 if let Ok(Some(AnyJsBinding::JsIdentifierBinding(id))) = func.id() {
                     return Some(TextRange::new(
                         func_range.start(),
@@ -264,6 +270,7 @@ impl Rule for UseExplicitType {
 
                 Some(func_range)
             }
+
             AnyJsFunctionWithReturnType::JsMethodClassMember(method) => {
                 if method.return_type_annotation().is_some() {
                     return None;
@@ -271,6 +278,7 @@ impl Rule for UseExplicitType {
 
                 Some(method.node_text_range())
             }
+
             AnyJsFunctionWithReturnType::JsGetterClassMember(getter) => {
                 if getter.return_type().is_some() {
                     return None;
@@ -278,6 +286,7 @@ impl Rule for UseExplicitType {
 
                 Some(getter.node_text_range())
             }
+
             AnyJsFunctionWithReturnType::JsMethodObjectMember(method) => {
                 if method.return_type_annotation().is_some() {
                     return None;
@@ -285,6 +294,7 @@ impl Rule for UseExplicitType {
 
                 Some(method.node_text_range())
             }
+
             AnyJsFunctionWithReturnType::JsGetterObjectMember(getter) => {
                 if getter.return_type().is_some() {
                     return None;
@@ -402,9 +412,11 @@ fn is_higher_order_function(func: &AnyJsFunction) -> bool {
                     | AnyJsExpression::JsFunctionExpression(_)
             )
         }
+
         Some(AnyJsFunctionBody::JsFunctionBody(func_body)) => {
             is_first_statement_function_return(func_body.statements())
         }
+
         _ => false,
     }
 }
@@ -443,6 +455,7 @@ fn is_first_statement_function_return(statements: JsStatementList) -> bool {
 /// Checks if a given function expression has a type annotation.
 fn is_typed_function_expressions(func: &AnyJsFunction) -> bool {
     let syntax = func.syntax();
+
     is_type_assertion(syntax)
         || is_variable_declarator_with_type_annotation(syntax)
         || is_default_function_parameter_with_type_annotation(syntax)
@@ -518,6 +531,7 @@ fn is_property_of_object_with_type(syntax: &SyntaxNode<JsLanguage>) -> bool {
         .and_then(JsObjectExpression::cast)
         .is_some_and(|obj_expression| {
             let obj_syntax = obj_expression.syntax();
+
             is_type_assertion(obj_syntax)
                 || is_variable_declarator_with_type_annotation(obj_syntax)
                 || is_property_of_object_with_type(obj_syntax)

@@ -61,12 +61,16 @@ declare_lint_rule! {
 
 impl Rule for UseThrowOnlyError {
     type Query = Ast<JsThrowStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let expr = node.argument().ok()?.omit_parentheses();
 
         is_invalid_throw_value(&expr).and(Some(()))

@@ -75,13 +75,18 @@ declare_node_union! {
 
 impl Rule for NoUnusedPrivateClassMembers {
     type Query = Ast<JsClassDeclaration>;
+
     type State = AnyMember;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let private_members: FxHashSet<AnyMember> = get_all_declared_private_members(node);
+
         if private_members.is_empty() {
             Vec::new()
         } else {
@@ -129,8 +134,10 @@ fn traverse_members_usage(
                     private_members.retain(|private_member| {
                         let member_being_used =
                             private_member.match_js_name(&js_name) == Some(true);
+
                         let is_write_only =
                             is_write_only(&js_name) == Some(true) && !private_member.is_accessor();
+
                         let is_in_update_expression = is_in_update_expression(&js_name);
 
                         if member_being_used && is_in_update_expression {
@@ -149,6 +156,7 @@ fn traverse_members_usage(
                     }
                 }
             }
+
             biome_rowan::WalkEvent::Leave(_) => continue,
         }
     }
@@ -213,8 +221,11 @@ fn get_constructor_params(class_declaration: &JsClassDeclaration) -> FxHashSet<A
 ///
 fn is_write_only(js_name: &AnyJsName) -> Option<bool> {
     let parent = js_name.syntax().parent()?;
+
     let grand_parent = parent.parent()?;
+
     let assignment_expression = JsAssignmentExpression::cast(grand_parent)?;
+
     let left = assignment_expression.left().ok()?;
 
     if !is_node_equal(left.syntax(), &parent) {
@@ -226,6 +237,7 @@ fn is_write_only(js_name: &AnyJsName) -> Option<bool> {
         Ok(JsAssignmentOperator::Assign)
     ) {
         let kind = assignment_expression.syntax().parent().kind();
+
         return Some(
             kind.is_some_and(|kind| matches!(kind, JsSyntaxKind::JS_EXPRESSION_STATEMENT)),
         );
@@ -260,6 +272,7 @@ impl AnyMember {
                     member.name().ok()??,
                     AnyJsClassMemberName::JsPrivateClassMemberName(_)
                 );
+
                 let is_ts_private = match member {
                     AnyJsClassMember::JsGetterClassMember(member) => member
                         .modifiers()
@@ -286,6 +299,7 @@ impl AnyMember {
 
                 Some(is_es_private || is_ts_private)
             }
+
             AnyMember::TsPropertyParameter(param) => Some(
                 param
                     .modifiers()
@@ -304,6 +318,7 @@ impl AnyMember {
                 AnyJsClassMember::JsPropertyClassMember(member) => {
                     Some(member.name().ok()?.range())
                 }
+
                 AnyJsClassMember::JsSetterClassMember(member) => Some(member.name().ok()?.range()),
                 _ => None,
             },
@@ -328,6 +343,7 @@ impl AnyMember {
 
     fn match_js_name(&self, js_name: &AnyJsName) -> Option<bool> {
         let value_token = js_name.value_token().ok()?;
+
         let token = value_token.text_trimmed();
 
         match self {
@@ -335,15 +351,19 @@ impl AnyMember {
                 AnyJsClassMember::JsGetterClassMember(member) => {
                     Some(member.name().ok()?.name()?.text() == token)
                 }
+
                 AnyJsClassMember::JsMethodClassMember(member) => {
                     Some(member.name().ok()?.name()?.text() == token)
                 }
+
                 AnyJsClassMember::JsPropertyClassMember(member) => {
                     Some(member.name().ok()?.name()?.text() == token)
                 }
+
                 AnyJsClassMember::JsSetterClassMember(member) => {
                     Some(member.name().ok()?.name()?.text() == token)
                 }
+
                 _ => None,
             },
             AnyMember::TsPropertyParameter(ts_property) => {

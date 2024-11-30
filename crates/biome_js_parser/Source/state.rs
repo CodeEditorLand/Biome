@@ -40,6 +40,7 @@ impl ExportDefaultItemKind {
     pub const fn is_mergeable(&self, other: &ExportDefaultItemKind) -> bool {
         Self::can_merge(self, other) || Self::can_merge(other, self)
     }
+
     const fn can_merge(a: &ExportDefaultItemKind, b: &ExportDefaultItemKind) -> bool {
         match (a, b) {
             // test ts decorator_export_default_function_and_function_overload
@@ -148,6 +149,7 @@ impl JsParserState {
 
         // test d.ts arguments_in_definition_file
         // function a(...arguments: any[]): void;
+
         if source_type.language().is_definition_file() {
             EnterAmbientContext.apply(&mut state);
         }
@@ -188,6 +190,7 @@ impl JsParserState {
         self.parsing_context
             .contains(ParsingContextFlags::CONTINUE_ALLOWED)
     }
+
     pub fn break_allowed(&self) -> bool {
         self.parsing_context
             .contains(ParsingContextFlags::BREAK_ALLOWED)
@@ -276,13 +279,18 @@ impl JsDebugParserStateCheckpoint {
 
     fn rewind(self, state: &mut JsParserState) {
         assert_eq!(state.parsing_context, self.parsing_context);
+
         assert_eq!(state.label_set.len(), self.label_set_len);
+
         assert_eq!(state.strict, self.strict);
+
         assert_eq!(state.default_item, self.default_item);
+
         assert_eq!(
             state.duplicate_binding_parent,
             self.duplicate_binding_parent
         );
+
         assert_eq!(state.name_map.len(), self.name_map_len);
     }
 }
@@ -525,6 +533,7 @@ impl<T: ChangeParserStateFlags> ChangeParserState for T {
 
     fn apply(self, state: &mut JsParserState) -> Self::Snapshot {
         let new_flags = self.compute_new_flags(state.parsing_context);
+
         ParsingContextFlagsSnapshot(std::mem::replace(&mut state.parsing_context, new_flags))
     }
 
@@ -596,6 +605,7 @@ impl ChangeParserState for EnterFunction {
     #[inline]
     fn restore(state: &mut JsParserState, value: Self::Snapshot) {
         state.parsing_context = value.parsing_context;
+
         state.label_set = value.label_set;
     }
 }
@@ -635,6 +645,7 @@ impl ChangeParserState for EnterClassStaticInitializationBlock {
 
     fn restore(state: &mut JsParserState, value: Self::Snapshot) {
         state.parsing_context = value.flags;
+
         state.label_set = value.label_set;
     }
 }
@@ -655,7 +666,9 @@ impl ChangeParserState for WithLabel {
     fn apply(self, state: &mut JsParserState) -> Self::Snapshot {
         #[cfg(debug_assertions)]
         let previous_len = state.label_set.len();
+
         state.label_set.insert(self.0, self.1);
+
         WithLabelSnapshot {
             // Capturing the len is sufficient because:
             // * The labels are stored in an index map that uses insertion-order
@@ -673,6 +686,7 @@ impl ChangeParserState for WithLabel {
     #[cfg(debug_assertions)]
     fn restore(state: &mut JsParserState, value: Self::Snapshot) {
         assert_eq!(state.label_set.len(), value.label_set_len + 1);
+
         state.label_set.pop();
     }
 }
@@ -700,6 +714,7 @@ impl ChangeParserState for EnterAmbientContext {
 
     fn apply(self, state: &mut JsParserState) -> Self::Snapshot {
         let new_flags = state.parsing_context | ParsingContextFlags::AMBIENT_CONTEXT;
+
         EnterAmbientContextSnapshot {
             flags: std::mem::replace(&mut state.parsing_context, new_flags),
             default_item: state.default_item.take(),
@@ -709,7 +724,9 @@ impl ChangeParserState for EnterAmbientContext {
 
     fn restore(state: &mut JsParserState, value: Self::Snapshot) {
         state.parsing_context = value.flags;
+
         state.default_item = value.default_item;
+
         state.strict = value.strict_mode;
     }
 }

@@ -48,8 +48,11 @@ declare_lint_rule! {
 
 impl Rule for NoHeaderScope {
     type Query = Ast<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -67,6 +70,7 @@ impl Rule for NoHeaderScope {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let element = ctx.query();
+
         let scope_node = element.find_attribute_by_name("scope")?;
 
         let diagnostic = RuleDiagnostic::new(
@@ -88,9 +92,11 @@ impl Rule for NoHeaderScope {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let element = ctx.query();
+
         let scope_node = element.find_attribute_by_name("scope")?;
 
         let mut mutation = ctx.root().begin();
+
         mutation.remove_node(scope_node);
 
         Some(JsRuleAction::new(

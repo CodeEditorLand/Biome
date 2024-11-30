@@ -50,15 +50,20 @@ declare_lint_rule! {
 
 impl Rule for UseErrorMessage {
     type Query = Semantic<JsNewOrCallExpression>;
+
     type State = UseErrorMessageRule;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let callee = node.callee().ok()?;
 
         let (reference, name) = global_identifier(&callee.omit_parentheses())?;
+
         let name_text = name.text();
 
         if BUILTIN_ERRORS.binary_search(&name_text).is_err()
@@ -68,6 +73,7 @@ impl Rule for UseErrorMessage {
         }
 
         let argument_position = if name_text == "AggregateError" { 1 } else { 0 };
+
         let arguments = node.arguments()?;
 
         let has_spread = arguments
@@ -97,12 +103,14 @@ impl Rule for UseErrorMessage {
                 };
 
                 let text = string_literal.inner_string_text().ok()?;
+
                 if text.trim().is_empty() {
                     return Some(UseErrorMessageRule::EmptyString);
                 }
 
                 None
             }
+
             AnyJsExpression::JsTemplateExpression(template) => {
                 if template.elements().into_iter().count() == 0 {
                     return Some(UseErrorMessageRule::EmptyString);
@@ -110,9 +118,11 @@ impl Rule for UseErrorMessage {
 
                 None
             }
+
             AnyJsExpression::JsArrayExpression(_) | AnyJsExpression::JsObjectExpression(_) => {
                 Some(UseErrorMessageRule::NotString)
             }
+
             _ => None,
         }
     }

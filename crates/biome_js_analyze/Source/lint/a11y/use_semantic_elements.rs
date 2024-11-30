@@ -51,14 +51,20 @@ declare_lint_rule! {
 
 impl Rule for UseSemanticElements {
     type Query = Ast<JsxOpeningElement>;
+
     type State = JsxAttribute;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let role_attribute = node.find_attribute_by_name("role")?;
+
         let role_value = role_attribute.as_static_value()?;
+
         let role_value = role_value.as_string_constant()?;
 
         // Allow `role="img"` on any element. For more information, see:
@@ -68,6 +74,7 @@ impl Rule for UseSemanticElements {
         }
 
         let role = AriaRole::from_roles(role_value)?;
+
         if role.base_html_elements().is_empty() && role.related_html_elements().is_empty() {
             None
         } else {
@@ -77,8 +84,11 @@ impl Rule for UseSemanticElements {
 
     fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let role_attribute = state;
+
         let role_value = role_attribute.as_static_value()?;
+
         let role_value = role_value.as_string_constant()?;
+
         let role = AriaRole::from_roles(role_value)?;
 
         let candidates = role
@@ -87,6 +97,7 @@ impl Rule for UseSemanticElements {
             .chain(role.related_html_elements())
             .map(|element| element.to_string())
             .collect::<Vec<_>>();
+
         let candidate_list = candidates.join("\n");
 
         Some(

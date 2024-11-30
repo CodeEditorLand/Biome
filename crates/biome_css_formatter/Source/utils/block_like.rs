@@ -20,21 +20,27 @@ impl<'a> FormatCssBlockLike<'a> {
             CssBlockLike::CssKeyframesBlock(block) => {
                 write!(f, [block.items().format()])
             }
+
             CssBlockLike::CssDeclarationOrAtRuleBlock(block) => {
                 write!(f, [block.items().format()])
             }
+
             CssBlockLike::CssDeclarationBlock(block) => {
                 write!(f, [block.declarations().format()])
             }
+
             CssBlockLike::CssRuleBlock(block) => {
                 write!(f, [block.rules().format()])
             }
+
             CssBlockLike::CssFontFeatureValuesBlock(block) => {
                 write!(f, [block.items().format()])
             }
+
             CssBlockLike::CssPageAtRuleBlock(block) => {
                 write!(f, [block.items().format()])
             }
+
             CssBlockLike::CssDeclarationOrRuleBlock(block) => {
                 write!(f, [block.items().format()])
             }
@@ -69,6 +75,7 @@ impl<'a> Format<CssFormatContext> for FormatCssBlockLike<'a> {
                 [soft_block_indent(&format_with(|f| self.write_items(f)))]
             )?;
         }
+
         write!(f, [r_curly_token.format()])
     }
 }

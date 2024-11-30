@@ -60,12 +60,16 @@ declare_lint_rule! {
 
 impl Rule for NoUnknownPseudoElement {
     type Query = Ast<CssPseudoElementSelector>;
+
     type State = AnyCssPseudoElement;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node: &CssPseudoElementSelector = ctx.query();
+
         let pseudo_element = node.element().ok()?;
 
         let pseudo_element_name = match &pseudo_element {
@@ -73,6 +77,7 @@ impl Rule for NoUnknownPseudoElement {
             AnyCssPseudoElement::CssPseudoElementFunctionIdentifier(ident) => {
                 ident.name().ok()?.text().to_string()
             }
+
             AnyCssPseudoElement::CssPseudoElementFunctionSelector(selector) => selector.text(),
             AnyCssPseudoElement::CssPseudoElementIdentifier(ident) => {
                 ident.name().ok()?.text().to_string()
@@ -90,6 +95,7 @@ impl Rule for NoUnknownPseudoElement {
 
     fn diagnostic(_: &RuleContext<Self>, element: &Self::State) -> Option<RuleDiagnostic> {
         let span = element.range();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

@@ -99,8 +99,10 @@ pub struct GritBubbleBuilder {
 impl GritBubbleBuilder {
     pub fn with_scope(mut self, scope: GritBubbleScope) -> Self {
         self.scope = Some(scope);
+
         self
     }
+
     pub fn build(self) -> GritBubble {
         GritBubble::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_BUBBLE,
@@ -180,8 +182,10 @@ pub struct GritDotdotdotBuilder {
 impl GritDotdotdotBuilder {
     pub fn with_pattern(mut self, pattern: AnyGritMaybeCurlyPattern) -> Self {
         self.pattern = Some(pattern);
+
         self
     }
+
     pub fn build(self) -> GritDotdotdot {
         GritDotdotdot::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_DOTDOTDOT,
@@ -270,12 +274,16 @@ pub struct GritLanguageDeclarationBuilder {
 impl GritLanguageDeclarationBuilder {
     pub fn with_flavor(mut self, flavor: GritLanguageFlavor) -> Self {
         self.flavor = Some(flavor);
+
         self
     }
+
     pub fn with_semicolon_token(mut self, semicolon_token: SyntaxToken) -> Self {
         self.semicolon_token = Some(semicolon_token);
+
         self
     }
+
     pub fn build(self) -> GritLanguageDeclaration {
         GritLanguageDeclaration::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_LANGUAGE_DECLARATION,
@@ -352,8 +360,10 @@ pub struct GritLikeBuilder {
 impl GritLikeBuilder {
     pub fn with_threshold(mut self, threshold: GritLikeThreshold) -> Self {
         self.threshold = Some(threshold);
+
         self
     }
+
     pub fn build(self) -> GritLike {
         GritLike::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_LIKE,
@@ -403,8 +413,10 @@ pub struct GritListBuilder {
 impl GritListBuilder {
     pub fn with_name(mut self, name: GritName) -> Self {
         self.name = Some(name);
+
         self
     }
+
     pub fn build(self) -> GritList {
         GritList::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_LIST,
@@ -651,8 +663,10 @@ pub struct GritPatternContainsBuilder {
 impl GritPatternContainsBuilder {
     pub fn with_until_clause(mut self, until_clause: GritPatternContainsUntilClause) -> Self {
         self.until_clause = Some(until_clause);
+
         self
     }
+
     pub fn build(self) -> GritPatternContains {
         GritPatternContains::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_PATTERN_CONTAINS,
@@ -709,12 +723,16 @@ pub struct GritPatternDefinitionBuilder {
 impl GritPatternDefinitionBuilder {
     pub fn with_visibility_token(mut self, visibility_token: SyntaxToken) -> Self {
         self.visibility_token = Some(visibility_token);
+
         self
     }
+
     pub fn with_language(mut self, language: GritLanguageDeclaration) -> Self {
         self.language = Some(language);
+
         self
     }
+
     pub fn build(self) -> GritPatternDefinition {
         GritPatternDefinition::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_PATTERN_DEFINITION,
@@ -786,8 +804,10 @@ pub struct GritPatternIfElseBuilder {
 impl GritPatternIfElseBuilder {
     pub fn with_else_clause(mut self, else_clause: GritPatternElseClause) -> Self {
         self.else_clause = Some(else_clause);
+
         self
     }
+
     pub fn build(self) -> GritPatternIfElse {
         GritPatternIfElse::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_PATTERN_IF_ELSE,
@@ -931,8 +951,10 @@ pub struct GritPredicateAndBuilder {
 impl GritPredicateAndBuilder {
     pub fn with_and_token(mut self, and_token: SyntaxToken) -> Self {
         self.and_token = Some(and_token);
+
         self
     }
+
     pub fn build(self) -> GritPredicateAnd {
         GritPredicateAnd::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_PREDICATE_AND,
@@ -1106,8 +1128,10 @@ pub struct GritPredicateIfElseBuilder {
 impl GritPredicateIfElseBuilder {
     pub fn with_else_clause(mut self, else_clause: GritPredicateElseClause) -> Self {
         self.else_clause = Some(else_clause);
+
         self
     }
+
     pub fn build(self) -> GritPredicateIfElse {
         GritPredicateIfElse::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_PREDICATE_IF_ELSE,
@@ -1249,8 +1273,10 @@ pub struct GritPredicateRewriteBuilder {
 impl GritPredicateRewriteBuilder {
     pub fn with_annotation(mut self, annotation: GritAnnotation) -> Self {
         self.annotation = Some(annotation);
+
         self
     }
+
     pub fn build(self) -> GritPredicateRewrite {
         GritPredicateRewrite::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_PREDICATE_REWRITE,
@@ -1291,8 +1317,10 @@ pub struct GritRegexPatternBuilder {
 impl GritRegexPatternBuilder {
     pub fn with_variables(mut self, variables: GritRegexPatternVariables) -> Self {
         self.variables = Some(variables);
+
         self
     }
+
     pub fn build(self) -> GritRegexPattern {
         GritRegexPattern::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_REGEX_PATTERN,
@@ -1339,8 +1367,10 @@ pub struct GritRewriteBuilder {
 impl GritRewriteBuilder {
     pub fn with_annotation(mut self, annotation: GritAnnotation) -> Self {
         self.annotation = Some(annotation);
+
         self
     }
+
     pub fn build(self) -> GritRewrite {
         GritRewrite::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_REWRITE,
@@ -1373,16 +1403,22 @@ pub struct GritRootBuilder {
 impl GritRootBuilder {
     pub fn with_bom_token(mut self, bom_token: SyntaxToken) -> Self {
         self.bom_token = Some(bom_token);
+
         self
     }
+
     pub fn with_version(mut self, version: AnyGritVersion) -> Self {
         self.version = Some(version);
+
         self
     }
+
     pub fn with_language(mut self, language: AnyGritLanguageDeclaration) -> Self {
         self.language = Some(language);
+
         self
     }
+
     pub fn build(self) -> GritRoot {
         GritRoot::unwrap_cast(SyntaxNode::new_detached(
             GritSyntaxKind::GRIT_ROOT,
@@ -1502,8 +1538,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GritDefinitionList::unwrap_cast(SyntaxNode::new_detached(
         GritSyntaxKind::GRIT_DEFINITION_LIST,
         (0..length).map(|index| {
@@ -1523,8 +1562,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GritLanguageFlavorList::unwrap_cast(SyntaxNode::new_detached(
         GritSyntaxKind::GRIT_LANGUAGE_FLAVOR_LIST,
         (0..length).map(|index| {
@@ -1544,8 +1586,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GritListPatternList::unwrap_cast(SyntaxNode::new_detached(
         GritSyntaxKind::GRIT_LIST_PATTERN_LIST,
         (0..length).map(|index| {
@@ -1565,8 +1610,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GritMapElementList::unwrap_cast(SyntaxNode::new_detached(
         GritSyntaxKind::GRIT_MAP_ELEMENT_LIST,
         (0..length).map(|index| {
@@ -1586,8 +1634,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GritNamedArgList::unwrap_cast(SyntaxNode::new_detached(
         GritSyntaxKind::GRIT_NAMED_ARG_LIST,
         (0..length).map(|index| {
@@ -1607,8 +1658,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GritPatternList::unwrap_cast(SyntaxNode::new_detached(
         GritSyntaxKind::GRIT_PATTERN_LIST,
         (0..length).map(|index| {
@@ -1628,8 +1682,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GritPredicateList::unwrap_cast(SyntaxNode::new_detached(
         GritSyntaxKind::GRIT_PREDICATE_LIST,
         (0..length).map(|index| {
@@ -1649,8 +1706,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     GritVariableList::unwrap_cast(SyntaxNode::new_detached(
         GritSyntaxKind::GRIT_VARIABLE_LIST,
         (0..length).map(|index| {

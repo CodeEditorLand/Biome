@@ -119,6 +119,7 @@ impl AriaRoles {
                     ) => {
                         return None;
                     }
+
                     _ => match elt.find_attribute_by_name(|n| n == "list") {
                         Some(_) => AriaRole::Combobox,
                         _ => AriaRole::Textbox,
@@ -147,6 +148,7 @@ impl AriaRoles {
                                 matches!(n, "aria-labelledby" | "aria-label" | "title")
                             })
                             .is_some();
+
                         if has_accessible_name {
                             AriaRole::Img
                         } else {
@@ -154,6 +156,7 @@ impl AriaRoles {
                         }
                     }
                 }
+
                 None => AriaRole::Img,
             },
             "section" => {
@@ -162,6 +165,7 @@ impl AriaRoles {
                         matches!(n, "aria-labelledby" | "aria-label" | "title")
                     })
                     .is_some();
+
                 if has_accessible_name {
                     AriaRole::Region
                 } else {
@@ -177,6 +181,7 @@ impl AriaRoles {
                     Some(size) => size.as_ref().parse::<i32>().ok()?,
                     None => 0,
                 };
+
                 if elt.find_attribute_by_name(|n| n == "multiple").is_none() && size <= 1 {
                     AriaRole::Combobox
                 } else {
@@ -191,6 +196,7 @@ impl AriaRoles {
                 // footer (maybe ContentInfoRole): https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/examples/contentinfo.html
                 AriaRole::Generic
             }
+
             _ => return None,
         })
     }
@@ -255,6 +261,7 @@ impl AriaRoles {
             Some("input" | "dl" | "label" | "legend" | "ruby" | "pre" | "figcaption" | "br") => {
                 true
             }
+
             Some("s" | "hgroup") => false,
             // FIXME: should we add `link`?
             //

@@ -51,32 +51,40 @@ declare_lint_rule! {
 
 impl Rule for NoImportantInKeyframe {
     type Query = Ast<CssKeyframesBlock>;
+
     type State = CssDeclarationImportant;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         for item in node.items() {
             let AnyCssKeyframesItem::CssKeyframesItem(keyframe_item) = item else {
                 return None;
             };
+
             let AnyCssDeclarationBlock::CssDeclarationBlock(block_declaration) =
                 keyframe_item.block().ok()?
             else {
                 return None;
             };
+
             for colon_declaration in block_declaration.declarations() {
                 if let Some(important) = colon_declaration.declaration().ok()?.important() {
                     return Some(important);
                 }
             }
         }
+
         None
     }
 
     fn diagnostic(_ctx: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
         let span = node.range();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

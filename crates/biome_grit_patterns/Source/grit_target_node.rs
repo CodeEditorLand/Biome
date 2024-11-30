@@ -272,6 +272,7 @@ impl<'a> GritTargetNode<'a> {
     /// context by looking for a variance in node kinds.
     pub fn matches_kinds_recursively_with(&self, other: &Self) -> bool {
         let mut cursor_a = self.walk();
+
         let mut cursor_b = other.walk();
 
         // Are we navigating back up? If so, we shouldn't try to visit any
@@ -366,20 +367,24 @@ impl<'a> GritAstNode for GritTargetNode<'a> {
 
     fn next_named_node(&self) -> Option<Self> {
         let mut current_node = Cow::Borrowed(self);
+
         loop {
             if let Some(sibling) = current_node.next_sibling() {
                 return Some(sibling);
             }
+
             current_node = Cow::Owned(current_node.parent()?);
         }
     }
 
     fn previous_named_node(&self) -> Option<Self> {
         let mut current_node = Cow::Borrowed(self);
+
         loop {
             if let Some(sibling) = current_node.previous_sibling() {
                 return Some(sibling);
             }
+
             current_node = Cow::Owned(current_node.parent()?);
         }
     }
@@ -441,7 +446,9 @@ impl<'a> Iterator for AncestorIterator<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let node = self.node.clone()?;
+
         self.node = node.parent();
+
         Some(node)
     }
 }
@@ -454,6 +461,7 @@ pub struct ChildrenIterator<'a> {
 impl<'a> ChildrenIterator<'a> {
     fn new(node: &GritTargetNode<'a>) -> Self {
         let mut cursor = GritTargetNodeCursor::new(node);
+
         Self {
             cursor: cursor.goto_first_child().then_some(cursor),
         }
@@ -465,10 +473,13 @@ impl<'a> Iterator for ChildrenIterator<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let c = self.cursor.as_mut()?;
+
         let node = c.node();
+
         if !c.goto_next_sibling() {
             self.cursor = None;
         }
+
         Some(node)
     }
 }
@@ -481,15 +492,19 @@ pub struct NamedChildrenIterator<'a> {
 impl<'a> NamedChildrenIterator<'a> {
     fn new(node: &GritTargetNode<'a>) -> Self {
         let mut cursor = GritTargetNodeCursor::new(node);
+
         let mut cursor = cursor.goto_first_child().then_some(cursor);
+
         if let Some(c) = cursor.as_mut() {
             while c.is_at_token() {
                 if !c.goto_next_sibling() {
                     cursor = None;
+
                     break;
                 }
             }
         }
+
         Self { cursor }
     }
 }
@@ -499,17 +514,21 @@ impl<'a> Iterator for NamedChildrenIterator<'a> {
 
     fn next(&mut self) -> Option<Self::Item> {
         let c = self.cursor.as_mut()?;
+
         let node = c.node();
+
         if c.goto_next_sibling() {
             while c.is_at_token() {
                 if !c.goto_next_sibling() {
                     self.cursor = None;
+
                     break;
                 }
             }
         } else {
             self.cursor = None;
         }
+
         Some(node)
     }
 }
@@ -540,8 +559,10 @@ impl<'a> AstCursor for GritTargetNodeCursor<'a> {
         match self.node.first_child() {
             Some(child) => {
                 self.node = child;
+
                 true
             }
+
             None => false,
         }
     }
@@ -550,11 +571,14 @@ impl<'a> AstCursor for GritTargetNodeCursor<'a> {
         if self.node == self.root {
             return false;
         }
+
         match self.node.parent() {
             Some(parent) => {
                 self.node = parent;
+
                 true
             }
+
             None => false,
         }
     }
@@ -563,11 +587,14 @@ impl<'a> AstCursor for GritTargetNodeCursor<'a> {
         if self.node == self.root {
             return false;
         }
+
         match self.node.next_sibling() {
             Some(sibling) => {
                 self.node = sibling;
+
                 true
             }
+
             None => false,
         }
     }

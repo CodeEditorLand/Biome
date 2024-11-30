@@ -370,6 +370,7 @@ macro_rules! map_syntax_node {
                         unsafe { $crate::GraphqlVariableDefinitionList::new_unchecked(node) };
                     $body
                 }
+
                 _ => unreachable!(),
             },
         }

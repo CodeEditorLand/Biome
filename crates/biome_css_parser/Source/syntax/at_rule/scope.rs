@@ -66,6 +66,7 @@ pub(crate) fn parse_scope_range_start_or_interval(p: &mut CssParser) -> ParsedSy
         if parse_or_recover_scope_edge(p).is_err() {
             return Present(m.complete(p, CSS_BOGUS_SCOPE_RANGE));
         }
+
         CSS_SCOPE_RANGE_INTERVAL
     } else {
         CSS_SCOPE_RANGE_START
@@ -121,9 +122,11 @@ pub(crate) fn parse_scope_edge(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T!['(']);
+
     SelectorList::default()
         .with_end_kind_ts(SCOPE_EDGE_SELECTOR_LIST_END_SET)
         .parse_list(p);
+
     p.expect(T![')']);
 
     Present(m.complete(p, CSS_SCOPE_EDGE))

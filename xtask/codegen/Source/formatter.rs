@@ -24,10 +24,13 @@ struct GitRepo {
 impl GitRepo {
     fn open() -> Self {
         let root = project_root();
+
         let repo = Repository::discover(&root).expect("failed to open git repo");
 
         let mut allow_staged = false;
+
         let mut allow_dirty = false;
+
         for arg in env::args() {
             match arg.as_str() {
                 "--allow-staged" => {
@@ -36,11 +39,13 @@ impl GitRepo {
                 "--allow-dirty" => {
                     allow_dirty = true;
                 }
+
                 _ => {}
             }
         }
 
         let mut repo_opts = StatusOptions::new();
+
         repo_opts.include_ignored(false);
 
         let statuses = repo
@@ -48,6 +53,7 @@ impl GitRepo {
             .expect("failed to read repository status");
 
         let mut staged = HashSet::new();
+
         let mut dirty = HashSet::new();
 
         for status in statuses.iter() {
@@ -63,6 +69,7 @@ impl GitRepo {
                             staged.insert(root.join(path));
                         }
                     }
+
                     _ => {
                         if !allow_dirty {
                             dirty.insert(root.join(path));
@@ -86,6 +93,7 @@ impl GitRepo {
         if self.dirty.contains(path) {
             panic!("Codegen would overwrite '{}' but it has uncommitted changes. Commit the file to git, or pass --allow-dirty to the command to proceed anyway", path.display());
         }
+
         if self.staged.contains(path) {
             panic!("Codegen would overwrite '{}' but it has uncommitted changes. Commit the file to git, or pass --allow-staged to the command to proceed anyway", path.display());
         }
@@ -99,6 +107,7 @@ impl GitRepo {
         }
 
         let root = project_root();
+
         self.repo
             .index()
             .expect("could not open index for git repository")
@@ -128,6 +137,7 @@ struct ModuleIndex {
 impl ModuleIndex {
     fn new(root: PathBuf) -> Self {
         let mut unused_files = HashSet::new();
+
         let mut queue: VecDeque<_> = NodeDialect::all()
             .iter()
             .map(|dialect| root.join(dialect.as_str()))
@@ -145,12 +155,14 @@ impl ModuleIndex {
                 let entry = entry.expect("failed to read DirEntry");
 
                 let path = entry.path();
+
                 let file_type = entry.file_type().unwrap_or_else(|err| {
                     panic!("failed to read file type of '{}': {}", path.display(), err)
                 });
 
                 if file_type.is_dir() {
                     queue.push_back(path);
+
                     continue;
                 }
 
@@ -171,6 +183,7 @@ impl ModuleIndex {
 
         // Walk up from the module file towards the root
         let mut parent = path.parent();
+
         let mut file_stem = path.file_stem();
 
         while let (Some(path), Some(stem)) = (parent, file_stem) {
@@ -178,9 +191,11 @@ impl ModuleIndex {
 
             // Insert each module into its parent
             let stem = stem.to_str().unwrap().to_owned();
+
             self.modules.entry(path.into()).or_default().insert(stem);
 
             parent = path.parent();
+
             file_stem = path.file_stem();
 
             // Stop at the root directory
@@ -197,6 +212,7 @@ impl ModuleIndex {
             let mut content = String::new();
 
             let stem = path.file_stem().unwrap().to_str().unwrap();
+
             for import in imports {
                 // Clippy complains about child modules having the same
                 // names as their parent, eg. js/name/name.rs
@@ -205,24 +221,31 @@ impl ModuleIndex {
                 }
 
                 content.push_str("pub(crate) mod ");
+
                 content.push_str(&import);
+
                 content.push_str(";\n");
             }
 
             let content = xtask::reformat_with_command(content, "cargo codegen formatter").unwrap();
 
             let path = path.join("mod.rs");
+
             let mut file = File::create(&path).unwrap();
+
             file.write_all(content.as_bytes()).unwrap();
+
             drop(file);
 
             self.unused_files.remove(&path);
+
             stage.push(path);
         }
 
         for file in self.unused_files {
             remove_file(&file)
                 .unwrap_or_else(|err| panic!("failed to delete '{}': {}", file.display(), err));
+
             stage.push(file);
         }
     }
@@ -257,6 +280,7 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
     }
 
     let mut modules = ModuleIndex::new(formatter_crate_path.join("src"));
+
     let mut format_impls =
         BoilerplateImpls::new(formatter_crate_path.join("src/generated.rs"), language_kind);
 
@@ -289,17 +313,24 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
     // the file doesn't already exist
     for (kind, name) in names {
         let module = name_to_module(&kind, &name, language_kind);
+
         let path = module.as_path();
+
         modules.insert(repo, &path);
 
         let node_id = Ident::new(&name, Span::call_site());
+
         let node_fields_id = Ident::new(&format!("{name}Fields"), Span::call_site());
+
         let format_id = Ident::new(&format!("Format{name}"), Span::call_site());
 
         let qualified_format_id = {
             let dialect = Ident::new(module.dialect.as_str(), Span::call_site());
+
             let concept = Ident::new(module.concept.as_str(), Span::call_site());
+
             let module = Ident::new(&module.name, Span::call_site());
+
             quote! { crate::#dialect::#concept::#module::#format_id }
         };
 
@@ -314,12 +345,15 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
         }
 
         let dir = path.parent().unwrap();
+
         create_dir_all(dir).unwrap();
 
         repo.check_path(&path);
 
         let syntax_crate_ident = language_kind.syntax_crate_ident();
+
         let formatter_ident = language_kind.formatter_ident();
+
         let formatter_context_ident = language_kind.format_context_ident();
 
         // Generate a default implementation of Format/FormatNode using format_list on
@@ -328,6 +362,7 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
         let tokens = match kind {
             NodeKind::List { separated: false } => quote! {
                 use crate::prelude::*;
+
                 use #syntax_crate_ident::#node_id;
 
                 #[derive(Debug, Clone, Default)]
@@ -343,6 +378,7 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
             },
             NodeKind::List { .. } => quote! {
                 use crate::prelude::*;
+
                 use #syntax_crate_ident::#node_id;
 
                 #[derive(Debug, Clone, Default)]
@@ -369,6 +405,7 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
                         use crate::prelude::*;
 
                         use #syntax_crate_ident::{#node_id, #node_fields_id};
+
                         use biome_formatter::write;
 
                         #[derive(Debug, Clone, Default)]
@@ -391,6 +428,7 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
                         use crate::prelude::*;
 
                         use biome_rowan::AstNode;
+
                         use #syntax_crate_ident::#node_id;
 
                         #[derive(Debug, Clone, Default)]
@@ -404,9 +442,11 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
                     }
                 }
             }
+
             NodeKind::Bogus => {
                 quote! {
                     use crate::FormatBogusNodeRule;
+
                     use #syntax_crate_ident::#node_id;
 
                     #[derive(Debug, Clone, Default)]
@@ -416,18 +456,21 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
                     }
                 }
             }
+
             NodeKind::Union { variants } => {
                 // For each variant of the union call to_format_element on the wrapped node
                 let match_arms: Vec<_> = variants
                     .into_iter()
                     .map(|variant| {
                         let variant = Ident::new(&variant, Span::call_site());
+
                         quote! { #node_id::#variant(node) => node.format().fmt(f), }
                     })
                     .collect();
 
                 quote! {
                     use crate::prelude::*;
+
                     use #syntax_crate_ident::#node_id;
 
                     #[derive(Debug, Clone, Default)]
@@ -453,13 +496,16 @@ fn generate_formatter(repo: &GitRepo, language_kind: LanguageKind) {
         };
 
         let mut file = File::create(&path).unwrap();
+
         file.write_all(tokens.as_bytes()).unwrap();
+
         drop(file);
 
         stage.push(path);
     }
 
     modules.print(&mut stage);
+
     format_impls.print(&mut stage);
 
     repo.stage_paths(&stage);
@@ -482,7 +528,9 @@ impl BoilerplateImpls {
 
     fn push(&mut self, kind: &NodeKind, node_id: &Ident, format_id: &TokenStream) {
         let syntax_crate_ident = self.language.syntax_crate_ident();
+
         let formatter_ident = self.language.formatter_ident();
+
         let formatter_context_ident = self.language.format_context_ident();
 
         let format_rule_impl = match kind {
@@ -533,17 +581,21 @@ impl BoilerplateImpls {
         let impls = self.impls;
 
         let formatter_ident = self.language.formatter_ident();
+
         let formatter_context_ident = self.language.format_context_ident();
 
         let tokens = quote! {
             use crate::{AsFormat, IntoFormat, FormatNodeRule, FormatBogusNodeRule, #formatter_ident, #formatter_context_ident};
+
             use biome_formatter::{FormatRefWithRule, FormatOwnedWithRule, FormatRule, FormatResult};
 
             #( #impls )*
         };
 
         let content = xtask::reformat_with_command(tokens, "cargo codegen formatter").unwrap();
+
         let mut file = File::create(&self.path).unwrap();
+
         file.write_all(content.as_bytes()).unwrap();
 
         stage.push(self.path);
@@ -604,6 +656,7 @@ impl NodeDialect {
             "Html" => NodeDialect::Html,
             _ => {
                 eprintln!("missing prefix {name}");
+
                 NodeDialect::Js
             }
         }
@@ -771,6 +824,7 @@ fn get_node_concept(
                 {
                     NodeConcept::Tag
                 }
+
                 _ if dialect.is_jsx() && name.contains("Attribute") => NodeConcept::Attribute,
 
                 // Default to auxiliary
@@ -801,6 +855,7 @@ fn get_node_concept(
                 {
                     NodeConcept::Value
                 }
+
                 _ => NodeConcept::Auxiliary,
             },
 
@@ -837,6 +892,7 @@ fn name_to_module(kind: &NodeKind, in_name: &str, language: LanguageKind) -> Nod
     assert!(matches!(upper_case_indices.next(), Some((0, _))));
 
     let (second_upper_start, _) = upper_case_indices.next().expect("Node name malformed");
+
     let (mut dialect_prefix, mut name) = in_name.split_at(second_upper_start);
 
     // AnyJsX
@@ -852,6 +908,7 @@ fn name_to_module(kind: &NodeKind, in_name: &str, language: LanguageKind) -> Nod
 
     // Convert the names from CamelCase to snake_case
     let mut stem = String::new();
+
     for (index, char) in name.chars().enumerate() {
         if char.is_lowercase() {
             stem.push(char);
@@ -859,6 +916,7 @@ fn name_to_module(kind: &NodeKind, in_name: &str, language: LanguageKind) -> Nod
             if index > 0 {
                 stem.push('_');
             }
+
             for char in char.to_lowercase() {
                 stem.push(char);
             }

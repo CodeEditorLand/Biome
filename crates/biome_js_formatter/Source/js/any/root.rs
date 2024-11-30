@@ -6,6 +6,7 @@ use biome_js_syntax::AnyJsRoot;
 pub(crate) struct FormatAnyJsRoot;
 impl FormatRule<AnyJsRoot> for FormatAnyJsRoot {
     type Context = JsFormatContext;
+
     fn fmt(&self, node: &AnyJsRoot, f: &mut JsFormatter) -> FormatResult<()> {
         match node {
             AnyJsRoot::JsExpressionSnipped(node) => node.format().fmt(f),

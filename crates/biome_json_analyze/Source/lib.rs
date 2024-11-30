@@ -21,7 +21,9 @@ pub(crate) type JsonRuleAction = RuleAction<JsonLanguage>;
 
 pub static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
     let mut metadata = MetadataRegistry::default();
+
     visit_registry(&mut metadata);
+
     metadata
 });
 
@@ -66,7 +68,9 @@ where
     ) -> Vec<Result<SuppressionKind, SuppressionDiagnostic>> {
         vec![]
     }
+
     let mut registry = RuleRegistry::builder(&filter, root);
+
     visit_registry(&mut registry);
 
     let (registry, mut services, diagnostics, visitors) = registry.build();
@@ -104,12 +108,19 @@ where
 #[cfg(test)]
 mod tests {
     use biome_analyze::{AnalyzerOptions, Never, RuleFilter};
+
     use biome_console::fmt::{Formatter, Termcolor};
+
     use biome_console::{markup, Markup};
+
     use biome_diagnostics::termcolor::NoColor;
+
     use biome_diagnostics::{Diagnostic, DiagnosticExt, PrintDiagnostic, Severity};
+
     use biome_json_parser::{parse_json, JsonParserOptions};
+
     use biome_json_syntax::{JsonFileSource, TextRange};
+
     use std::slice;
 
     use crate::{analyze, AnalysisFilter, ControlFlow};
@@ -119,8 +130,11 @@ mod tests {
     fn quick_test() {
         fn markup_to_string(markup: Markup) -> String {
             let mut buffer = Vec::new();
+
             let mut write = Termcolor(NoColor::new(&mut buffer));
+
             let mut fmt = Formatter::new(&mut write);
+
             fmt.write_markup(markup).unwrap();
 
             String::from_utf8(buffer).unwrap()
@@ -136,8 +150,11 @@ mod tests {
         let parsed = parse_json(SOURCE, JsonParserOptions::default());
 
         let mut error_ranges: Vec<TextRange> = Vec::new();
+
         let rule_filter = RuleFilter::Rule("nursery", "noDuplicateJsonKeys");
+
         let options = AnalyzerOptions::default();
+
         analyze(
             &parsed.tree(),
             AnalysisFilter {
@@ -149,18 +166,22 @@ mod tests {
             |signal| {
                 if let Some(diag) = signal.diagnostic() {
                     error_ranges.push(diag.location().span.unwrap());
+
                     let error = diag
                         .with_severity(Severity::Warning)
                         .with_file_path("ahahah")
                         .with_file_source_code(SOURCE);
+
                     let text = markup_to_string(markup! {
                         {PrintDiagnostic::verbose(&error)}
                     });
+
                     eprintln!("{text}");
                 }
 
                 for action in signal.actions() {
                     let new_code = action.mutation.commit();
+
                     eprintln!("{new_code}");
                 }
 

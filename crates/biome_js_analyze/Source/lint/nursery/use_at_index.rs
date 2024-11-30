@@ -125,8 +125,11 @@ pub struct UseAtIndexState {
 
 impl Rule for UseAtIndex {
     type Query = Ast<AnyJsArrayAccess>;
+
     type State = UseAtIndexState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -140,11 +143,13 @@ impl Rule for UseAtIndex {
             // foo.bar()
             AnyJsArrayAccess::JsCallExpression(call_exp) => check_call_expression(call_exp),
         };
+
         result
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -159,20 +164,25 @@ impl Rule for UseAtIndex {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let prev_node = match node {
             AnyJsArrayAccess::JsComputedMemberExpression(node) => {
                 AnyJsExpression::JsComputedMemberExpression(node.clone())
             }
+
             AnyJsArrayAccess::JsCallExpression(node) => {
                 AnyJsExpression::JsCallExpression(node.clone())
             }
         };
+
         let UseAtIndexState {
             at_number_exp,
             error_type: _,
             object,
         } = state;
+
         let object = overwrap_parentheses_expression(object)?;
 
         mutation.replace_node(
@@ -216,8 +226,10 @@ impl ErrorType {
                         },
                     )
                 };
+
                 markup! { "Prefer "<Emphasis>{method}</Emphasis>" over "<Emphasis>{old_method}</Emphasis>"." }.to_owned()
             }
+
             ErrorType::Slice {
                 arg_type,
                 extract_type,
@@ -227,6 +239,7 @@ impl ErrorType {
                     SliceExtractType::Shift => ".shift()",
                     SliceExtractType::ZeroMember => "[0]",
                 };
+
                 let (method, old_method) = match (arg_type, extract_type) {
                     (SliceArgType::OneArg, SliceExtractType::Pop) => {
                         ("X.at(-1)", format!("X.slice(-a){}", extract_string))
@@ -234,6 +247,7 @@ impl ErrorType {
                     (SliceArgType::TwoArg, SliceExtractType::Pop) => {
                         ("X.at(Y - 1)", format!("X.slice(a, Y){}", extract_string))
                     }
+
                     _ => (
                         "X.at(Y)",
                         format!(
@@ -247,6 +261,7 @@ impl ErrorType {
                         ),
                     ),
                 };
+
                 markup! { "Prefer "<Emphasis>{method}</Emphasis>" over "<Emphasis>{old_method}</Emphasis>"." }.to_owned()
             }
         }
@@ -266,7 +281,9 @@ impl ErrorType {
 fn is_same_reference(left: AnyJsExpression, right: AnyJsExpression) -> Option<bool> {
     // solve JsParenthesizedExpression
     let left = left.omit_parentheses();
+
     let right = right.omit_parentheses();
+
     match (left, right) {
         // x[0]
         (
@@ -278,14 +295,17 @@ fn is_same_reference(left: AnyJsExpression, right: AnyJsExpression) -> Option<bo
             else {
                 return Some(false);
             };
+
             let AnyJsExpression::AnyJsLiteralExpression(right_member) =
                 right.member().ok()?.omit_parentheses()
             else {
                 return Some(false);
             };
+
             if left_member.text() != right_member.text() {
                 return Some(false);
             }
+
             is_same_reference(left.object().ok()?, right.object().ok()?)
         }
         // x.y
@@ -294,7 +314,9 @@ fn is_same_reference(left: AnyJsExpression, right: AnyJsExpression) -> Option<bo
             AnyJsExpression::JsStaticMemberExpression(right),
         ) => {
             let left_member = left.member().ok()?;
+
             let right_member = right.member().ok()?;
+
             if left_member.text() != right_member.text() {
                 Some(false)
             } else {
@@ -318,21 +340,26 @@ fn overwrap_parentheses_expression(node: &AnyJsExpression) -> Option<AnyJsExpres
         AnyJsExpression::JsArrayExpression(exp) => {
             Some(AnyJsExpression::JsArrayExpression(exp.clone()))
         }
+
         AnyJsExpression::JsCallExpression(exp) => {
             Some(AnyJsExpression::JsCallExpression(exp.clone()))
         }
+
         AnyJsExpression::JsComputedMemberExpression(exp) => {
             Some(AnyJsExpression::JsComputedMemberExpression(exp.clone()))
         }
+
         AnyJsExpression::JsIdentifierExpression(exp) => Some(
             AnyJsExpression::JsIdentifierExpression(exp.clone().trim_trivia()?),
         ),
         AnyJsExpression::JsParenthesizedExpression(exp) => {
             Some(AnyJsExpression::JsParenthesizedExpression(exp.clone()))
         }
+
         AnyJsExpression::JsStaticMemberExpression(exp) => {
             Some(AnyJsExpression::JsStaticMemberExpression(exp.clone()))
         }
+
         _ => Some(AnyJsExpression::JsParenthesizedExpression(
             make::js_parenthesized_expression(
                 make::token(T!['(']),
@@ -348,11 +375,15 @@ fn get_length_node(node: &AnyJsExpression) -> Option<AnyJsExpression> {
     let AnyJsExpression::JsStaticMemberExpression(node) = node else {
         return None;
     };
+
     let member_name = node.member().ok()?;
+
     let member_name = member_name.as_js_name()?.value_token().ok()?;
+
     if member_name.text_trimmed() != "length" {
         return None;
     }
+
     node.object().ok()
 }
 
@@ -360,19 +391,24 @@ fn get_length_node(node: &AnyJsExpression) -> Option<AnyJsExpression> {
 fn get_integer_from_literal(node: &AnyJsExpression) -> Option<i64> {
     if let AnyJsExpression::JsUnaryExpression(unary) = node {
         let token = unary.operator_token().ok()?;
+
         if token.kind() != T![-] {
             return None;
         }
+
         return get_integer_from_literal(&unary.argument().ok()?.omit_parentheses())
             .map(|num| -num);
     }
+
     let AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::JsNumberLiteralExpression(
         number,
     )) = node
     else {
         return None;
     };
+
     let number = number.as_number()?;
+
     if number.fract() == 0.0 {
         Some(i64::try_from(number as i128).ok()?)
     } else {
@@ -393,13 +429,16 @@ fn split_minus_binary_expressions(
 
     while let AnyJsExpression::JsBinaryExpression(binary) = expression {
         let token = binary.operator_token().ok()?;
+
         if token.kind() != T![-] {
             return Some((AnyJsExpression::JsBinaryExpression(binary), right_list));
         }
 
         right_list.push(binary.right().ok()?);
+
         expression = binary.left().ok()?;
     }
+
     Some((expression, right_list))
 }
 
@@ -426,12 +465,14 @@ fn extract_negative_index_expression(
     object: AnyJsExpression,
 ) -> Option<AnyJsExpression> {
     let (left, right_list) = split_minus_binary_expressions(member)?;
+
     if right_list.is_empty() {
         return None;
     }
 
     // left expression should be foo.length
     let left = left.omit_parentheses();
+
     let length_parent = get_length_node(&left)?;
     // left expression should be the same as the object
     if !is_same_reference(object, length_parent)? {
@@ -497,18 +538,25 @@ fn analyze_slice_element_access(node: &AnyJsExpression) -> Option<UseAtIndexStat
         // .pop() or .shift()
         AnyJsExpression::JsCallExpression(call_exp) => {
             let has_args = !call_exp.arguments().ok()?.args().is_empty();
+
             if has_args {
                 return None;
             }
+
             let member = call_exp.callee().ok()?.omit_parentheses();
+
             let AnyJsExpression::JsStaticMemberExpression(member) = member else {
                 return None;
             };
+
             if call_exp.is_optional_chain() || member.is_optional_chain() {
                 return None;
             }
+
             let member_name = member.member().ok()?.as_js_name()?.value_token().ok()?;
+
             let object = member.object().ok()?.omit_parentheses();
+
             match member_name.text_trimmed() {
                 "pop" => (object, SliceExtractType::Pop),
                 "shift" => (object, SliceExtractType::Shift),
@@ -517,11 +565,14 @@ fn analyze_slice_element_access(node: &AnyJsExpression) -> Option<UseAtIndexStat
                 }
             }
         }
+
         AnyJsExpression::JsComputedMemberExpression(member) => {
             let object = member.object().ok()?.omit_parentheses();
+
             if member.is_optional_chain() {
                 return None;
             }
+
             let value = get_integer_from_literal(&member.member().ok()?.omit_parentheses())?;
             // enable only x[0]
             if value != 0 {
@@ -529,16 +580,20 @@ fn analyze_slice_element_access(node: &AnyJsExpression) -> Option<UseAtIndexStat
             }
             (object, SliceExtractType::ZeroMember)
         }
+
         _ => return None,
     };
     // .slice(0,1)
     let AnyJsExpression::JsCallExpression(call_exp) = selected_exp else {
         return None;
     };
+
     let AnyJsExpression::JsStaticMemberExpression(member) = call_exp.callee().ok()? else {
         return None;
     };
+
     let member_name = member.member().ok()?.as_js_name()?.value_token().ok()?;
+
     if member_name.text_trimmed() != "slice" {
         return None;
     }
@@ -548,10 +603,13 @@ fn analyze_slice_element_access(node: &AnyJsExpression) -> Option<UseAtIndexStat
     else {
         return None;
     };
+
     let AnyJsCallArgument::AnyJsExpression(arg0) = arg0.clone() else {
         return None;
     };
+
     let start_exp = arg0.omit_parentheses();
+
     let sliced_exp = member.object().ok()?;
 
     match (extract_type.clone(), optional_arg1) {
@@ -575,6 +633,7 @@ fn analyze_slice_element_access(node: &AnyJsExpression) -> Option<UseAtIndexStat
         }
         (SliceExtractType::ZeroMember | SliceExtractType::Shift, Some(arg1)) => {
             let start_index = get_integer_from_literal(&start_exp)?;
+
             let end_index =
                 get_integer_from_literal(&arg1.as_any_js_expression()?.clone().omit_parentheses())?;
             (start_index * end_index >= 0 && start_index < end_index).then_some(UseAtIndexState {
@@ -588,6 +647,7 @@ fn analyze_slice_element_access(node: &AnyJsExpression) -> Option<UseAtIndexStat
         }
         (SliceExtractType::Pop, Some(arg1)) => {
             let start_index = get_integer_from_literal(&start_exp)?;
+
             let end_index =
                 get_integer_from_literal(&arg1.as_any_js_expression()?.clone().omit_parentheses())?;
             (start_index * end_index >= 0 && start_index < end_index).then_some(UseAtIndexState {
@@ -599,6 +659,7 @@ fn analyze_slice_element_access(node: &AnyJsExpression) -> Option<UseAtIndexStat
                 object: sliced_exp,
             })
         }
+
         _ => None,
     }
 }
@@ -608,8 +669,10 @@ fn check_binary_expression_member(
     object: AnyJsExpression,
 ) -> Option<UseAtIndexState> {
     let member = AnyJsExpression::JsBinaryExpression(member);
+
     let negative_index_exp =
         extract_negative_index_expression(member, object.clone().omit_parentheses());
+
     let negative_index = negative_index_exp?;
 
     Some(UseAtIndexState {
@@ -636,12 +699,15 @@ fn check_computed_member_expression(exp: &JsComputedMemberExpression) -> Option<
     }
     // check member
     let member = exp.member().ok()?.omit_parentheses();
+
     let object = exp.object().ok()?;
+
     match member.clone() {
         // foo[foo.length - 1]
         AnyJsExpression::JsBinaryExpression(binary) => {
             check_binary_expression_member(binary, object)
         }
+
         _ => None,
     }
 }
@@ -654,21 +720,27 @@ fn check_call_expression_char_at(
     let [Some(arg0), None] = call_exp.arguments().ok()?.get_arguments_by_index([0, 1]) else {
         return None;
     };
+
     let AnyJsCallArgument::AnyJsExpression(arg0) = arg0.clone() else {
         return None;
     };
+
     let arg0 = arg0.omit_parentheses();
+
     let char_at_parent = member.object().ok()?.omit_parentheses();
+
     match arg0.clone() {
         // foo.charAt(foo.length - 1)
         AnyJsExpression::JsBinaryExpression(_) => {
             let at_number_exp = extract_negative_index_expression(arg0, char_at_parent.clone());
+
             at_number_exp.map(|at_number_exp| UseAtIndexState {
                 at_number_exp,
                 error_type: ErrorType::StringCharAt { is_negative: true },
                 object: char_at_parent,
             })
         }
+
         _ => None,
     }
 }
@@ -691,12 +763,15 @@ fn check_call_expression(call_exp: &JsCallExpression) -> Option<UseAtIndexState>
             if member.is_optional_chain() {
                 return None;
             }
+
             let member_name = member.member().ok()?.as_js_name()?.value_token().ok()?;
+
             match member_name.text_trimmed() {
                 "charAt" => check_call_expression_char_at(call_exp, &member),
                 _ => None,
             }
         }
+
         _ => None,
     }
 }
@@ -708,10 +783,12 @@ fn make_at_method(object: AnyJsExpression, arg: AnyJsExpression) -> JsCallExpres
         make::token(T![.]),
         make::js_name(make::ident("at")).into(),
     );
+
     let args = make::js_call_arguments(
         make::token(T!['(']),
         make::js_call_argument_list([AnyJsCallArgument::AnyJsExpression(arg)], []),
         make::token(T![')']),
     );
+
     make::js_call_expression(at_member.into(), args).build()
 }

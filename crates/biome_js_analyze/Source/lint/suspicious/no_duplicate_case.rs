@@ -91,20 +91,27 @@ declare_lint_rule! {
 
 impl Rule for NoDuplicateCase {
     type Query = Ast<JsSwitchStatement>;
+
     type State = (TextRange, TextRange);
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let mut defined_tests: Vec<AnyJsExpression> = Vec::new();
+
         let mut signals = Vec::new();
+
         for case in node.cases() {
             if let AnyJsSwitchClause::JsCaseClause(case) = case {
                 if let Ok(test) = case.test() {
                     let define_test = defined_tests
                         .iter()
                         .find(|define_test| is_node_equal(define_test.syntax(), test.syntax()));
+
                     if let Some(define_test) = define_test {
                         signals.push((define_test.range(), test.range()));
                     } else {
@@ -113,11 +120,13 @@ impl Rule for NoDuplicateCase {
                 }
             }
         }
+
         signals.into_boxed_slice()
     }
 
     fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let (first_label_range, label_range) = state;
+
         Some(
             RuleDiagnostic::new(rule_category!(), label_range, "Duplicate case label.")
                 .detail(first_label_range, "The first similar label is here:"),

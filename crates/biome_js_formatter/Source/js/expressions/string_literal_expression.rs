@@ -17,6 +17,7 @@ impl FormatNodeRule<JsStringLiteralExpression> for FormatJsStringLiteralExpressi
         let JsStringLiteralExpressionFields { value_token } = node.as_fields();
 
         let value_token = value_token?;
+
         let formatted =
             FormatLiteralStringToken::new(&value_token, StringLiteralParentKind::Expression);
 
@@ -32,11 +33,13 @@ impl FormatNodeRule<JsStringLiteralExpression> for FormatJsStringLiteralExpressi
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::{JsFileSource, JsStringLiteralExpression, ModuleKind};
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("{ 'test'; }", JsStringLiteralExpression);
+
         assert_needs_parentheses!(
             r#"
             {
@@ -46,6 +49,7 @@ mod tests {
             "#,
             JsStringLiteralExpression
         );
+
         assert_needs_parentheses!(
             r#"
             function Test () {
@@ -54,6 +58,7 @@ mod tests {
             "#,
             JsStringLiteralExpression
         );
+
         assert_needs_parentheses!(
             r#"
             class A {
@@ -64,6 +69,7 @@ mod tests {
             "#,
             JsStringLiteralExpression
         );
+
         assert_needs_parentheses!(
             "('test');",
             JsStringLiteralExpression,

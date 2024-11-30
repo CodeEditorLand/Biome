@@ -28,12 +28,14 @@ impl GlobalReference {
     /// Returns if this reference is just reading its binding
     pub fn is_read(&self) -> bool {
         let reference = &self.data.global(self.global_id).references[self.id as usize];
+
         matches!(reference.ty, SemanticModelReferenceType::Read { .. })
     }
 
     /// Returns if this reference is writing its binding
     pub fn is_write(&self) -> bool {
         let reference = &self.data.global(self.global_id).references[self.id as usize];
+
         matches!(reference.ty, SemanticModelReferenceType::Write { .. })
     }
 }

@@ -39,6 +39,7 @@ fn evaluate_any_pseudo_class(class: &AnyCssPseudoClass) -> Specificity {
                     .selector()
                     .map_or(ZERO_SPECIFICITY, |s| evaluate_any_compound_selector(&s))
         }
+
         AnyCssPseudoClass::CssPseudoClassFunctionCompoundSelectorList(selector_list) => {
             let list_max = selector_list
                 .compound_selectors()
@@ -49,6 +50,7 @@ fn evaluate_any_pseudo_class(class: &AnyCssPseudoClass) -> Specificity {
 
             CLASS_SPECIFICITY + list_max
         }
+
         AnyCssPseudoClass::CssPseudoClassFunctionIdentifier(_) => CLASS_SPECIFICITY,
         AnyCssPseudoClass::CssPseudoClassFunctionNth(_) => CLASS_SPECIFICITY,
         AnyCssPseudoClass::CssPseudoClassFunctionRelativeSelectorList(selector_list) => {
@@ -66,11 +68,13 @@ fn evaluate_any_pseudo_class(class: &AnyCssPseudoClass) -> Specificity {
                     })
                     .reduce(|acc, e| acc.max(e))
                     .unwrap_or(ZERO_SPECIFICITY);
+
                 base + list_max
             } else {
                 ZERO_SPECIFICITY
             }
         }
+
         AnyCssPseudoClass::CssPseudoClassFunctionSelector(s) => {
             if let Some(base) = s
                 .name()
@@ -84,6 +88,7 @@ fn evaluate_any_pseudo_class(class: &AnyCssPseudoClass) -> Specificity {
                 ZERO_SPECIFICITY
             }
         }
+
         AnyCssPseudoClass::CssPseudoClassFunctionSelectorList(selector_list) => {
             if let Some(base) = selector_list
                 .name()
@@ -98,11 +103,13 @@ fn evaluate_any_pseudo_class(class: &AnyCssPseudoClass) -> Specificity {
                     })
                     .reduce(|acc, e| acc.max(e))
                     .unwrap_or(ZERO_SPECIFICITY);
+
                 base + list_max
             } else {
                 ZERO_SPECIFICITY
             }
         }
+
         AnyCssPseudoClass::CssPseudoClassFunctionValueList(_) => CLASS_SPECIFICITY,
         AnyCssPseudoClass::CssPseudoClassIdentifier(_) => CLASS_SPECIFICITY,
     }
@@ -133,6 +140,7 @@ pub fn evaluate_compound_selector(selector: &CssCompoundSelector) -> Specificity
     let simple_specificity = selector
         .simple_selector()
         .map_or(ZERO_SPECIFICITY, |s| evaluate_any_simple_selector(&s));
+
     let subselector_specificity = selector
         .sub_selectors()
         .iter()
@@ -154,6 +162,7 @@ pub fn evaluate_complex_selector(selector: &CssComplexSelector) -> Specificity {
     let left_specificity = selector
         .left()
         .map_or(ZERO_SPECIFICITY, |s| evaluate_any_selector(&s));
+
     let right_specificity = selector
         .right()
         .map_or(ZERO_SPECIFICITY, |s| evaluate_any_selector(&s));

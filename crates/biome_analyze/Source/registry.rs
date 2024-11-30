@@ -64,12 +64,14 @@ impl MetadataRegistry {
     /// Return a unique identifier for a rule group if it's known by this registry
     pub fn find_group(&self, group: &str) -> Option<GroupKey> {
         let key = self.inner.get(group)?;
+
         Some(key.into_group_key())
     }
 
     /// Return a unique identifier for a rule if it's known by this registry
     pub fn find_rule(&self, group: &str, rule: &str) -> Option<RuleKey> {
         let key = self.inner.get(&(group, rule))?;
+
         Some(key.into_rule_key())
     }
 
@@ -168,6 +170,7 @@ impl<L: Language + Default + 'static> RegistryVisitor<L> for RuleRegistryBuilder
         }
 
         let phase = R::phase() as usize;
+
         let phase = &mut self.registry.phase_rules[phase];
 
         let rule = RegistryRule::new::<R>(phase.rule_states.len());
@@ -187,6 +190,7 @@ impl<L: Language + Default + 'static> RegistryVisitor<L> for RuleRegistryBuilder
                     // Convert the numerical value of `kind` to an index in the
                     // `nodes` vector
                     let RawSyntaxKind(index) = kind.to_raw();
+
                     let index = usize::from(index);
 
                     // Ensure the vector has enough capacity by inserting empty
@@ -198,9 +202,11 @@ impl<L: Language + Default + 'static> RegistryVisitor<L> for RuleRegistryBuilder
                     // Insert a handle to the rule `R` into the `SyntaxKindRules` entry
                     // corresponding to the SyntaxKind index
                     let node = &mut rules[index];
+
                     node.rules.push(rule);
                 }
             }
+
             QueryKey::TypeId(key) => {
                 let TypeRules::TypeRules { rules } = phase
                     .type_rules
@@ -254,6 +260,7 @@ impl<L: Language + 'static> QueryMatcher<L> for RuleRegistry<L> {
         let phase = &mut self.phase_rules[params.phase as usize];
 
         let query_type = params.query.type_id();
+
         let Some(rules) = phase.type_rules.get(&query_type) else {
             return;
         };
@@ -265,6 +272,7 @@ impl<L: Language + 'static> QueryMatcher<L> for RuleRegistry<L> {
                 // Convert the numerical value of the SyntaxKind to an index in the
                 // `syntax` vector
                 let RawSyntaxKind(kind) = node.kind().to_raw();
+
                 let kind = usize::from(kind);
 
                 // Lookup the syntax entry corresponding to the SyntaxKind index
@@ -273,6 +281,7 @@ impl<L: Language + 'static> QueryMatcher<L> for RuleRegistry<L> {
                     None => return,
                 }
             }
+
             TypeRules::TypeRules { rules } => rules,
         };
 
@@ -312,11 +321,13 @@ pub struct MetadataKey {
 impl MetadataKey {
     fn into_group_key(self) -> GroupKey {
         let (group, _) = self.inner;
+
         GroupKey::new(group)
     }
 
     fn into_rule_key(self) -> RuleKey {
         let (group, rule) = self.inner;
+
         RuleKey::new(group, rule)
     }
 }
@@ -396,11 +407,17 @@ impl<L: Language + Default> RegistryRule<L> {
             // SAFETY: The rule should never get executed in the first place
             // if the query doesn't match
             let query_result = params.query.downcast_ref().unwrap();
+
             let query_result = <R::Query as Queryable>::unwrap_match(params.services, query_result);
+
             let globals = params.options.globals();
+
             let preferred_quote = params.options.preferred_quote();
+
             let jsx_runtime = params.options.jsx_runtime();
+
             let options = params.options.rule_options::<R>().unwrap_or_default();
+
             let ctx = match RuleContext::new(
                 &query_result,
                 params.root,
@@ -422,6 +439,7 @@ impl<L: Language + Default> RegistryRule<L> {
                 R::suppressed_nodes(&ctx, &result, &mut state.suppressions);
 
                 let instances = R::instances_for_signal(&result);
+
                 let signal = Box::new(RuleSignal::<R>::new(
                     params.root,
                     query_result.clone(),

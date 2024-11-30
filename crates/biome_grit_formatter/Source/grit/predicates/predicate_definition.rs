@@ -17,6 +17,7 @@ impl FormatNodeRule<GritPredicateDefinition> for FormatGritPredicateDefinition {
             name,
             predicate_token,
         } = node.as_fields();
+
         write!(
             f,
             [

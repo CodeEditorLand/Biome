@@ -59,12 +59,16 @@ impl Rule for NoImportAssign {
     type Query = Semantic<AnyJsImportSpecifier>;
     /// The first element of the tuple is the invalid `JsIdentifierAssignment`, the second element of the tuple is the imported `JsIdentifierBinding`.
     type State = (JsIdentifierAssignment, JsIdentifierBinding);
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let label_statement = ctx.query();
+
         let mut invalid_assign_list = Vec::new();
+
         let local_name_binding = match label_statement {
             // `import {x as xx} from 'y'`
             //          ^^^^^^^
@@ -89,16 +93,20 @@ impl Rule for NoImportAssign {
                 specifier.local_name().ok()
             }
         };
+
         local_name_binding
             .and_then(|binding| {
                 let ident_binding = binding.as_js_identifier_binding()?;
+
                 let model = ctx.model();
+
                 for reference in ident_binding.all_writes(model) {
                     invalid_assign_list.push((
                         JsIdentifierAssignment::cast_ref(reference.syntax())?,
                         ident_binding.clone(),
                     ));
                 }
+
                 Some(invalid_assign_list)
             })
             .unwrap_or_default()
@@ -107,6 +115,7 @@ impl Rule for NoImportAssign {
 
     fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let (invalid_assign, import_binding) = state;
+
         let name = invalid_assign.syntax().text_trimmed();
 
         Some(

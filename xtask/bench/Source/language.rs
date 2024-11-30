@@ -100,6 +100,7 @@ impl Parsed {
             Parsed::JavaScript(parse, source_type) => {
                 Some(FormatNode::JavaScript(parse.syntax(), *source_type))
             }
+
             Parsed::Json(parse) => Some(FormatNode::Json(parse.syntax())),
             Parsed::Css(parse) => Some(FormatNode::Css(parse.syntax())),
             Parsed::Graphql(parse) => Some(FormatNode::Graphql(parse.syntax())),
@@ -139,10 +140,12 @@ impl FormatNode {
                 biome_js_formatter::format_node(JsFormatOptions::new(*source_type), root)
                     .map(FormattedNode::JavaScript)
             }
+
             Self::Json(root) => {
                 biome_json_formatter::format_node(JsonFormatOptions::default(), root)
                     .map(FormattedNode::Json)
             }
+
             Self::Css(root) => biome_css_formatter::format_node(CssFormatOptions::default(), root)
                 .map(FormattedNode::Css),
             FormatNode::Graphql(root) => {
@@ -187,8 +190,11 @@ impl Analyze {
                         .build(),
                     ..AnalysisFilter::default()
                 };
+
                 let mut options = AnalyzerOptions::default();
+
                 options.configuration.jsx_runtime = Some(JsxRuntime::default());
+
                 biome_js_analyze::analyze(
                     root,
                     filter,
@@ -197,11 +203,14 @@ impl Analyze {
                     None,
                     |event| {
                         black_box(event.diagnostic());
+
                         black_box(event.actions());
+
                         ControlFlow::<Never>::Continue(())
                     },
                 );
             }
+
             Analyze::Css(root) => {
                 let filter = AnalysisFilter {
                     categories: RuleCategoriesBuilder::default()
@@ -210,10 +219,14 @@ impl Analyze {
                         .build(),
                     ..AnalysisFilter::default()
                 };
+
                 let options = AnalyzerOptions::default();
+
                 biome_css_analyze::analyze(root, filter, &options, |event| {
                     black_box(event.diagnostic());
+
                     black_box(event.actions());
+
                     ControlFlow::<Never>::Continue(())
                 });
             }

@@ -32,11 +32,14 @@ impl<'a> File<'a, GritQueryContext> for GritFile<'a> {
         match self {
             Self::Resolved(resolved) => {
                 let name = resolved.name.text(files, language)?;
+
                 let absolute_path = Path::new(name.as_ref()).absolutize()?;
+
                 Ok(ResolvedPattern::from_constant(Constant::String(
                     absolute_path.to_string_lossy().to_string(),
                 )))
             }
+
             Self::Ptr(ptr) => Ok(ResolvedPattern::from_path_binding(
                 files.get_absolute_path(*ptr)?,
             )),
@@ -48,6 +51,7 @@ impl<'a> File<'a, GritQueryContext> for GritFile<'a> {
             Self::Resolved(resolved) => resolved.body.clone(),
             Self::Ptr(ptr) => {
                 let file = &files.get_file_owner(*ptr);
+
                 GritResolvedPattern::from_tree(&file.tree)
             }
         }
@@ -58,6 +62,7 @@ impl<'a> File<'a, GritQueryContext> for GritFile<'a> {
             Self::Resolved(resolved) => resolved.body.clone(),
             Self::Ptr(ptr) => {
                 let file = &files.get_file_owner(*ptr);
+
                 ResolvedPattern::from_node_binding(file.tree.root_node())
             }
         }

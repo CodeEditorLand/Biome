@@ -48,9 +48,13 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
         verbose,
         sub_command,
     } = migrate_payload;
+
     let mut cache = NodeCache::default();
+
     let fs = &session.app.fs;
+
     let console = session.app.console;
+
     let workspace = session.app.workspace;
 
     let open_options = if write {
@@ -58,18 +62,23 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
     } else {
         OpenOptions::default().read(true)
     };
+
     let mut biome_config_file =
         fs.open_with_options(configuration_file_path.as_path(), open_options)?;
+
     let mut biome_config_content = String::new();
+
     biome_config_file.read_to_string(&mut biome_config_content)?;
 
     let biome_path = BiomePath::new(configuration_file_path.as_path());
+
     workspace.open_file(OpenFileParams {
         path: biome_path.clone(),
         content: biome_config_content.to_string(),
         version: 0,
         document_file_source: Some(JsonFileSource::json().into()),
     })?;
+
     let parsed = parse_json_with_cache(
         &biome_config_content,
         &mut cache,
@@ -82,13 +91,17 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                 path: prettier_path,
                 data: prettier_config,
             } = prettier::read_config_file(fs, console)?;
+
             let biome_config =
                 deserialize_from_json_ast::<PartialConfiguration>(&parsed.tree(), "")
                     .into_deserialized();
+
             let Some(mut biome_config) = biome_config else {
                 return Ok(());
             };
+
             let old_biome_config = biome_config.clone();
+
             let prettier_biome_config =
                 prettier_config
                     .try_into()
@@ -97,7 +110,9 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                             reason: err.to_string(),
                         })
                     })?;
+
             biome_config.merge_with(prettier_biome_config);
+
             if let Ok(ignore_patterns) = ignorefile::read_ignore_file(fs, prettier::IGNORE_FILE) {
                 if !ignore_patterns.patterns.is_empty() {
                     biome_config
@@ -107,6 +122,7 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                         .get_or_insert(Default::default())
                         .extend(ignore_patterns.patterns);
                 }
+
                 if ignore_patterns.has_negated_patterns {
                     console.log(markup! {
                         <Warn><Emphasis>{prettier::IGNORE_FILE}</Emphasis>" contains negated glob patterns that start with "<Emphasis>"!"</Emphasis>".\nThese patterns cannot be migrated because Biome doesn't support them."</Warn>
@@ -117,6 +133,7 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                     });
                 }
             }
+
             if biome_config == old_biome_config {
                 console.log(markup! {
                     <Info>"No changes to apply to the Biome configuration file."</Info>
@@ -127,19 +144,24 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                         reason: err.to_string(),
                     })
                 })?;
+
                 workspace.change_file(ChangeFileParams {
                     path: biome_path.clone(),
                     content: new_content,
                     version: 1,
                 })?;
+
                 let printed = workspace.format_file(FormatFileParams { path: biome_path })?;
+
                 if write {
                     biome_config_file.set_content(printed.as_code().as_bytes())?;
+
                     console.log(markup!{
                         <Info><Emphasis>{prettier_path}</Emphasis>" has been successfully migrated."</Info>
                     });
                 } else {
                     let file_name = configuration_file_path.display().to_string();
+
                     let diagnostic = MigrateDiffDiagnostic {
                         file_name,
                         diff: ContentDiffAdvice {
@@ -147,13 +169,16 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                             new: printed.as_code().to_string(),
                         },
                     };
+
                     console.error(markup! {{PrintDiagnostic::simple(&diagnostic)}});
+
                     console.log(markup! {
                         <Info>"Run the command with the option "<Emphasis>"--write"</Emphasis>" to apply the changes."</Info>
                     })
                 }
             }
         }
+
         Some(MigrateSubCommand::Eslint {
             include_inspired,
             include_nursery,
@@ -162,19 +187,25 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                 path: eslint_path,
                 data: eslint_config,
             } = eslint::read_eslint_config(fs, console)?;
+
             let biome_config =
                 deserialize_from_json_ast::<PartialConfiguration>(&parsed.tree(), "")
                     .into_deserialized();
+
             let Some(mut biome_config) = biome_config else {
                 return Ok(());
             };
+
             let (biome_eslint_config, results) =
                 eslint_config.into_biome_config(&eslint_to_biome::MigrationOptions {
                     include_inspired,
                     include_nursery,
                 });
+
             let old_biome_config = biome_config.clone();
+
             biome_config.merge_with(biome_eslint_config);
+
             if let Ok(ignore_patterns) = ignorefile::read_ignore_file(fs, eslint::IGNORE_FILE) {
                 if !ignore_patterns.patterns.is_empty() {
                     biome_config
@@ -184,6 +215,7 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                         .get_or_insert(Default::default())
                         .extend(ignore_patterns.patterns);
                 }
+
                 if ignore_patterns.has_negated_patterns {
                     console.log(markup! {
                         <Warn><Emphasis>{eslint::IGNORE_FILE}</Emphasis>" contains negated glob patterns that start with "<Emphasis>"!"</Emphasis>".\nThese patterns cannot be migrated because Biome doesn't support them."</Warn>
@@ -194,6 +226,7 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                     });
                 }
             }
+
             if biome_config == old_biome_config {
                 console.log(markup! {
                     <Info>"No changes to apply to the Biome configuration file."</Info>
@@ -204,19 +237,24 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                         reason: err.to_string(),
                     })
                 })?;
+
                 workspace.change_file(ChangeFileParams {
                     path: biome_path.clone(),
                     content: new_content,
                     version: 1,
                 })?;
+
                 let printed = workspace.format_file(FormatFileParams { path: biome_path })?;
+
                 if write {
                     biome_config_file.set_content(printed.as_code().as_bytes())?;
+
                     console.log(markup!{
                         <Info><Emphasis>{eslint_path}</Emphasis>" has been successfully migrated."</Info>
                     });
                 } else {
                     let file_name = configuration_file_path.display().to_string();
+
                     let diagnostic = MigrateDiffDiagnostic {
                         file_name,
                         diff: ContentDiffAdvice {
@@ -224,25 +262,32 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                             new: printed.as_code().to_string(),
                         },
                     };
+
                     console.error(markup! {{PrintDiagnostic::simple(&diagnostic)}});
+
                     console.log(markup! {
                         <Info>"Run the command with the option "<Emphasis>"--write"</Emphasis>" to apply the changes."</Info>
                     })
                 }
             }
+
             if results.has_inspired_rules {
                 console.log(markup! {
                     <Info>"Run the command with the option "<Emphasis>"--include-inspired"</Emphasis>" to also migrate inspired rules."</Info>
                 })
             }
         }
+
         None => {
             let has_deprecated_configuration =
                 configuration_file_path.file_name() == Some(OsStr::new("rome.json"));
 
             let mut errors = 0;
+
             let mut tree = parsed.tree();
+
             let mut actions = Vec::new();
+
             loop {
                 let (action, _) = migrate_configuration(
                     &tree,
@@ -250,15 +295,19 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                     biome_configuration::VERSION.to_string(),
                     |signal| {
                         let current_diagnostic = signal.diagnostic();
+
                         if current_diagnostic.is_some() {
                             errors += 1;
                         }
+
                         if let Some(action) = signal.actions().next() {
                             return ControlFlow::Break(action);
                         }
+
                         ControlFlow::Continue(())
                     },
                 );
+
                 match action {
                     Some(action) => {
                         if let (root, Some((range, _))) =
@@ -270,6 +319,7 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                                     return Err(CliDiagnostic::check_error(category!("migrate")))
                                 }
                             };
+
                             actions.push(FixAction {
                                 rule_name: action.rule_name.map(|(group, rule)| {
                                     (Cow::Borrowed(group), Cow::Borrowed(rule))
@@ -278,6 +328,7 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                             });
                         }
                     }
+
                     None => {
                         break;
                     }
@@ -285,21 +336,26 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
             }
 
             let new_configuration_content = tree.to_string();
+
             if biome_config_content != new_configuration_content || has_deprecated_configuration {
                 if write {
                     let mut configuration_file = if has_deprecated_configuration {
                         let biome_file_path =
                             configuration_directory_path.join(ConfigName::biome_json());
+
                         fs.create_new(biome_file_path.as_path())?
                     } else {
                         biome_config_file
                     };
+
                     configuration_file.set_content(tree.to_string().as_bytes())?;
+
                     console.log(markup!{
                             <Info>"The configuration "<Emphasis>{{configuration_file_path.display().to_string()}}</Emphasis>" has been successfully migrated."</Info>
                         })
                 } else {
                     let file_name = configuration_file_path.display().to_string();
+
                     let diagnostic = if has_deprecated_configuration {
                         MigrateDiffDiagnostic {
                             file_name,
@@ -317,6 +373,7 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                             },
                         }
                     };
+
                     if diagnostic.tags().is_verbose() {
                         if verbose {
                             console.error(markup! {{PrintDiagnostic::verbose(&diagnostic)}})
@@ -324,6 +381,7 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
                     } else {
                         console.error(markup! {{PrintDiagnostic::simple(&diagnostic)}})
                     }
+
                     console.log(markup! {
                             <Info>"Run the command with the option "<Emphasis>"--write"</Emphasis>" to apply the changes."</Info>
                         })
@@ -337,5 +395,6 @@ pub(crate) fn run(migrate_payload: MigratePayload) -> Result<(), CliDiagnostic> 
             }
         }
     }
+
     Ok(())
 }

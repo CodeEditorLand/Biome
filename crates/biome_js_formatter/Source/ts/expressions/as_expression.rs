@@ -68,52 +68,71 @@ pub(crate) fn format_as_or_satisfies_expression(
 #[cfg(test)]
 mod tests {
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::{JsFileSource, TsAsExpression};
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("5 as number ? true : false", TsAsExpression);
+
         assert_needs_parentheses!("cond ? x as number : false", TsAsExpression);
+
         assert_needs_parentheses!("cond ? true : x as number", TsAsExpression);
 
         assert_needs_parentheses!("class X extends (B as number) {}", TsAsExpression);
 
         assert_needs_parentheses!("(x as Function)()", TsAsExpression);
+
         assert_needs_parentheses!("(x as Function)?.()", TsAsExpression);
+
         assert_needs_parentheses!("new (x as Function)()", TsAsExpression);
 
         assert_needs_parentheses!("<number>(x as any)", TsAsExpression);
+
         assert_needs_parentheses!("(x as any)`template`", TsAsExpression);
+
         assert_needs_parentheses!("!(x as any)", TsAsExpression);
+
         assert_needs_parentheses!("[...(x as any)]", TsAsExpression);
+
         assert_needs_parentheses!("({...(x as any)})", TsAsExpression);
+
         assert_needs_parentheses!(
             "<test {...(x as any)} />",
             TsAsExpression,
             JsFileSource::tsx()
         );
+
         assert_needs_parentheses!(
             "<test>{...(x as any)}</test>",
             TsAsExpression,
             JsFileSource::tsx()
         );
+
         assert_needs_parentheses!("await (x as any)", TsAsExpression);
+
         assert_needs_parentheses!("(x as any)!", TsAsExpression);
 
         assert_needs_parentheses!("(x as any).member", TsAsExpression);
+
         assert_needs_parentheses!("(x as any)[member]", TsAsExpression);
+
         assert_not_needs_parentheses!("object[x as any]", TsAsExpression);
 
         assert_needs_parentheses!("(x as any) + (y as any)", TsAsExpression[0]);
+
         assert_needs_parentheses!("(x as any) + (y as any)", TsAsExpression[1]);
 
         assert_needs_parentheses!("(x as any) && (y as any)", TsAsExpression[0]);
+
         assert_needs_parentheses!("(x as any) && (y as any)", TsAsExpression[1]);
 
         assert_needs_parentheses!("(x as any) in (y as any)", TsAsExpression[0]);
+
         assert_needs_parentheses!("(x as any) in (y as any)", TsAsExpression[1]);
 
         assert_needs_parentheses!("(x as any) instanceof (y as any)", TsAsExpression[0]);
+
         assert_needs_parentheses!("(x as any) instanceof (y as any)", TsAsExpression[1]);
 
         assert_not_needs_parentheses!("x as number as string", TsAsExpression[1]);
@@ -125,6 +144,7 @@ mod tests {
             "export default (function foo(){} as typeof console.log)",
             TsAsExpression
         );
+
         assert_not_needs_parentheses!("export default foo as bar", TsAsExpression);
     }
 }

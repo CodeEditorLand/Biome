@@ -89,10 +89,15 @@ impl<'source> YamlLexer<'source> {
     /// Consumes and returns the next token, if any
     fn consume_token(&mut self) -> Option<Token> {
         let start = self.text_position();
+
         let char = self.current_char()?;
+
         let kind = self.consume_token_in_context(char, self.context);
+
         self.current_kind = kind;
+
         let end = self.text_position();
+
         Some(Token {
             kind,
             range: TextRange::new(start, end),
@@ -116,22 +121,27 @@ impl<'source> YamlLexer<'source> {
                     self.consume_identifer_or_value()
                 }
             }
+
             b':' => {
                 if self.is_next_char_whitespace() {
                     self.context = YamlLexContext::AfterIdent;
+
                     self.consume_byte(T![:])
                 } else {
                     self.consume_identifer_or_value()
                 }
             }
+
             b'\'' | b'"' => self.consume_string_literal(current),
             b' ' => self.consume_newline_or_whitespaces(),
             b'\n' => {
                 if self.context == YamlLexContext::AfterIdent {
                     self.context = YamlLexContext::Regular;
                 }
+
                 self.consume_newline_or_whitespaces()
             }
+
             b'[' => self.consume_array_inline_start(),
             b',' => {
                 if self.context == YamlLexContext::AfterInlineArray {
@@ -140,6 +150,7 @@ impl<'source> YamlLexer<'source> {
                     self.consume_identifer_or_value()
                 }
             }
+
             b']' => {
                 if self.context == YamlLexContext::AfterInlineArray {
                     self.consume_array_inline_end()
@@ -147,6 +158,7 @@ impl<'source> YamlLexer<'source> {
                     self.consume_identifer_or_value()
                 }
             }
+
             _ => match context {
                 YamlLexContext::Regular => self.consume_identifer_or_value(),
                 YamlLexContext::AfterIdent => self.consume_value(),
@@ -155,6 +167,7 @@ impl<'source> YamlLexer<'source> {
         };
 
         debug_assert!(self.text_position() > start, "Lexer did not advance");
+
         kind
     }
 
@@ -162,12 +175,15 @@ impl<'source> YamlLexer<'source> {
     #[inline]
     fn consume_byte(&mut self, tok: YamlSyntaxKind) -> YamlSyntaxKind {
         self.advance(1);
+
         tok
     }
 
     fn consume_comment(&mut self) -> YamlSyntaxKind {
         self.assert_byte(b'#');
+
         self.consume_until_newline();
+
         YamlSyntaxKind::COMMENT
     }
 
@@ -176,87 +192,117 @@ impl<'source> YamlLexer<'source> {
             if c == b'\n' {
                 break;
             }
+
             self.advance(1);
         }
+
         self.context = YamlLexContext::Regular;
     }
 
     fn consume_string_literal(&mut self, quote: u8) -> YamlSyntaxKind {
         self.assert_current_char_boundary();
+
         self.assert_byte(quote);
+
         self.advance(1);
 
         let mut escape = false;
+
         loop {
             match self.current_char() {
                 Some(b'\\') => {
                     escape = true;
+
                     self.advance(1);
                 }
+
                 Some(c) if c == quote && !escape => {
                     self.advance(1);
+
                     break;
                 }
+
                 Some(_) => {
                     escape = false;
+
                     self.advance(1);
                 }
+
                 None => {
                     break;
                 }
             }
         }
+
         YamlSyntaxKind::YAML_STRING_VALUE
     }
 
     /// Consume a line up to the colon or the end of the line
     fn consume_identifer_or_value(&mut self) -> YamlSyntaxKind {
         let start = self.position;
+
         let mut is_ident = false;
+
         while let Some(c) = self.current_char() {
             if c == b'\n' {
                 break;
             }
+
             if c == b':' && self.is_next_char_whitespace() {
                 is_ident = true;
+
                 break;
             }
+
             self.advance(1);
         }
+
         if is_ident {
             YamlSyntaxKind::YAML_IDENTIFIER
         } else {
             let value = &self.source[start..self.position];
+
             interpret_value(value)
         }
     }
 
     fn consume_value(&mut self) -> YamlSyntaxKind {
         let start = self.position;
+
         while let Some(c) = self.current_char() {
             if c == b'\n' {
                 break;
             }
+
             if self.context == YamlLexContext::AfterInlineArray && (c == b',' || c == b']') {
                 break;
             }
+
             self.advance(1);
         }
+
         let value = &self.source[start..self.position];
+
         interpret_value(value)
     }
 
     fn consume_array_inline_start(&mut self) -> YamlSyntaxKind {
         self.assert_byte(b'[');
+
         self.advance(1);
+
         self.context = YamlLexContext::AfterInlineArray;
+
         YamlSyntaxKind::L_BRACK
     }
 
     fn consume_array_inline_end(&mut self) -> YamlSyntaxKind {
         self.assert_byte(b']');
+
         self.advance(1);
+
         self.context = YamlLexContext::Regular;
+
         YamlSyntaxKind::R_BRACK
     }
 }
@@ -275,10 +321,13 @@ fn interpret_value(value: &str) -> YamlSyntaxKind {
 
 impl<'src> Lexer<'src> for YamlLexer<'src> {
     const NEWLINE: Self::Kind = YamlSyntaxKind::NEWLINE;
+
     const WHITESPACE: Self::Kind = YamlSyntaxKind::WHITESPACE;
 
     type Kind = YamlSyntaxKind;
+
     type LexContext = YamlLexContext;
+
     type ReLexContext = YamlReLexContext;
 
     fn source(&self) -> &'src str {
@@ -296,6 +345,7 @@ impl<'src> Lexer<'src> for YamlLexer<'src> {
     #[inline]
     fn advance_char_unchecked(&mut self) {
         let c = self.current_char_unchecked();
+
         self.position += c.len_utf8();
     }
 
@@ -306,7 +356,9 @@ impl<'src> Lexer<'src> for YamlLexer<'src> {
 
     fn next_token(&mut self, context: Self::LexContext) -> Self::Kind {
         self.current_start = TextSize::from(self.position as u32);
+
         self.current_flags = TokenFlags::empty();
+
         self.consume_token_in_context(self.current_char().unwrap_or(b'\0'), context)
     }
 
@@ -350,9 +402,11 @@ impl<'src> Lexer<'src> for YamlLexer<'src> {
     fn consume_newline_or_whitespaces(&mut self) -> YamlSyntaxKind {
         if self.consume_newline() {
             self.after_newline = true;
+
             YamlSyntaxKind::NEWLINE
         } else {
             self.consume_whitespaces();
+
             YamlSyntaxKind::WHITESPACE
         }
     }
@@ -423,11 +477,17 @@ mod test {
     #[test]
     fn test_interpret_value() {
         assert_eq!(interpret_value("true"), YamlSyntaxKind::YAML_BOOLEAN_VALUE);
+
         assert_eq!(interpret_value("false"), YamlSyntaxKind::YAML_BOOLEAN_VALUE);
+
         assert_eq!(interpret_value("null"), YamlSyntaxKind::YAML_NULL_VALUE);
+
         assert_eq!(interpret_value("foo"), YamlSyntaxKind::YAML_STRING_VALUE);
+
         assert_eq!(interpret_value("1"), YamlSyntaxKind::YAML_NUMBER_VALUE);
+
         assert_eq!(interpret_value("1.0"), YamlSyntaxKind::YAML_NUMBER_VALUE);
+
         assert_eq!(interpret_value("1.0.0"), YamlSyntaxKind::YAML_STRING_VALUE);
     }
 }

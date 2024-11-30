@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssImportLayer;
 pub(crate) struct FormatAnyCssImportLayer;
 impl FormatRule<AnyCssImportLayer> for FormatAnyCssImportLayer {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssImportLayer, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssImportLayer::CssImportAnonymousLayer(node) => node.format().fmt(f),

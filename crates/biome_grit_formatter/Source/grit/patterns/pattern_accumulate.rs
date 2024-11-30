@@ -10,6 +10,7 @@ impl FormatNodeRule<GritPatternAccumulate> for FormatGritPatternAccumulate {
             left,
             add_assign_token,
         } = node.as_fields();
+
         write!(
             f,
             [

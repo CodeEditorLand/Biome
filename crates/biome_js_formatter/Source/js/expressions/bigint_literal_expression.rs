@@ -17,9 +17,11 @@ impl FormatNodeRule<JsBigintLiteralExpression> for FormatJsBigintLiteralExpressi
         f: &mut JsFormatter,
     ) -> FormatResult<()> {
         let JsBigintLiteralExpressionFields { value_token } = node.as_fields();
+
         let value_token = value_token?;
 
         let original = value_token.text_trimmed();
+
         match original.to_ascii_lowercase_cow() {
             Cow::Borrowed(_) => write![f, [value_token.format()]],
             Cow::Owned(lowercase) => {

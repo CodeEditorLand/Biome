@@ -55,12 +55,16 @@ declare_lint_rule! {
 
 impl Rule for NoHeadElement {
     type Query = Ast<JsxOpeningElement>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let element = ctx.query();
+
         let name = element.name().ok()?.name_value_token().ok()?;
 
         if name.text_trimmed() == "head" {

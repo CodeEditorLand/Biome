@@ -21,11 +21,15 @@ pub(crate) async fn did_open(
     params: lsp_types::DidOpenTextDocumentParams,
 ) -> Result<()> {
     let url = params.text_document.uri;
+
     let version = params.text_document.version;
+
     let content = params.text_document.text;
+
     let language_hint = DocumentFileSource::from_language_id(&params.text_document.language_id);
 
     let biome_path = session.file_path(&url)?;
+
     let doc = Document::new(version, &content);
 
     session.workspace.open_file(OpenFileParams {
@@ -51,6 +55,7 @@ pub(crate) async fn did_change(
     params: lsp_types::DidChangeTextDocumentParams,
 ) -> Result<()> {
     let url = params.text_document.uri;
+
     let version = params.text_document.version;
 
     let biome_path = session.file_path(&url)?;
@@ -58,7 +63,9 @@ pub(crate) async fn did_change(
     let old_text = session.workspace.get_file_content(GetFileContentParams {
         path: biome_path.clone(),
     })?;
+
     tracing::trace!("old document: {:?}", old_text);
+
     tracing::trace!("content changes: {:?}", params.content_changes);
 
     let text = apply_document_changes(
@@ -91,6 +98,7 @@ pub(crate) async fn did_close(
     params: lsp_types::DidCloseTextDocumentParams,
 ) -> Result<()> {
     let url = params.text_document.uri;
+
     let biome_path = session.file_path(&url)?;
 
     session
@@ -100,7 +108,9 @@ pub(crate) async fn did_close(
     session.remove_document(&url);
 
     let diagnostics = vec![];
+
     let version = None;
+
     session
         .client
         .publish_diagnostics(url, diagnostics, version)

@@ -70,8 +70,11 @@ impl FlatConfigObject {
 impl Merge for FlatConfigObject {
     fn merge_with(&mut self, other: Self) {
         self.files.extend(other.files);
+
         self.ignores.extend(other.ignores);
+
         self.language_options.merge_with(other.language_options);
+
         self.rules.merge_with(other.rules);
     }
 }
@@ -108,9 +111,13 @@ pub(crate) struct LegacyConfigData {
 impl Merge for LegacyConfigData {
     fn merge_with(&mut self, mut other: Self) {
         self.extends.merge_with(other.extends);
+
         self.globals.merge_with(other.globals);
+
         self.ignore_patterns.merge_with(other.ignore_patterns);
+
         self.rules.merge_with(other.rules);
+
         self.overrides.append(&mut other.overrides);
     }
 }
@@ -119,6 +126,7 @@ impl Merge for LegacyConfigData {
 pub(crate) struct IgnorePattern(pub(crate) String);
 impl Deref for IgnorePattern {
     type Target = String;
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -130,10 +138,12 @@ impl biome_deserialize::Deserializable for IgnorePattern {
         diagnostics: &mut Vec<DeserializationDiagnostic>,
     ) -> Option<Self> {
         let s = biome_deserialize::Text::deserialize(value, name, diagnostics)?;
+
         match ignorefile::convert_pattern(s.text()) {
             Ok(pattern) => Some(Self(pattern)),
             Err(msg) => {
                 diagnostics.push(DeserializationDiagnostic::new(msg).with_range(value.range()));
+
                 None
             }
         }
@@ -159,6 +169,7 @@ impl Globals {
 }
 impl Deref for Globals {
     type Target = FxHashMap<String, GlobalConf>;
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -231,6 +242,7 @@ impl<T> From<T> for ShorthandVec<T> {
 }
 impl<T> Deref for ShorthandVec<T> {
     type Target = Vec<T>;
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -242,7 +254,9 @@ impl<T> DerefMut for ShorthandVec<T> {
 }
 impl<T> IntoIterator for ShorthandVec<T> {
     type Item = T;
+
     type IntoIter = vec::IntoIter<T>;
+
     fn into_iter(self) -> Self::IntoIter {
         self.0.into_iter()
     }
@@ -300,6 +314,7 @@ impl<T: Default, U: Default> RuleConf<T, U> {
             RuleConf::Severity(_) | RuleConf::Options(_, _, _) | RuleConf::Spread(_, _) => {
                 T::default()
             }
+
             RuleConf::Option(_, option) => option,
         }
     }
@@ -311,11 +326,14 @@ impl<T: Deserializable + 'static, U: Deserializable + 'static> Deserializable fo
         diagnostics: &mut Vec<biome_deserialize::DeserializationDiagnostic>,
     ) -> Option<Self> {
         struct Visitor<T, U>(PhantomData<(T, U)>);
+
         impl<T: Deserializable + 'static, U: Deserializable + 'static> DeserializationVisitor
             for Visitor<T, U>
         {
             type Output = RuleConf<T, U>;
+
             const EXPECTED_TYPE: DeserializableTypes = DeserializableTypes::ARRAY;
+
             fn visit_array(
                 self,
                 values: impl Iterator<Item = Option<impl DeserializableValue>>,
@@ -324,26 +342,34 @@ impl<T: Deserializable + 'static, U: Deserializable + 'static> Deserializable fo
                 diagnostics: &mut Vec<DeserializationDiagnostic>,
             ) -> Option<Self::Output> {
                 let mut values = values.flatten();
+
                 let Some(first_value) = values.next() else {
                     diagnostics.push(
                         DeserializationDiagnostic::new("A severity is expected.").with_range(range),
                     );
+
                     return None;
                 };
+
                 let severity = Deserializable::deserialize(&first_value, "", diagnostics)?;
+
                 if TypeId::of::<T>() == TypeId::of::<()>() {
                     return Some(RuleConf::Severity(severity));
                 }
+
                 let Some(second_value) = values.next() else {
                     return Some(RuleConf::Severity(severity));
                 };
+
                 let Some(option) = T::deserialize(&second_value, "", diagnostics) else {
                     // Recover by ignoring the failed deserialization
                     return Some(RuleConf::Severity(severity));
                 };
+
                 let Some(third_value) = values.next() else {
                     return Some(RuleConf::Option(severity, option));
                 };
+
                 if TypeId::of::<U>() != TypeId::of::<()>() {
                     if let Some(option2) = U::deserialize(&third_value, "", diagnostics) {
                         return Some(RuleConf::Options(severity, option, option2));
@@ -352,17 +378,24 @@ impl<T: Deserializable + 'static, U: Deserializable + 'static> Deserializable fo
                         return Some(RuleConf::Option(severity, option));
                     }
                 }
+
                 let Some(option2) = T::deserialize(&third_value, "", diagnostics) else {
                     // Recover by ignoring the failed deserialization
                     return Some(RuleConf::Option(severity, option));
                 };
+
                 let mut spread = Vec::new();
+
                 spread.push(option);
+
                 spread.push(option2);
+
                 spread.extend(values.filter_map(|val| T::deserialize(&val, "", diagnostics)));
+
                 Some(RuleConf::Spread(severity, spread))
             }
         }
+
         if matches!(
             value.visitable_type()?,
             DeserializableType::Number | DeserializableType::Str
@@ -444,6 +477,7 @@ impl Merge for Rules {
 }
 impl Deref for Rules {
     type Target = IndexSet<Rule>;
+
     fn deref(&self) -> &Self::Target {
         &self.0
     }
@@ -455,9 +489,12 @@ impl Deserializable for Rules {
         diagnostics: &mut Vec<biome_deserialize::DeserializationDiagnostic>,
     ) -> Option<Self> {
         struct Visitor;
+
         impl DeserializationVisitor for Visitor {
             type Output = Rules;
+
             const EXPECTED_TYPE: DeserializableTypes = DeserializableTypes::MAP;
+
             fn visit_map(
                 self,
                 members: impl Iterator<
@@ -471,11 +508,14 @@ impl Deserializable for Rules {
                 diagnostics: &mut Vec<biome_deserialize::DeserializationDiagnostic>,
             ) -> Option<Self::Output> {
                 use biome_deserialize::Text;
+
                 let mut result = IndexSet::default();
+
                 for (key, value) in members.flatten() {
                     let Some(rule_name) = Text::deserialize(&key, "", diagnostics) else {
                         continue;
                     };
+
                     match rule_name.text() {
                         // Eslint rules with options that we handle
                         "no-console" => {
@@ -527,9 +567,11 @@ impl Deserializable for Rules {
                         }
                     }
                 }
+
                 Some(Rules(result))
             }
         }
+
         value.deserialize(Visitor, name, diagnostics)
     }
 }
@@ -607,9 +649,11 @@ impl Rule {
             Rule::TypeScriptExplicitMemberAccessibility(_) => {
                 Cow::Borrowed("@typescript-eslint/explicit-member-accessibility")
             }
+
             Rule::TypeScriptNamingConvention(_) => {
                 Cow::Borrowed("@typescript-eslint/naming-convention")
             }
+
             Rule::UnicornFilenameCase(_) => Cow::Borrowed("unicorn/filename-case"),
         }
     }

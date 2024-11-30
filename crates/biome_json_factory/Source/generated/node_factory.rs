@@ -88,8 +88,10 @@ pub struct JsonRootBuilder {
 impl JsonRootBuilder {
     pub fn with_bom_token(mut self, bom_token: SyntaxToken) -> Self {
         self.bom_token = Some(bom_token);
+
         self
     }
+
     pub fn build(self) -> JsonRoot {
         JsonRoot::unwrap_cast(SyntaxNode::new_detached(
             JsonSyntaxKind::JSON_ROOT,
@@ -115,8 +117,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsonArrayElementList::unwrap_cast(SyntaxNode::new_detached(
         JsonSyntaxKind::JSON_ARRAY_ELEMENT_LIST,
         (0..length).map(|index| {
@@ -136,8 +141,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     JsonMemberList::unwrap_cast(SyntaxNode::new_detached(
         JsonSyntaxKind::JSON_MEMBER_LIST,
         (0..length).map(|index| {

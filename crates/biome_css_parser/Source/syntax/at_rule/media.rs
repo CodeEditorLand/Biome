@@ -48,7 +48,9 @@ impl MediaQueryList {
 
 impl ParseSeparatedList for MediaQueryList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_MEDIA_QUERY_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -84,6 +86,7 @@ fn parse_any_media_query(p: &mut CssParser) -> ParsedSyntax {
         parse_metavariable(p)
     } else if is_at_any_media_condition(p) {
         let m = p.start();
+
         parse_any_media_condition(p).ok(); // TODO handle error
         Present(m.complete(p, CSS_MEDIA_CONDITION_QUERY))
     } else {
@@ -110,16 +113,20 @@ fn parse_any_media_condition(p: &mut CssParser) -> ParsedSyntax {
         match p.cur() {
             T![and] => {
                 let m = media_in_parens.precede(p);
+
                 p.expect(T![and]); // TODO handle error
                 parse_media_and_condition(p).ok(); // TODO handle error
                 Present(m.complete(p, CSS_MEDIA_AND_CONDITION))
             }
+
             T![or] => {
                 let m = media_in_parens.precede(p);
+
                 p.expect(T![or]); // TODO handle error
                 parse_media_or_condition(p).ok(); // TODO handle error
                 Present(m.complete(p, CSS_MEDIA_OR_CONDITION))
             }
+
             _ => media_in_parens,
         }
     }
@@ -137,7 +144,9 @@ fn parse_any_media_type_query(p: &mut CssParser) -> ParsedSyntax {
 
     if p.at(T![and]) {
         let m = media_type_query.precede(p);
+
         p.bump(T![and]);
+
         parse_any_media_type_condition(p).ok(); // TODO handle error
         Present(m.complete(p, CSS_MEDIA_AND_TYPE_QUERY))
     } else {
@@ -158,6 +167,7 @@ fn parse_media_type_query(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.eat_ts(MODIFIER_TYPE_QUERY_SET);
+
     parse_media_type(p).ok();
 
     Present(m.complete(p, CSS_MEDIA_TYPE_QUERY))
@@ -206,6 +216,7 @@ fn parse_media_not_condition(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
 
     p.bump(T![not]);
+
     parse_any_media_in_parens(p).ok(); // TODO handle error
 
     Present(m.complete(p, CSS_MEDIA_NOT_CONDITION))
@@ -217,6 +228,7 @@ fn parse_media_and_condition(p: &mut CssParser) -> ParsedSyntax {
 
     if p.at(T![and]) {
         let m = media_in_parens.precede(p);
+
         p.expect(T![and]); // TODO handle error
         parse_media_and_condition(p).ok(); // TODO handle error
         Present(m.complete(p, CSS_MEDIA_AND_CONDITION))
@@ -231,6 +243,7 @@ fn parse_media_or_condition(p: &mut CssParser) -> ParsedSyntax {
 
     if p.at(T![or]) {
         let m = media_in_parens.precede(p);
+
         p.expect(T![or]); // TODO handle error
         parse_media_or_condition(p).ok(); // TODO handle error
         Present(m.complete(p, CSS_MEDIA_OR_CONDITION))
@@ -251,6 +264,7 @@ fn parse_any_media_in_parens(p: &mut CssParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['(']);
 
     let kind = if is_at_any_media_condition(p) {

@@ -10,6 +10,7 @@ pub use syntax_node::*;
 impl From<u16> for YamlSyntaxKind {
     fn from(d: u16) -> YamlSyntaxKind {
         assert!(d <= (YamlSyntaxKind::__LAST as u16));
+
         unsafe { std::mem::transmute::<u16, YamlSyntaxKind>(d) }
     }
 }
@@ -22,6 +23,7 @@ impl From<YamlSyntaxKind> for u16 {
 
 impl biome_rowan::SyntaxKind for YamlSyntaxKind {
     const TOMBSTONE: Self = YamlSyntaxKind::TOMBSTONE;
+
     const EOF: Self = YamlSyntaxKind::EOF;
 
     fn is_bogus(&self) -> bool {

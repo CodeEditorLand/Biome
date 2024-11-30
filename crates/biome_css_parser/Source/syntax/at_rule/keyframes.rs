@@ -127,6 +127,7 @@ fn parse_keyframes_scoped_name(p: &mut CssParser) -> ParsedSyntax {
         // we generate a diagnostic error and skip the invalid scope.
         if !p.eat_ts(CSS_MODULES_SCOPE_SET) {
             p.error(expected_any_css_module_scope(p, p.cur_range()));
+
             p.bump_any();
         }
 
@@ -197,7 +198,9 @@ struct KeyframesItemListParseRecovery;
 
 impl ParseRecovery for KeyframesItemListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_KEYFRAMES_ITEM;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -209,7 +212,9 @@ struct KeyframesItemList;
 
 impl ParseNodeList for KeyframesItemList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_KEYFRAMES_ITEM_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -233,7 +238,9 @@ struct KeyframesItemBlockParseRecovery;
 
 impl ParseRecovery for KeyframesItemBlockParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_BLOCK;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -252,6 +259,7 @@ impl ParseRecovery for KeyframesItemBlockParseRecovery {
         //          color: blue;
         //      }
         //   }
+
         p.at(T!['}']) || is_at_keyframes_item_selector(p)
     }
 }
@@ -259,6 +267,7 @@ impl ParseRecovery for KeyframesItemBlockParseRecovery {
 #[inline]
 fn parse_keyframes_item(p: &mut CssParser) -> ParsedSyntax {
     let m = p.start();
+
     KeyframesSelectorList.parse_list(p);
     // `parse_list` will take care of recovering invalid selectors, but if
     // _none_ are present, we still want to add a diagnostic to explain the
@@ -277,7 +286,9 @@ struct KeyframesSelectorListParseRecovery;
 
 impl ParseRecovery for KeyframesSelectorListParseRecovery {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = CSS_BOGUS_SELECTOR;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -296,6 +307,7 @@ impl ParseRecovery for KeyframesSelectorListParseRecovery {
         // 	   color: blue;
         // 	} <----- a recover point
         // }
+
         is_at_keyframes_item_selector(p) || is_at_keyframes_selector_list_end(p)
     }
 }
@@ -304,7 +316,9 @@ struct KeyframesSelectorList;
 
 impl ParseSeparatedList for KeyframesSelectorList {
     type Kind = CssSyntaxKind;
+
     type Parser<'source> = CssParser<'source>;
+
     const LIST_KIND: Self::Kind = CSS_KEYFRAMES_SELECTOR_LIST;
 
     fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
@@ -342,6 +356,7 @@ fn is_at_keyframes_selector_list_end(p: &mut CssParser) -> bool {
     // 	from   <----- here we miss a '{', but we can try to assume that we can parse a declaration block.
     // 	}
     // }
+
     p.at(T!['{']) || is_at_declaration(p) || p.at(T!['}'])
 }
 
@@ -369,9 +384,11 @@ fn parse_keyframes_item_selector(p: &mut CssParser) -> ParsedSyntax {
 
     let kind = if is_at_percentage_dimension(p) {
         parse_percentage_dimension(p).ok();
+
         CSS_KEYFRAMES_PERCENTAGE_SELECTOR
     } else {
         p.bump_ts(KEYFRAMES_ITEM_SELECTOR_IDENT_SET);
+
         CSS_KEYFRAMES_IDENT_SELECTOR
     };
 

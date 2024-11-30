@@ -41,6 +41,7 @@ impl FormatNodeRule<TsTypeAssertionExpression> for FormatTsTypeAssertionExpressi
 
         if break_after_cast {
             let format_cast = format_cast.memoized();
+
             let format_expression = expression.format().memoized();
 
             write!(
@@ -71,6 +72,7 @@ impl FormatNodeRule<TsTypeAssertionExpression> for FormatTsTypeAssertionExpressi
 #[cfg(test)]
 mod tests {
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::TsTypeAssertionExpression;
 
     #[test]
@@ -80,21 +82,31 @@ mod tests {
         assert_needs_parentheses!("class X extends (<number>B) {}", TsTypeAssertionExpression);
 
         assert_needs_parentheses!("(<Function>x)()", TsTypeAssertionExpression);
+
         assert_needs_parentheses!("(<Function>x)?.()", TsTypeAssertionExpression);
+
         assert_needs_parentheses!("new (<Function>x)()", TsTypeAssertionExpression);
 
         assert_needs_parentheses!("<number>(<any>x)", TsTypeAssertionExpression[1]);
+
         assert_needs_parentheses!("<number>(<any>x)", TsTypeAssertionExpression[1]);
+
         assert_needs_parentheses!("(<any>x)`template`", TsTypeAssertionExpression);
+
         assert_needs_parentheses!("!(<any>x)", TsTypeAssertionExpression);
+
         assert_needs_parentheses!("[...(<any>x)]", TsTypeAssertionExpression);
+
         assert_needs_parentheses!("({...(<any>x)})", TsTypeAssertionExpression);
 
         assert_needs_parentheses!("await (<any>x)", TsTypeAssertionExpression);
+
         assert_needs_parentheses!("(<any>x)!", TsTypeAssertionExpression);
 
         assert_needs_parentheses!("(<any>x).member", TsTypeAssertionExpression);
+
         assert_needs_parentheses!("(<any>x)[member]", TsTypeAssertionExpression);
+
         assert_not_needs_parentheses!("object[<any>x]", TsTypeAssertionExpression);
     }
 }

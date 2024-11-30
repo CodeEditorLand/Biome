@@ -62,6 +62,7 @@ pub(crate) fn traverse(
                     }
                 }
             }
+
             _ => {
                 if execution.as_stdin_file().is_none() && !cli_options.no_errors_on_unmatched {
                     return Err(CliDiagnostic::missing_argument(
@@ -74,17 +75,23 @@ pub(crate) fn traverse(
     }
 
     let (interner, recv_files) = PathInterner::new();
+
     let (sender, receiver) = unbounded();
 
     let changed = AtomicUsize::new(0);
+
     let unchanged = AtomicUsize::new(0);
+
     let matches = AtomicUsize::new(0);
+
     let skipped = AtomicUsize::new(0);
 
     let fs = &*session.app.fs;
+
     let workspace = &*session.app.workspace;
 
     let max_diagnostics = execution.get_max_diagnostics();
+
     let remaining_diagnostics = AtomicU32::new(max_diagnostics);
 
     let printer = DiagnosticsPrinter::new(execution)
@@ -131,13 +138,21 @@ pub(crate) fn traverse(
     }
 
     let errors = printer.errors();
+
     let warnings = printer.warnings();
+
     let changed = changed.load(Ordering::Relaxed);
+
     let unchanged = unchanged.load(Ordering::Relaxed);
+
     let matches = matches.load(Ordering::Relaxed);
+
     let skipped = skipped.load(Ordering::Relaxed);
+
     let suggested_fixes_skipped = printer.skipped_fixes();
+
     let diagnostics_not_printed = printer.not_printed_diagnostics();
+
     Ok(TraverseResult {
         summary: TraversalSummary {
             changed,
@@ -160,6 +175,7 @@ pub(crate) fn traverse(
 /// This is currently only used to assign friendly debug names to the threads of the pool
 fn init_thread_pool() {
     static INIT_ONCE: Once = Once::new();
+
     INIT_ONCE.call_once(|| {
         rayon::ThreadPoolBuilder::new()
             .thread_name(|index| format!("biome::worker_{index}"))
@@ -176,6 +192,7 @@ fn traverse_inputs(
     ctx: &TraversalOptions,
 ) -> (Duration, BTreeSet<BiomePath>) {
     let start = Instant::now();
+
     fs.traversal(Box::new(move |scope: &dyn TraversalScope| {
         for input in inputs {
             scope.evaluate(ctx, PathBuf::from(input));
@@ -183,8 +200,11 @@ fn traverse_inputs(
     }));
 
     let paths = ctx.evaluated_paths();
+
     let dome = Dome::new(paths);
+
     let mut iter = dome.iter();
+
     fs.traversal(Box::new(|scope: &dyn TraversalScope| {
         while let Some(path) = iter.next_config() {
             scope.handle(ctx, path.to_path_buf());
@@ -246,16 +266,19 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
 
     fn with_verbose(mut self, verbose: bool) -> Self {
         self.verbose = verbose;
+
         self
     }
 
     fn with_max_diagnostics(mut self, value: u32) -> Self {
         self.max_diagnostics = value;
+
         self
     }
 
     fn with_diagnostic_level(mut self, value: Severity) -> Self {
         self.diagnostic_level = value;
+
         self
     }
 
@@ -293,9 +316,12 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
     /// Count the diagnostic, and then returns a boolean that tells if it should be printed
     fn should_print(&self) -> bool {
         let printed_diagnostics = self.printed_diagnostics.load(Ordering::Relaxed);
+
         let should_print = printed_diagnostics < self.max_diagnostics;
+
         if should_print {
             self.printed_diagnostics.fetch_add(1, Ordering::Relaxed);
+
             self.remaining_diagnostics.store(
                 self.max_diagnostics.saturating_sub(printed_diagnostics),
                 Ordering::Relaxed,
@@ -327,14 +353,18 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
 
                 Message::Error(mut err) => {
                     let location = err.location();
+
                     if self.should_skip_diagnostic(err.severity(), err.tags()) {
                         continue;
                     }
+
                     if err.severity() == Severity::Warning {
                         // *warnings += 1;
+
                         self.warnings.fetch_add(1, Ordering::Relaxed);
                         // self.warnings.set(self.warnings.get() + 1)
                     }
+
                     if let Some(Resource::File(file_path)) = location.resource.as_ref() {
                         // Retrieves the file name from the file ID cache, if it's a miss
                         // flush entries from the interner channel until it's found
@@ -344,6 +374,7 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                                 match interner.recv() {
                                     Ok(path) => {
                                         paths.insert(path.display().to_string());
+
                                         if path.display().to_string() == *file_path {
                                             break paths.get(&path.display().to_string());
                                         }
@@ -381,6 +412,7 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                     if self.execution.is_ci() {
                         for diag in diagnostics {
                             let severity = diag.severity();
+
                             if self.should_skip_diagnostic(severity, diag.tags()) {
                                 continue;
                             }
@@ -388,22 +420,27 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                             if severity == Severity::Error {
                                 self.errors.fetch_add(1, Ordering::Relaxed);
                             }
+
                             if severity == Severity::Warning {
                                 self.warnings.fetch_add(1, Ordering::Relaxed);
                             }
 
                             let diag = diag.with_file_path(&name).with_file_source_code(&content);
+
                             diagnostics_to_print.push(diag);
                         }
                     } else {
                         for diag in diagnostics {
                             let severity = diag.severity();
+
                             if self.should_skip_diagnostic(severity, diag.tags()) {
                                 continue;
                             }
+
                             if severity == Severity::Error {
                                 self.errors.fetch_add(1, Ordering::Relaxed);
                             }
+
                             if severity == Severity::Warning {
                                 self.warnings.fetch_add(1, Ordering::Relaxed);
                             }
@@ -413,11 +450,13 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                             if should_print {
                                 let diag =
                                     diag.with_file_path(&name).with_file_source_code(&content);
+
                                 diagnostics_to_print.push(diag)
                             }
                         }
                     }
                 }
+
                 Message::Diff {
                     file_name,
                     old,
@@ -426,6 +465,7 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                 } => {
                     // A diff is an error in CI mode and in format check mode
                     let is_error = self.execution.is_ci() || !self.execution.is_format_write();
+
                     if is_error {
                         self.errors.fetch_add(1, Ordering::Relaxed);
                     }
@@ -454,11 +494,13 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                                             new: new.clone(),
                                         },
                                     };
+
                                     diagnostics_to_print.push(
                                         diag.with_severity(severity)
                                             .with_file_source_code(old.clone()),
                                     );
                                 }
+
                                 DiffKind::OrganizeImports => {
                                     let diag = CIOrganizeImportsDiffDiagnostic {
                                         file_name: file_name.clone(),
@@ -467,11 +509,13 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                                             new: new.clone(),
                                         },
                                     };
+
                                     diagnostics_to_print.push(
                                         diag.with_severity(severity)
                                             .with_file_source_code(old.clone()),
                                     );
                                 }
+
                                 DiffKind::Assists => {
                                     let diag = CIAssistsDiffDiagnostic {
                                         file_name: file_name.clone(),
@@ -480,6 +524,7 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                                             new: new.clone(),
                                         },
                                     };
+
                                     diagnostics_to_print.push(
                                         diag.with_severity(severity)
                                             .with_file_source_code(old.clone()),
@@ -496,11 +541,13 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                                             new: new.clone(),
                                         },
                                     };
+
                                     diagnostics_to_print.push(
                                         diag.with_severity(severity)
                                             .with_file_source_code(old.clone()),
                                     )
                                 }
+
                                 DiffKind::OrganizeImports => {
                                     let diag = OrganizeImportsDiffDiagnostic {
                                         file_name: file_name.clone(),
@@ -509,11 +556,13 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                                             new: new.clone(),
                                         },
                                     };
+
                                     diagnostics_to_print.push(
                                         diag.with_severity(severity)
                                             .with_file_source_code(old.clone()),
                                     )
                                 }
+
                                 DiffKind::Assists => {
                                     let diag = AssistsDiffDiagnostic {
                                         file_name: file_name.clone(),
@@ -522,6 +571,7 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                                             new: new.clone(),
                                         },
                                     };
+
                                     diagnostics_to_print.push(
                                         diag.with_severity(severity)
                                             .with_file_source_code(old.clone()),
@@ -533,6 +583,7 @@ impl<'ctx> DiagnosticsPrinter<'ctx> {
                 }
             }
         }
+
         diagnostics_to_print
     }
 }
@@ -568,11 +619,13 @@ pub(crate) struct TraversalOptions<'ctx, 'app> {
 impl<'ctx, 'app> TraversalOptions<'ctx, 'app> {
     pub(crate) fn increment_changed(&self, path: &BiomePath) {
         self.changed.fetch_add(1, Ordering::Relaxed);
+
         self.evaluated_paths
             .write()
             .unwrap()
             .replace(path.to_written());
     }
+
     pub(crate) fn increment_unchanged(&self) {
         self.unchanged.fetch_add(1, Ordering::Relaxed);
     }
@@ -616,6 +669,7 @@ impl<'ctx, 'app> TraversalContext for TraversalOptions<'ctx, 'app> {
 
     fn can_handle(&self, biome_path: &BiomePath) -> bool {
         let path = biome_path.as_path();
+
         if self.fs.path_is_dir(path) || self.fs.path_is_symlink(path) {
             // handle:
             // - directories
@@ -631,8 +685,10 @@ impl<'ctx, 'app> TraversalContext for TraversalOptions<'ctx, 'app> {
                 })
                 .unwrap_or_else(|err| {
                     self.push_diagnostic(err.into());
+
                     false
                 });
+
             return can_handle;
         }
 
@@ -650,28 +706,34 @@ impl<'ctx, 'app> TraversalContext for TraversalOptions<'ctx, 'app> {
             Ok(file_features) => {
                 if file_features.is_protected() {
                     self.protected_file(biome_path);
+
                     return false;
                 }
 
                 if file_features.is_not_supported() && !file_features.is_ignored() {
                     // we should throw a diagnostic if we can't handle a file that isn't ignored
                     self.miss_handler_err(extension_error(biome_path), biome_path);
+
                     return false;
                 }
+
                 file_features
             }
+
             Err(err) => {
                 self.miss_handler_err(err, biome_path);
 
                 return false;
             }
         };
+
         match self.execution.traversal_mode() {
             TraversalMode::Check { .. } | TraversalMode::CI { .. } => {
                 file_features.supports_lint()
                     || file_features.supports_format()
                     || file_features.supports_organize_imports()
             }
+
             TraversalMode::Format { .. } => file_features.supports_format(),
             TraversalMode::Lint { .. } => file_features.supports_lint(),
             // Imagine if Biome can't handle its own configuration file...
@@ -700,28 +762,41 @@ fn handle_file(ctx: &TraversalOptions, path: &BiomePath) {
         Ok(Ok(FileStatus::Changed)) => {
             ctx.increment_changed(path);
         }
+
         Ok(Ok(FileStatus::Unchanged)) => {
             ctx.increment_unchanged();
         }
+
         Ok(Ok(FileStatus::SearchResult(num_matches, msg))) => {
             ctx.increment_unchanged();
+
             ctx.increment_matches(num_matches);
+
             ctx.push_message(msg);
         }
+
         Ok(Ok(FileStatus::Message(msg))) => {
             ctx.increment_unchanged();
+
             ctx.push_message(msg);
         }
+
         Ok(Ok(FileStatus::Protected(file_path))) => {
             ctx.increment_unchanged();
+
             ctx.push_diagnostic(WorkspaceError::protected_file(file_path).into());
         }
+
         Ok(Ok(FileStatus::Ignored)) => {}
+
         Ok(Err(err)) => {
             ctx.increment_unchanged();
+
             ctx.skipped.fetch_add(1, Ordering::Relaxed);
+
             ctx.push_message(err);
         }
+
         Err(err) => {
             let message = match err.downcast::<String>() {
                 Ok(msg) => format!("processing panicked: {msg}"),

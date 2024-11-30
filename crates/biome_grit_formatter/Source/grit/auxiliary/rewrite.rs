@@ -13,6 +13,7 @@ impl FormatNodeRule<GritRewrite> for FormatGritRewrite {
         } = node.as_fields();
 
         write!(f, [left.format(), space()])?;
+
         if let Some(annotation) = annotation {
             write!(f, [annotation.format(), space()])?;
         };

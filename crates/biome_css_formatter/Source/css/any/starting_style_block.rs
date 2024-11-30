@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssStartingStyleBlock;
 pub(crate) struct FormatAnyCssStartingStyleBlock;
 impl FormatRule<AnyCssStartingStyleBlock> for FormatAnyCssStartingStyleBlock {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssStartingStyleBlock, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssStartingStyleBlock::CssBogusBlock(node) => node.format().fmt(f),

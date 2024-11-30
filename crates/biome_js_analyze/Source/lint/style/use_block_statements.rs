@@ -78,46 +78,61 @@ declare_node_union! {
 
 impl Rule for UseBlockStatements {
     type Query = Ast<AnyJsBlockStatement>;
+
     type State = UseBlockStatementsOperationType;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         match node {
             AnyJsBlockStatement::JsIfStatement(stmt) => {
                 use_block_statements_diagnostic!(stmt, consequent)
             }
+
             AnyJsBlockStatement::JsDoWhileStatement(stmt) => {
                 use_block_statements_diagnostic!(stmt)
             }
+
             AnyJsBlockStatement::JsForInStatement(stmt) => {
                 use_block_statements_diagnostic!(stmt)
             }
+
             AnyJsBlockStatement::JsForOfStatement(stmt) => {
                 use_block_statements_diagnostic!(stmt)
             }
+
             AnyJsBlockStatement::JsForStatement(stmt) => {
                 use_block_statements_diagnostic!(stmt)
             }
+
             AnyJsBlockStatement::JsWhileStatement(stmt) => {
                 use_block_statements_diagnostic!(stmt)
             }
+
             AnyJsBlockStatement::JsWithStatement(stmt) => {
                 use_block_statements_diagnostic!(stmt)
             }
+
             AnyJsBlockStatement::JsElseClause(stmt) => {
                 let body = stmt.alternate().ok()?;
+
                 if matches!(body, AnyJsStatement::JsEmptyStatement(_)) {
                     return Some(UseBlockStatementsOperationType::ReplaceBody);
                 }
+
                 let is_block = matches!(
                     body,
                     AnyJsStatement::JsBlockStatement(_) | AnyJsStatement::JsIfStatement(_)
                 );
+
                 if !is_block {
                     return Some(UseBlockStatementsOperationType::Wrap(body));
                 }
+
                 None
             }
         }
@@ -125,6 +140,7 @@ impl Rule for UseBlockStatements {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),
@@ -139,11 +155,13 @@ impl Rule for UseBlockStatements {
         nodes_need_to_replaced: &Self::State,
     ) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
 
         match nodes_need_to_replaced {
             UseBlockStatementsOperationType::Wrap(stmt) => {
                 let mut l_curly_token = make::token(T!['{']);
+
                 let r_curly_token = make::token(T!['}']);
 
                 // Ensure the opening curly token is separated from the previous token by at least one space
@@ -190,6 +208,7 @@ impl Rule for UseBlockStatements {
                     // else-clause nodes if this statement is part of an
                     // else-if chain
                     let mut node = node.clone();
+
                     while let Some(parent) = node.parent::<AnyJsBlockStatement>() {
                         if !matches!(parent, AnyJsBlockStatement::JsElseClause(_)) {
                             break;
@@ -242,6 +261,7 @@ impl Rule for UseBlockStatements {
                     )),
                 );
             }
+
             UseBlockStatementsOperationType::ReplaceBody => match node {
                 AnyJsBlockStatement::JsIfStatement(stmt) => {
                     use_block_statements_replace_body!(
@@ -252,6 +272,7 @@ impl Rule for UseBlockStatements {
                         stmt
                     )
                 }
+
                 AnyJsBlockStatement::JsElseClause(stmt) => {
                     use_block_statements_replace_body!(
                         JsElseClause,
@@ -261,26 +282,33 @@ impl Rule for UseBlockStatements {
                         stmt
                     )
                 }
+
                 AnyJsBlockStatement::JsDoWhileStatement(stmt) => {
                     use_block_statements_replace_body!(JsDoWhileStatement, mutation, node, stmt)
                 }
+
                 AnyJsBlockStatement::JsForInStatement(stmt) => {
                     use_block_statements_replace_body!(JsForInStatement, mutation, node, stmt)
                 }
+
                 AnyJsBlockStatement::JsForOfStatement(stmt) => {
                     use_block_statements_replace_body!(JsForOfStatement, mutation, node, stmt)
                 }
+
                 AnyJsBlockStatement::JsForStatement(stmt) => {
                     use_block_statements_replace_body!(JsForStatement, mutation, node, stmt)
                 }
+
                 AnyJsBlockStatement::JsWhileStatement(stmt) => {
                     use_block_statements_replace_body!(JsWhileStatement, mutation, node, stmt)
                 }
+
                 AnyJsBlockStatement::JsWithStatement(stmt) => {
                     use_block_statements_replace_body!(JsWithStatement, mutation, node, stmt)
                 }
             },
         };
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -293,12 +321,14 @@ impl Rule for UseBlockStatements {
 /// Collect newline and comment trivia pieces in reverse order up to the first newline included
 fn collect_to_first_newline(trivia: &JsSyntaxTrivia) -> Vec<SyntaxTriviaPiece<JsLanguage>> {
     let mut has_newline = false;
+
     trivia
         .pieces()
         .rev()
         .filter(|piece| piece.is_newline() || piece.is_whitespace())
         .take_while(|piece| {
             let had_newline = has_newline;
+
             has_newline |= piece.is_newline();
             !had_newline
         })
@@ -314,6 +344,7 @@ pub enum UseBlockStatementsOperationType {
 macro_rules! use_block_statements_diagnostic {
     ($id:ident, $field:ident) => {{
         let body = $id.$field().ok()?;
+
         if matches!(body, AnyJsStatement::JsEmptyStatement(_)) {
             Some(UseBlockStatementsOperationType::ReplaceBody)
         } else if !matches!(body, AnyJsStatement::JsBlockStatement(_)) {

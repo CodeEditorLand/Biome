@@ -120,10 +120,15 @@ fn default_graphql_formatter() {
     let graphql_configuration = GraphqlFormatter::default();
 
     assert_eq!(graphql_configuration.enabled, Some(false));
+
     assert_eq!(graphql_configuration.indent_style, None);
+
     assert_eq!(graphql_configuration.indent_width, None);
+
     assert_eq!(graphql_configuration.line_ending, None);
+
     assert_eq!(graphql_configuration.line_width, None);
+
     assert_eq!(graphql_configuration.quote_style, None);
 }
 

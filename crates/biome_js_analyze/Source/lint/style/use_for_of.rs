@@ -68,13 +68,18 @@ declare_node_union! {
 
 impl Rule for UseForOf {
     type Query = Semantic<JsForStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         let initializer = node.initializer()?;
 
         if !is_for_initializer_valid(&initializer)? {
@@ -82,9 +87,13 @@ impl Rule for UseForOf {
         }
 
         let declarators = initializer.as_js_variable_declaration()?.declarators();
+
         let initializer = declarators.first()?.ok()?;
+
         let initializer_id = initializer.id().ok()?;
+
         let test = node.test()?;
+
         let binding = initializer_id
             .as_any_js_binding()?
             .as_js_identifier_binding()?;
@@ -98,6 +107,7 @@ impl Rule for UseForOf {
         }
 
         let body = node.body().ok()?;
+
         let body_range = match body {
             AnyJsStatement::JsBlockStatement(block) => Some(block.range()),
             AnyJsStatement::JsExpressionStatement(statement) => Some(statement.range()),
@@ -105,18 +115,23 @@ impl Rule for UseForOf {
         }?;
 
         let references = list_initializer_references(model, binding, &body_range);
+
         let array_right = test.as_js_binary_expression()?.right().ok()?;
+
         let array_used_in_for = array_right
             .as_js_static_member_expression()?
             .object()
             .ok()?;
+
         let index_only_used_with_array = |reference| {
             let array_in_use = reference_being_used_by_array(reference, &array_used_in_for)
                 .is_some_and(|array_in_use| array_in_use);
+
             let is_delete = is_delete(reference).is_some_and(|is_delete| is_delete);
 
             array_in_use && !is_delete
         };
+
         if references.iter().all(index_only_used_with_array) {
             Some(())
         } else {
@@ -179,6 +194,7 @@ fn list_initializer_references(
 ///
 fn is_for_initializer_valid(initializer: &AnyJsForInitializer) -> Option<bool> {
     let initializer_declarations = initializer.as_js_variable_declaration()?.declarators();
+
     let initializer = initializer_declarations.first()?.ok()?;
 
     if initializer_declarations.len() > 1 || !is_zero_initialized(&initializer)? {
@@ -203,7 +219,9 @@ fn is_for_test_valid(
     test: &AnyJsExpression,
 ) -> Option<bool> {
     let test_binary_expression = test.as_js_binary_expression()?;
+
     let left = test_binary_expression.left().ok()?;
+
     let identifier_expression = left.as_js_identifier_expression()?;
 
     if initializer_binding.name_token().ok()?.text_trimmed()
@@ -274,6 +292,7 @@ fn reference_being_used_by_array(
 ///
 fn is_delete(reference: &AnyBindingExpression) -> Option<bool> {
     let grand_parent = reference.syntax().grand_parent()?;
+
     let js_expression = AnyJsExpression::cast(grand_parent)?;
 
     match js_expression {
@@ -287,10 +306,15 @@ fn is_delete(reference: &AnyBindingExpression) -> Option<bool> {
 
 fn is_less_than_length_expression(binary_expression: &JsBinaryExpression) -> Option<bool> {
     let right = binary_expression.right().ok()?;
+
     let static_member_expression = right.as_js_static_member_expression()?;
+
     let object = static_member_expression.object().ok()?;
+
     let member = static_member_expression.member().ok()?;
+
     let member = member.as_js_name()?;
+
     let operator = binary_expression.operator().ok()?;
 
     Some(
@@ -302,11 +326,13 @@ fn is_less_than_length_expression(binary_expression: &JsBinaryExpression) -> Opt
 
 fn is_zero_initialized(variable_declarator: &JsVariableDeclarator) -> Option<bool> {
     let expression = variable_declarator.initializer()?.expression().ok()?;
+
     let number_literal = expression
         .as_any_js_literal_expression()?
         .as_js_number_literal_expression()?;
 
     let value = number_literal.value_token().ok()?;
+
     let value = value.text_trimmed();
 
     Some(value == "0")
@@ -331,15 +357,18 @@ impl AnyIncrementableLike {
             )),
             AnyIncrementableLike::JsAssignmentExpression(expression) => {
                 let operator = expression.operator().ok()?;
+
                 let right = expression.right().ok()?;
 
                 if let Some(binary_expression) = JsBinaryExpression::cast_ref(right.syntax()) {
                     let binary_right = binary_expression.right().ok()?;
+
                     let number_literal = binary_right
                         .as_any_js_literal_expression()?
                         .as_js_number_literal_expression()?;
 
                     let binary_value = number_literal.value_token().ok()?;
+
                     let binary_value = binary_value.text_trimmed();
 
                     if matches!(binary_expression.operator().ok()?, JsBinaryOperator::Plus)
@@ -354,6 +383,7 @@ impl AnyIncrementableLike {
                     .as_js_number_literal_expression()?;
 
                 let value = number_literal.value_token().ok()?;
+
                 let value = value.text_trimmed();
 
                 Some(matches!(operator, JsAssignmentOperator::AddAssign) && value == "1")
@@ -394,12 +424,15 @@ impl TryFrom<AnyJsExpression> for AnyIncrementableLike {
             AnyJsExpression::JsAssignmentExpression(expression) => {
                 Ok(AnyIncrementableLike::JsAssignmentExpression(expression))
             }
+
             AnyJsExpression::JsPostUpdateExpression(expression) => {
                 Ok(AnyIncrementableLike::JsPostUpdateExpression(expression))
             }
+
             AnyJsExpression::JsPreUpdateExpression(expression) => {
                 Ok(AnyIncrementableLike::JsPreUpdateExpression(expression))
             }
+
             _ => Err(()),
         }
     }
@@ -413,12 +446,15 @@ impl TryFrom<AnyJsExpression> for AnyBindingExpression {
             AnyJsExpression::JsPostUpdateExpression(expression) => {
                 Ok(AnyBindingExpression::JsPostUpdateExpression(expression))
             }
+
             AnyJsExpression::JsIdentifierExpression(expression) => {
                 Ok(AnyBindingExpression::JsIdentifierExpression(expression))
             }
+
             AnyJsExpression::JsPreUpdateExpression(expression) => {
                 Ok(AnyBindingExpression::JsPreUpdateExpression(expression))
             }
+
             _ => Err(()),
         }
     }

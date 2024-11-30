@@ -35,14 +35,18 @@ impl Rule for NoLabelVar {
     type Query = Semantic<JsLabeledStatement>;
     /// The first element of the tuple is the name of the binding, the second element of the tuple is the label name
     type State = (JsSyntaxNode, JsSyntaxToken);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let label_statement = ctx.query();
 
         let label_token = label_statement.label_token().ok()?;
+
         let name = label_token.text_trimmed();
+
         let model = ctx.model();
         // We search each scope from current scope until the global scope
         // if we find a binding that has its name equal to label name, then we found a  `LabelVar` issue.
@@ -51,11 +55,13 @@ impl Rule for NoLabelVar {
                 return Some((binding.syntax().clone(), label_token));
             }
         }
+
         None
     }
 
     fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let (binding_syntax_node, label_token) = state;
+
         let name = label_token.text_trimmed();
 
         Some(RuleDiagnostic::new(rule_category!(),

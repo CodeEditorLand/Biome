@@ -11,6 +11,7 @@ pub(crate) fn search<'ctx>(
     pattern: &PatternId,
 ) -> FileResult {
     let mut workspace_file = WorkspaceFile::new(ctx, path)?;
+
     search_with_guard(ctx, &mut workspace_file, pattern)
 }
 
@@ -30,7 +31,9 @@ pub(crate) fn search_with_guard<'ctx>(
                 )?;
 
             let input = workspace_file.input()?;
+
             let file_name = workspace_file.path.display().to_string();
+
             let matches_len = result.matches.len();
 
             let search_results = Message::Diagnostics {

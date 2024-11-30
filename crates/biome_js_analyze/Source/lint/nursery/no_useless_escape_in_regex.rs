@@ -50,24 +50,35 @@ declare_lint_rule! {
 
 impl Rule for NoUselessEscapeInRegex {
     type Query = Ast<JsRegexLiteralExpression>;
+
     type State = State;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let (pattern, flags) = node.decompose().ok()?;
+
         let bytes = pattern.as_bytes();
+
         let mut byte_it = bytes.iter().enumerate();
+
         let has_v_flag = flags.text().as_bytes().contains(&b'v');
+
         let has_u_flag = flags.text().as_bytes().contains(&b'u');
+
         let is_unicode_aware = has_v_flag || has_u_flag;
+
         while let Some((index, byte)) = byte_it.next() {
             match byte {
                 b'\\' => {
                     let Some((_, escaped)) = byte_it.next() else {
                         break;
                     };
+
                     match escaped {
                         b'\\'
                         | b'/'
@@ -88,7 +99,9 @@ impl Rule for NoUselessEscapeInRegex {
                         | b'(' | b')'
                         // Alternation
                         | b'|' => {}
+
                         b'p' | b'P' | b'k' | b'q' if is_unicode_aware => {}
+
                         _ => {
                             return Some(State {
                                 backslash_index: index as u16,
@@ -98,26 +111,32 @@ impl Rule for NoUselessEscapeInRegex {
                         }
                     }
                 }
+
                 b'[' => {
                     let char_class_start_index = index;
+
                     let mut inner_class_count = 0;
+
                     while let Some((index, byte)) = byte_it.next() {
                         match byte {
                             b'\\' => {
                                 let Some((escaped_index, escaped)) = byte_it.next() else {
                                     break;
                                 };
+
                                 match escaped {
                                     // `^` can be escaped to avoid the negation of the char class.
                                     b'^' if escaped_index == (char_class_start_index + 2) => {}
                                     // No need to escape `-` at the start
                                     b'-' if has_v_flag || escaped_index != (char_class_start_index + 2) => {}
+
                                     b'\\'
                                     | b']'
                                     // chartacaters sets
                                     | b'd' | b'D' | b'w' | b'W' | b's' | b'S' |
                                     b't' | b'r' | b'n' | b'v' | b'f' | b'b' | b'0' |
                                     b'c' | b'x' | b'u' => {}
+
                                     b'p' | b'P' | b'k' | b'q' if is_unicode_aware => {}
                                     // Invalid speccial characters in char class under the `v` flag.
                                     b'(' | b')' | b'[' | b'{' | b'}' | b'/' | b'|' if has_v_flag => {}
@@ -134,6 +153,7 @@ impl Rule for NoUselessEscapeInRegex {
                                             });
                                         }
                                     }
+
                                     b'_' if has_v_flag => {
                                         // `[\_^^]`
                                         if !byte_it.next().is_some_and(|(_, byte)| *byte == b'^') &&
@@ -145,6 +165,7 @@ impl Rule for NoUselessEscapeInRegex {
                                             });
                                         }
                                     }
+
                                     b'^' if has_v_flag  => {
                                         let must_be_escaped =
                                             // `[_^\^]`
@@ -161,6 +182,7 @@ impl Rule for NoUselessEscapeInRegex {
                                                 // `[\^^^]`
                                                 byte_it.next().is_some_and(|(_, byte)| *byte == b'^')
                                             ));
+
                                         if !must_be_escaped {
                                             return Some(State {
                                                 backslash_index: index as u16,
@@ -169,6 +191,7 @@ impl Rule for NoUselessEscapeInRegex {
                                             });
                                         }
                                     }
+
                                     _ => {
                                         return Some(State {
                                             backslash_index: index as u16,
@@ -178,11 +201,13 @@ impl Rule for NoUselessEscapeInRegex {
                                     }
                                 }
                             }
+
                             b'[' => {
                                 if has_v_flag {
                                     inner_class_count += 1;
                                 }
                             }
+
                             b']' => {
                                 if has_v_flag && inner_class_count != 0 {
                                     inner_class_count -= 1;
@@ -200,13 +225,16 @@ impl Rule for NoUselessEscapeInRegex {
                                     break;
                                 }
                             }
+
                             _ => {}
                         }
                     }
                 }
+
                 _ => {}
             }
         }
+
         None
     }
 
@@ -218,7 +246,9 @@ impl Rule for NoUselessEscapeInRegex {
         } = state;
         // Add 1 because the index was computed in the pattern (it doesn't take `/` into account).
         let adjusted_backslash_index = (*backslash_index as u32) + 1;
+
         let node = ctx.query();
+
         let backslash_position = node.range().start() + TextSize::from(adjusted_backslash_index);
         // To compute the correct text range, we need the byte length of the escaped character.
         // To get that, we take a string slice from the escaped character and iterate until thenext character.
@@ -227,6 +257,7 @@ impl Rule for NoUselessEscapeInRegex {
             [(adjusted_backslash_index as usize + 1)..]
             .char_indices()
             .nth(1)?;
+
         let diag = RuleDiagnostic::new(
             rule_category!(),
             TextRange::at(backslash_position, (1 + *escaped_byte_len as u32).into()),
@@ -234,6 +265,7 @@ impl Rule for NoUselessEscapeInRegex {
                 "The character doesn't need to be escaped."
             },
         );
+
         Some(if matches!(escaped, b'p' | b'P' | b'k') {
             diag.note("The escape sequence is only useful if the regular expression is unicode-aware. To be unicode-aware, the `u` or `v` flag should be used.")
         } else if *in_char_class {
@@ -241,18 +273,23 @@ impl Rule for NoUselessEscapeInRegex {
                 b'^' => {
                     diag.note("The character should only be escaped if it is the first character of the class.")
                 }
+
                 b'B' => {
                     diag.note("The escape sequence only has meaning outside a character class.")
                 }
+
                 b'(' | b')' | b'[' | b'{' | b'}' | b'/' | b'|' => {
                     diag.note("The character should only be escaped if it is outside a character class or under the `v` flag.")
                 }
+
                 b'.' | b'$' | b'*' | b'+' | b'?' => {
                     diag.note("The character should only be escaped if it is outside a character class.")
                 }
+
                 b'-' => {
                     diag.note("The character should only be escaped if it appears in the middle of the character class or under the `v` flag.")
                 }
+
                 _ => diag,
             }
         } else {
@@ -266,13 +303,18 @@ impl Rule for NoUselessEscapeInRegex {
         } = state;
         // Add 1 because the index was computed in the pattern (it doesn't take `/` into account).
         let adjusted_backslash_index = (*backslash_index as usize) + 1;
+
         let node = ctx.query();
+
         let value_token = node.value_token().ok()?;
+
         let regex_text = value_token.text_trimmed();
+
         debug_assert!(
             regex_text.as_bytes().get(adjusted_backslash_index) == Some(&b'\\'),
             "backslash_index should points to a backslash."
         );
+
         let new_regex = JsSyntaxToken::new_detached(
             JsSyntaxKind::JS_REGEX_LITERAL,
             &format!(
@@ -283,8 +325,11 @@ impl Rule for NoUselessEscapeInRegex {
             [],
             [],
         );
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_token(value_token, new_regex);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

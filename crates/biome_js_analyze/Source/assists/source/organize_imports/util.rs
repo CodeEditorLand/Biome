@@ -68,6 +68,7 @@ impl<T: AsRef<str> + Eq> Ord for ImportSource<T> {
                     ImportSourceAsciiCollator.cmp_str(self.inner.as_ref(), other.inner.as_ref())
                 }
             }
+
             result => result,
         }
     }
@@ -91,6 +92,7 @@ pub enum ImportSourceKind {
 impl ImportSourceKind {
     pub fn from_source(import_source: &str) -> Self {
         let mut iter = import_source.bytes();
+
         match iter.next() {
             Some(b'@') => {
                 match iter.next() {
@@ -98,6 +100,7 @@ impl ImportSourceKind {
                         // TypeScript conventional path aliases
                         Self::Alias
                     }
+
                     Some(b'a'..=b'z' | b'0'..=b'9' | b'-') => Self::Package,
                     _ => Self::Unknown,
                 }
@@ -113,6 +116,7 @@ impl ImportSourceKind {
                         Self::Unknown
                     }
                 }
+
                 None | Some(b'/') => Self::Path,
                 Some(_) => Self::Unknown,
             },
@@ -120,6 +124,7 @@ impl ImportSourceKind {
                 loop {
                     match iter.next() {
                         Some(b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' | b'.') => {}
+
                         Some(b':') => {
                             // Protocol
                             return match iter.next() {
@@ -127,18 +132,22 @@ impl ImportSourceKind {
                                 Some(b'@' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_') => {
                                     Self::ProtocolPackage
                                 }
+
                                 _ => Self::Unknown,
                             };
                         }
+
                         None | Some(b'/') => {
                             return Self::Package;
                         }
+
                         Some(_) => {
                             return Self::Unknown;
                         }
                     }
                 }
             }
+
             _ => Self::Unknown,
         }
     }
@@ -238,11 +247,14 @@ impl<'a> Iterator for PathComponents<'a> {
                     .clone()
                     .take_while(|c| matches!(c, Component::ParentDir))
                     .count();
+
                 for _ in 1..=count {
                     self.inner.next();
                 }
+
                 PathComponent::ParentDir(count + 1)
             }
+
             Component::CurDir => {
                 // Normalize `./../..` to `../..`.
                 // Note that [std::path::Components] already normalizes `.././..` to `../..`
@@ -251,15 +263,18 @@ impl<'a> Iterator for PathComponents<'a> {
                     .clone()
                     .take_while(|c| matches!(c, Component::ParentDir))
                     .count();
+
                 if parent_dir_count == 0 {
                     PathComponent::CurDir
                 } else {
                     for _ in 1..=parent_dir_count {
                         self.inner.next();
                     }
+
                     PathComponent::ParentDir(parent_dir_count)
                 }
             }
+
             Component::Normal(s) => PathComponent::Normal(s),
         })
     }
@@ -326,8 +341,10 @@ mod test {
             "https://example.org/path#frag",
             "https://example.org/path-a",
         ];
+
         for items in sorted.windows(2) {
             let (x, y) = (items[0], items[1]);
+
             assert_eq!(
                 ImportSourceAsciiCollator.cmp_str(x, y),
                 Ordering::Less,
@@ -340,8 +357,11 @@ mod test {
     fn test_cmp_path() {
         let cmp_path =
             |p1: &Path, p2: &Path| PathComponents::from(p1).cmp(PathComponents::from(p2));
+
         assert_eq!(cmp_path(Path::new("/"), Path::new("..")), Ordering::Less);
+
         assert_eq!(cmp_path(Path::new(".."), Path::new(".")), Ordering::Less);
+
         assert_eq!(cmp_path(Path::new("."), Path::new("test")), Ordering::Less);
     }
 
@@ -372,8 +392,10 @@ mod test {
             ImportSource::from(".."),
             ImportSource::from("."),
         ];
+
         for items in sorted.windows(2) {
             let (x, y) = (&items[0], &items[1]);
+
             assert!(x < y, "'{:?}' < '{:?}'", x, y);
         }
     }

@@ -12,6 +12,7 @@ pub(crate) fn load_config(specifier: &str) -> Result<Resolution, CliDiagnostic> 
             "{UNCYCLE_FUNCTION} import('{specifier}').then((c) => console.log(JSON.stringify(uncycle(c.default))))"
         ))
         .output();
+
     match content_output {
         Err(_) => {
             Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
@@ -26,7 +27,9 @@ pub(crate) fn load_config(specifier: &str) -> Result<Resolution, CliDiagnostic> 
                     "require.resolve('{specifier}')"
                 ))
                 .output();
+
             let resolved_path = path_output.ok().map_or(String::new(), |path_output| String::from_utf8_lossy(&path_output.stdout).trim().to_string());
+
             if !output.stderr.is_empty() {
                 // Try with `require` before giving up.
                 let output2 = Command::new("node")
@@ -36,6 +39,7 @@ pub(crate) fn load_config(specifier: &str) -> Result<Resolution, CliDiagnostic> 
                         "{UNCYCLE_FUNCTION} console.log(JSON.stringify(uncycle(require('{specifier}'))))"
                     ))
                     .output();
+
                 if let Ok(output2) = output2 {
                     if output2.stderr.is_empty() {
                         return Ok(Resolution {
@@ -44,11 +48,14 @@ pub(crate) fn load_config(specifier: &str) -> Result<Resolution, CliDiagnostic> 
                         });
                     }
                 }
+
                 let stderr = String::from_utf8_lossy(&output.stderr);
+
                 return Err(CliDiagnostic::MigrateError(MigrationDiagnostic {
                     reason: format!("`node` was invoked to resolve '{specifier}'. This invocation failed with the following error:\n{stderr}")
                 }));
             }
+
             Ok(Resolution {
                 content: String::from_utf8_lossy(&output.stdout).to_string(),
                 resolved_path,
@@ -69,6 +76,7 @@ pub(crate) struct Resolution {
 /// JavaScript function used to remove cyclic references.
 const UNCYCLE_FUNCTION: &str = "function uncycle(obj, seen = new Set()) {
     seen.add(obj);
+
     for (const [key, val] of Object.entries(obj)) {
         if (val != null && typeof val == 'object') {
             if (seen.has(val)) {
@@ -79,6 +87,8 @@ const UNCYCLE_FUNCTION: &str = "function uncycle(obj, seen = new Set()) {
             }
         }
     }
+
     seen.delete(obj);
+
     return obj;
 }";

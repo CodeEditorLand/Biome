@@ -36,6 +36,7 @@ impl Format<JsFormatContext> for FormatAnyJsParameters {
         let parentheses_not_needed = self
             .as_arrow_function_expression()
             .map_or(false, |expression| can_avoid_parentheses(&expression, f));
+
         let has_any_decorated_parameter = list.has_any_decorated_parameter();
 
         let can_hug =
@@ -51,6 +52,7 @@ impl Format<JsFormatContext> for FormatAnyJsParameters {
         };
 
         let l_paren_token = self.l_paren_token()?;
+
         let r_paren_token = self.r_paren_token()?;
 
         match layout {
@@ -64,6 +66,7 @@ impl Format<JsFormatContext> for FormatAnyJsParameters {
                     ]
                 )
             }
+
             ParameterLayout::Hug => {
                 if !parentheses_not_needed {
                     write!(f, [l_paren_token.format()])?;
@@ -87,6 +90,7 @@ impl Format<JsFormatContext> for FormatAnyJsParameters {
 
                 Ok(())
             }
+
             ParameterLayout::Default => {
                 if !parentheses_not_needed {
                     write!(f, [l_paren_token.format()])?;
@@ -129,6 +133,7 @@ impl FormatAnyJsParameters {
             FormatAnyJsParameters::JsParameters(parameters) => {
                 AnyJsParameterList::from(parameters.items())
             }
+
             FormatAnyJsParameters::JsConstructorParameters(parameters) => {
                 AnyJsParameterList::from(parameters.parameters())
             }
@@ -237,6 +242,7 @@ pub(crate) fn should_hug_function_parameters(
                             // `a: { prop: string }`
                             // or parameter is an arrow function parameter
                             // (a) => {}
+
                             AnyJsBindingPattern::AnyJsBinding(
                                 AnyJsBinding::JsIdentifierBinding(_),
                             ) => {
@@ -253,6 +259,7 @@ pub(crate) fn should_hug_function_parameters(
                                         })
                                 }
                             }
+
                             AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsBogusBinding(_)) => {
                                 return Err(FormatError::SyntaxError);
                             }
@@ -266,13 +273,16 @@ pub(crate) fn should_hug_function_parameters(
                             AnyJsBindingPattern::JsArrayBindingPattern(_)
                                 | AnyJsBindingPattern::JsObjectBindingPattern(_)
                         );
+
                         let should_hug_right = match initializer.expression()? {
                             AnyJsExpression::JsObjectExpression(object) => {
                                 object.members().is_empty()
                             }
+
                             AnyJsExpression::JsArrayExpression(array) => {
                                 array.elements().is_empty()
                             }
+
                             AnyJsExpression::JsIdentifierExpression(_) => true,
                             _ => false,
                         };
@@ -281,6 +291,7 @@ pub(crate) fn should_hug_function_parameters(
                     }
                 }
             }
+
             AnyJsFormalParameter::JsBogusParameter(_) | AnyJsFormalParameter::JsMetavariable(_) => {
                 return Err(FormatError::SyntaxError)
             }
@@ -290,6 +301,7 @@ pub(crate) fn should_hug_function_parameters(
     }
 
     let list = parameters.list();
+
     if list.len() != 1 {
         return Ok(false);
     }
@@ -302,7 +314,9 @@ pub(crate) fn should_hug_function_parameters(
     }
 
     let has_parentheses = parameters.l_paren_token().is_ok() && parameters.r_paren_token().is_ok();
+
     let from_arrow_function = parameters.as_arrow_function_expression().is_some();
+
     let should_hug_formal_parameter =
         has_parentheses && from_arrow_function && parentheses_not_needed;
 
@@ -311,6 +325,7 @@ pub(crate) fn should_hug_function_parameters(
             AnyJsParameter::AnyJsFormalParameter(formal_parameter) => {
                 hug_formal_parameter(&formal_parameter, should_hug_formal_parameter)?
             }
+
             AnyJsParameter::JsRestParameter(_) => false,
             AnyJsParameter::TsThisParameter(this) => {
                 this.type_annotation().map_or(false, |type_annotation| {
@@ -323,6 +338,7 @@ pub(crate) fn should_hug_function_parameters(
                 AnyJsConstructorParameter::AnyJsFormalParameter(formal_parameter) => {
                     hug_formal_parameter(&formal_parameter, should_hug_formal_parameter)?
                 }
+
                 AnyJsConstructorParameter::JsRestParameter(_)
                 | AnyJsConstructorParameter::TsPropertyParameter(_) => false,
             }
@@ -371,6 +387,7 @@ pub(crate) fn is_simple_parameter(
             ) && (allow_type_annotations || param.type_annotation().is_none())
                 && param.initializer().is_none()
         }
+
         _ => false,
     }
 }

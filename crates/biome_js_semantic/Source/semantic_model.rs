@@ -48,6 +48,7 @@ pub struct SemanticModelOptions {
 /// For a push based model to build the [SemanticModel], see [SemanticModelBuilder].
 pub fn semantic_model(root: &AnyJsRoot, options: SemanticModelOptions) -> SemanticModel {
     let mut extractor = SemanticEventExtractor::default();
+
     let mut builder = SemanticModelBuilder::new(root.clone());
 
     let SemanticModelOptions { globals } = options;
@@ -57,12 +58,15 @@ pub fn semantic_model(root: &AnyJsRoot, options: SemanticModelOptions) -> Semant
     }
 
     let root = root.syntax();
+
     for node in root.preorder() {
         match node {
             biome_js_syntax::WalkEvent::Enter(node) => {
                 builder.push_node(&node);
+
                 extractor.enter(&node);
             }
+
             biome_js_syntax::WalkEvent::Leave(node) => extractor.leave(&node),
         }
     }

@@ -60,8 +60,11 @@ declare_lint_rule! {
 
 impl Rule for NoPrecisionLoss {
     type Query = Ast<JsNumberLiteralExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -76,6 +79,7 @@ impl Rule for NoPrecisionLoss {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let value = node.as_number()?;
 
         Some(
@@ -91,9 +95,11 @@ impl Rule for NoPrecisionLoss {
 
 fn is_precision_lost(node: &JsNumberLiteralExpression) -> Option<bool> {
     let token = node.value_token().ok()?;
+
     let num = token.text_trimmed();
 
     let (radix, num) = split_into_radix_and_number(num);
+
     if radix == 10 {
         is_precision_lost_in_base_10(&num)
     } else {
@@ -103,16 +109,23 @@ fn is_precision_lost(node: &JsNumberLiteralExpression) -> Option<bool> {
 
 fn is_precision_lost_in_base_10(num: &str) -> Option<bool> {
     const MAX_SIGNIFICANT_DIGITS_BASE10: u32 = 17;
+
     let normalized = NormalizedNumber::new(num);
+
     let precision = normalized.precision();
+
     if precision == 0 {
         return Some(false);
     }
+
     if precision > MAX_SIGNIFICANT_DIGITS_BASE10 as usize {
         return Some(true);
     }
+
     let parsed = num.parse::<f64>().ok()?;
+
     let stored_num = format!("{:.*e}", precision - 1, parsed);
+
     Some(stored_num != normalized.to_scientific())
 }
 
@@ -128,7 +141,9 @@ fn is_precision_lost_in_base_other(num: &str, radix: u8) -> bool {
     };
 
     const MAX_SAFE_INTEGER: i64 = 2_i64.pow(53) - 1;
+
     const MIN_SAFE_INTEGER: i64 = -MAX_SAFE_INTEGER;
+
     const SAFE_RANGE: RangeInclusive<i64> = MIN_SAFE_INTEGER..=MAX_SAFE_INTEGER;
 
     !SAFE_RANGE.contains(&parsed)
@@ -153,10 +168,12 @@ struct NormalizedNumber<'a> {
 impl NormalizedNumber<'_> {
     fn new(num: &str) -> NormalizedNumber<'_> {
         let num = remove_leading_zeros(num);
+
         let (mantissa, exponent) = num
             .split_once(['e', 'E'])
             .and_then(|(mantissa, exponent)| Some((mantissa, exponent.parse::<isize>().ok()?)))
             .unwrap_or((num, 0));
+
         match mantissa.split_once(['.']) {
             None => NormalizedNumber {
                 digits: remove_trailing_zeros(mantissa),
@@ -165,19 +182,23 @@ impl NormalizedNumber<'_> {
             },
             Some(("", fraction)) => {
                 let digits = remove_leading_zeros(fraction);
+
                 NormalizedNumber {
                     digits: remove_trailing_zeros(digits),
                     digits_rest: "",
                     exponent: digits.len() as isize - fraction.len() as isize + exponent,
                 }
             }
+
             Some((integer, fraction)) => {
                 let fraction = remove_trailing_zeros(fraction);
+
                 let digits = if fraction.is_empty() {
                     remove_trailing_zeros(integer)
                 } else {
                     integer
                 };
+
                 NormalizedNumber {
                     digits,
                     digits_rest: fraction,
@@ -189,6 +210,7 @@ impl NormalizedNumber<'_> {
 
     fn to_scientific(&self) -> String {
         let fraction = &self.digits[1..];
+
         if fraction.is_empty() && self.digits_rest.is_empty() {
             format!("{}e{}", self.digits, self.exponent - 1)
         } else {

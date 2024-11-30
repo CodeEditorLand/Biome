@@ -59,12 +59,15 @@ impl RenamableNode for AnyJsRenamableDeclaration {
             AnyJsRenamableDeclaration::JsIdentifierBinding(node) => {
                 RenamableNode::binding(node, model)
             }
+
             AnyJsRenamableDeclaration::JsReferenceIdentifier(node) => {
                 RenamableNode::binding(node, model)
             }
+
             AnyJsRenamableDeclaration::JsIdentifierAssignment(node) => {
                 RenamableNode::binding(node, model)
             }
+
             AnyJsRenamableDeclaration::TsIdentifierBinding(node) => {
                 RenamableNode::binding(node, model)
             }
@@ -95,6 +98,7 @@ impl std::fmt::Display for RenameError {
                     "encountered an error while renaming the symbol \"{original_name}\" to \"{new_name}\""
                 )
             }
+
             RenameError::CannotFindDeclaration(_) => {
                 write!(
                     f,
@@ -117,6 +121,7 @@ impl Diagnostic for RenameError {
                     markup! { "Can't find the declaration. Found node "{{node}} }
                 )
             }
+
             RenameError::CannotBeRenamed { original_name, new_name, .. } => {
                 fmt.write_markup(
                     markup! { "Can't rename from "<Emphasis>{{original_name}}</Emphasis>" to "<Emphasis>{{new_name}}</Emphasis>"" }
@@ -127,6 +132,7 @@ impl Diagnostic for RenameError {
 
     fn location(&self) -> Location<'_> {
         let location = Location::builder();
+
         if let RenameError::CannotBeRenamed { original_range, .. } = self {
             location.span(original_range).build()
         } else {
@@ -140,6 +146,7 @@ impl TryFrom<JsSyntaxNode> for AnyJsRenamableDeclaration {
 
     fn try_from(node: JsSyntaxNode) -> Result<Self, Self::Error> {
         let node_name = node.text_trimmed().to_string();
+
         match node.kind() {
             JsSyntaxKind::JS_IDENTIFIER_BINDING => node
                 .cast::<JsIdentifierBinding>()
@@ -230,9 +237,11 @@ impl RenameSymbolExtensions for BatchMutation<JsLanguage> {
         // We can rename a binding if there is no conflicts in the current scope.
         // We can shadow parent scopes, so we don´t check them.
         let syntax = prev_binding.syntax();
+
         let scope = model
             .scope_hoisted_to(syntax)
             .unwrap_or_else(|| model.scope(syntax));
+
         if scope.get_binding(new_name).is_some() {
             return false;
         }
@@ -245,7 +254,9 @@ impl RenameSymbolExtensions for BatchMutation<JsLanguage> {
         // until the root.
 
         let all_references: Vec<_> = prev_binding.all_references(model).collect();
+
         let mut token_changes = Vec::with_capacity(all_references.len());
+
         let mut node_changes = vec![];
 
         for reference in all_references {
@@ -260,14 +271,17 @@ impl RenameSymbolExtensions for BatchMutation<JsLanguage> {
             }
 
             let reference_syntax = reference.syntax();
+
             let Some(id_usage) = AnyJsIdentifierUsage::cast_ref(reference_syntax) else {
                 continue;
             };
+
             let Ok(prev_ref_token) = id_usage.value_token() else {
                 continue;
             };
 
             let new_name = make::ident(new_name);
+
             if let Some(reference_parent) = reference_syntax.parent() {
                 if reference_parent.kind() == JsSyntaxKind::JS_SHORTHAND_PROPERTY_OBJECT_MEMBER {
                     // Handle renaming of shorthand properties.
@@ -275,6 +289,7 @@ impl RenameSymbolExtensions for BatchMutation<JsLanguage> {
                     // `let color = ...; const c = { color }` must result in
                     // `let colorNew = ...; const c = { color: colorNew }`
                     let trailing_trivia = prev_ref_token.trailing_trivia().pieces();
+
                     let new_property = make::js_property_object_member(
                         make::js_literal_member_name(prev_ref_token.with_trailing_trivia([]))
                             .into(),
@@ -285,10 +300,13 @@ impl RenameSymbolExtensions for BatchMutation<JsLanguage> {
                         ))
                         .into(),
                     );
+
                     node_changes.push((reference_parent, new_property.into_syntax()));
+
                     continue;
                 }
             }
+
             token_changes.push((prev_ref_token, new_name));
         }
 
@@ -300,6 +318,7 @@ impl RenameSymbolExtensions for BatchMutation<JsLanguage> {
         for (prev_token, next_token) in token_changes {
             self.replace_token(prev_token, next_token);
         }
+
         for (prev_node, next_node) in node_changes {
             self.replace_element(prev_node.into(), next_node.into());
         }
@@ -311,8 +330,11 @@ impl RenameSymbolExtensions for BatchMutation<JsLanguage> {
 #[cfg(test)]
 mod tests {
     use crate::utils::rename::RenameError;
+
     use crate::{assert_rename_nok, assert_rename_ok};
+
     use biome_diagnostics::{print_diagnostic_to_string, DiagnosticExt, Error};
+
     use biome_js_syntax::TextRange;
 
     assert_rename_ok! {
@@ -391,6 +413,7 @@ mod tests {
     #[test]
     fn cannot_be_renamed() {
         let source_code = "async function f() {}";
+
         snap_diagnostic(
             "cannot_be_renamed",
             &RenameError::CannotBeRenamed {

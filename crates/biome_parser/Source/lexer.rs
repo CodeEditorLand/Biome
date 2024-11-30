@@ -73,6 +73,7 @@ pub trait Lexer<'src> {
             Self::NEWLINE
         } else {
             self.consume_whitespaces();
+
             Self::WHITESPACE
         }
     }
@@ -93,8 +94,10 @@ pub trait Lexer<'src> {
                     b'\r' | b'\n' => {
                         break;
                     }
+
                     _ => {
                         let start = self.text_position();
+
                         self.advance(1);
 
                         self.push_diagnostic(
@@ -120,6 +123,7 @@ pub trait Lexer<'src> {
     /// Advances the position by one and returns the next byte value
     fn next_byte(&mut self) -> Option<u8> {
         self.advance(1);
+
         self.current_byte()
     }
 
@@ -158,14 +162,17 @@ pub trait Lexer<'src> {
         match self.current_byte() {
             Some(b'\n') => {
                 self.advance(1);
+
                 true
             }
+
             Some(b'\r') => {
                 if self.peek_byte() == Some(b'\n') {
                     self.advance(2)
                 } else {
                     self.advance(1)
                 }
+
                 true
             }
 
@@ -229,6 +236,7 @@ pub trait Lexer<'src> {
         // support other encodings like UTF-16.
         if let Some(first) = self.source().get(0..3) {
             let bom = Bom::from(first.as_bytes());
+
             self.advance(bom.len());
 
             match bom {
@@ -249,6 +257,7 @@ pub trait Lexer<'src> {
         // Precautionary measure for making sure the unsafe code below does not
         // read over memory boundary.
         debug_assert!(!self.is_eof());
+
         self.assert_current_char_boundary();
 
         // Safety: We know this is safe because we require the input to the
@@ -262,6 +271,7 @@ pub trait Lexer<'src> {
             else {
                 core::hint::unreachable_unchecked();
             };
+
             chr
         }
     }
@@ -269,6 +279,7 @@ pub trait Lexer<'src> {
     /// Check if the lexer starts a grit metavariable
     fn is_metavariable_start(&mut self) -> bool {
         let current_char = self.current_char_unchecked();
+
         if current_char == 'µ' {
             let current_char_length = current_char.len_utf8();
             // µ[a-zA-Z_][a-zA-Z0-9_]*
@@ -287,6 +298,7 @@ pub trait Lexer<'src> {
                 return true;
             }
         }
+
         false
     }
 
@@ -297,6 +309,7 @@ pub trait Lexer<'src> {
 
         // SAFETY: We know the current character is µ.
         let current_char = self.current_char_unchecked();
+
         self.advance(current_char.len_utf8());
 
         if self.current_byte() == Some(b'.') {
@@ -305,11 +318,13 @@ pub trait Lexer<'src> {
         } else {
             // µ[a-zA-Z_][a-zA-Z0-9_]*
             self.advance(1);
+
             while let Some(chr) = self.current_byte() {
                 match chr {
                     b'a'..=b'z' | b'A'..=b'Z' | b'0'..=b'9' | b'_' => {
                         self.advance(1);
                     }
+
                     _ => break,
                 }
             }
@@ -429,6 +444,7 @@ impl<K: SyntaxKind> Lookahead<K> {
             if !lookahead.current_kind.is_trivia() {
                 self.non_trivia_checkpoints.pop_front();
             }
+
             Some(lookahead)
         } else {
             None
@@ -453,6 +469,7 @@ impl<K: SyntaxKind> Lookahead<K> {
     /// Clears all checkpoints from both buffers.
     fn clear(&mut self) {
         self.all_checkpoints.clear();
+
         self.non_trivia_checkpoints.clear();
     }
 
@@ -506,6 +523,7 @@ impl<'l, Lex: Lexer<'l>> BufferedLexer<Lex::Kind, Lex> {
         // The [BufferedLexer] and [Lexer] are now both at the same position. Clear the cached
         // current token and lex out the next token.
         self.current = None;
+
         self.inner.next_token(context)
     }
 
@@ -558,13 +576,16 @@ impl<'l, Lex: Lexer<'l>> BufferedLexer<Lex::Kind, Lex> {
     /// Rewinds the lexer to the state stored in the checkpoint.
     pub fn rewind(&mut self, checkpoint: LexerCheckpoint<Lex::Kind>) {
         self.inner.rewind(checkpoint);
+
         self.lookahead.clear();
+
         self.current = None;
     }
 
     fn reset_lookahead(&mut self) {
         if let Some(current) = self.current.take() {
             self.inner.rewind(current);
+
             self.lookahead.clear();
         }
     }
@@ -588,6 +609,7 @@ where
     /// Re-lex the current token in the given context
     pub fn re_lex(&mut self, context: Lex::ReLexContext) -> Lex::Kind {
         let current_kind = self.current();
+
         let current_checkpoint = self.inner.checkpoint();
 
         if let Some(current) = self.current.take() {
@@ -603,6 +625,7 @@ where
             // It's still the same kind. So let's move the lexer back to the position it was before re-lexing
             // and keep the lookahead as is.
             self.current = Some(self.inner.checkpoint());
+
             self.inner.rewind(current_checkpoint);
         }
 
@@ -628,7 +651,9 @@ where
 
         // Jump right to where we've left of last time rather than going through all tokens again.
         let mut remaining = n - self.lookahead.non_trivia_len();
+
         let current_length = self.lookahead.all_len();
+
         let iter = self.lookahead_iter().skip(current_length);
 
         for item in iter {
@@ -674,11 +699,13 @@ impl<'l, 't, Lex: LexerWithCheckpoint<'t>> Iterator for LookaheadIterator<'l, 't
     #[inline]
     fn next(&mut self) -> Option<Self::Item> {
         let lookbehind = &self.buffered.lookahead;
+
         self.nth += 1;
 
         // Is the `nth` token already in the cache, then return it
         if let Some(lookbehind) = lookbehind.get_checkpoint(self.nth - 1) {
             let lookahead = LookaheadToken::from(lookbehind);
+
             return Some(lookahead);
         }
 

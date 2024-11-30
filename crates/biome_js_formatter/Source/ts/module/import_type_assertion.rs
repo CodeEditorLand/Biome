@@ -17,6 +17,7 @@ impl FormatNodeRule<TsImportTypeAssertion> for FormatTsImportTypeAssertion {
 
         if assertions.is_empty() {
             let has_dangling = f.comments().has_dangling_comments(node.syntax());
+
             write!(
                 f,
                 [
@@ -30,6 +31,7 @@ impl FormatNodeRule<TsImportTypeAssertion> for FormatTsImportTypeAssertion {
             )
         } else {
             let should_insert_space_around_brackets = f.options().bracket_spacing().value();
+
             write!(
                 f,
                 [

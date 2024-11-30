@@ -43,6 +43,7 @@ impl SyntaxTrivia {
 
     pub(crate) fn text_range(&self) -> TextRange {
         let length = self.green_trivia().text_len();
+
         let token_range = self.token.text_range();
 
         match self.is_leading {
@@ -84,6 +85,7 @@ impl SyntaxTrivia {
     /// See [SyntaxTriviaPiece].
     pub(crate) fn pieces(&self) -> SyntaxTriviaPiecesIterator {
         let range = self.text_range();
+
         SyntaxTriviaPiecesIterator {
             raw: self.clone(),
             next_index: 0,
@@ -97,7 +99,9 @@ impl SyntaxTrivia {
 impl fmt::Debug for SyntaxTrivia {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let mut f = f.debug_struct("SyntaxTrivia");
+
         f.field("text_range", &self.text_range());
+
         f.finish()
     }
 }
@@ -122,9 +126,11 @@ impl Iterator for SyntaxTriviaPiecesIterator {
 
     fn next(&mut self) -> Option<Self::Item> {
         let trivia = self.raw.get_piece(self.next_index)?;
+
         let piece = (self.next_offset, *trivia);
 
         self.next_index += 1;
+
         self.next_offset += trivia.text_len();
 
         Some(piece)
@@ -147,6 +153,7 @@ impl DoubleEndedIterator for SyntaxTriviaPiecesIterator {
         self.end_index -= 1;
 
         let trivia = self.raw.get_piece(self.end_index)?;
+
         self.end_offset -= trivia.text_len();
 
         Some((self.end_offset, *trivia))
@@ -158,25 +165,32 @@ impl ExactSizeIterator for SyntaxTriviaPiecesIterator {}
 #[cfg(test)]
 mod tests {
     use crate::raw_language::{RawLanguage, RawLanguageKind, RawSyntaxTreeBuilder};
+
     use crate::{SyntaxNode, TriviaPiece};
 
     #[test]
     fn trivia_text() {
         let mut builder = RawSyntaxTreeBuilder::new();
+
         builder.start_node(RawLanguageKind::ROOT);
+
         builder.token_with_trivia(
             RawLanguageKind::WHITESPACE,
             "\t let \t\t",
             &[TriviaPiece::whitespace(2)],
             &[TriviaPiece::whitespace(3)],
         );
+
         builder.finish_node();
 
         let root = builder.finish_green();
+
         let syntax: SyntaxNode<RawLanguage> = SyntaxNode::new_root(root);
 
         let token = syntax.first_token().unwrap();
+
         assert_eq!(token.leading_trivia().text(), "\t ");
+
         assert_eq!(token.trailing_trivia().text(), " \t\t");
     }
 }

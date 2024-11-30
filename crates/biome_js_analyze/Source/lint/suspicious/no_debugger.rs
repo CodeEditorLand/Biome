@@ -36,8 +36,11 @@ declare_lint_rule! {
 
 impl Rule for NoDebugger {
     type Query = Ast<JsDebuggerStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(_: &RuleContext<Self>) -> Option<Self::State> {
@@ -61,6 +64,7 @@ impl Rule for NoDebugger {
         let node = ctx.query();
 
         let mut mutation = ctx.root().begin();
+
         mutation.remove_statement(node.clone().into());
 
         Some(JsRuleAction::new(

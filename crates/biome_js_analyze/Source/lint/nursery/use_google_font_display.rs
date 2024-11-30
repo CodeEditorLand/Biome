@@ -67,8 +67,11 @@ pub enum FontDisplayIssue {
 
 impl Rule for UseGoogleFontDisplay {
     type Query = Ast<AnyJsxElement>;
+
     type State = (FontDisplayIssue, TextRange);
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -79,7 +82,9 @@ impl Rule for UseGoogleFontDisplay {
         }
 
         let href = element.find_attribute_by_name("href")?;
+
         let initializer = href.initializer()?.value().ok()?.as_static_value()?;
+
         let href_text = initializer.as_string_constant()?;
 
         if !href_text.starts_with("https://fonts.googleapis.com/css") {
@@ -91,6 +96,7 @@ impl Rule for UseGoogleFontDisplay {
             .last()?
             .split('&')
             .find(|p| p.starts_with("display="));
+
         let range = initializer.range();
 
         if let Some(display_param) = display_param {

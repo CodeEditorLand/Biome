@@ -24,13 +24,16 @@ impl LogCompiler {
             .map(|(_, node)| node.to_string());
 
         let mut args = named_args_to_map(named_args, context)?;
+
         let message = args.remove("$message");
+
         let variable = args.remove("$variable");
 
         let variable = variable.and_then(|pattern| match pattern {
             Pattern::Variable(variable) => {
                 Some(VariableInfo::new(var_name.unwrap_or_default(), variable))
             }
+
             _ => None,
         });
 

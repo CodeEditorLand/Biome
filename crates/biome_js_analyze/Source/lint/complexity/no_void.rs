@@ -30,12 +30,16 @@ declare_lint_rule! {
 
 impl Rule for NoVoid {
     type Query = Ast<JsUnaryExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let expression = ctx.query();
+
         if expression.is_void().ok()? {
             Some(())
         } else {
@@ -45,6 +49,7 @@ impl Rule for NoVoid {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),

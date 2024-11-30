@@ -15,6 +15,7 @@ impl PrMatchCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Match<GritQueryContext>, CompileError> {
         let value = compile_match_subject(&node.left()?, context)?;
+
         let pattern = Some(PatternCompiler::from_node(&node.right()?, context)?);
 
         Ok(Match::new(value, pattern))
@@ -29,6 +30,7 @@ fn compile_match_subject(
         AnyGritPredicateMatchSubject::AnyGritContainer(node) => {
             ContainerCompiler::from_node(node, context)
         }
+
         AnyGritPredicateMatchSubject::AnyGritLiteral(literal) => {
             // FIXME: The grammar says literals are supported here, but the
             //        Grit reference compiler doesn't accept them either.

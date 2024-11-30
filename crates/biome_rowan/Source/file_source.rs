@@ -23,15 +23,19 @@ impl Display for FileSourceError {
             FileSourceError::MissingFileName => {
                 write!(f, "The path has no file name")
             }
+
             FileSourceError::MissingFileExtension => {
                 write!(f, "The path has no file extension")
             }
+
             FileSourceError::UnknownExtension => {
                 write!(f, "The parser can't parse the extension yet")
             }
+
             FileSourceError::UnknownFileName => {
                 write!(f, "The parser doesn't recognize the file yet")
             }
+
             FileSourceError::UnknownLanguageId => {
                 write!(f, "The parser can't parse the language yet")
             }

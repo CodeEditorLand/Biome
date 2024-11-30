@@ -23,6 +23,7 @@ impl FormatNodeRule<JsIdentifierAssignment> for FormatJsIdentifierAssignment {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsIdentifierAssignment;
 
     #[test]
@@ -30,6 +31,7 @@ mod tests {
         assert_needs_parentheses!("for ((async) of []) {}", JsIdentifierAssignment);
 
         assert_not_needs_parentheses!("for await (async of []) {}", JsIdentifierAssignment);
+
         assert_not_needs_parentheses!("for (test of []) {}", JsIdentifierAssignment);
     }
 }

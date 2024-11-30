@@ -48,17 +48,23 @@ declare_lint_rule! {
 
 impl Rule for NoDuplicateSelectorsKeyframeBlock {
     type Query = Ast<CssKeyframesBlock>;
+
     type State = AnyCssKeyframesSelector;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let mut selector_list: HashSet<String> = HashSet::new();
+
         for keyframe_item in node.items() {
             match keyframe_item {
                 AnyCssKeyframesItem::CssKeyframesItem(item) => {
                     let keyframe_selector = item.selectors().into_iter().next()?.ok()?;
+
                     if !selector_list.insert(
                         keyframe_selector
                             .text()
@@ -68,9 +74,11 @@ impl Rule for NoDuplicateSelectorsKeyframeBlock {
                         return Some(keyframe_selector);
                     }
                 }
+
                 _ => return None,
             }
         }
+
         None
     }
 

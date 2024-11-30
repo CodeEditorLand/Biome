@@ -80,21 +80,27 @@ declare_lint_rule! {
 
 impl Rule for UseDefaultSwitchClauseLast {
     type Query = Ast<JsDefaultClause>;
+
     type State = JsCaseClause;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let default_clause = ctx.query();
+
         let next_case = default_clause
             .syntax()
             .siblings(Direction::Next)
             .find_map(JsCaseClause::cast);
+
         next_case
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, next_case: &Self::State) -> Option<RuleDiagnostic> {
         let default_clause = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             default_clause.range(),

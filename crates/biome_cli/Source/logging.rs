@@ -11,25 +11,31 @@ pub fn setup_cli_subscriber(level: LoggingLevel, kind: LoggingKind) {
     if level == LoggingLevel::None {
         return;
     }
+
     let format = tracing_subscriber::fmt::layer()
         .with_level(true)
         .with_target(false)
         .with_thread_names(true)
         .with_file(true)
         .with_ansi(true);
+
     match kind {
         LoggingKind::Pretty => {
             let format = format.pretty();
+
             registry()
                 .with(format.with_filter(LoggingFilter { level }))
                 .init()
         }
+
         LoggingKind::Compact => {
             let format = format.compact();
+
             registry()
                 .with(format.with_filter(LoggingFilter { level }))
                 .init()
         }
+
         LoggingKind::Json => {
             let format = format.json().flatten_event(true);
 
@@ -65,6 +71,7 @@ impl LoggingLevel {
 
 impl FromStr for LoggingLevel {
     type Err = String;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "none" => Ok(Self::None),

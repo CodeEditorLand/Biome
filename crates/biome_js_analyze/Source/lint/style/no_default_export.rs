@@ -69,19 +69,25 @@ declare_lint_rule! {
 
 impl Rule for NoDefaultExport {
     type Query = Ast<AnyJsExportClause>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let export_clause = ctx.query();
+
         match export_clause {
             AnyJsExportClause::JsExportDefaultDeclarationClause(clause) => {
                 Some(clause.default_token().ok()?.text_trimmed_range())
             }
+
             AnyJsExportClause::JsExportDefaultExpressionClause(clause) => {
                 Some(clause.default_token().ok()?.text_trimmed_range())
             }
+
             AnyJsExportClause::JsExportNamedClause(clause) => clause
                 .specifiers()
                 .iter()

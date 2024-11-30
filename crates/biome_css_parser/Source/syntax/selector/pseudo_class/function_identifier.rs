@@ -26,6 +26,7 @@ pub(crate) fn parse_pseudo_class_function_identifier(p: &mut CssParser) -> Parse
     let m = p.start();
 
     p.bump_ts(PSEUDO_CLASS_FUNCTION_IDENTIFIER_SET);
+
     p.bump(T!['(']);
 
     let kind = if is_at_dir_parameter_identifier(p) {
@@ -43,7 +44,9 @@ pub(crate) fn parse_pseudo_class_function_identifier(p: &mut CssParser) -> Parse
         }
     } else {
         recover_selector_function_parameter(p, expected_dir_parameter_identifier);
+
         p.expect(T![')']);
+
         CSS_BOGUS_PSEUDO_CLASS
     };
 

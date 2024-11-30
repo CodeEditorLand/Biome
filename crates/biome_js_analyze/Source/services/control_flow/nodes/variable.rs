@@ -17,9 +17,11 @@ impl NodeVisitor for VariableVisitor {
         _: StatementStack,
     ) -> SyntaxResult<Self> {
         let declaration = node.declaration()?;
+
         for declarator in declaration.declarators() {
             if let Some(initializer) = declarator?.initializer() {
                 let expr = initializer.expression()?;
+
                 builder.append_statement().with_node(expr.into_syntax());
             }
         }

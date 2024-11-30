@@ -35,6 +35,7 @@ impl AstroFileHandler {
     /// If the frontmatter doesn't exist, an empty string is returned.
     pub fn input(text: &str) -> &str {
         let mut matches = Self::matches(text);
+
         match (matches.next(), matches.next()) {
             (Some(start), Some(end)) => &text[start.end()..end.start()],
             _ => "",
@@ -54,6 +55,7 @@ impl AstroFileHandler {
     /// Astro fences. The function replaces `output` inside those fences.
     pub fn output(input: &str, output: &str) -> String {
         let mut matches = Self::matches(input);
+
         if let (Some(start), Some(end)) = (matches.next(), matches.next()) {
             format!(
                 "{}{}{}",
@@ -102,6 +104,7 @@ fn parse(
     cache: &mut NodeCache,
 ) -> ParseResult {
     let frontmatter = AstroFileHandler::input(text);
+
     let parse = parse_js_with_cache(
         frontmatter,
         file_source

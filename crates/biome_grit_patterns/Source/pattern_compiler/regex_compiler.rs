@@ -23,14 +23,21 @@ impl RegexCompiler {
         let regex = match node.regex()? {
             AnyGritRegex::GritRegexLiteral(regex_node) => {
                 let token = regex_node.value_token()?;
+
                 let regex = token.text_trimmed();
+
                 debug_assert!(regex.starts_with("r\"") && regex.ends_with('"'));
+
                 RegexLike::Regex(regex[2..regex.len() - 1].to_string())
             }
+
             AnyGritRegex::GritSnippetRegexLiteral(regex_node) => {
                 let token = regex_node.value_token()?;
+
                 let regex = token.text_trimmed();
+
                 let range = token.text_trimmed_range().to_byte_range();
+
                 debug_assert!(regex.starts_with("r`") && regex.ends_with('`'));
 
                 if !context
@@ -40,6 +47,7 @@ impl RegexCompiler {
                     .is_match(regex)
                 {
                     let alternative = format!("r\"{}\"", &regex[2..regex.len() - 1]);
+
                     context.log(CompilerDiagnostic::new_warning(
                         format!("Unnecessary use of metavariable snippet syntax without metavariables. Replace {regex} with {alternative}"),
                         token.text_trimmed_range(),
@@ -48,6 +56,7 @@ impl RegexCompiler {
 
                 let pattern =
                     parse_snippet_content(&regex[2..regex.len() - 1], range, context, is_rhs)?;
+
                 RegexLike::Pattern(Box::new(pattern))
             }
         };

@@ -49,29 +49,37 @@ declare_lint_rule! {
 
 impl Rule for NoAsyncPromiseExecutor {
     type Query = Ast<JsNewExpression>;
+
     type State = AnyJsFunction;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let JsNewExpressionFields {
             new_token: _,
             callee,
             type_arguments: _,
             arguments,
         } = node.as_fields();
+
         let callee = callee.ok()?;
+
         let is_promise_constructor = callee
             .as_js_identifier_expression()
             .and_then(|ident| ident.name().ok())
             .map_or(false, |name| name.syntax().text_trimmed() == "Promise");
+
         if !is_promise_constructor {
             return None;
         }
 
         // get first argument of the `Promise` constructor
         let first_arg = arguments?.args().iter().next()?.ok()?;
+
         if let AnyJsCallArgument::AnyJsExpression(expr) = first_arg {
             get_async_function_expression_like(expr)
         } else {

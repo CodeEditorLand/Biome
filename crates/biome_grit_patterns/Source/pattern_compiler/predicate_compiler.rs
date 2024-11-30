@@ -27,6 +27,7 @@ impl PredicateCompiler {
             AnyGritPredicate::GritBracketedPredicate(node) => {
                 Self::from_node(&node.predicate()?, context)
             }
+
             AnyGritPredicate::GritPredicateAccumulate(node) => Ok(Predicate::Accumulate(Box::new(
                 PrAccumulateCompiler::from_node(node, context)?,
             ))),
@@ -46,18 +47,22 @@ impl PredicateCompiler {
             AnyGritPredicate::GritPredicateGreater(node) => {
                 Err(CompileError::UnsupportedKind(node.syntax().kind().into())) // Not supported by Grit either.
             }
+
             AnyGritPredicate::GritPredicateGreaterEqual(node) => {
                 Err(CompileError::UnsupportedKind(node.syntax().kind().into())) // Not supported by Grit either.
             }
+
             AnyGritPredicate::GritPredicateIfElse(node) => Ok(Predicate::If(Box::new(
                 PrIfCompiler::from_node(node, context)?,
             ))),
             AnyGritPredicate::GritPredicateLess(node) => {
                 Err(CompileError::UnsupportedKind(node.syntax().kind().into())) // Not supported by Grit either.
             }
+
             AnyGritPredicate::GritPredicateLessEqual(node) => {
                 Err(CompileError::UnsupportedKind(node.syntax().kind().into())) // Not supported by Grit either.
             }
+
             AnyGritPredicate::GritPredicateMatch(node) => Ok(Predicate::Match(Box::new(
                 PrMatchCompiler::from_node(node, context)?,
             ))),
@@ -70,6 +75,7 @@ impl PredicateCompiler {
             AnyGritPredicate::GritPredicateNotEqual(node) => {
                 Err(CompileError::UnsupportedKind(node.syntax().kind().into())) // Not supported by Grit either.
             }
+
             AnyGritPredicate::GritPredicateOr(node) => Ok(Predicate::Or(Box::new(
                 PrOrCompiler::from_node(node, context)?,
             ))),

@@ -178,19 +178,30 @@ impl RegistryVisitor<GraphqlLanguage> for AssistsRulesVisitor {
 
 pub(crate) fn generate_rules_configuration(mode: Mode) -> Result<()> {
     let linter_config_root = project_root().join("crates/biome_configuration/src/analyzer/linter");
+
     let assists_config_root =
         project_root().join("crates/biome_configuration/src/analyzer/assists");
+
     let push_rules_directory = project_root().join("crates/biome_configuration/src/generated");
 
     let mut lint_visitor = LintRulesVisitor::default();
+
     let mut assists_visitor = AssistsRulesVisitor::default();
+
     biome_js_analyze::visit_registry(&mut lint_visitor);
+
     biome_js_analyze::visit_registry(&mut assists_visitor);
+
     biome_json_analyze::visit_registry(&mut lint_visitor);
+
     biome_json_analyze::visit_registry(&mut assists_visitor);
+
     biome_css_analyze::visit_registry(&mut lint_visitor);
+
     biome_css_analyze::visit_registry(&mut assists_visitor);
+
     biome_graphql_analyze::visit_registry(&mut lint_visitor);
+
     biome_graphql_analyze::visit_registry(&mut assists_visitor);
 
     // let LintRulesVisitor { groups } = lint_visitor;
@@ -202,6 +213,7 @@ pub(crate) fn generate_rules_configuration(mode: Mode) -> Result<()> {
         &mode,
         RuleCategory::Lint,
     )?;
+
     generate_for_groups(
         assists_visitor.groups,
         assists_config_root.as_path(),
@@ -221,12 +233,18 @@ fn generate_for_groups(
     kind: RuleCategory,
 ) -> Result<()> {
     let mut struct_groups = Vec::with_capacity(groups.len());
+
     let mut group_pascal_idents = Vec::with_capacity(groups.len());
+
     let mut group_idents = Vec::with_capacity(groups.len());
+
     let mut group_strings = Vec::with_capacity(groups.len());
+
     let mut group_as_default_rules = Vec::with_capacity(groups.len());
+
     for (group, rules) in groups {
         let group_pascal_ident = quote::format_ident!("{}", &Case::Pascal.convert(group));
+
         let group_ident = quote::format_ident!("{}", group);
 
         let (global_all, global_recommended) = if group == "nursery" {
@@ -240,6 +258,7 @@ fn generate_for_groups(
                 quote! { !self.is_recommended_false() },
             )
         };
+
         group_as_default_rules.push(if kind == RuleCategory::Lint {
             quote! {
                 if let Some(group) = self.#group_ident.as_ref() {
@@ -248,7 +267,9 @@ fn generate_for_groups(
                         #global_recommended,
                         &mut enabled_rules,
                     );
+
                     enabled_rules.extend(&group.get_enabled_rules());
+
                     disabled_rules.extend(&group.get_disabled_rules());
                 } else if #global_all {
                     enabled_rules.extend(#group_pascal_ident::all_rules_as_filters());
@@ -265,8 +286,11 @@ fn generate_for_groups(
         });
 
         group_pascal_idents.push(group_pascal_ident);
+
         group_idents.push(group_ident);
+
         group_strings.push(Literal::string(group));
+
         struct_groups.push(generate_group_struct(group, &rules, kind));
     }
 
@@ -282,11 +306,15 @@ fn generate_for_groups(
                 let mut split_code = category.name().split('/');
 
                 let _lint = split_code.next();
+
                 debug_assert_eq!(_lint, Some("assists"));
 
                 let group = <RuleGroup as std::str::FromStr>::from_str(split_code.next()?).ok()?;
+
                 let rule_name = split_code.next()?;
+
                 let rule_name = Self::has_rule(group, rule_name)?;
+
                 match group {
                     #(
                         RuleGroup::#group_pascal_idents => self
@@ -313,11 +341,15 @@ fn generate_for_groups(
                 let mut split_code = category.name().split('/');
 
                 let _lint = split_code.next();
+
                 debug_assert_eq!(_lint, Some("lint"));
 
                 let group = <RuleGroup as std::str::FromStr>::from_str(split_code.next()?).ok()?;
+
                 let rule_name = split_code.next()?;
+
                 let rule_name = Self::has_rule(group, rule_name)?;
+
                 let severity = match group {
                     #(
                         RuleGroup::#group_pascal_idents => self
@@ -334,6 +366,7 @@ fn generate_for_groups(
                             }, |(level, _)| level.into()),
                     )*
                 };
+
                 Some(severity)
             }
 
@@ -343,11 +376,13 @@ fn generate_for_groups(
     let use_rule_configuration = if kind == RuleCategory::Action {
         quote! {
             use crate::analyzer::{RuleAssistConfiguration, RuleAssistPlainConfiguration};
+
             use biome_analyze::{options::RuleOptions, RuleFilter};
         }
     } else {
         quote! {
             use crate::analyzer::{RuleConfiguration, RulePlainConfiguration, RuleFixConfiguration};
+
             use biome_analyze::{options::RuleOptions, RuleFilter};
         }
     };
@@ -356,8 +391,11 @@ fn generate_for_groups(
         quote! {
             #use_rule_configuration
             use biome_deserialize_macros::{Deserializable, Merge};
+
             use biome_diagnostics::{Category, Severity};
+
             use rustc_hash::FxHashSet;
+
             use serde::{Deserialize, Serialize};
             #[cfg(feature = "schema")]
             use schemars::JsonSchema;
@@ -368,6 +406,7 @@ fn generate_for_groups(
             pub enum RuleGroup {
                 #( #group_pascal_idents ),*
             }
+
             impl RuleGroup {
                 pub const fn as_str(self) -> &'static str {
                     match self {
@@ -375,8 +414,10 @@ fn generate_for_groups(
                     }
                 }
             }
+
             impl std::str::FromStr for RuleGroup {
                 type Err = &'static str;
+
                 fn from_str(s: &str) -> Result<Self, Self::Err> {
                     match s {
                         #( #group_pascal_idents::GROUP_NAME => Ok(Self::#group_pascal_idents), )*
@@ -399,6 +440,7 @@ fn generate_for_groups(
             impl Actions {
                 /// Checks if the code coming from [biome_diagnostics::Diagnostic] corresponds to a rule.
                 /// Usually the code is built like {group}/{rule_name}
+
                 pub fn has_rule(
                     group: RuleGroup,
                     rule_name: &str,
@@ -437,11 +479,17 @@ fn generate_for_groups(
         quote! {
             #use_rule_configuration
             use biome_console::markup;
+
             use biome_deserialize::{DeserializableValidator, DeserializationDiagnostic};
+
             use biome_deserialize_macros::{Deserializable, Merge};
+
             use biome_diagnostics::{Category, Severity};
+
             use biome_rowan::TextRange;
+
             use rustc_hash::FxHashSet;
+
             use serde::{Deserialize, Serialize};
             #[cfg(feature = "schema")]
             use schemars::JsonSchema;
@@ -452,6 +500,7 @@ fn generate_for_groups(
             pub enum RuleGroup {
                 #( #group_pascal_idents ),*
             }
+
             impl RuleGroup {
                 pub const fn as_str(self) -> &'static str {
                     match self {
@@ -459,8 +508,10 @@ fn generate_for_groups(
                     }
                 }
             }
+
             impl std::str::FromStr for RuleGroup {
                 type Err = &'static str;
+
                 fn from_str(s: &str) -> Result<Self, Self::Err> {
                     match s {
                         #( #group_pascal_idents::GROUP_NAME => Ok(Self::#group_pascal_idents), )*
@@ -503,6 +554,7 @@ fn generate_for_groups(
                             ))
                             .with_range(range)
                             .with_note(markup!("Biome will fallback to its defaults for this section.")));
+
                         return false;
                     }
 
@@ -513,6 +565,7 @@ fn generate_for_groups(
             impl Rules {
                 /// Checks if the code coming from [biome_diagnostics::Diagnostic] corresponds to a rule.
                 /// Usually the code is built like {group}/{rule_name}
+
                 pub fn has_rule(
                     group: RuleGroup,
                     rule_name: &str,
@@ -553,6 +606,7 @@ fn generate_for_groups(
                 /// The enabled rules are calculated from the difference with the disabled rules.
                 pub fn as_enabled_rules(&self) -> FxHashSet<RuleFilter<'static>> {
                     let mut enabled_rules = FxHashSet::default();
+
                     let mut disabled_rules = FxHashSet::default();
                     #( #group_as_default_rules )*
 
@@ -577,6 +631,7 @@ fn generate_for_groups(
         RuleCategory::Lint => {
             quote! {
                 use crate::analyzer::linter::*;
+
                 use biome_analyze::{AnalyzerRules, MetadataRegistry};
 
                 pub fn push_to_analyzer_rules(
@@ -598,9 +653,11 @@ fn generate_for_groups(
                 }
             }
         }
+
         RuleCategory::Action => {
             quote! {
                 use crate::analyzer::assists::*;
+
                 use biome_analyze::{AnalyzerRules, MetadataRegistry};
 
                 pub fn push_to_analyzer_assists(
@@ -622,10 +679,12 @@ fn generate_for_groups(
                 }
             }
         }
+
         RuleCategory::Syntax | RuleCategory::Transformation => unimplemented!(),
     };
 
     let configuration = groups.to_string();
+
     let push_rules = push_rules.to_string();
 
     let file_name = match kind {
@@ -639,7 +698,9 @@ fn generate_for_groups(
     } else {
         &root.join("rules.rs")
     };
+
     update(path, &xtask::reformat(configuration)?, mode)?;
+
     update(file_name, &xtask::reformat(push_rules)?, mode)?;
 
     Ok(())
@@ -651,32 +712,44 @@ fn generate_group_struct(
     kind: RuleCategory,
 ) -> TokenStream {
     let mut lines_recommended_rule = Vec::new();
+
     let mut lines_recommended_rule_as_filter = Vec::new();
+
     let mut lines_all_rule_as_filter = Vec::new();
+
     let mut lines_rule = Vec::new();
+
     let mut schema_lines_rules = Vec::new();
+
     let mut rule_enabled_check_line = Vec::new();
+
     let mut rule_disabled_check_line = Vec::new();
+
     let mut get_rule_configuration_line = Vec::new();
 
     for (index, (rule, metadata)) in rules.iter().enumerate() {
         let summary = {
             let mut docs = String::new();
+
             let parser = Parser::new(metadata.docs);
+
             for event in parser {
                 match event {
                     Event::Text(text) => {
                         docs.push_str(text.as_ref());
                     }
+
                     Event::Code(text) => {
                         // Escape `[` and `<` to obtain valid Markdown
                         docs.push_str(text.replace('[', "\\[").replace('<', "\\<").as_ref());
                     }
+
                     Event::SoftBreak => {
                         docs.push(' ');
                     }
 
                     Event::Start(Tag::Paragraph) => {}
+
                     Event::End(TagEnd::Paragraph) => {
                         break;
                     }
@@ -693,6 +766,7 @@ fn generate_group_struct(
                         TagEnd::Strong | TagEnd::Paragraph => {
                             continue;
                         }
+
                         _ => panic!("Unimplemented tag {:?}", { tag }),
                     },
 
@@ -701,11 +775,14 @@ fn generate_group_struct(
                     }
                 }
             }
+
             docs
         };
 
         let rule_position = Literal::u8_unsuffixed(index as u8);
+
         let rule_identifier = quote::format_ident!("{}", Case::Snake.convert(rule));
+
         let rule_config_type = quote::format_ident!(
             "{}",
             if kind == RuleCategory::Action {
@@ -716,7 +793,9 @@ fn generate_group_struct(
                 "RuleConfiguration"
             }
         );
+
         let rule_name = Ident::new(&to_capitalized(rule), Span::call_site());
+
         if metadata.recommended {
             lines_recommended_rule_as_filter.push(quote! {
                 RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[#rule_position])
@@ -726,12 +805,15 @@ fn generate_group_struct(
                 #rule
             });
         }
+
         lines_all_rule_as_filter.push(quote! {
             RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[#rule_position])
         });
+
         lines_rule.push(quote! {
              #rule
         });
+
         let rule_option_type = match metadata.language {
             "css" => quote! {
                 biome_css_analyze::options::#rule_name
@@ -747,6 +829,7 @@ fn generate_group_struct(
             },
             _ => panic!("Language not supported"),
         };
+
         let rule_option = if kind == RuleCategory::Action {
             quote! { Option<#rule_config_type<#rule_option_type>> }
         } else {
@@ -754,6 +837,7 @@ fn generate_group_struct(
                 Option<#rule_config_type<#rule_option_type>>
             }
         };
+
         schema_lines_rules.push(quote! {
             #[doc = #summary]
             #[serde(skip_serializing_if = "Option::is_none")]
@@ -770,6 +854,7 @@ fn generate_group_struct(
                 }
             }
         });
+
         rule_disabled_check_line.push(quote! {
             if let Some(rule) = self.#rule_identifier.as_ref() {
                 if rule.is_disabled() {
@@ -828,6 +913,7 @@ fn generate_group_struct(
             impl #group_pascal_ident {
 
                 const GROUP_NAME: &'static str = #group;
+
                 pub(crate) const GROUP_RULES: &'static [&'static str] = &[
                     #( #lines_rule ),*
                 ];
@@ -879,6 +965,7 @@ fn generate_group_struct(
                             ))
                             .with_range(range)
                             .with_note(markup!("Biome will fallback to its defaults for this section.")));
+
                         return false;
                     }
 
@@ -889,6 +976,7 @@ fn generate_group_struct(
             impl #group_pascal_ident {
 
                 const GROUP_NAME: &'static str = #group;
+
                 pub(crate) const GROUP_RULES: &'static [&'static str] = &[
                     #( #lines_rule ),*
                 ];

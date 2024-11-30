@@ -23,6 +23,7 @@ impl FormatNodeRule<JsImportNamedClause> for FormatJsImportNamedClause {
         }
 
         let named_specifiers = named_specifiers?;
+
         let specifiers = named_specifiers.specifiers();
 
         // can_break implementation, return `format_element` instead of boolean to reduce enum conversion overhead.
@@ -45,6 +46,7 @@ impl FormatNodeRule<JsImportNamedClause> for FormatJsImportNamedClause {
         {
             // SAFETY: we know that the `specifiers.specifiers().len() == 1`, so unwrap `iter().next()` is safe.
             let first_specifier = specifiers.elements().next().unwrap();
+
             if let (Ok(specifier), Ok(separator)) =
                 (first_specifier.node(), first_specifier.trailing_separator())
             {
@@ -56,6 +58,7 @@ impl FormatNodeRule<JsImportNamedClause> for FormatJsImportNamedClause {
                         specifiers: _,
                         r_curly_token,
                     } = named_specifiers.as_fields();
+
                     let should_insert_space_around_brackets = f.options().bracket_spacing().value();
 
                     write!(

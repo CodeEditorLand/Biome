@@ -25,6 +25,7 @@ impl MapCompiler {
             .into_iter()
             .map(|element| compile_map_element(&element?, context, is_rhs))
             .collect::<Result<BTreeMap<_, _>, CompileError>>()?;
+
         Ok(Map::new(elements))
     }
 }
@@ -37,9 +38,12 @@ fn compile_map_element(
     match node {
         AnyGritMapElement::GritMapElement(element) => {
             let key = element.key()?.syntax().text_trimmed().to_string();
+
             let pattern = PatternCompiler::from_node_with_rhs(&element.value()?, context, is_rhs)?;
+
             Ok((key, pattern))
         }
+
         AnyGritMapElement::GritBogusMapElement(_) => Err(CompileError::UnexpectedKind(
             GritSyntaxKind::GRIT_BOGUS_MAP_ELEMENT.into(),
         )),

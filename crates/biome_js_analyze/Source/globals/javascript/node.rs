@@ -170,9 +170,11 @@ fn test_order() {
     for items in BUILTIN.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in NODE.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+
     for items in COMMON_JS.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }

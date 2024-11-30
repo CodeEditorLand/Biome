@@ -53,12 +53,16 @@ declare_lint_rule! {
 
 impl Rule for NoUselessLoneBlockStatements {
     type Query = Ast<JsBlockStatement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let block = ctx.query();
+
         let is_module = ctx.source_type::<JsFileSource>().is_module();
 
         if JsLabeledStatement::can_cast(block.syntax().parent()?.kind()) {
@@ -90,7 +94,9 @@ impl Rule for NoUselessLoneBlockStatements {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let block = ctx.query();
+
         let block_range = block.range();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -107,7 +113,9 @@ impl Rule for NoUselessLoneBlockStatements {
 
     fn action(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<JsRuleAction> {
         let block = ctx.query();
+
         let stmts_list = block.parent::<JsStatementList>()?;
+
         let block_pos = stmts_list
             .iter()
             .position(|x| x.syntax() == block.syntax())?;
@@ -126,6 +134,7 @@ impl Rule for NoUselessLoneBlockStatements {
         let new_stmts_list = make::js_statement_list(new_stmts);
 
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node_discard_trivia(stmts_list, new_stmts_list);
 
         return Some(JsRuleAction::new(

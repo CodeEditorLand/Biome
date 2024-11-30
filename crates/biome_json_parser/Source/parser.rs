@@ -22,12 +22,14 @@ impl JsonParserOptions {
     #[must_use]
     pub fn with_allow_comments(mut self) -> Self {
         self.allow_comments = true;
+
         self
     }
 
     #[must_use]
     pub fn with_allow_trailing_commas(mut self) -> Self {
         self.allow_trailing_commas = true;
+
         self
     }
 }
@@ -35,12 +37,15 @@ impl JsonParserOptions {
 impl From<&JsonFileSource> for JsonParserOptions {
     fn from(file_source: &JsonFileSource) -> Self {
         let mut options = Self::default();
+
         if file_source.allow_comments() {
             options = options.with_allow_comments();
         }
+
         if file_source.allow_trailing_commas() {
             options = options.with_allow_trailing_commas();
         }
+
         options
     }
 }
@@ -62,6 +67,7 @@ impl<'source> JsonParser<'source> {
         Vec<Trivia>,
     ) {
         let (trivia, lexer_diagnostics) = self.source.finish();
+
         let (events, parse_diagnostics) = self.context.finish();
 
         let diagnostics = merge_diagnostics(lexer_diagnostics, parse_diagnostics);
@@ -76,6 +82,7 @@ impl<'source> JsonParser<'source> {
 
 impl<'source> Parser for JsonParser<'source> {
     type Kind = JsonSyntaxKind;
+
     type Source = JsonTokenSource<'source>;
 
     fn context(&self) -> &ParserContext<Self::Kind> {
@@ -98,21 +105,28 @@ impl<'source> Parser for JsonParser<'source> {
 #[cfg(test)]
 mod tests {
     use crate::JsonParserOptions;
+
     use biome_json_syntax::JsonFileSource;
 
     #[test]
     fn parse_options_from_json_file_source_respects_allow_comments_and_allow_trailing_comma() {
         let p1 = JsonParserOptions::from(&JsonFileSource::json());
+
         assert!(!p1.allow_comments);
+
         assert!(!p1.allow_trailing_commas);
 
         let p2 = JsonParserOptions::from(&JsonFileSource::json_allow_comments());
+
         assert!(p2.allow_comments);
+
         assert!(!p2.allow_trailing_commas);
 
         let p3 =
             JsonParserOptions::from(&JsonFileSource::json_allow_comments_and_trailing_commas());
+
         assert!(p3.allow_comments);
+
         assert!(p3.allow_trailing_commas);
     }
 }

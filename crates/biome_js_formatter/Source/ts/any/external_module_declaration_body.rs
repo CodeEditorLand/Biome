@@ -6,6 +6,7 @@ use biome_js_syntax::AnyTsExternalModuleDeclarationBody;
 pub(crate) struct FormatAnyTsExternalModuleDeclarationBody;
 impl FormatRule<AnyTsExternalModuleDeclarationBody> for FormatAnyTsExternalModuleDeclarationBody {
     type Context = JsFormatContext;
+
     fn fmt(
         &self,
         node: &AnyTsExternalModuleDeclarationBody,
@@ -15,6 +16,7 @@ impl FormatRule<AnyTsExternalModuleDeclarationBody> for FormatAnyTsExternalModul
             AnyTsExternalModuleDeclarationBody::TsEmptyExternalModuleDeclarationBody(node) => {
                 node.format().fmt(f)
             }
+
             AnyTsExternalModuleDeclarationBody::TsModuleBlock(node) => node.format().fmt(f),
         }
     }

@@ -100,6 +100,7 @@ impl Test262TestCase {
             .is_some();
 
         let options = JsParserOptions::default().with_parse_class_parameter_decorators();
+
         let files = TestCaseFiles::single(
             self.name.clone(),
             self.code.clone(),
@@ -122,6 +123,7 @@ impl Test262TestCase {
                     TestRunOutcome::Passed(files)
                 }
             }
+
             Err(_) if should_fail => TestRunOutcome::Passed(files),
             Ok(_) if should_fail => TestRunOutcome::IncorrectlyPassed(files),
             Err(errors) if !should_fail => TestRunOutcome::IncorrectlyErrored { errors, files },
@@ -137,6 +139,7 @@ impl TestCase for Test262TestCase {
 
     fn run(&self) -> TestRunOutcome {
         let meta = &self.meta;
+
         if meta.flags.contains(&TestFlag::OnlyStrict) {
             self.execute_test(true, JsFileSource::js_script())
         } else if meta.flags.contains(&TestFlag::Module) {
@@ -145,7 +148,9 @@ impl TestCase for Test262TestCase {
             self.execute_test(false, JsFileSource::js_script())
         } else {
             let l = self.execute_test(false, JsFileSource::js_script());
+
             let r = self.execute_test(true, JsFileSource::js_script());
+
             merge_outcomes(l, r)
         }
     }
@@ -164,20 +169,27 @@ impl TestSuite for Test262TestSuite {
 
     fn checkout(&self) -> io::Result<()> {
         let base_path = project_root().join(BASE_PATH);
+
         let mut command = Command::new("git");
+
         command
             .arg("clone")
             .arg("https://github.com/tc39/test262.git")
             .arg("--depth")
             .arg("1")
             .arg(base_path.display().to_string());
+
         command.output()?;
+
         let mut command = Command::new("git");
+
         command
             .arg("reset")
             .arg("--hard")
             .arg("715dd1073bc060f4ee221e2e74770f5728e7b8a0");
+
         command.output()?;
+
         Ok(())
     }
 

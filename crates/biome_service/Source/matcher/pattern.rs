@@ -135,17 +135,22 @@ impl Pattern {
     /// An invalid glob pattern will yield a `PatternError`.
     pub fn parse(pattern: &str, is_editorconfig: bool) -> Result<Self, PatternError> {
         let chars = pattern.chars().collect::<Vec<_>>();
+
         let mut tokens = Vec::new();
+
         let mut is_recursive = false;
+
         let mut i = 0;
 
         // A pattern is relative if it starts with "." followed by a separator,
         // eg. "./test" or ".\test"
         let is_relative = matches!(chars.get(..2), Some(['.', sep]) if path::is_separator(*sep));
+
         if is_relative {
             // If a pattern starts with a relative prefix, strip it from the
             // pattern and replace it with a "**" sequence
             i += 2;
+
             tokens.push(AnyRecursiveSequence);
         } else {
             // A pattern is absolute if it starts with a path separator, eg. "/home" or "\\?\C:\Users"
@@ -167,6 +172,7 @@ impl Pattern {
             match chars[i] {
                 '?' => {
                     tokens.push(AnyChar);
+
                     i += 1;
                 }
                 '*' => {
@@ -185,6 +191,7 @@ impl Pattern {
                                 msg: ERROR_WILDCARDS,
                             });
                         }
+
                         count if count == 2 => {
                             // ** can only be an entire path component
                             // i.e. a/**/b is valid, but a**/b or a/**b is not
@@ -193,6 +200,7 @@ impl Pattern {
                                 // it ends in a '/'
                                 if i < chars.len() && path::is_separator(chars[i]) {
                                     i += 1;
+
                                     true
                                     // or the pattern ends here
                                     // this enables the existing globbing mechanism
@@ -223,10 +231,12 @@ impl Pattern {
                                     && tokens[tokens_len - 1] == AnyRecursiveSequence)
                                 {
                                     is_recursive = true;
+
                                     tokens.push(AnyRecursiveSequence);
                                 }
                             }
                         }
+
                         _ => {
                             tokens.push(AnySequence);
                         }
@@ -238,9 +248,13 @@ impl Pattern {
                             None => (),
                             Some(j) => {
                                 let chars = &chars[i + 2..i + 3 + j];
+
                                 let cs = parse_char_specifiers(chars);
+
                                 tokens.push(AnyExcept(cs));
+
                                 i += j + 4;
+
                                 continue;
                             }
                         }
@@ -249,8 +263,11 @@ impl Pattern {
                             None => (),
                             Some(j) => {
                                 let cs = parse_char_specifiers(&chars[i + 1..i + 2 + j]);
+
                                 tokens.push(AnyWithin(cs));
+
                                 i += j + 3;
+
                                 continue;
                             }
                         }
@@ -264,22 +281,27 @@ impl Pattern {
                 }
                 '{' if is_editorconfig => {
                     let mut depth = 1;
+
                     let mut j = i + 1;
+
                     while j < chars.len() {
                         match chars[j] {
                             '{' => depth += 1,
                             '}' => depth -= 1,
                             _ => (),
                         }
+
                         if depth > 1 {
                             return Err(PatternError {
                                 pos: j,
                                 msg: "nested '{' in '{...}' is not allowed",
                             });
                         }
+
                         if depth == 0 {
                             break;
                         }
+
                         j += 1;
                     }
 
@@ -291,19 +313,25 @@ impl Pattern {
                     }
 
                     let mut subpatterns = Vec::new();
+
                     for subpattern in pattern[i + 1..j].split(',') {
                         let mut pattern = Pattern::new(subpattern)?;
                         // HACK: remove the leading '**' if it exists
                         if pattern.tokens.first() == Some(&PatternToken::AnyRecursiveSequence) {
                             pattern.tokens.remove(0);
                         }
+
                         subpatterns.push(pattern);
                     }
+
                     tokens.push(AnyPattern(subpatterns));
+
                     i = j + 1;
                 }
+
                 c => {
                     tokens.push(Char(c));
+
                     i += 1;
                 }
             }
@@ -331,20 +359,25 @@ impl Pattern {
     /// match the input string and nothing else.
     pub fn escape(s: &str) -> String {
         let mut escaped = String::new();
+
         for c in s.chars() {
             match c {
                 // note that ! does not need escaping because it is only special
                 // inside brackets
                 '?' | '*' | '[' | ']' => {
                     escaped.push('[');
+
                     escaped.push(c);
+
                     escaped.push(']');
                 }
+
                 c => {
                     escaped.push(c);
                 }
             }
         }
+
         escaped
     }
 
@@ -416,7 +449,9 @@ impl Pattern {
                         if follows_separator && options.require_literal_leading_dot && c == '.' {
                             return SubPatternDoesntMatch;
                         }
+
                         follows_separator = path::is_separator(c);
+
                         match *token {
                             AnyRecursiveSequence if !follows_separator => continue,
                             AnySequence
@@ -424,8 +459,10 @@ impl Pattern {
                             {
                                 return SubPatternDoesntMatch
                             }
+
                             _ => (),
                         }
+
                         match self.matches_from(
                             follows_separator,
                             file.clone(),
@@ -437,23 +474,29 @@ impl Pattern {
                         }
                     }
                 }
+
                 AnyPattern(patterns) => {
                     for pattern in patterns.iter() {
                         let mut tokens = pattern.tokens.clone();
+
                         tokens.extend_from_slice(&self.tokens[(i + ti + 1)..]);
+
                         let new_pattern = Pattern::from_tokens(
                             tokens,
                             pattern.original.clone(),
                             pattern.is_recursive,
                         );
+
                         if new_pattern.matches_from(follows_separator, file.clone(), 0, options)
                             == Match
                         {
                             return Match;
                         }
                     }
+
                     return SubPatternDoesntMatch;
                 }
+
                 _ => {
                     let c = match file.next() {
                         Some(c) => c,
@@ -471,6 +514,7 @@ impl Pattern {
                         {
                             false
                         }
+
                         AnyChar => true,
                         AnyWithin(ref specifiers) => in_char_specifiers(specifiers, c, options),
                         AnyExcept(ref specifiers) => !in_char_specifiers(specifiers, c, options),
@@ -479,6 +523,7 @@ impl Pattern {
                     } {
                         return SubPatternDoesntMatch;
                     }
+
                     follows_separator = is_sep;
                 }
             }
@@ -495,16 +540,21 @@ impl Pattern {
 
 fn parse_char_specifiers(s: &[char]) -> Vec<CharSpecifier> {
     let mut cs = Vec::new();
+
     let mut i = 0;
+
     while i < s.len() {
         if i + 3 <= s.len() && s[i + 1] == '-' {
             cs.push(CharRange(s[i], s[i + 2]));
+
             i += 3;
         } else {
             cs.push(SingleChar(s[i]));
+
             i += 1;
         }
     }
+
     cs
 }
 
@@ -516,19 +566,23 @@ fn in_char_specifiers(specifiers: &[CharSpecifier], c: char, options: MatchOptio
                     return true;
                 }
             }
+
             CharRange(start, end) => {
                 // FIXME: work with non-ascii chars properly (issue #1347)
                 if !options.case_sensitive && c.is_ascii() && start.is_ascii() && end.is_ascii() {
                     let start = start.to_ascii_lowercase();
+
                     let end = end.to_ascii_lowercase();
 
                     let start_up = start.to_uppercase().next().unwrap();
+
                     let end_up = end.to_uppercase().next().unwrap();
 
                     // only allow case insensitive matching when
                     // both start and end are within a-z or A-Z
                     if start != start_up && end != end_up {
                         let c = c.to_ascii_lowercase();
+
                         if c >= start && c <= end {
                             return true;
                         }
@@ -606,180 +660,262 @@ impl MatchOptions {
 #[cfg(test)]
 mod test {
     use super::{MatchOptions, Pattern};
+
     use std::path::Path;
 
     #[test]
     fn test_pattern_from_str() {
         assert!("a*b".parse::<Pattern>().unwrap().matches("a_b"));
+
         assert!("a/**b".parse::<Pattern>().unwrap_err().pos == 4);
     }
 
     #[test]
     fn test_wildcard_errors() {
         assert!(Pattern::new("a/**b").unwrap_err().pos == 4);
+
         assert!(Pattern::new("a/bc**").unwrap_err().pos == 3);
+
         assert!(Pattern::new("a/*****").unwrap_err().pos == 4);
+
         assert!(Pattern::new("a/b**c**d").unwrap_err().pos == 2);
+
         assert!(Pattern::new("a**b").unwrap_err().pos == 0);
     }
 
     #[test]
     fn test_unclosed_bracket_errors() {
         assert!(Pattern::new("abc[def").unwrap_err().pos == 3);
+
         assert!(Pattern::new("abc[!def").unwrap_err().pos == 3);
+
         assert!(Pattern::new("abc[").unwrap_err().pos == 3);
+
         assert!(Pattern::new("abc[!").unwrap_err().pos == 3);
+
         assert!(Pattern::new("abc[d").unwrap_err().pos == 3);
+
         assert!(Pattern::new("abc[!d").unwrap_err().pos == 3);
+
         assert!(Pattern::new("abc[]").unwrap_err().pos == 3);
+
         assert!(Pattern::new("abc[!]").unwrap_err().pos == 3);
     }
 
     #[test]
     fn test_wildcards() {
         assert!(Pattern::new("a*b").unwrap().matches("a_b"));
+
         assert!(Pattern::new("a*b*c").unwrap().matches("abc"));
+
         assert!(!Pattern::new("a*b*c").unwrap().matches("abcd"));
+
         assert!(Pattern::new("a*b*c").unwrap().matches("a_b_c"));
+
         assert!(Pattern::new("a*b*c").unwrap().matches("a___b___c"));
+
         assert!(Pattern::new("abc*abc*abc")
             .unwrap()
             .matches("abcabcabcabcabcabcabc"));
+
         assert!(!Pattern::new("abc*abc*abc")
             .unwrap()
             .matches("abcabcabcabcabcabcabca"));
+
         assert!(Pattern::new("a*a*a*a*a*a*a*a*a")
             .unwrap()
             .matches("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"));
+
         assert!(Pattern::new("a*b[xyz]c*d").unwrap().matches("abxcdbxcddd"));
     }
 
     #[test]
     fn test_recursive_wildcards() {
         let pat = Pattern::new("some/**/needle.txt").unwrap();
+
         assert!(pat.matches("some/needle.txt"));
+
         assert!(pat.matches("some/one/needle.txt"));
+
         assert!(pat.matches("some/one/two/needle.txt"));
+
         assert!(pat.matches("some/other/needle.txt"));
+
         assert!(!pat.matches("some/other/notthis.txt"));
 
         // a single ** should be valid, for globs
         // Should accept anything
         let pat = Pattern::new("**").unwrap();
+
         assert!(pat.is_recursive);
+
         assert!(pat.matches("abcde"));
+
         assert!(pat.matches(""));
+
         assert!(pat.matches(".asdf"));
+
         assert!(pat.matches("/x/.asdf"));
 
         // collapse consecutive wildcards
         let pat = Pattern::new("some/**/**/needle.txt").unwrap();
+
         assert!(pat.matches("some/needle.txt"));
+
         assert!(pat.matches("some/one/needle.txt"));
+
         assert!(pat.matches("some/one/two/needle.txt"));
+
         assert!(pat.matches("some/other/needle.txt"));
+
         assert!(!pat.matches("some/other/notthis.txt"));
 
         // ** can begin the pattern
         let pat = Pattern::new("**/test").unwrap();
+
         assert!(pat.matches("one/two/test"));
+
         assert!(pat.matches("one/test"));
+
         assert!(pat.matches("test"));
 
         // /** can begin the pattern
         let pat = Pattern::new("/**/test").unwrap();
+
         assert!(pat.matches("/one/two/test"));
+
         assert!(pat.matches("/one/test"));
+
         assert!(pat.matches("/test"));
+
         assert!(!pat.matches("/one/notthis"));
+
         assert!(!pat.matches("/notthis"));
 
         // Only start sub-patterns on start of path segment.
         let pat = Pattern::new("**/.*").unwrap();
+
         assert!(pat.matches(".abc"));
+
         assert!(pat.matches("abc/.abc"));
+
         assert!(!pat.matches("ab.c"));
+
         assert!(!pat.matches("abc/ab.c"));
     }
 
     #[test]
     fn test_range_pattern() {
         let pat = Pattern::new("a[0-9]b").unwrap();
+
         for i in 0..10 {
             assert!(pat.matches(&format!("a{i}b")));
         }
+
         assert!(!pat.matches("a_b"));
 
         let pat = Pattern::new("a[!0-9]b").unwrap();
+
         for i in 0..10 {
             assert!(!pat.matches(&format!("a{i}b")));
         }
+
         assert!(pat.matches("a_b"));
 
         let pats = ["[a-z123]", "[1a-z23]", "[123a-z]"];
+
         for &p in pats.iter() {
             let pat = Pattern::new(p).unwrap();
+
             for c in "abcdefghijklmnopqrstuvwxyz".chars() {
                 assert!(pat.matches(&c.to_string()));
             }
+
             for c in "ABCDEFGHIJKLMNOPQRSTUVWXYZ".chars() {
                 let options = MatchOptions {
                     case_sensitive: false,
                     ..MatchOptions::new()
                 };
+
                 assert!(pat.matches_with(&c.to_string(), options));
             }
+
             assert!(pat.matches("1"));
+
             assert!(pat.matches("2"));
+
             assert!(pat.matches("3"));
         }
 
         let pats = ["[abc-]", "[-abc]", "[a-c-]"];
+
         for &p in pats.iter() {
             let pat = Pattern::new(p).unwrap();
+
             assert!(pat.matches("a"));
+
             assert!(pat.matches("b"));
+
             assert!(pat.matches("c"));
+
             assert!(pat.matches("-"));
+
             assert!(!pat.matches("d"));
         }
 
         let pat = Pattern::new("[2-1]").unwrap();
+
         assert!(!pat.matches("1"));
+
         assert!(!pat.matches("2"));
 
         assert!(Pattern::new("[-]").unwrap().matches("-"));
+
         assert!(!Pattern::new("[!-]").unwrap().matches("-"));
     }
 
     #[test]
     fn test_pattern_matches() {
         let txt_pat = Pattern::new("*hello.txt").unwrap();
+
         assert!(txt_pat.matches("hello.txt"));
+
         assert!(txt_pat.matches("gareth_says_hello.txt"));
+
         assert!(txt_pat.matches("some/path/to/hello.txt"));
+
         assert!(txt_pat.matches("some\\path\\to\\hello.txt"));
+
         assert!(txt_pat.matches("/an/absolute/path/to/hello.txt"));
+
         assert!(!txt_pat.matches("hello.txt-and-then-some"));
+
         assert!(!txt_pat.matches("goodbye.txt"));
 
         let dir_pat = Pattern::new("*some/path/to/hello.txt").unwrap();
+
         assert!(dir_pat.matches("some/path/to/hello.txt"));
+
         assert!(dir_pat.matches("a/bigger/some/path/to/hello.txt"));
+
         assert!(!dir_pat.matches("some/path/to/hello.txt-and-then-some"));
+
         assert!(!dir_pat.matches("some/other/path/to/hello.txt"));
     }
 
     #[test]
     fn test_pattern_escape() {
         let s = "_[_]_?_*_!_";
+
         assert_eq!(Pattern::escape(s), "_[[]_[]]_[?]_[*]_!_".to_string());
+
         assert!(Pattern::new(&Pattern::escape(s)).unwrap().matches(s));
     }
 
     #[test]
     fn test_pattern_matches_case_insensitive() {
         let pat = Pattern::new("aBcDeFg").unwrap();
+
         let options = MatchOptions {
             case_sensitive: false,
             require_literal_separator: false,
@@ -787,14 +923,18 @@ mod test {
         };
 
         assert!(pat.matches_with("aBcDeFg", options));
+
         assert!(pat.matches_with("abcdefg", options));
+
         assert!(pat.matches_with("ABCDEFG", options));
+
         assert!(pat.matches_with("AbCdEfG", options));
     }
 
     #[test]
     fn test_pattern_matches_case_insensitive_range() {
         let pat_within = Pattern::new("[a]").unwrap();
+
         let pat_except = Pattern::new("[!a]").unwrap();
 
         let options_case_insensitive = MatchOptions {
@@ -802,6 +942,7 @@ mod test {
             require_literal_separator: false,
             require_literal_leading_dot: false,
         };
+
         let options_case_sensitive = MatchOptions {
             case_sensitive: true,
             require_literal_separator: false,
@@ -809,11 +950,15 @@ mod test {
         };
 
         assert!(pat_within.matches_with("a", options_case_insensitive));
+
         assert!(pat_within.matches_with("A", options_case_insensitive));
+
         assert!(!pat_within.matches_with("A", options_case_sensitive));
 
         assert!(!pat_except.matches_with("a", options_case_insensitive));
+
         assert!(!pat_except.matches_with("A", options_case_insensitive));
+
         assert!(pat_except.matches_with("A", options_case_sensitive));
     }
 
@@ -824,6 +969,7 @@ mod test {
             require_literal_separator: true,
             require_literal_leading_dot: false,
         };
+
         let options_not_require_literal = MatchOptions {
             case_sensitive: true,
             require_literal_separator: false,
@@ -833,12 +979,15 @@ mod test {
         assert!(Pattern::new("abc/def")
             .unwrap()
             .matches_with("abc/def", options_require_literal));
+
         assert!(!Pattern::new("abc?def")
             .unwrap()
             .matches_with("abc/def", options_require_literal));
+
         assert!(!Pattern::new("abc*def")
             .unwrap()
             .matches_with("abc/def", options_require_literal));
+
         assert!(!Pattern::new("abc[/]def")
             .unwrap()
             .matches_with("abc/def", options_require_literal));
@@ -846,12 +995,15 @@ mod test {
         assert!(Pattern::new("abc/def")
             .unwrap()
             .matches_with("abc/def", options_not_require_literal));
+
         assert!(Pattern::new("abc?def")
             .unwrap()
             .matches_with("abc/def", options_not_require_literal));
+
         assert!(Pattern::new("abc*def")
             .unwrap()
             .matches_with("abc/def", options_not_require_literal));
+
         assert!(Pattern::new("abc[/]def")
             .unwrap()
             .matches_with("abc/def", options_not_require_literal));
@@ -864,6 +1016,7 @@ mod test {
             require_literal_separator: false,
             require_literal_leading_dot: true,
         };
+
         let options_not_require_literal_leading_dot = MatchOptions {
             case_sensitive: true,
             require_literal_separator: false,
@@ -875,7 +1028,9 @@ mod test {
                 .unwrap()
                 .matches_with(".hello.txt", options)
         };
+
         assert!(f(options_not_require_literal_leading_dot));
+
         assert!(!f(options_require_literal_leading_dot));
 
         let f = |options| {
@@ -883,7 +1038,9 @@ mod test {
                 .unwrap()
                 .matches_with(".hello.txt", options)
         };
+
         assert!(f(options_not_require_literal_leading_dot));
+
         assert!(f(options_require_literal_leading_dot));
 
         let f = |options| {
@@ -891,7 +1048,9 @@ mod test {
                 .unwrap()
                 .matches_with("aaa/bbb/.ccc", options)
         };
+
         assert!(f(options_not_require_literal_leading_dot));
+
         assert!(!f(options_require_literal_leading_dot));
 
         let f = |options| {
@@ -899,7 +1058,9 @@ mod test {
                 .unwrap()
                 .matches_with("aaa/bbb/c.c.c.", options)
         };
+
         assert!(f(options_not_require_literal_leading_dot));
+
         assert!(f(options_require_literal_leading_dot));
 
         let f = |options| {
@@ -907,7 +1068,9 @@ mod test {
                 .unwrap()
                 .matches_with("aaa/bbb/.ccc", options)
         };
+
         assert!(f(options_not_require_literal_leading_dot));
+
         assert!(f(options_require_literal_leading_dot));
 
         let f = |options| {
@@ -915,7 +1078,9 @@ mod test {
                 .unwrap()
                 .matches_with("aaa/.bbb", options)
         };
+
         assert!(f(options_not_require_literal_leading_dot));
+
         assert!(!f(options_require_literal_leading_dot));
 
         let f = |options| {
@@ -923,11 +1088,15 @@ mod test {
                 .unwrap()
                 .matches_with("aaa/.bbb", options)
         };
+
         assert!(f(options_not_require_literal_leading_dot));
+
         assert!(!f(options_require_literal_leading_dot));
 
         let f = |options| Pattern::new("**/*").unwrap().matches_with(".bbb", options);
+
         assert!(f(options_not_require_literal_leading_dot));
+
         assert!(!f(options_require_literal_leading_dot));
     }
 
@@ -941,18 +1110,21 @@ mod test {
     #[test]
     fn test_path_join() {
         let pattern = Path::new("one").join(Path::new("**/*.rs"));
+
         assert!(Pattern::new(pattern.to_str().unwrap()).is_ok());
     }
 
     #[test]
     fn test_pattern_relative() {
         assert!(Pattern::new("./b").unwrap().matches_path(Path::new("a/b")));
+
         assert!(Pattern::new("b").unwrap().matches_path(Path::new("a/b")));
 
         if cfg!(windows) {
             assert!(Pattern::new(".\\b")
                 .unwrap()
                 .matches_path(Path::new("a\\b")));
+
             assert!(Pattern::new("b").unwrap().matches_path(Path::new("a\\b")));
         }
     }
@@ -967,6 +1139,7 @@ mod test {
             assert!(Pattern::new("c:/a/b")
                 .unwrap()
                 .matches_path(Path::new("c:/a/b")));
+
             assert!(Pattern::new("C:\\a\\b")
                 .unwrap()
                 .matches_path(Path::new("C:\\a\\b")));
@@ -974,6 +1147,7 @@ mod test {
             assert!(Pattern::new("\\\\?\\c:\\a\\b")
                 .unwrap()
                 .matches_path(Path::new("\\\\?\\c:\\a\\b")));
+
             assert!(Pattern::new("\\\\?\\C:/a/b")
                 .unwrap()
                 .matches_path(Path::new("\\\\?\\C:/a/b")));
@@ -1012,13 +1186,19 @@ mod test {
     #[test]
     fn test_pattern_glob_brackets() {
         let pattern = Pattern::parse("{foo.js,bar.js}", true).unwrap();
+
         assert!(pattern.matches_path(Path::new("foo.js")));
+
         assert!(pattern.matches_path(Path::new("bar.js")));
+
         assert!(!pattern.matches_path(Path::new("baz.js")));
 
         let pattern = Pattern::parse("{foo,bar}.js", true).unwrap();
+
         assert!(pattern.matches_path(Path::new("foo.js")));
+
         assert!(pattern.matches_path(Path::new("bar.js")));
+
         assert!(!pattern.matches_path(Path::new("baz.js")));
 
         assert!(Pattern::parse("**/{foo,bar}.js", true)
@@ -1026,16 +1206,25 @@ mod test {
             .matches_path(Path::new("a/b/foo.js")));
 
         let pattern = Pattern::parse("src/{a/foo,bar}.js", true).unwrap();
+
         assert!(pattern.matches_path(Path::new("src/a/foo.js")));
+
         assert!(pattern.matches_path(Path::new("src/bar.js")));
+
         assert!(!pattern.matches_path(Path::new("src/a/b/foo.js")));
+
         assert!(!pattern.matches_path(Path::new("src/a/bar.js")));
 
         let pattern = Pattern::parse("src/{a,b}/{c,d}/foo.js", true).unwrap();
+
         assert!(pattern.matches_path(Path::new("src/a/c/foo.js")));
+
         assert!(pattern.matches_path(Path::new("src/a/d/foo.js")));
+
         assert!(pattern.matches_path(Path::new("src/b/c/foo.js")));
+
         assert!(pattern.matches_path(Path::new("src/b/d/foo.js")));
+
         assert!(!pattern.matches_path(Path::new("src/bar/foo.js")));
 
         let _ = Pattern::parse("{{foo,bar},baz}", true)
@@ -1046,8 +1235,11 @@ mod test {
     fn test_pattern_glob_brackets_not_available_by_default() {
         // RODO: Remove this test when we make brackets available by default in Biome 2.0
         let pattern = Pattern::parse("{foo.js,bar.js}", false).unwrap();
+
         assert!(!pattern.matches_path(Path::new("foo.js")));
+
         assert!(!pattern.matches_path(Path::new("bar.js")));
+
         assert!(!pattern.matches_path(Path::new("baz.js")));
     }
 }

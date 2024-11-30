@@ -11,6 +11,7 @@ pub struct RawLanguage;
 
 impl Language for RawLanguage {
     type Kind = RawLanguageKind;
+
     type Root = RawLanguageRoot;
 }
 
@@ -43,6 +44,7 @@ pub enum RawLanguageKind {
 
 impl SyntaxKind for RawLanguageKind {
     const TOMBSTONE: Self = RawLanguageKind::TOMBSTONE;
+
     const EOF: Self = RawLanguageKind::EOF;
 
     fn is_bogus(&self) -> bool {
@@ -91,6 +93,7 @@ impl SyntaxKind for RawLanguageKind {
             RawLanguageKind::PLUS_TOKEN => "+",
             _ => return None,
         };
+
         Some(str)
     }
 }
@@ -180,6 +183,7 @@ impl SeparatedExpressionList {
 
 impl AstSeparatedList for SeparatedExpressionList {
     type Language = RawLanguage;
+
     type Node = LiteralExpression;
 
     fn syntax_list(&self) -> &SyntaxList<RawLanguage> {
@@ -206,9 +210,11 @@ impl SyntaxFactory for RawLanguageSyntaxFactory {
             RawLanguageKind::BOGUS | RawLanguageKind::ROOT => {
                 RawSyntaxNode::new(kind, children.into_iter().map(Some))
             }
+
             RawLanguageKind::EXPRESSION_LIST => {
                 Self::make_node_list_syntax(kind, children, |kind| kind == LITERAL_EXPRESSION)
             }
+
             RawLanguageKind::SEPARATED_EXPRESSION_LIST => Self::make_separated_list_syntax(
                 kind,
                 children,
@@ -224,6 +230,7 @@ impl SyntaxFactory for RawLanguageSyntaxFactory {
                 }
 
                 let mut elements = children.into_iter();
+
                 let current_element = elements.next();
 
                 if let Some(element) = &current_element {
@@ -245,28 +252,35 @@ impl SyntaxFactory for RawLanguageSyntaxFactory {
 
             RawLanguageKind::CONDITION => {
                 let mut elements = (&children).into_iter();
+
                 let mut current_element = elements.next();
+
                 let mut slots: RawNodeSlots<3> = Default::default();
 
                 if let Some(element) = &current_element {
                     if element.kind() == RawLanguageKind::L_PAREN_TOKEN {
                         slots.mark_present();
+
                         current_element = elements.next();
                     }
                 }
 
                 slots.next_slot();
+
                 if let Some(element) = &current_element {
                     if element.kind() == RawLanguageKind::LITERAL_EXPRESSION {
                         slots.mark_present();
+
                         current_element = elements.next();
                     }
                 }
 
                 slots.next_slot();
+
                 if let Some(element) = &current_element {
                     if element.kind() == RawLanguageKind::R_PAREN_TOKEN {
                         slots.mark_present();
+
                         current_element = elements.next();
                     }
                 }
@@ -279,6 +293,7 @@ impl SyntaxFactory for RawLanguageSyntaxFactory {
 
                 slots.into_node(kind, children)
             }
+
             _ => unreachable!("{:?} is not a node kind", kind),
         }
     }

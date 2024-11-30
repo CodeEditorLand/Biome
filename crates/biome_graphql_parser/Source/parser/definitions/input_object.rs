@@ -40,11 +40,13 @@ pub(crate) fn parse_input_object_type_extension(p: &mut GraphqlParser) -> Parsed
     let m = p.start();
 
     p.bump(T![extend]);
+
     p.expect(T![input]);
 
     parse_reference(p).or_add_diagnostic(p, expected_name);
 
     let directive_list = DirectiveList.parse_list(p);
+
     let directive_empty = directive_list.range(p).is_empty();
 
     let input_fields_empty = parse_input_fields_definition(p).is_absent();
@@ -61,10 +63,13 @@ fn parse_input_fields_definition(p: &mut GraphqlParser) -> ParsedSyntax {
     if !is_at_input_fields_definition(p) {
         return Absent;
     }
+
     let m = p.start();
+
     p.expect(T!['{']);
 
     InputFieldList.parse_list(p);
+
     p.expect(T!['}']);
 
     Present(m.complete(p, GRAPHQL_INPUT_FIELDS_DEFINITION))
@@ -75,6 +80,7 @@ struct InputFieldList;
 
 impl ParseNodeList for InputFieldList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_INPUT_FIELD_LIST;
@@ -100,7 +106,9 @@ struct InputFieldListParseRecovery;
 
 impl ParseRecovery for InputFieldListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {

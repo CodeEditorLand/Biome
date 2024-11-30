@@ -84,12 +84,16 @@ pub struct YamlDocumentBuilder {
 impl YamlDocumentBuilder {
     pub fn with_dashdashdash_token(mut self, dashdashdash_token: SyntaxToken) -> Self {
         self.dashdashdash_token = Some(dashdashdash_token);
+
         self
     }
+
     pub fn with_dotdotdot_token(mut self, dotdotdot_token: SyntaxToken) -> Self {
         self.dotdotdot_token = Some(dotdotdot_token);
+
         self
     }
+
     pub fn build(self) -> YamlDocument {
         YamlDocument::unwrap_cast(SyntaxNode::new_detached(
             YamlSyntaxKind::YAML_DOCUMENT,
@@ -156,8 +160,10 @@ pub struct YamlRootBuilder {
 impl YamlRootBuilder {
     pub fn with_bom_token(mut self, bom_token: SyntaxToken) -> Self {
         self.bom_token = Some(bom_token);
+
         self
     }
+
     pub fn build(self) -> YamlRoot {
         YamlRoot::unwrap_cast(SyntaxNode::new_detached(
             YamlSyntaxKind::YAML_ROOT,
@@ -183,8 +189,11 @@ where
     S::IntoIter: ExactSizeIterator,
 {
     let mut items = items.into_iter();
+
     let mut separators = separators.into_iter();
+
     let length = items.len() + separators.len();
+
     YamlArrayInlineList::unwrap_cast(SyntaxNode::new_detached(
         YamlSyntaxKind::YAML_ARRAY_INLINE_LIST,
         (0..length).map(|index| {

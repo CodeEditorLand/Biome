@@ -42,6 +42,7 @@ impl Advices for LintAdvices {
         )?;
 
         visitor.record_log(LogCategory::Info, &"This constant is declared here")?;
+
         visitor.record_frame(Location {
             resource: Some(Resource::File(&self.path)),
             span: Some(self.declaration_span),
@@ -52,6 +53,7 @@ impl Advices for LintAdvices {
         })?;
 
         visitor.record_log(LogCategory::Info, &"Safe Fix")?;
+
         visitor.record_diff(&self.code_action)
     }
 }
@@ -64,6 +66,7 @@ struct LintVerboseAdvices {
 impl Advices for LintVerboseAdvices {
     fn record(&self, visitor: &mut dyn Visit) -> io::Result<()> {
         visitor.record_log(LogCategory::Info, &"Apply this fix using `--apply`:")?;
+
         visitor.record_command(&format!("biome check --write {}", self.path))
     }
 }

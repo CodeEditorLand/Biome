@@ -53,7 +53,9 @@ impl ToOwned for GreenTokenData {
     fn to_owned(&self) -> GreenToken {
         unsafe {
             let green = GreenToken::from_raw(ptr::NonNull::from(self));
+
             let green = ManuallyDrop::new(green);
+
             GreenToken::clone(&green)
         }
     }
@@ -80,6 +82,7 @@ impl fmt::Debug for GreenTokenData {
 impl fmt::Debug for GreenToken {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let data: &GreenTokenData = self;
+
         fmt::Debug::fmt(data, f)
     }
 }
@@ -87,6 +90,7 @@ impl fmt::Debug for GreenToken {
 impl fmt::Display for GreenToken {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         let data: &GreenTokenData = self;
+
         fmt::Display::fmt(data, f)
     }
 }
@@ -112,7 +116,9 @@ impl GreenTokenData {
 
     pub(crate) fn leading_trailing_total_len(&self) -> (TextSize, TextSize, TextSize) {
         let leading_len = self.data.header.leading.text_len();
+
         let trailing_len = self.data.header.trailing.text_len();
+
         let total_len = self.data.slice().len() as u32;
         (leading_len, trailing_len, total_len.into())
     }
@@ -123,7 +129,9 @@ impl GreenTokenData {
         let (leading_len, trailing_len, total_len) = self.leading_trailing_total_len();
 
         let start: usize = leading_len.into();
+
         let end: usize = (total_len - trailing_len).into();
+
         let text = unsafe { std::str::from_utf8_unchecked(self.data.slice()) };
         &text[start..end]
     }
@@ -150,6 +158,7 @@ impl GreenToken {
     #[cfg(test)]
     pub fn new(kind: RawSyntaxKind, text: &str) -> GreenToken {
         let leading = GreenTrivia::empty();
+
         let trailing = leading.clone();
 
         Self::with_trivia(kind, text, leading, trailing)
@@ -168,7 +177,9 @@ impl GreenToken {
             trailing,
             _c: Count::new(),
         };
+
         let ptr = ThinArc::from_header_and_iter(head, text.bytes());
+
         GreenToken { ptr }
     }
 
@@ -180,7 +191,9 @@ impl GreenToken {
     #[inline]
     pub(crate) unsafe fn from_raw(ptr: ptr::NonNull<GreenTokenData>) -> GreenToken {
         let arc = Arc::from_raw(&ptr.as_ref().data as *const ReprThin);
+
         let arc = mem::transmute::<Arc<ReprThin>, ThinArc<GreenTokenHead, u8>>(arc);
+
         GreenToken { ptr: arc }
     }
 }
@@ -194,6 +207,7 @@ impl ops::Deref for GreenToken {
             let repr: &Repr = &self.ptr;
             #[allow(invalid_reference_casting)]
             let repr: &ReprThin = &*(repr as *const Repr as *const ReprThin);
+
             mem::transmute::<&ReprThin, &GreenTokenData>(repr)
         }
     }
@@ -202,6 +216,7 @@ impl ops::Deref for GreenToken {
 #[cfg(test)]
 mod tests {
     use super::*;
+
     use quickcheck_macros::*;
 
     #[test]
@@ -214,6 +229,7 @@ mod tests {
         );
 
         assert_eq!("\n\t let \t\t", t.text());
+
         assert_eq!(TextSize::from(9), t.text_len());
 
         assert_eq!("let", t.text_trimmed());
@@ -229,13 +245,16 @@ mod tests {
     #[quickcheck]
     fn whitespace_and_comments_text_len(len: u32) {
         let len = TextSize::from(len);
+
         assert_eq!(len, GreenTrivia::whitespace(len).text_len());
+
         assert_eq!(len, GreenTrivia::single_line_comment(len).text_len());
     }
 
     #[test]
     fn sizes() {
         assert_eq!(24, std::mem::size_of::<GreenTokenHead>());
+
         assert_eq!(8, std::mem::size_of::<GreenToken>());
     }
 }

@@ -46,28 +46,38 @@ declare_lint_rule! {
 
 impl Rule for NoProcessEnv {
     type Query = Semantic<JsStaticMemberExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let static_member_expr = ctx.query();
+
         let model = ctx.model();
+
         let object = static_member_expr.object().ok()?;
+
         let member_expr = static_member_expr.member().ok()?;
+
         if member_expr.as_js_name()?.text() != "env" {
             return None;
         }
 
         let (reference, name) = global_identifier(&object)?;
+
         if name.text() != "process" {
             return None;
         }
+
         model.binding(&reference).is_none().then_some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

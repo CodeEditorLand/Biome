@@ -53,12 +53,16 @@ declare_lint_rule! {
 
 impl Rule for NoEmptyBlock {
     type Query = Ast<CssBlockLike>;
+
     type State = CssBlockLike;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         if node.is_empty_without_comments() {
             return Some(node.clone());
         }
@@ -68,6 +72,7 @@ impl Rule for NoEmptyBlock {
 
     fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
         let span = node.range();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

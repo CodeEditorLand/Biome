@@ -25,10 +25,12 @@ pub(super) trait Queue<'a> {
             Some(top_slice) => {
                 // SAFETY: Safe because queue ensures that slices inside `slices` are never empty.
                 let next_index = self.next_index();
+
                 let element = &top_slice[next_index];
 
                 if next_index + 1 == top_slice.len() {
                     self.stack_mut().pop().unwrap();
+
                     self.set_next_index(0);
                 } else {
                     self.set_next_index(next_index + 1);
@@ -36,6 +38,7 @@ pub(super) trait Queue<'a> {
 
                 Some(element)
             }
+
             None => None,
         }
     }
@@ -69,14 +72,18 @@ pub(super) trait Queue<'a> {
             [] => {
                 // Don't push empty slices
             }
+
             slice => {
                 let next_index = self.next_index();
+
                 let stack = self.stack_mut();
+
                 if let Some(top) = stack.pop() {
                     stack.push(&top[next_index..])
                 }
 
                 stack.push(slice);
+
                 self.set_next_index(0);
             }
         }
@@ -85,6 +92,7 @@ pub(super) trait Queue<'a> {
     /// Removes top slice.
     fn pop_slice(&mut self) -> Option<&'a [FormatElement]> {
         self.set_next_index(0);
+
         self.stack_mut().pop()
     }
 
@@ -238,6 +246,7 @@ where
 
                 while let Some(FormatElement::Interned(interned)) = top {
                     self.queue.extend_back(interned);
+
                     top = self.queue.pop();
                 }
 
@@ -255,6 +264,7 @@ where
 
                         Some(element)
                     }
+
                     element => Some(element),
                 }
             }
@@ -311,6 +321,7 @@ impl FitsEndPredicate for SingleEntryPredicate {
 
                     false
                 }
+
                 FormatElement::Tag(Tag::EndEntry) => {
                     if *depth == 0 {
                         return invalid_end_tag(TagKind::Entry, None);
@@ -326,10 +337,12 @@ impl FitsEndPredicate for SingleEntryPredicate {
 
                     is_end
                 }
+
                 FormatElement::Interned(_) => false,
                 element if *depth == 0 => {
                     return invalid_start_tag(TagKind::Entry, Some(element));
                 }
+
                 _ => false,
             },
         };
@@ -341,8 +354,11 @@ impl FitsEndPredicate for SingleEntryPredicate {
 #[cfg(test)]
 mod tests {
     use crate::format_element::LineMode;
+
     use crate::prelude::Tag;
+
     use crate::printer::queue::{PrintQueue, Queue};
+
     use crate::FormatElement;
 
     #[test]
@@ -358,6 +374,7 @@ mod tests {
             queue.pop(),
             Some(&FormatElement::Line(LineMode::SoftOrSpace))
         );
+
         assert_eq!(queue.pop(), Some(&FormatElement::Space));
 
         assert_eq!(queue.pop(), None);
@@ -369,6 +386,7 @@ mod tests {
             PrintQueue::new(&[FormatElement::Tag(Tag::StartEntry), FormatElement::Space]);
 
         assert_eq!(queue.pop(), Some(&FormatElement::Tag(Tag::StartEntry)));
+
         assert_eq!(queue.pop(), Some(&FormatElement::Space));
 
         queue.extend_back(&[FormatElement::Line(LineMode::SoftOrSpace)]);

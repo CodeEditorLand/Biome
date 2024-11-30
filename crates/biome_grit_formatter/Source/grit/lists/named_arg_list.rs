@@ -5,6 +5,7 @@ use biome_grit_syntax::GritNamedArgList;
 pub(crate) struct FormatGritNamedArgList;
 impl FormatRule<GritNamedArgList> for FormatGritNamedArgList {
     type Context = GritFormatContext;
+
     fn fmt(&self, node: &GritNamedArgList, f: &mut GritFormatter) -> FormatResult<()> {
         let mut join = f.join_with(space());
 

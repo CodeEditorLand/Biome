@@ -55,22 +55,33 @@ declare_lint_rule! {
 
 impl Rule for NoConsole {
     type Query = Semantic<JsCallExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = Box<NoConsoleOptions>;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let call_expression = ctx.query();
+
         let model = ctx.model();
+
         let callee = call_expression.callee().ok()?;
+
         let member_expression = AnyJsMemberExpression::cast(callee.into_syntax())?;
+
         let object = member_expression.object().ok()?;
+
         let (reference, name) = global_identifier(&object)?;
+
         if name.text() != "console" {
             return None;
         }
+
         if let Some(member_name) = member_expression.member_name() {
             let member_name = member_name.text();
+
             if ctx
                 .options()
                 .allow
@@ -80,12 +91,15 @@ impl Rule for NoConsole {
                 return None;
             }
         }
+
         model.binding(&reference).is_none().then_some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let node = JsExpressionStatement::cast(node.syntax().parent()?)?;
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -102,15 +116,19 @@ impl Rule for NoConsole {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let call_expression = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         match JsExpressionStatement::cast(call_expression.syntax().parent()?) {
             Some(stmt) if stmt.semicolon_token().is_some() => {
                 mutation.remove_node(stmt);
             }
+
             _ => {
                 mutation.remove_node(call_expression.clone());
             }
         }
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

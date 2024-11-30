@@ -193,9 +193,11 @@ impl SemanticEventExtractor {
 
                 self.resolve_variables_references();
             }
+
             GRAPHQL_OPERATION_DEFINITION | GRAPHQL_FRAGMENT_DEFINITION => {
                 self.leave_scope();
             }
+
             _ => {}
         }
     }
@@ -210,14 +212,18 @@ impl SemanticEventExtractor {
         let Ok(name_token) = node.value_token() else {
             return;
         };
+
         let name = name_token.token_text_trimmed();
 
         let range = node.syntax().text_range();
+
         let Some(parent) = node.syntax().parent() else {
             // every node aside from the root should have a parent, so this should never happen
             return;
         };
+
         self.stash.push_back(SemanticEvent::Declaration { range });
+
         if AnyGraphqlTypeDefinition::can_cast(parent.kind()) {
             self.push_binding(
                 BindingName::Type(name),
@@ -241,13 +247,18 @@ impl SemanticEventExtractor {
         let Ok(name_token) = node.value_token() else {
             return;
         };
+
         let name = name_token.token_text_trimmed();
+
         let range = node.syntax().text_range();
+
         let Some(parent) = node.syntax().parent() else {
             // every node aside from the root should have a parent, so this should never happen
             return;
         };
+
         let binding_info = ReferenceInfo { range };
+
         let binding_name = match parent.kind() {
             GRAPHQL_FIELD_DEFINITION
             | GRAPHQL_IMPLEMENTS_INTERFACE_LIST
@@ -260,7 +271,9 @@ impl SemanticEventExtractor {
             _ if AnyGraphqlTypeExtension::can_cast(parent.kind()) => BindingName::Type(name),
             _ => BindingName::Value(name),
         };
+
         self.push_reference(binding_name.clone(), binding_info.clone());
+
         if let Some(scope) = &mut self.current_scope {
             scope
                 .references
@@ -278,15 +291,21 @@ impl SemanticEventExtractor {
         let Some(variables_definitions) = &mut scope.variables_definitions else {
             return;
         };
+
         let Ok(name) = node.name() else {
             return;
         };
+
         let Ok(name_token) = name.value_token() else {
             return;
         };
+
         let name_token = name_token.token_text_trimmed();
+
         let range = node.range();
+
         variables_definitions.insert(name_token, VariableBindingInfo { range });
+
         self.stash.push_back(SemanticEvent::Declaration { range });
     }
 
@@ -294,6 +313,7 @@ impl SemanticEventExtractor {
         let Some(scope) = &mut self.current_scope else {
             return;
         };
+
         let Ok(name_token) = node.name() else {
             return;
         };
@@ -301,8 +321,11 @@ impl SemanticEventExtractor {
         let Ok(name_token) = name_token.value_token() else {
             return;
         };
+
         let name_token = name_token.token_text_trimmed();
+
         let range = node.syntax().text_range();
+
         scope
             .implicit_variables_references
             .entry(name_token.clone())
@@ -315,6 +338,7 @@ impl SemanticEventExtractor {
 
     fn push_operation_scope(&mut self, node: &GraphqlOperationDefinition) {
         let range = node.syntax().text_range();
+
         self.current_scope = Some(Scope {
             scope_id: self.scopes.len(),
             range,
@@ -326,6 +350,7 @@ impl SemanticEventExtractor {
 
     fn push_fragment_scope(&mut self, node: &GraphqlFragmentDefinition) {
         let range = node.syntax().text_range();
+
         self.current_scope = Some(Scope {
             scope_id: self.scopes.len(),
             range,
@@ -361,6 +386,7 @@ impl SemanticEventExtractor {
                         range: reference.range,
                         declared_at,
                     };
+
                     self.stash.push_back(event);
                 }
             } else {
@@ -375,6 +401,7 @@ impl SemanticEventExtractor {
 
     fn resolve_variables_references(&mut self) {
         let mut processed_scopes = HashSet::new();
+
         for scope_id in 0..self.scopes.len() {
             self.resolve_scope_implicit_variables_references(scope_id, &mut processed_scopes);
         }
@@ -399,6 +426,7 @@ impl SemanticEventExtractor {
                             range: variable.range,
                             declared_at,
                         });
+
                         processed_variables.insert(variable.range);
                     }
                 } else {
@@ -408,6 +436,7 @@ impl SemanticEventExtractor {
                                 range: variable.range,
                                 referenced_operation: Some(scope.range),
                             });
+
                         processed_variables.insert(variable.range);
                     }
                 }
@@ -425,6 +454,7 @@ impl SemanticEventExtractor {
                     if processed_variables.contains(&reference.range) {
                         continue;
                     }
+
                     self.stash
                         .push_back(SemanticEvent::UnresolvedVariableReference {
                             range: reference.range,
@@ -445,8 +475,11 @@ impl SemanticEventExtractor {
         if processed_scopes.contains(&current_scope_id) {
             return;
         }
+
         processed_scopes.insert(current_scope_id);
+
         let references = self.scopes[current_scope_id].references.clone();
+
         for (name, _) in references {
             let Some(&BindingInfo {
                 scope_id: Some(binding_scope_id),

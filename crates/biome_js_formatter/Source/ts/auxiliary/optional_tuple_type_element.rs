@@ -16,8 +16,11 @@ impl FormatNodeRule<TsOptionalTupleTypeElement> for FormatTsOptionalTupleTypeEle
             ty,
             question_mark_token,
         } = node.as_fields();
+
         let ty = ty.format();
+
         let question_mark = question_mark_token.format();
+
         write![f, [ty, question_mark]]
     }
 }

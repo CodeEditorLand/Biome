@@ -19,9 +19,11 @@ impl AsCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Where<GritQueryContext>, CompileError> {
         let pattern = node.pattern()?;
+
         let variable = node.variable()?;
 
         let name = variable.value_token()?;
+
         let name = name.text_trimmed();
 
         // this just searches the subtree for a variables that share the name.
@@ -35,7 +37,9 @@ impl AsCompiler {
         }
 
         let pattern = PatternCompiler::from_node(&pattern, context)?;
+
         let variable = VariableCompiler::from_node(&variable, context);
+
         Ok(Where::new(
             Pattern::Variable(variable.clone()),
             Predicate::Match(Box::new(Match::new(
@@ -52,7 +56,9 @@ fn pattern_repeated_variable(
     lang: &impl Language,
 ) -> Result<bool, CompileError> {
     let node = GritNode::from(pattern.syntax());
+
     let cursor = traverse(node.walk(), Order::Pre);
+
     Ok(cursor
         .filter(|node| {
             node.kind() == GritSyntaxKind::GRIT_VARIABLE
@@ -60,6 +66,7 @@ fn pattern_repeated_variable(
         })
         .map(|node| {
             let text = node.text_trimmed();
+
             if node.kind() == GritSyntaxKind::GRIT_VARIABLE {
                 Ok(text == name)
             } else {
@@ -73,5 +80,6 @@ fn pattern_repeated_variable(
 
 fn is_variables_in_snippet(name: &str, snippet: &str, lang: &impl Language) -> bool {
     let variables = split_snippet(snippet, lang);
+
     variables.iter().any(|variable| variable.1 == name)
 }

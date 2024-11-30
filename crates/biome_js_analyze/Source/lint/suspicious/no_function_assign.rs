@@ -109,16 +109,22 @@ pub struct State {
 
 impl Rule for NoFunctionAssign {
     type Query = Semantic<JsFunctionDeclaration>;
+
     type State = State;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let declaration = ctx.query();
+
         let model = ctx.model();
 
         let id = declaration.id().ok()?;
+
         let id = id.as_js_identifier_binding()?;
+
         let all_writes: Vec<Reference> = id.all_writes(model).collect();
 
         if all_writes.is_empty() {
@@ -141,8 +147,10 @@ impl Rule for NoFunctionAssign {
         );
 
         let mut hoisted_quantity = 0;
+
         for reference in state.all_writes.iter() {
             let node = reference.syntax();
+
             diag = diag.detail(node.text_trimmed_range(), "Reassigned here.");
 
             hoisted_quantity += i32::from(reference.is_using_hoisted_declaration());

@@ -142,8 +142,11 @@ pub struct SuggestedExtensionMapping {
 
 impl Rule for UseImportExtensions {
     type Query = Ast<AnyJsImportLike>;
+
     type State = UseImportExtensionsState;
+
     type Signals = Option<Self::State>;
+
     type Options = Box<UseImportExtensionsOptions>;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -175,6 +178,7 @@ impl Rule for UseImportExtensions {
         let mut mutation = ctx.root().begin();
 
         let (suggested_path, extension) = state.suggestion.clone()?;
+
         let new_module_name = if ctx.as_preferred_quote().is_double() {
             make::js_string_literal(&suggested_path)
         } else {
@@ -209,9 +213,13 @@ fn get_extensionless_import(
     custom_suggested_imports: &FxHashMap<Box<str>, SuggestedExtensionMapping>,
 ) -> Option<UseImportExtensionsState> {
     let module_name_token = node.module_name_token()?;
+
     let module_path = inner_string_text(&module_name_token);
+
     let path = Path::new(module_path.text());
+
     let mut path_components = path.components();
+
     let first_component = path_components.next()?;
 
     if !matches!(first_component, Component::CurDir | Component::ParentDir)
@@ -221,6 +229,7 @@ fn get_extensionless_import(
     }
 
     let last_component = path_components.last().unwrap_or(first_component);
+
     let has_query_or_hash = last_component
         .as_os_str()
         .to_str()
@@ -236,6 +245,7 @@ fn get_extensionless_import(
     let import_ext = resolve_import_extension(file_ext, path, custom_suggested_imports);
 
     let mut path_parts = module_path.text().split('/');
+
     let mut is_index_file = false;
 
     // Remove trailing slash and useless path segment.
@@ -258,6 +268,7 @@ fn get_extensionless_import(
 
             is_index_file = true;
         }
+
         _ => {}
     };
 
@@ -265,6 +276,7 @@ fn get_extensionless_import(
     // https://github.com/rust-lang/rust/issues/79524
     let mut new_path = path_parts.fold(String::new(), |mut output, b| {
         output.push_str(b);
+
         output.push('/');
 
         output

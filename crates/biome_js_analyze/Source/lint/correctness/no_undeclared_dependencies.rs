@@ -200,19 +200,26 @@ pub struct RuleState {
 
 impl Rule for NoUndeclaredDependencies {
     type Query = Manifest<AnyJsImportLike>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = NoUndeclaredDependenciesOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.is_in_ts_module_declaration() {
             return None;
         }
 
         let path = ctx.file_path();
+
         let is_dev_dependency_available = ctx.options().dev_dependencies.is_available(path);
+
         let is_peer_dependency_available = ctx.options().peer_dependencies.is_available(path);
+
         let is_optional_dependency_available =
             ctx.options().optional_dependencies.is_available(path);
 
@@ -224,7 +231,9 @@ impl Rule for NoUndeclaredDependencies {
         };
 
         let token_text = node.inner_string_text()?;
+
         let package_name = parse_package_name(token_text.text())?;
+
         if is_available(package_name)
             // Self package imports
             // TODO: we should also check that an `.` exports exists.
@@ -244,6 +253,7 @@ impl Rule for NoUndeclaredDependencies {
             if let Some(import_clause) = node.parent::<AnyJsImportClause>() {
                 if import_clause.type_token().is_some() {
                     let package_name = format!("@types/{package_name}");
+
                     if is_available(&package_name) {
                         return None;
                     }
@@ -302,6 +312,7 @@ impl Rule for NoUndeclaredDependencies {
 
 fn parse_package_name(path: &str) -> Option<&str> {
     let mut in_scope = false;
+
     for (i, c) in path.bytes().enumerate() {
         match c {
             b'@' if i == 0 => {
@@ -310,7 +321,9 @@ fn parse_package_name(path: &str) -> Option<&str> {
             // uppercase characters are not allowed in package name
             // Here we are more tolerant and accept them.
             b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'-' | b'_' => {}
+
             b'.' if i != 0 => {}
+
             b'/' => {
                 if in_scope {
                     if i == 1 {
@@ -330,6 +343,7 @@ fn parse_package_name(path: &str) -> Option<&str> {
                     return Some(&path[..i]);
                 }
             }
+
             _ => {
                 return None;
             }
@@ -345,28 +359,43 @@ fn test() {
         parse_package_name("@scope/package-name"),
         Some("@scope/package-name")
     );
+
     assert_eq!(
         parse_package_name("@scope/package-name/path"),
         Some("@scope/package-name")
     );
+
     assert_eq!(parse_package_name("package_"), Some("package_"));
+
     assert_eq!(parse_package_name("package/path"), Some("package"));
+
     assert_eq!(parse_package_name("0"), Some("0"));
+
     assert_eq!(parse_package_name("0/path"), Some("0"));
+
     assert_eq!(parse_package_name("-"), Some("-"));
+
     assert_eq!(parse_package_name("-/path"), Some("-"));
+
     assert_eq!(parse_package_name("a.js"), Some("a.js"));
+
     assert_eq!(parse_package_name("@././file"), Some("@./."));
 
     // Invalid package names that we accept
     assert_eq!(parse_package_name("PACKAGE"), Some("PACKAGE"));
+
     assert_eq!(parse_package_name("_"), Some("_"));
 
     // Invalid package names that we reject
     assert_eq!(parse_package_name("@/path"), None);
+
     assert_eq!(parse_package_name("."), None);
+
     assert_eq!(parse_package_name("./path"), None);
+
     assert_eq!(parse_package_name("#path"), None);
+
     assert_eq!(parse_package_name("/path"), None);
+
     assert_eq!(parse_package_name("p@ckage/name"), None);
 }

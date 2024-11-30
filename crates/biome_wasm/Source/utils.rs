@@ -33,6 +33,7 @@ impl DiagnosticPrinter {
     #[wasm_bindgen(constructor)]
     pub fn new(file_name: String, file_source: String) -> Self {
         let line_starts = LineIndexBuf::from_source_text(&file_source);
+
         Self {
             file_name,
             file_source: SourceCode {
@@ -58,11 +59,13 @@ impl DiagnosticPrinter {
     ) -> Result<(), Error> {
         let diag: Diagnostic =
             serde_wasm_bindgen::from_value(diagnostic.into()).map_err(into_error)?;
+
         let err = diag
             .with_file_path(&self.file_name)
             .with_file_source_code(&self.file_source);
 
         let mut html = HTML::new(&mut self.buffer);
+
         Formatter::new(&mut html)
             .write_markup(markup!({ printer(&err) }))
             .map_err(into_error)?;

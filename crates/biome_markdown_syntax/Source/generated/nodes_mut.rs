@@ -18,12 +18,14 @@ impl MdDocument {
                 .splice_slots(0usize..=0usize, once(element.map(|element| element.into()))),
         )
     }
+
     pub fn with_value(self, element: MdBlockList) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_eof_token(self, element: SyntaxToken) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -62,12 +64,14 @@ impl MdHeader {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_md_paragraph(self, element: Option<MdParagraph>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             1usize..=1usize,
             once(element.map(|element| element.into_syntax().into())),
         ))
     }
+
     pub fn with_after(self, element: MdHashList) -> Self {
         Self::unwrap_cast(
             self.syntax
@@ -122,12 +126,14 @@ impl MdInlineImage {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_src(self, element: MdTextual) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_title(self, element: Option<MdTextual>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             2usize..=2usize,
@@ -142,12 +148,14 @@ impl MdInlineLink {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_url(self, element: MdTextual) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_title(self, element: Option<MdTextual>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             2usize..=2usize,
@@ -162,12 +170,14 @@ impl MdLinkBlock {
                 .splice_slots(0usize..=0usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_url(self, element: MdTextual) -> Self {
         Self::unwrap_cast(
             self.syntax
                 .splice_slots(1usize..=1usize, once(Some(element.into_syntax().into()))),
         )
     }
+
     pub fn with_title(self, element: Option<MdTextual>) -> Self {
         Self::unwrap_cast(self.syntax.splice_slots(
             2usize..=2usize,

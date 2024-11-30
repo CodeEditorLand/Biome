@@ -91,6 +91,7 @@ impl AnyJsCreateElement {
                     None
                 }
             }
+
             AnyJsCreateElement::JsxSelfClosingElement(_) => None,
             AnyJsCreateElement::JsCallExpression(expression) => {
                 let react_create_element =
@@ -112,6 +113,7 @@ impl AnyJsCreateElement {
                     .find_attribute_by_name("dangerouslySetInnerHTML")
                     .map(DangerousProp::from)
             }
+
             AnyJsCreateElement::JsxSelfClosingElement(element) => element
                 .find_attribute_by_name("dangerouslySetInnerHTML")
                 .map(DangerousProp::from),
@@ -135,6 +137,7 @@ impl AnyJsCreateElement {
                     .find_attribute_by_name("children")
                     .map(DangerousProp::from)
             }
+
             AnyJsCreateElement::JsxSelfClosingElement(element) => element
                 .find_attribute_by_name("children")
                 .map(DangerousProp::from),
@@ -152,15 +155,21 @@ impl AnyJsCreateElement {
 
 impl Rule for NoDangerouslySetInnerHtmlWithChildren {
     type Query = Semantic<AnyJsCreateElement>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
+
         if let Some(dangerous_prop) = node.find_dangerous_prop(model) {
             let dangerous_prop = dangerous_prop.range();
+
             if let Some(children_node) = node.has_children(model) {
                 return Some(RuleState {
                     children_kind: ChildrenKind::Direct(children_node.text_trimmed_range()),
@@ -173,6 +182,7 @@ impl Rule for NoDangerouslySetInnerHtmlWithChildren {
                 });
             }
         }
+
         None
     }
 

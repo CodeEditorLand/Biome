@@ -30,6 +30,7 @@ impl Format<JsFormatContext> for FormatMaybeCachedFunctionBody<'_> {
             FunctionBodyCacheMode::NoCache => {
                 write!(f, [self.body.format()])
             }
+
             FunctionBodyCacheMode::Cached => {
                 match f.context().get_cached_function_body(self.body) {
                     Some(cached) => f.write_element(cached),
@@ -47,12 +48,15 @@ impl Format<JsFormatContext> for FormatMaybeCachedFunctionBody<'_> {
                     }
                 }
             }
+
             FunctionBodyCacheMode::Cache => match f.intern(&self.body.format())? {
                 Some(interned) => {
                     f.context_mut()
                         .set_cached_function_body(self.body, interned.clone());
+
                     f.write_element(interned)
                 }
+
                 None => Ok(()),
             },
         }

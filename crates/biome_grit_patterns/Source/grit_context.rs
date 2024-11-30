@@ -25,14 +25,23 @@ pub struct GritQueryContext;
 
 impl QueryContext for GritQueryContext {
     type Node<'a> = GritTargetNode<'a>;
+
     type NodePattern = GritNodePattern;
+
     type LeafNodePattern = GritLeafNodePattern;
+
     type ExecContext<'a> = GritExecContext<'a>;
+
     type Binding<'a> = GritBinding<'a>;
+
     type CodeSnippet = GritCodeSnippet;
+
     type ResolvedPattern<'a> = GritResolvedPattern<'a>;
+
     type Language<'a> = GritTargetLanguage;
+
     type File<'a> = GritFile<'a>;
+
     type Tree<'a> = GritTargetTree;
 }
 
@@ -125,10 +134,12 @@ impl<'a> ExecContext<'a, GritQueryContext> for GritExecContext<'a> {
                 self.load_file(&GritFile::Ptr(*file_ptr), state, logs)
                     .unwrap_or(false)
             });
+
             ResolvedPattern::from_files(ResolvedPattern::from_list_parts(
                 files.iter().map(|f| ResolvedPattern::from_file_pointer(*f)),
             ))
         };
+
         if !step.execute(&binding, state, self, logs)? {
             return Ok(false);
         }
@@ -142,8 +153,10 @@ impl<'a> ExecContext<'a, GritQueryContext> for GritExecContext<'a> {
             variables,
             suppressed,
         };
+
         for file_ptr in files {
             let file = state.files.get_file_owner(file_ptr);
+
             let mut match_log = file.matches.borrow_mut();
 
             if match_log.input_matches.is_none() {
@@ -156,6 +169,7 @@ impl<'a> ExecContext<'a, GritQueryContext> for GritExecContext<'a> {
         let new_files_binding = &mut state.bindings[GLOBAL_VARS_SCOPE_INDEX as usize]
             .last_mut()
             .unwrap()[NEW_FILES_INDEX];
+
         if new_files_binding.value.is_none() {
             new_files_binding.value = Some(GritResolvedPattern::from_list_parts([].into_iter()));
         }
@@ -178,7 +192,9 @@ impl<'a> ExecContext<'a, GritQueryContext> for GritExecContext<'a> {
                 .text(&state.files, &self.lang)?
                 .as_ref()
                 .into();
+
             let body = file.body(&state.files).text(&state.files, &self.lang)?;
+
             let owned_file =
                 new_file_owner(name.clone(), &body, &self.lang, logs)?.ok_or_else(|| {
                     GritPatternError::Builder(format!(
@@ -186,13 +202,16 @@ impl<'a> ExecContext<'a, GritQueryContext> for GritExecContext<'a> {
                         name.to_string_lossy()
                     ))
                 })?;
+
             self.files().push(owned_file);
             // SAFETY: We just pushed to the list of files, so there must be one.
             let _ = state.files.push_new_file(self.files().last().unwrap());
         }
 
         state.effects = vec![];
+
         new_files_binding.value = Some(ResolvedPattern::from_list_parts([].into_iter()));
+
         Ok(true)
     }
 
@@ -210,12 +229,14 @@ impl<'a> ExecContext<'a, GritQueryContext> for GritExecContext<'a> {
             GritFile::Resolved(_) => {
                 // Assume the file is already loaded
             }
+
             GritFile::Ptr(ptr) => {
                 if state.files.is_loaded(ptr) {
                     return Ok(true);
                 }
 
                 let index = ptr.file;
+
                 let file = &self.loadable_files[index as usize];
 
                 // TODO: Verify the workspace's maximum file size.
@@ -228,12 +249,15 @@ impl<'a> ExecContext<'a, GritQueryContext> for GritExecContext<'a> {
                     &self.lang,
                     logs,
                 )?;
+
                 if let Some(file) = file {
                     self.files.push(file);
+
                     state.files.load_file(ptr, self.files.last().unwrap());
                 }
             }
         }
+
         Ok(true)
     }
 }
@@ -247,6 +271,7 @@ fn file_owner_from_matches(
     logs: &mut AnalysisLogs,
 ) -> GritResult<Option<FileOwner<GritTargetTree>>> {
     let name = name.into();
+
     let new = !old_tree.is_fresh();
 
     let Some(tree) = language
@@ -257,6 +282,7 @@ fn file_owner_from_matches(
     };
 
     let absolute_path = name.absolutize()?.to_path_buf();
+
     Ok(Some(FileOwner {
         name,
         absolute_path,
@@ -282,6 +308,7 @@ fn new_file_owner(
     };
 
     let absolute_path = name.absolutize()?.to_path_buf();
+
     Ok(Some(FileOwner {
         name,
         absolute_path,

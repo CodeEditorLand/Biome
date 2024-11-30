@@ -20,6 +20,7 @@ impl StepCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<Step<GritQueryContext>, CompileError> {
         let pattern = PatternCompiler::from_node(node, context)?;
+
         match pattern {
             Pattern::File(_)
             | Pattern::Files(_)
@@ -29,6 +30,7 @@ impl StepCompiler {
             | Pattern::Call(_)
             | Pattern::Where(_)
             | Pattern::Bubble(_) => {}
+
             Pattern::And(_)
             | Pattern::Or(_)
             | Pattern::AstNode(_)
@@ -79,6 +81,7 @@ impl StepCompiler {
                     node.syntax().text_trimmed_range(),
                 ));
             }
+
             Pattern::Sequential(ref s) => {
                 for step in s.iter() {
                     if !matches!(
@@ -95,11 +98,13 @@ impl StepCompiler {
                             SEQUENTIAL_WARNING,
                             node.syntax().text_trimmed_range(),
                         ));
+
                         break;
                     }
                 }
             }
         }
+
         let pattern = wrap_pattern_in_before_and_after_each_file(pattern, context)?;
 
         Ok(Step::new(pattern))

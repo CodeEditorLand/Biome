@@ -66,10 +66,14 @@ impl Members {
             .0
             .iter()
             .map(|node| node.node.syntax().text_range().start());
+
         let mut previous_start = iter.next().unwrap_or_default();
+
         iter.all(|start| {
             let is_sorted = previous_start < start;
+
             previous_start = start;
+
             is_sorted
         })
     }
@@ -93,8 +97,11 @@ impl Members {
 
 impl Rule for UseSortedKeys {
     type Query = Ast<JsonMemberList>;
+
     type State = Members;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -108,6 +115,7 @@ impl Rule for UseSortedKeys {
             .iter()
             .filter_map(|node| {
                 let node = node.ok()?;
+
                 Some(MemberKey { node })
             })
             .collect::<BTreeSet<_>>();
@@ -123,8 +131,11 @@ impl Rule for UseSortedKeys {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsonRuleAction> {
         let list = state.to_sorted_node();
+
         let mut mutation = ctx.root().begin();
+
         let node = ctx.query().clone();
+
         mutation.replace_node(node, list);
 
         Some(RuleAction::new(

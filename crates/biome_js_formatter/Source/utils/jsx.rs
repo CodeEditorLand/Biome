@@ -28,6 +28,7 @@ pub(crate) static JSX_WHITESPACE_CHARS: [u8; 4] = [b' ', b'\n', b'\t', b'\r'];
 /// ```
 pub fn is_meaningful_jsx_text(text: &str) -> bool {
     let mut has_newline = false;
+
     for byte in text.bytes() {
         // If there is a non-whitespace character
         if !JSX_WHITESPACE_CHARS.contains(&byte) {
@@ -80,6 +81,7 @@ pub(crate) fn is_jsx_suppressed(tag: &AnyJsxTag, comments: &JsComments) -> bool 
                 Some(_) | None => false,
             }
         }
+
         _ => false,
     }
 }
@@ -132,6 +134,7 @@ pub(crate) fn get_wrap_state(node: &JsxTagExpression) -> WrapState {
                 WrapState::WrapOnBreak
             }
         }
+
         JsSyntaxKind::JS_COMPUTED_MEMBER_EXPRESSION => {
             let member = JsComputedMemberExpression::unwrap_cast(parent);
 
@@ -141,6 +144,7 @@ pub(crate) fn get_wrap_state(node: &JsxTagExpression) -> WrapState {
                 WrapState::WrapOnBreak
             }
         }
+
         _ => WrapState::WrapOnBreak,
     })
 }
@@ -208,9 +212,11 @@ pub(crate) fn is_whitespace_jsx_expression(
 
                     is_empty && !has_comments
                 }
+
                 _ => false,
             }
         }
+
         _ => false,
     }
 }
@@ -231,6 +237,7 @@ where
                 // Keep track if there's any leading/trailing empty line, new line or whitespace
 
                 let value_token = text.value_token()?;
+
                 let mut chunks = JsxSplitChunksIterator::new(value_token.text()).peekable();
 
                 // Text starting with a whitespace
@@ -263,6 +270,7 @@ where
                                 builder.entry(JsxChild::Whitespace)
                             }
                         }
+
                         _ => unreachable!(),
                     }
                 }
@@ -284,6 +292,7 @@ where
                             let text = value_token
                                 .token_text()
                                 .slice(TextRange::at(relative_start, word.text_len()));
+
                             let source_position = value_token.text_range().start() + relative_start;
 
                             builder.entry(JsxChild::Word(JsxWord::new(text, source_position)));
@@ -299,6 +308,7 @@ where
                     builder.entry(JsxChild::NonText(child.into()))
                 }
             }
+
             child => {
                 builder.entry(JsxChild::NonText(child));
             }
@@ -332,6 +342,7 @@ impl JsxSplitChildrenBuilder {
                     self.buffer.push(child);
                 }
             }
+
             _ => self.buffer.push(child),
         }
     }
@@ -459,6 +470,7 @@ impl<'a> Iterator for JsxSplitChunksIterator<'a> {
         let char = self.chars.next()?;
 
         let start = self.position;
+
         self.position += char.text_len();
 
         let is_whitespace = matches!(char, ' ' | '\n' | '\t' | '\r');
@@ -471,10 +483,12 @@ impl<'a> Iterator for JsxSplitChunksIterator<'a> {
             }
 
             self.position += next.text_len();
+
             self.chars.next();
         }
 
         let range = TextRange::new(start, self.position);
+
         let slice = &self.text[range];
 
         let chunk = if is_whitespace {
@@ -527,16 +541,19 @@ impl<I: Iterator> JsxChildrenIterator<I> {
 
     pub fn peek(&mut self) -> Option<&I::Item> {
         let iter = &mut self.iter;
+
         self.peeked.get_or_insert_with(|| iter.next()).as_ref()
     }
 
     pub fn peek_next(&mut self) -> Option<&I::Item> {
         let iter = &mut self.iter;
+
         let peeked = &mut self.peeked;
 
         self.peeked_next
             .get_or_insert_with(|| {
                 peeked.get_or_insert_with(|| iter.next());
+
                 iter.next()
             })
             .as_ref()
@@ -544,13 +561,17 @@ impl<I: Iterator> JsxChildrenIterator<I> {
 
     pub fn peek_next_next(&mut self) -> Option<&I::Item> {
         let iter = &mut self.iter;
+
         let peeked = &mut self.peeked;
+
         let peeked_next = &mut self.peeked_next;
 
         self.peeked_next_next
             .get_or_insert_with(|| {
                 peeked.get_or_insert_with(|| iter.next());
+
                 peeked_next.get_or_insert_with(|| iter.next());
+
                 iter.next()
             })
             .as_ref()
@@ -564,9 +585,12 @@ impl<I: Iterator> Iterator for JsxChildrenIterator<I> {
         match self.peeked.take() {
             Some(peeked) => {
                 self.peeked = self.peeked_next.take();
+
                 self.peeked_next = self.peeked_next_next.take();
+
                 peeked
             }
+
             None => self.iter.next(),
         }
     }
@@ -577,9 +601,13 @@ mod tests {
     use crate::utils::jsx::{
         jsx_split_children, JsxChild, JsxChildrenIterator, JsxSplitChunksIterator, JsxTextChunk,
     };
+
     use biome_formatter::comments::Comments;
+
     use biome_js_parser::{parse, JsParserOptions};
+
     use biome_js_syntax::{JsFileSource, JsxChildList, JsxText};
+
     use biome_rowan::{AstNode, TextSize};
 
     #[test]
@@ -589,20 +617,31 @@ mod tests {
         let mut iter = JsxChildrenIterator::new(buffer.iter());
 
         assert_eq!(iter.peek(), Some(&&1));
+
         assert_eq!(iter.peek(), Some(&&1));
+
         assert_eq!(iter.peek_next(), Some(&&2));
+
         assert_eq!(iter.peek_next(), Some(&&2));
+
         assert_eq!(iter.peek_next_next(), Some(&&3));
+
         assert_eq!(iter.peek_next_next(), Some(&&3));
 
         assert_eq!(iter.next(), Some(&1));
+
         assert_eq!(iter.next(), Some(&2));
 
         assert_eq!(iter.peek_next_next(), Some(&&5));
+
         assert_eq!(iter.peek_next_next(), Some(&&5));
+
         assert_eq!(iter.peek_next(), Some(&&4));
+
         assert_eq!(iter.peek_next(), Some(&&4));
+
         assert_eq!(iter.peek(), Some(&&3));
+
         assert_eq!(iter.peek(), Some(&&3));
     }
 
@@ -612,6 +651,7 @@ mod tests {
             JsFileSource::jsx(),
             JsParserOptions::default(),
         );
+
         assert!(
             !parse.has_errors(),
             "Source should not have any errors {:?}",
@@ -625,7 +665,9 @@ mod tests {
             .expect("Expected a JSX Text child");
 
         let value_token = jsx_text.value_token().unwrap();
+
         let chunks = JsxSplitChunksIterator::new(value_token.text()).collect::<Vec<_>>();
+
         assert_eq!(chunks, expected_chunks);
     }
 
@@ -708,8 +750,11 @@ mod tests {
         let children = jsx_split_children(&child_list, &Comments::default()).unwrap();
 
         assert_eq!(3, children.len());
+
         assert_word(&children[0], "a");
+
         assert_word(&children[1], "b");
+
         assert_word(&children[2], "c");
     }
 
@@ -747,8 +792,11 @@ mod tests {
         let children = jsx_split_children(&child_list, &Comments::default()).unwrap();
 
         assert_eq!(3, children.len());
+
         assert_eq!(children[0], JsxChild::Newline);
+
         assert_word(&children[1], "a");
+
         assert_word(&children[2], "b");
     }
 
@@ -759,8 +807,11 @@ mod tests {
         let children = jsx_split_children(&child_list, &Comments::default()).unwrap();
 
         assert_eq!(3, children.len());
+
         assert_word(&children[0], "a");
+
         assert_word(&children[1], "b");
+
         assert_eq!(children[2], JsxChild::Whitespace);
     }
 
@@ -771,8 +822,11 @@ mod tests {
         let children = jsx_split_children(&child_list, &Comments::default()).unwrap();
 
         assert_eq!(3, children.len());
+
         assert_word(&children[0], "a");
+
         assert_word(&children[1], "b");
+
         assert_eq!(children[2], JsxChild::Newline);
     }
 
@@ -787,9 +841,13 @@ mod tests {
             children.len(),
             "Expected to contain four elements. Actual:\n{children:#?} "
         );
+
         assert_word(&children[0], "a");
+
         assert_eq!(children[1], JsxChild::Whitespace);
+
         assert_word(&children[2], "c");
+
         assert_eq!(children[3], JsxChild::Whitespace);
     }
 
@@ -804,9 +862,13 @@ mod tests {
             children.len(),
             "Expected to contain four elements. Actual:\n{children:#?} "
         );
+
         assert_word(&children[0], "a");
+
         assert_eq!(children[1], JsxChild::Whitespace);
+
         assert_word(&children[2], "c");
+
         assert_eq!(children[3], JsxChild::Whitespace);
     }
 
@@ -825,9 +887,13 @@ mod tests {
             children.len(),
             "Expected to contain four elements. Actual:\n{children:#?} "
         );
+
         assert_word(&children[0], "a");
+
         assert_eq!(children[1], JsxChild::Whitespace);
+
         assert_word(&children[2], "c");
+
         assert_eq!(children[3], JsxChild::Whitespace);
     }
 
@@ -836,6 +902,7 @@ mod tests {
             JsxChild::Word(word) => {
                 assert_eq!(word.text.text(), text)
             }
+
             child => {
                 panic!("Expected a word but found {child:#?}");
             }

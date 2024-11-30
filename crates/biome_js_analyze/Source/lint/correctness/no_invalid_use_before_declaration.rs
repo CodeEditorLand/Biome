@@ -71,15 +71,21 @@ declare_lint_rule! {
 
 impl Rule for NoInvalidUseBeforeDeclaration {
     type Query = SemanticServices;
+
     type State = InvalidUseBeforeDeclaration;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let model = ctx.model();
+
         let mut result = vec![];
+
         for binding in model.all_bindings() {
             let id = binding.tree();
+
             if matches!(
                 id,
                 AnyJsIdentifierBinding::TsIdentifierBinding(_)
@@ -88,13 +94,17 @@ impl Rule for NoInvalidUseBeforeDeclaration {
                 // Ignore type declarations (interfaces, type-aliases, ...)
                 continue;
             };
+
             let Some(declaration) = id.declaration() else {
                 continue;
             };
+
             let Ok(declaration_kind) = DeclarationKind::try_from(&declaration) else {
                 continue;
             };
+
             let declaration_end = declaration.range().end();
+
             let declaration_control_flow_root =
                 if let AnyJsBindingDeclaration::JsVariableDeclarator(declarator) = declaration
                     .parent_binding_pattern_declaration()
@@ -108,6 +118,7 @@ impl Rule for NoInvalidUseBeforeDeclaration {
                 } else {
                     None
                 };
+
             for reference in binding.all_references() {
                 if reference.range_start() < declaration_end {
                     let reference_syntax = reference.syntax();
@@ -156,6 +167,7 @@ impl Rule for NoInvalidUseBeforeDeclaration {
                 }
             }
         }
+
         result.into_boxed_slice()
     }
 
@@ -165,11 +177,13 @@ impl Rule for NoInvalidUseBeforeDeclaration {
             reference_range,
             binding_range: declaration_range,
         } = state;
+
         let declaration_kind_text = match declaration_kind {
             DeclarationKind::EnumMember => "enum member",
             DeclarationKind::Parameter => "parameter",
             DeclarationKind::Variable => "variable",
         };
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

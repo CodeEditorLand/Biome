@@ -49,6 +49,7 @@ impl<'source> GritParser<'source> {
         Vec<Trivia>,
     ) {
         let (trivia, lexer_diagnostics) = self.source.finish();
+
         let (events, parse_diagnostics) = self.context.finish();
 
         let diagnostics = merge_diagnostics(lexer_diagnostics, parse_diagnostics);
@@ -59,6 +60,7 @@ impl<'source> GritParser<'source> {
 
 impl<'source> Parser for GritParser<'source> {
     type Kind = GritSyntaxKind;
+
     type Source = GritTokenSource<'source>;
 
     fn context(&self) -> &ParserContext<Self::Kind> {
@@ -84,6 +86,7 @@ pub(crate) fn parse_root(p: &mut GritParser) {
     p.eat(UNICODE_BOM);
 
     parse_version(p).ok();
+
     parse_language_declaration(p).ok();
 
     DefinitionList::new().parse_list(p);
@@ -99,38 +102,47 @@ fn parse_version(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![engine]);
 
     let mut is_supported = true;
 
     let engine_range = p.cur_range();
+
     if p.eat(T![biome]) {
         if p.eat(T!['(']) {
             match parse_double_literal(p) {
                 Present(_) => {
                     p.expect(T![')']);
                 }
+
                 Absent => {
                     if p.at(T![')']) {
                         p.error(expected_engine_version(p, p.cur_range()));
                     } else {
                         p.error(p.err_builder("Expected version to be a double", p.cur_range()));
+
                         p.bump_any();
                     }
+
                     p.bump(T![')']);
+
                     is_supported = false;
                 }
             }
         } else {
             let engine_end = engine_range.end();
+
             p.error(expected_engine_version(
                 p,
                 TextRange::new(engine_end, engine_end),
             ));
+
             is_supported = false;
         }
     } else {
         p.error(p.err_builder("Engine must be `biome`", engine_range));
+
         is_supported = false;
     }
 
@@ -150,18 +162,22 @@ fn parse_language_declaration(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T![language]);
 
     let mut is_supported = true;
 
     if parse_language_name(p) == Absent {
         p.error(expected_language_name(p, p.cur_range()));
+
         p.eat(GRIT_NAME);
+
         is_supported = false;
     }
 
     if p.at(T!['(']) {
         let m = p.start();
+
         p.bump(T!['(']);
 
         LanguageFlavorList.parse_list(p);
@@ -187,6 +203,7 @@ pub(crate) struct LanguageFlavorList;
 
 impl ParseSeparatedList for LanguageFlavorList {
     type Kind = GritSyntaxKind;
+
     type Parser<'source> = GritParser<'source>;
 
     const LIST_KIND: Self::Kind = GRIT_LANGUAGE_FLAVOR_LIST;
@@ -226,7 +243,9 @@ fn parse_language_name(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump_ts(SUPPORTED_LANGUAGE_SET);
+
     Present(m.complete(p, GRIT_LANGUAGE_NAME))
 }
 
@@ -236,7 +255,9 @@ fn parse_language_flavor_kind(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump_ts(SUPPORTED_LANGUAGE_FLAVOR_SET);
+
     Present(m.complete(p, GRIT_LANGUAGE_FLAVOR_KIND))
 }
 
@@ -256,7 +277,9 @@ fn parse_name(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(GRIT_NAME);
+
     Present(m.complete(p, GRIT_NAME))
 }
 
@@ -267,9 +290,13 @@ fn parse_named_arg(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     parse_name(p).ok();
+
     p.eat(T![=]);
+
     parse_pattern(p).ok();
+
     Present(m.complete(p, GRIT_NAMED_ARG))
 }
 
@@ -280,7 +307,9 @@ fn parse_not(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump_ts(NOT_SET);
+
     Present(m.complete(p, GRIT_NOT))
 }
 
@@ -296,7 +325,9 @@ fn parse_variable(p: &mut GritParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(GRIT_VARIABLE);
+
     Present(m.complete(p, GRIT_VARIABLE))
 }
 
@@ -304,6 +335,7 @@ pub(crate) struct VariableList;
 
 impl ParseSeparatedList for VariableList {
     type Kind = GritSyntaxKind;
+
     type Parser<'source> = GritParser<'source>;
 
     const LIST_KIND: Self::Kind = GRIT_VARIABLE_LIST;

@@ -23,6 +23,7 @@ impl FormatNodeRule<JsObjectAssignmentPatternShorthandProperty>
         if let Some(init) = init {
             write!(f, [space(), init.format()])?;
         }
+
         Ok(())
     }
 }

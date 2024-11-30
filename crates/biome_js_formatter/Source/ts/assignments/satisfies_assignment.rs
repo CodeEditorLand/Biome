@@ -26,18 +26,24 @@ impl FormatNodeRule<TsSatisfiesAssignment> for FormatTsSatisfiesAssignment {
 #[cfg(test)]
 mod tests {
     use crate::assert_needs_parentheses;
+
     use biome_js_syntax::TsSatisfiesAssignment;
 
     #[test]
     fn needs_parentheses() {
         assert_needs_parentheses!("a satisfies number = 'test'", TsSatisfiesAssignment);
+
         assert_needs_parentheses!("(a satisfies number)! = 'test'", TsSatisfiesAssignment);
+
         assert_needs_parentheses!(
             "(<number>(a satisfies number)) = 'test'",
             TsSatisfiesAssignment
         );
+
         assert_needs_parentheses!("++(a satisfies number)", TsSatisfiesAssignment);
+
         assert_needs_parentheses!("(a satisfies number)--", TsSatisfiesAssignment);
+
         assert_needs_parentheses!(
             "({ a: a satisfies number } = { a: 5 })",
             TsSatisfiesAssignment

@@ -78,16 +78,22 @@ const GLOBAL_NUMBER_PROPERTIES: [&str; 4] = ["parseInt", "parseFloat", "NaN", "I
 
 impl Rule for UseNumberNamespace {
     type Query = Semantic<AnyJsExpression>;
+
     type State = StaticValue;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let (reference, global_ident) = global_identifier(node)?;
+
         if !GLOBAL_NUMBER_PROPERTIES.contains(&global_ident.text()) {
             return None;
         }
+
         ctx.model()
             .binding(&reference)
             .is_none()
@@ -96,6 +102,7 @@ impl Rule for UseNumberNamespace {
 
     fn diagnostic(ctx: &RuleContext<Self>, global_ident: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let equivalent_property = match global_ident.text() {
             "Infinity" => {
                 if let Some(parent) = node.parent::<JsUnaryExpression>() {
@@ -108,6 +115,7 @@ impl Rule for UseNumberNamespace {
                     "POSITIVE_INFINITY"
                 }
             }
+
             other => other,
         };
 
@@ -127,12 +135,15 @@ impl Rule for UseNumberNamespace {
 
     fn action(ctx: &RuleContext<Self>, global_ident: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let (old_node, new_node) = match node {
             AnyJsExpression::JsIdentifierExpression(expression) => {
                 let name = expression.name().ok()?.text();
+
                 if !GLOBAL_NUMBER_PROPERTIES.contains(&name.as_str()) {
                     return None;
                 }
+
                 let (old_node, replacement) = match name.as_str() {
                     "Infinity" => {
                         if let Some(parent) = node.parent::<JsUnaryExpression>() {
@@ -151,6 +162,7 @@ impl Rule for UseNumberNamespace {
                             (node.clone(), "POSITIVE_INFINITY")
                         }
                     }
+
                     _ => (node.clone(), name.as_str()),
                 };
                 (
@@ -165,12 +177,14 @@ impl Rule for UseNumberNamespace {
                     ),
                 )
             }
+
             AnyJsExpression::JsStaticMemberExpression(expression) => {
                 let name = expression.member().ok()?.text();
 
                 if !GLOBAL_NUMBER_PROPERTIES.contains(&name.as_str()) {
                     return None;
                 }
+
                 let (old_node, replacement) = match name.as_str() {
                     "Infinity" => {
                         if let Some(parent) = node.parent::<JsUnaryExpression>() {
@@ -189,6 +203,7 @@ impl Rule for UseNumberNamespace {
                             (node.clone(), "POSITIVE_INFINITY")
                         }
                     }
+
                     _ => (node.clone(), name.as_str()),
                 };
                 (
@@ -205,6 +220,7 @@ impl Rule for UseNumberNamespace {
                     ),
                 )
             }
+
             AnyJsExpression::JsComputedMemberExpression(expression) => {
                 let object = expression.object().ok()?;
                 (
@@ -216,10 +232,14 @@ impl Rule for UseNumberNamespace {
                     ),
                 )
             }
+
             _ => return None,
         };
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(old_node, new_node.into());
+
         let equivalent_property = match global_ident.text() {
             "Infinity" => {
                 if let Some(parent) = node.parent::<JsUnaryExpression>() {
@@ -232,6 +252,7 @@ impl Rule for UseNumberNamespace {
                     "POSITIVE_INFINITY"
                 }
             }
+
             other => other,
         };
 

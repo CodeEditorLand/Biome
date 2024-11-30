@@ -7,9 +7,11 @@ use crate::{registry::Phase, services::FromServices, Phases, ServiceBag, Visitor
 /// Trait implemented for types that lint rules can query in order to emit diagnostics or code actions.
 pub trait Queryable: Sized {
     type Input: QueryMatch;
+
     type Output;
 
     type Language: Language;
+
     type Services: FromServices + Phase;
 
     /// Registers one or more [Visitor] that will emit `Self::Input` query

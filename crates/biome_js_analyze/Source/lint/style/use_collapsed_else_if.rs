@@ -99,20 +99,28 @@ pub struct RuleState {
 
 impl Rule for UseCollapsedElseIf {
     type Query = Ast<JsElseClause>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let else_clause = ctx.query();
+
         let alternate = else_clause.alternate().ok()?;
+
         let AnyJsStatement::JsBlockStatement(block_statement) = alternate else {
             return None;
         };
+
         let statements = block_statement.statements();
+
         if statements.len() != 1 {
             return None;
         }
+
         if let AnyJsStatement::JsIfStatement(if_statement) = statements.first()? {
             Some(RuleState {
                 block_statement,
@@ -145,11 +153,13 @@ impl Rule for UseCollapsedElseIf {
             .has_trailing_comments()
             || if_statement.syntax().has_comments_direct()
             || block_statement.r_curly_token().ok()?.has_leading_comments();
+
         if has_comments {
             return None;
         }
 
         let mut mutation = ctx.root().begin();
+
         mutation.replace_node(
             AnyJsStatement::from(block_statement.clone()),
             if_statement.clone().into(),

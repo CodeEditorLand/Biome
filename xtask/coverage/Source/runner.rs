@@ -63,6 +63,7 @@ impl From<TestRunOutcome> for Outcome {
             TestRunOutcome::IncorrectlyPassed(_) | TestRunOutcome::IncorrectlyErrored { .. } => {
                 Outcome::Failed
             }
+
             TestRunOutcome::Panicked(_) => Outcome::Panicked,
         }
     }
@@ -99,6 +100,7 @@ impl TestCaseFile {
 
 pub(crate) fn create_bogus_node_in_tree_diagnostic(node: JsSyntaxNode) -> ParseDiagnostic {
     assert!(node.kind().is_bogus());
+
     ParseDiagnostic::new(
         "There are no parse errors but the parsed tree contains bogus nodes.",
         node.text_trimmed_range()
@@ -164,6 +166,7 @@ impl TestCaseFiles {
 
 impl<'a> IntoIterator for &'a TestCaseFiles {
     type Item = &'a TestCaseFile;
+
     type IntoIter = std::slice::Iter<'a, TestCaseFile>;
 
     fn into_iter(self) -> Self::IntoIter {
@@ -181,9 +184,13 @@ pub(crate) trait TestCase: RefUnwindSafe + Send + Sync {
 
 pub(crate) trait TestSuite: Send + Sync {
     fn name(&self) -> &str;
+
     fn base_path(&self) -> &str;
+
     fn is_test(&self, path: &Path) -> bool;
+
     fn load_test(&self, path: &Path) -> Option<Box<dyn TestCase>>;
+
     fn checkout(&self) -> io::Result<()>;
 }
 
@@ -224,14 +231,18 @@ pub(crate) fn run_test_suite(
     context: &mut TestRunContext,
 ) -> TestResults {
     test_suite.checkout().expect("To checkout the repository");
+
     context.reporter.test_suite_started(test_suite);
+
     let instance = load_tests(test_suite, context);
+
     context.reporter.test_suite_run_started(&instance);
 
     std::panic::set_hook(Box::new(|info| {
         use std::io::Write;
 
         let backtrace = backtrace::Backtrace::default();
+
         let mut stacktrace = vec![];
 
         // Skip frames inside the backtrace lib
@@ -240,6 +251,7 @@ pub(crate) fn run_test_suite(
                 if let Some(file) = s.filename() {
                     // We don't care about std or cargo registry libs
                     let file_path = file.as_os_str().to_str().unwrap();
+
                     if file_path.starts_with("/rustc") || file_path.contains(".cargo") {
                         continue;
                     }
@@ -261,6 +273,7 @@ pub(crate) fn run_test_suite(
                     (None, Some(col)) => {
                         let _ = write!(stacktrace, " @ col {col}");
                     }
+
                     _ => {}
                 }
 
@@ -271,7 +284,9 @@ pub(crate) fn run_test_suite(
         let stacktrace = String::from_utf8(stacktrace).unwrap();
 
         let mut msg = vec![];
+
         let _ = write!(msg, "{info}");
+
         let msg = String::from_utf8(msg).unwrap();
 
         tracing::error!(
@@ -282,18 +297,22 @@ pub(crate) fn run_test_suite(
     }));
 
     let mut test_results = TestResults::new();
+
     let (tx, rx) = std::sync::mpsc::channel();
 
     context.pool.scoped(|scope| {
         scope.execute(|| {
             let mut results: Vec<TestResult> = Vec::with_capacity(instance.len());
+
             for result in rx {
                 context.reporter.test_completed(&result);
+
                 results.push(TestResult {
                     test_case: result.test_case,
                     outcome: result.outcome.into(),
                 });
             }
+
             test_results.store_results(results);
         });
 
@@ -311,11 +330,13 @@ pub(crate) fn run_test_suite(
                             .map(|x| x.to_string())
                             .or_else(|| panic.downcast_ref::<&str>().map(|x| (*x).to_string()))
                             .unwrap_or_default();
+
                         tracing::error!(
                             panic = error.as_str(),
                             name = test.name(),
                             "Test panicked"
                         );
+
                         TestRunOutcome::Panicked(panic)
                     }
                 };
@@ -346,6 +367,7 @@ fn load_tests(suite: &dyn TestSuite, context: &mut TestRunContext) -> TestSuiteI
         .filter_map(Result::ok)
         .filter(|file| {
             let path = file.path();
+
             if !path.is_file() {
                 return false;
             }
@@ -356,7 +378,9 @@ fn load_tests(suite: &dyn TestSuite, context: &mut TestRunContext) -> TestSuiteI
 
             if let Some(filter) = &context.filter {
                 let normalized_path = path.to_string_lossy().replace('\\', "/");
+
                 let normalized_query = filter.replace('\\', "/");
+
                 normalized_path.contains(&normalized_query)
             } else {
                 true
@@ -368,12 +392,14 @@ fn load_tests(suite: &dyn TestSuite, context: &mut TestRunContext) -> TestSuiteI
     context.reporter.tests_discovered(suite, paths.len());
 
     let (tx, rx) = std::sync::mpsc::channel();
+
     let mut tests: Vec<Box<dyn TestCase>> = Vec::with_capacity(paths.len());
 
     context.pool.scoped(|scope| {
         scope.execute(|| {
             for test in rx {
                 context.reporter.test_loaded();
+
                 if let Some(test) = test {
                     tests.push(test);
                 }

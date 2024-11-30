@@ -52,8 +52,11 @@ declare_lint_rule! {
 
 impl Rule for UseNumberToFixedDigitsArgument {
     type Query = Ast<JsCallExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -108,6 +111,7 @@ impl Rule for UseNumberToFixedDigitsArgument {
         ));
 
         let previous_args = ctx.query().arguments().ok()?.args();
+
         let new_args = make::js_call_argument_list([arg], []);
 
         mutation.replace_node::<JsCallArgumentList>(previous_args, new_args);

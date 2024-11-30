@@ -36,7 +36,9 @@ impl FormatNodeRule<JsxSpreadChild> for FormatJsxSpreadChild {
                         dotdotdot_token.format(),
                     ]
                 )?;
+
                 FormatAnyJsExpressionWithoutComments.fmt(&expression, f)?;
+
                 write!(
                     f,
                     [

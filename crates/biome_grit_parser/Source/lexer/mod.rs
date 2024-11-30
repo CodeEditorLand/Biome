@@ -36,10 +36,13 @@ pub(crate) struct GritLexer<'src> {
 
 impl<'src> Lexer<'src> for GritLexer<'src> {
     const NEWLINE: Self::Kind = NEWLINE;
+
     const WHITESPACE: Self::Kind = WHITESPACE;
+
     type Kind = GritSyntaxKind;
 
     type LexContext = ();
+
     type ReLexContext = ();
 
     fn source(&self) -> &'src str {
@@ -65,8 +68,10 @@ impl<'src> Lexer<'src> for GritLexer<'src> {
                     self.current_start < self.text_position(),
                     "Lexer did not progress"
                 );
+
                 kind
             }
+
             None => EOF,
         };
 
@@ -78,6 +83,7 @@ impl<'src> Lexer<'src> for GritLexer<'src> {
 
         kind
     }
+
     fn has_preceding_line_break(&self) -> bool {
         self.after_newline
     }
@@ -105,6 +111,7 @@ impl<'src> Lexer<'src> for GritLexer<'src> {
     #[inline]
     fn advance_char_unchecked(&mut self) {
         let c = self.current_char_unchecked();
+
         self.position += c.len_utf8();
     }
 
@@ -131,6 +138,7 @@ impl<'src> GritLexer<'src> {
     #[inline]
     fn consume_byte(&mut self, tok: GritSyntaxKind) -> GritSyntaxKind {
         self.advance(1);
+
         tok
     }
 
@@ -147,9 +155,11 @@ impl<'src> GritLexer<'src> {
                 b'\r' | b'\n' => {
                     break;
                 }
+
                 _ => match byte {
                     b' ' | b'\t' | b'\n' | b'\r' => {
                         let start = self.text_position();
+
                         self.advance(1);
 
                         self.diagnostics.push(
@@ -160,6 +170,7 @@ impl<'src> GritLexer<'src> {
                             .with_hint("Use a regular whitespace character instead."),
                         )
                     }
+
                     _ => break,
                 },
             }
@@ -175,8 +186,10 @@ impl<'src> GritLexer<'src> {
         match current {
             b'\n' | b'\r' => {
                 debug_assert!(self.consume_newline());
+
                 NEWLINE
             }
+
             b'\t' | b' ' => self.consume_whitespaces(),
             b'\'' | b'"' => self.consume_string_literal(current),
             b'`' => self.consume_backtick_snippet(),
@@ -204,13 +217,16 @@ impl<'src> GritLexer<'src> {
             _ if self.position == 0 && self.consume_potential_bom(UNICODE_BOM).is_some() => {
                 UNICODE_BOM
             }
+
             _ => self.consume_unexpected_character(),
         }
     }
 
     fn consume_dots(&mut self) -> GritSyntaxKind {
         assert_eq!(self.current_byte(), Some(b'.'));
+
         let start = self.position;
+
         self.advance(1);
 
         match self.current_byte() {
@@ -224,6 +240,7 @@ impl<'src> GritLexer<'src> {
                         }
 
                         let end = self.position;
+
                         self.diagnostics.push(
                             ParseDiagnostic::new(
                                 format!("'{}' isn't valid here.", ".".repeat(end - start)),
@@ -238,6 +255,7 @@ impl<'src> GritLexer<'src> {
                     }
                 } else {
                     self.advance(1);
+
                     self.diagnostics.push(
                         ParseDiagnostic::new("'..' isn't valid here.", start..self.position)
                             .with_hint("Did you mean '...'?"),
@@ -246,66 +264,83 @@ impl<'src> GritLexer<'src> {
                     ERROR_TOKEN
                 }
             }
+
             _ => T![.],
         }
     }
 
     fn consume_equals_or_rewrite(&mut self) -> GritSyntaxKind {
         assert_eq!(self.current_byte(), Some(b'='));
+
         self.advance(1);
 
         match self.current_byte() {
             Some(b'=') => {
                 self.advance(1);
+
                 T![==]
             }
+
             Some(b'>') => {
                 self.advance(1);
+
                 T![=>]
             }
+
             _ => T![=],
         }
     }
 
     fn consume_lt_or_match(&mut self) -> GritSyntaxKind {
         assert_eq!(self.current_byte(), Some(b'<'));
+
         self.advance(1);
 
         match self.current_byte() {
             Some(b':') => {
                 self.advance(1);
+
                 T![<:]
             }
+
             Some(b'=') => {
                 self.advance(1);
+
                 T![<=]
             }
+
             _ => T![<],
         }
     }
 
     fn consume_gt(&mut self) -> GritSyntaxKind {
         assert_eq!(self.current_byte(), Some(b'>'));
+
         self.advance(1);
 
         match self.current_byte() {
             Some(b'=') => {
                 self.advance(1);
+
                 T![>=]
             }
+
             _ => T![>],
         }
     }
 
     fn consume_plus_or_acc(&mut self) -> GritSyntaxKind {
         assert_eq!(self.current_byte(), Some(b'+'));
+
         self.advance(1);
 
         match self.current_byte() {
             Some(b'=') => {
                 self.advance(1);
+
                 T![+=]
             }
+
             _ => T![+],
         }
     }
@@ -315,11 +350,14 @@ impl<'src> GritLexer<'src> {
         self.assert_current_char_boundary();
 
         let char = self.current_char_unchecked();
+
         let err = ParseDiagnostic::new(
             format!("unexpected character `{char}`"),
             self.text_position()..self.text_position() + char.text_len(),
         );
+
         self.diagnostics.push(err);
+
         self.advance(char.len_utf8());
 
         ERROR_TOKEN
@@ -332,6 +370,7 @@ impl<'src> GritLexer<'src> {
         let start = self.text_position();
 
         let is_negative = first == b'-';
+
         if is_negative {
             self.advance(1);
         }
@@ -354,10 +393,12 @@ impl<'src> GritLexer<'src> {
                                 reason: InvalidNumberReason::Octal,
                             }
                         }
+
                         LexNumberState::FirstDigit => LexNumberState::IntegerPart,
                         state => state,
                     }
                 }
+
                 Some(b'1'..=b'9') => {
                     self.advance(1);
 
@@ -366,6 +407,7 @@ impl<'src> GritLexer<'src> {
                         state => state,
                     }
                 }
+
                 Some(b'.') => {
                     let position = self.text_position();
 
@@ -377,6 +419,7 @@ impl<'src> GritLexer<'src> {
                         {
                             LexNumberState::FractionalPart
                         }
+
                         LexNumberState::IntegerPart => LexNumberState::Invalid {
                             position: self.text_position(),
                             reason: InvalidNumberReason::MissingFraction,
@@ -388,6 +431,7 @@ impl<'src> GritLexer<'src> {
                         },
                     }
                 }
+
                 Some(b'e' | b'E') => {
                     let position = self.text_position();
 
@@ -402,12 +446,14 @@ impl<'src> GritLexer<'src> {
                         {
                             LexNumberState::Exponent
                         }
+
                         LexNumberState::IntegerPart | LexNumberState::FractionalPart => {
                             LexNumberState::Invalid {
                                 position: self.text_position(),
                                 reason: InvalidNumberReason::MissingExponent,
                             }
                         }
+
                         invalid @ LexNumberState::Invalid { .. } => invalid,
                         _ => LexNumberState::Invalid {
                             position,
@@ -415,6 +461,7 @@ impl<'src> GritLexer<'src> {
                         },
                     }
                 }
+
                 _ => {
                     break;
                 }
@@ -446,6 +493,7 @@ impl<'src> GritLexer<'src> {
                             "Expected a digit as the exponent",
                         )
                     }
+
                     InvalidNumberReason::MissingFraction => ParseDiagnostic::new(
                         "Missing fraction",
                         position..position + TextSize::from(1),
@@ -454,6 +502,7 @@ impl<'src> GritLexer<'src> {
                 };
 
                 self.diagnostics.push(diagnostic);
+
                 ERROR_TOKEN
             }
         }
@@ -461,6 +510,7 @@ impl<'src> GritLexer<'src> {
 
     fn consume_string_literal(&mut self, quote: u8) -> GritSyntaxKind {
         self.assert_current_char_boundary();
+
         let start = self.text_position();
 
         self.advance(1); // Skip over the quote
@@ -475,15 +525,18 @@ impl<'src> GritLexer<'src> {
             match chr {
                 b'\'' | b'"' if quote == chr => {
                     self.advance(1);
+
                     state = match state {
                         LexStringState::InString => LexStringState::Terminated,
                         state => state,
                     };
+
                     break;
                 }
                 // '\t' etc
                 b'\\' => {
                     let escape_start = self.text_position();
+
                     self.advance(1);
 
                     match self.current_byte() {
@@ -493,6 +546,7 @@ impl<'src> GritLexer<'src> {
                             (Ok(_), _) => {}
                             (Err(err), LexStringState::InString) => {
                                 self.diagnostics.push(err);
+
                                 state = LexStringState::InvalidEscapeSequence;
                             }
                             (Err(_), _) => {}
@@ -507,6 +561,7 @@ impl<'src> GritLexer<'src> {
                         Some(_) => {
                             if matches!(state, LexStringState::InString) {
                                 let c = self.current_char_unchecked();
+
                                 self.diagnostics.push(
                                     ParseDiagnostic::new(
                                         "Invalid escape sequence",
@@ -516,6 +571,7 @@ impl<'src> GritLexer<'src> {
                                         r#"Valid escape sequences are: `\$`, `\\`, `\"`, `\n`."#,
                                     ),
                                 );
+
                                 state = LexStringState::InvalidEscapeSequence;
                             }
                         }
@@ -529,11 +585,13 @@ impl<'src> GritLexer<'src> {
                                 )
                                     .with_detail(self.text_position()..self.text_position(), "File ends here")
                                 );
+
                                 state = LexStringState::InvalidEscapeSequence;
                             }
                         }
                     }
                 }
+
                 b'\n' | b'\r' => {
                     let unterminated =
                         ParseDiagnostic::new("Missing closing quote", start..self.text_position())
@@ -543,6 +601,7 @@ impl<'src> GritLexer<'src> {
 
                     return ERROR_TOKEN;
                 }
+
                 _ => self.advance_char_unchecked(),
             }
         }
@@ -551,6 +610,7 @@ impl<'src> GritLexer<'src> {
             LexStringState::Terminated => GRIT_STRING,
             LexStringState::InvalidQuote => {
                 let literal_range = TextRange::new(start, self.text_position());
+
                 self.diagnostics.push(
                     ParseDiagnostic::new(
                         "GritQL does not allow single quoted strings",
@@ -558,8 +618,10 @@ impl<'src> GritLexer<'src> {
                     )
                     .with_hint("Use double quotes to escape the string."),
                 );
+
                 ERROR_TOKEN
             }
+
             LexStringState::InString => {
                 let unterminated =
                     ParseDiagnostic::new("Missing closing quote", start..self.text_position())
@@ -567,16 +629,19 @@ impl<'src> GritLexer<'src> {
                             self.source.text_len()..self.source.text_len(),
                             "file ends here",
                         );
+
                 self.diagnostics.push(unterminated);
 
                 ERROR_TOKEN
             }
+
             LexStringState::InvalidEscapeSequence => ERROR_TOKEN,
         }
     }
 
     fn consume_backtick_snippet(&mut self) -> GritSyntaxKind {
         self.assert_current_char_boundary();
+
         let start = self.text_position();
 
         self.advance(1); // Skip over the backtick
@@ -586,15 +651,18 @@ impl<'src> GritLexer<'src> {
             match chr {
                 b'`' => {
                     self.advance(1);
+
                     state = match state {
                         LexBacktickSnippet::InSnippet => LexBacktickSnippet::Terminated,
                         state => state,
                     };
+
                     break;
                 }
                 // '\t' etc
                 b'\\' => {
                     let escape_start = self.text_position();
+
                     self.advance(1);
 
                     match self.current_byte() {
@@ -603,6 +671,7 @@ impl<'src> GritLexer<'src> {
                         Some(_) => {
                             if matches!(state, LexBacktickSnippet::InSnippet) {
                                 let c = self.current_char_unchecked();
+
                                 self.diagnostics.push(
                                     ParseDiagnostic::new(
                                         "Invalid escape sequence",
@@ -612,6 +681,7 @@ impl<'src> GritLexer<'src> {
                                         r#"Valid escape sequences are: `\$`, `\\`, `\``, `\n`."#,
                                     ),
                                 );
+
                                 state = LexBacktickSnippet::InvalidEscapeSequence;
                             }
                         }
@@ -625,11 +695,13 @@ impl<'src> GritLexer<'src> {
                                 )
                                     .with_detail(self.text_position()..self.text_position(), "File ends here")
                                 );
+
                                 state = LexBacktickSnippet::InvalidEscapeSequence;
                             }
                         }
                     }
                 }
+
                 _ => self.advance_char_unchecked(),
             }
         }
@@ -643,10 +715,12 @@ impl<'src> GritLexer<'src> {
                             self.source.text_len()..self.source.text_len(),
                             "file ends here",
                         );
+
                 self.diagnostics.push(unterminated);
 
                 ERROR_TOKEN
             }
+
             LexBacktickSnippet::InvalidEscapeSequence => ERROR_TOKEN,
         }
     }
@@ -656,6 +730,7 @@ impl<'src> GritLexer<'src> {
     /// A unicode escape sequence must consist of 4 hex characters.
     fn consume_unicode_escape(&mut self) -> Result<(), ParseDiagnostic> {
         self.assert_byte(b'u');
+
         self.assert_current_char_boundary();
 
         let start = self.text_position();
@@ -681,6 +756,7 @@ impl<'src> GritLexer<'src> {
                     .with_detail(self.text_position()..self.text_position().add(char.text_len()), "Non hexadecimal number")
                     .with_hint("A unicode escape sequence must consist of 4 hexadecimal numbers: `\\uXXXX`, e.g. `\\u002F' for '/'."));
                 }
+
                 None => {
                     // Reached the end of the file before processing 4 hex digits
                     return Err(ParseDiagnostic::new(
@@ -705,13 +781,17 @@ impl<'src> GritLexer<'src> {
     /// prefixes.
     fn consume_name(&mut self, first: u8) -> GritSyntaxKind {
         let name_start = self.text_position();
+
         self.assert_current_char_boundary();
 
         // Note to keep the buffer large enough to fit every possible keyword
         // that the lexer can return.
         const BUFFER_SIZE: usize = 14;
+
         let mut buffer = [0u8; BUFFER_SIZE];
+
         buffer[0] = first;
+
         let mut len = 1;
 
         self.advance_byte_or_char(first);
@@ -720,6 +800,7 @@ impl<'src> GritLexer<'src> {
             if is_identifier_byte(byte) {
                 if len < BUFFER_SIZE {
                     buffer[len] = byte;
+
                     len += 1;
                 }
 
@@ -822,6 +903,7 @@ impl<'src> GritLexer<'src> {
     fn consume_regex(&mut self) -> GritSyntaxKind {
         // Handle invalid quotes
         self.assert_current_char_boundary();
+
         let start = self.text_position();
 
         self.advance(1); // Skip over the quote
@@ -831,15 +913,18 @@ impl<'src> GritLexer<'src> {
             match chr {
                 b'"' => {
                     self.advance(1);
+
                     state = match state {
                         LexRegexState::InRegex => LexRegexState::Terminated,
                         state => state,
                     };
+
                     break;
                 }
                 // '\t' etc
                 b'\\' => {
                     let escape_start = self.text_position();
+
                     self.advance(1);
 
                     match self.current_byte() {
@@ -854,11 +939,13 @@ impl<'src> GritLexer<'src> {
                                 )
                                     .with_detail(self.text_position()..self.text_position(), "File ends here")
                                 );
+
                                 return ERROR_TOKEN;
                             }
                         }
                     }
                 }
+
                 b'\n' | b'\r' => {
                     let unterminated =
                         ParseDiagnostic::new("Missing closing quote", start..self.text_position())
@@ -868,6 +955,7 @@ impl<'src> GritLexer<'src> {
 
                     return ERROR_TOKEN;
                 }
+
                 _ => self.advance_char_unchecked(),
             }
         }
@@ -881,6 +969,7 @@ impl<'src> GritLexer<'src> {
                             self.source.text_len()..self.source.text_len(),
                             "file ends here",
                         );
+
                 self.diagnostics.push(unterminated);
 
                 ERROR_TOKEN
@@ -891,10 +980,12 @@ impl<'src> GritLexer<'src> {
     /// Lexes a variable (with leading `$`).
     fn consume_variable(&mut self) -> GritSyntaxKind {
         assert_eq!(self.current_byte(), Some(b'$'));
+
         self.advance(1); // Skip the leading `$`.
 
         if self.current_byte() == Some(b'_') {
             self.advance(1);
+
             return DOLLAR_UNDERSCORE;
         }
 
@@ -912,6 +1003,7 @@ impl<'src> GritLexer<'src> {
     /// Lexes a comment or a plain slash token.
     fn consume_comment_or_slash(&mut self) -> GritSyntaxKind {
         let start = self.text_position();
+
         match self.peek_byte() {
             Some(b'*') => {
                 // eat `/*`
@@ -930,10 +1022,13 @@ impl<'src> GritLexer<'src> {
                                 return COMMENT;
                             }
                         }
+
                         b'\n' | b'\r' => {
                             has_newline = true;
+
                             self.advance(1)
                         }
+
                         chr => self.advance_byte_or_char(chr),
                     }
                 }
@@ -953,6 +1048,7 @@ impl<'src> GritLexer<'src> {
                     COMMENT
                 }
             }
+
             Some(b'/') => {
                 self.advance(2);
 
@@ -965,8 +1061,10 @@ impl<'src> GritLexer<'src> {
 
                 COMMENT
             }
+
             _ => {
                 self.advance(1);
+
                 T![/]
             }
         }

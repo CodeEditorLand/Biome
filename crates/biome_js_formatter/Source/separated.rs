@@ -19,7 +19,9 @@ where
     N: AstNode<Language = JsLanguage> + AsFormat<JsFormatContext> + 'static,
 {
     type Context = JsFormatContext;
+
     type FormatNode<'a> = N::Format<'a>;
+
     type FormatSeparator<'a> = FormatRefWithRule<'a, JsSyntaxToken, FormatJsSyntaxToken>;
 
     fn format_node<'a>(&self, node: &'a N) -> Self::FormatNode<'a> {

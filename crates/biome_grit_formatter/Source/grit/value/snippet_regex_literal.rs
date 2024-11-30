@@ -10,6 +10,7 @@ impl FormatNodeRule<GritSnippetRegexLiteral> for FormatGritSnippetRegexLiteral {
         f: &mut GritFormatter,
     ) -> FormatResult<()> {
         let GritSnippetRegexLiteralFields { value_token } = node.as_fields();
+
         write!(f, [value_token.format()])
     }
 }

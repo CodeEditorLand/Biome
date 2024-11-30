@@ -34,17 +34,23 @@ declare_syntax_rule! {
 
 impl Rule for NoTypeOnlyImportAttributes {
     type Query = Ast<AnyJsModuleItem>;
+
     type State = RuleState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let extension = ctx.file_path().extension()?;
+
         if extension.as_encoded_bytes() == b"cts" {
             // Ignore `*.cts`
             return None;
         }
+
         let module_item = ctx.query();
+
         match module_item {
             AnyJsModuleItem::AnyJsStatement(_) => None,
             AnyJsModuleItem::JsExport(export) => match export.export_clause().ok()? {
@@ -61,6 +67,7 @@ impl Rule for NoTypeOnlyImportAttributes {
                 }),
                 AnyJsExportClause::JsExportNamedFromClause(clause) => {
                     let assertion_range = clause.assertion()?.range();
+
                     let type_token = clause.type_token().or_else(|| {
                         clause
                             .specifiers()
@@ -68,6 +75,7 @@ impl Rule for NoTypeOnlyImportAttributes {
                             .filter_map(|specifier| specifier.ok())
                             .find_map(|specifier| specifier.type_token())
                     })?;
+
                     Some(RuleState {
                         assertion_range,
                         type_token_range: type_token.text_trimmed_range(),
@@ -78,28 +86,34 @@ impl Rule for NoTypeOnlyImportAttributes {
                 AnyJsImportClause::JsImportBareClause(_) => None,
                 AnyJsImportClause::JsImportCombinedClause(clause) => {
                     let assertion_range = clause.assertion()?.range();
+
                     let type_token = find_first_type_token(
                         clause.specifier().ok()?.as_js_named_import_specifiers()?,
                     )?;
+
                     Some(RuleState {
                         assertion_range,
                         type_token_range: type_token.text_trimmed_range(),
                     })
                 }
+
                 AnyJsImportClause::JsImportDefaultClause(clause) => Some(RuleState {
                     assertion_range: clause.assertion()?.range(),
                     type_token_range: clause.type_token()?.text_trimmed_range(),
                 }),
                 AnyJsImportClause::JsImportNamedClause(clause) => {
                     let assertion_range = clause.assertion()?.range();
+
                     let type_token = clause
                         .type_token()
                         .or_else(|| find_first_type_token(&clause.named_specifiers().ok()?))?;
+
                     Some(RuleState {
                         assertion_range,
                         type_token_range: type_token.text_trimmed_range(),
                     })
                 }
+
                 AnyJsImportClause::JsImportNamespaceClause(clause) => Some(RuleState {
                     assertion_range: clause.assertion()?.range(),
                     type_token_range: clause.type_token()?.text_trimmed_range(),
@@ -110,11 +124,13 @@ impl Rule for NoTypeOnlyImportAttributes {
 
     fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         let import_or_export = if matches!(node, AnyJsModuleItem::JsImport(_)) {
             "import"
         } else {
             "export"
         };
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

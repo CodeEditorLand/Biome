@@ -68,8 +68,11 @@ declare_lint_rule! {
 
 impl Rule for UseKeyWithClickEvents {
     type Query = Ast<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -78,6 +81,7 @@ impl Rule for UseKeyWithClickEvents {
         match element.name() {
             Ok(AnyJsxElementName::JsxName(name)) => {
                 let name_token = name.value_token().ok()?;
+
                 let element_name = name_token.text_trimmed().to_ascii_lowercase_cow();
 
                 // Don't handle interactive roles
@@ -89,6 +93,7 @@ impl Rule for UseKeyWithClickEvents {
                     return None;
                 }
             }
+
             _ => {
                 return None;
             }
@@ -105,7 +110,9 @@ impl Rule for UseKeyWithClickEvents {
             match attribute {
                 AnyJsxAttribute::JsxAttribute(attribute) => {
                     let attribute_name = attribute.name().ok()?;
+
                     let name = attribute_name.as_jsx_name()?;
+
                     let name_token = name.value_token().ok()?;
 
                     if matches!(
@@ -115,6 +122,7 @@ impl Rule for UseKeyWithClickEvents {
                         return None;
                     }
                 }
+
                 AnyJsxAttribute::JsxSpreadAttribute(_) => {
                     return None;
                 }

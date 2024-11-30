@@ -17,6 +17,7 @@ impl FormatRuleWithOptions<JsArrayElementList> for FormatJsArrayElementList {
 
     fn with_options(mut self, options: Self::Options) -> Self {
         self.group_id = options;
+
         self
     }
 }
@@ -46,6 +47,7 @@ impl FormatRule<JsArrayElementList> for FormatJsArrayElementList {
                     filler.entry(
                         &format_once(|f| {
                             let element = element?;
+
                             if get_lines_before(element.syntax()) > 1 {
                                 write!(f, [empty_line()])
                             } else if f.comments().has_leading_own_line_comment(element.syntax()) {
@@ -60,6 +62,7 @@ impl FormatRule<JsArrayElementList> for FormatJsArrayElementList {
 
                 filler.finish()
             }
+
             ArrayLayout::OnePerLine => write_array_node(node, f),
         }
     }
@@ -101,7 +104,9 @@ pub(crate) fn can_concisely_print_array_list(
     comments: &JsComments,
 ) -> bool {
     use biome_js_syntax::AnyJsArrayElement::*;
+
     use biome_js_syntax::AnyJsExpression::*;
+
     use biome_js_syntax::JsUnaryOperator::*;
 
     if list.is_empty() {
@@ -116,6 +121,7 @@ pub(crate) fn can_concisely_print_array_list(
 
             Ok(AnyJsExpression(JsUnaryExpression(expr))) => {
                 let signed = matches!(expr.operator(), Ok(Plus | Minus));
+
                 let argument = expr.argument();
 
                 match argument {
@@ -128,6 +134,7 @@ pub(crate) fn can_concisely_print_array_list(
                             return false;
                         }
                     }
+
                     _ => {
                         return false;
                     }

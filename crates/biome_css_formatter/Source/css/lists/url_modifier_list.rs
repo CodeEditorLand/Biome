@@ -4,6 +4,7 @@ use biome_css_syntax::CssUrlModifierList;
 pub(crate) struct FormatCssUrlModifierList;
 impl FormatRule<CssUrlModifierList> for FormatCssUrlModifierList {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &CssUrlModifierList, f: &mut CssFormatter) -> FormatResult<()> {
         f.join().entries(node.iter().formatted()).finish()
     }

@@ -14,18 +14,24 @@ use biome_rowan::{AstNode, BatchMutation, TriviaPieceKind};
 fn make_indentation_from_jsx_element(current_element: &JsxText) -> JsxText {
     if let Ok(text) = current_element.value_token() {
         let bytes = text.text().bytes();
+
         let mut newlines = 0;
+
         let mut spaces = 0;
+
         let mut string_found = false;
+
         for byte in bytes {
             if byte == b'\"' {
                 if string_found {
                     string_found = false;
                 } else {
                     string_found = true;
+
                     continue;
                 }
             }
+
             if string_found {
                 continue;
             }
@@ -33,12 +39,14 @@ fn make_indentation_from_jsx_element(current_element: &JsxText) -> JsxText {
             if matches!(byte, b'\r' | b'\n') {
                 newlines += 1;
             }
+
             if matches!(byte, b' ') && newlines == 1 && !string_found {
                 spaces += 1;
             }
         }
 
         let content = format!("\n{}", " ".repeat(spaces));
+
         jsx_text(jsx_ident(content.as_str()))
     } else {
         jsx_text(jsx_ident("\n"))
@@ -59,7 +67,9 @@ impl SuppressionAction for JsSuppressionAction {
             token_to_apply_suppression: token.clone(),
             should_insert_leading_newline: false,
         };
+
         let mut current_token = token;
+
         let mut should_insert_leading_newline = loop {
             let trivia = current_token.leading_trivia();
             // There are some tokens that might contains newlines in their tokens, only
@@ -73,6 +83,7 @@ impl SuppressionAction for JsSuppressionAction {
                         | JsSyntaxKind::TEMPLATE_CHUNK
                 )
             });
+
             if current_token
                 .trailing_trivia()
                 .pieces()
@@ -87,6 +98,7 @@ impl SuppressionAction for JsSuppressionAction {
             } else if matches!(current_token.kind(), JsSyntaxKind::DOLLAR_CURLY) {
                 if let Some(next_token) = current_token.next_token() {
                     current_token = next_token;
+
                     break false;
                 }
             } else if let Some(token) = current_token.prev_token() {
@@ -106,10 +118,12 @@ impl SuppressionAction for JsSuppressionAction {
         }
 
         apply_suppression.should_insert_leading_newline = should_insert_leading_newline;
+
         apply_suppression.token_has_trailing_comments = current_token
             .trailing_trivia()
             .pieces()
             .any(|trivia| trivia.kind().is_multiline_comment());
+
         apply_suppression.token_to_apply_suppression = current_token;
 
         Some(apply_suppression)
@@ -124,6 +138,7 @@ impl SuppressionAction for JsSuppressionAction {
     /// - JS templates are an exception to the rule. JS templates might contain expressions inside their
     ///     content, and those expressions can contain diagnostics. The function uses the token `${` as boundary
     ///     and tries to place the suppression comment after it;
+
     fn apply_suppression(
         &self,
         mutation: &mut BatchMutation<Self::Language>,
@@ -162,6 +177,7 @@ impl SuppressionAction for JsSuppressionAction {
                     token(T!['}']),
                 )
                 .build();
+
                 if let Some(current_element) = JsxOpeningElement::cast_ref(&current_jsx_element) {
                     if let Some(parent) = current_element.parent::<JsxElement>() {
                         mutation.add_jsx_elements_before_element(
@@ -179,6 +195,7 @@ impl SuppressionAction for JsSuppressionAction {
                 } else if let Some(current_element) = JsxText::cast_ref(&current_jsx_element) {
                     // We want to add an additional JsxText to keep the indentation
                     let indentation_text = make_indentation_from_jsx_element(&current_element);
+
                     mutation.add_jsx_elements_after_element(
                         &AnyJsxChild::JsxText(current_element),
                         [
@@ -189,6 +206,7 @@ impl SuppressionAction for JsSuppressionAction {
                 }
             } else {
                 let mut new_token = token_to_apply_suppression.clone();
+
                 if !should_insert_leading_newline {
                     new_token = new_token.with_leading_trivia([
                         (TriviaPieceKind::Newline, "\n"),
@@ -207,10 +225,12 @@ impl SuppressionAction for JsSuppressionAction {
                         (TriviaPieceKind::Newline, "\n"),
                     ])
                 };
+
                 mutation.replace_token_transfer_trivia(token_to_apply_suppression, new_token);
             }
         } else {
             let mut new_token = token_to_apply_suppression.clone();
+
             if !should_insert_leading_newline {
                 if token_has_trailing_comments {
                     new_token = new_token.with_trailing_trivia([
@@ -241,10 +261,12 @@ impl SuppressionAction for JsSuppressionAction {
                 ])
             } else {
                 let comment = format!("// {suppression_text}: {suppression_reason}");
+
                 let mut trivia = vec![
                     (TriviaPieceKind::SingleLineComment, comment.as_str()),
                     (TriviaPieceKind::Newline, "\n"),
                 ];
+
                 let leading_whitespace: Vec<_> = new_token
                     .leading_trivia()
                     .pieces()
@@ -257,6 +279,7 @@ impl SuppressionAction for JsSuppressionAction {
                 // Trim trailing trivia to prevent double insertion of trailing whitespaces in `replace_token_transfer_trivia`.
                 new_token = new_token.with_leading_trivia(trivia).trim_trailing_trivia();
             };
+
             mutation.replace_token_transfer_trivia(token_to_apply_suppression, new_token);
         }
     }

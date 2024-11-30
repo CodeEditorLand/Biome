@@ -85,12 +85,16 @@ declare_lint_rule! {
 impl Rule for UseImportRestrictions {
     // TODO. This does not handle dynamic imports and require calls.
     type Query = Ast<JsModuleSource>;
+
     type State = ImportRestrictionsState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let binding = ctx.query();
+
         let Ok(path) = binding.inner_string_text() else {
             return None;
         };
@@ -131,6 +135,7 @@ fn get_restricted_import(module_path: &TokenText) -> Option<ImportRestrictionsSt
     }
 
     let mut path_parts: Vec<_> = module_path.text().split('/').collect();
+
     let mut index_filename = None;
 
     // TODO. The implementation could be optimized further by using
@@ -146,6 +151,7 @@ fn get_restricted_import(module_path: &TokenText) -> Option<ImportRestrictionsSt
                 // component, but we store the file name so we can add it to
                 // both the reported path and the suggestion.
                 index_filename = path_parts.last().copied();
+
                 path_parts.pop();
             }
         }
@@ -156,6 +162,7 @@ fn get_restricted_import(module_path: &TokenText) -> Option<ImportRestrictionsSt
         .filter(|&&part| part != "." && part != "..")
         .count()
         > 1;
+
     if !is_restricted {
         return None;
     }
@@ -190,6 +197,7 @@ fn get_extension<'a>(path_parts: &'_ [&'a str]) -> Option<&'a str> {
         Some(dot_index) if dot_index > 0 && dot_index < part.len() - 1 => {
             Some(&part[dot_index + 1..])
         }
+
         _ => None,
     })
 }

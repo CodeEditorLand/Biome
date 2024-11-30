@@ -200,6 +200,7 @@ impl Display for MaxDiagnostics {
             MaxDiagnostics::None => {
                 write!(f, "none")
             }
+
             MaxDiagnostics::Limit(value) => {
                 write!(f, "{value}")
             }
@@ -209,6 +210,7 @@ impl Display for MaxDiagnostics {
 
 impl FromStr for MaxDiagnostics {
     type Err = String;
+
     fn from_str(s: &str) -> Result<Self, Self::Err> {
         match s {
             "none" => Ok(MaxDiagnostics::None),

@@ -22,6 +22,7 @@ pub(crate) fn format(
     params: DocumentFormattingParams,
 ) -> Result<Option<Vec<TextEdit>>, LspError> {
     let url = params.text_document.uri;
+
     let biome_path = session.file_path(&url)?;
 
     let doc = session.document(&url)?;
@@ -33,36 +34,46 @@ pub(crate) fn format(
 
     if file_features.supports_format() {
         debug!("Formatting...");
+
         let printed = session.workspace.format_file(FormatFileParams {
             path: biome_path.clone(),
         })?;
 
         let mut output = printed.into_code();
+
         let input = session.workspace.get_file_content(GetFileContentParams {
             path: biome_path.clone(),
         })?;
+
         if output.is_empty() {
             return Ok(None);
         }
+
         match biome_path.extension().map(OsStr::as_encoded_bytes) {
             Some(b"astro") => {
                 output = AstroFileHandler::output(input.as_str(), output.as_str());
             }
+
             Some(b"vue") => {
                 output = VueFileHandler::output(input.as_str(), output.as_str());
             }
+
             Some(b"svelte") => {
                 output = SvelteFileHandler::output(input.as_str(), output.as_str());
             }
+
             _ => {}
         }
 
         let content = session.workspace.get_file_content(GetFileContentParams {
             path: biome_path.clone(),
         })?;
+
         let indels =
             biome_text_edit::TextEdit::from_unicode_words(content.as_str(), output.as_str());
+
         let position_encoding = session.position_encoding();
+
         let edits = text_edit(&doc.line_index, indels, position_encoding, None)?;
 
         Ok(Some(edits))
@@ -77,6 +88,7 @@ pub(crate) fn format_range(
     params: DocumentRangeFormattingParams,
 ) -> Result<Option<Vec<TextEdit>>, LspError> {
     let url = params.text_document.uri;
+
     let biome_path = session.file_path(&url)?;
 
     let file_features = session.workspace.file_features(SupportsFeatureParams {
@@ -88,6 +100,7 @@ pub(crate) fn format_range(
         let doc = session.document(&url)?;
 
         let position_encoding = session.position_encoding();
+
         let format_range = from_proto::text_range(&doc.line_index, params.range, position_encoding)
             .with_context(|| {
                 format!(
@@ -95,15 +108,18 @@ pub(crate) fn format_range(
                     params.range.end
                 )
             })?;
+
         let content = session.workspace.get_file_content(GetFileContentParams {
             path: biome_path.clone(),
         })?;
+
         let offset = match biome_path.extension().map(OsStr::as_encoded_bytes) {
             Some(b"vue") => VueFileHandler::start(content.as_str()),
             Some(b"astro") => AstroFileHandler::start(content.as_str()),
             Some(b"svelte") => SvelteFileHandler::start(content.as_str()),
             _ => None,
         };
+
         let format_range = if let Some(offset) = offset {
             if format_range.start() - TextSize::from(offset) >= TextSize::from(0) {
                 TextRange::new(
@@ -125,9 +141,12 @@ pub(crate) fn format_range(
         let content = session.workspace.get_file_content(GetFileContentParams {
             path: biome_path.clone(),
         })?;
+
         let indels =
             biome_text_edit::TextEdit::from_unicode_words(content.as_str(), formatted.as_code());
+
         let position_encoding = session.position_encoding();
+
         let edits = text_edit(
             &doc.line_index,
             indels,
@@ -147,6 +166,7 @@ pub(crate) fn format_on_type(
     params: DocumentOnTypeFormattingParams,
 ) -> Result<Option<Vec<TextEdit>>, LspError> {
     let url = params.text_document_position.text_document.uri;
+
     let position = params.text_document_position.position;
 
     let biome_path = session.file_path(&url)?;
@@ -160,6 +180,7 @@ pub(crate) fn format_on_type(
         let doc = session.document(&url)?;
 
         let position_encoding = session.position_encoding();
+
         let offset = from_proto::offset(&doc.line_index, position, position_encoding)
             .with_context(|| format!("failed to access position {position:?} in document {url}"))?;
 
@@ -174,12 +195,14 @@ pub(crate) fn format_on_type(
 
         let indels =
             biome_text_edit::TextEdit::from_unicode_words(content.as_str(), formatted.as_code());
+
         let edits = text_edit(
             &doc.line_index,
             indels,
             position_encoding,
             Some(offset.into()),
         )?;
+
         Ok(Some(edits))
     } else {
         notify_user(file_features, biome_path)

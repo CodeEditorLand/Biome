@@ -83,15 +83,20 @@ pub struct ValidAriaRoleOptions {
 
 impl Rule for UseValidAriaRole {
     type Query = Ast<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = Box<ValidAriaRoleOptions>;
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let options = ctx.options();
 
         let ignore_non_dom = options.ignore_non_dom;
+
         let allowed_invalid_roles = &options.allow_invalid_roles;
 
         if ignore_non_dom && node.is_custom_component() {
@@ -99,11 +104,15 @@ impl Rule for UseValidAriaRole {
         }
 
         let role_attribute = node.find_attribute_by_name("role")?;
+
         let role_attribute_static_value = role_attribute.as_static_value()?;
+
         let role_attribute_value = role_attribute_static_value.text().trim();
+
         if role_attribute_value.is_empty() {
             return Some(());
         }
+
         let mut role_attribute_value = role_attribute_value.split_ascii_whitespace();
 
         let is_valid = role_attribute_value.all(|val| {
@@ -122,6 +131,7 @@ impl Rule for UseValidAriaRole {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),
@@ -138,9 +148,13 @@ impl Rule for UseValidAriaRole {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let role_attribute = node.find_attribute_by_name("role")?;
+
         mutation.remove_node(role_attribute);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

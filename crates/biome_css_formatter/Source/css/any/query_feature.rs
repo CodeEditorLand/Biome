@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssQueryFeature;
 pub(crate) struct FormatAnyCssQueryFeature;
 impl FormatRule<AnyCssQueryFeature> for FormatAnyCssQueryFeature {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssQueryFeature, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssQueryFeature::CssQueryFeatureBoolean(node) => node.format().fmt(f),

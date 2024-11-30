@@ -30,12 +30,16 @@ pub fn project_root() -> PathBuf {
 
 pub fn run_rustfmt(mode: Mode) -> Result<()> {
     let _dir = pushd(project_root());
+
     let _e = pushenv("RUSTUP_TOOLCHAIN", "stable");
+
     ensure_rustfmt()?;
+
     match mode {
         Mode::Overwrite => run!("cargo fmt"),
         Mode::Verify => run!("cargo fmt -- --check"),
     }?;
+
     Ok(())
 }
 
@@ -56,7 +60,9 @@ pub fn prepend_generated_preamble(content: impl Display) -> String {
 
 pub fn reformat_without_preamble(text: impl Display) -> Result<String> {
     let _e = pushenv("RUSTUP_TOOLCHAIN", "stable");
+
     ensure_rustfmt()?;
+
     let output = run!(
         "rustfmt --config newline_style=Unix";
         <text.to_string().as_bytes()
@@ -67,11 +73,13 @@ pub fn reformat_without_preamble(text: impl Display) -> Result<String> {
 
 pub fn ensure_rustfmt() -> Result<()> {
     let out = run!("rustfmt --version")?;
+
     if !out.contains("stable") {
         bail!(
             "Failed to run rustfmt from toolchain 'stable'. \
              Please run `rustup component add rustfmt --toolchain stable` to install it.",
         )
     }
+
     Ok(())
 }

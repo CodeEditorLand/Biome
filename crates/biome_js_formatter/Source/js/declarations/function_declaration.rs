@@ -43,6 +43,7 @@ impl FormatFunction {
             FormatFunction::JsFunctionExportDefaultDeclaration(declaration) => {
                 declaration.async_token()
             }
+
             FormatFunction::TsDeclareFunctionDeclaration(member) => member.async_token(),
             FormatFunction::TsDeclareFunctionExportDefaultDeclaration(member) => {
                 member.async_token()
@@ -57,9 +58,11 @@ impl FormatFunction {
             FormatFunction::JsFunctionExportDefaultDeclaration(declaration) => {
                 declaration.function_token()
             }
+
             FormatFunction::TsDeclareFunctionDeclaration(declaration) => {
                 declaration.function_token()
             }
+
             FormatFunction::TsDeclareFunctionExportDefaultDeclaration(declaration) => {
                 declaration.function_token()
             }
@@ -73,6 +76,7 @@ impl FormatFunction {
             FormatFunction::JsFunctionExportDefaultDeclaration(declaration) => {
                 declaration.star_token()
             }
+
             FormatFunction::TsDeclareFunctionDeclaration(_) => None,
             FormatFunction::TsDeclareFunctionExportDefaultDeclaration(_) => None,
         }
@@ -97,9 +101,11 @@ impl FormatFunction {
             FormatFunction::JsFunctionExportDefaultDeclaration(declaration) => {
                 declaration.type_parameters()
             }
+
             FormatFunction::TsDeclareFunctionDeclaration(declaration) => {
                 declaration.type_parameters()
             }
+
             FormatFunction::TsDeclareFunctionExportDefaultDeclaration(declaration) => {
                 declaration.type_parameters()
             }
@@ -113,6 +119,7 @@ impl FormatFunction {
             FormatFunction::JsFunctionExportDefaultDeclaration(declaration) => {
                 declaration.parameters()
             }
+
             FormatFunction::TsDeclareFunctionDeclaration(declaration) => declaration.parameters(),
             FormatFunction::TsDeclareFunctionExportDefaultDeclaration(declaration) => {
                 declaration.parameters()
@@ -125,13 +132,16 @@ impl FormatFunction {
             FormatFunction::JsFunctionDeclaration(declaration) => {
                 declaration.return_type_annotation()
             }
+
             FormatFunction::JsFunctionExpression(expression) => expression.return_type_annotation(),
             FormatFunction::JsFunctionExportDefaultDeclaration(declaration) => {
                 declaration.return_type_annotation()
             }
+
             FormatFunction::TsDeclareFunctionDeclaration(declaration) => {
                 declaration.return_type_annotation()
             }
+
             FormatFunction::TsDeclareFunctionExportDefaultDeclaration(declaration) => {
                 declaration.return_type_annotation()
             }
@@ -145,6 +155,7 @@ impl FormatFunction {
             FormatFunction::JsFunctionExportDefaultDeclaration(declaration) => {
                 Some(declaration.body()?)
             }
+
             FormatFunction::TsDeclareFunctionDeclaration(_) => None,
             FormatFunction::TsDeclareFunctionExportDefaultDeclaration(_) => None,
         })
@@ -176,13 +187,16 @@ impl FormatFunction {
             Some(id) => {
                 write!(f, [space(), id.format()])?;
             }
+
             None => {
                 write!(f, [space()])?;
             }
         }
 
         let type_parameters = self.type_parameters();
+
         let parameters = self.parameters()?;
+
         let return_type_annotation = self.return_type_annotation();
 
         write!(f, [type_parameters.format()])?;
@@ -192,7 +206,9 @@ impl FormatFunction {
                 let mut buffer = RemoveSoftLinesBuffer::new(f);
 
                 let mut recording = buffer.start_recording();
+
                 write!(recording, [parameters.format()])?;
+
                 let recorded = recording.stop();
 
                 if recorded.will_break() {
@@ -209,6 +225,7 @@ impl FormatFunction {
             f,
             [group(&format_with(|f| {
                 let mut format_return_type_annotation = return_type_annotation.format().memoized();
+
                 let group_parameters = should_group_function_parameters(
                     type_parameters.as_ref(),
                     parameters.items().len(),
@@ -249,6 +266,7 @@ impl FormatFunction {
 impl Format<JsFormatContext> for FormatFunction {
     fn fmt(&self, f: &mut JsFormatter) -> FormatResult<()> {
         self.fmt_with_options(f, &FormatFunctionOptions::default())?;
+
         Ok(())
     }
 }
@@ -278,6 +296,7 @@ pub(crate) fn should_group_function_parameters(
                     return Ok(false);
                 }
             }
+
             _ => return Ok(false),
         }
     }

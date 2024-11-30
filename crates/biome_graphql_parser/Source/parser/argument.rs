@@ -20,7 +20,9 @@ struct ArgumentListParseRecovery;
 
 impl ParseRecovery for ArgumentListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_ARGUMENT;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
@@ -33,6 +35,7 @@ struct ArgumentList;
 
 impl ParseNodeList for ArgumentList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_ARGUMENT_LIST;
@@ -61,8 +64,11 @@ pub(crate) fn parse_arguments(p: &mut GraphqlParser) -> ParsedSyntax {
     }
 
     let m = p.start();
+
     p.bump(T!['(']);
+
     ArgumentList.parse_list(p);
+
     p.expect(T![')']);
 
     Present(m.complete(p, GRAPHQL_ARGUMENTS))
@@ -78,7 +84,9 @@ fn parse_argument(p: &mut GraphqlParser) -> ParsedSyntax {
 
     // name is checked for in `is_at_name`
     parse_literal_name(p).ok();
+
     p.expect(T![:]);
+
     parse_value(p).or_add_diagnostic(p, expected_value);
 
     Present(m.complete(p, GRAPHQL_ARGUMENT))

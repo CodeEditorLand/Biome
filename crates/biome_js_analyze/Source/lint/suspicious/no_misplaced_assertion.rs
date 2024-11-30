@@ -136,12 +136,16 @@ const EXCEPTION_MEMBERS_FOR_EXPECT: [&str; 10] = [
 
 impl Rule for NoMisplacedAssertion {
     type Query = Semantic<AnyJsExpression>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let model = ctx.model();
 
         if let Some(call_text) = node.to_assertion_call() {
@@ -151,7 +155,9 @@ impl Rule for NoMisplacedAssertion {
                     .filter_map(JsCallExpression::cast)
                     .find_map(|call_expression| {
                         let callee = call_expression.callee().ok()?;
+
                         let callee = may_extract_nested_expr(callee)?;
+
                         callee.contains_it_call().then_some(true)
                     })
                     .unwrap_or_default()
@@ -163,10 +169,13 @@ impl Rule for NoMisplacedAssertion {
                     .filter_map(JsCallExpression::cast)
                     .find_map(|call_expression| {
                         let callee = call_expression.callee().ok()?;
+
                         let callee = may_extract_nested_expr(callee)?;
+
                         callee.contains_describe_call().then_some(true)
                     })
             };
+
             let assertion_call = node.get_callee_object_identifier()?;
 
             if let Some(ancestor_is_describe_call) = ancestor_is_describe_call {
@@ -178,11 +187,16 @@ impl Rule for NoMisplacedAssertion {
             }
 
             let is_exception = is_exception_for_expect(node)?;
+
             let binding = model.binding(&assertion_call);
+
             if let Some(binding) = binding {
                 let ident = JsIdentifierBinding::cast_ref(binding.syntax())?;
+
                 let import = ident.syntax().ancestors().find_map(JsImport::cast)?;
+
                 let source_text = import.source_text().ok()?;
+
                 if (ASSERTION_FUNCTION_NAMES.contains(&call_text.text()))
                     && (SPECIFIERS.iter().any(|specifier| {
                         // Deno is a particular case
@@ -236,13 +250,17 @@ fn may_extract_nested_expr(callee: AnyJsExpression) -> Option<AnyJsExpression> {
 /// Returns whether the assertion call is an exception for the `expect` assertion function.
 fn is_exception_for_expect(node: &AnyJsExpression) -> Option<bool> {
     let assertion_call = node.get_callee_object_identifier()?;
+
     let callee_text = assertion_call.syntax().parent()?.text_trimmed();
 
     let parent = node.syntax().parent()?;
+
     let last_token = parent.last_token()?;
+
     let last_token_text = last_token.text();
 
     let member = node.get_callee_member_name()?;
+
     let member_text = member.text_trimmed();
 
     Some(if callee_text == "expect" {

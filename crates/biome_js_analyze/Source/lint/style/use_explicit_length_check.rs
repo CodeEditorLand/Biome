@@ -135,13 +135,18 @@ declare_lint_rule! {
 
 impl Rule for UseExplicitLengthCheck {
     type Query = Ast<JsStaticMemberExpression>;
+
     type State = UseExplicitLengthCheckState;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let member_expr = ctx.query();
+
         let member_name = member_expr.member().ok()?;
+
         let member_name = member_name
             .as_js_name()?
             .value_token()
@@ -156,6 +161,7 @@ impl Rule for UseExplicitLengthCheck {
         // That requires type inference. Example: `{ length: "not a number" }`
 
         let member_expr_syntax = member_expr.syntax();
+
         let parent_syntax = member_expr_syntax.parent()?;
 
         if let Some((binary_expr, mut len_check, is_possibly_valid)) =
@@ -234,7 +240,9 @@ impl Rule for UseExplicitLengthCheck {
             LengthCheck::Zero => ("=== 0", "zero"),
             LengthCheck::NonZero => ("> 0", "not zero"),
         };
+
         let member_name = state.member_name.text();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             state.node.range(),
@@ -246,7 +254,9 @@ impl Rule for UseExplicitLengthCheck {
 
     fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
         let member_expr = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let operator_kind = match state.check {
             LengthCheck::Zero => T![===],
             LengthCheck::NonZero => T![>],
@@ -263,6 +273,7 @@ impl Rule for UseExplicitLengthCheck {
         );
 
         let mut new_node = new_binary_expr.into_syntax();
+
         let parent = state.node.syntax().parent()?;
         // In cases like `export default!foo.length` -> `export default foo.length === 0`
         // we need to add a space between keyword and expression
@@ -286,7 +297,9 @@ impl Rule for UseExplicitLengthCheck {
             LengthCheck::Zero => "=== 0",
             LengthCheck::NonZero => "> 0",
         };
+
         let member_name = state.member_name.text();
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -347,6 +360,7 @@ fn is_binary_expr_length_check(
     let binary_expr = JsBinaryExpression::cast_ref(node)?;
 
     let (member_position, literal) = extract_binary_position_and_literal(&binary_expr)?;
+
     let number = literal
         .as_js_number_literal_expression()?
         .as_number()?
@@ -403,18 +417,25 @@ fn is_binary_expr_length_check(
 /// Returns ancestor expression and whether it is negated
 fn get_boolean_ancestor(node: &JsSyntaxNode) -> Option<(AnyJsExpression, bool)> {
     let mut boolean_node: Option<JsSyntaxNode> = None;
+
     let mut current_node = node.parent()?;
+
     let mut is_negative = false;
 
     loop {
         if let Some(expr) = is_boolean_call(&current_node) {
             let syntax = expr.into_syntax();
+
             current_node = syntax.parent()?;
+
             boolean_node = Some(syntax);
         } else if let Some(expr) = is_negation(&current_node) {
             let syntax = expr.into_syntax();
+
             current_node = syntax.parent()?;
+
             boolean_node = Some(syntax);
+
             is_negative = !is_negative;
         } else if current_node.kind() == JsSyntaxKind::JS_PARENTHESIZED_EXPRESSION {
             current_node = current_node.parent()?;

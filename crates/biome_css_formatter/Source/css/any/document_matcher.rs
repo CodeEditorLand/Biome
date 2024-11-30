@@ -6,6 +6,7 @@ use biome_css_syntax::AnyCssDocumentMatcher;
 pub(crate) struct FormatAnyCssDocumentMatcher;
 impl FormatRule<AnyCssDocumentMatcher> for FormatAnyCssDocumentMatcher {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &AnyCssDocumentMatcher, f: &mut CssFormatter) -> FormatResult<()> {
         match node {
             AnyCssDocumentMatcher::CssBogusDocumentMatcher(node) => node.format().fmt(f),

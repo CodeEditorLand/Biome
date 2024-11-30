@@ -51,6 +51,7 @@ pub(super) fn parse_interface_type_extension(p: &mut GraphqlParser) -> ParsedSyn
     let m = p.start();
 
     p.bump(T![extend]);
+
     p.bump(T![interface]);
 
     parse_reference(p).or_add_diagnostic(p, expected_name);
@@ -58,7 +59,9 @@ pub(super) fn parse_interface_type_extension(p: &mut GraphqlParser) -> ParsedSyn
     let implements_interface_empty = parse_implements_interface(p).is_absent();
 
     let pos = p.source().position();
+
     DirectiveList.parse_list(p);
+
     let directive_empty = p.source().position() == pos;
 
     let fields_definition_empty = parse_fields_definition(p).is_absent();
@@ -75,9 +78,11 @@ pub(super) fn parse_implements_interface(p: &mut GraphqlParser) -> ParsedSyntax 
     if !is_at_implements_interface(p) {
         return Absent;
     }
+
     let m = p.start();
 
     p.bump(T![implements]);
+
     p.eat(T![&]); // leading ampersand separator is optional
 
     ImplementsInterfaceList.parse_list(p);
@@ -90,6 +95,7 @@ struct ImplementsInterfaceList;
 
 impl ParseSeparatedList for ImplementsInterfaceList {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
 
     const LIST_KIND: Self::Kind = GRAPHQL_IMPLEMENTS_INTERFACE_LIST;
@@ -131,7 +137,9 @@ struct ImplementsInterfaceListParseRecovery;
 
 impl ParseRecovery for ImplementsInterfaceListParseRecovery {
     type Kind = GraphqlSyntaxKind;
+
     type Parser<'source> = GraphqlParser<'source>;
+
     const RECOVERED_KIND: Self::Kind = GRAPHQL_BOGUS;
 
     fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {

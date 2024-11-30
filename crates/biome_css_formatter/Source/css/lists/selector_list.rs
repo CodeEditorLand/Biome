@@ -5,6 +5,7 @@ use biome_css_syntax::CssSelectorList;
 pub(crate) struct FormatCssSelectorList;
 impl FormatRule<CssSelectorList> for FormatCssSelectorList {
     type Context = CssFormatContext;
+
     fn fmt(&self, node: &CssSelectorList, f: &mut CssFormatter) -> FormatResult<()> {
         let separator = soft_line_break_or_space();
         // Using `join_with` and a manual separator instead of `join_nodes_with_soft_line`
@@ -52,6 +53,7 @@ impl FormatRule<CssSelectorList> for FormatCssSelectorList {
 
                 if simple_selector_has_leading_comments || sub_selector_has_leading_comments {
                     joiner.entry(&group(&formatted));
+
                     continue;
                 }
             }

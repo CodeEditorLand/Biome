@@ -54,8 +54,11 @@ declare_lint_rule! {
 
 impl Rule for NoDoneCallback {
     type Query = Ast<JsCallExpression>;
+
     type State = TextRange;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -72,6 +75,7 @@ impl Rule for NoDoneCallback {
         }
 
         let arguments = &node.arguments().ok()?;
+
         let callee_name = callee.get_callee_object_name()?;
 
         let argument_index = match callee_name.text_trimmed() {
@@ -79,33 +83,43 @@ impl Rule for NoDoneCallback {
             "it" | "test" => 1, // for test.each() and test() we want the second argument
             _ => return None,
         };
+
         let argument = arguments
             .get_arguments_by_index([argument_index])
             .first()?
             .clone();
 
         let callback = argument?;
+
         let callback = callback.as_any_js_expression()?;
 
         match callback {
             AnyJsExpression::JsArrowFunctionExpression(arrow_function) => {
                 let parameter = arrow_function.parameters().ok()?;
+
                 match parameter {
                     AnyJsArrowFunctionParameters::AnyJsBinding(binding) => {
                         let param = binding.as_js_identifier_binding()?;
+
                         let text_range = param.name_token().ok()?;
+
                         let text_range = text_range.text_trimmed_range();
+
                         return Some(text_range);
                     }
+
                     AnyJsArrowFunctionParameters::JsParameters(js_parameters) => {
                         return analyze_js_parameters(&js_parameters, is_test_each)
                     }
                 }
             }
+
             AnyJsExpression::JsFunctionExpression(js_function) => {
                 let js_parameters = js_function.parameters().ok()?;
+
                 return analyze_js_parameters(&js_parameters, is_test_each);
             }
+
             _ => {}
         }
 
@@ -137,11 +151,15 @@ fn analyze_js_parameters(js_parameters: &JsParameters, is_test_each: bool) -> Op
     };
 
     let param = param.ok()?;
+
     let formal_parameter = param.as_any_js_formal_parameter()?;
+
     let formal_parameter = formal_parameter.as_js_formal_parameter()?;
 
     let binding = formal_parameter.binding().ok()?;
+
     let binding = binding.as_any_js_binding()?;
+
     let text_range = get_js_binding_range(binding)?;
 
     Some(text_range)
@@ -149,7 +167,10 @@ fn analyze_js_parameters(js_parameters: &JsParameters, is_test_each: bool) -> Op
 
 fn get_js_binding_range(binding: &AnyJsBinding) -> Option<TextRange> {
     let param = binding.as_js_identifier_binding()?;
+
     let text_range = param.name_token().ok()?;
+
     let text_range = text_range.text_trimmed_range();
+
     Some(text_range)
 }

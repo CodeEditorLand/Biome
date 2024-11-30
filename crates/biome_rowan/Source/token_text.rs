@@ -21,11 +21,13 @@ impl std::hash::Hash for TokenText {
 impl TokenText {
     pub(crate) fn new(token: GreenToken) -> TokenText {
         let range = TextRange::at(TextSize::default(), token.text_len());
+
         Self { token, range }
     }
 
     pub(crate) fn with_range(token: GreenToken, range: TextRange) -> TokenText {
         debug_assert!(range.end() <= token.text_len());
+
         Self { token, range }
     }
 
@@ -47,7 +49,9 @@ impl TokenText {
             "Range {range:?} exceeds the text length {:?}",
             self.len()
         );
+
         self.range = range + self.range.start();
+
         self
     }
 

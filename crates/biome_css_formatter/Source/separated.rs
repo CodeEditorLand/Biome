@@ -18,7 +18,9 @@ where
     N: AstNode<Language = CssLanguage> + AsFormat<CssFormatContext> + 'static,
 {
     type Context = CssFormatContext;
+
     type FormatNode<'a> = N::Format<'a>;
+
     type FormatSeparator<'a> = FormatRefWithRule<'a, CssSyntaxToken, FormatCssSyntaxToken>;
 
     fn format_node<'a>(&self, node: &'a N) -> Self::FormatNode<'a> {
@@ -82,7 +84,9 @@ where
         + 'static,
 {
     type Context = CssFormatContext;
+
     type FormatNode<'a> = FormatRefWithRule<'a, N, R>;
+
     type FormatSeparator<'a> = FormatRefWithRule<'a, CssSyntaxToken, FormatCssSyntaxToken>;
 
     fn format_node<'a>(&self, node: &'a N) -> Self::FormatNode<'a> {

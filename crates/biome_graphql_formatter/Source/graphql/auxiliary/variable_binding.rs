@@ -11,6 +11,7 @@ impl FormatNodeRule<GraphqlVariableBinding> for FormatGraphqlVariableBinding {
         f: &mut GraphqlFormatter,
     ) -> FormatResult<()> {
         let GraphqlVariableBindingFields { dollar_token, name } = node.as_fields();
+
         write!(f, [dollar_token.format(), name.format()])
     }
 }

@@ -4,6 +4,7 @@ use biome_graphql_syntax::GraphqlSelectionList;
 pub(crate) struct FormatGraphqlSelectionList;
 impl FormatRule<GraphqlSelectionList> for FormatGraphqlSelectionList {
     type Context = GraphqlFormatContext;
+
     fn fmt(&self, node: &GraphqlSelectionList, f: &mut GraphqlFormatter) -> FormatResult<()> {
         let mut join = f.join_nodes_with_hardline();
 

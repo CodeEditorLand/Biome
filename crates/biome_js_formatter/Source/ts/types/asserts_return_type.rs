@@ -14,6 +14,7 @@ impl FormatNodeRule<TsAssertsReturnType> for FormatTsAssertsReturnType {
             asserts_token,
             predicate,
         } = node.as_fields();
+
         write![
             f,
             [

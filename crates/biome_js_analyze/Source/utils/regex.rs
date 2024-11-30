@@ -30,8 +30,11 @@ impl Deref for RestrictedRegex {
 impl std::fmt::Display for RestrictedRegex {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let repr = self.0.as_str();
+
         debug_assert!(repr.starts_with("^(?:"));
+
         debug_assert!(repr.ends_with(")$"));
+
         f.write_str(&repr[4..(repr.len() - 2)])
     }
 }
@@ -47,6 +50,7 @@ impl FromStr for RestrictedRegex {
 
     fn from_str(value: &str) -> Result<Self, Self::Err> {
         is_restricted_regex(value)?;
+
         regex::Regex::new(&format!("^(?:{value})$")).map(RestrictedRegex)
     }
 }
@@ -81,7 +85,9 @@ impl PartialEq for RestrictedRegex {
 /// Rteurns an error if `pattern` doesn't follow the restricted regular expression syntax.
 fn is_restricted_regex(pattern: &str) -> Result<(), regex::Error> {
     let mut it = pattern.bytes();
+
     let mut is_in_char_class = false;
+
     while let Some(c) = it.next() {
         match c {
             b'\\' => {
@@ -121,6 +127,7 @@ fn is_restricted_regex(pattern: &str) -> Result<(), regex::Error> {
                     ));
                 }
             }
+
             b'^' | b'$' if !is_in_char_class => {
                 // Anchors are implicit and always present in a restricted regex
                 return Err(regex::Error::Syntax(
@@ -128,17 +135,21 @@ fn is_restricted_regex(pattern: &str) -> Result<(), regex::Error> {
                         .to_string(),
                 ));
             }
+
             b'[' if is_in_char_class => {
                 return Err(regex::Error::Syntax(
                     "Nested character class are not supported.".to_string(),
                 ));
             }
+
             b'[' => {
                 is_in_char_class = true;
             }
+
             b']' => {
                 is_in_char_class = false;
             }
+
             b'&' | b'~' | b'-' if is_in_char_class => {
                 if it.next() == Some(c) {
                     return Err(regex::Error::Syntax(
@@ -146,10 +157,12 @@ fn is_restricted_regex(pattern: &str) -> Result<(), regex::Error> {
                     ));
                 }
             }
+
             b'(' if !is_in_char_class => match it.next() {
                 Some(b'[') => {
                     is_in_char_class = true;
                 }
+
                 Some(b'?') => match it.next() {
                     Some(b'P' | b'=' | b'!' | b'<') => {
                         return if c == b'P'
@@ -165,7 +178,9 @@ fn is_restricted_regex(pattern: &str) -> Result<(), regex::Error> {
                             ))
                         };
                     }
+
                     Some(b':') => {}
+
                     _ => {
                         return Err(regex::Error::Syntax(
                             "Group flags `(?flags:)` are not supported.".to_string(),
@@ -177,6 +192,7 @@ fn is_restricted_regex(pattern: &str) -> Result<(), regex::Error> {
             _ => {}
         }
     }
+
     Ok(())
 }
 
@@ -187,24 +203,41 @@ mod tests {
     #[test]
     fn test() {
         assert!(is_restricted_regex("^a").is_err());
+
         assert!(is_restricted_regex("a$").is_err());
+
         assert!(is_restricted_regex(r"\").is_err());
+
         assert!(is_restricted_regex(r"\p{L}").is_err());
+
         assert!(is_restricted_regex(r"(?i:)").is_err());
+
         assert!(is_restricted_regex(r"(?=a)").is_err());
+
         assert!(is_restricted_regex(r"(?!a)").is_err());
+
         assert!(is_restricted_regex(r"(?<NAME>:a)").is_err());
+
         assert!(is_restricted_regex(r"[[:digit:]]").is_err());
+
         assert!(is_restricted_regex(r"[a[bc]d]").is_err());
+
         assert!(is_restricted_regex(r"[ab--a]").is_err());
+
         assert!(is_restricted_regex(r"[ab&&a]").is_err());
+
         assert!(is_restricted_regex(r"[ab~~a]").is_err());
 
         assert!(is_restricted_regex("").is_ok());
+
         assert!(is_restricted_regex("abc").is_ok());
+
         assert!(is_restricted_regex("(?:a)(.+)z").is_ok());
+
         assert!(is_restricted_regex("[A-Z][^a-z]").is_ok());
+
         assert!(is_restricted_regex(r"\n\t\v\f").is_ok());
+
         assert!(is_restricted_regex("([^_])").is_ok());
     }
 }

@@ -6,6 +6,7 @@ use biome_grit_syntax::AnyGritContainer;
 pub(crate) struct FormatAnyGritContainer;
 impl FormatRule<AnyGritContainer> for FormatAnyGritContainer {
     type Context = GritFormatContext;
+
     fn fmt(&self, node: &AnyGritContainer, f: &mut GritFormatter) -> FormatResult<()> {
         match node {
             AnyGritContainer::GritBogusContainer(node) => node.format().fmt(f),

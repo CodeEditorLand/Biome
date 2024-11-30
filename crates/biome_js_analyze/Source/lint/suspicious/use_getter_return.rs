@@ -68,24 +68,34 @@ declare_lint_rule! {
 
 impl Rule for UseGetterReturn {
     type Query = ControlFlowGraph;
+
     type State = InvalidGetterReturn;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let cfg = ctx.query();
+
         let node_kind = cfg.node.kind();
+
         let mut invalid_returns = Vec::new();
+
         if !JsGetterClassMember::can_cast(node_kind) && !JsGetterObjectMember::can_cast(node_kind) {
             // The node is not a getter.
             return invalid_returns.into_boxed_slice();
         }
         // stack of blocks to process
         let mut block_stack = vec![ROOT_BLOCK_ID];
+
         let mut visited_blocks = RoaringBitmap::new();
+
         visited_blocks.insert(ROOT_BLOCK_ID.index());
+
         while let Some(block_id) = block_stack.pop() {
             let block = cfg.get(block_id);
+
             for exception_handler in block.exception_handlers.iter() {
                 // Ignore finally handler: they are already in the Control Flow Graph.
                 if matches!(exception_handler.kind, ExceptionHandlerKind::Catch) {
@@ -95,9 +105,11 @@ impl Rule for UseGetterReturn {
                     }
                 }
             }
+
             for instruction in block.instructions.iter() {
                 match instruction.kind {
                     InstructionKind::Statement => {}
+
                     InstructionKind::Jump {
                         conditional,
                         block: jump_block_id,
@@ -107,11 +119,13 @@ impl Rule for UseGetterReturn {
                         if visited_blocks.insert(jump_block_id.index()) {
                             block_stack.push(jump_block_id);
                         }
+
                         if !conditional {
                             // The next instructions are unreachable.
                             break;
                         }
                     }
+
                     InstructionKind::Return => {
                         if let Some(NodeOrToken::Node(node)) = &instruction.node {
                             if let Some(return_stmt) = JsReturnStatement::cast_ref(node) {
@@ -130,14 +144,17 @@ impl Rule for UseGetterReturn {
                 }
             }
         }
+
         invalid_returns.into_boxed_slice()
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, invalid_return: &Self::State) -> Option<RuleDiagnostic> {
         let cfg = ctx.query();
+
         let diagnostic = match invalid_return {
             InvalidGetterReturn::MissingReturn => {
                 let getter_range = cfg.node.text_trimmed_range();
+
                 RuleDiagnostic::new(
                     rule_category!(),
                     getter_range,
@@ -146,6 +163,7 @@ impl Rule for UseGetterReturn {
                     },
                 )
             }
+
             InvalidGetterReturn::EmptyReturn(return_stmt_range) => RuleDiagnostic::new(
                 rule_category!(),
                 return_stmt_range,
@@ -154,6 +172,7 @@ impl Rule for UseGetterReturn {
                 },
             ),
         };
+
         Some(diagnostic)
     }
 }

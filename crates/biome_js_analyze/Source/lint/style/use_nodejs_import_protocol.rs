@@ -59,17 +59,24 @@ declare_lint_rule! {
 
 impl Rule for UseNodejsImportProtocol {
     type Query = Manifest<AnyJsImportLike>;
+
     type State = JsSyntaxToken;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         if node.is_in_ts_module_declaration() {
             return None;
         }
+
         let module_name = node.module_name_token()?;
+
         let module_name_trimmed = inner_string_text(&module_name);
+
         if ctx.is_dependency(&module_name_trimmed)
             || ctx.is_dev_dependency(&module_name_trimmed)
             || ctx.is_peer_dependency(&module_name_trimmed)
@@ -77,6 +84,7 @@ impl Rule for UseNodejsImportProtocol {
         {
             return None;
         }
+
         is_node_module_without_protocol(&module_name_trimmed).then_some(module_name)
     }
 
@@ -98,16 +106,22 @@ impl Rule for UseNodejsImportProtocol {
             module_name.kind() == JsSyntaxKind::JS_STRING_LITERAL,
             "The module name token should be a string literal."
         );
+
         let str_delimiter = (*module_name.text_trimmed().as_bytes().first()?) as char;
+
         let module_inner_name = inner_string_text(module_name);
+
         let new_module_name = JsSyntaxToken::new_detached(
             JsSyntaxKind::JS_STRING_LITERAL,
             &format!("{str_delimiter}node:{module_inner_name}{str_delimiter}"),
             [],
             [],
         );
+
         let mut mutation = ctx.root().begin();
+
         mutation.replace_token(module_name.clone(), new_module_name);
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),

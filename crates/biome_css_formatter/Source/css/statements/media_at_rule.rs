@@ -36,6 +36,7 @@ impl FormatNodeRule<CssMediaAtRule> for FormatCssMediaAtRule {
                 // 	     all and (min-device-pixel-ratio: 1.5)
                 //   {
                 //   }
+
                 group(&indent(&queries.format())),
                 space(),
                 block.format()

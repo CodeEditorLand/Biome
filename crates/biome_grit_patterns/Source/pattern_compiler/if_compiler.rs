@@ -14,7 +14,9 @@ impl IfCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<If<GritQueryContext>, CompileError> {
         let if_ = PredicateCompiler::from_node(&node.if_predicate()?, context)?;
+
         let then = PatternCompiler::from_maybe_curly_node(&node.then_pattern()?, context)?;
+
         let else_ = node
             .else_clause()
             .map(|node| PatternCompiler::from_maybe_curly_node(&node.else_pattern()?, context))
@@ -32,7 +34,9 @@ impl PrIfCompiler {
         context: &mut NodeCompilationContext,
     ) -> Result<PrIf<GritQueryContext>, CompileError> {
         let if_ = PredicateCompiler::from_node(&node.if_predicate()?, context)?;
+
         let then = PredicateCompiler::from_node(&node.then_predicate()?, context)?;
+
         let else_ = node
             .else_clause()
             .map(|node| PredicateCompiler::from_node(&node.else_predicate()?, context))

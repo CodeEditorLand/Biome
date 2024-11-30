@@ -15,6 +15,7 @@ impl FormatRule<JsDirectiveList> for FormatJsDirectiveList {
         }
 
         let syntax_node = node.syntax();
+
         let next_sibling = syntax_node.next_sibling();
         // if next_sibling's first leading_trivia has more than one new_line, we should add an extra empty line at the end of
         // JsDirectiveList, for example:

@@ -85,8 +85,11 @@ declare_lint_rule! {
 
 impl Rule for NoDoubleEquals {
     type Query = Ast<JsBinaryExpression>;
+
     type State = JsSyntaxToken;
+
     type Signals = Option<Self::State>;
+
     type Options = NoDoubleEqualsOptions;
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -109,7 +112,9 @@ impl Rule for NoDoubleEquals {
 
     fn diagnostic(ctx: &RuleContext<Self>, op: &Self::State) -> Option<RuleDiagnostic> {
         let text_trimmed = op.text_trimmed();
+
         let suggestion = if op.kind() == EQ2 { "===" } else { "!==" };
+
         let diagnostic = RuleDiagnostic::new(
             rule_category!(),
             op.text_trimmed_range(),
@@ -138,6 +143,7 @@ impl Rule for NoDoubleEquals {
         let mut mutation = ctx.root().begin();
 
         let suggestion = if op.kind() == EQ2 { T![===] } else { T![!==] };
+
         mutation.replace_token(op.clone(), make::token(suggestion));
 
         Some(JsRuleAction::new(

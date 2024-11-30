@@ -15,6 +15,7 @@ impl FormatNodeRule<TsNamedTupleTypeElement> for FormatTsNamedTupleTypeElement {
             name,
             dotdotdot_token,
         } = node.as_fields();
+
         write![
             f,
             [

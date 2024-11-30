@@ -78,6 +78,7 @@ impl Display for FixKind {
 
 impl TryFrom<FixKind> for Applicability {
     type Error = &'static str;
+
     fn try_from(value: FixKind) -> Result<Self, Self::Error> {
         match value {
             FixKind::None => Err("The fix kind is None"),
@@ -188,7 +189,9 @@ impl Ord for RuleSource {
             Ordering::Less
         } else {
             let self_rule = self.as_rule_name();
+
             let other_rule = other.as_rule_name();
+
             self_rule.cmp(other_rule)
         }
     }
@@ -333,16 +336,19 @@ impl RuleMetadata {
 
     pub const fn recommended(mut self, recommended: bool) -> Self {
         self.recommended = recommended;
+
         self
     }
 
     pub const fn deprecated(mut self, deprecated: &'static str) -> Self {
         self.deprecated = Some(deprecated);
+
         self
     }
 
     pub const fn fix_kind(mut self, kind: FixKind) -> Self {
         self.fix_kind = kind;
+
         self
     }
 
@@ -351,16 +357,19 @@ impl RuleMetadata {
         //if self.source_kind.is_none() {
         //    self.source_kind = Some(RuleSourceKind::SameLogic);
         //}
+
         self
     }
 
     pub const fn source_kind(mut self, source_kind: RuleSourceKind) -> Self {
         self.source_kind = Some(source_kind);
+
         self
     }
 
     pub const fn language(mut self, language: &'static str) -> Self {
         self.language = language;
+
         self
     }
 
@@ -375,9 +384,11 @@ impl RuleMetadata {
             RuleCategory::Lint => {
                 ActionCategory::QuickFix(Cow::Owned(format!("{}.{}", group, self.name)))
             }
+
             RuleCategory::Action => {
                 ActionCategory::Source(SourceActionKind::Other(Cow::Borrowed(self.name)))
             }
+
             RuleCategory::Syntax | RuleCategory::Transformation => unimplemented!(""),
         }
     }
@@ -385,6 +396,7 @@ impl RuleMetadata {
 
 pub trait RuleMeta {
     type Group: RuleGroup;
+
     const METADATA: RuleMetadata;
 }
 
@@ -505,6 +517,7 @@ macro_rules! declare_rule {
 
         impl $crate::RuleMeta for $id {
             type Group = super::Group;
+
             const METADATA: $crate::RuleMetadata =
                 $crate::RuleMetadata::new($version, $name, concat!( $( $doc, "\n", )* ), $language) $( .$key($value) )*;
         }
@@ -564,6 +577,7 @@ macro_rules! declare_source_rule {
 /// disabled at once
 pub trait RuleGroup {
     type Language: Language;
+
     type Category: GroupCategory;
     /// The name of this group, displayed in the diagnostics emitted by its rules
     const NAME: &'static str;
@@ -580,6 +594,7 @@ macro_rules! declare_lint_group {
 
         impl $crate::RuleGroup for $id {
             type Language = <( $( $( $rule )::* , )* ) as $crate::GroupLanguage>::Language;
+
             type Category = super::Category;
 
             const NAME: &'static str = $name;
@@ -617,6 +632,7 @@ macro_rules! declare_assists_group {
 
         impl $crate::RuleGroup for $id {
             type Language = <( $( $( $rule )::* , )* ) as $crate::GroupLanguage>::Language;
+
             type Category = super::Category;
 
             const NAME: &'static str = $name;
@@ -654,6 +670,7 @@ macro_rules! declare_syntax_group {
 
         impl $crate::RuleGroup for $id {
             type Language = <( $( $( $rule )::* , )* ) as $crate::GroupLanguage>::Language;
+
             type Category = super::Category;
 
             const NAME: &'static str = $name;
@@ -887,6 +904,7 @@ pub trait Rule: RuleMeta + Sized {
         state: &Self::State,
     ) -> Option<RuleAction<RuleLanguage<Self>>> {
         let (..) = (ctx, state);
+
         None
     }
 
@@ -908,10 +926,15 @@ pub trait Rule: RuleMeta + Sized {
                 <Self::Group as RuleGroup>::NAME,
                 Self::METADATA.name
             );
+
             let suppression_text = format!("biome-ignore {rule_category}");
+
             let root = ctx.root();
+
             let token = root.syntax().token_at_offset(text_range.start());
+
             let mut mutation = root.begin();
+
             suppression_action.apply_suppression_comment(SuppressionCommentEmitterPayload {
                 suppression_text: suppression_text.as_str(),
                 mutation: &mut mutation,
@@ -976,6 +999,7 @@ impl Advices for RuleAdvice {
                 detail.log_category,
                 &markup! { {detail.message} }.to_owned(),
             )?;
+
             visitor.record_frame(Location::builder().span(&detail.range).build())?;
         }
         // we then print notes
@@ -988,11 +1012,13 @@ impl Advices for RuleAdvice {
                 LogCategory::Info,
                 &markup! { {suggestion_list.message} }.to_owned(),
             )?;
+
             let list: Vec<_> = suggestion_list
                 .list
                 .iter()
                 .map(|suggestion| suggestion as &dyn Display)
                 .collect();
+
             visitor.record_list(&list)?;
         }
 
@@ -1017,6 +1043,7 @@ impl RuleDiagnostic {
     /// used in a builder-like way to modify labels.
     pub fn new(category: &'static Category, span: impl AsSpan, title: impl Display) -> Self {
         let message = markup!({ title }).to_owned();
+
         Self {
             category,
             span: span.as_span(),
@@ -1029,6 +1056,7 @@ impl RuleDiagnostic {
     /// Set an explicit plain-text summary for this diagnostic.
     pub fn description(mut self, summary: impl Into<String>) -> Self {
         self.message.set_description(summary.into());
+
         self
     }
 
@@ -1038,6 +1066,7 @@ impl RuleDiagnostic {
     /// This does not have any influence on the diagnostic rendering.
     pub fn deprecated(mut self) -> Self {
         self.tags |= DiagnosticTags::DEPRECATED_CODE;
+
         self
     }
 
@@ -1047,6 +1076,7 @@ impl RuleDiagnostic {
     /// This does not have any influence on the diagnostic rendering.
     pub fn unnecessary(mut self) -> Self {
         self.tags |= DiagnosticTags::UNNECESSARY_CODE;
+
         self
     }
 
@@ -1059,6 +1089,7 @@ impl RuleDiagnostic {
             message: markup!({ msg }).to_owned(),
             range: span.as_span(),
         });
+
         self
     }
 
@@ -1072,6 +1103,7 @@ impl RuleDiagnostic {
         self.rule_advice
             .notes
             .push((log_category, markup!({ msg }).to_owned()));
+
         self
     }
 
@@ -1094,6 +1126,7 @@ impl RuleDiagnostic {
                 .map(|msg| markup! {{msg}}.to_owned())
                 .collect(),
         });
+
         self
     }
 

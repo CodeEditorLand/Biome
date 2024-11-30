@@ -27,6 +27,7 @@ impl FormatNodeRule<JsPostUpdateExpression> for FormatJsPostUpdateExpression {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsPostUpdateExpression;
 
     #[test]
@@ -34,17 +35,21 @@ mod tests {
         assert_needs_parentheses!("class A extends (A++) {}", JsPostUpdateExpression);
 
         assert_needs_parentheses!("(a++).b", JsPostUpdateExpression);
+
         assert_needs_parentheses!("(a++)[b]", JsPostUpdateExpression);
+
         assert_not_needs_parentheses!("a[b++]", JsPostUpdateExpression);
 
         assert_needs_parentheses!("(a++)`template`", JsPostUpdateExpression);
 
         assert_needs_parentheses!("(a++)()", JsPostUpdateExpression);
+
         assert_needs_parentheses!("new (a++)()", JsPostUpdateExpression);
 
         assert_needs_parentheses!("(a++)!", JsPostUpdateExpression);
 
         assert_needs_parentheses!("(a++) ** 3", JsPostUpdateExpression);
+
         assert_not_needs_parentheses!("(a++) + 3", JsPostUpdateExpression);
     }
 }

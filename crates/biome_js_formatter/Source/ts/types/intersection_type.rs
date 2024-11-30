@@ -14,6 +14,7 @@ impl FormatNodeRule<TsIntersectionType> for FormatTsIntersectionType {
             leading_separator_token,
             types,
         } = node.as_fields();
+
         write!(
             f,
             [group(&format_args!(
@@ -32,6 +33,7 @@ impl FormatNodeRule<TsIntersectionType> for FormatTsIntersectionType {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::TsIntersectionType;
 
     #[test]
@@ -41,15 +43,19 @@ mod tests {
         assert_needs_parentheses!("let s: unique (string & number);", TsIntersectionType);
 
         assert_needs_parentheses!("let s: [number, ...(string & number)]", TsIntersectionType);
+
         assert_needs_parentheses!("let s: [(string & number)?]", TsIntersectionType);
 
         assert_needs_parentheses!("let s: (string & number)[a]", TsIntersectionType);
+
         assert_not_needs_parentheses!("let s: a[(string & number)]", TsIntersectionType);
 
         assert_not_needs_parentheses!("let s: (&a) & (&b)", TsIntersectionType[1]);
+
         assert_not_needs_parentheses!("let s: (&a) & (&b)", TsIntersectionType[2]);
 
         assert_needs_parentheses!("let s: (a & b) & (&c)", TsIntersectionType[1]);
+
         assert_not_needs_parentheses!("let s: (a & b) & (&c)", TsIntersectionType[2]);
     }
 }

@@ -56,8 +56,11 @@ declare_lint_rule! {
 
 impl Rule for UseTemplate {
     type Query = Ast<JsBinaryExpression>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
@@ -73,11 +76,13 @@ impl Rule for UseTemplate {
         {
             return None;
         }
+
         can_be_template_literal(node)?.then_some(())
     }
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),
@@ -89,12 +94,16 @@ impl Rule for UseTemplate {
 
     fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
         let node = ctx.query();
+
         let mut mutation = ctx.root().begin();
+
         let template = template_expression_from_binary_expression(node)?;
+
         mutation.replace_node(
             AnyJsExpression::JsBinaryExpression(node.clone()),
             AnyJsExpression::JsTemplateExpression(template),
         );
+
         Some(JsRuleAction::new(
             ctx.metadata().action_category(ctx.category(), ctx.group()),
             ctx.metadata().applicability(),
@@ -115,12 +124,17 @@ impl Rule for UseTemplate {
 /// String-like literals are string literals and untagged template literals.
 fn can_be_template_literal(node: &JsBinaryExpression) -> Option<bool> {
     let mut iter = node.syntax().preorder();
+
     let mut has_constant_string_constituent = false;
+
     let mut has_interpolated_string_constituent = false;
+
     let mut has_non_constant_string_constituent = false;
+
     while let Some(walk) = iter.next() {
         if let WalkEvent::Enter(node) = walk {
             let expression = AnyJsExpression::cast(node)?;
+
             match &expression {
                 AnyJsExpression::JsParenthesizedExpression(_) => continue,
                 AnyJsExpression::JsBinaryExpression(binary)
@@ -128,30 +142,37 @@ fn can_be_template_literal(node: &JsBinaryExpression) -> Option<bool> {
                 {
                     continue
                 }
+
                 AnyJsExpression::JsTemplateExpression(template) if template.is_constant() => {
                     has_constant_string_constituent = true;
                 }
+
                 AnyJsExpression::JsTemplateExpression(template) if template.tag().is_none() => {
                     has_interpolated_string_constituent = true;
                 }
+
                 AnyJsExpression::AnyJsLiteralExpression(
                     AnyJsLiteralExpression::JsStringLiteralExpression(_),
                 ) => {
                     has_constant_string_constituent = true;
                 }
+
                 _ => {
                     has_non_constant_string_constituent = true;
                 }
             }
+
             if (has_constant_string_constituent
                 && (has_non_constant_string_constituent || has_interpolated_string_constituent))
                 || (has_interpolated_string_constituent && has_non_constant_string_constituent)
             {
                 return Some(true);
             }
+
             iter.skip_subtree();
         }
     }
+
     Some(false)
 }
 
@@ -165,24 +186,31 @@ fn template_expression_from_binary_expression(
     // Any subsequent expression is directly inserted in `template_elements` if its parent
     // evaluates to a string.
     let mut template_elements = vec![];
+
     let mut left_expressions_stack = vec![];
+
     let mut binary_evaluates_to_string_stack = vec![];
 
     let mut iter = node.syntax().preorder();
+
     while let Some(walk) = iter.next() {
         match walk {
             WalkEvent::Enter(node) => match AnyJsExpression::cast(node)? {
                 AnyJsExpression::JsParenthesizedExpression(_) => {}
+
                 AnyJsExpression::JsBinaryExpression(ref binary)
                     if binary.operator() == Ok(JsBinaryOperator::Plus) =>
                 {
                     left_expressions_stack.push(vec![]);
+
                     binary_evaluates_to_string_stack.push(false);
                 }
+
                 _ => iter.skip_subtree(),
             },
             WalkEvent::Leave(node) => {
                 let expression = AnyJsExpression::cast(node)?;
+
                 match &expression {
                     // Skip parenthesized expressions, because they would be added twice to
                     // `left_expressions_stack` or `template_elements` (see the last match arm):
@@ -207,6 +235,7 @@ fn template_expression_from_binary_expression(
                             left_expressions.push(expression)
                         }
                     }
+
                     AnyJsExpression::JsTemplateExpression(template) if template.tag().is_none() => {
                         *binary_evaluates_to_string_stack.last_mut()? = true;
 
@@ -215,8 +244,10 @@ fn template_expression_from_binary_expression(
                         {
                             template_elements.push(template_element_from(left_expression)?)
                         }
+
                         flatten_template_element_list(&mut template_elements, template.elements())?;
                     }
+
                     AnyJsExpression::AnyJsLiteralExpression(
                         AnyJsLiteralExpression::JsStringLiteralExpression(string_literal),
                     ) => {
@@ -227,8 +258,10 @@ fn template_expression_from_binary_expression(
                         {
                             template_elements.push(template_element_from(left_expression)?)
                         }
+
                         template_elements.push(template_chunk_from(string_literal)?);
                     }
+
                     _expression => {
                         if !template_elements.is_empty()
                             && *binary_evaluates_to_string_stack.last()?
@@ -242,6 +275,7 @@ fn template_expression_from_binary_expression(
             }
         }
     }
+
     Some(
         make::js_template_expression(
             make::token(T!['`']),
@@ -254,6 +288,7 @@ fn template_expression_from_binary_expression(
 
 fn template_chunk_from(string_literal: &JsStringLiteralExpression) -> Option<AnyJsTemplateElement> {
     let text = string_literal.inner_string_text().ok()?;
+
     Some(AnyJsTemplateElement::from(make::js_template_chunk_element(
         make::js_template_chunk(text.text()),
     )))
@@ -285,10 +320,12 @@ fn flatten_template_element_list(
             AnyJsTemplateElement::JsTemplateChunkElement(_) => result.push(element),
             AnyJsTemplateElement::JsTemplateElement(ref ele) => {
                 let expr = ele.expression().ok()?;
+
                 match expr {
                     AnyJsExpression::JsTemplateExpression(template) => {
                         flatten_template_element_list(result, template.elements())?;
                     }
+
                     _ => {
                         result.push(element);
                     }
@@ -296,5 +333,6 @@ fn flatten_template_element_list(
             }
         }
     }
+
     Some(())
 }

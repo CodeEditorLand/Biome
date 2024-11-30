@@ -27,26 +27,32 @@ impl FormatNodeRule<JsPreUpdateExpression> for FormatJsPreUpdateExpression {
 mod tests {
 
     use crate::{assert_needs_parentheses, assert_not_needs_parentheses};
+
     use biome_js_syntax::JsPreUpdateExpression;
 
     #[test]
     fn needs_parentheses() {
         // valid, but should become +(++a)
         assert_needs_parentheses!("+ ++a", JsPreUpdateExpression);
+
         assert_needs_parentheses!("class A extends (++A) {}", JsPreUpdateExpression);
 
         assert_needs_parentheses!("(++a).b", JsPreUpdateExpression);
+
         assert_needs_parentheses!("(++a)[b]", JsPreUpdateExpression);
+
         assert_not_needs_parentheses!("a[++b]", JsPreUpdateExpression);
 
         assert_needs_parentheses!("(++a)`template`", JsPreUpdateExpression);
 
         assert_needs_parentheses!("(++a)()", JsPreUpdateExpression);
+
         assert_needs_parentheses!("new (++a)()", JsPreUpdateExpression);
 
         assert_needs_parentheses!("(++a)!", JsPreUpdateExpression);
 
         assert_needs_parentheses!("(++a) ** 3", JsPreUpdateExpression);
+
         assert_not_needs_parentheses!("(++a) + 3", JsPreUpdateExpression);
     }
 }

@@ -48,6 +48,7 @@ impl ProjectDiagnostic {
 
     pub fn with_tag(mut self, tag: DiagnosticTags) -> Self {
         self.tags.insert(tag);
+
         self
     }
 }
@@ -82,8 +83,10 @@ impl ProjectAnalyzeDiagnostic {
             "The license "<Emphasis>{licence}</Emphasis>" is deprecated"
         })
     }
+
     pub fn with_range(mut self, range: impl AsSpan) -> Self {
         self.range = range.as_span();
+
         self
     }
 }

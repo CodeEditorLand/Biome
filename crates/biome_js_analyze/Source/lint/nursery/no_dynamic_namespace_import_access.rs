@@ -66,8 +66,11 @@ declare_lint_rule! {
 
 impl Rule for NoDynamicNamespaceImportAccess {
     type Query = Semantic<JsImportNamespaceClause>;
+
     type State = TextRange;
+
     type Signals = Box<[Self::State]>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
@@ -103,14 +106,18 @@ fn find_dynamic_namespace_import_accesses(
     }
 
     let specifier = import_namespace_clause.namespace_specifier().ok()?;
+
     let any_binding = specifier.local_name().ok()?;
+
     let identifier = any_binding.as_js_identifier_binding()?;
+
     let reads = identifier.all_reads(ctx.model());
 
     let ranges = reads
         .into_iter()
         .filter_map(|read| {
             let syntax = read.syntax().parent()?.parent()?;
+
             let node = JsComputedMemberExpression::cast(syntax)?;
 
             Some(node.range())

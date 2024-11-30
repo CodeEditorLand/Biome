@@ -25,6 +25,7 @@ pub(crate) fn parse_pseudo_class_function_selector_list(p: &mut CssParser) -> Pa
     let m = p.start();
 
     p.bump_ts(PSEUDO_CLASS_FUNCTION_SELECTOR_LIST_SET);
+
     p.bump(T!['(']);
 
     let list = SelectorList::default()
@@ -32,10 +33,12 @@ pub(crate) fn parse_pseudo_class_function_selector_list(p: &mut CssParser) -> Pa
         // we don't need to recover here, because we have a better diagnostic message in a close token
         .disable_recovery()
         .parse_list(p);
+
     let list_range = list.range(p);
 
     if list_range.is_empty() && p.at(T![')']) {
         let diagnostic = expected_selector(p, list_range);
+
         p.error(diagnostic);
     }
 

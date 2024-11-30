@@ -28,8 +28,10 @@ pub struct MdDocumentBuilder {
 impl MdDocumentBuilder {
     pub fn with_bom_token(mut self, bom_token: SyntaxToken) -> Self {
         self.bom_token = Some(bom_token);
+
         self
     }
+
     pub fn build(self) -> MdDocument {
         MdDocument::unwrap_cast(SyntaxNode::new_detached(
             MarkdownSyntaxKind::MD_DOCUMENT,
@@ -74,8 +76,10 @@ pub struct MdHeaderBuilder {
 impl MdHeaderBuilder {
     pub fn with_md_paragraph(mut self, md_paragraph: MdParagraph) -> Self {
         self.md_paragraph = Some(md_paragraph);
+
         self
     }
+
     pub fn build(self) -> MdHeader {
         MdHeader::unwrap_cast(SyntaxNode::new_detached(
             MarkdownSyntaxKind::MD_HEADER,
@@ -133,8 +137,10 @@ pub struct MdInlineImageBuilder {
 impl MdInlineImageBuilder {
     pub fn with_title(mut self, title: MdTextual) -> Self {
         self.title = Some(title);
+
         self
     }
+
     pub fn build(self) -> MdInlineImage {
         MdInlineImage::unwrap_cast(SyntaxNode::new_detached(
             MarkdownSyntaxKind::MD_INLINE_IMAGE,
@@ -162,8 +168,10 @@ pub struct MdInlineLinkBuilder {
 impl MdInlineLinkBuilder {
     pub fn with_title(mut self, title: MdTextual) -> Self {
         self.title = Some(title);
+
         self
     }
+
     pub fn build(self) -> MdInlineLink {
         MdInlineLink::unwrap_cast(SyntaxNode::new_detached(
             MarkdownSyntaxKind::MD_INLINE_LINK,
@@ -191,8 +199,10 @@ pub struct MdLinkBlockBuilder {
 impl MdLinkBlockBuilder {
     pub fn with_title(mut self, title: MdTextual) -> Self {
         self.title = Some(title);
+
         self
     }
+
     pub fn build(self) -> MdLinkBlock {
         MdLinkBlock::unwrap_cast(SyntaxNode::new_detached(
             MarkdownSyntaxKind::MD_LINK_BLOCK,

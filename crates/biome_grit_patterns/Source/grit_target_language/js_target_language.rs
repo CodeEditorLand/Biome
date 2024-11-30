@@ -45,6 +45,7 @@ impl GritTargetLanguageImpl for JsTargetLanguage {
     /// `ts_language_symbol_for_name()`.
     fn kind_by_name(&self, node_name: &str) -> Option<JsSyntaxKind> {
         use JsSyntaxKind::*;
+
         let kind = match node_name {
             "assignment_expression" => JS_ASSIGNMENT_EXPRESSION,
             "call_expression" => JS_CALL_EXPRESSION,
@@ -69,6 +70,7 @@ impl GritTargetLanguageImpl for JsTargetLanguage {
         };
 
         use JsSyntaxKind::*;
+
         match kind {
             JS_ASSIGNMENT_EXPRESSION => "assignment_expression",
             JS_CALL_EXPRESSION => "call_expression",
@@ -91,6 +93,7 @@ impl GritTargetLanguageImpl for JsTargetLanguage {
         };
 
         use JsSyntaxKind::*;
+
         match kind {
             JS_ASSIGNMENT_EXPRESSION => &[],
             JS_CALL_EXPRESSION => &[("function", 0), ("type_arguments", 2), ("arguments", 3)],

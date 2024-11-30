@@ -45,13 +45,16 @@ pub fn parse_suppression_comment(
                 .strip_suffix("*/")
                 .or_else(|| comment.strip_suffix(['*', '/']))
                 .unwrap_or(comment);
+
             true
         }
         "#" => false,
         "<!--" => {
             comment = comment.strip_suffix("-->").unwrap_or(comment);
+
             true
         }
+
         token => panic!("comment with unknown opening token {token:?}, from {comment}"),
     };
 
@@ -105,6 +108,7 @@ pub fn parse_suppression_comment(
             }
         } else {
             is_legacy = true;
+
             for pattern in DEPRECATED_PATTERNS {
                 line = line.strip_prefix(pattern)?;
             }
@@ -114,6 +118,7 @@ pub fn parse_suppression_comment(
         // entirely if it doesn't match
 
         let line = line.trim_start();
+
         Some(
             parse_suppression_line(line, is_legacy).map_err(|err| SuppressionDiagnostic {
                 message: err.message,
@@ -152,9 +157,11 @@ impl std::fmt::Display for SuppressionDiagnosticKind {
             SuppressionDiagnosticKind::ParseCategory(category) => {
                 write!(f, "failed to parse category {category:?}")
             }
+
             SuppressionDiagnosticKind::MissingCategory => {
                 write!(f, "unexpected token, expected one of ':' or whitespace")
             }
+
             SuppressionDiagnosticKind::MissingParen => write!(f, "unexpected token, expected ')'"),
         }
     }
@@ -170,9 +177,11 @@ impl biome_console::fmt::Display for SuppressionDiagnosticKind {
             SuppressionDiagnosticKind::ParseCategory(category) => {
                 write!(fmt, "failed to parse category {category:?}")
             }
+
             SuppressionDiagnosticKind::MissingCategory => {
                 write!(fmt, "unexpected token, expected one of ':' or whitespace")
             }
+
             SuppressionDiagnosticKind::MissingParen => {
                 write!(fmt, "unexpected token, expected ')'")
             }
@@ -186,6 +195,7 @@ fn parse_suppression_line(
     is_legacy: bool,
 ) -> Result<Suppression, SuppressionDiagnostic> {
     let mut line = base;
+
     let mut categories = Vec::new();
 
     loop {
@@ -198,12 +208,15 @@ fn parse_suppression_line(
             })?;
 
         let (category, rest) = line.split_at(separator);
+
         let category = category.trim_end();
+
         let category: Option<&'static Category> = if !category.is_empty() {
             let category = category.parse().map_err(|()| SuppressionDiagnostic {
                 message: SuppressionDiagnosticKind::ParseCategory(category.into()),
                 span: TextRange::at(offset_from(base, category), TextSize::of(category)),
             })?;
+
             Some(category)
         } else {
             None
@@ -220,6 +233,7 @@ fn parse_suppression_line(
                 }
 
                 line = rest.trim_start();
+
                 break;
             }
             // Paren token: parse a category + value
@@ -231,12 +245,14 @@ fn parse_suppression_line(
                         offset_from(line, separator) + TextSize::of(separator),
                     ),
                 })?;
+
                 let paren = rest.find(')').ok_or_else(|| SuppressionDiagnostic {
                     message: SuppressionDiagnosticKind::MissingParen,
                     span: TextRange::at(offset_from(base, rest), TextSize::of(rest)),
                 })?;
 
                 let (value, rest) = rest.split_at(paren);
+
                 let value = value.trim();
 
                 categories.push((category, Some(value)));
@@ -255,6 +271,7 @@ fn parse_suppression_line(
     }
 
     let reason = line.trim_end();
+
     Ok(Suppression {
         categories,
         reason,
@@ -270,16 +287,20 @@ fn parse_suppression_line(
 /// in undefined behavior.
 fn offset_from(base: &str, substr: &str) -> TextSize {
     let base_len = base.len();
+
     assert!(substr.len() <= base_len);
 
     let base = base.as_ptr();
+
     let substr = substr.as_ptr();
+
     let offset = unsafe { substr.offset_from(base) };
 
     // SAFETY: converting from `isize` to `usize` can only fail if `offset` is
     // negative, meaning `base` is either a substring of `substr` or the two
     // string slices are unrelated
     let offset = usize::try_from(offset).expect("usize underflow");
+
     assert!(offset <= base_len);
 
     // SAFETY: the conversion from `usize` to `TextSize` can fail if `offset`
@@ -290,6 +311,7 @@ fn offset_from(base: &str, substr: &str) -> TextSize {
 #[cfg(test)]
 mod tests {
     use biome_diagnostics::category;
+
     use biome_rowan::{TextRange, TextSize};
 
     use crate::{offset_from, SuppressionDiagnostic, SuppressionDiagnosticKind};
@@ -459,9 +481,11 @@ mod tests {
         assert_eq!(offset_from(BASE, BASE), TextSize::from(0));
 
         let (_, substr) = BASE.split_at(55);
+
         assert_eq!(offset_from(BASE, substr), TextSize::from(55));
 
         let (_, substr) = BASE.split_at(BASE.len());
+
         assert_eq!(offset_from(BASE, substr), TextSize::of(BASE));
     }
 
@@ -513,6 +537,7 @@ mod tests {
 #[cfg(test)]
 mod tests_biome_ignore {
     use biome_diagnostics::category;
+
     use biome_rowan::{TextRange, TextSize};
 
     use crate::{offset_from, SuppressionDiagnostic, SuppressionDiagnosticKind};
@@ -683,9 +708,11 @@ mod tests_biome_ignore {
         assert_eq!(offset_from(BASE, BASE), TextSize::from(0));
 
         let (_, substr) = BASE.split_at(55);
+
         assert_eq!(offset_from(BASE, substr), TextSize::from(55));
 
         let (_, substr) = BASE.split_at(BASE.len());
+
         assert_eq!(offset_from(BASE, substr), TextSize::of(BASE));
     }
 

@@ -225,6 +225,7 @@ impl GritSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_literal(self) -> bool {
         match self {
             GRIT_INT | GRIT_NEGATIVE_INT | GRIT_DOUBLE | GRIT_STRING | GRIT_REGEX
@@ -232,6 +233,7 @@ impl GritSyntaxKind {
             _ => false,
         }
     }
+
     pub const fn is_list(self) -> bool {
         match self {
             GRIT_DEFINITION_LIST
@@ -247,6 +249,7 @@ impl GritSyntaxKind {
             _ => false,
         }
     }
+
     pub fn from_keyword(ident: &str) -> Option<GritSyntaxKind> {
         let kw = match ident {
             "sequential" => SEQUENTIAL_KW,
@@ -293,8 +296,10 @@ impl GritSyntaxKind {
             "return" => RETURN_KW,
             _ => return None,
         };
+
         Some(kw)
     }
+
     pub const fn to_string(&self) -> Option<&'static str> {
         let tok = match self {
             DOT3 => "...",
@@ -371,6 +376,7 @@ impl GritSyntaxKind {
             GRIT_STRING_LITERAL => "string literal",
             _ => return None,
         };
+
         Some(tok)
     }
 }

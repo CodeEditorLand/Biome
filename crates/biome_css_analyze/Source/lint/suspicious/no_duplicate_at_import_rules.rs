@@ -57,13 +57,18 @@ declare_lint_rule! {
 
 impl Rule for NoDuplicateAtImportRules {
     type Query = Ast<CssRuleList>;
+
     type State = CssImportAtRule;
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
         let node = ctx.query();
+
         let mut import_url_map: HashMap<String, HashSet<String>> = HashMap::new();
+
         for rule in node {
             match rule {
                 AnyCssRule::CssAtRule(item) => match item.rule().ok()? {
@@ -76,6 +81,7 @@ impl Rule for NoDuplicateAtImportRules {
                             .replace("url(", "")
                             .replace(')', "")
                             .replace('"', "'");
+
                         if let Some(media_query_set) = import_url_map.get_mut(&import_url) {
                             // if the current import_rule has no media queries or there are no queries saved in the
                             // media_query_set, this is always a duplicate
@@ -92,32 +98,39 @@ impl Rule for NoDuplicateAtImportRules {
                                             return Some(import_rule);
                                         }
                                     }
+
                                     _ => return None,
                                 }
                             }
                         } else {
                             let mut media_set: HashSet<String> = HashSet::new();
+
                             for media in import_rule.media() {
                                 match media {
                                     Ok(media) => {
                                         media_set.insert(media.text().to_lowercase_cow().into());
                                     }
+
                                     _ => return None,
                                 }
                             }
+
                             import_url_map.insert(import_url, media_set);
                         }
                     }
+
                     _ => return None,
                 },
                 _ => return None,
             }
         }
+
         None
     }
 
     fn diagnostic(_: &RuleContext<Self>, node: &Self::State) -> Option<RuleDiagnostic> {
         let span = node.range();
+
         Some(
             RuleDiagnostic::new(
                 rule_category!(),

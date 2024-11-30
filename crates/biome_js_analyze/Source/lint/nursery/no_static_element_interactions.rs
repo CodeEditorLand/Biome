@@ -85,13 +85,18 @@ const CATEGORIES_TO_CHECK: &[&str] = &["focus", "keyboard", "mouse"];
 
 impl Rule for NoStaticElementInteractions {
     type Query = Aria<AnyJsxElement>;
+
     type State = ();
+
     type Signals = Option<Self::State>;
+
     type Options = ();
 
     fn run(ctx: &RuleContext<Self>) -> Self::Signals {
         let node = ctx.query();
+
         let element_name = node.name().ok()?.as_jsx_name()?.value_token().ok()?;
+
         let element_name = element_name.text_trimmed();
 
         // Check if the element is hidden from screen readers.
@@ -131,6 +136,7 @@ impl Rule for NoStaticElementInteractions {
 
     fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
         let node = ctx.query();
+
         Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),

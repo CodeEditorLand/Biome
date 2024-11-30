@@ -28,10 +28,13 @@ impl<'l> JsTokenSource<'l> {
     /// Creates a new token source for the given string
     pub fn from_str(source: &'l str, options: JsParserOptions) -> JsTokenSource<'l> {
         let lexer = JsLexer::from_str(source).with_options(options);
+
         let buffered = BufferedLexer::new(lexer);
+
         let mut source = JsTokenSource::new(buffered);
 
         source.next_non_trivia_token(JsLexContext::default(), true);
+
         source
     }
 
@@ -72,6 +75,7 @@ impl<'l> JsTokenSource<'l> {
             .lookahead_iter()
             .next()
             .and_then(|lookahead| TriviaPieceKind::try_from(lookahead.kind()).ok());
+
         next_token_trivia.is_some()
     }
 
@@ -90,7 +94,9 @@ impl<'l> JsTokenSource<'l> {
     /// Restores the token source to a previous state
     pub fn rewind(&mut self, checkpoint: JsTokenSourceCheckpoint) {
         assert!(self.trivia_list.len() >= checkpoint.trivia_len as usize);
+
         self.trivia_list.truncate(checkpoint.trivia_len as usize);
+
         self.lexer.rewind(checkpoint.lexer_checkpoint);
     }
 }
