@@ -1,8 +1,8 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="HTTPS://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-dark-transparent.svg">
-    <source media="(prefers-color-scheme: light)" srcset="HTTPS://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg">
-    <img alt="Shows the banner of Biome, with its logo and the phrase 'Biome - Toolchain of the web'." src="HTTPS://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg" width="700">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-dark-transparent.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg">
+    <img alt="Shows the banner of Biome, with its logo and the phrase 'Biome - Toolchain of the web'." src="https://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg" width="700">
   </picture>
 
   <br>
@@ -106,7 +106,7 @@ Biome 提供了一個簡單的贊助計劃，允許公司在各種開發者中�
 
 我們使用 [Polar.sh](HTTPS://polar.sh/biomejs) 來提升和推廣你希望看到和實現的特定功能。查看我們的待辦事項並幫助我們：
 
-<a href="HTTPS://polar.sh/biomejs"><img src="HTTPS://polar.sh/embed/fund-our-backlog.svg?org=biomejs" /></a>
+<a href="HTTPS://polar.sh/biomejs"><img src="https://polar.sh/embed/fund-our-backlog.svg?org=biomejs" /></a>
 
 ## 贊助商
 
@@ -118,22 +118,22 @@ Biome 提供了一個簡單的贊助計劃，允許公司在各種開發者中�
   <tbody>
     <tr>
       <td align="center" valign="middle">
-        <a href="HTTPS://www.kanamekey.com" target="_blank"><img src="HTTPS://images.opencollective.com/kaname/d15fd98/logo/256.png?height=80" width="80"></a>
+        <a href="HTTPS://www.kanamekey.com" target="_blank"><img src="https://images.opencollective.com/kaname/d15fd98/logo/256.png?height=80" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://nanabit.dev/" target="_blank"><img src="HTTPS://images.opencollective.com/nanabit/d15fd98/logo/256.png?height=80" width="80"></a>
+        <a href="HTTPS://nanabit.dev/" target="_blank"><img src="https://images.opencollective.com/nanabit/d15fd98/logo/256.png?height=80" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://vital.io/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/25357309?s=200" width="80"></a>
+        <a href="HTTPS://vital.io/" target="_blank"><img src="https://avatars.githubusercontent.com/u/25357309?s=200" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://coderabbit.ai/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/132028505?s=200&v=4" width="80"></a>
+        <a href="HTTPS://coderabbit.ai/" target="_blank"><img src="https://avatars.githubusercontent.com/u/132028505?s=200&v=4" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://forge42.dev/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/161314831?s=200&v=4" width="80"></a>
+        <a href="HTTPS://forge42.dev/" target="_blank"><img src="https://avatars.githubusercontent.com/u/161314831?s=200&v=4" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://forge42.dev/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/513560?s=200&v=4" width="80"></a>
+        <a href="HTTPS://forge42.dev/" target="_blank"><img src="https://avatars.githubusercontent.com/u/513560?s=200&v=4" width="80"></a>
       </td>
     </tr>
   </tbody>
@@ -145,19 +145,19 @@ Biome 提供了一個簡單的贊助計劃，允許公司在各種開發者中�
   <tbody>
     <tr>
       <td align="center" valign="middle">
-        <a href="HTTPS://www.kanamekey.com" target="_blank"><img src="HTTPS://images.opencollective.com/kaname/d15fd98/logo/256.png?height=80" width="80"></a>
+        <a href="HTTPS://www.kanamekey.com" target="_blank"><img src="https://images.opencollective.com/kaname/d15fd98/logo/256.png?height=80" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://nanabit.dev/" target="_blank"><img src="HTTPS://images.opencollective.com/nanabit/d15fd98/logo/256.png?height=80" width="80"></a>
+        <a href="HTTPS://nanabit.dev/" target="_blank"><img src="https://images.opencollective.com/nanabit/d15fd98/logo/256.png?height=80" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://vital.io/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/25357309?s=200" width="80"></a>
+        <a href="HTTPS://vital.io/" target="_blank"><img src="https://avatars.githubusercontent.com/u/25357309?s=200" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://coderabbit.ai/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/132028505?s=200&v=4" width="80"></a>
+        <a href="HTTPS://coderabbit.ai/" target="_blank"><img src="https://avatars.githubusercontent.com/u/132028505?s=200&v=4" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://forge42.dev/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/161314831?s=200&v=4" width="80"></a>
+        <a href="HTTPS://forge42.dev/" target="_blank"><img src="https://avatars.githubusercontent.com/u/161314831?s=200&v=4" width="80"></a>
       </td>
     </tr>
   </tbody>

@@ -1,8 +1,8 @@
 <div align="center">
   <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="HTTPS://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-dark-transparent.svg">
-    <source media="(prefers-color-scheme: light)" srcset="HTTPS://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg">
-    <img alt="Shows the banner of Biome, with its logo and the phrase 'Biome - Toolchain of the web'." src="HTTPS://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg" width="700">
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-dark-transparent.svg">
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg">
+    <img alt="Shows the banner of Biome, with its logo and the phrase 'Biome - Toolchain of the web'." src="https://raw.githubusercontent.com/biomejs/resources/main/svg/slogan-light-transparent.svg" width="700">
   </picture>
 
   <br>
@@ -114,10 +114,10 @@ Biome предлагает простую спонсорскую програм�
   <tbody>
     <tr>
       <td align="center" valign="middle">
-        <a href="HTTPS://l2beat.com/" target="_blank"><img src="HTTPS://images.opencollective.com/l2beat/c2b2a27/logo/256.png" height="100"></a>
+        <a href="HTTPS://l2beat.com/" target="_blank"><img src="https://images.opencollective.com/l2beat/c2b2a27/logo/256.png" height="100"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://www.phoenixlabs.dev/" target="_blank"><img src="HTTPS://images.opencollective.com/phoenix-labs/2824ed4/logo/100.png?height=100" height="100"></a>
+        <a href="HTTPS://www.phoenixlabs.dev/" target="_blank"><img src="https://images.opencollective.com/phoenix-labs/2824ed4/logo/100.png?height=100" height="100"></a>
       </td>
     </tr>
   </tbody>
@@ -129,22 +129,22 @@ Biome предлагает простую спонсорскую програм�
   <tbody>
     <tr>
       <td align="center" valign="middle">
-        <a href="HTTPS://www.kanamekey.com" target="_blank"><img src="HTTPS://images.opencollective.com/kaname/d15fd98/logo/256.png?height=80" width="80"></a>
+        <a href="HTTPS://www.kanamekey.com" target="_blank"><img src="https://images.opencollective.com/kaname/d15fd98/logo/256.png?height=80" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://nanabit.dev/" target="_blank"><img src="HTTPS://images.opencollective.com/nanabit/d15fd98/logo/256.png?height=80" width="80"></a>
+        <a href="HTTPS://nanabit.dev/" target="_blank"><img src="https://images.opencollective.com/nanabit/d15fd98/logo/256.png?height=80" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://vital.io/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/25357309?s=200" width="80"></a>
+        <a href="HTTPS://vital.io/" target="_blank"><img src="https://avatars.githubusercontent.com/u/25357309?s=200" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://coderabbit.ai/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/132028505?s=200&v=4" width="80"></a>
+        <a href="HTTPS://coderabbit.ai/" target="_blank"><img src="https://avatars.githubusercontent.com/u/132028505?s=200&v=4" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://forge42.dev/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/161314831?s=200&v=4" width="80"></a>
+        <a href="HTTPS://forge42.dev/" target="_blank"><img src="https://avatars.githubusercontent.com/u/161314831?s=200&v=4" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTP://rstudio.org/" target="_blank"><img src="HTTPS://avatars.githubusercontent.com/u/513560?s=200&v=4" width="80"></a>
+        <a href="HTTP://rstudio.org/" target="_blank"><img src="https://avatars.githubusercontent.com/u/513560?s=200&v=4" width="80"></a>
       </td>
     </tr>
   </tbody>
