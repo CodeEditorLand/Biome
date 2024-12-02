@@ -8,7 +8,7 @@
 		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
 	},
 	"dependencies": {
-		"happy-dom": "15.11.6"
+		"happy-dom": "15.11.7"
 	},
 	"description": "Structured representation of the ARIA roles, properties, and states",
 	"devDependencies": {
