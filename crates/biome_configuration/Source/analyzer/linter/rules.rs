@@ -3757,6 +3757,9 @@ pub struct Nursery {
     #[doc = "Require explicit return types on functions and class methods."]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub use_explicit_type: Option<RuleConfiguration<biome_js_analyze::options::UseExplicitType>>,
+    #[doc = "Require that all exports are declared after all non-export statements."]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub use_exports_last: Option<RuleConfiguration<biome_js_analyze::options::UseExportsLast>>,
     #[doc = "Enforces the use of a recommended display strategy with Google Fonts."]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub use_google_font_display:
@@ -3776,6 +3779,10 @@ pub struct Nursery {
     #[serde(skip_serializing_if = "Option::is_none")]
     pub use_named_operation:
         Option<RuleFixConfiguration<biome_graphql_analyze::options::UseNamedOperation>>,
+    #[doc = "Validates that all enum values are capitalized."]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    pub use_naming_convention:
+        Option<RuleConfiguration<biome_graphql_analyze::options::UseNamingConvention>>,
     #[doc = "Enforce the sorting of CSS utility classes."]
     #[serde(skip_serializing_if = "Option::is_none")]
     pub use_sorted_classes:
@@ -3854,11 +3861,13 @@ impl Nursery {
         "useConsistentMemberAccessibility",
         "useDeprecatedReason",
         "useExplicitType",
+        "useExportsLast",
         "useGoogleFontDisplay",
         "useGoogleFontPreconnect",
         "useGuardForIn",
         "useImportRestrictions",
         "useNamedOperation",
+        "useNamingConvention",
         "useSortedClasses",
         "useStrictMode",
         "useTrimStartEnd",
@@ -3897,8 +3906,8 @@ impl Nursery {
         RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[34]),
         RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[39]),
         RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[40]),
-        RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[46]),
-        RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[48]),
+        RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[47]),
+        RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[50]),
     ];
 
     const ALL_RULES_AS_FILTERS: &'static [RuleFilter<'static>] = &[
@@ -3953,6 +3962,8 @@ impl Nursery {
         RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[48]),
         RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[49]),
         RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[50]),
+        RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[51]),
+        RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[52]),
     ];
     #[doc = r" Retrieves the recommended rules"]
     pub(crate) fn is_recommended_true(&self) -> bool {
@@ -4225,61 +4236,61 @@ impl Nursery {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[41]));
             }
         }
-
-        if let Some(rule) = self.use_google_font_display.as_ref() {
+        if let Some(rule) = self.use_exports_last.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[42]));
             }
         }
-
-        if let Some(rule) = self.use_google_font_preconnect.as_ref() {
+        if let Some(rule) = self.use_google_font_display.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[43]));
             }
         }
-
-        if let Some(rule) = self.use_guard_for_in.as_ref() {
+        if let Some(rule) = self.use_google_font_preconnect.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[44]));
             }
         }
-
-        if let Some(rule) = self.use_import_restrictions.as_ref() {
+        if let Some(rule) = self.use_guard_for_in.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[45]));
             }
         }
-
-        if let Some(rule) = self.use_named_operation.as_ref() {
+        if let Some(rule) = self.use_import_restrictions.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[46]));
             }
         }
-
-        if let Some(rule) = self.use_sorted_classes.as_ref() {
+        if let Some(rule) = self.use_named_operation.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[47]));
             }
         }
-
-        if let Some(rule) = self.use_strict_mode.as_ref() {
+        if let Some(rule) = self.use_naming_convention.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[48]));
             }
         }
-
-        if let Some(rule) = self.use_trim_start_end.as_ref() {
+        if let Some(rule) = self.use_sorted_classes.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[49]));
             }
         }
-
-        if let Some(rule) = self.use_valid_autocomplete.as_ref() {
+        if let Some(rule) = self.use_strict_mode.as_ref() {
             if rule.is_enabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[50]));
             }
         }
-
+        if let Some(rule) = self.use_trim_start_end.as_ref() {
+            if rule.is_enabled() {
+                index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[51]));
+            }
+        }
+        if let Some(rule) = self.use_valid_autocomplete.as_ref() {
+            if rule.is_enabled() {
+                index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[52]));
+            }
+        }
         index_set
     }
 
@@ -4537,61 +4548,61 @@ impl Nursery {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[41]));
             }
         }
-
-        if let Some(rule) = self.use_google_font_display.as_ref() {
+        if let Some(rule) = self.use_exports_last.as_ref() {
             if rule.is_disabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[42]));
             }
         }
-
-        if let Some(rule) = self.use_google_font_preconnect.as_ref() {
+        if let Some(rule) = self.use_google_font_display.as_ref() {
             if rule.is_disabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[43]));
             }
         }
-
-        if let Some(rule) = self.use_guard_for_in.as_ref() {
+        if let Some(rule) = self.use_google_font_preconnect.as_ref() {
             if rule.is_disabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[44]));
             }
         }
-
-        if let Some(rule) = self.use_import_restrictions.as_ref() {
+        if let Some(rule) = self.use_guard_for_in.as_ref() {
             if rule.is_disabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[45]));
             }
         }
-
-        if let Some(rule) = self.use_named_operation.as_ref() {
+        if let Some(rule) = self.use_import_restrictions.as_ref() {
             if rule.is_disabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[46]));
             }
         }
-
-        if let Some(rule) = self.use_sorted_classes.as_ref() {
+        if let Some(rule) = self.use_named_operation.as_ref() {
             if rule.is_disabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[47]));
             }
         }
-
-        if let Some(rule) = self.use_strict_mode.as_ref() {
+        if let Some(rule) = self.use_naming_convention.as_ref() {
             if rule.is_disabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[48]));
             }
         }
-
-        if let Some(rule) = self.use_trim_start_end.as_ref() {
+        if let Some(rule) = self.use_sorted_classes.as_ref() {
             if rule.is_disabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[49]));
             }
         }
-
-        if let Some(rule) = self.use_valid_autocomplete.as_ref() {
+        if let Some(rule) = self.use_strict_mode.as_ref() {
             if rule.is_disabled() {
                 index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[50]));
             }
         }
-
+        if let Some(rule) = self.use_trim_start_end.as_ref() {
+            if rule.is_disabled() {
+                index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[51]));
+            }
+        }
+        if let Some(rule) = self.use_valid_autocomplete.as_ref() {
+            if rule.is_disabled() {
+                index_set.insert(RuleFilter::Rule(Self::GROUP_NAME, Self::GROUP_RULES[52]));
+            }
+        }
         index_set
     }
     #[doc = r" Checks if, given a rule name, matches one of the rules contained in this category"]
@@ -4799,6 +4810,10 @@ impl Nursery {
                 .use_explicit_type
                 .as_ref()
                 .map(|conf| (conf.level(), conf.get_options())),
+            "useExportsLast" => self
+                .use_exports_last
+                .as_ref()
+                .map(|conf| (conf.level(), conf.get_options())),
             "useGoogleFontDisplay" => self
                 .use_google_font_display
                 .as_ref()
@@ -4817,6 +4832,10 @@ impl Nursery {
                 .map(|conf| (conf.level(), conf.get_options())),
             "useNamedOperation" => self
                 .use_named_operation
+                .as_ref()
+                .map(|conf| (conf.level(), conf.get_options())),
+            "useNamingConvention" => self
+                .use_naming_convention
                 .as_ref()
                 .map(|conf| (conf.level(), conf.get_options())),
             "useSortedClasses" => self
