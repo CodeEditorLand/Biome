@@ -9,8 +9,8 @@
 	},
 	"description": "Bindings to the JSON-RPC Workspace API of the Biome daemon",
 	"devDependencies": {
-		"@playform/build": "0.1.9",
-		"@types/node": "20.17.9"
+		"@playform/build": "0.2.0",
+		"@types/node": "22.10.1"
 	},
 	"files": [
 		"dist/",
