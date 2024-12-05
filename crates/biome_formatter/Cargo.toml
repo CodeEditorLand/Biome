@@ -21,7 +21,7 @@ biome_rowan = { workspace = true }
 biome_string_case = { workspace = true }
 cfg-if = "1.0.0"
 countme = { workspace = true }
-drop_bomb = "0.1.5"
+drop_bomb = { version = "0.1.5" }
 indexmap = { workspace = true }
 rustc-hash = { workspace = true }
 schemars = { workspace = true, optional = true }

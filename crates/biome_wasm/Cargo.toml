@@ -5,7 +5,7 @@ description = "WebAssembly bindings to the Biome workspace API"
 edition = "2021"
 homepage = "https://biomejs.dev/"
 keywords = ["parser", "linter", "formatter", "wasm"]
-license = "MIT OR Apache-2.0"
+license-file = "LICENSE"
 name = "biome_wasm"
 publish = false
 repository = "https://github.com/biomejs/biome"
@@ -38,7 +38,7 @@ biome_js_factory = { workspace = true }
 biome_js_formatter = { workspace = true }
 biome_rowan = { workspace = true }
 biome_service = { workspace = true, features = ["schema"] }
-quote = "1.0.14"
+quote = { version = "1.0.14" }
 
 [lints]
 workspace = true

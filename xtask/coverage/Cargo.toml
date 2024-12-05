@@ -24,9 +24,9 @@ serde_json         = { workspace = true }
 serde_yaml         = "0.9.34"
 tracing            = { workspace = true }
 tracing-subscriber = { workspace = true, features = ["env-filter", "std"] }
-walkdir = "2.5.0"
+walkdir = { version = "2.5.0" }
 xtask = { path = '../', version = "0.0" }
-yastl = "0.1.2"
+yastl = { version = "0.1.2" }
 
 [lints]
 workspace = true

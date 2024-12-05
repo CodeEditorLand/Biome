@@ -26,14 +26,14 @@ biome_json_syntax = { workspace = true }
 biome_parser = { workspace = true }
 biome_rowan = { workspace = true }
 
-ansi_rgb = "0.2.0"
+ansi_rgb = { version = "0.2.0" }
 codspeed-criterion-compat = { version = "2.7.2", optional = true }
 criterion                 = "0.5.1"
 ureq                      = "2.11.0"
 url                       = "2.5.3"
 
 [target.'cfg(target_os = "windows")'.dependencies]
-mimalloc = "0.1.43"
+mimalloc = { version = "0.1.43" }
 
 [target.'cfg(all(target_family="unix", not(all(target_arch = "aarch64", target_env = "musl"))))'.dependencies]
 tikv-jemallocator = "0.6.0"
