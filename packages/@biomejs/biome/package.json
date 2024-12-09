@@ -1,18 +1,35 @@
 {
-	"author": {
-		"email": "Source/Open@Editor.Land",
-		"name": "🖋️ Source — 👐🏻 Open —",
-		"url": "HTTPS://Editor.Land"
+	"name": "@codeeditorland/biome",
+	"version": "1.9.4",
+	"description": "Biome is a toolchain for the web: formatter, linter and more",
+	"keywords": [
+		"format",
+		"lint",
+		"toolchain",
+		"JavaScript",
+		"TypeScript",
+		"JSON",
+		"JSONC",
+		"JSX",
+		"TSX",
+		"CSS",
+		"GraphQL"
+	],
+	"homepage": "https://biomejs.dev",
+	"bugs": "https://github.com/biomejs/biome/issues",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/biomejs/biome.git",
+		"directory": "packages/@biomejs/biome"
 	},
+	"funding": {
+		"type": "opencollective",
+		"url": "https://opencollective.com/biome"
+	},
+	"license": "MIT OR Apache-2.0",
+	"author": "Emanuele Stoppa",
 	"bin": {
 		"biome": "bin/biome"
-	},
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
-	},
-	"description": "Biome is a toolchain for the web: formatter, linter and more",
-	"devDependencies": {
-		"@playform/build": "0.2.0"
 	},
 	"files": [
 		"bin/biome",
@@ -23,18 +40,11 @@
 		"LICENSE-MIT",
 		"ROME-LICENSE-MIT"
 	],
-	"funding": {
-		"type": "opencollective",
-		"url": "https://opencollective.com/biome"
+	"scripts": {
+		"postinstall": "node scripts/postinstall.js"
 	},
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
-	"keywords": [
-		"codeeditorland",
-		"land",
-		"playform"
-	],
-	"license": "SEE LICENSE IN LICENSE",
-	"name": "@biomejs/biome",
+	"dependencies": {},
+	"devDependencies": {},
 	"optionalDependencies": {
 		"@biomejs/cli-darwin-arm64": "1.9.4",
 		"@biomejs/cli-darwin-x64": "1.9.4",
@@ -45,17 +55,10 @@
 		"@biomejs/cli-win32-arm64": "1.9.4",
 		"@biomejs/cli-win32-x64": "1.9.4"
 	},
-	"private": false,
+	"engines": {
+		"node": ">=14.21.3"
+	},
 	"publishConfig": {
-		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
-	},
-	"scripts": {
-		"prepublishOnly": "Build 'Source/**/*.ts'"
-	},
-	"type": "module",
-	"version": "0.0.1"
+		"provenance": true
+	}
 }

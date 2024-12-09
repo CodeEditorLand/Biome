@@ -1,19 +1,24 @@
 {
-	"author": {
-		"email": "Source/Open@Editor.Land",
-		"name": "🖋️ Source — 👐🏻 Open —",
-		"url": "HTTPS://Editor.Land"
-	},
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
-	},
+	"name": "@codeeditorland/js-api",
+	"version": "0.7.1",
 	"description": "JavaScript APIs for the Biome package",
-	"devDependencies": {
-		"@biomejs/wasm-bundler": "link:../wasm-bundler",
-		"@biomejs/wasm-nodejs": "link:../wasm-nodejs",
-		"@biomejs/wasm-web": "link:../wasm-web",
-		"@playform/build": "0.2.0"
+	"keywords": [
+		"JavaScript",
+		"bindings",
+		"APIs",
+		"biome"
+	],
+	"homepage": "https://biomejs.dev",
+	"bugs": "https://github.com/biomejs/biome/issues",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/biomejs/biome.git",
+		"directory": "packages/@biomejs/js-api"
 	},
+	"license": "MIT OR Apache-2.0",
+	"author": "Biome Developers and Contributors",
+	"main": "./dist/index.js",
+	"types": "./dist/index.d.ts",
 	"files": [
 		"README.md",
 		"LICENSE-APACHE",
@@ -21,34 +26,6 @@
 		"ROME-LICENSE-MIT",
 		"dist/"
 	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
-	"keywords": [
-		"codeeditorland",
-		"land",
-		"playform"
-	],
-	"license": "SEE LICENSE IN LICENSE",
-	"main": "./dist/index.js",
-	"name": "@biomejs/js-api",
-	"peerDependenciesMeta": {
-		"@biomejs/wasm-bundler": {
-			"optional": true
-		},
-		"@biomejs/wasm-nodejs": {
-			"optional": true
-		},
-		"@biomejs/wasm-web": {
-			"optional": true
-		}
-	},
-	"private": false,
-	"publishConfig": {
-		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
-	},
 	"scripts": {
 		"biome:check": "cargo biome-cli-dev check .",
 		"build": "tsc",
@@ -60,11 +37,37 @@
 		"build:wasm-node-dev": "wasm-pack build --out-dir ../../packages/@biomejs/wasm-nodejs --target nodejs --dev --scope biomejs ../../../crates/biome_wasm",
 		"build:wasm-web": "wasm-pack build --out-dir ../../packages/@biomejs/wasm-web --target web --release --scope biomejs ../../../crates/biome_wasm",
 		"build:wasm-web-dev": "wasm-pack build --out-dir ../../packages/@biomejs/wasm-web --target web --dev --scope biomejs ../../../crates/biome_wasm",
+		"check": "pnpm biome:check && tsc --noEmit",
+		"check:apply": "cargo biome-cli-dev check --apply-unsafe .",
 		"ci": "cargo biome-cli-dev ci ./src && tsc --noEmit",
-		"prepublishOnly": "Build 'Source/**/*.ts'",
-		"test:ci": "vitest run"
+		"format": "cargo biome-cli-dev format --write .",
+		"test": "vitest",
+		"test:ci": "vitest run",
+		"tsc": "tsc --noEmit"
 	},
-	"type": "module",
-	"types": "./dist/index.d.ts",
-	"version": "0.0.1"
+	"dependencies": {},
+	"devDependencies": {
+		"@codeeditorland/wasm-bundler": "0.0.1",
+		"@codeeditorland/wasm-nodejs": "0.0.1",
+		"@codeeditorland/wasm-web": "0.0.1",
+		"typescript": "5.7.2",
+		"vite": "5.4.11",
+		"vitest": "1.6.0"
+	},
+	"peerDependencies": {
+		"@biomejs/wasm-bundler": "^1.9.4",
+		"@biomejs/wasm-nodejs": "^1.9.4",
+		"@biomejs/wasm-web": "^1.9.4"
+	},
+	"peerDependenciesMeta": {
+		"@biomejs/wasm-bundler": {
+			"optional": true
+		},
+		"@biomejs/wasm-nodejs": {
+			"optional": true
+		},
+		"@biomejs/wasm-web": {
+			"optional": true
+		}
+	}
 }

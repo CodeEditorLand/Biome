@@ -1,45 +1,30 @@
 {
-	"author": {
-		"email": "Source/Open@Editor.Land",
-		"name": "🖋️ Source — 👐🏻 Open —",
-		"url": "HTTPS://Editor.Land"
-	},
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
-	},
-	"collaborators": [
-		"Biome Developers and Contributors"
-	],
+	"name": "@codeeditorland/wasm-nodejs",
+	"version": "1.8.3",
 	"description": "WebAssembly bindings to the Biome workspace API",
-	"devDependencies": {
-		"@playform/build": "0.2.0"
+	"keywords": [
+		"parser",
+		"linter",
+		"formatter",
+		"wasm"
+	],
+	"homepage": "https://biomejs.dev/",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/biomejs/biome.git",
+		"directory": "packages/@biomejs/biome/wasm-nodejs"
 	},
+	"license": "MIT OR Apache-2.0",
+	"main": "biome_wasm.js",
+	"types": "biome_wasm.d.ts",
 	"files": [
 		"biome_wasm_bg.wasm",
 		"biome_wasm.js",
 		"biome_wasm.d.ts"
 	],
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
-	"keywords": [
-		"codeeditorland",
-		"land",
-		"playform"
-	],
-	"license": "SEE LICENSE IN LICENSE",
-	"main": "biome_wasm.js",
-	"name": "@biomejs/wasm-nodejs",
-	"private": false,
-	"publishConfig": {
-		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
-	},
-	"scripts": {
-		"prepublishOnly": "Build 'Source/**/*.ts'"
-	},
-	"type": "module",
-	"types": "biome_wasm.d.ts",
-	"version": "0.0.1"
+	"dependencies": {},
+	"devDependencies": {},
+	"collaborators": [
+		"Biome Developers and Contributors"
+	]
 }

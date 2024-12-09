@@ -1,37 +1,20 @@
 {
-	"author": {
-		"email": "Source/Open@Editor.Land",
-		"name": "🖋️ Source — 👐🏻 Open —",
-		"url": "HTTPS://Editor.Land"
-	},
-	"bugs": {
-		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
-	},
+	"name": "@codeeditorland/benchmark",
+	"version": "1.0.0",
+	"private": true,
 	"description": "",
-	"devDependencies": {
-		"@playform/build": "0.2.0",
-		"dprint": "0.47.6"
-	},
-	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
-	"keywords": [
-		"codeeditorland",
-		"land",
-		"playform"
-	],
-	"license": "SEE LICENSE IN LICENSE",
-	"main": "run.js",
-	"name": "@biomejs/benchmark",
-	"private": false,
-	"publishConfig": {
-		"access": "public"
-	},
-	"repository": {
-		"type": "git",
-		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
-	},
-	"scripts": {
-		"prepublishOnly": "Build 'Source/**/*.ts'"
-	},
+	"license": "MIT OR Apache-2.0",
+	"author": "Biome Developers and Contributors",
 	"type": "module",
-	"version": "0.0.1"
+	"main": "run.js",
+	"dependencies": {},
+	"devDependencies": {
+		"@typescript-eslint/eslint-plugin": "8.17.0",
+		"dprint": "0.47.6",
+		"eslint": "9.16.0",
+		"prettier": "3.3.3"
+	},
+	"engines": {
+		"node": ">20.0.0"
+	}
 }
