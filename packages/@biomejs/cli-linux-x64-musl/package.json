@@ -1,18 +1,7 @@
 {
 	"name": "@codeeditorland/cli-linux-x64-musl",
-	"version": "1.8.3",
-	"homepage": "https://biomejs.dev",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/biomejs/biome.git",
-		"directory": "packages/@biomejs/biome/cli-linux-x64-musl"
-	},
-	"license": "MIT OR Apache-2.0",
 	"dependencies": {},
 	"devDependencies": {},
-	"engines": {
-		"node": ">=14.21.3"
-	},
 	"os": [
 		"linux"
 	],

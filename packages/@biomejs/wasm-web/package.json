@@ -1,20 +1,6 @@
 {
 	"name": "@codeeditorland/wasm-web",
-	"version": "1.8.3",
 	"description": "WebAssembly bindings to the Biome workspace API",
-	"keywords": [
-		"parser",
-		"linter",
-		"formatter",
-		"wasm"
-	],
-	"homepage": "https://biomejs.dev/",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/biomejs/biome.git",
-		"directory": "packages/@biomejs/biome/wasm-web"
-	},
-	"license": "MIT OR Apache-2.0",
 	"sideEffects": [
 		"./snippets/*"
 	],
@@ -27,9 +13,6 @@
 	],
 	"dependencies": {},
 	"devDependencies": {},
-	"publishConfig": {
-		"provenance": true
-	},
 	"collaborators": [
 		"Biome Developers and Contributors"
 	]

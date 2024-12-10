@@ -1,23 +1,6 @@
 {
 	"name": "@codeeditorland/backend-jsonrpc",
-	"version": "1.9.3",
 	"description": "Bindings to the JSON-RPC Workspace API of the Biome daemon",
-	"keywords": [
-		"JavaScript",
-		"TypeScript",
-		"format",
-		"lint",
-		"toolchain"
-	],
-	"homepage": "https://biomejs.dev",
-	"bugs": "https://github.com/biomejs/biome/issues",
-	"repository": {
-		"type": "git",
-		"url": "git+https://github.com/biomejs/biome.git",
-		"directory": "npm/backend-jsonrpc"
-	},
-	"license": "MIT OR Apache-2.0",
-	"author": "Biome Developers and Contributors",
 	"main": "dist/index.js",
 	"files": [
 		"dist/",
@@ -28,16 +11,11 @@
 	],
 	"scripts": {
 		"build": "tsc",
-		"test": "vitest",
-		"test:ci": "pnpm build && vitest run",
-		"tsc": "tsc --noEmit"
+		"test:ci": "pnpm build && vitest run"
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@types/node": "20.17.9",
-		"typescript": "5.7.2",
-		"vite": "5.4.11",
-		"vitest": "1.6.0"
+		"@types/node": "20.17.9"
 	},
 	"optionalDependencies": {
 		"@biomejs/cli-darwin-arm64": "1.9.4",
@@ -48,11 +26,5 @@
 		"@biomejs/cli-linux-x64-musl": "1.9.4",
 		"@biomejs/cli-win32-arm64": "1.9.4",
 		"@biomejs/cli-win32-x64": "1.9.4"
-	},
-	"engines": {
-		"node": ">=14.21.3"
-	},
-	"publishConfig": {
-		"provenance": true
 	}
 }
