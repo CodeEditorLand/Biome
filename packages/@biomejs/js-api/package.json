@@ -1,6 +1,28 @@
 {
 	"name": "@codeeditorland/js-api",
+	"version": "0.0.1",
+	"private": false,
 	"description": "JavaScript APIs for the Biome package",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "🖋️ Source — 👐🏻 Open —",
+		"email": "Source/Open@Editor.Land",
+		"url": "HTTPS://Editor.Land"
+	},
+	"type": "module",
 	"main": "./dist/index.js",
 	"types": "./dist/index.d.ts",
 	"files": [
@@ -22,13 +44,15 @@
 		"build:wasm-web": "wasm-pack build --out-dir ../../packages/@biomejs/wasm-web --target web --release --scope biomejs ../../../crates/biome_wasm",
 		"build:wasm-web-dev": "wasm-pack build --out-dir ../../packages/@biomejs/wasm-web --target web --dev --scope biomejs ../../../crates/biome_wasm",
 		"ci": "cargo biome-cli-dev ci ./src && tsc --noEmit",
+		"prepublishOnly": "Build 'Source/**/*.ts'",
 		"test:ci": "vitest run"
 	},
 	"dependencies": {},
 	"devDependencies": {
 		"@codeeditorland/wasm-bundler": "0.0.1",
 		"@codeeditorland/wasm-nodejs": "0.0.1",
-		"@codeeditorland/wasm-web": "0.0.1"
+		"@codeeditorland/wasm-web": "0.0.1",
+		"@playform/build": "0.2.0"
 	},
 	"peerDependenciesMeta": {
 		"@biomejs/wasm-bundler": {
@@ -40,5 +64,8 @@
 		"@biomejs/wasm-web": {
 			"optional": true
 		}
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }
