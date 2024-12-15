@@ -1,180 +1,157 @@
-use crate::CssCommentStyle;
-use biome_formatter::{prelude::*, AttributePosition, BracketSpacing, IndentWidth, QuoteStyle};
+use std::{fmt, rc::Rc};
+
+use biome_css_syntax::{CssFileSource, CssLanguage};
 use biome_formatter::{
-    CstFormatContext, FormatContext, FormatOptions, IndentStyle, LineEnding, LineWidth,
-    TransformSourceMap,
+	AttributePosition,
+	BracketSpacing,
+	CstFormatContext,
+	FormatContext,
+	FormatOptions,
+	IndentStyle,
+	IndentWidth,
+	LineEnding,
+	LineWidth,
+	QuoteStyle,
+	TransformSourceMap,
+	prelude::*,
 };
 
-use crate::comments::{CssComments, FormatCssLeadingComment};
-use biome_css_syntax::{CssFileSource, CssLanguage};
-use std::fmt;
-use std::rc::Rc;
+use crate::{
+	CssCommentStyle,
+	comments::{CssComments, FormatCssLeadingComment},
+};
 
 #[derive(Debug)]
 pub struct CssFormatContext {
-    options: CssFormatOptions,
-    /// The comments of the nodes and tokens in the program.
-    comments: Rc<CssComments>,
-    source_map: Option<TransformSourceMap>,
+	options:CssFormatOptions,
+	/// The comments of the nodes and tokens in the program.
+	comments:Rc<CssComments>,
+	source_map:Option<TransformSourceMap>,
 }
 
 impl CssFormatContext {
-    pub fn new(options: CssFormatOptions, comments: CssComments) -> Self {
-        Self {
-            options,
-            comments: Rc::new(comments),
-            source_map: None,
-        }
-    }
+	pub fn new(options:CssFormatOptions, comments:CssComments) -> Self {
+		Self { options, comments:Rc::new(comments), source_map:None }
+	}
 
-    pub fn with_source_map(mut self, source_map: Option<TransformSourceMap>) -> Self {
-        self.source_map = source_map;
+	pub fn with_source_map(mut self, source_map:Option<TransformSourceMap>) -> Self {
+		self.source_map = source_map;
 
-        self
-    }
+		self
+	}
 }
 
 impl FormatContext for CssFormatContext {
-    type Options = CssFormatOptions;
+	type Options = CssFormatOptions;
 
-    fn options(&self) -> &Self::Options {
-        &self.options
-    }
+	fn options(&self) -> &Self::Options { &self.options }
 
-    fn source_map(&self) -> Option<&TransformSourceMap> {
-        None
-    }
+	fn source_map(&self) -> Option<&TransformSourceMap> { None }
 }
 
 impl CstFormatContext for CssFormatContext {
-    type Language = CssLanguage;
+	type CommentRule = FormatCssLeadingComment;
+	type Language = CssLanguage;
+	type Style = CssCommentStyle;
 
-    type Style = CssCommentStyle;
-
-    type CommentRule = FormatCssLeadingComment;
-
-    fn comments(&self) -> &CssComments {
-        &self.comments
-    }
+	fn comments(&self) -> &CssComments { &self.comments }
 }
 
 #[derive(Debug, Default, Clone, PartialEq)]
 pub struct CssFormatOptions {
-    indent_style: IndentStyle,
-    indent_width: IndentWidth,
-    line_ending: LineEnding,
-    line_width: LineWidth,
-    quote_style: QuoteStyle,
-    _file_source: CssFileSource,
+	indent_style:IndentStyle,
+	indent_width:IndentWidth,
+	line_ending:LineEnding,
+	line_width:LineWidth,
+	quote_style:QuoteStyle,
+	_file_source:CssFileSource,
 }
 
 impl CssFormatOptions {
-    pub fn new(file_source: CssFileSource) -> Self {
-        Self {
-            _file_source: file_source,
-            indent_style: IndentStyle::default(),
-            indent_width: IndentWidth::default(),
-            line_ending: LineEnding::default(),
-            line_width: LineWidth::default(),
-            quote_style: QuoteStyle::default(),
-        }
-    }
+	pub fn new(file_source:CssFileSource) -> Self {
+		Self {
+			_file_source:file_source,
+			indent_style:IndentStyle::default(),
+			indent_width:IndentWidth::default(),
+			line_ending:LineEnding::default(),
+			line_width:LineWidth::default(),
+			quote_style:QuoteStyle::default(),
+		}
+	}
 
-    pub fn with_indent_style(mut self, indent_style: IndentStyle) -> Self {
-        self.indent_style = indent_style;
+	pub fn with_indent_style(mut self, indent_style:IndentStyle) -> Self {
+		self.indent_style = indent_style;
 
-        self
-    }
+		self
+	}
 
-    pub fn with_indent_width(mut self, indent_width: IndentWidth) -> Self {
-        self.indent_width = indent_width;
+	pub fn with_indent_width(mut self, indent_width:IndentWidth) -> Self {
+		self.indent_width = indent_width;
 
-        self
-    }
+		self
+	}
 
-    pub fn with_line_ending(mut self, line_ending: LineEnding) -> Self {
-        self.line_ending = line_ending;
+	pub fn with_line_ending(mut self, line_ending:LineEnding) -> Self {
+		self.line_ending = line_ending;
 
-        self
-    }
+		self
+	}
 
-    pub fn with_line_width(mut self, line_width: LineWidth) -> Self {
-        self.line_width = line_width;
+	pub fn with_line_width(mut self, line_width:LineWidth) -> Self {
+		self.line_width = line_width;
 
-        self
-    }
+		self
+	}
 
-    pub fn with_quote_style(mut self, quote_style: QuoteStyle) -> Self {
-        self.quote_style = quote_style;
+	pub fn with_quote_style(mut self, quote_style:QuoteStyle) -> Self {
+		self.quote_style = quote_style;
 
-        self
-    }
+		self
+	}
 
-    pub fn set_indent_style(&mut self, indent_style: IndentStyle) {
-        self.indent_style = indent_style;
-    }
+	pub fn set_indent_style(&mut self, indent_style:IndentStyle) {
+		self.indent_style = indent_style;
+	}
 
-    pub fn set_indent_width(&mut self, indent_width: IndentWidth) {
-        self.indent_width = indent_width;
-    }
+	pub fn set_indent_width(&mut self, indent_width:IndentWidth) {
+		self.indent_width = indent_width;
+	}
 
-    pub fn set_line_ending(&mut self, line_ending: LineEnding) {
-        self.line_ending = line_ending;
-    }
+	pub fn set_line_ending(&mut self, line_ending:LineEnding) { self.line_ending = line_ending; }
 
-    pub fn set_line_width(&mut self, line_width: LineWidth) {
-        self.line_width = line_width;
-    }
+	pub fn set_line_width(&mut self, line_width:LineWidth) { self.line_width = line_width; }
 
-    pub fn set_quote_style(&mut self, quote_style: QuoteStyle) {
-        self.quote_style = quote_style;
-    }
+	pub fn set_quote_style(&mut self, quote_style:QuoteStyle) { self.quote_style = quote_style; }
 
-    pub fn quote_style(&self) -> QuoteStyle {
-        self.quote_style
-    }
+	pub fn quote_style(&self) -> QuoteStyle { self.quote_style }
 }
 
 impl FormatOptions for CssFormatOptions {
-    fn indent_style(&self) -> IndentStyle {
-        self.indent_style
-    }
+	fn indent_style(&self) -> IndentStyle { self.indent_style }
 
-    fn indent_width(&self) -> IndentWidth {
-        self.indent_width
-    }
+	fn indent_width(&self) -> IndentWidth { self.indent_width }
 
-    fn line_width(&self) -> LineWidth {
-        self.line_width
-    }
+	fn line_width(&self) -> LineWidth { self.line_width }
 
-    fn line_ending(&self) -> LineEnding {
-        self.line_ending
-    }
+	fn line_ending(&self) -> LineEnding { self.line_ending }
 
-    fn attribute_position(&self) -> AttributePosition {
-        AttributePosition::default()
-    }
+	fn attribute_position(&self) -> AttributePosition { AttributePosition::default() }
 
-    fn bracket_spacing(&self) -> BracketSpacing {
-        BracketSpacing::default()
-    }
+	fn bracket_spacing(&self) -> BracketSpacing { BracketSpacing::default() }
 
-    fn as_print_options(&self) -> PrinterOptions {
-        PrinterOptions::from(self)
-    }
+	fn as_print_options(&self) -> PrinterOptions { PrinterOptions::from(self) }
 }
 
 impl fmt::Display for CssFormatOptions {
-    fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
-        writeln!(f, "Indent style: {}", self.indent_style)?;
+	fn fmt(&self, f:&mut fmt::Formatter<'_>) -> fmt::Result {
+		writeln!(f, "Indent style: {}", self.indent_style)?;
 
-        writeln!(f, "Indent width: {}", self.indent_width.value())?;
+		writeln!(f, "Indent width: {}", self.indent_width.value())?;
 
-        writeln!(f, "Line ending: {}", self.line_ending)?;
+		writeln!(f, "Line ending: {}", self.line_ending)?;
 
-        writeln!(f, "Line width: {}", self.line_width.value())?;
+		writeln!(f, "Line width: {}", self.line_width.value())?;
 
-        writeln!(f, "Quote style: {}", self.quote_style)
-    }
+		writeln!(f, "Quote style: {}", self.quote_style)
+	}
 }

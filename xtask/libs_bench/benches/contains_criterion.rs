@@ -1,129 +1,129 @@
 mod contains;
 
 use contains::*;
-use criterion::{criterion_group, criterion_main, Criterion};
+use criterion::{Criterion, criterion_group, criterion_main};
 use fastbloom_rs::Membership;
 
-fn criterion_benchmark(c: &mut Criterion) {
-    let set = contains_hashset_setup();
+fn criterion_benchmark(c:&mut Criterion) {
+	let set = contains_hashset_setup();
 
-    c.bench_function("contains_hashset", |b| {
-        b.iter(|| {
-            let mut count = 0;
+	c.bench_function("contains_hashset", |b| {
+		b.iter(|| {
+			let mut count = 0;
 
-            for k in search_for() {
-                count += i32::from(set.contains(*k));
-            }
+			for k in search_for() {
+				count += i32::from(set.contains(*k));
+			}
 
-            count
-        })
-    });
+			count
+		})
+	});
 
-    let set = contains_btreeset_setup();
+	let set = contains_btreeset_setup();
 
-    c.bench_function("contains_btreeset", |b| {
-        b.iter(|| {
-            let mut count = 0;
+	c.bench_function("contains_btreeset", |b| {
+		b.iter(|| {
+			let mut count = 0;
 
-            for k in search_for() {
-                count = i32::from(set.contains(*k));
-            }
+			for k in search_for() {
+				count = i32::from(set.contains(*k));
+			}
 
-            count
-        })
-    });
+			count
+		})
+	});
 
-    let set = contains_bloom_setup();
+	let set = contains_bloom_setup();
 
-    c.bench_function("contains_bloom", |b| {
-        b.iter(|| {
-            let mut count = 0;
+	c.bench_function("contains_bloom", |b| {
+		b.iter(|| {
+			let mut count = 0;
 
-            for k in search_for() {
-                count += i32::from(set.contains(k.as_bytes()))
-            }
+			for k in search_for() {
+				count += i32::from(set.contains(k.as_bytes()))
+			}
 
-            count
-        })
-    });
+			count
+		})
+	});
 
-    let set = contains_trie_setup();
+	let set = contains_trie_setup();
 
-    c.bench_function("contains_trie", |b| {
-        b.iter(|| {
-            let mut count = 0;
+	c.bench_function("contains_trie", |b| {
+		b.iter(|| {
+			let mut count = 0;
 
-            for k in search_for() {
-                count += i32::from(set.contains_key(k.as_bytes()));
-            }
+			for k in search_for() {
+				count += i32::from(set.contains_key(k.as_bytes()));
+			}
 
-            count
-        })
-    });
+			count
+		})
+	});
 
-    let set = contains_slice_setup();
+	let set = contains_slice_setup();
 
-    c.bench_function("contains_slice", |b| {
-        b.iter(|| {
-            let mut count = 0;
+	c.bench_function("contains_slice", |b| {
+		b.iter(|| {
+			let mut count = 0;
 
-            for k in search_for() {
-                count += set.iter().position(|x| x == k).unwrap_or(0);
-            }
+			for k in search_for() {
+				count += set.iter().position(|x| x == k).unwrap_or(0);
+			}
 
-            count
-        })
-    });
+			count
+		})
+	});
 
-    let set = contains_fst_setup();
+	let set = contains_fst_setup();
 
-    c.bench_function("contains_fst", |b| {
-        b.iter(|| {
-            let mut count = 0;
+	c.bench_function("contains_fst", |b| {
+		b.iter(|| {
+			let mut count = 0;
 
-            for k in search_for() {
-                count += i32::from(set.contains(k));
-            }
+			for k in search_for() {
+				count += i32::from(set.contains(k));
+			}
 
-            count
-        })
-    });
+			count
+		})
+	});
 
-    let mut set = keywords();
+	let mut set = keywords();
 
-    set.sort();
+	set.sort();
 
-    c.bench_function("contains_binary_search", |b| {
-        b.iter(|| {
-            let mut count = 0;
+	c.bench_function("contains_binary_search", |b| {
+		b.iter(|| {
+			let mut count = 0;
 
-            for k in search_for() {
-                count += set.binary_search_by(|v| (*k).cmp(v.as_str())).unwrap_or(1);
-            }
+			for k in search_for() {
+				count += set.binary_search_by(|v| (*k).cmp(v.as_str())).unwrap_or(1);
+			}
 
-            count
-        })
-    });
+			count
+		})
+	});
 
-    let set = contains_memchr_setup();
+	let set = contains_memchr_setup();
 
-    c.bench_function("contains_memchr", |b| {
-        b.iter(|| {
-            {
-                let mut count = 0;
+	c.bench_function("contains_memchr", |b| {
+		b.iter(|| {
+			{
+				let mut count = 0;
 
-                for k in search_for() {
-                    for item in set.iter() {
-                        count += i32::from(
-                            memchr::memmem::find(k.as_bytes(), item.as_str().as_bytes()).is_some(),
-                        );
-                    }
-                }
+				for k in search_for() {
+					for item in set.iter() {
+						count += i32::from(
+							memchr::memmem::find(k.as_bytes(), item.as_str().as_bytes()).is_some(),
+						);
+					}
+				}
 
-                count
-            };
-        })
-    });
+				count
+			};
+		})
+	});
 }
 
 criterion_group!(contains, criterion_benchmark);

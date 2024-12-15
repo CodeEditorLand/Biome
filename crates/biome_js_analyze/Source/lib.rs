@@ -1,18 +1,32 @@
 #![warn(clippy::needless_pass_by_value)]
 
-use crate::suppression_action::JsSuppressionAction;
+use std::{
+	ops::Deref,
+	sync::{Arc, LazyLock},
+};
+
 use biome_analyze::{
-    AnalysisFilter, Analyzer, AnalyzerContext, AnalyzerOptions, AnalyzerSignal, ControlFlow,
-    InspectMatcher, LanguageRoot, MatchQueryParams, MetadataRegistry, RuleAction, RuleRegistry,
-    SuppressionKind,
+	AnalysisFilter,
+	Analyzer,
+	AnalyzerContext,
+	AnalyzerOptions,
+	AnalyzerSignal,
+	ControlFlow,
+	InspectMatcher,
+	LanguageRoot,
+	MatchQueryParams,
+	MetadataRegistry,
+	RuleAction,
+	RuleRegistry,
+	SuppressionKind,
 };
 use biome_aria::AriaRoles;
-use biome_diagnostics::{category, Error as DiagnosticError};
+use biome_diagnostics::{Error as DiagnosticError, category};
 use biome_js_syntax::{JsFileSource, JsLanguage};
 use biome_project::PackageJson;
-use biome_suppression::{parse_suppression_comment, SuppressionDiagnostic};
-use std::ops::Deref;
-use std::sync::{Arc, LazyLock};
+use biome_suppression::{SuppressionDiagnostic, parse_suppression_comment};
+
+use crate::suppression_action::JsSuppressionAction;
 
 pub mod assists;
 mod ast_utils;
@@ -26,256 +40,239 @@ mod suppression_action;
 mod syntax;
 pub mod utils;
 
-pub use crate::registry::visit_registry;
-pub use crate::services::control_flow::ControlFlowGraph;
+pub use crate::{registry::visit_registry, services::control_flow::ControlFlowGraph};
 
 pub(crate) type JsRuleAction = RuleAction<JsLanguage>;
 
-pub static METADATA: LazyLock<MetadataRegistry> = LazyLock::new(|| {
-    let mut metadata = MetadataRegistry::default();
+pub static METADATA:LazyLock<MetadataRegistry> = LazyLock::new(|| {
+	let mut metadata = MetadataRegistry::default();
 
-    visit_registry(&mut metadata);
+	visit_registry(&mut metadata);
 
-    metadata
+	metadata
 });
 
-/// Run the analyzer on the provided `root`: this process will use the given `filter`
-/// to selectively restrict analysis to specific rules / a specific source range,
-/// then call `emit_signal` when an analysis rule emits a diagnostic or action.
-/// Additionally, this function takes a `inspect_matcher` function that can be
-/// used to inspect the "query matches" emitted by the analyzer before they are
-/// processed by the lint rules registry
+/// Run the analyzer on the provided `root`: this process will use the given
+/// `filter` to selectively restrict analysis to specific rules / a specific
+/// source range, then call `emit_signal` when an analysis rule emits a
+/// diagnostic or action. Additionally, this function takes a `inspect_matcher`
+/// function that can be used to inspect the "query matches" emitted by the
+/// analyzer before they are processed by the lint rules registry
 pub fn analyze_with_inspect_matcher<'a, V, F, B>(
-    root: &LanguageRoot<JsLanguage>,
-    filter: AnalysisFilter,
-    inspect_matcher: V,
-    options: &'a AnalyzerOptions,
-    source_type: JsFileSource,
-    manifest: Option<PackageJson>,
-    mut emit_signal: F,
+	root:&LanguageRoot<JsLanguage>,
+	filter:AnalysisFilter,
+	inspect_matcher:V,
+	options:&'a AnalyzerOptions,
+	source_type:JsFileSource,
+	manifest:Option<PackageJson>,
+	mut emit_signal:F,
 ) -> (Option<B>, Vec<DiagnosticError>)
 where
-    V: FnMut(&MatchQueryParams<JsLanguage>) + 'a,
-    F: FnMut(&dyn AnalyzerSignal<JsLanguage>) -> ControlFlow<B> + 'a,
-    B: 'a,
-{
-    fn parse_linter_suppression_comment(
-        text: &str,
-    ) -> Vec<Result<SuppressionKind, SuppressionDiagnostic>> {
-        let mut result = Vec::new();
+	V: FnMut(&MatchQueryParams<JsLanguage>) + 'a,
+	F: FnMut(&dyn AnalyzerSignal<JsLanguage>) -> ControlFlow<B> + 'a,
+	B: 'a, {
+	fn parse_linter_suppression_comment(
+		text:&str,
+	) -> Vec<Result<SuppressionKind, SuppressionDiagnostic>> {
+		let mut result = Vec::new();
 
-        for comment in parse_suppression_comment(text) {
-            let categories = match comment {
-                Ok(comment) => {
-                    if comment.is_legacy {
-                        result.push(Ok(SuppressionKind::Deprecated));
-                    }
+		for comment in parse_suppression_comment(text) {
+			let categories = match comment {
+				Ok(comment) => {
+					if comment.is_legacy {
+						result.push(Ok(SuppressionKind::Deprecated));
+					}
 
-                    comment.categories
-                }
+					comment.categories
+				},
 
-                Err(err) => {
-                    result.push(Err(err));
+				Err(err) => {
+					result.push(Err(err));
 
-                    continue;
-                }
-            };
+					continue;
+				},
+			};
 
-            for (key, value) in categories {
-                if key == category!("lint") {
-                    if let Some(value) = value {
-                        result.push(Ok(SuppressionKind::MaybeLegacy(value)));
-                    } else {
-                        result.push(Ok(SuppressionKind::Everything));
-                    }
-                } else {
-                    let category = key.name();
+			for (key, value) in categories {
+				if key == category!("lint") {
+					if let Some(value) = value {
+						result.push(Ok(SuppressionKind::MaybeLegacy(value)));
+					} else {
+						result.push(Ok(SuppressionKind::Everything));
+					}
+				} else {
+					let category = key.name();
 
-                    if let Some(rule) = category.strip_prefix("lint/") {
-                        if let Some(instance) = value {
-                            result.push(Ok(SuppressionKind::RuleInstance(rule, instance)));
-                        } else {
-                            result.push(Ok(SuppressionKind::Rule(rule)));
-                        }
-                    }
-                }
-            }
-        }
+					if let Some(rule) = category.strip_prefix("lint/") {
+						if let Some(instance) = value {
+							result.push(Ok(SuppressionKind::RuleInstance(rule, instance)));
+						} else {
+							result.push(Ok(SuppressionKind::Rule(rule)));
+						}
+					}
+				}
+			}
+		}
 
-        result
-    }
+		result
+	}
 
-    let mut registry = RuleRegistry::builder(&filter, root);
+	let mut registry = RuleRegistry::builder(&filter, root);
 
-    visit_registry(&mut registry);
+	visit_registry(&mut registry);
 
-    let (registry, mut services, diagnostics, visitors) = registry.build();
+	let (registry, mut services, diagnostics, visitors) = registry.build();
 
-    // Bail if we can't parse a rule option
-    if !diagnostics.is_empty() {
-        return (None, diagnostics);
-    }
+	// Bail if we can't parse a rule option
+	if !diagnostics.is_empty() {
+		return (None, diagnostics);
+	}
 
-    let mut analyzer = Analyzer::new(
-        METADATA.deref(),
-        InspectMatcher::new(registry, inspect_matcher),
-        parse_linter_suppression_comment,
-        Box::new(JsSuppressionAction),
-        &mut emit_signal,
-    );
+	let mut analyzer = Analyzer::new(
+		METADATA.deref(),
+		InspectMatcher::new(registry, inspect_matcher),
+		parse_linter_suppression_comment,
+		Box::new(JsSuppressionAction),
+		&mut emit_signal,
+	);
 
-    for ((phase, _), visitor) in visitors {
-        analyzer.add_visitor(phase, visitor);
-    }
+	for ((phase, _), visitor) in visitors {
+		analyzer.add_visitor(phase, visitor);
+	}
 
-    services.insert_service(Arc::new(AriaRoles));
+	services.insert_service(Arc::new(AriaRoles));
 
-    services.insert_service(Arc::new(manifest));
+	services.insert_service(Arc::new(manifest));
 
-    services.insert_service(source_type);
-    (
-        analyzer.run(AnalyzerContext {
-            root: root.clone(),
-            range: filter.range,
-            services,
-            options,
-        }),
-        diagnostics,
-    )
+	services.insert_service(source_type);
+	(
+		analyzer.run(AnalyzerContext { root:root.clone(), range:filter.range, services, options }),
+		diagnostics,
+	)
 }
 
-/// Run the analyzer on the provided `root`: this process will use the given `filter`
-/// to selectively restrict analysis to specific rules / a specific source range,
-/// then call `emit_signal` when an analysis rule emits a diagnostic or action
+/// Run the analyzer on the provided `root`: this process will use the given
+/// `filter` to selectively restrict analysis to specific rules / a specific
+/// source range, then call `emit_signal` when an analysis rule emits a
+/// diagnostic or action
 pub fn analyze<'a, F, B>(
-    root: &LanguageRoot<JsLanguage>,
-    filter: AnalysisFilter,
-    options: &'a AnalyzerOptions,
-    source_type: JsFileSource,
-    manifest: Option<PackageJson>,
-    emit_signal: F,
+	root:&LanguageRoot<JsLanguage>,
+	filter:AnalysisFilter,
+	options:&'a AnalyzerOptions,
+	source_type:JsFileSource,
+	manifest:Option<PackageJson>,
+	emit_signal:F,
 ) -> (Option<B>, Vec<DiagnosticError>)
 where
-    F: FnMut(&dyn AnalyzerSignal<JsLanguage>) -> ControlFlow<B> + 'a,
-    B: 'a,
-{
-    analyze_with_inspect_matcher(
-        root,
-        filter,
-        |_| {},
-        options,
-        source_type,
-        manifest,
-        emit_signal,
-    )
+	F: FnMut(&dyn AnalyzerSignal<JsLanguage>) -> ControlFlow<B> + 'a,
+	B: 'a, {
+	analyze_with_inspect_matcher(root, filter, |_| {}, options, source_type, manifest, emit_signal)
 }
 
 #[cfg(test)]
 mod tests {
-    use biome_analyze::{AnalyzerOptions, Never, RuleCategoriesBuilder, RuleFilter};
+	use std::slice;
 
-    use biome_console::fmt::{Formatter, Termcolor};
+	use biome_analyze::{AnalyzerOptions, Never, RuleCategoriesBuilder, RuleFilter};
+	use biome_console::{
+		Markup,
+		fmt::{Formatter, Termcolor},
+		markup,
+	};
+	use biome_diagnostics::{
+		Diagnostic,
+		DiagnosticExt,
+		PrintDiagnostic,
+		Severity,
+		category,
+		termcolor::NoColor,
+	};
+	use biome_js_parser::{JsParserOptions, parse};
+	use biome_js_syntax::{JsFileSource, TextRange, TextSize};
+	use biome_project::{Dependencies, PackageJson};
 
-    use biome_console::{markup, Markup};
+	use crate::{AnalysisFilter, ControlFlow, analyze};
 
-    use biome_diagnostics::category;
+	#[ignore]
+	#[test]
+	fn quick_test() {
+		fn markup_to_string(markup:Markup) -> String {
+			let mut buffer = Vec::new();
 
-    use biome_diagnostics::termcolor::NoColor;
+			let mut write = Termcolor(NoColor::new(&mut buffer));
 
-    use biome_diagnostics::{Diagnostic, DiagnosticExt, PrintDiagnostic, Severity};
+			let mut fmt = Formatter::new(&mut write);
 
-    use biome_js_parser::{parse, JsParserOptions};
+			fmt.write_markup(markup).unwrap();
 
-    use biome_js_syntax::{JsFileSource, TextRange, TextSize};
+			String::from_utf8(buffer).unwrap()
+		}
 
-    use biome_project::{Dependencies, PackageJson};
+		const SOURCE:&str = r#"import buffer from "buffer"; "#;
 
-    use std::slice;
+		let parsed = parse(SOURCE, JsFileSource::tsx(), JsParserOptions::default());
 
-    use crate::{analyze, AnalysisFilter, ControlFlow};
+		let mut error_ranges:Vec<TextRange> = Vec::new();
 
-    #[ignore]
-    #[test]
-    fn quick_test() {
-        fn markup_to_string(markup: Markup) -> String {
-            let mut buffer = Vec::new();
+		let options = AnalyzerOptions::default();
 
-            let mut write = Termcolor(NoColor::new(&mut buffer));
+		let rule_filter = RuleFilter::Rule("style", "useNodejsImportProtocol");
 
-            let mut fmt = Formatter::new(&mut write);
+		let mut dependencies = Dependencies::default();
 
-            fmt.write_markup(markup).unwrap();
+		dependencies.add("buffer", "latest");
 
-            String::from_utf8(buffer).unwrap()
-        }
+		analyze(
+			&parsed.tree(),
+			AnalysisFilter {
+				enabled_rules:Some(slice::from_ref(&rule_filter)),
+				..AnalysisFilter::default()
+			},
+			&options,
+			JsFileSource::tsx(),
+			Some(PackageJson { dependencies, ..Default::default() }),
+			|signal| {
+				if let Some(diag) = signal.diagnostic() {
+					error_ranges.push(diag.location().span.unwrap());
 
-        const SOURCE: &str = r#"import buffer from "buffer"; "#;
+					let error = diag
+						.with_severity(Severity::Warning)
+						.with_file_path("dummyFile")
+						.with_file_source_code(SOURCE);
 
-        let parsed = parse(SOURCE, JsFileSource::tsx(), JsParserOptions::default());
+					let text = markup_to_string(markup! {
+						{PrintDiagnostic::verbose(&error)}
+					});
 
-        let mut error_ranges: Vec<TextRange> = Vec::new();
+					eprintln!("{text}");
+				}
 
-        let options = AnalyzerOptions::default();
+				for action in signal.actions() {
+					let new_code = action.mutation.commit();
 
-        let rule_filter = RuleFilter::Rule("style", "useNodejsImportProtocol");
+					eprintln!("new code!!!");
 
-        let mut dependencies = Dependencies::default();
+					eprintln!("{new_code}");
+				}
 
-        dependencies.add("buffer", "latest");
+				ControlFlow::<Never>::Continue(())
+			},
+		);
 
-        analyze(
-            &parsed.tree(),
-            AnalysisFilter {
-                enabled_rules: Some(slice::from_ref(&rule_filter)),
-                ..AnalysisFilter::default()
-            },
-            &options,
-            JsFileSource::tsx(),
-            Some(PackageJson {
-                dependencies,
-                ..Default::default()
-            }),
-            |signal| {
-                if let Some(diag) = signal.diagnostic() {
-                    error_ranges.push(diag.location().span.unwrap());
+		// assert_eq!(error_ranges.as_slice(), &[]);
+	}
 
-                    let error = diag
-                        .with_severity(Severity::Warning)
-                        .with_file_path("dummyFile")
-                        .with_file_source_code(SOURCE);
-
-                    let text = markup_to_string(markup! {
-                        {PrintDiagnostic::verbose(&error)}
-                    });
-
-                    eprintln!("{text}");
-                }
-
-                for action in signal.actions() {
-                    let new_code = action.mutation.commit();
-
-                    eprintln!("new code!!!");
-
-                    eprintln!("{new_code}");
-                }
-
-                ControlFlow::<Never>::Continue(())
-            },
-        );
-
-        // assert_eq!(error_ranges.as_slice(), &[]);
-    }
-
-    #[test]
-    fn suppression() {
-        const SOURCE: &str = "
+	#[test]
+	fn suppression() {
+		const SOURCE:&str = "
             function checkSuppressions1(a, b) {
                 a == b;
                 // biome-ignore lint/suspicious:whole group
                 a == b;
                 // biome-ignore lint/suspicious/noDoubleEquals: single rule
                 a == b;
-                /* biome-ignore lint/style/useWhile: multiple block comments */ /* biome-ignore lint/suspicious/noDoubleEquals: multiple block comments */
+                /* biome-ignore lint/style/useWhile: multiple block comments */ /* biome-ignore \
+		                     lint/suspicious/noDoubleEquals: multiple block comments */
                 a == b;
                 // biome-ignore lint/style/useWhile: multiple line comments
                 // biome-ignore lint/suspicious/noDoubleEquals: multiple line comments
@@ -284,7 +281,8 @@ mod tests {
                 a == b;
             }
 
-            // biome-ignore lint/suspicious/noDoubleEquals: do not suppress warning for the whole function
+            // biome-ignore lint/suspicious/noDoubleEquals: do not suppress warning for the whole \
+		                     function
             function checkSuppressions2(a, b) {
                 a == b;
             }
@@ -295,7 +293,8 @@ mod tests {
                 a == b;
                 // rome-ignore lint/suspicious/noDoubleEquals: single rule
                 a == b;
-                /* rome-ignore lint/style/useWhile: multiple block comments */ /* rome-ignore lint(suspicious/noDoubleEquals): multiple block comments */
+                /* rome-ignore lint/style/useWhile: multiple block comments */ /* rome-ignore \
+		                     lint(suspicious/noDoubleEquals): multiple block comments */
                 a == b;
                 // rome-ignore lint/style/useWhile: multiple line comments
                 // rome-ignore lint/suspicious/noDoubleEquals: multiple line comments
@@ -304,7 +303,8 @@ mod tests {
                 a == b;
             }
 
-            // biome-ignore lint(suspicious/noDoubleEquals): do not suppress warning for the whole function
+            // biome-ignore lint(suspicious/noDoubleEquals): do not suppress warning for the whole \
+		                     function
             function checkSuppressions4(a, b) {
                 a == b;
             }
@@ -317,127 +317,112 @@ mod tests {
             }
         ";
 
-        let parsed = parse(
-            SOURCE,
-            JsFileSource::js_module(),
-            JsParserOptions::default(),
-        );
+		let parsed = parse(SOURCE, JsFileSource::js_module(), JsParserOptions::default());
 
-        let mut lint_ranges: Vec<TextRange> = Vec::new();
+		let mut lint_ranges:Vec<TextRange> = Vec::new();
 
-        let mut parse_ranges: Vec<TextRange> = Vec::new();
+		let mut parse_ranges:Vec<TextRange> = Vec::new();
 
-        let mut warn_ranges: Vec<TextRange> = Vec::new();
+		let mut warn_ranges:Vec<TextRange> = Vec::new();
 
-        let options = AnalyzerOptions::default();
+		let options = AnalyzerOptions::default();
 
-        analyze(
-            &parsed.tree(),
-            AnalysisFilter::default(),
-            &options,
-            JsFileSource::js_module(),
-            None,
-            |signal| {
-                if let Some(diag) = signal.diagnostic() {
-                    let span = diag.get_span();
+		analyze(
+			&parsed.tree(),
+			AnalysisFilter::default(),
+			&options,
+			JsFileSource::js_module(),
+			None,
+			|signal| {
+				if let Some(diag) = signal.diagnostic() {
+					let span = diag.get_span();
 
-                    let error = diag
-                        .with_severity(Severity::Warning)
-                        .with_file_path("example.js")
-                        .with_file_source_code(SOURCE);
+					let error = diag
+						.with_severity(Severity::Warning)
+						.with_file_path("example.js")
+						.with_file_source_code(SOURCE);
 
-                    let code = error.category().unwrap();
+					let code = error.category().unwrap();
 
-                    if code == category!("lint/suspicious/noDoubleEquals") {
-                        lint_ranges.push(span.unwrap());
-                    }
+					if code == category!("lint/suspicious/noDoubleEquals") {
+						lint_ranges.push(span.unwrap());
+					}
 
-                    if code == category!("suppressions/parse") {
-                        parse_ranges.push(span.unwrap());
-                    }
+					if code == category!("suppressions/parse") {
+						parse_ranges.push(span.unwrap());
+					}
 
-                    if code == category!("suppressions/deprecatedSuppressionComment") {
-                        warn_ranges.push(span.unwrap());
-                    }
-                }
+					if code == category!("suppressions/deprecatedSuppressionComment") {
+						warn_ranges.push(span.unwrap());
+					}
+				}
 
-                ControlFlow::<Never>::Continue(())
-            },
-        );
+				ControlFlow::<Never>::Continue(())
+			},
+		);
 
-        assert_eq!(
-            lint_ranges.as_slice(),
-            &[
-                TextRange::new(TextSize::from(67), TextSize::from(69)),
-                TextRange::new(TextSize::from(641), TextSize::from(643)),
-                TextRange::new(TextSize::from(835), TextSize::from(837)),
-                TextRange::new(TextSize::from(922), TextSize::from(924)),
-                TextRange::new(TextSize::from(1492), TextSize::from(1494)),
-                TextRange::new(TextSize::from(1687), TextSize::from(1689)),
-            ]
-        );
+		assert_eq!(
+			lint_ranges.as_slice(),
+			&[
+				TextRange::new(TextSize::from(67), TextSize::from(69)),
+				TextRange::new(TextSize::from(641), TextSize::from(643)),
+				TextRange::new(TextSize::from(835), TextSize::from(837)),
+				TextRange::new(TextSize::from(922), TextSize::from(924)),
+				TextRange::new(TextSize::from(1492), TextSize::from(1494)),
+				TextRange::new(TextSize::from(1687), TextSize::from(1689)),
+			]
+		);
 
-        assert_eq!(
-            parse_ranges.as_slice(),
-            &[
-                TextRange::new(TextSize::from(1791), TextSize::from(1802)),
-                TextRange::new(TextSize::from(1842), TextSize::from(1843)),
-                TextRange::new(TextSize::from(1876), TextSize::from(1877)),
-                TextRange::new(TextSize::from(1929), TextSize::from(1936)),
-            ]
-        );
+		assert_eq!(
+			parse_ranges.as_slice(),
+			&[
+				TextRange::new(TextSize::from(1791), TextSize::from(1802)),
+				TextRange::new(TextSize::from(1842), TextSize::from(1843)),
+				TextRange::new(TextSize::from(1876), TextSize::from(1877)),
+				TextRange::new(TextSize::from(1929), TextSize::from(1936)),
+			]
+		);
 
-        assert_eq!(
-            warn_ranges.as_slice(),
-            &[
-                TextRange::new(TextSize::from(944), TextSize::from(987)),
-                TextRange::new(TextSize::from(1028), TextSize::from(1086)),
-                TextRange::new(TextSize::from(1127), TextSize::from(1189)),
-                TextRange::new(TextSize::from(1190), TextSize::from(1264)),
-                TextRange::new(TextSize::from(1305), TextSize::from(1363)),
-                TextRange::new(TextSize::from(1380), TextSize::from(1449)),
-                TextRange::new(TextSize::from(1525), TextSize::from(1620)),
-            ]
-        );
-    }
+		assert_eq!(
+			warn_ranges.as_slice(),
+			&[
+				TextRange::new(TextSize::from(944), TextSize::from(987)),
+				TextRange::new(TextSize::from(1028), TextSize::from(1086)),
+				TextRange::new(TextSize::from(1127), TextSize::from(1189)),
+				TextRange::new(TextSize::from(1190), TextSize::from(1264)),
+				TextRange::new(TextSize::from(1305), TextSize::from(1363)),
+				TextRange::new(TextSize::from(1380), TextSize::from(1449)),
+				TextRange::new(TextSize::from(1525), TextSize::from(1620)),
+			]
+		);
+	}
 
-    #[test]
-    fn suppression_syntax() {
-        const SOURCE: &str = "
+	#[test]
+	fn suppression_syntax() {
+		const SOURCE:&str = "
             // biome-ignore lint/suspicious/noDoubleEquals: single rule
             a == b;
         ";
 
-        let parsed = parse(
-            SOURCE,
-            JsFileSource::js_module(),
-            JsParserOptions::default(),
-        );
+		let parsed = parse(SOURCE, JsFileSource::js_module(), JsParserOptions::default());
 
-        let filter = AnalysisFilter {
-            categories: RuleCategoriesBuilder::default().with_syntax().build(),
-            ..AnalysisFilter::default()
-        };
+		let filter = AnalysisFilter {
+			categories:RuleCategoriesBuilder::default().with_syntax().build(),
+			..AnalysisFilter::default()
+		};
 
-        let options = AnalyzerOptions::default();
+		let options = AnalyzerOptions::default();
 
-        analyze(
-            &parsed.tree(),
-            filter,
-            &options,
-            JsFileSource::js_module(),
-            None,
-            |signal| {
-                if let Some(diag) = signal.diagnostic() {
-                    let code = diag.category().unwrap();
+		analyze(&parsed.tree(), filter, &options, JsFileSource::js_module(), None, |signal| {
+			if let Some(diag) = signal.diagnostic() {
+				let code = diag.category().unwrap();
 
-                    if code != category!("suppressions/unused") {
-                        panic!("unexpected diagnostic {code:?}");
-                    }
-                }
+				if code != category!("suppressions/unused") {
+					panic!("unexpected diagnostic {code:?}");
+				}
+			}
 
-                ControlFlow::<Never>::Continue(())
-            },
-        );
-    }
+			ControlFlow::<Never>::Continue(())
+		});
+	}
 }

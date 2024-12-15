@@ -1,10 +1,13 @@
-use crate::js_kinds_src::{AstSrc, Field};
-use crate::language_kind::LanguageKind;
 use quote::{format_ident, quote};
 use xtask::Result;
 
-pub fn generate_nodes_mut(ast: &AstSrc, language_kind: LanguageKind) -> Result<String> {
-    let node_boilerplate_impls: Vec<_> = ast
+use crate::{
+	js_kinds_src::{AstSrc, Field},
+	language_kind::LanguageKind,
+};
+
+pub fn generate_nodes_mut(ast:&AstSrc, language_kind:LanguageKind) -> Result<String> {
+	let node_boilerplate_impls: Vec<_> = ast
         .nodes
         .iter()
         .map(|node| {
@@ -77,24 +80,21 @@ pub fn generate_nodes_mut(ast: &AstSrc, language_kind: LanguageKind) -> Result<S
         })
         .collect();
 
-    let syntax_token = language_kind.syntax_token();
+	let syntax_token = language_kind.syntax_token();
 
-    let ast = quote! {
-        use std::iter::once;
+	let ast = quote! {
+		use std::iter::once;
 
-        use biome_rowan::AstNode;
+		use biome_rowan::AstNode;
 
-        use crate::{generated::nodes::*, #syntax_token as SyntaxToken};
+		use crate::{generated::nodes::*, #syntax_token as SyntaxToken};
 
-        #(#node_boilerplate_impls)*
-    };
+		#(#node_boilerplate_impls)*
+	};
 
-    let ast = ast
-        .to_string()
-        .replace("T ! [ ", "T![")
-        .replace(" ] )", "])");
+	let ast = ast.to_string().replace("T ! [ ", "T![").replace(" ] )", "])");
 
-    let pretty = xtask::reformat(ast)?;
+	let pretty = xtask::reformat(ast)?;
 
-    Ok(pretty)
+	Ok(pretty)
 }

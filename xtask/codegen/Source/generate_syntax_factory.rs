@@ -1,151 +1,154 @@
-use super::js_kinds_src::AstSrc;
-use crate::generate_nodes::{get_field_predicate, group_fields_for_ordering, token_kind_to_code};
-use crate::language_kind::LanguageKind;
 use biome_string_case::Case;
 use proc_macro2::TokenStream;
 use quote::{format_ident, quote};
 use xtask::Result;
 
-pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Result<String> {
-    let syntax_crate = language_kind.syntax_crate_ident();
+use super::js_kinds_src::AstSrc;
+use crate::{
+	generate_nodes::{get_field_predicate, group_fields_for_ordering, token_kind_to_code},
+	language_kind::LanguageKind,
+};
 
-    let syntax_kind = language_kind.syntax_kind();
+pub fn generate_syntax_factory(ast:&AstSrc, language_kind:LanguageKind) -> Result<String> {
+	let syntax_crate = language_kind.syntax_crate_ident();
 
-    let factory_kind = language_kind.syntax_factory();
+	let syntax_kind = language_kind.syntax_kind();
 
-    let normal_node_arms = ast.nodes.iter().map(|node| {
-        let kind = format_ident!("{}", Case::Constant.convert(&node.name));
+	let factory_kind = language_kind.syntax_factory();
 
-        let expected_len = node.fields.len();
+	let normal_node_arms = ast.nodes.iter().map(|node| {
+		let kind = format_ident!("{}", Case::Constant.convert(&node.name));
 
-        let fields = if node.dynamic {
-            // Chunk the fields of the node into groups of unordered nodes that need
-            // to be checked in parallel and ordered nodes that get checked one by one.
-            let field_groups = group_fields_for_ordering(node);
+		let expected_len = node.fields.len();
 
-            field_groups
-                .iter()
-                .map(|group| {
-                    match group.len() {
-                        0 => unreachable!("Somehow encountered a group of fields with no entries"),
-                        // Single-field groups are assumed to act like ordered fields, so
-                        // they can just check the kind and move on if there's no match.
-                        1 => {
-                            let field = group[0];
+		let fields = if node.dynamic {
+			// Chunk the fields of the node into groups of unordered nodes that need
+			// to be checked in parallel and ordered nodes that get checked one by one.
+			let field_groups = group_fields_for_ordering(node);
 
-                            let field_predicate = get_field_predicate(field, language_kind);
+			field_groups
+				.iter()
+				.map(|group| {
+					match group.len() {
+						0 => unreachable!("Somehow encountered a group of fields with no entries"),
+						// Single-field groups are assumed to act like ordered fields, so
+						// they can just check the kind and move on if there's no match.
+						1 => {
+							let field = group[0];
 
-                            quote! {
-                                if let Some(element) = &current_element {
-                                    if #field_predicate {
-                                        slots.mark_present();
+							let field_predicate = get_field_predicate(field, language_kind);
 
-                                        current_element = elements.next();
-                                    }
-                                }
+							quote! {
+								if let Some(element) = &current_element {
+									if #field_predicate {
+										slots.mark_present();
 
-                                slots.next_slot();
-                            }
-                        }
+										current_element = elements.next();
+									}
+								}
 
-                        _ => {
-                            let variants = group.iter().enumerate().map(|(index, field)| {
-                                let field_predicate = get_field_predicate(field, language_kind);
+								slots.next_slot();
+							}
+						},
 
-                                let maybe_else = if index > 0 {
-                                    quote! { else }
-                                } else {
-                                    Default::default()
-                                };
+						_ => {
+							let variants = group.iter().enumerate().map(|(index, field)| {
+								let field_predicate = get_field_predicate(field, language_kind);
 
-                                quote! {
-                                    #maybe_else if !group_slot_map[#index] && #field_predicate {
-                                        group_slot_map[#index] = true;
-                                    }
-                                }
-                            });
+								let maybe_else = if index > 0 {
+									quote! { else }
+								} else {
+									Default::default()
+								};
 
-                            let group_length = group.len();
+								quote! {
+									#maybe_else if !group_slot_map[#index] && #field_predicate {
+										group_slot_map[#index] = true;
+									}
+								}
+							});
 
-                            quote! {
-                                let mut unmatched_count = #group_length;
+							let group_length = group.len();
 
-                                let mut group_slot_map = [false; #group_length];
+							quote! {
+								let mut unmatched_count = #group_length;
 
-                                for _ in 0usize..#group_length {
-                                    let Some(element) = &current_element else {
-                                        break;
-                                    };
+								let mut group_slot_map = [false; #group_length];
 
-                                    #(#variants)* else {
-                                        // If the element didn't match any of the variants, then no more
-                                        // are allowed to match, so move on to the next group.
-                                        break;
-                                    }
+								for _ in 0usize..#group_length {
+									let Some(element) = &current_element else {
+										break;
+									};
 
-                                    unmatched_count -= 1;
+									#(#variants)* else {
+										// If the element didn't match any of the variants, then no more
+										// are allowed to match, so move on to the next group.
+										break;
+									}
 
-                                    slots.mark_present();
+									unmatched_count -= 1;
 
-                                    slots.next_slot();
+									slots.mark_present();
 
-                                    current_element = elements.next();
-                                }
-                                // Advanced past all of the expected slots for the group so that
-                                // they get marked as empty.
-                                for _ in 0..unmatched_count {
-                                    slots.next_slot();
-                                }
-                            }
-                        }
-                    }
-                })
-                .collect::<Vec<TokenStream>>()
-        } else {
-            node.fields
-                .iter()
-                .map(|field| {
-                    let field_predicate = get_field_predicate(field, language_kind);
+									slots.next_slot();
 
-                    quote! {
-                        if let Some(element) = &current_element {
-                            if #field_predicate {
-                                slots.mark_present();
+									current_element = elements.next();
+								}
+								// Advanced past all of the expected slots for the group so that
+								// they get marked as empty.
+								for _ in 0..unmatched_count {
+									slots.next_slot();
+								}
+							}
+						},
+					}
+				})
+				.collect::<Vec<TokenStream>>()
+		} else {
+			node.fields
+				.iter()
+				.map(|field| {
+					let field_predicate = get_field_predicate(field, language_kind);
 
-                                current_element = elements.next();
-                            }
-                        }
+					quote! {
+						if let Some(element) = &current_element {
+							if #field_predicate {
+								slots.mark_present();
 
-                        slots.next_slot();
-                    }
-                })
-                .collect::<Vec<TokenStream>>()
-        };
+								current_element = elements.next();
+							}
+						}
 
-        quote! {
-            #kind => {
-                let mut elements = (&children).into_iter();
+						slots.next_slot();
+					}
+				})
+				.collect::<Vec<TokenStream>>()
+		};
 
-                let mut slots: RawNodeSlots<#expected_len> = RawNodeSlots::default();
+		quote! {
+			#kind => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots: RawNodeSlots<#expected_len> = RawNodeSlots::default();
 
-                #(#fields)*
+				let mut current_element = elements.next();
 
-                // Additional unexpected elements
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        #kind.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				#(#fields)*
 
-                slots.into_node(#kind, children)
-            }
-        }
-    });
+				// Additional unexpected elements
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						#kind.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-    let lists = ast.lists().map(|(name, data)| {
+				slots.into_node(#kind, children)
+			}
+		}
+	});
+
+	let lists = ast.lists().map(|(name, data)| {
         let element_type = format_ident!("{}", data.element_name);
 
         let kind = format_ident!("{}", Case::Constant.convert(name));
@@ -165,41 +168,39 @@ pub fn generate_syntax_factory(ast: &AstSrc, language_kind: LanguageKind) -> Res
         }
     });
 
-    let bogus_kinds = ast
-        .bogus
-        .iter()
-        .map(|node| format_ident!("{}", Case::Constant.convert(node)));
+	let bogus_kinds =
+		ast.bogus.iter().map(|node| format_ident!("{}", Case::Constant.convert(node)));
 
-    let output = quote! {
-        use #syntax_crate::{*, #syntax_kind, #syntax_kind::*, T};
+	let output = quote! {
+		use #syntax_crate::{*, #syntax_kind, #syntax_kind::*, T};
 
-        use biome_rowan::{AstNode, ParsedChildren, RawNodeSlots, RawSyntaxNode, SyntaxFactory, SyntaxKind};
+		use biome_rowan::{AstNode, ParsedChildren, RawNodeSlots, RawSyntaxNode, SyntaxFactory, SyntaxKind};
 
-        #[derive(Debug)]
-        pub struct #factory_kind;
+		#[derive(Debug)]
+		pub struct #factory_kind;
 
-        impl SyntaxFactory for #factory_kind {
-            type Kind = #syntax_kind;
+		impl SyntaxFactory for #factory_kind {
+			type Kind = #syntax_kind;
 
-            #[allow(unused_mut)]
-            fn make_syntax(
-                kind: Self::Kind,
-                children: ParsedChildren<Self::Kind>,
-            ) -> RawSyntaxNode<Self::Kind>
-            {
-                match kind {
-                    #(#bogus_kinds)|* => {
-                        RawSyntaxNode::new(kind, children.into_iter().map(Some))
-                    },
-                    #(#normal_node_arms),*,
-                    #(#lists),*,
-                    _ => unreachable!("Is {:?} a token?", kind),
-                }
-            }
-        }
-    };
+			#[allow(unused_mut)]
+			fn make_syntax(
+				kind: Self::Kind,
+				children: ParsedChildren<Self::Kind>,
+			) -> RawSyntaxNode<Self::Kind>
+			{
+				match kind {
+					#(#bogus_kinds)|* => {
+						RawSyntaxNode::new(kind, children.into_iter().map(Some))
+					},
+					#(#normal_node_arms),*,
+					#(#lists),*,
+					_ => unreachable!("Is {:?} a token?", kind),
+				}
+			}
+		}
+	};
 
-    let pretty = xtask::reformat(output)?;
+	let pretty = xtask::reformat(output)?;
 
-    Ok(pretty)
+	Ok(pretty)
 }

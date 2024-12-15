@@ -5,7 +5,8 @@
 //! use the parser for their specific needs, for example, parsing
 //! only an expression.
 //!
-//! Functions emit markers, see `CompletedMarker` and `Marker` docs for more info.
+//! Functions emit markers, see `CompletedMarker` and `Marker` docs for more
+//! info.
 
 mod assignment;
 mod auxiliary;

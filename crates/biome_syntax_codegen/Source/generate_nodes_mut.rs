@@ -1,13 +1,15 @@
-use crate::ast::{AstSrc, Field};
-use crate::LanguageSrc;
 use anyhow::Result;
 use quote::{format_ident, quote};
 
-pub fn generate_nodes_mut<K>(ast: &AstSrc, kind_source: &K) -> Result<String>
+use crate::{
+	LanguageSrc,
+	ast::{AstSrc, Field},
+};
+
+pub fn generate_nodes_mut<K>(ast:&AstSrc, kind_source:&K) -> Result<String>
 where
-    K: LanguageSrc,
-{
-    let node_boilerplate_impls: Vec<_> = ast
+	K: LanguageSrc, {
+	let node_boilerplate_impls: Vec<_> = ast
         .nodes
         .iter()
         .map(|node| {
@@ -76,20 +78,17 @@ where
         })
         .collect();
 
-    let syntax_token = kind_source.syntax_token();
+	let syntax_token = kind_source.syntax_token();
 
-    let ast = quote! {
-        use std::iter::once;
-        use biome_rowan::AstNode;
-        use crate::{generated::nodes::*, #syntax_token as SyntaxToken};
+	let ast = quote! {
+		use std::iter::once;
+		use biome_rowan::AstNode;
+		use crate::{generated::nodes::*, #syntax_token as SyntaxToken};
 
-        #(#node_boilerplate_impls)*
-    };
+		#(#node_boilerplate_impls)*
+	};
 
-    let ast = ast
-        .to_string()
-        .replace("T ! [ ", "T![")
-        .replace(" ] )", "])");
+	let ast = ast.to_string().replace("T ! [ ", "T![").replace(" ] )", "])");
 
-    Ok(ast)
+	Ok(ast)
 }

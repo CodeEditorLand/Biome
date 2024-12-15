@@ -1,245 +1,248 @@
-use super::js_kinds_src::AstSrc;
-use crate::js_kinds_src::Field;
-use crate::language_kind::LanguageKind;
 use biome_string_case::Case;
 use quote::{format_ident, quote};
 use xtask::Result;
 
-pub fn generate_node_factory(ast: &AstSrc, language_kind: LanguageKind) -> Result<String> {
-    let syntax_crate = language_kind.syntax_crate_ident();
+use super::js_kinds_src::AstSrc;
+use crate::{js_kinds_src::Field, language_kind::LanguageKind};
 
-    let syntax_kind = language_kind.syntax_kind();
+pub fn generate_node_factory(ast:&AstSrc, language_kind:LanguageKind) -> Result<String> {
+	let syntax_crate = language_kind.syntax_crate_ident();
 
-    let syntax_token = language_kind.syntax_token();
+	let syntax_kind = language_kind.syntax_kind();
 
-    let syntax_node = language_kind.syntax_node();
+	let syntax_token = language_kind.syntax_token();
 
-    let syntax_element = language_kind.syntax_element();
+	let syntax_node = language_kind.syntax_node();
 
-    let nodes =
-        ast.nodes.iter().map(|node| {
-            let type_name = format_ident!("{}", node.name);
+	let syntax_element = language_kind.syntax_element();
 
-            let kind = format_ident!("{}", Case::Constant.convert(&node.name));
+	let nodes = ast.nodes.iter().map(|node| {
+		let type_name = format_ident!("{}", node.name);
 
-            let factory_name = format_ident!("{}", Case::Snake.convert(&node.name));
+		let kind = format_ident!("{}", Case::Constant.convert(&node.name));
 
-            let (optional, required): (Vec<_>, Vec<_>) =
-                node.fields.iter().partition(|field| field.is_optional());
+		let factory_name = format_ident!("{}", Case::Snake.convert(&node.name));
 
-            if optional.is_empty() {
-                let (args, slots): (Vec<_>, Vec<_>) = required
-                    .into_iter()
-                    .map(|field| {
-                        let name = field.method_name(language_kind);
+		let (optional, required):(Vec<_>, Vec<_>) =
+			node.fields.iter().partition(|field| field.is_optional());
 
-                        let type_name = field.ty();
+		if optional.is_empty() {
+			let (args, slots):(Vec<_>, Vec<_>) = required
+				.into_iter()
+				.map(|field| {
+					let name = field.method_name(language_kind);
 
-                        let arg = quote! { #name: #type_name };
+					let type_name = field.ty();
 
-                        let slot = match field {
-                            Field::Token { .. } => {
-                                quote! { Some(SyntaxElement::Token(#name)) }
-                            }
+					let arg = quote! { #name: #type_name };
 
-                            Field::Node { .. } => {
-                                quote! { Some(SyntaxElement::Node(#name.into_syntax())) }
-                            }
-                        };
+					let slot = match field {
+						Field::Token { .. } => {
+							quote! { Some(SyntaxElement::Token(#name)) }
+						},
 
-                        (arg, slot)
-                    })
-                    .unzip();
+						Field::Node { .. } => {
+							quote! { Some(SyntaxElement::Node(#name.into_syntax())) }
+						},
+					};
 
-                return quote! {
-                    pub fn #factory_name( #( #args ),* ) -> #type_name {
-                        #type_name::unwrap_cast(SyntaxNode::new_detached(
-                            #syntax_kind::#kind,
-                            [#( #slots ),*],
-                        ))
-                    }
-                };
-            }
+					(arg, slot)
+				})
+				.unzip();
 
-            let builder_name = format_ident!("{}Builder", node.name);
+			return quote! {
+				pub fn #factory_name( #( #args ),* ) -> #type_name {
+					#type_name::unwrap_cast(SyntaxNode::new_detached(
+						#syntax_kind::#kind,
+						[#( #slots ),*],
+					))
+				}
+			};
+		}
 
-            let (required_args, required_fields): (Vec<_>, Vec<_>) = required
-                .into_iter()
-                .map(|field| {
-                    let name = field.method_name(language_kind);
+		let builder_name = format_ident!("{}Builder", node.name);
 
-                    let type_name = field.ty();
+		let (required_args, required_fields):(Vec<_>, Vec<_>) = required
+			.into_iter()
+			.map(|field| {
+				let name = field.method_name(language_kind);
 
-                    let arg = quote! { #name: #type_name };
+				let type_name = field.ty();
 
-                    let field = quote! { #name };
+				let arg = quote! { #name: #type_name };
 
-                    (arg, field)
-                })
-                .unzip();
+				let field = quote! { #name };
 
-            let (optional_builder, optional_methods): (Vec<_>, Vec<_>) = optional
-                .into_iter()
-                .map(|field| {
-                    let name = field.method_name(language_kind);
+				(arg, field)
+			})
+			.unzip();
 
-                    let method_name = format_ident!("with_{}", name);
+		let (optional_builder, optional_methods):(Vec<_>, Vec<_>) = optional
+			.into_iter()
+			.map(|field| {
+				let name = field.method_name(language_kind);
 
-                    let type_name = field.ty();
+				let method_name = format_ident!("with_{}", name);
 
-                    let field_type = quote! { #name: Option<#type_name> };
+				let type_name = field.ty();
 
-                    let field_init = quote! { #name: None };
+				let field_type = quote! { #name: Option<#type_name> };
 
-                    let method = quote! {
-                        pub fn #method_name(mut self, #name: #type_name) -> Self {
-                            self.#name = Some(#name);
+				let field_init = quote! { #name: None };
 
-                            self
-                        }
-                    };
+				let method = quote! {
+					pub fn #method_name(mut self, #name: #type_name) -> Self {
+						self.#name = Some(#name);
 
-                    ((field_type, field_init), method)
-                })
-                .unzip();
+						self
+					}
+				};
 
-            let (optional_fields, optional_inits): (Vec<_>, Vec<_>) =
-                optional_builder.into_iter().unzip();
+				((field_type, field_init), method)
+			})
+			.unzip();
 
-            let slots: Vec<_> = node
-                .fields
-                .iter()
-                .map(|field| {
-                    let name = field.method_name(language_kind);
+		let (optional_fields, optional_inits):(Vec<_>, Vec<_>) =
+			optional_builder.into_iter().unzip();
 
-                    match field {
-                        Field::Token { optional, .. } => if *optional {
-                            quote! { self.#name.map(|token| SyntaxElement::Token(token)) }
-                        } else {
-                            quote! { Some(SyntaxElement::Token(self.#name)) }
-                        }
+		let slots:Vec<_> = node
+			.fields
+			.iter()
+			.map(|field| {
+				let name = field.method_name(language_kind);
 
-                        Field::Node { optional, .. } => if *optional {
-                            quote! { self.#name.map(|token| SyntaxElement::Node(token.into_syntax())) }
-                        } else {
-                            quote! { Some(SyntaxElement::Node(self.#name.into_syntax())) }
-                        }
-                    }
-                })
-                .collect();
+				match field {
+					Field::Token { optional, .. } => {
+						if *optional {
+							quote! { self.#name.map(|token| SyntaxElement::Token(token)) }
+						} else {
+							quote! { Some(SyntaxElement::Token(self.#name)) }
+						}
+					},
 
-            quote! {
-                pub fn #factory_name( #( #required_args ),* ) -> #builder_name {
-                    #builder_name {
-                        #( #required_fields, )*
-                        #( #optional_inits, )*
-                    }
-                }
+					Field::Node { optional, .. } => {
+						if *optional {
+							quote! { self.#name.map(|token| SyntaxElement::Node(token.into_syntax())) }
+						} else {
+							quote! { Some(SyntaxElement::Node(self.#name.into_syntax())) }
+						}
+					},
+				}
+			})
+			.collect();
 
-                pub struct #builder_name {
-                    #( #required_args, )*
-                    #( #optional_fields, )*
-                }
+		quote! {
+			pub fn #factory_name( #( #required_args ),* ) -> #builder_name {
+				#builder_name {
+					#( #required_fields, )*
+					#( #optional_inits, )*
+				}
+			}
 
-                impl #builder_name {
-                    #( #optional_methods )*
-                    pub fn build(self) -> #type_name {
-                        #type_name::unwrap_cast(SyntaxNode::new_detached(
-                            #syntax_kind::#kind,
-                            [#( #slots ),*],
-                        ))
-                    }
-                }
-            }
-        });
+			pub struct #builder_name {
+				#( #required_args, )*
+				#( #optional_fields, )*
+			}
 
-    let lists = ast.lists().map(|(name, list)| {
-        let list_name = format_ident!("{}", name);
+			impl #builder_name {
+				#( #optional_methods )*
+				pub fn build(self) -> #type_name {
+					#type_name::unwrap_cast(SyntaxNode::new_detached(
+						#syntax_kind::#kind,
+						[#( #slots ),*],
+					))
+				}
+			}
+		}
+	});
 
-        let kind = format_ident!("{}", Case::Constant.convert(name));
+	let lists = ast.lists().map(|(name, list)| {
+		let list_name = format_ident!("{}", name);
 
-        let factory_name = format_ident!("{}", Case::Snake.convert(name));
+		let kind = format_ident!("{}", Case::Constant.convert(name));
 
-        let item = format_ident!("{}", list.element_name);
+		let factory_name = format_ident!("{}", Case::Snake.convert(name));
 
-        if list.separator.is_some() {
-            quote! {
-                pub fn #factory_name<I, S>(items: I, separators: S) -> #list_name
-                where
-                    I: IntoIterator<Item = #item>,
-                    I::IntoIter: ExactSizeIterator,
-                    S: IntoIterator<Item = #syntax_token>,
-                    S::IntoIter: ExactSizeIterator,
-                {
-                    let mut items = items.into_iter();
+		let item = format_ident!("{}", list.element_name);
 
-                    let mut separators = separators.into_iter();
+		if list.separator.is_some() {
+			quote! {
+				pub fn #factory_name<I, S>(items: I, separators: S) -> #list_name
+				where
+					I: IntoIterator<Item = #item>,
+					I::IntoIter: ExactSizeIterator,
+					S: IntoIterator<Item = #syntax_token>,
+					S::IntoIter: ExactSizeIterator,
+				{
+					let mut items = items.into_iter();
 
-                    let length = items.len() + separators.len();
-                    #list_name::unwrap_cast(SyntaxNode::new_detached(
-                        #syntax_kind::#kind,
-                        (0..length).map(|index| {
-                            if index % 2 == 0 {
-                                Some(items.next()?.into_syntax().into())
-                            } else {
-                                Some(separators.next()?.into())
-                            }
-                        }),
-                    ))
-                }
-            }
-        } else {
-            quote! {
-                pub fn #factory_name<I>(items: I) -> #list_name
-                where
-                    I: IntoIterator<Item = #item>,
-                    I::IntoIter: ExactSizeIterator,
-                {
-                    #list_name::unwrap_cast(SyntaxNode::new_detached(
-                        #syntax_kind::#kind,
-                        items
-                            .into_iter()
-                            .map(|item| Some(item.into_syntax().into())),
-                    ))
-                }
-            }
-        }
-    });
+					let mut separators = separators.into_iter();
 
-    let bogus = ast.bogus.iter().map(|name| {
-        let bogus_name = format_ident!("{}", name);
+					let length = items.len() + separators.len();
+					#list_name::unwrap_cast(SyntaxNode::new_detached(
+						#syntax_kind::#kind,
+						(0..length).map(|index| {
+							if index % 2 == 0 {
+								Some(items.next()?.into_syntax().into())
+							} else {
+								Some(separators.next()?.into())
+							}
+						}),
+					))
+				}
+			}
+		} else {
+			quote! {
+				pub fn #factory_name<I>(items: I) -> #list_name
+				where
+					I: IntoIterator<Item = #item>,
+					I::IntoIter: ExactSizeIterator,
+				{
+					#list_name::unwrap_cast(SyntaxNode::new_detached(
+						#syntax_kind::#kind,
+						items
+							.into_iter()
+							.map(|item| Some(item.into_syntax().into())),
+					))
+				}
+			}
+		}
+	});
 
-        let kind = format_ident!("{}", Case::Constant.convert(name));
+	let bogus = ast.bogus.iter().map(|name| {
+		let bogus_name = format_ident!("{}", name);
 
-        let factory_name = format_ident!("{}", Case::Snake.convert(name));
+		let kind = format_ident!("{}", Case::Constant.convert(name));
 
-        quote! {
-            pub fn #factory_name<I>(slots: I) -> #bogus_name
-            where
-                I: IntoIterator<Item = Option<SyntaxElement>>,
-                I::IntoIter: ExactSizeIterator,
-            {
-                #bogus_name::unwrap_cast(SyntaxNode::new_detached(
-                    #syntax_kind::#kind,
-                    slots
-                ))
-            }
-        }
-    });
+		let factory_name = format_ident!("{}", Case::Snake.convert(name));
 
-    let output = quote! {
-        #![allow(clippy::redundant_closure)]
-        #![allow(clippy::too_many_arguments)]
-        use #syntax_crate::{*, #syntax_token as SyntaxToken, #syntax_node as SyntaxNode, #syntax_element as SyntaxElement};
+		quote! {
+			pub fn #factory_name<I>(slots: I) -> #bogus_name
+			where
+				I: IntoIterator<Item = Option<SyntaxElement>>,
+				I::IntoIter: ExactSizeIterator,
+			{
+				#bogus_name::unwrap_cast(SyntaxNode::new_detached(
+					#syntax_kind::#kind,
+					slots
+				))
+			}
+		}
+	});
 
-        use biome_rowan::AstNode;
+	let output = quote! {
+		#![allow(clippy::redundant_closure)]
+		#![allow(clippy::too_many_arguments)]
+		use #syntax_crate::{*, #syntax_token as SyntaxToken, #syntax_node as SyntaxNode, #syntax_element as SyntaxElement};
 
-        #(#nodes)*
-        #(#lists)*
-        #(#bogus)*
-    };
+		use biome_rowan::AstNode;
 
-    let pretty = xtask::reformat(output)?;
+		#(#nodes)*
+		#(#lists)*
+		#(#bogus)*
+	};
 
-    Ok(pretty)
+	let pretty = xtask::reformat(output)?;
+
+	Ok(pretty)
 }
