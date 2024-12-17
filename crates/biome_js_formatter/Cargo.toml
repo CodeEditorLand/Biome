@@ -36,7 +36,7 @@ biome_js_factory = { path = "../biome_js_factory" }
 biome_js_parser = { path = "../biome_js_parser" }
 biome_parser = { path = "../biome_parser" }
 biome_service = { path = "../biome_service" }
-countme = { workspace = true, features = ["enable"] }
+countme = { workspace = true }
 quickcheck = { workspace = true }
 serde = { workspace = true, features = ["derive"] }
 serde_json = { workspace = true }
