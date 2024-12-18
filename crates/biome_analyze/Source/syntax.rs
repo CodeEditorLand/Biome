@@ -25,18 +25,13 @@ where
 	type Output = N;
 	type Services = ();
 
-	fn build_visitor(
-		analyzer:&mut impl AddVisitor<Self::Language>,
-		_:&<Self::Language as Language>::Root,
-	) {
+	fn build_visitor(analyzer:&mut impl AddVisitor<Self::Language>, _:&<Self::Language as Language>::Root) {
 		analyzer.add_visitor(Phases::Syntax, SyntaxVisitor::default);
 	}
 
 	fn key() -> QueryKey<Self::Language> { QueryKey::Syntax(N::KIND_SET) }
 
-	fn unwrap_match(_:&ServiceBag, node:&Self::Input) -> Self::Output {
-		N::unwrap_cast(node.clone())
-	}
+	fn unwrap_match(_:&ServiceBag, node:&Self::Input) -> Self::Output { N::unwrap_cast(node.clone()) }
 }
 
 impl<L:Language + 'static> QueryMatch for SyntaxNode<L> {
@@ -164,8 +159,7 @@ mod tests {
 
 		let mut matcher = BufferMatcher::default();
 
-		let mut emit_signal =
-			|_:&dyn AnalyzerSignal<RawLanguage>| -> ControlFlow<Never> { unreachable!() };
+		let mut emit_signal = |_:&dyn AnalyzerSignal<RawLanguage>| -> ControlFlow<Never> { unreachable!() };
 
 		let metadata = MetadataRegistry::default();
 

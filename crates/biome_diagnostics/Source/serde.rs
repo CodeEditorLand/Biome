@@ -100,19 +100,13 @@ impl super::Diagnostic for Diagnostic {
 
 	fn severity(&self) -> Severity { self.severity }
 
-	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		fmt.write_str(&self.description)
-	}
+	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { fmt.write_str(&self.description) }
 
-	fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
-		fmt.write_markup(markup! { {self.message} })
-	}
+	fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> { fmt.write_markup(markup! { {self.message} }) }
 
 	fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> { self.advices.record(visitor) }
 
-	fn verbose_advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-		self.verbose_advices.record(visitor)
-	}
+	fn verbose_advices(&self, visitor:&mut dyn Visit) -> io::Result<()> { self.verbose_advices.record(visitor) }
 
 	fn location(&self) -> super::Location<'_> {
 		super::Location::builder()
@@ -199,11 +193,7 @@ impl Visit for Advices {
 		Ok(())
 	}
 
-	fn record_backtrace(
-		&mut self,
-		title:&dyn fmt::Display,
-		backtrace:&Backtrace,
-	) -> io::Result<()> {
+	fn record_backtrace(&mut self, title:&dyn fmt::Display, backtrace:&Backtrace) -> io::Result<()> {
 		self.advices
 			.push(Advice::Backtrace(markup!({ title }).to_owned(), backtrace.clone()));
 
@@ -216,11 +206,7 @@ impl Visit for Advices {
 		Ok(())
 	}
 
-	fn record_group(
-		&mut self,
-		title:&dyn fmt::Display,
-		advice:&dyn super::Advices,
-	) -> io::Result<()> {
+	fn record_group(&mut self, title:&dyn fmt::Display, advice:&dyn super::Advices) -> io::Result<()> {
 		let mut advices = Advices::new();
 
 		advice.record(&mut advices)?;
@@ -264,8 +250,7 @@ impl super::Advices for Advice {
 		match self {
 			Advice::Log(category, text) => visitor.record_log(*category, text),
 			Advice::List(list) => {
-				let as_display:Vec<&dyn fmt::Display> =
-					list.iter().map(|item| item as &dyn fmt::Display).collect();
+				let as_display:Vec<&dyn fmt::Display> = list.iter().map(|item| item as &dyn fmt::Display).collect();
 
 				visitor.record_list(&as_display)
 			},

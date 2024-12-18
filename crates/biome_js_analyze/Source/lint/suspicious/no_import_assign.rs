@@ -1,138 +1,137 @@
-use crate::services::semantic::Semantic;
-use biome_analyze::{context::RuleContext, declare_lint_rule, Rule, RuleDiagnostic, RuleSource};
+use biome_analyze::{Rule, RuleDiagnostic, RuleSource, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_js_semantic::ReferencesExtensions;
 use biome_js_syntax::{AnyJsImportSpecifier, JsIdentifierAssignment, JsIdentifierBinding};
-
 use biome_rowan::AstNode;
 
+use crate::services::semantic::Semantic;
+
 declare_lint_rule! {
-    ///  Disallow assigning to imported bindings
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```js,expect_diagnostic
-    /// import x from "y";
-    /// x = 1;
-    /// ```
-    /// ```js,expect_diagnostic
-    /// import y from "y";
-    /// [y] = 1;
-    /// ```
-    /// ```js,expect_diagnostic
-    /// import z from "y";
-    /// ({ z } = 1);
-    /// ```
-    /// ```js,expect_diagnostic
-    /// import a from "y";
-    /// [...a] = 1;
-    /// ```
-    /// ```js,expect_diagnostic
-    /// import b from "y";
-    /// ({ ...b } = 1);
-    /// ```
-    /// ```js,expect_diagnostic
-    /// import c from "y";
-    /// for (c in y) {};
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// import d from "y";
-    /// d += 1;
-    /// ```
-    /// ```js,expect_diagnostic
-    /// import * as e from "y";
-    /// e = 1;
-    /// ```
-    pub NoImportAssign {
-        version: "1.0.0",
-        name: "noImportAssign",
-        language: "js",
-        sources: &[RuleSource::Eslint("no-import-assign")],
-        recommended: true,
-    }
+	///  Disallow assigning to imported bindings
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```js,expect_diagnostic
+	/// import x from "y";
+	/// x = 1;
+	/// ```
+	/// ```js,expect_diagnostic
+	/// import y from "y";
+	/// [y] = 1;
+	/// ```
+	/// ```js,expect_diagnostic
+	/// import z from "y";
+	/// ({ z } = 1);
+	/// ```
+	/// ```js,expect_diagnostic
+	/// import a from "y";
+	/// [...a] = 1;
+	/// ```
+	/// ```js,expect_diagnostic
+	/// import b from "y";
+	/// ({ ...b } = 1);
+	/// ```
+	/// ```js,expect_diagnostic
+	/// import c from "y";
+	/// for (c in y) {};
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// import d from "y";
+	/// d += 1;
+	/// ```
+	/// ```js,expect_diagnostic
+	/// import * as e from "y";
+	/// e = 1;
+	/// ```
+	pub NoImportAssign {
+		version: "1.0.0",
+		name: "noImportAssign",
+		language: "js",
+		sources: &[RuleSource::Eslint("no-import-assign")],
+		recommended: true,
+	}
 }
 
 impl Rule for NoImportAssign {
-    type Query = Semantic<AnyJsImportSpecifier>;
-    /// The first element of the tuple is the invalid `JsIdentifierAssignment`, the second element of the tuple is the imported `JsIdentifierBinding`.
-    type State = (JsIdentifierAssignment, JsIdentifierBinding);
+	type Options = ();
+	type Query = Semantic<AnyJsImportSpecifier>;
+	type Signals = Box<[Self::State]>;
+	/// The first element of the tuple is the invalid `JsIdentifierAssignment`,
+	/// the second element of the tuple is the imported `JsIdentifierBinding`.
+	type State = (JsIdentifierAssignment, JsIdentifierBinding);
 
-    type Signals = Box<[Self::State]>;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let label_statement = ctx.query();
 
-    type Options = ();
+		let mut invalid_assign_list = Vec::new();
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let label_statement = ctx.query();
+		let local_name_binding = match label_statement {
+			// `import {x as xx} from 'y'`
+			//          ^^^^^^^
+			AnyJsImportSpecifier::JsNamedImportSpecifier(specifier) => specifier.local_name().ok(),
+			// `import {x} from 'y'`
+			//          ^
+			AnyJsImportSpecifier::JsShorthandNamedImportSpecifier(specifier) => {
+				specifier.local_name().ok()
+			},
+			// `import * as xxx from 'y'`
+			//         ^^^^^^^^
+			// `import a, * as b from 'y'`
+			//            ^^^^^^
+			AnyJsImportSpecifier::JsNamespaceImportSpecifier(specifier) => {
+				specifier.local_name().ok()
+			},
+			// `import xx from 'y'`
+			//         ^^
+			// `import a, * as b from 'y'`
+			//         ^
+			AnyJsImportSpecifier::JsDefaultImportSpecifier(specifier) => {
+				specifier.local_name().ok()
+			},
+		};
 
-        let mut invalid_assign_list = Vec::new();
+		local_name_binding
+			.and_then(|binding| {
+				let ident_binding = binding.as_js_identifier_binding()?;
 
-        let local_name_binding = match label_statement {
-            // `import {x as xx} from 'y'`
-            //          ^^^^^^^
-            AnyJsImportSpecifier::JsNamedImportSpecifier(specifier) => specifier.local_name().ok(),
-            // `import {x} from 'y'`
-            //          ^
-            AnyJsImportSpecifier::JsShorthandNamedImportSpecifier(specifier) => {
-                specifier.local_name().ok()
-            }
-            // `import * as xxx from 'y'`
-            //         ^^^^^^^^
-            // `import a, * as b from 'y'`
-            //            ^^^^^^
-            AnyJsImportSpecifier::JsNamespaceImportSpecifier(specifier) => {
-                specifier.local_name().ok()
-            }
-            // `import xx from 'y'`
-            //         ^^
-            // `import a, * as b from 'y'`
-            //         ^
-            AnyJsImportSpecifier::JsDefaultImportSpecifier(specifier) => {
-                specifier.local_name().ok()
-            }
-        };
+				let model = ctx.model();
 
-        local_name_binding
-            .and_then(|binding| {
-                let ident_binding = binding.as_js_identifier_binding()?;
+				for reference in ident_binding.all_writes(model) {
+					invalid_assign_list.push((
+						JsIdentifierAssignment::cast_ref(reference.syntax())?,
+						ident_binding.clone(),
+					));
+				}
 
-                let model = ctx.model();
+				Some(invalid_assign_list)
+			})
+			.unwrap_or_default()
+			.into_boxed_slice()
+	}
 
-                for reference in ident_binding.all_writes(model) {
-                    invalid_assign_list.push((
-                        JsIdentifierAssignment::cast_ref(reference.syntax())?,
-                        ident_binding.clone(),
-                    ));
-                }
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+		let (invalid_assign, import_binding) = state;
 
-                Some(invalid_assign_list)
-            })
-            .unwrap_or_default()
-            .into_boxed_slice()
-    }
+		let name = invalid_assign.syntax().text_trimmed();
 
-    fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-        let (invalid_assign, import_binding) = state;
-
-        let name = invalid_assign.syntax().text_trimmed();
-
-        Some(
-            RuleDiagnostic::new(
-                rule_category!(),
-                invalid_assign.syntax().text_trimmed_range(),
-                markup! {
-                    "The imported variable "<Emphasis>{name.to_string()}</Emphasis>" is read-only"
-                },
-            )
-            .note(markup! {"Use a local variable instead of reassigning an import."})
-            .detail(
-                import_binding.syntax().text_trimmed_range(),
-                markup! {
-                    "The variable is imported here"
-                },
-            ),
-        )
-    }
+		Some(
+			RuleDiagnostic::new(
+				rule_category!(),
+				invalid_assign.syntax().text_trimmed_range(),
+				markup! {
+					"The imported variable "<Emphasis>{name.to_string()}</Emphasis>" is read-only"
+				},
+			)
+			.note(markup! {"Use a local variable instead of reassigning an import."})
+			.detail(
+				import_binding.syntax().text_trimmed_range(),
+				markup! {
+					"The variable is imported here"
+				},
+			),
+		)
+	}
 }

@@ -56,12 +56,7 @@ use std::{
 
 pub use arguments::{Argument, Arguments};
 use biome_console::markup;
-use biome_deserialize::{
-	Deserializable,
-	DeserializableValue,
-	DeserializationDiagnostic,
-	TextNumber,
-};
+use biome_deserialize::{Deserializable, DeserializableValue, DeserializationDiagnostic, TextNumber};
 use biome_deserialize_macros::{Deserializable, Merge};
 use biome_rowan::{
 	Language,
@@ -76,15 +71,7 @@ use biome_rowan::{
 	TextSize,
 	TokenAtOffset,
 };
-pub use buffer::{
-	Buffer,
-	BufferExtensions,
-	BufferSnapshot,
-	Inspect,
-	PreambleBuffer,
-	RemoveSoftLinesBuffer,
-	VecBuffer,
-};
+pub use buffer::{Buffer, BufferExtensions, BufferSnapshot, Inspect, PreambleBuffer, RemoveSoftLinesBuffer, VecBuffer};
 pub use builders::BestFitting;
 pub use format_element::{FormatElement, LINE_TERMINATORS, normalize_newlines};
 pub use group_id::GroupId;
@@ -309,9 +296,7 @@ impl Display for IndentWidth {
 }
 
 impl Debug for IndentWidth {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		std::fmt::Display::fmt(self, f)
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { std::fmt::Display::fmt(self, f) }
 }
 
 /// Validated value for the `line_width` formatter options
@@ -389,9 +374,7 @@ impl Display for LineWidth {
 }
 
 impl Debug for LineWidth {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		std::fmt::Display::fmt(self, f)
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { std::fmt::Display::fmt(self, f) }
 }
 
 /// Error type returned when parsing a [LineWidth] or [IndentWidth] from a
@@ -418,9 +401,7 @@ impl From<ParseIntError> for ParseFormatNumberError {
 }
 
 impl Debug for ParseFormatNumberError {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		std::fmt::Display::fmt(self, f)
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { std::fmt::Display::fmt(self, f) }
 }
 
 impl std::fmt::Display for ParseFormatNumberError {
@@ -580,9 +561,7 @@ impl From<bool> for BracketSpacing {
 }
 
 impl std::fmt::Display for BracketSpacing {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		std::write!(f, "{}", self.value())
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { std::write!(f, "{}", self.value()) }
 }
 
 impl FromStr for BracketSpacing {
@@ -593,10 +572,7 @@ impl FromStr for BracketSpacing {
 
 		match value {
 			Ok(value) => Ok(Self(value)),
-			Err(_) => {
-				Err("Value not supported for BracketSpacing. Supported values are 'true' and \
-				     'false'.")
-			},
+			Err(_) => Err("Value not supported for BracketSpacing. Supported values are 'true' and 'false'."),
 		}
 	}
 }
@@ -629,10 +605,7 @@ impl FromStr for AttributePosition {
 		match s {
 			"multiline" | "Multiline" => Ok(Self::Multiline),
 			"auto" | "Auto" => Ok(Self::Auto),
-			_ => {
-				Err("Value not supported for attribute_position. Supported values are 'auto' and \
-				     'multiline'.")
-			},
+			_ => Err("Value not supported for attribute_position. Supported values are 'auto' and 'multiline'."),
 		}
 	}
 }
@@ -873,9 +846,7 @@ impl Printed {
 
 	/// Takes the ranges of nodes that have been formatted as verbatim,
 	/// replacing them with an empty list.
-	pub fn take_verbatim_ranges(&mut self) -> Vec<TextRange> {
-		std::mem::take(&mut self.verbatim_ranges)
-	}
+	pub fn take_verbatim_ranges(&mut self) -> Vec<TextRange> { std::mem::take(&mut self.verbatim_ranges) }
 }
 
 /// Public return type of the formatter
@@ -997,11 +968,7 @@ where
 {
 	type Context = C;
 
-	fn fmt(
-		&self,
-		token:&SyntaxToken<C::Language>,
-		f:&mut Formatter<Self::Context>,
-	) -> FormatResult<()> {
+	fn fmt(&self, token:&SyntaxToken<C::Language>, f:&mut Formatter<Self::Context>) -> FormatResult<()> {
 		f.state_mut().track_token(token);
 
 		crate::write!(f, [format_skipped_token_trivia(token), format_trimmed_token(token),])
@@ -1188,10 +1155,7 @@ where
 /// # }
 /// ```
 #[inline(always)]
-pub fn write<Context>(
-	output:&mut dyn Buffer<Context = Context>,
-	args:Arguments<Context>,
-) -> FormatResult<()> {
+pub fn write<Context>(output:&mut dyn Buffer<Context = Context>, args:Arguments<Context>) -> FormatResult<()> {
 	let mut f = Formatter::new(output);
 
 	f.write_fmt(args)
@@ -1227,10 +1191,7 @@ pub fn write<Context>(
 /// # Ok(())
 /// # }
 /// ```
-pub fn format<Context>(
-	context:Context,
-	arguments:Arguments<Context>,
-) -> FormatResult<Formatted<Context>>
+pub fn format<Context>(context:Context, arguments:Arguments<Context>) -> FormatResult<Formatted<Context>>
 where
 	Context: FormatContext, {
 	let mut state = FormatState::new(context);
@@ -1551,8 +1512,7 @@ pub fn format_range<Language:FormatLanguage>(
 			.last()
 			.unwrap_or(start_node);
 
-		range = text_non_whitespace_range(&result_start_node)
-			.cover(text_non_whitespace_range(&result_end_node));
+		range = text_non_whitespace_range(&result_start_node).cover(text_non_whitespace_range(&result_end_node));
 
 		// Find the lowest common ancestor node for the previously selected
 		// sibling nodes by building the path to the root node from both
@@ -1693,10 +1653,7 @@ pub fn format_range<Language:FormatLanguage>(
 /// even if it's a mismatch from the rest of the block the selection is in
 ///
 /// It returns a [Formatted] result
-pub fn format_sub_tree<L:FormatLanguage>(
-	root:&SyntaxNode<L::SyntaxLanguage>,
-	language:L,
-) -> FormatResult<Printed> {
+pub fn format_sub_tree<L:FormatLanguage>(root:&SyntaxNode<L::SyntaxLanguage>, language:L) -> FormatResult<Printed> {
 	// Determine the initial indentation level for the printer by inspecting the
 	// trivia pieces of each token from the first token of the common root towards
 	// the start of the file
@@ -1708,8 +1665,7 @@ pub fn format_sub_tree<L:FormatLanguage>(
 	// to consider its leading trivia pieces
 	let first_token = tokens.next();
 
-	let first_token_trivias =
-		first_token.into_iter().flat_map(|token| token.leading_trivia().pieces().rev());
+	let first_token_trivias = first_token.into_iter().flat_map(|token| token.leading_trivia().pieces().rev());
 
 	let next_tokens_trivias = tokens.flat_map(|token| {
 		token
@@ -1841,9 +1797,7 @@ impl<Context> FormatState<Context> {
 	/// name is used in the [std::fmt::Debug] of the document if this is a
 	/// debug build. The name is unused for production builds and has no
 	/// meaning on the equality of two group ids.
-	pub fn group_id(&self, debug_name:&'static str) -> GroupId {
-		self.group_id_builder.group_id(debug_name)
-	}
+	pub fn group_id(&self, debug_name:&'static str) -> GroupId { self.group_id_builder.group_id(debug_name) }
 
 	/// Tracks the given token as formatted
 	#[inline]
@@ -1864,9 +1818,7 @@ impl<Context> FormatState<Context> {
 	/// It can be useful to disable the token tracking when it is necessary to
 	/// re-format a node with different parameters.
 	#[cfg(debug_assertions)]
-	pub fn set_token_tracking_disabled(&mut self, enabled:bool) {
-		self.printed_tokens.set_disabled(enabled)
-	}
+	pub fn set_token_tracking_disabled(&mut self, enabled:bool) { self.printed_tokens.set_disabled(enabled) }
 
 	#[cfg(not(debug_assertions))]
 	#[inline]
@@ -1878,10 +1830,7 @@ impl<Context> FormatState<Context> {
 
 	/// Asserts in debug builds that all tokens have been printed.
 	#[inline]
-	pub fn assert_formatted_all_tokens<L:Language>(
-		&self,
-		#[allow(unused_variables)] root:&SyntaxNode<L>,
-	) {
+	pub fn assert_formatted_all_tokens<L:Language>(&self, #[allow(unused_variables)] root:&SyntaxNode<L>) {
 		cfg_if::cfg_if! {
 			if #[cfg(debug_assertions)] {
 				self.printed_tokens.assert_all_tracked(root);

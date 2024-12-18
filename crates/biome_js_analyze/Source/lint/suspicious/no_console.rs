@@ -1,149 +1,150 @@
-use crate::{services::semantic::Semantic, JsRuleAction};
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, FixKind, Rule, RuleDiagnostic, RuleSource,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
 use biome_deserialize_macros::Deserializable;
 use biome_js_syntax::{
-    global_identifier, AnyJsMemberExpression, JsCallExpression, JsExpressionStatement,
+	AnyJsMemberExpression,
+	JsCallExpression,
+	JsExpressionStatement,
+	global_identifier,
 };
 use biome_rowan::{AstNode, BatchMutationExt};
 
+use crate::{JsRuleAction, services::semantic::Semantic};
+
 declare_lint_rule! {
-    /// Disallow the use of `console`.
-    ///
-    /// In a browser environment, it’s considered a best practice to log messages using `console`.
-    /// Such messages are considered to be for debugging purposes and therefore not suitable to ship to the client.
-    /// In general, calls using `console` should be stripped before being pushed to production.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```js,expect_diagnostic
-    /// console.error('hello world')
-    /// ```
-    ///
-    /// ## Options
-    ///
-    /// Use the options to explicitly allow a specific subset of `console` methods.
-    ///
-    /// ```json,options
-    /// {
-    ///   "options": {
-    ///     "allow": ["assert", "error", "info", "warn"]
-    ///   }
-    /// }
-    /// ```
-    ///
-    /// ```js,expect_diagnostic,use_options
-    /// console.error("error message"); // Allowed
-    /// console.warn("warning message"); // Allowed
-    /// console.info("info message"); // Allowed
-    /// console.log("log message");
-    /// console.assert(true, "explanation"); // Allowed
-    /// ```
-    pub NoConsole {
-        version: "1.6.0",
-        name: "noConsole",
-        language: "js",
-        sources: &[RuleSource::Eslint("no-console")],
-        recommended: false,
-        fix_kind: FixKind::Unsafe,
-    }
+	/// Disallow the use of `console`.
+	///
+	/// In a browser environment, it’s considered a best practice to log messages using `console`.
+	/// Such messages are considered to be for debugging purposes and therefore not suitable to ship to the client.
+	/// In general, calls using `console` should be stripped before being pushed to production.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```js,expect_diagnostic
+	/// console.error('hello world')
+	/// ```
+	///
+	/// ## Options
+	///
+	/// Use the options to explicitly allow a specific subset of `console` methods.
+	///
+	/// ```json,options
+	/// {
+	///   "options": {
+	///     "allow": ["assert", "error", "info", "warn"]
+	///   }
+	/// }
+	/// ```
+	///
+	/// ```js,expect_diagnostic,use_options
+	/// console.error("error message"); // Allowed
+	/// console.warn("warning message"); // Allowed
+	/// console.info("info message"); // Allowed
+	/// console.log("log message");
+	/// console.assert(true, "explanation"); // Allowed
+	/// ```
+	pub NoConsole {
+		version: "1.6.0",
+		name: "noConsole",
+		language: "js",
+		sources: &[RuleSource::Eslint("no-console")],
+		recommended: false,
+		fix_kind: FixKind::Unsafe,
+	}
 }
 
 impl Rule for NoConsole {
-    type Query = Semantic<JsCallExpression>;
+	type Options = Box<NoConsoleOptions>;
+	type Query = Semantic<JsCallExpression>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-    type State = ();
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let call_expression = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let model = ctx.model();
 
-    type Options = Box<NoConsoleOptions>;
+		let callee = call_expression.callee().ok()?;
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let call_expression = ctx.query();
+		let member_expression = AnyJsMemberExpression::cast(callee.into_syntax())?;
 
-        let model = ctx.model();
+		let object = member_expression.object().ok()?;
 
-        let callee = call_expression.callee().ok()?;
+		let (reference, name) = global_identifier(&object)?;
 
-        let member_expression = AnyJsMemberExpression::cast(callee.into_syntax())?;
+		if name.text() != "console" {
+			return None;
+		}
 
-        let object = member_expression.object().ok()?;
+		if let Some(member_name) = member_expression.member_name() {
+			let member_name = member_name.text();
 
-        let (reference, name) = global_identifier(&object)?;
+			if ctx.options().allow.iter().any(|allowed| allowed.as_ref() == member_name) {
+				return None;
+			}
+		}
 
-        if name.text() != "console" {
-            return None;
-        }
+		model.binding(&reference).is_none().then_some(())
+	}
 
-        if let Some(member_name) = member_expression.member_name() {
-            let member_name = member_name.text();
+	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
+		let node = ctx.query();
 
-            if ctx
-                .options()
-                .allow
-                .iter()
-                .any(|allowed| allowed.as_ref() == member_name)
-            {
-                return None;
-            }
-        }
+		let node = JsExpressionStatement::cast(node.syntax().parent()?)?;
 
-        model.binding(&reference).is_none().then_some(())
-    }
+		Some(
+			RuleDiagnostic::new(
+				rule_category!(),
+				node.syntax().text_trimmed_range(),
+				markup! {
+					"Don't use "<Emphasis>"console"</Emphasis>"."
+				},
+			)
+			.note(markup! {
+				"The use of "<Emphasis>"console"</Emphasis>" is often reserved for debugging."
+			}),
+		)
+	}
 
-    fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
-        let node = ctx.query();
+	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
+		let call_expression = ctx.query();
 
-        let node = JsExpressionStatement::cast(node.syntax().parent()?)?;
+		let mut mutation = ctx.root().begin();
 
-        Some(
-            RuleDiagnostic::new(
-                rule_category!(),
-                node.syntax().text_trimmed_range(),
-                markup! {
-                    "Don't use "<Emphasis>"console"</Emphasis>"."
-                },
-            )
-            .note(markup! {
-                "The use of "<Emphasis>"console"</Emphasis>" is often reserved for debugging."
-            }),
-        )
-    }
+		match JsExpressionStatement::cast(call_expression.syntax().parent()?) {
+			Some(stmt) if stmt.semicolon_token().is_some() => {
+				mutation.remove_node(stmt);
+			},
 
-    fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
-        let call_expression = ctx.query();
+			_ => {
+				mutation.remove_node(call_expression.clone());
+			},
+		}
 
-        let mut mutation = ctx.root().begin();
-
-        match JsExpressionStatement::cast(call_expression.syntax().parent()?) {
-            Some(stmt) if stmt.semicolon_token().is_some() => {
-                mutation.remove_node(stmt);
-            }
-
-            _ => {
-                mutation.remove_node(call_expression.clone());
-            }
-        }
-
-        Some(JsRuleAction::new(
-            ctx.metadata().action_category(ctx.category(), ctx.group()),
-            ctx.metadata().applicability(),
-            markup! { "Remove "<Emphasis>"console"</Emphasis>"." }.to_owned(),
-            mutation,
-        ))
-    }
+		Some(JsRuleAction::new(
+			ctx.metadata().action_category(ctx.category(), ctx.group()),
+			ctx.metadata().applicability(),
+			markup! { "Remove "<Emphasis>"console"</Emphasis>"." }.to_owned(),
+			mutation,
+		))
+	}
 }
 
 #[derive(
-    Clone, Debug, Default, Deserializable, Eq, PartialEq, serde::Deserialize, serde::Serialize,
+	Clone, Debug, Default, Deserializable, Eq, PartialEq, serde::Deserialize, serde::Serialize,
 )]
 #[cfg_attr(feature = "schemars", derive(schemars::JsonSchema))]
 #[serde(deny_unknown_fields)]
 pub struct NoConsoleOptions {
-    /// Allowed calls on the console object.
-    pub allow: Box<[Box<str>]>,
+	/// Allowed calls on the console object.
+	pub allow:Box<[Box<str>]>,
 }

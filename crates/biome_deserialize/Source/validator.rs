@@ -13,12 +13,7 @@ pub trait DeserializableValidator {
 	///
 	/// Returns `true` if the instance passes validation and `false` when it
 	/// should be rejected.
-	fn validate(
-		&mut self,
-		name:&str,
-		range:TextRange,
-		diagnostics:&mut Vec<DeserializationDiagnostic>,
-	) -> bool;
+	fn validate(&mut self, name:&str, range:TextRange, diagnostics:&mut Vec<DeserializationDiagnostic>) -> bool;
 }
 
 /// Validates whether the given value is non-empty.

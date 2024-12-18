@@ -2,14 +2,7 @@ use std::str::FromStr;
 
 use biome_deserialize::StringSet;
 use biome_deserialize_macros::{Deserializable, Merge, Partial};
-use biome_formatter::{
-	AttributePosition,
-	BracketSpacing,
-	IndentStyle,
-	IndentWidth,
-	LineEnding,
-	LineWidth,
-};
+use biome_formatter::{AttributePosition, BracketSpacing, IndentStyle, IndentWidth, LineEnding, LineWidth};
 use bpaf::Bpaf;
 use serde::{Deserialize, Serialize};
 

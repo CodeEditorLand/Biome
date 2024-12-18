@@ -16,8 +16,7 @@ mod state;
 mod syntax;
 mod token_source;
 
-pub(crate) type CssLosslessTreeSink<'source> =
-	LosslessTreeSink<'source, CssLanguage, CssSyntaxFactory>;
+pub(crate) type CssLosslessTreeSink<'source> = LosslessTreeSink<'source, CssLanguage, CssSyntaxFactory>;
 
 pub fn parse_css(source:&str, options:CssParserOptions) -> CssParse {
 	let mut cache = NodeCache::default();
@@ -26,11 +25,7 @@ pub fn parse_css(source:&str, options:CssParserOptions) -> CssParse {
 }
 
 /// Parses the provided string as CSS program using the provided node cache.
-pub fn parse_css_with_cache(
-	source:&str,
-	cache:&mut NodeCache,
-	options:CssParserOptions,
-) -> CssParse {
+pub fn parse_css_with_cache(source:&str, cache:&mut NodeCache, options:CssParserOptions) -> CssParse {
 	tracing::debug_span!("Parsing phase").in_scope(move || {
 		let mut parser = CssParser::new(source, options);
 
@@ -56,9 +51,7 @@ pub struct CssParse {
 }
 
 impl CssParse {
-	pub fn new(root:CssSyntaxNode, diagnostics:Vec<ParseDiagnostic>) -> CssParse {
-		CssParse { root, diagnostics }
-	}
+	pub fn new(root:CssSyntaxNode, diagnostics:Vec<ParseDiagnostic>) -> CssParse { CssParse { root, diagnostics } }
 
 	/// The syntax node represented by this Parse result
 	///
@@ -88,9 +81,7 @@ impl CssParse {
 	pub fn into_diagnostics(self) -> Vec<ParseDiagnostic> { self.diagnostics }
 
 	/// Returns [true] if the parser encountered some errors during the parsing.
-	pub fn has_errors(&self) -> bool {
-		self.diagnostics.iter().any(|diagnostic| diagnostic.is_error())
-	}
+	pub fn has_errors(&self) -> bool { self.diagnostics.iter().any(|diagnostic| diagnostic.is_error()) }
 
 	/// Convert this parse result into a typed AST node.
 	///

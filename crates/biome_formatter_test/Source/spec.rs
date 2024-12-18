@@ -62,10 +62,7 @@ impl<'a> SpecTestFile<'a> {
 		);
 
 		app.workspace
-			.register_project_folder(RegisterProjectFolderParams {
-				set_as_current_workspace:true,
-				path:None,
-			})
+			.register_project_folder(RegisterProjectFolderParams { set_as_current_workspace:true, path:None })
 			.unwrap();
 
 		if let Some(settings) = settings {
@@ -87,15 +84,7 @@ impl<'a> SpecTestFile<'a> {
 
 			let (_, range_start_index, range_end_index) = strip_rome_placeholders(&mut input_code);
 
-			Some(SpecTestFile {
-				input_file,
-				root_path,
-
-				input_code,
-
-				range_start_index,
-				range_end_index,
-			})
+			Some(SpecTestFile { input_file, root_path, input_code, range_start_index, range_end_index })
 		} else {
 			None
 		}
@@ -110,16 +99,12 @@ impl<'a> SpecTestFile<'a> {
 	pub fn relative_file_name(&self) -> &str {
 		self.input_file
 			.strip_prefix(self.root_path)
-			.unwrap_or_else(|_| {
-				panic!("failed to strip prefix {:?} from {:?}", self.root_path, self.input_file)
-			})
+			.unwrap_or_else(|_| panic!("failed to strip prefix {:?} from {:?}", self.root_path, self.input_file))
 			.to_str()
 			.expect("failed to get relative file name")
 	}
 
-	fn range(&self) -> (Option<usize>, Option<usize>) {
-		(self.range_start_index, self.range_end_index)
-	}
+	fn range(&self) -> (Option<usize>, Option<usize>) { (self.range_start_index, self.range_end_index) }
 }
 
 pub struct SpecSnapshot<'a, L>
@@ -135,12 +120,7 @@ impl<'a, L> SpecSnapshot<'a, L>
 where
 	L: TestFormatLanguage,
 {
-	pub fn new(
-		test_file:SpecTestFile<'a>,
-		test_directory:&str,
-		language:L,
-		format_language:L::FormatLanguage,
-	) -> Self {
+	pub fn new(test_file:SpecTestFile<'a>, test_directory:&str, language:L, format_language:L::FormatLanguage) -> Self {
 		let test_directory = PathBuf::from(test_directory);
 
 		SpecSnapshot { test_file, test_directory, language, format_language }
@@ -158,10 +138,7 @@ where
 				self.language.format_range(
 					format_language.clone(),
 					&syntax,
-					TextRange::new(
-						TextSize::try_from(start).unwrap(),
-						TextSize::try_from(end).unwrap(),
-					),
+					TextRange::new(TextSize::try_from(start).unwrap(), TextSize::try_from(end).unwrap()),
 				)
 			},
 			_ => {
@@ -175,8 +152,7 @@ where
 
 		let output_code = match range {
 			(Some(_), Some(_)) => {
-				let range =
-					formatted.range().expect("the result of format_range should have a range");
+				let range = formatted.range().expect("the result of format_range should have a range");
 
 				let mut output_code = self.test_file.input_code.clone();
 
@@ -246,10 +222,8 @@ where
 
 			let mut settings = Settings::default();
 			// SAFETY: we checked its existence already, we assume we have rights to read it
-			let (test_options, diagnostics) = deserialize_from_str::<PartialConfiguration>(
-				options_path.get_buffer_from_file().as_str(),
-			)
-			.consume();
+			let (test_options, diagnostics) =
+				deserialize_from_str::<PartialConfiguration>(options_path.get_buffer_from_file().as_str()).consume();
 
 			settings
 				.merge_with_configuration(test_options.unwrap_or_default(), None, None, &[])
@@ -279,14 +253,10 @@ where
 
 			const CR_PATTERN:&str = "\r";
 
-			output_code =
-				output_code.replace(CRLF_PATTERN, "<CRLF>\n").replace(CR_PATTERN, "<CR>\n");
+			output_code = output_code.replace(CRLF_PATTERN, "<CRLF>\n").replace(CR_PATTERN, "<CR>\n");
 
 			snapshot_builder = snapshot_builder
-				.with_output_and_options(
-					SnapshotOutput::new(&output_code).with_index(1),
-					format_language.options(),
-				)
+				.with_output_and_options(SnapshotOutput::new(&output_code).with_index(1), format_language.options())
 				.with_unimplemented(&printed)
 				.with_lines_exceeding_max_width(&output_code, max_width);
 		}

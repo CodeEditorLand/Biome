@@ -423,9 +423,7 @@ mod tests {
 				text("aVeryLongIdentifier"),
 				soft_line_break_or_space(),
 				best_fitting![
-					format_args![text(
-						"Something that will not fit on a line with 30 character print width."
-					)],
+					format_args![text("Something that will not fit on a line with 30 character print width.")],
 					format_args![
 						group(&format_args![
 							text("Start"),
@@ -443,11 +441,7 @@ mod tests {
 								soft_line_break_or_space(),
 								text("2,"),
 								soft_line_break_or_space(),
-								group(&format_args!(
-									text("A,"),
-									soft_line_break_or_space(),
-									text("B")
-								)),
+								group(&format_args!(text("A,"), soft_line_break_or_space(), text("B"))),
 								soft_line_break_or_space(),
 								text("3")
 							]),

@@ -227,8 +227,7 @@ impl FromStr for MaxDiagnostics {
 					Ok(MaxDiagnostics::Limit(value))
 				} else {
 					Err(format!(
-						"Invalid value provided. Provide 'none' to lift the limit, or a number \
-						 between 0 and {}.",
+						"Invalid value provided. Provide 'none' to lift the limit, or a number between 0 and {}.",
 						u32::MAX
 					))
 				}

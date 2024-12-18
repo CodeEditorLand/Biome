@@ -38,9 +38,7 @@ pub struct SnapshotBuilder<'a> {
 }
 
 impl<'a> SnapshotBuilder<'a> {
-	pub fn new(input_file:&'a Path) -> Self {
-		SnapshotBuilder { input_file, snapshot:String::new() }
-	}
+	pub fn new(input_file:&'a Path) -> Self { SnapshotBuilder { input_file, snapshot:String::new() } }
 
 	pub fn with_input(mut self, input:&str) -> Self {
 		writeln!(self.snapshot).unwrap();
@@ -168,8 +166,7 @@ impl<'a> SnapshotBuilder<'a> {
 		let mut buffer = termcolor::Buffer::no_color();
 
 		for diagnostic in parsed.diagnostics() {
-			let error =
-				diagnostic.clone().with_file_path(file_name).with_file_source_code(parse_input);
+			let error = diagnostic.clone().with_file_path(file_name).with_file_source_code(parse_input);
 
 			Formatter::new(&mut Termcolor(&mut buffer))
 				.write_markup(markup! {
@@ -201,8 +198,7 @@ impl<'a> SnapshotBuilder<'a> {
 			output.lines().enumerate().filter(|(_, line)| line.len() > max_width).peekable();
 
 		if lines_exceeding_max_width.peek().is_some() {
-			writeln!(self.snapshot, "# Lines exceeding max width of {max_width} characters")
-				.unwrap();
+			writeln!(self.snapshot, "# Lines exceeding max width of {max_width} characters").unwrap();
 
 			writeln!(self.snapshot, "```").unwrap();
 

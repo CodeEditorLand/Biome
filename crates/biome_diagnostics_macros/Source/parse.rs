@@ -45,20 +45,10 @@ impl DeriveInput {
 	pub(crate) fn parse(input:syn::DeriveInput) -> Self {
 		match input.data {
 			syn::Data::Struct(data) => {
-				Self::DeriveStructInput(DeriveStructInput::parse(
-					input.ident,
-					input.generics,
-					input.attrs,
-					data,
-				))
+				Self::DeriveStructInput(DeriveStructInput::parse(input.ident, input.generics, input.attrs, data))
 			},
 			syn::Data::Enum(data) => {
-				Self::DeriveEnumInput(DeriveEnumInput::parse(
-					input.ident,
-					input.generics,
-					input.attrs,
-					data,
-				))
+				Self::DeriveEnumInput(DeriveEnumInput::parse(input.ident, input.generics, input.attrs, data))
 			},
 			syn::Data::Union(data) => {
 				abort!(
@@ -71,12 +61,7 @@ impl DeriveInput {
 }
 
 impl DeriveStructInput {
-	pub(crate) fn parse(
-		ident:Ident,
-		generics:Generics,
-		attrs:Vec<Attribute>,
-		data:DataStruct,
-	) -> Self {
+	pub(crate) fn parse(ident:Ident, generics:Generics, attrs:Vec<Attribute>, data:DataStruct) -> Self {
 		let mut result = Self {
 			ident,
 			generics,
@@ -133,13 +118,11 @@ impl DeriveStructInput {
 							for item in attr.attrs {
 								match item {
 									SplitMessageAttr::Description { value, .. } => {
-										result.description =
-											Some(StaticOrDynamic::Static(value.into()));
+										result.description = Some(StaticOrDynamic::Static(value.into()));
 									},
 
 									SplitMessageAttr::Message { markup, .. } => {
-										result.message =
-											Some(StaticOrDynamic::Static(markup.into()));
+										result.message = Some(StaticOrDynamic::Static(markup.into()));
 									},
 								}
 							}
@@ -232,12 +215,7 @@ impl DeriveStructInput {
 }
 
 impl DeriveEnumInput {
-	pub(crate) fn parse(
-		ident:Ident,
-		generics:Generics,
-		attrs:Vec<Attribute>,
-		data:DataEnum,
-	) -> Self {
+	pub(crate) fn parse(ident:Ident, generics:Generics, attrs:Vec<Attribute>, data:DataEnum) -> Self {
 		for attr in attrs {
 			if attr.path.is_ident("diagnostic") {
 				abort!(attr.span(), "\"diagnostic\" attributes are not supported on enums");
@@ -320,9 +298,7 @@ struct SeverityAttr {
 }
 
 impl Parse for SeverityAttr {
-	fn parse(input:ParseStream) -> Result<Self> {
-		Ok(Self { _eq_token:input.parse()?, value:input.parse()? })
-	}
+	fn parse(input:ParseStream) -> Result<Self> { Ok(Self { _eq_token:input.parse()?, value:input.parse()? }) }
 }
 
 struct CategoryAttr {
@@ -331,9 +307,7 @@ struct CategoryAttr {
 }
 
 impl Parse for CategoryAttr {
-	fn parse(input:ParseStream) -> Result<Self> {
-		Ok(Self { _eq_token:input.parse()?, value:input.parse()? })
-	}
+	fn parse(input:ParseStream) -> Result<Self> { Ok(Self { _eq_token:input.parse()?, value:input.parse()? }) }
 }
 
 enum MessageAttr {
@@ -360,10 +334,7 @@ impl Parse for MessageAttr {
 
 		let content;
 
-		Ok(Self::SingleMarkup {
-			_paren_token:syn::parenthesized!(content in input),
-			markup:content.parse()?,
-		})
+		Ok(Self::SingleMarkup { _paren_token:syn::parenthesized!(content in input), markup:content.parse()? })
 	}
 }
 
@@ -399,10 +370,7 @@ impl Parse for SplitMessageAttr {
 		if name == "message" {
 			let content;
 
-			return Ok(Self::Message {
-				_paren_token:syn::parenthesized!(content in input),
-				markup:content.parse()?,
-			});
+			return Ok(Self::Message { _paren_token:syn::parenthesized!(content in input), markup:content.parse()? });
 		}
 
 		Err(Error::new_spanned(name, "unknown attribute"))

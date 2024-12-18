@@ -66,9 +66,7 @@ impl Diagnostic for AnalyzerDiagnostic {
 
 	fn message(&self, fmt:&mut biome_console::fmt::Formatter<'_>) -> std::io::Result<()> {
 		match &self.kind {
-			DiagnosticKind::Rule(rule_diagnostic) => {
-				biome_console::fmt::Display::fmt(&rule_diagnostic.message, fmt)
-			},
+			DiagnosticKind::Rule(rule_diagnostic) => biome_console::fmt::Display::fmt(&rule_diagnostic.message, fmt),
 
 			DiagnosticKind::Raw(error) => error.message(fmt),
 		}
@@ -90,9 +88,7 @@ impl Diagnostic for AnalyzerDiagnostic {
 
 	fn location(&self) -> Location<'_> {
 		match &self.kind {
-			DiagnosticKind::Rule(rule_diagnostic) => {
-				Location::builder().span(&rule_diagnostic.span).build()
-			},
+			DiagnosticKind::Rule(rule_diagnostic) => Location::builder().span(&rule_diagnostic.span).build(),
 
 			DiagnosticKind::Raw(error) => error.location(),
 		}
@@ -115,9 +111,7 @@ impl Diagnostic for AnalyzerDiagnostic {
 
 impl AnalyzerDiagnostic {
 	/// Creates a diagnostic from a generic [Error]
-	pub fn from_error(error:Error) -> Self {
-		Self { kind:DiagnosticKind::Raw(error), code_suggestion_list:vec![] }
-	}
+	pub fn from_error(error:Error) -> Self { Self { kind:DiagnosticKind::Raw(error), code_suggestion_list:vec![] } }
 
 	pub fn get_span(&self) -> Option<TextRange> {
 		match &self.kind {
@@ -136,9 +130,7 @@ impl AnalyzerDiagnostic {
 				DiagnosticKind::Rule(rule_diagnostic)
 			},
 
-			DiagnosticKind::Raw(error) => {
-				DiagnosticKind::Raw(error.with_tags(DiagnosticTags::FIXABLE))
-			},
+			DiagnosticKind::Raw(error) => DiagnosticKind::Raw(error.with_tags(DiagnosticTags::FIXABLE)),
 		};
 
 		self.code_suggestion_list.push(suggestion);
@@ -198,10 +190,7 @@ impl std::fmt::Display for RuleError {
 			},
 
 			RuleError::ReplacedRootWithNonRootError { rule_name: None } => {
-				std::write!(
-					fmt,
-					"a code action replaced the root of the file with a non-root node."
-				)
+				std::write!(fmt, "a code action replaced the root of the file with a non-root node.")
 			},
 		}
 	}
@@ -218,10 +207,7 @@ impl biome_console::fmt::Display for RuleError {
 			},
 
 			RuleError::ReplacedRootWithNonRootError { rule_name: None } => {
-				std::write!(
-					fmt,
-					"a code action replaced the root of the file with a non-root node."
-				)
+				std::write!(fmt, "a code action replaced the root of the file with a non-root node.")
 			},
 		}
 	}

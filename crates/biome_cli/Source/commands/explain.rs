@@ -1,68 +1,67 @@
 use biome_analyze::{FixKind, RuleMetadata};
-use biome_console::{markup, ConsoleExt};
+use biome_console::{ConsoleExt, markup};
 use biome_flags::biome_env;
 use biome_service::documentation::Doc;
 
-use crate::commands::daemon::default_biome_log_path;
-use crate::{CliDiagnostic, CliSession};
+use crate::{CliDiagnostic, CliSession, commands::daemon::default_biome_log_path};
 
-fn print_rule(session: CliSession, metadata: &RuleMetadata) {
-    session.app.console.log(markup! {
-        "# "{metadata.name}"\n"
-    });
+fn print_rule(session:CliSession, metadata:&RuleMetadata) {
+	session.app.console.log(markup! {
+		"# "{metadata.name}"\n"
+	});
 
-    match metadata.fix_kind {
-        FixKind::None => {
-            session.app.console.log(markup! {
-                "No fix available.\n"
-            });
-        }
+	match metadata.fix_kind {
+		FixKind::None => {
+			session.app.console.log(markup! {
+				"No fix available.\n"
+			});
+		},
 
-        kind => {
-            session.app.console.log(markup! {
-                "Fix is "{kind}".\n"
-            });
-        }
-    }
+		kind => {
+			session.app.console.log(markup! {
+				"Fix is "{kind}".\n"
+			});
+		},
+	}
 
-    let docs = metadata
-        .docs
-        .lines()
-        .map(|line| line.trim_start())
-        .collect::<Vec<_>>()
-        .join("\n");
+	let docs = metadata
+		.docs
+		.lines()
+		.map(|line| line.trim_start())
+		.collect::<Vec<_>>()
+		.join("\n");
 
-    session.app.console.log(markup! {
-        "This rule is "{if metadata.recommended {"recommended."} else {"not recommended."}}
-        "\n\n"
-        "# Description\n"
-        {docs}
-    });
+	session.app.console.log(markup! {
+		"This rule is "{if metadata.recommended {"recommended."} else {"not recommended."}}
+		"\n\n"
+		"# Description\n"
+		{docs}
+	});
 }
 
-pub(crate) fn explain(session: CliSession, doc: Doc) -> Result<(), CliDiagnostic> {
-    match doc {
-        Doc::Rule(metadata) => {
-            print_rule(session, &metadata);
+pub(crate) fn explain(session:CliSession, doc:Doc) -> Result<(), CliDiagnostic> {
+	match doc {
+		Doc::Rule(metadata) => {
+			print_rule(session, &metadata);
 
-            Ok(())
-        }
+			Ok(())
+		},
 
-        Doc::DaemonLogs => {
-            let cache_dir = biome_env()
-                .biome_log_path
-                .value()
-                .unwrap_or(default_biome_log_path().display().to_string());
+		Doc::DaemonLogs => {
+			let cache_dir = biome_env()
+				.biome_log_path
+				.value()
+				.unwrap_or(default_biome_log_path().display().to_string());
 
-            session.app.console.error(markup! {
-                <Info>"The daemon logs are available in the directory: \n"</Info>
-            });
+			session.app.console.error(markup! {
+				<Info>"The daemon logs are available in the directory: \n"</Info>
+			});
 
-            session.app.console.log(markup! {{cache_dir}});
+			session.app.console.log(markup! {{cache_dir}});
 
-            Ok(())
-        }
+			Ok(())
+		},
 
-        Doc::Unknown(arg) => Err(CliDiagnostic::unexpected_argument(arg, "explain")),
-    }
+		Doc::Unknown(arg) => Err(CliDiagnostic::unexpected_argument(arg, "explain")),
+	}
 }

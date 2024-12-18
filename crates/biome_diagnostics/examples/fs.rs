@@ -1,16 +1,7 @@
 use std::io;
 
 use biome_console::{ConsoleExt, EnvConsole, fmt, markup};
-use biome_diagnostics::{
-	Advices,
-	Diagnostic,
-	Location,
-	LogCategory,
-	PrintDiagnostic,
-	Resource,
-	SourceCode,
-	Visit,
-};
+use biome_diagnostics::{Advices, Diagnostic, Location, LogCategory, PrintDiagnostic, Resource, SourceCode, Visit};
 use biome_rowan::{TextRange, TextSize};
 
 #[derive(Debug, Diagnostic)]
@@ -34,8 +25,7 @@ impl Advices for NotFoundAdvices {
 	fn record(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 		visitor.record_log(LogCategory::Info, &"The following files were ignored")?;
 
-		let pattern_list:Vec<_> =
-			self.pattern_list.iter().map(|pattern| pattern as &dyn fmt::Display).collect();
+		let pattern_list:Vec<_> = self.pattern_list.iter().map(|pattern| pattern as &dyn fmt::Display).collect();
 
 		visitor.record_list(&pattern_list)?;
 

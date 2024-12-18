@@ -92,10 +92,9 @@ impl TransformSourceMap {
 
 		debug_assert!(
 			range.end() <= self.source_text.text.text_len() - self.source_text.offset,
-			"Mapped range {:?} exceeds the length of the source document {:?}. Please check if \
-			 the passed `transformed_range` is a range of the transformed tree and not of the \
-			 source tree, and that it belongs to the tree for which the source map was created \
-			 for.",
+			"Mapped range {:?} exceeds the length of the source document {:?}. Please check if the passed \
+			 `transformed_range` is a range of the transformed tree and not of the source tree, and that it belongs \
+			 to the tree for which the source map was created for.",
 			range,
 			self.source_text.text.text_len() - self.source_text.offset
 		);
@@ -135,10 +134,7 @@ impl TransformSourceMap {
 		source_range
 	}
 
-	fn trimmed_source_range_from_transformed_range(
-		&self,
-		transformed_range:TextRange,
-	) -> TextRange {
+	fn trimmed_source_range_from_transformed_range(&self, transformed_range:TextRange) -> TextRange {
 		let source_range = self.source_range(transformed_range);
 
 		let mut mapped_range = source_range;
@@ -266,8 +262,7 @@ impl TransformSourceMap {
 			// comments). It can, therefore, be necessary to navigate backwards again.
 			// In this case, do a binary search for the index of the next deleted range
 			// (`O(log(n)`).
-			let out_of_order_marker =
-				previous_marker.map_or(false, |previous| previous.source > marker.source);
+			let out_of_order_marker = previous_marker.map_or(false, |previous| previous.source > marker.source);
 
 			if out_of_order_marker {
 				let index = self
@@ -305,8 +300,7 @@ impl TransformSourceMap {
 				self.deleted_ranges.get(next_range_index - 1)
 			};
 
-			let source =
-				self.source_offset_with_range(marker.source, RangePosition::Start, current_range);
+			let source = self.source_offset_with_range(marker.source, RangePosition::Start, current_range);
 
 			marker.source = source;
 		}
@@ -414,8 +408,8 @@ impl DeletedRange {
 	fn new(source_range:TextRange, total_length_preceding_deleted_ranges:TextSize) -> Self {
 		debug_assert!(
 			source_range.start() >= total_length_preceding_deleted_ranges,
-			"The total number of deleted bytes ({:?}) can not exceed the offset from the start in \
-			 the source document ({:?}). This is a bug in the source map implementation.",
+			"The total number of deleted bytes ({:?}) can not exceed the offset from the start in the source document \
+			 ({:?}). This is a bug in the source map implementation.",
 			total_length_preceding_deleted_ranges,
 			source_range.start()
 		);
@@ -437,9 +431,7 @@ impl DeletedRange {
 
 	/// Returns the byte position of [DeleteRange::source_start] in the
 	/// transformed document.
-	fn transformed_start(&self) -> TextSize {
-		self.source_range.start() - self.total_length_preceding_deleted_ranges
-	}
+	fn transformed_start(&self) -> TextSize { self.source_range.start() - self.total_length_preceding_deleted_ranges }
 }
 
 /// Builder for creating a source map.
@@ -473,9 +465,7 @@ impl TransformSourceMapBuilder {
 	pub fn push_source_text(&mut self, text:&str) { self.source_text.push_str(text); }
 
 	/// Adds a new mapping for a deleted character range.
-	pub fn add_deleted_range(&mut self, source_range:TextRange) {
-		self.deleted_ranges.push(source_range);
-	}
+	pub fn add_deleted_range(&mut self, source_range:TextRange) { self.deleted_ranges.push(source_range); }
 
 	/// Adds a mapping to widen a nodes trimmed range.
 	///
@@ -490,11 +480,7 @@ impl TransformSourceMapBuilder {
 	/// the trimmed range of `a` should now enclose the full range including the
 	/// `(` and `)` tokens to ensure that the parentheses are retained when
 	/// printing that node in verbatim style.
-	pub fn extend_trimmed_node_range(
-		&mut self,
-		original_range:TextRange,
-		extended_range:TextRange,
-	) {
+	pub fn extend_trimmed_node_range(&mut self, original_range:TextRange, extended_range:TextRange) {
 		let mapping = TrimmedNodeRangeMapping { original_range, extended_range };
 
 		self.mapped_node_ranges.insert(original_range.start(), mapping);
@@ -756,8 +742,7 @@ mod tests {
 		builder.add_deleted_range(TextRange::new(TextSize::from(3), TextSize::from(5)));
 
 		// Extend `a` to the range of `(a)`
-		builder
-			.extend_trimmed_node_range(expression.text_trimmed_range(), inner.text_trimmed_range());
+		builder.extend_trimmed_node_range(expression.text_trimmed_range(), inner.text_trimmed_range());
 		// Extend `(a)` to the range of `((a))`
 		builder.extend_trimmed_node_range(inner.text_trimmed_range(), outer.text_trimmed_range());
 
@@ -765,19 +750,13 @@ mod tests {
 
 		// Query `a`
 		assert_eq!(
-			source_map.trimmed_source_text_from_transformed_range(TextRange::new(
-				TextSize::from(0),
-				TextSize::from(1)
-			)),
+			source_map.trimmed_source_text_from_transformed_range(TextRange::new(TextSize::from(0), TextSize::from(1))),
 			"((a))"
 		);
 
 		// Query `a;` expression
 		assert_eq!(
-			source_map.trimmed_source_text_from_transformed_range(TextRange::new(
-				TextSize::from(0),
-				TextSize::from(2)
-			)),
+			source_map.trimmed_source_text_from_transformed_range(TextRange::new(TextSize::from(0), TextSize::from(2))),
 			"((a));"
 		);
 	}
@@ -827,36 +806,16 @@ mod tests {
 		assert_eq!(
 			deleted_ranges,
 			vec![
-				DeletedRangeEntry {
-					source:TextSize::from(0),
-					transformed:TextSize::from(0),
-					text:"("
-				},
-				DeletedRangeEntry {
-					source:TextSize::from(5),
-					transformed:TextSize::from(4),
-					text:"((("
-				},
-				DeletedRangeEntry {
-					source:TextSize::from(13),
-					transformed:TextSize::from(9),
-					text:"))"
-				},
-				DeletedRangeEntry {
-					source:TextSize::from(19),
-					transformed:TextSize::from(13),
-					text:"))"
-				},
+				DeletedRangeEntry { source:TextSize::from(0), transformed:TextSize::from(0), text:"(" },
+				DeletedRangeEntry { source:TextSize::from(5), transformed:TextSize::from(4), text:"(((" },
+				DeletedRangeEntry { source:TextSize::from(13), transformed:TextSize::from(9), text:"))" },
+				DeletedRangeEntry { source:TextSize::from(19), transformed:TextSize::from(13), text:"))" },
 			]
 		);
 
 		assert_eq!(
 			source_map.deleted_ranges().last(),
-			Some(DeletedRangeEntry {
-				source:TextSize::from(19),
-				transformed:TextSize::from(13),
-				text:"))"
-			})
+			Some(DeletedRangeEntry { source:TextSize::from(19), transformed:TextSize::from(13), text:"))" })
 		);
 	}
 }

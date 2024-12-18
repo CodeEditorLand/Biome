@@ -104,13 +104,7 @@ mod map;
 use std::cell::{Cell, RefCell};
 use std::{marker::PhantomData, rc::Rc};
 
-use biome_rowan::{
-	Language,
-	SyntaxNode,
-	SyntaxToken,
-	SyntaxTriviaPieceComments,
-	syntax::SyntaxElementKey,
-};
+use biome_rowan::{Language, SyntaxNode, SyntaxToken, SyntaxTriviaPieceComments, syntax::SyntaxElementKey};
 use rustc_hash::FxHashSet;
 
 use self::{builder::CommentsBuilderVisitor, map::CommentsMap};
@@ -181,9 +175,7 @@ impl CommentKind {
 	/// // But not line comments
 	/// assert!(!CommentKind::Line.is_inline())
 	/// ```
-	pub const fn is_inline(&self) -> bool {
-		matches!(self, CommentKind::InlineBlock | CommentKind::Block)
-	}
+	pub const fn is_inline(&self) -> bool { matches!(self, CommentKind::InlineBlock | CommentKind::Block) }
 }
 
 /// A comment in the source document.
@@ -803,10 +795,7 @@ pub trait CommentStyle: Default {
 	/// Determines the placement of `comment`.
 	///
 	/// The default implementation returns [CommentPlacement::Default].
-	fn place_comment(
-		&self,
-		comment:DecoratedComment<Self::Language>,
-	) -> CommentPlacement<Self::Language> {
+	fn place_comment(&self, comment:DecoratedComment<Self::Language>) -> CommentPlacement<Self::Language> {
 		CommentPlacement::Default(comment)
 	}
 }
@@ -840,11 +829,7 @@ pub struct Comments<L:Language> {
 
 impl<L:Language> Comments<L> {
 	/// Extracts all the comments from `root` and its descendants nodes.
-	pub fn from_node<Style>(
-		root:&SyntaxNode<L>,
-		style:&Style,
-		source_map:Option<&TransformSourceMap>,
-	) -> Self
+	pub fn from_node<Style>(root:&SyntaxNode<L>, style:&Style, source_map:Option<&TransformSourceMap>) -> Self
 	where
 		Style: CommentStyle<Language = L>, {
 		let builder = CommentsBuilderVisitor::new(style, source_map);
@@ -873,9 +858,7 @@ impl<L:Language> Comments<L> {
 	/// Returns `true` if the given `node` has any [leading
 	/// comments](self#leading-comments).
 	#[inline]
-	pub fn has_leading_comments(&self, node:&SyntaxNode<L>) -> bool {
-		!self.leading_comments(node).is_empty()
-	}
+	pub fn has_leading_comments(&self, node:&SyntaxNode<L>) -> bool { !self.leading_comments(node).is_empty() }
 
 	/// Tests if the node has any [leading comments](self#leading-comments) that
 	/// have a leading line break.
@@ -893,9 +876,7 @@ impl<L:Language> Comments<L> {
 
 	/// Returns `true` if node has any [dangling
 	/// comments](self#dangling-comments).
-	pub fn has_dangling_comments(&self, node:&SyntaxNode<L>) -> bool {
-		!self.dangling_comments(node).is_empty()
-	}
+	pub fn has_dangling_comments(&self, node:&SyntaxNode<L>) -> bool { !self.dangling_comments(node).is_empty() }
 
 	/// Returns the [dangling comments](self#dangling-comments) of `node`
 	pub fn dangling_comments(&self, node:&SyntaxNode<L>) -> &[SourceComment<L>] {
@@ -917,16 +898,11 @@ impl<L:Language> Comments<L> {
 	/// Returns `true` if the given `node` has any [trailing
 	/// comments](self#trailing-comments).
 	#[inline]
-	pub fn has_trailing_comments(&self, node:&SyntaxNode<L>) -> bool {
-		!self.trailing_comments(node).is_empty()
-	}
+	pub fn has_trailing_comments(&self, node:&SyntaxNode<L>) -> bool { !self.trailing_comments(node).is_empty() }
 
 	/// Returns an iterator over the [leading](self#leading-comments) and
 	/// [trailing comments](self#trailing-comments) of `node`.
-	pub fn leading_trailing_comments(
-		&self,
-		node:&SyntaxNode<L>,
-	) -> impl Iterator<Item = &SourceComment<L>> {
+	pub fn leading_trailing_comments(&self, node:&SyntaxNode<L>) -> impl Iterator<Item = &SourceComment<L>> {
 		self.leading_comments(node).iter().chain(self.trailing_comments(node).iter())
 	}
 
@@ -942,9 +918,7 @@ impl<L:Language> Comments<L> {
 
 	/// Returns `true` if that node has skipped token trivia attached.
 	#[inline]
-	pub fn has_skipped(&self, token:&SyntaxToken<L>) -> bool {
-		self.data.with_skipped.contains(&token.key())
-	}
+	pub fn has_skipped(&self, token:&SyntaxToken<L>) -> bool { self.data.with_skipped.contains(&token.key()) }
 
 	/// Returns `true` if `node` has a [leading](self#leading-comments),
 	/// [dangling](self#dangling-comments), or
@@ -1025,8 +999,7 @@ Node:
 
 	#[cfg(debug_assertions)]
 	pub(crate) fn assert_formatted_all_comments(&self) {
-		let has_unformatted_comments =
-			self.data.comments.all_parts().any(|comment| !comment.formatted.get());
+		let has_unformatted_comments = self.data.comments.all_parts().any(|comment| !comment.formatted.get());
 
 		if has_unformatted_comments {
 			let mut unformatted_comments = Vec::new();
@@ -1038,26 +1011,17 @@ Node:
 				.expect("Expected root for comments with data")
 				.descendants()
 			{
-				unformatted_comments.extend(self.leading_comments(&node).iter().filter_map(
-					|comment| {
-						(!comment.formatted.get())
-							.then_some(DebugComment::Leading { node:node.clone(), comment })
-					},
-				));
+				unformatted_comments.extend(self.leading_comments(&node).iter().filter_map(|comment| {
+					(!comment.formatted.get()).then_some(DebugComment::Leading { node:node.clone(), comment })
+				}));
 
-				unformatted_comments.extend(self.dangling_comments(&node).iter().filter_map(
-					|comment| {
-						(!comment.formatted.get())
-							.then_some(DebugComment::Dangling { node:node.clone(), comment })
-					},
-				));
+				unformatted_comments.extend(self.dangling_comments(&node).iter().filter_map(|comment| {
+					(!comment.formatted.get()).then_some(DebugComment::Dangling { node:node.clone(), comment })
+				}));
 
-				unformatted_comments.extend(self.trailing_comments(&node).iter().filter_map(
-					|comment| {
-						(!comment.formatted.get())
-							.then_some(DebugComment::Trailing { node:node.clone(), comment })
-					},
-				));
+				unformatted_comments.extend(self.trailing_comments(&node).iter().filter_map(|comment| {
+					(!comment.formatted.get()).then_some(DebugComment::Trailing { node:node.clone(), comment })
+				}));
 			}
 
 			panic!("The following comments have not been formatted.\n{unformatted_comments:#?}")
@@ -1181,11 +1145,7 @@ where
 {
 	type Context = C;
 
-	fn fmt(
-		&self,
-		item:&SourceComment<C::Language>,
-		f:&mut Formatter<Self::Context>,
-	) -> FormatResult<()> {
+	fn fmt(&self, item:&SourceComment<C::Language>, f:&mut Formatter<Self::Context>) -> FormatResult<()> {
 		write!(f, [item.piece.as_piece()])
 	}
 }

@@ -88,26 +88,16 @@ impl std::fmt::Debug for FormatElement {
 			FormatElement::Space | FormatElement::HardSpace => write!(fmt, "Space"),
 			FormatElement::Line(mode) => fmt.debug_tuple("Line").field(mode).finish(),
 			FormatElement::ExpandParent => write!(fmt, "ExpandParent"),
-			FormatElement::StaticText { text } => {
-				fmt.debug_tuple("StaticText").field(text).finish()
-			},
+			FormatElement::StaticText { text } => fmt.debug_tuple("StaticText").field(text).finish(),
 
-			FormatElement::DynamicText { text, .. } => {
-				fmt.debug_tuple("DynamicText").field(text).finish()
-			},
+			FormatElement::DynamicText { text, .. } => fmt.debug_tuple("DynamicText").field(text).finish(),
 
-			FormatElement::LocatedTokenText { slice, .. } => {
-				fmt.debug_tuple("LocatedTokenText").field(slice).finish()
-			},
+			FormatElement::LocatedTokenText { slice, .. } => fmt.debug_tuple("LocatedTokenText").field(slice).finish(),
 
 			FormatElement::LineSuffixBoundary => write!(fmt, "LineSuffixBoundary"),
-			FormatElement::BestFitting(best_fitting) => {
-				fmt.debug_tuple("BestFitting").field(&best_fitting).finish()
-			},
+			FormatElement::BestFitting(best_fitting) => fmt.debug_tuple("BestFitting").field(&best_fitting).finish(),
 
-			FormatElement::Interned(interned) => {
-				fmt.debug_list().entries(interned.deref()).finish()
-			},
+			FormatElement::Interned(interned) => fmt.debug_list().entries(interned.deref()).finish(),
 
 			FormatElement::Tag(tag) => fmt.debug_tuple("Tag").field(tag).finish(),
 		}
@@ -323,18 +313,18 @@ impl BestFittingElement {
 
 	/// Returns the most expanded variant
 	pub fn most_expanded(&self) -> &[FormatElement] {
-		self.variants.last().expect(
-			"Most contain at least two elements, as guaranteed by the best fitting builder.",
-		)
+		self.variants
+			.last()
+			.expect("Most contain at least two elements, as guaranteed by the best fitting builder.")
 	}
 
 	pub fn variants(&self) -> &[Box<[FormatElement]>] { &self.variants }
 
 	/// Returns the least expanded variant
 	pub fn most_flat(&self) -> &[FormatElement] {
-		self.variants.first().expect(
-			"Most contain at least two elements, as guaranteed by the best fitting builder.",
-		)
+		self.variants
+			.first()
+			.expect("Most contain at least two elements, as guaranteed by the best fitting builder.")
 	}
 }
 

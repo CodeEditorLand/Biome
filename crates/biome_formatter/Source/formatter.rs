@@ -98,10 +98,7 @@ impl<'buf, Context> Formatter<'buf, Context> {
 	/// # Ok(())
 	/// # }
 	/// ```
-	pub fn join_with<'a, Joiner>(
-		&'a mut self,
-		joiner:Joiner,
-	) -> JoinBuilder<'a, 'buf, Joiner, Context>
+	pub fn join_with<'a, Joiner>(&'a mut self, joiner:Joiner) -> JoinBuilder<'a, 'buf, Joiner, Context>
 	where
 		Joiner: Format<Context>, {
 		JoinBuilder::with_separator(self, joiner)
@@ -115,9 +112,7 @@ impl<'buf, Context> Formatter<'buf, Context> {
 	/// elements with either a [crate::builders::soft_line_break_or_space] or
 	/// [crate::builders::empty_line] depending on how many line breaks were
 	/// separating the elements in the original file.
-	pub fn join_nodes_with_soft_line<'a>(
-		&'a mut self,
-	) -> JoinNodesBuilder<'a, 'buf, Line, Context> {
+	pub fn join_nodes_with_soft_line<'a>(&'a mut self) -> JoinNodesBuilder<'a, 'buf, Line, Context> {
 		JoinNodesBuilder::new(soft_line_break_or_space(), self)
 	}
 
@@ -269,9 +264,7 @@ impl<Context> Buffer for Formatter<'_, Context> {
 	type Context = Context;
 
 	#[inline(always)]
-	fn write_element(&mut self, element:FormatElement) -> FormatResult<()> {
-		self.buffer.write_element(element)
-	}
+	fn write_element(&mut self, element:FormatElement) -> FormatResult<()> { self.buffer.write_element(element) }
 
 	fn elements(&self) -> &[FormatElement] { self.buffer.elements() }
 
@@ -290,9 +283,7 @@ impl<Context> Buffer for Formatter<'_, Context> {
 
 	fn snapshot(&self) -> BufferSnapshot { self.buffer.snapshot() }
 
-	fn restore_snapshot(&mut self, snapshot:BufferSnapshot) {
-		self.buffer.restore_snapshot(snapshot)
-	}
+	fn restore_snapshot(&mut self, snapshot:BufferSnapshot) { self.buffer.restore_snapshot(snapshot) }
 }
 
 /// Snapshot of the formatter state  used to handle backtracking if

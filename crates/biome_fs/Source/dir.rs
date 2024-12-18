@@ -13,10 +13,7 @@ pub fn ensure_cache_dir() -> PathBuf {
 		if let Err(err) = fs::create_dir_all(&cache_dir) {
 			let temp_dir = env::temp_dir();
 
-			warn!(
-				"Failed to create local cache directory {cache_dir:?} due to error: {err}, \
-				 fallback to {temp_dir:?}"
-			);
+			warn!("Failed to create local cache directory {cache_dir:?} due to error: {err}, fallback to {temp_dir:?}");
 
 			temp_dir
 		} else {

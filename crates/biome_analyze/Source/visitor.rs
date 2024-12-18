@@ -53,11 +53,7 @@ pub struct VisitorFinishContext<'a, L:Language> {
 pub trait Visitor {
 	type Language: Language;
 
-	fn visit(
-		&mut self,
-		event:&WalkEvent<SyntaxNode<Self::Language>>,
-		ctx:VisitorContext<Self::Language>,
-	);
+	fn visit(&mut self, event:&WalkEvent<SyntaxNode<Self::Language>>, ctx:VisitorContext<Self::Language>);
 
 	fn finish(self: Box<Self>, ctx:VisitorFinishContext<Self::Language>) { let _ = ctx; }
 }
@@ -73,11 +69,7 @@ pub trait Visitor {
 pub trait NodeVisitor<V>: Sized {
 	type Node: AstNode;
 
-	fn enter(
-		node:Self::Node,
-		ctx:&mut VisitorContext<NodeLanguage<Self::Node>>,
-		stack:&mut V,
-	) -> Self;
+	fn enter(node:Self::Node, ctx:&mut VisitorContext<NodeLanguage<Self::Node>>, stack:&mut V) -> Self;
 
 	fn exit(self, node:Self::Node, ctx:&mut VisitorContext<NodeLanguage<Self::Node>>, stack:&mut V);
 }

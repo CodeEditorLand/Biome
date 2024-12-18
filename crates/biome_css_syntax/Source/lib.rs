@@ -5,15 +5,7 @@ pub mod stmt_ext;
 mod syntax_node;
 
 use biome_rowan::{AstNode, RawSyntaxKind, SyntaxKind};
-pub use biome_rowan::{
-	SyntaxNodeText,
-	TextLen,
-	TextRange,
-	TextSize,
-	TokenAtOffset,
-	TriviaPieceKind,
-	WalkEvent,
-};
+pub use biome_rowan::{SyntaxNodeText, TextLen, TextRange, TextSize, TokenAtOffset, TriviaPieceKind, WalkEvent};
 pub use file_source::CssFileSource;
 pub use syntax_node::*;
 
@@ -60,9 +52,7 @@ impl CssSyntaxKind {
 	/// Returns true for all non-contextual keywords (includes future reserved
 	/// keywords)
 	#[inline]
-	pub const fn is_non_contextual_keyword(self) -> bool {
-		self.is_keyword() && !self.is_contextual_keyword()
-	}
+	pub const fn is_non_contextual_keyword(self) -> bool { self.is_keyword() && !self.is_contextual_keyword() }
 
 	/// Returns true for all _known_ dimension units.
 	///

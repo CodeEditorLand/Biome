@@ -103,9 +103,7 @@ impl<'source> TokenSource for CssTokenSource<'source> {
 
 	fn skip_as_trivia(&mut self) { self.skip_as_trivia_with_context(CssLexContext::Regular) }
 
-	fn finish(self) -> (Vec<Trivia>, Vec<ParseDiagnostic>) {
-		(self.trivia_list, self.lexer.finish())
-	}
+	fn finish(self) -> (Vec<Trivia>, Vec<ParseDiagnostic>) { (self.trivia_list, self.lexer.finish()) }
 }
 
 impl<'source> BumpWithContext for CssTokenSource<'source> {
@@ -119,11 +117,8 @@ impl<'source> BumpWithContext for CssTokenSource<'source> {
 
 	fn skip_as_trivia_with_context(&mut self, context:Self::Context) {
 		if self.current() != EOF {
-			self.trivia_list.push(Trivia::new(
-				TriviaPieceKind::Skipped,
-				self.current_range(),
-				false,
-			));
+			self.trivia_list
+				.push(Trivia::new(TriviaPieceKind::Skipped, self.current_range(), false));
 
 			self.next_non_trivia_token(context, true)
 		}

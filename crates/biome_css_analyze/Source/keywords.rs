@@ -18,8 +18,7 @@ pub const FONT_FAMILY_KEYWORDS:[&str; 10] = [
 ];
 
 pub const FONT_WEIGHT_ABSOLUTE_KEYWORDS:[&str; 2] = ["bold", "normal"];
-pub const FONT_WEIGHT_NUMERIC_KEYWORDS:[&str; 9] =
-	["100", "200", "300", "400", "500", "600", "700", "800", "900"];
+pub const FONT_WEIGHT_NUMERIC_KEYWORDS:[&str; 9] = ["100", "200", "300", "400", "500", "600", "700", "800", "900"];
 pub const FONT_STYLE_KEYWORDS:[&str; 3] = ["italic", "normal", "oblique"];
 pub const FONT_VARIANTS_KEYWORDS:[&str; 34] = [
 	"all-petite-caps",
@@ -766,8 +765,7 @@ pub const FUNCTION_KEYWORDS:[&str; 685] = [
 ];
 
 // These are the ones that can have single-colon notation
-pub const LEVEL_ONE_AND_TWO_PSEUDO_ELEMENTS:[&str; 4] =
-	["after", "before", "first-letter", "first-line"];
+pub const LEVEL_ONE_AND_TWO_PSEUDO_ELEMENTS:[&str; 4] = ["after", "before", "first-letter", "first-line"];
 
 pub const VENDOR_SPECIFIC_PSEUDO_ELEMENTS:[&str; 66] = [
 	"-moz-focus-inner",
@@ -6019,9 +6017,7 @@ mod tests {
 			.zip(LONGHAND_SUB_PROPERTIES_OF_SHORTHAND_PROPERTIES.iter())
 		{
 			for longhand_sub_property in longhand_sub_properties.iter() {
-				if ["border-color", "border-radius", "border-style", "border-width"]
-					.contains(shorthand_property)
-				{
+				if ["border-color", "border-radius", "border-style", "border-width"].contains(shorthand_property) {
 					let (start, end) = shorthand_property.split_at(6);
 
 					assert!(longhand_sub_property.starts_with(start));
@@ -6050,13 +6046,8 @@ mod tests {
 					assert!(longhand_sub_property.ends_with(end));
 				} else if *shorthand_property == "inset" {
 					assert!(["bottom", "left", "right", "top"].contains(longhand_sub_property));
-				} else if ["place-content", "place-items", "place-self"]
-					.contains(shorthand_property)
-				{
-					assert!(
-						longhand_sub_property.starts_with("align")
-							|| longhand_sub_property.starts_with("justify")
-					);
+				} else if ["place-content", "place-items", "place-self"].contains(shorthand_property) {
+					assert!(longhand_sub_property.starts_with("align") || longhand_sub_property.starts_with("justify"));
 
 					let (_, end) = shorthand_property.split_at(5);
 

@@ -109,10 +109,7 @@ pub struct RuleRegistry<L:Language> {
 }
 
 impl<L:Language + Default> RuleRegistry<L> {
-	pub fn builder<'a>(
-		filter:&'a AnalysisFilter<'a>,
-		root:&'a L::Root,
-	) -> RuleRegistryBuilder<'a, L> {
+	pub fn builder<'a>(filter:&'a AnalysisFilter<'a>, root:&'a L::Root) -> RuleRegistryBuilder<'a, L> {
 		RuleRegistryBuilder {
 			filter,
 			root,
@@ -186,10 +183,9 @@ impl<L:Language + Default + 'static> RegistryVisitor<L> for RuleRegistryBuilder<
 					.or_insert_with(|| TypeRules::SyntaxRules { rules:Vec::new() })
 				else {
 					unreachable!(
-						"the SyntaxNode type has already been registered as a TypeRules instead \
-						 of a SyntaxRules, this is generally caused by an implementation of \
-						 `Queryable::key` returning a `QueryKey::TypeId` with the type ID of \
-						 `SyntaxNode`"
+						"the SyntaxNode type has already been registered as a TypeRules instead of a SyntaxRules, \
+						 this is generally caused by an implementation of `Queryable::key` returning a \
+						 `QueryKey::TypeId` with the type ID of `SyntaxNode`"
 					)
 				};
 
@@ -222,10 +218,9 @@ impl<L:Language + Default + 'static> RegistryVisitor<L> for RuleRegistryBuilder<
 					.or_insert_with(|| TypeRules::TypeRules { rules:Vec::new() })
 				else {
 					unreachable!(
-						"the query type has already been registered as a SyntaxRules instead of a \
-						 TypeRules, this is generally caused by an implementation of \
-						 `Queryable::key` returning a `QueryKey::TypeId` with the type ID of \
-						 `SyntaxNode`"
+						"the query type has already been registered as a SyntaxRules instead of a TypeRules, this is \
+						 generally caused by an implementation of `Queryable::key` returning a `QueryKey::TypeId` \
+						 with the type ID of `SyntaxNode`"
 					)
 				};
 
@@ -257,9 +252,7 @@ type BuilderResult<L> = (
 );
 
 impl<L:Language> RuleRegistryBuilder<'_, L> {
-	pub fn build(self) -> BuilderResult<L> {
-		(self.registry, self.services, self.diagnostics, self.visitors)
-	}
+	pub fn build(self) -> BuilderResult<L> { (self.registry, self.services, self.diagnostics, self.visitors) }
 }
 
 impl<L:Language + 'static> QueryMatcher<L> for RuleRegistry<L> {
@@ -429,8 +422,7 @@ impl<L:Language + Default> RegistryRule<L> {
 			};
 
 			for result in R::run(&ctx) {
-				let text_range =
-					R::text_range(&ctx, &result).unwrap_or_else(|| params.query.text_range());
+				let text_range = R::text_range(&ctx, &result).unwrap_or_else(|| params.query.text_range());
 
 				R::suppressed_nodes(&ctx, &result, &mut state.suppressions);
 
@@ -445,12 +437,9 @@ impl<L:Language + Default> RegistryRule<L> {
 					params.options,
 				));
 
-				params.signal_queue.push(SignalEntry {
-					signal,
-					rule:RuleKey::rule::<R>(),
-					instances,
-					text_range,
-				});
+				params
+					.signal_queue
+					.push(SignalEntry { signal, rule:RuleKey::rule::<R>(), instances, text_range });
 			}
 
 			Ok(())

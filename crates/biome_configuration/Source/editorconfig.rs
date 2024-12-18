@@ -27,9 +27,7 @@ use crate::{
 pub fn parse_str(s:&str) -> Result<EditorConfig, EditorConfigDiagnostic> {
 	// TODO: use serde_path_to_error to emit better parse diagnostics
 	serde_ini::from_str(s).map_err(|err| {
-		EditorConfigDiagnostic::ParseFailed(ParseFailedDiagnostic {
-			source:Some(Error::from(IniError::from(err))),
-		})
+		EditorConfigDiagnostic::ParseFailed(ParseFailedDiagnostic { source:Some(Error::from(IniError::from(err))) })
 	})
 }
 
@@ -48,10 +46,8 @@ impl EditorConfig {
 	pub fn to_biome(mut self) -> (Option<PartialConfiguration>, Vec<EditorConfigDiagnostic>) {
 		let diagnostics = self.validate();
 
-		let mut config = PartialConfiguration {
-			formatter:self.options.remove("*").map(|o| o.to_biome()),
-			..Default::default()
-		};
+		let mut config =
+			PartialConfiguration { formatter:self.options.remove("*").map(|o| o.to_biome()), ..Default::default() };
 
 		let mut errors = vec![];
 
@@ -185,9 +181,7 @@ where
 	deserialize_bool_from_string(deserializer).map(Some)
 }
 
-fn deserialize_optional_value_from_string<'de, D, T>(
-	deserializer:D,
-) -> Result<EditorconfigValue<T>, D::Error>
+fn deserialize_optional_value_from_string<'de, D, T>(deserializer:D) -> Result<EditorconfigValue<T>, D::Error>
 where
 	D: Deserializer<'de>,
 	T: FromStr,
@@ -227,17 +221,11 @@ fn expand_unknown_glob_patterns(pattern:&str) -> Result<Vec<String>, EditorConfi
 				let mut parts = s.split("..");
 
 				let start = parts.next().ok_or_else(|| {
-					EditorConfigDiagnostic::invalid_glob_pattern(
-						s,
-						"Range pattern must have exactly two parts",
-					)
+					EditorConfigDiagnostic::invalid_glob_pattern(s, "Range pattern must have exactly two parts")
 				})?;
 
 				let end = parts.next().ok_or_else(|| {
-					EditorConfigDiagnostic::invalid_glob_pattern(
-						s,
-						"Range pattern must have exactly two parts",
-					)
+					EditorConfigDiagnostic::invalid_glob_pattern(s, "Range pattern must have exactly two parts")
 				})?;
 
 				if parts.next().is_some() {
@@ -263,8 +251,7 @@ fn expand_unknown_glob_patterns(pattern:&str) -> Result<Vec<String>, EditorConfi
 
 				self.variants = Some(VariantType::Range((start, end)));
 			} else {
-				self.variants =
-					Some(VariantType::List(s.split(',').map(|s| s.to_string()).collect()));
+				self.variants = Some(VariantType::List(s.split(',').map(|s| s.to_string()).collect()));
 			}
 
 			Ok(())
@@ -513,8 +500,7 @@ max_line_length = off
 	fn should_expand_glob_pattern_list() {
 		let pattern = "package.json";
 
-		let mut expanded =
-			expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
+		let mut expanded = expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
 
 		expanded.sort();
 
@@ -522,8 +508,7 @@ max_line_length = off
 
 		let pattern = "{package.json,.travis.yml}";
 
-		let mut expanded =
-			expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
+		let mut expanded = expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
 
 		expanded.sort();
 
@@ -534,8 +519,7 @@ max_line_length = off
 	fn should_expand_glob_pattern_list_2() {
 		let pattern = "**/{foo,bar}.{test,spec}.js";
 
-		let mut expanded =
-			expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
+		let mut expanded = expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
 
 		expanded.sort();
 
@@ -549,8 +533,7 @@ max_line_length = off
 	fn should_expand_glob_pattern_range() {
 		let pattern = "**/bar.{1..4}.js";
 
-		let mut expanded =
-			expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
+		let mut expanded = expand_unknown_glob_patterns(pattern).expect("Failed to expand glob pattern");
 
 		expanded.sort();
 

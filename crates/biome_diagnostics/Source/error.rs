@@ -16,15 +16,7 @@ use std::{
 
 use biome_console::fmt;
 
-use crate::{
-	Category,
-	Diagnostic,
-	DiagnosticTags,
-	Location,
-	Severity,
-	Visit,
-	diagnostic::internal::AsDiagnostic,
-};
+use crate::{Category, Diagnostic, DiagnosticTags, Location, Severity, Visit, diagnostic::internal::AsDiagnostic};
 
 /// The `Error` struct wraps any type implementing [Diagnostic] into a single
 /// dynamic type.
@@ -49,14 +41,10 @@ impl Error {
 	}
 
 	/// Calls [Diagnostic::message] on the [Diagnostic] wrapped by this [Error].
-	pub fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
-		self.as_diagnostic().message(fmt)
-	}
+	pub fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> { self.as_diagnostic().message(fmt) }
 
 	/// Calls [Diagnostic::advices] on the [Diagnostic] wrapped by this [Error].
-	pub fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-		self.as_diagnostic().advices(visitor)
-	}
+	pub fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> { self.as_diagnostic().advices(visitor) }
 
 	/// Calls [Diagnostic::verbose_advices] on the [Diagnostic] wrapped by this
 	/// [Error].

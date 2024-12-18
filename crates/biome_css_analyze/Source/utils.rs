@@ -45,13 +45,11 @@ use crate::keywords::{
 };
 
 pub fn is_font_family_keyword(value:&str) -> bool {
-	BASIC_KEYWORDS.binary_search(&value).is_ok()
-		|| FONT_FAMILY_KEYWORDS.binary_search(&value).is_ok()
+	BASIC_KEYWORDS.binary_search(&value).is_ok() || FONT_FAMILY_KEYWORDS.binary_search(&value).is_ok()
 }
 
 pub fn is_system_family_name_keyword(value:&str) -> bool {
-	BASIC_KEYWORDS.binary_search(&value).is_ok()
-		|| SYSTEM_FAMILY_NAME_KEYWORDS.binary_search(&value).is_ok()
+	BASIC_KEYWORDS.binary_search(&value).is_ok() || SYSTEM_FAMILY_NAME_KEYWORDS.binary_search(&value).is_ok()
 }
 
 // check if the value is a shorthand keyword used in `font` property
@@ -84,9 +82,7 @@ pub fn find_font_family(value:CssGenericComponentValueList) -> Vec<AnyCssValue> 
 		}
 
 		// Ignore keywords for other font parts
-		if is_font_shorthand_keyword(&lower_case_value)
-			&& !is_font_family_keyword(&lower_case_value)
-		{
+		if is_font_shorthand_keyword(&lower_case_value) && !is_font_family_keyword(&lower_case_value) {
 			continue;
 		}
 
@@ -100,12 +96,8 @@ pub fn find_font_family(value:CssGenericComponentValueList) -> Vec<AnyCssValue> 
 			if let Some(prev_prev_node) = prev_node.prev_sibling() {
 				if let Some(slash) = prev_node.cast::<AnyCssGenericComponentValue>() {
 					if let Some(size) = prev_prev_node.cast::<AnyCssGenericComponentValue>() {
-						if matches!(
-							size,
-							AnyCssGenericComponentValue::AnyCssValue(AnyCssValue::AnyCssDimension(
-								_
-							))
-						) && matches!(slash, AnyCssGenericComponentValue::CssGenericDelimiter(_))
+						if matches!(size, AnyCssGenericComponentValue::AnyCssValue(AnyCssValue::AnyCssDimension(_)))
+							&& matches!(slash, AnyCssGenericComponentValue::CssGenericDelimiter(_))
 						{
 							continue;
 						}
@@ -123,9 +115,7 @@ pub fn find_font_family(value:CssGenericComponentValueList) -> Vec<AnyCssValue> 
 			AnyCssGenericComponentValue::CssGenericDelimiter(_) => continue,
 			AnyCssGenericComponentValue::AnyCssValue(css_value) => {
 				match css_value {
-					AnyCssValue::CssIdentifier(_) | AnyCssValue::CssString(_) => {
-						font_families.push(css_value)
-					},
+					AnyCssValue::CssIdentifier(_) | AnyCssValue::CssString(_) => font_families.push(css_value),
 
 					_ => continue,
 				}
@@ -167,9 +157,7 @@ pub fn is_pseudo_elements(prop:&str) -> bool {
 /// See https://drafts.csswg.org/css-extensions/#custom-selectors for more details
 pub fn is_custom_selector(prop:&str) -> bool { prop.starts_with("--") }
 
-pub fn is_page_pseudo_class(prop:&str) -> bool {
-	AT_RULE_PAGE_PSEUDO_CLASSES.binary_search(&prop).is_ok()
-}
+pub fn is_page_pseudo_class(prop:&str) -> bool { AT_RULE_PAGE_PSEUDO_CLASSES.binary_search(&prop).is_ok() }
 
 pub fn is_known_pseudo_class(prop:&str) -> bool {
 	LEVEL_ONE_AND_TWO_PSEUDO_ELEMENTS.binary_search(&prop).is_ok()
@@ -193,10 +181,7 @@ pub fn is_known_properties(prop:&str) -> bool {
 }
 
 pub fn vendor_prefixed(props:&str) -> bool {
-	props.starts_with("-webkit-")
-		|| props.starts_with("-moz-")
-		|| props.starts_with("-ms-")
-		|| props.starts_with("-o-")
+	props.starts_with("-webkit-") || props.starts_with("-moz-") || props.starts_with("-ms-") || props.starts_with("-o-")
 }
 
 /// Check if the input string is a media feature name.
@@ -246,9 +231,7 @@ pub fn get_reset_to_initial_properties(shorthand_property:&str) -> &'static [&'s
 	}
 }
 
-fn is_custom_element(prop:&str) -> bool {
-	prop.contains('-') && prop.eq(prop.to_lowercase_cow().as_ref())
-}
+fn is_custom_element(prop:&str) -> bool { prop.contains('-') && prop.eq(prop.to_lowercase_cow().as_ref()) }
 
 /// Check if the input string is a known type selector.
 pub fn is_known_type_selector(prop:&str) -> bool {

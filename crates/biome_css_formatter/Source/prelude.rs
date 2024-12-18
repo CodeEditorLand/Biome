@@ -3,20 +3,8 @@
 
 pub(crate) use biome_formatter::prelude::*;
 #[allow(unused_imports)]
-pub(crate) use biome_rowan::{
-	AstNode as _,
-	AstNodeList as _,
-	AstNodeSlotMap as _,
-	AstSeparatedList as _,
-};
+pub(crate) use biome_rowan::{AstNode as _, AstNodeList as _, AstNodeSlotMap as _, AstSeparatedList as _};
 
 pub(crate) use crate::separated::FormatAstSeparatedListExtension;
 #[allow(unused_imports)]
-pub(crate) use crate::{
-	AsFormat,
-	CssFormatContext,
-	CssFormatter,
-	FormatNodeRule,
-	FormattedIterExt as _,
-	IntoFormat,
-};
+pub(crate) use crate::{AsFormat, CssFormatContext, CssFormatter, FormatNodeRule, FormattedIterExt as _, IntoFormat};

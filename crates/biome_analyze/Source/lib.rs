@@ -27,14 +27,7 @@ mod visitor;
 // Re-exported for use in the `declare_group` macro
 use biome_console::markup;
 pub use biome_diagnostics::category_concat;
-use biome_diagnostics::{
-	Applicability,
-	Diagnostic,
-	DiagnosticExt,
-	DiagnosticTags,
-	Severity,
-	category,
-};
+use biome_diagnostics::{Applicability, Diagnostic, DiagnosticExt, DiagnosticTags, Severity, category};
 use biome_rowan::{
 	AstNode,
 	BatchMutation,
@@ -154,11 +147,7 @@ where
 
 	/// Registers a [Visitor] to be executed as part of a given `phase` of the
 	/// analyzer run
-	pub fn add_visitor(
-		&mut self,
-		phase:Phases,
-		visitor:Box<dyn Visitor<Language = L> + 'analyzer>,
-	) {
+	pub fn add_visitor(&mut self, phase:Phases, visitor:Box<dyn Visitor<Language = L> + 'analyzer>) {
 		self.phases.entry(phase).or_default().push(visitor);
 	}
 
@@ -224,8 +213,8 @@ where
 				SuppressionDiagnostic::new(
 					category!("suppressions/unused"),
 					suppression.comment_span,
-					"Suppression comment has no effect. Remove the suppression or make sure you \
-					 are suppressing the correct rule.",
+					"Suppression comment has no effect. Remove the suppression or make sure you are suppressing the \
+					 correct rule.",
 				)
 			});
 
@@ -378,9 +367,7 @@ where
 		for (index, piece) in token.leading_trivia().pieces().enumerate() {
 			if matches!(
 				piece.kind(),
-				TriviaPieceKind::Newline
-					| TriviaPieceKind::MultiLineComment
-					| TriviaPieceKind::Skipped
+				TriviaPieceKind::Newline | TriviaPieceKind::MultiLineComment | TriviaPieceKind::Skipped
 			) {
 				self.bump_line_index(piece.text(), piece.text_range());
 			}
@@ -395,9 +382,7 @@ where
 		for (index, piece) in token.trailing_trivia().pieces().enumerate() {
 			if matches!(
 				piece.kind(),
-				TriviaPieceKind::Newline
-					| TriviaPieceKind::MultiLineComment
-					| TriviaPieceKind::Skipped
+				TriviaPieceKind::Newline | TriviaPieceKind::MultiLineComment | TriviaPieceKind::Skipped
 			) {
 				self.bump_line_index(piece.text(), piece.text_range());
 			}
@@ -431,8 +416,7 @@ where
 			// search over all the previously seen suppressions to find one
 			// with a matching range
 			let suppression = self.line_suppressions.last_mut().filter(|suppression| {
-				suppression.line_index == *self.line_index
-					&& suppression.text_range.start() <= start
+				suppression.line_index == *self.line_index && suppression.text_range.start() <= start
 			});
 
 			let suppression = match suppression {
@@ -553,9 +537,7 @@ where
 
 				let key = match group_rule {
 					None => self.metadata.find_group(rule).map(RuleFilter::from),
-					Some((group, rule)) => {
-						self.metadata.find_rule(group, rule).map(RuleFilter::from)
-					},
+					Some((group, rule)) => self.metadata.find_rule(group, rule).map(RuleFilter::from),
 				};
 
 				match (key, instance) {
@@ -574,10 +556,7 @@ where
 									SuppressionDiagnostic::new(
 										category!("suppressions/unknownRule"),
 										range,
-										format_args!(
-											"Unknown lint rule {group}/{rule} in suppression \
-											 comment"
-										),
+										format_args!("Unknown lint rule {group}/{rule} in suppression comment"),
 									)
 								},
 
@@ -585,9 +564,7 @@ where
 									SuppressionDiagnostic::new(
 										category!("suppressions/unknownGroup"),
 										range,
-										format_args!(
-											"Unknown lint rule group {rule} in suppression comment"
-										),
+										format_args!("Unknown lint rule group {rule} in suppression comment"),
 									)
 								},
 							}
@@ -619,8 +596,7 @@ where
 				.with_tags(DiagnosticTags::DEPRECATED_CODE)
 			});
 
-			let signal = signal
-				.with_action(|| update_suppression(self.root, token, is_leading, index, text));
+			let signal = signal.with_action(|| update_suppression(self.root, token, is_leading, index, text));
 
 			(self.emit_signal)(&signal)?;
 		}
@@ -635,9 +611,7 @@ where
 		// If the last suppression was on the same or previous line, extend its
 		// range and set of suppressed rules with the content for the new suppression
 		if let Some(last_suppression) = self.line_suppressions.last_mut() {
-			if last_suppression.line_index == line_index
-				|| last_suppression.line_index + 1 == line_index
-			{
+			if last_suppression.line_index == line_index || last_suppression.line_index + 1 == line_index {
 				last_suppression.line_index = line_index;
 
 				last_suppression.text_range = last_suppression.text_range.cover(range);
@@ -682,9 +656,8 @@ where
 		for (index, _) in text.match_indices('\n') {
 			if let Some(last_suppression) = self.line_suppressions.last_mut() {
 				if last_suppression.line_index == *self.line_index {
-					let index = TextSize::try_from(index).expect(
-						"integer overflow while converting a suppression line to `TextSize`",
-					);
+					let index = TextSize::try_from(index)
+						.expect("integer overflow while converting a suppression line to `TextSize`");
 
 					let range = TextRange::at(range.start(), index);
 
@@ -707,9 +680,7 @@ where
 	}
 }
 
-fn create_suppression_comment_action<L:Language>(
-	token:&SyntaxToken<L>,
-) -> Option<AnalyzerAction<L>> {
+fn create_suppression_comment_action<L:Language>(token:&SyntaxToken<L>) -> Option<AnalyzerAction<L>> {
 	let first_node = token.parent()?;
 
 	let mut new_leading_trivia = vec![];
@@ -744,12 +715,7 @@ fn create_suppression_comment_action<L:Language>(
 		token_text.push_str(piece.text());
 	}
 
-	let new_token = SyntaxToken::new_detached(
-		token.kind(),
-		&token_text,
-		new_leading_trivia,
-		new_trailing_trivia,
-	);
+	let new_token = SyntaxToken::new_detached(token.kind(), &token_text, new_leading_trivia, new_trailing_trivia);
 
 	mutation.replace_token_discard_trivia(token.clone(), new_token);
 
@@ -915,9 +881,7 @@ impl<'a> RuleFilter<'a> {
 		R: Rule, {
 		match self {
 			RuleFilter::Group(group) => group == <R::Group as RuleGroup>::NAME,
-			RuleFilter::Rule(group, rule) => {
-				group == <R::Group as RuleGroup>::NAME && rule == R::METADATA.name
-			},
+			RuleFilter::Rule(group, rule) => group == <R::Group as RuleGroup>::NAME && rule == R::METADATA.name,
 		}
 	}
 }

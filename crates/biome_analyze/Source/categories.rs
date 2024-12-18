@@ -85,34 +85,20 @@ impl ActionCategory {
 			},
 
 			ActionCategory::Refactor(RefactorKind::None) => Cow::Borrowed("refactor.biome"),
-			ActionCategory::Refactor(RefactorKind::Extract) => {
-				Cow::Borrowed("refactor.extract.biome")
-			},
+			ActionCategory::Refactor(RefactorKind::Extract) => Cow::Borrowed("refactor.extract.biome"),
 
-			ActionCategory::Refactor(RefactorKind::Inline) => {
-				Cow::Borrowed("refactor.inline.biome")
-			},
+			ActionCategory::Refactor(RefactorKind::Inline) => Cow::Borrowed("refactor.inline.biome"),
 
-			ActionCategory::Refactor(RefactorKind::Rewrite) => {
-				Cow::Borrowed("refactor.rewrite.biome")
-			},
+			ActionCategory::Refactor(RefactorKind::Rewrite) => Cow::Borrowed("refactor.rewrite.biome"),
 
-			ActionCategory::Refactor(RefactorKind::Other(tag)) => {
-				Cow::Owned(format!("refactor.{tag}.biome"))
-			},
+			ActionCategory::Refactor(RefactorKind::Other(tag)) => Cow::Owned(format!("refactor.{tag}.biome")),
 
 			ActionCategory::Source(SourceActionKind::None) => Cow::Borrowed("source.biome"),
-			ActionCategory::Source(SourceActionKind::FixAll) => {
-				Cow::Borrowed("source.fixAll.biome")
-			},
+			ActionCategory::Source(SourceActionKind::FixAll) => Cow::Borrowed("source.fixAll.biome"),
 
-			ActionCategory::Source(SourceActionKind::OrganizeImports) => {
-				Cow::Borrowed("source.organizeImports.biome")
-			},
+			ActionCategory::Source(SourceActionKind::OrganizeImports) => Cow::Borrowed("source.organizeImports.biome"),
 
-			ActionCategory::Source(SourceActionKind::Other(tag)) => {
-				Cow::Owned(format!("source.{tag}.biome"))
-			},
+			ActionCategory::Source(SourceActionKind::Other(tag)) => Cow::Owned(format!("source.{tag}.biome")),
 
 			ActionCategory::Other(tag) => Cow::Owned(format!("{tag}.biome")),
 		}
@@ -218,9 +204,7 @@ impl RuleCategories {
 
 	/// Checks whether the current categories contain a specific
 	/// [RuleCategories]
-	pub fn contains(&self, other:impl Into<RuleCategories>) -> bool {
-		self.0.contains(other.into().0)
-	}
+	pub fn contains(&self, other:impl Into<RuleCategories>) -> bool { self.0.contains(other.into().0) }
 }
 
 impl Default for RuleCategories {
@@ -237,9 +221,7 @@ impl From<RuleCategory> for RuleCategories {
 			RuleCategory::Syntax => RuleCategories(BitFlags::from_flag(Categories::Syntax)),
 			RuleCategory::Lint => RuleCategories(BitFlags::from_flag(Categories::Lint)),
 			RuleCategory::Action => RuleCategories(BitFlags::from_flag(Categories::Action)),
-			RuleCategory::Transformation => {
-				RuleCategories(BitFlags::from_flag(Categories::Transformation))
-			},
+			RuleCategory::Transformation => RuleCategories(BitFlags::from_flag(Categories::Transformation)),
 		}
 	}
 }
@@ -285,9 +267,7 @@ impl<'de> serde::Deserialize<'de> for RuleCategories {
 		impl<'de> de::Visitor<'de> for Visitor {
 			type Value = RuleCategories;
 
-			fn expecting(&self, formatter:&mut Formatter) -> fmt::Result {
-				write!(formatter, "RuleCategories")
-			}
+			fn expecting(&self, formatter:&mut Formatter) -> fmt::Result { write!(formatter, "RuleCategories") }
 
 			fn visit_seq<A>(self, mut seq:A) -> Result<Self::Value, A::Error>
 			where

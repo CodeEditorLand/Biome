@@ -2,14 +2,7 @@ use std::str::FromStr;
 
 use biome_deserialize::StringSet;
 use biome_deserialize_macros::{Deserializable, Merge};
-use biome_formatter::{
-	AttributePosition,
-	BracketSpacing,
-	IndentStyle,
-	IndentWidth,
-	LineEnding,
-	LineWidth,
-};
+use biome_formatter::{AttributePosition, BracketSpacing, IndentStyle, IndentWidth, LineEnding, LineWidth};
 use bpaf::Bpaf;
 use serde::{Deserialize, Serialize};
 
@@ -26,9 +19,7 @@ use crate::{
 	partial_json_configuration,
 };
 
-#[derive(
-	Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize,
-)]
+#[derive(Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase", deny_unknown_fields)]
 pub struct Overrides(#[bpaf(hide)] pub Vec<OverridePattern>);
@@ -39,9 +30,7 @@ impl FromStr for Overrides {
 	fn from_str(_s:&str) -> Result<Self, Self::Err> { Ok(Self::default()) }
 }
 
-#[derive(
-	Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize,
-)]
+#[derive(Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase", default, deny_unknown_fields)]
 pub struct OverridePattern {
@@ -99,9 +88,7 @@ impl FromStr for OverridePattern {
 	fn from_str(_s:&str) -> Result<Self, Self::Err> { Ok(Self::default()) }
 }
 
-#[derive(
-	Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize,
-)]
+#[derive(Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase", default, deny_unknown_fields)]
 pub struct OverrideFormatterConfiguration {
@@ -155,9 +142,7 @@ pub struct OverrideFormatterConfiguration {
 	pub bracket_spacing:Option<BracketSpacing>,
 }
 
-#[derive(
-	Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize,
-)]
+#[derive(Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase", default, deny_unknown_fields)]
 pub struct OverrideLinterConfiguration {
@@ -173,9 +158,7 @@ pub struct OverrideLinterConfiguration {
 	pub rules:Option<crate::analyzer::linter::Rules>,
 }
 
-#[derive(
-	Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize,
-)]
+#[derive(Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase", default, deny_unknown_fields)]
 pub struct OverrideOrganizeImportsConfiguration {
@@ -186,9 +169,7 @@ pub struct OverrideOrganizeImportsConfiguration {
 	pub enabled:Option<bool>,
 }
 
-#[derive(
-	Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize,
-)]
+#[derive(Bpaf, Clone, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase", default, deny_unknown_fields)]
 pub struct OverrideAssistsConfiguration {

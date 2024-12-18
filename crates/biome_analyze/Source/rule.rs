@@ -152,9 +152,7 @@ pub enum RuleSource {
 }
 
 impl PartialEq for RuleSource {
-	fn eq(&self, other:&Self) -> bool {
-		std::mem::discriminant(self) == std::mem::discriminant(other)
-	}
+	fn eq(&self, other:&Self) -> bool { std::mem::discriminant(self) == std::mem::discriminant(other) }
 }
 
 impl std::fmt::Display for RuleSource {
@@ -293,9 +291,7 @@ impl RuleSource {
         }
 	}
 
-	pub fn as_url_and_rule_name(&self) -> (String, &'static str) {
-		(self.to_rule_url(), self.as_rule_name())
-	}
+	pub fn as_url_and_rule_name(&self) -> (String, &'static str) { (self.to_rule_url(), self.as_rule_name()) }
 
 	/// Original ESLint rule
 	pub const fn is_eslint(&self) -> bool { matches!(self, Self::Eslint(_)) }
@@ -324,12 +320,7 @@ impl RuleSourceKind {
 }
 
 impl RuleMetadata {
-	pub const fn new(
-		version:&'static str,
-		name:&'static str,
-		docs:&'static str,
-		language:&'static str,
-	) -> Self {
+	pub const fn new(version:&'static str, name:&'static str, docs:&'static str, language:&'static str) -> Self {
 		Self {
 			deprecated:None,
 			version,
@@ -388,13 +379,9 @@ impl RuleMetadata {
 
 	pub fn action_category(&self, category:RuleCategory, group:&'static str) -> ActionCategory {
 		match category {
-			RuleCategory::Lint => {
-				ActionCategory::QuickFix(Cow::Owned(format!("{}.{}", group, self.name)))
-			},
+			RuleCategory::Lint => ActionCategory::QuickFix(Cow::Owned(format!("{}.{}", group, self.name))),
 
-			RuleCategory::Action => {
-				ActionCategory::Source(SourceActionKind::Other(Cow::Borrowed(self.name)))
-			},
+			RuleCategory::Action => ActionCategory::Source(SourceActionKind::Other(Cow::Borrowed(self.name))),
 
 			RuleCategory::Syntax | RuleCategory::Transformation => unimplemented!(""),
 		}
@@ -781,11 +768,10 @@ macro_rules! impl_group_language {
 }
 
 impl_group_language!(
-	T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16, T17, T18,
-	T19, T20, T21, T22, T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37,
-	T38, T39, T40, T41, T42, T43, T44, T45, T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56,
-	T57, T58, T59, T60, T61, T62, T63, T64, T65, T66, T67, T68, T69, T70, T71, T72, T73, T74, T75,
-	T76, T77, T78, T79, T80, T81, T82, T83, T84, T85, T86, T87, T88, T89
+	T00, T01, T02, T03, T04, T05, T06, T07, T08, T09, T10, T11, T12, T13, T14, T15, T16, T17, T18, T19, T20, T21, T22,
+	T23, T24, T25, T26, T27, T28, T29, T30, T31, T32, T33, T34, T35, T36, T37, T38, T39, T40, T41, T42, T43, T44, T45,
+	T46, T47, T48, T49, T50, T51, T52, T53, T54, T55, T56, T57, T58, T59, T60, T61, T62, T63, T64, T65, T66, T67, T68,
+	T69, T70, T71, T72, T73, T74, T75, T76, T77, T78, T79, T80, T81, T82, T83, T84, T85, T86, T87, T88, T89
 );
 
 /// Trait implemented by all analysis rules: declares interest to a certain
@@ -839,9 +825,7 @@ pub trait Rule: RuleMeta + Sized {
 	/// *Note: For `noUnusedVariables` the above may not seem very useful (and
 	/// indeed it's not implemented), but for rules such as
 	/// `useExhaustiveDependencies` this is actually desirable.*
-	fn instances_for_signal(_signal:&Self::State) -> Box<[Box<str>]> {
-		Vec::new().into_boxed_slice()
-	}
+	fn instances_for_signal(_signal:&Self::State) -> Box<[Box<str>]> { Vec::new().into_boxed_slice() }
 
 	/// Used by the analyzer to associate a range of source text to a signal in
 	/// order to support suppression comments.
@@ -905,10 +889,7 @@ pub trait Rule: RuleMeta + Sized {
 	/// from a signal raised by `run`
 	///
 	/// The default implementation returns None
-	fn action(
-		ctx:&RuleContext<Self>,
-		state:&Self::State,
-	) -> Option<RuleAction<RuleLanguage<Self>>> {
+	fn action(ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleAction<RuleLanguage<Self>>> {
 		let (..) = (ctx, state);
 
 		None
@@ -927,8 +908,7 @@ pub trait Rule: RuleMeta + Sized {
 		// if the rule belongs to `Lint`, we auto generate an action to suppress the
 		// rule
 		if <Self::Group as RuleGroup>::Category::CATEGORY == RuleCategory::Lint {
-			let rule_category =
-				format!("lint/{}/{}", <Self::Group as RuleGroup>::NAME, Self::METADATA.name);
+			let rule_category = format!("lint/{}/{}", <Self::Group as RuleGroup>::NAME, Self::METADATA.name);
 
 			let suppression_text = format!("biome-ignore {rule_category}");
 
@@ -946,22 +926,14 @@ pub trait Rule: RuleMeta + Sized {
 				suppression_reason:suppression_reason.unwrap_or("<explanation>"),
 			});
 
-			Some(SuppressAction {
-				mutation,
-				message:markup! { "Suppress rule " {rule_category} }.to_owned(),
-			})
+			Some(SuppressAction { mutation, message:markup! { "Suppress rule " {rule_category} }.to_owned() })
 		} else {
 			None
 		}
 	}
 
 	/// Returns a mutation to apply to the code
-	fn transform(
-		_ctx:&RuleContext<Self>,
-		_state:&Self::State,
-	) -> Option<BatchMutation<RuleLanguage<Self>>> {
-		None
-	}
+	fn transform(_ctx:&RuleContext<Self>, _state:&Self::State) -> Option<BatchMutation<RuleLanguage<Self>>> { None }
 }
 
 /// Diagnostic object returned by a single analysis rule
@@ -1009,8 +981,7 @@ impl Advices for RuleAdvice {
 		}
 
 		if let Some(suggestion_list) = &self.suggestion_list {
-			visitor
-				.record_log(LogCategory::Info, &markup! { {suggestion_list.message} }.to_owned())?;
+			visitor.record_log(LogCategory::Info, &markup! { {suggestion_list.message} }.to_owned())?;
 
 			let list:Vec<_> = suggestion_list
 				.list
@@ -1110,11 +1081,7 @@ impl RuleDiagnostic {
 	/// It creates a new footer note which contains a message and a list of
 	/// possible suggestions. Useful when there's need to suggest a list of
 	/// things inside a diagnostic.
-	pub fn footer_list(
-		mut self,
-		message:impl Display,
-		list:impl IntoIterator<Item = impl Display>,
-	) -> Self {
+	pub fn footer_list(mut self, message:impl Display, list:impl IntoIterator<Item = impl Display>) -> Self {
 		self.rule_advice.suggestion_list = Some(SuggestionList {
 			message:markup! { {message} }.to_owned(),
 			list:list.into_iter().map(|msg| markup! {{msg}}.to_owned()).collect(),

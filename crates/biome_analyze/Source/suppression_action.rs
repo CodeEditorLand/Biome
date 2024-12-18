@@ -19,17 +19,12 @@ pub trait SuppressionAction {
 
 		// considering that our suppression system works via lines, we need to look for
 		// the first newline, so we can place the comment there
-		let apply_suppression = original_token.as_ref().and_then(|original_token| {
-			self.find_token_to_apply_suppression(original_token.clone())
-		});
+		let apply_suppression = original_token
+			.as_ref()
+			.and_then(|original_token| self.find_token_to_apply_suppression(original_token.clone()));
 
 		if let Some(apply_suppression) = apply_suppression {
-			self.apply_suppression(
-				mutation,
-				apply_suppression,
-				suppression_text,
-				suppression_reason,
-			);
+			self.apply_suppression(mutation, apply_suppression, suppression_text, suppression_reason);
 		}
 	}
 
@@ -60,12 +55,11 @@ pub trait SuppressionAction {
 			TokenAtOffset::None => None,
 			TokenAtOffset::Single(token) => Some(token),
 			TokenAtOffset::Between(left_token, right_token) => {
-				let chosen_token =
-					if right_token.text_range().start() == diagnostic_text_range.start() {
-						right_token
-					} else {
-						left_token
-					};
+				let chosen_token = if right_token.text_range().start() == diagnostic_text_range.start() {
+					right_token
+				} else {
+					left_token
+				};
 
 				Some(chosen_token)
 			},

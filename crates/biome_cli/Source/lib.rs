@@ -58,10 +58,7 @@ pub struct CliSession<'app> {
 }
 
 impl<'app> CliSession<'app> {
-	pub fn new(
-		workspace:&'app dyn Workspace,
-		console:&'app mut dyn Console,
-	) -> Result<Self, CliDiagnostic> {
+	pub fn new(workspace:&'app dyn Workspace, console:&'app mut dyn Console) -> Result<Self, CliDiagnostic> {
 		Ok(Self {
 			app:App::new(
 				DynRef::Owned(Box::<OsFileSystem>::default()),
@@ -281,27 +278,11 @@ impl<'app> CliSession<'app> {
 				run_command(
 					self,
 					&cli_options,
-					SearchCommandPayload {
-						files_configuration,
-						paths,
-						pattern,
-						stdin_file_path,
-						vcs_configuration,
-					},
+					SearchCommandPayload { files_configuration, paths, pattern, stdin_file_path, vcs_configuration },
 				)
 			},
-			BiomeCommand::RunServer {
-				stop_on_disconnect,
-				config_path,
-				log_path,
-				log_prefix_name,
-			} => {
-				commands::daemon::run_server(
-					stop_on_disconnect,
-					config_path,
-					Some(log_path),
-					Some(log_prefix_name),
-				)
+			BiomeCommand::RunServer { stop_on_disconnect, config_path, log_path, log_prefix_name } => {
+				commands::daemon::run_server(stop_on_disconnect, config_path, Some(log_path), Some(log_prefix_name))
 			},
 			BiomeCommand::PrintSocket => commands::daemon::print_socket(),
 		};

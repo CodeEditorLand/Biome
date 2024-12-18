@@ -72,11 +72,9 @@ impl DeserializableValidator for PartialVcsConfiguration {
 	) -> bool {
 		if self.client_kind.is_none() && self.is_enabled() {
 			diagnostics.push(
-				DeserializationDiagnostic::new(
-					"You enabled the VCS integration, but you didn't specify a client.",
-				)
-				.with_range(range)
-				.with_note("Biome will disable the VCS integration until the issue is fixed."),
+				DeserializationDiagnostic::new("You enabled the VCS integration, but you didn't specify a client.")
+					.with_range(range)
+					.with_note("Biome will disable the VCS integration until the issue is fixed."),
 			);
 
 			return false;
@@ -86,9 +84,7 @@ impl DeserializableValidator for PartialVcsConfiguration {
 	}
 }
 
-#[derive(
-	Clone, Copy, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize,
-)]
+#[derive(Clone, Copy, Debug, Default, Deserialize, Deserializable, Eq, Merge, PartialEq, Serialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase")]
 pub enum VcsClientKind {

@@ -3,68 +3,38 @@
 
 use biome_formatter::{FormatOwnedWithRule, FormatRefWithRule, FormatResult, FormatRule};
 
-use crate::{
-	AsFormat,
-	FormatBogusNodeRule,
-	FormatNodeRule,
-	GraphqlFormatContext,
-	GraphqlFormatter,
-	IntoFormat,
-};
-impl FormatRule<biome_graphql_syntax::GraphqlAlias>
-	for crate::graphql::auxiliary::alias::FormatGraphqlAlias
-{
+use crate::{AsFormat, FormatBogusNodeRule, FormatNodeRule, GraphqlFormatContext, GraphqlFormatter, IntoFormat};
+impl FormatRule<biome_graphql_syntax::GraphqlAlias> for crate::graphql::auxiliary::alias::FormatGraphqlAlias {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlAlias,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlAlias, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlAlias>::fmt(self, node, f)
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlAlias {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_graphql_syntax::GraphqlAlias,
-		crate::graphql::auxiliary::alias::FormatGraphqlAlias,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_graphql_syntax::GraphqlAlias, crate::graphql::auxiliary::alias::FormatGraphqlAlias>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::auxiliary::alias::FormatGraphqlAlias::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::auxiliary::alias::FormatGraphqlAlias::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlAlias {
-	type Format = FormatOwnedWithRule<
-		biome_graphql_syntax::GraphqlAlias,
-		crate::graphql::auxiliary::alias::FormatGraphqlAlias,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_graphql_syntax::GraphqlAlias, crate::graphql::auxiliary::alias::FormatGraphqlAlias>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::auxiliary::alias::FormatGraphqlAlias::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::auxiliary::alias::FormatGraphqlAlias::default())
 	}
 }
-impl FormatRule<biome_graphql_syntax::GraphqlArgument>
-	for crate::graphql::auxiliary::argument::FormatGraphqlArgument
-{
+impl FormatRule<biome_graphql_syntax::GraphqlArgument> for crate::graphql::auxiliary::argument::FormatGraphqlArgument {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlArgument,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlArgument, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlArgument>::fmt(self, node, f)
 	}
 }
@@ -77,10 +47,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgument {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::auxiliary::argument::FormatGraphqlArgument::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::auxiliary::argument::FormatGraphqlArgument::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgument {
@@ -91,10 +58,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgument 
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::auxiliary::argument::FormatGraphqlArgument::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::auxiliary::argument::FormatGraphqlArgument::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlArguments>
@@ -103,11 +67,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlArguments>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlArguments,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlArguments, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlArguments>::fmt(self, node, f)
 	}
 }
@@ -120,10 +80,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArguments {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::auxiliary::arguments::FormatGraphqlArguments::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::auxiliary::arguments::FormatGraphqlArguments::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArguments {
@@ -134,10 +91,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArguments
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::auxiliary::arguments::FormatGraphqlArguments::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::auxiliary::arguments::FormatGraphqlArguments::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlArgumentsDefinition>
@@ -146,11 +100,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlArgumentsDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlArgumentsDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlArgumentsDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlArgumentsDefinition>::fmt(self, node, f)
 	}
 }
@@ -163,7 +113,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgumentsDe
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: arguments_definition :: FormatGraphqlArgumentsDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::arguments_definition::FormatGraphqlArgumentsDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgumentsDefinition {
@@ -174,7 +127,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArguments
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: arguments_definition :: FormatGraphqlArgumentsDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::arguments_definition::FormatGraphqlArgumentsDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlBooleanValue>
@@ -183,11 +139,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlBooleanValue>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlBooleanValue,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlBooleanValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlBooleanValue>::fmt(self, node, f)
 	}
 }
@@ -200,10 +152,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBooleanValu
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::value::boolean_value::FormatGraphqlBooleanValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::value::boolean_value::FormatGraphqlBooleanValue::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBooleanValue {
@@ -214,10 +163,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBooleanVa
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::value::boolean_value::FormatGraphqlBooleanValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::value::boolean_value::FormatGraphqlBooleanValue::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlDefaultValue>
@@ -226,11 +172,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlDefaultValue>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlDefaultValue,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlDefaultValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlDefaultValue>::fmt(self, node, f)
 	}
 }
@@ -243,10 +185,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDefaultValu
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::value::default_value::FormatGraphqlDefaultValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::value::default_value::FormatGraphqlDefaultValue::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDefaultValue {
@@ -257,10 +196,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDefaultVa
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::value::default_value::FormatGraphqlDefaultValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::value::default_value::FormatGraphqlDefaultValue::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlDescription>
@@ -269,11 +205,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlDescription>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlDescription,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlDescription, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlDescription>::fmt(self, node, f)
 	}
 }
@@ -312,11 +244,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlDirective>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlDirective,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlDirective, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlDirective>::fmt(self, node, f)
 	}
 }
@@ -329,10 +257,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirective {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::auxiliary::directive::FormatGraphqlDirective::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::auxiliary::directive::FormatGraphqlDirective::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirective {
@@ -343,10 +268,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirective
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::auxiliary::directive::FormatGraphqlDirective::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::auxiliary::directive::FormatGraphqlDirective::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlDirectiveDefinition>
@@ -355,11 +277,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlDirectiveDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlDirectiveDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlDirectiveDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlDirectiveDefinition>::fmt(self, node, f)
 	}
 }
@@ -372,7 +290,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirectiveDe
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: directive_definition :: FormatGraphqlDirectiveDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::directive_definition::FormatGraphqlDirectiveDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirectiveDefinition {
@@ -383,7 +304,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirective
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: directive_definition :: FormatGraphqlDirectiveDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::directive_definition::FormatGraphqlDirectiveDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlDirectiveLocation>
@@ -392,11 +316,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlDirectiveLocation>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlDirectiveLocation,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlDirectiveLocation, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlDirectiveLocation>::fmt(self, node, f)
 	}
 }
@@ -411,8 +331,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirectiveLo
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::graphql::auxiliary::directive_location::FormatGraphqlDirectiveLocation::default(
-			),
+			crate::graphql::auxiliary::directive_location::FormatGraphqlDirectiveLocation::default(),
 		)
 	}
 }
@@ -426,8 +345,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirective
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::graphql::auxiliary::directive_location::FormatGraphqlDirectiveLocation::default(
-			),
+			crate::graphql::auxiliary::directive_location::FormatGraphqlDirectiveLocation::default(),
 		)
 	}
 }
@@ -437,11 +355,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlEnumTypeDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlEnumTypeDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlEnumTypeDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlEnumTypeDefinition>::fmt(self, node, f)
 	}
 }
@@ -454,7 +368,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumTypeDef
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: enum_type_definition :: FormatGraphqlEnumTypeDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::enum_type_definition::FormatGraphqlEnumTypeDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumTypeDefinition {
@@ -465,7 +382,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumTypeD
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: enum_type_definition :: FormatGraphqlEnumTypeDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::enum_type_definition::FormatGraphqlEnumTypeDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlEnumTypeExtension>
@@ -474,11 +394,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlEnumTypeExtension>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlEnumTypeExtension,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlEnumTypeExtension, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlEnumTypeExtension>::fmt(self, node, f)
 	}
 }
@@ -491,7 +407,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumTypeExt
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: extensions :: enum_type_extension :: FormatGraphqlEnumTypeExtension :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::extensions::enum_type_extension::FormatGraphqlEnumTypeExtension::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumTypeExtension {
@@ -502,20 +421,17 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumTypeE
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: extensions :: enum_type_extension :: FormatGraphqlEnumTypeExtension :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::extensions::enum_type_extension::FormatGraphqlEnumTypeExtension::default(),
+		)
 	}
 }
-impl FormatRule<biome_graphql_syntax::GraphqlEnumValue>
-	for crate::graphql::value::enum_value::FormatGraphqlEnumValue
-{
+impl FormatRule<biome_graphql_syntax::GraphqlEnumValue> for crate::graphql::value::enum_value::FormatGraphqlEnumValue {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlEnumValue,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlEnumValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlEnumValue>::fmt(self, node, f)
 	}
 }
@@ -528,10 +444,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumValue {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::value::enum_value::FormatGraphqlEnumValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::value::enum_value::FormatGraphqlEnumValue::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumValue {
@@ -542,10 +455,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumValue
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::value::enum_value::FormatGraphqlEnumValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::value::enum_value::FormatGraphqlEnumValue::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlEnumValueDefinition>
@@ -554,11 +464,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlEnumValueDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlEnumValueDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlEnumValueDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlEnumValueDefinition>::fmt(self, node, f)
 	}
 }
@@ -571,7 +477,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumValueDe
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: enum_value_definition :: FormatGraphqlEnumValueDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::enum_value_definition::FormatGraphqlEnumValueDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumValueDefinition {
@@ -582,7 +491,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumValue
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: enum_value_definition :: FormatGraphqlEnumValueDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::enum_value_definition::FormatGraphqlEnumValueDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlEnumValuesDefinition>
@@ -608,7 +520,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumValuesD
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: enum_values_definition :: FormatGraphqlEnumValuesDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::enum_values_definition::FormatGraphqlEnumValuesDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumValuesDefinition {
@@ -619,50 +534,36 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumValue
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: enum_values_definition :: FormatGraphqlEnumValuesDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::enum_values_definition::FormatGraphqlEnumValuesDefinition::default(),
+		)
 	}
 }
-impl FormatRule<biome_graphql_syntax::GraphqlField>
-	for crate::graphql::auxiliary::field::FormatGraphqlField
-{
+impl FormatRule<biome_graphql_syntax::GraphqlField> for crate::graphql::auxiliary::field::FormatGraphqlField {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlField,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlField, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlField>::fmt(self, node, f)
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlField {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_graphql_syntax::GraphqlField,
-		crate::graphql::auxiliary::field::FormatGraphqlField,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_graphql_syntax::GraphqlField, crate::graphql::auxiliary::field::FormatGraphqlField>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::auxiliary::field::FormatGraphqlField::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::auxiliary::field::FormatGraphqlField::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlField {
-	type Format = FormatOwnedWithRule<
-		biome_graphql_syntax::GraphqlField,
-		crate::graphql::auxiliary::field::FormatGraphqlField,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_graphql_syntax::GraphqlField, crate::graphql::auxiliary::field::FormatGraphqlField>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::auxiliary::field::FormatGraphqlField::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::auxiliary::field::FormatGraphqlField::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlFieldDefinition>
@@ -671,11 +572,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlFieldDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlFieldDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlFieldDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlFieldDefinition>::fmt(self, node, f)
 	}
 }
@@ -714,11 +611,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlFieldsDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlFieldsDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlFieldsDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlFieldsDefinition>::fmt(self, node, f)
 	}
 }
@@ -733,8 +626,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlFieldsDefin
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::graphql::definitions::fields_definition::FormatGraphqlFieldsDefinition::default(
-			),
+			crate::graphql::definitions::fields_definition::FormatGraphqlFieldsDefinition::default(),
 		)
 	}
 }
@@ -748,8 +640,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlFieldsDef
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::graphql::definitions::fields_definition::FormatGraphqlFieldsDefinition::default(
-			),
+			crate::graphql::definitions::fields_definition::FormatGraphqlFieldsDefinition::default(),
 		)
 	}
 }
@@ -759,11 +650,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlFloatValue>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlFloatValue,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlFloatValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlFloatValue>::fmt(self, node, f)
 	}
 }
@@ -776,10 +663,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlFloatValue 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::value::float_value::FormatGraphqlFloatValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::value::float_value::FormatGraphqlFloatValue::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlFloatValue {
@@ -790,10 +674,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlFloatValu
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::value::float_value::FormatGraphqlFloatValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::value::float_value::FormatGraphqlFloatValue::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlFragmentDefinition>
@@ -802,11 +683,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlFragmentDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlFragmentDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlFragmentDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlFragmentDefinition>::fmt(self, node, f)
 	}
 }
@@ -819,7 +696,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlFragmentDef
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: fragment_definition :: FormatGraphqlFragmentDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::fragment_definition::FormatGraphqlFragmentDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlFragmentDefinition {
@@ -830,7 +710,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlFragmentD
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: fragment_definition :: FormatGraphqlFragmentDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::fragment_definition::FormatGraphqlFragmentDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlFragmentSpread>
@@ -839,11 +722,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlFragmentSpread>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlFragmentSpread,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlFragmentSpread, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlFragmentSpread>::fmt(self, node, f)
 	}
 }
@@ -899,7 +778,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlImplementsI
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: auxiliary :: implements_interfaces :: FormatGraphqlImplementsInterfaces :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::auxiliary::implements_interfaces::FormatGraphqlImplementsInterfaces::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlImplementsInterfaces {
@@ -910,7 +792,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlImplement
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: auxiliary :: implements_interfaces :: FormatGraphqlImplementsInterfaces :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::auxiliary::implements_interfaces::FormatGraphqlImplementsInterfaces::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlInlineFragment>
@@ -919,11 +804,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlInlineFragment>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlInlineFragment,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlInlineFragment, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlInlineFragment>::fmt(self, node, f)
 	}
 }
@@ -979,7 +860,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputFields
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: input_fields_definition :: FormatGraphqlInputFieldsDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::input_fields_definition::FormatGraphqlInputFieldsDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputFieldsDefinition {
@@ -990,24 +874,55 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputFiel
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: input_fields_definition :: FormatGraphqlInputFieldsDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::input_fields_definition::FormatGraphqlInputFieldsDefinition::default(),
+		)
 	}
 }
-impl FormatRule < biome_graphql_syntax :: GraphqlInputObjectTypeDefinition > for crate :: graphql :: definitions :: input_object_type_definition :: FormatGraphqlInputObjectTypeDefinition { type Context = GraphqlFormatContext ; # [inline (always)] fn fmt (& self , node : & biome_graphql_syntax :: GraphqlInputObjectTypeDefinition , f : & mut GraphqlFormatter) -> FormatResult < () > { FormatNodeRule :: < biome_graphql_syntax :: GraphqlInputObjectTypeDefinition > :: fmt (self , node , f) } }
+impl FormatRule<biome_graphql_syntax::GraphqlInputObjectTypeDefinition>
+	for crate::graphql::definitions::input_object_type_definition::FormatGraphqlInputObjectTypeDefinition
+{
+	type Context = GraphqlFormatContext;
+
+	#[inline(always)]
+	fn fmt(
+		&self,
+		node:&biome_graphql_syntax::GraphqlInputObjectTypeDefinition,
+		f:&mut GraphqlFormatter,
+	) -> FormatResult<()> {
+		FormatNodeRule::<biome_graphql_syntax::GraphqlInputObjectTypeDefinition>::fmt(self, node, f)
+	}
+}
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputObjectTypeDefinition {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_graphql_syntax :: GraphqlInputObjectTypeDefinition , crate :: graphql :: definitions :: input_object_type_definition :: FormatGraphqlInputObjectTypeDefinition > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_graphql_syntax::GraphqlInputObjectTypeDefinition,
+		crate::graphql::definitions::input_object_type_definition::FormatGraphqlInputObjectTypeDefinition,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: input_object_type_definition :: FormatGraphqlInputObjectTypeDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::input_object_type_definition::FormatGraphqlInputObjectTypeDefinition::default(
+			),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputObjectTypeDefinition {
-	type Format = FormatOwnedWithRule < biome_graphql_syntax :: GraphqlInputObjectTypeDefinition , crate :: graphql :: definitions :: input_object_type_definition :: FormatGraphqlInputObjectTypeDefinition > ;
+	type Format = FormatOwnedWithRule<
+		biome_graphql_syntax::GraphqlInputObjectTypeDefinition,
+		crate::graphql::definitions::input_object_type_definition::FormatGraphqlInputObjectTypeDefinition,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: input_object_type_definition :: FormatGraphqlInputObjectTypeDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::input_object_type_definition::FormatGraphqlInputObjectTypeDefinition::default(
+			),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlInputObjectTypeExtension>
@@ -1025,19 +940,32 @@ impl FormatRule<biome_graphql_syntax::GraphqlInputObjectTypeExtension>
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputObjectTypeExtension {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_graphql_syntax :: GraphqlInputObjectTypeExtension , crate :: graphql :: extensions :: input_object_type_extension :: FormatGraphqlInputObjectTypeExtension > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_graphql_syntax::GraphqlInputObjectTypeExtension,
+		crate::graphql::extensions::input_object_type_extension::FormatGraphqlInputObjectTypeExtension,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: extensions :: input_object_type_extension :: FormatGraphqlInputObjectTypeExtension :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::extensions::input_object_type_extension::FormatGraphqlInputObjectTypeExtension::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputObjectTypeExtension {
-	type Format = FormatOwnedWithRule < biome_graphql_syntax :: GraphqlInputObjectTypeExtension , crate :: graphql :: extensions :: input_object_type_extension :: FormatGraphqlInputObjectTypeExtension > ;
+	type Format = FormatOwnedWithRule<
+		biome_graphql_syntax::GraphqlInputObjectTypeExtension,
+		crate::graphql::extensions::input_object_type_extension::FormatGraphqlInputObjectTypeExtension,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: extensions :: input_object_type_extension :: FormatGraphqlInputObjectTypeExtension :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::extensions::input_object_type_extension::FormatGraphqlInputObjectTypeExtension::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlInputValueDefinition>
@@ -1063,7 +991,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputValueD
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: input_value_definition :: FormatGraphqlInputValueDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::input_value_definition::FormatGraphqlInputValueDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputValueDefinition {
@@ -1074,20 +1005,17 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputValu
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: input_value_definition :: FormatGraphqlInputValueDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::input_value_definition::FormatGraphqlInputValueDefinition::default(),
+		)
 	}
 }
-impl FormatRule<biome_graphql_syntax::GraphqlIntValue>
-	for crate::graphql::value::int_value::FormatGraphqlIntValue
-{
+impl FormatRule<biome_graphql_syntax::GraphqlIntValue> for crate::graphql::value::int_value::FormatGraphqlIntValue {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlIntValue,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlIntValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlIntValue>::fmt(self, node, f)
 	}
 }
@@ -1100,10 +1028,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlIntValue {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::value::int_value::FormatGraphqlIntValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::value::int_value::FormatGraphqlIntValue::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlIntValue {
@@ -1114,10 +1039,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlIntValue 
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::value::int_value::FormatGraphqlIntValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::value::int_value::FormatGraphqlIntValue::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlInterfaceTypeDefinition>
@@ -1135,19 +1057,32 @@ impl FormatRule<biome_graphql_syntax::GraphqlInterfaceTypeDefinition>
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInterfaceTypeDefinition {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_graphql_syntax :: GraphqlInterfaceTypeDefinition , crate :: graphql :: definitions :: interface_type_definition :: FormatGraphqlInterfaceTypeDefinition > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_graphql_syntax::GraphqlInterfaceTypeDefinition,
+		crate::graphql::definitions::interface_type_definition::FormatGraphqlInterfaceTypeDefinition,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: interface_type_definition :: FormatGraphqlInterfaceTypeDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::interface_type_definition::FormatGraphqlInterfaceTypeDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInterfaceTypeDefinition {
-	type Format = FormatOwnedWithRule < biome_graphql_syntax :: GraphqlInterfaceTypeDefinition , crate :: graphql :: definitions :: interface_type_definition :: FormatGraphqlInterfaceTypeDefinition > ;
+	type Format = FormatOwnedWithRule<
+		biome_graphql_syntax::GraphqlInterfaceTypeDefinition,
+		crate::graphql::definitions::interface_type_definition::FormatGraphqlInterfaceTypeDefinition,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: interface_type_definition :: FormatGraphqlInterfaceTypeDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::interface_type_definition::FormatGraphqlInterfaceTypeDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlInterfaceTypeExtension>
@@ -1173,7 +1108,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInterfaceTy
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: extensions :: interface_type_extension :: FormatGraphqlInterfaceTypeExtension :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::extensions::interface_type_extension::FormatGraphqlInterfaceTypeExtension::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInterfaceTypeExtension {
@@ -1184,20 +1122,17 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInterface
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: extensions :: interface_type_extension :: FormatGraphqlInterfaceTypeExtension :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::extensions::interface_type_extension::FormatGraphqlInterfaceTypeExtension::default(),
+		)
 	}
 }
-impl FormatRule<biome_graphql_syntax::GraphqlListType>
-	for crate::graphql::auxiliary::list_type::FormatGraphqlListType
-{
+impl FormatRule<biome_graphql_syntax::GraphqlListType> for crate::graphql::auxiliary::list_type::FormatGraphqlListType {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlListType,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlListType, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlListType>::fmt(self, node, f)
 	}
 }
@@ -1210,10 +1145,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlListType {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::auxiliary::list_type::FormatGraphqlListType::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::auxiliary::list_type::FormatGraphqlListType::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlListType {
@@ -1224,23 +1156,14 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlListType 
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::auxiliary::list_type::FormatGraphqlListType::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::auxiliary::list_type::FormatGraphqlListType::default())
 	}
 }
-impl FormatRule<biome_graphql_syntax::GraphqlListValue>
-	for crate::graphql::value::list_value::FormatGraphqlListValue
-{
+impl FormatRule<biome_graphql_syntax::GraphqlListValue> for crate::graphql::value::list_value::FormatGraphqlListValue {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlListValue,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlListValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlListValue>::fmt(self, node, f)
 	}
 }
@@ -1253,10 +1176,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlListValue {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::value::list_value::FormatGraphqlListValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::value::list_value::FormatGraphqlListValue::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlListValue {
@@ -1267,10 +1187,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlListValue
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::value::list_value::FormatGraphqlListValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::value::list_value::FormatGraphqlListValue::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlLiteralName>
@@ -1279,11 +1196,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlLiteralName>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlLiteralName,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlLiteralName, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlLiteralName>::fmt(self, node, f)
 	}
 }
@@ -1322,11 +1235,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlNameBinding>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlNameBinding,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlNameBinding, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlNameBinding>::fmt(self, node, f)
 	}
 }
@@ -1365,11 +1274,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlNameReference>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlNameReference,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlNameReference, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlNameReference>::fmt(self, node, f)
 	}
 }
@@ -1408,11 +1313,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlNonNullType>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlNonNullType,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlNonNullType, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlNonNullType>::fmt(self, node, f)
 	}
 }
@@ -1445,17 +1346,11 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlNonNullTy
 		)
 	}
 }
-impl FormatRule<biome_graphql_syntax::GraphqlNullValue>
-	for crate::graphql::value::null_value::FormatGraphqlNullValue
-{
+impl FormatRule<biome_graphql_syntax::GraphqlNullValue> for crate::graphql::value::null_value::FormatGraphqlNullValue {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlNullValue,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlNullValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlNullValue>::fmt(self, node, f)
 	}
 }
@@ -1468,10 +1363,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlNullValue {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::value::null_value::FormatGraphqlNullValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::value::null_value::FormatGraphqlNullValue::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlNullValue {
@@ -1482,10 +1374,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlNullValue
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::value::null_value::FormatGraphqlNullValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::value::null_value::FormatGraphqlNullValue::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlObjectField>
@@ -1494,11 +1383,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlObjectField>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlObjectField,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlObjectField, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlObjectField>::fmt(self, node, f)
 	}
 }
@@ -1554,7 +1439,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectTypeD
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: object_type_definition :: FormatGraphqlObjectTypeDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::object_type_definition::FormatGraphqlObjectTypeDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectTypeDefinition {
@@ -1565,7 +1453,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectTyp
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: object_type_definition :: FormatGraphqlObjectTypeDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::object_type_definition::FormatGraphqlObjectTypeDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlObjectTypeExtension>
@@ -1574,11 +1465,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlObjectTypeExtension>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlObjectTypeExtension,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlObjectTypeExtension, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlObjectTypeExtension>::fmt(self, node, f)
 	}
 }
@@ -1591,7 +1478,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectTypeE
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: extensions :: object_type_extension :: FormatGraphqlObjectTypeExtension :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::extensions::object_type_extension::FormatGraphqlObjectTypeExtension::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectTypeExtension {
@@ -1602,7 +1492,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectTyp
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: extensions :: object_type_extension :: FormatGraphqlObjectTypeExtension :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::extensions::object_type_extension::FormatGraphqlObjectTypeExtension::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlObjectValue>
@@ -1611,11 +1504,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlObjectValue>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlObjectValue,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlObjectValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlObjectValue>::fmt(self, node, f)
 	}
 }
@@ -1628,10 +1517,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectValue
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::value::object_value::FormatGraphqlObjectValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::value::object_value::FormatGraphqlObjectValue::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectValue {
@@ -1642,10 +1528,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectVal
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::value::object_value::FormatGraphqlObjectValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::value::object_value::FormatGraphqlObjectValue::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlOperationDefinition>
@@ -1654,11 +1537,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlOperationDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlOperationDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlOperationDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlOperationDefinition>::fmt(self, node, f)
 	}
 }
@@ -1671,7 +1550,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlOperationDe
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: operation_definition :: FormatGraphqlOperationDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::operation_definition::FormatGraphqlOperationDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlOperationDefinition {
@@ -1682,7 +1564,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlOperation
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: operation_definition :: FormatGraphqlOperationDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::operation_definition::FormatGraphqlOperationDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlOperationType>
@@ -1691,11 +1576,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlOperationType>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlOperationType,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlOperationType, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlOperationType>::fmt(self, node, f)
 	}
 }
@@ -1728,26 +1609,17 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlOperation
 		)
 	}
 }
-impl FormatRule<biome_graphql_syntax::GraphqlRoot>
-	for crate::graphql::auxiliary::root::FormatGraphqlRoot
-{
+impl FormatRule<biome_graphql_syntax::GraphqlRoot> for crate::graphql::auxiliary::root::FormatGraphqlRoot {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlRoot,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlRoot, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlRoot>::fmt(self, node, f)
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRoot {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_graphql_syntax::GraphqlRoot,
-		crate::graphql::auxiliary::root::FormatGraphqlRoot,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_graphql_syntax::GraphqlRoot, crate::graphql::auxiliary::root::FormatGraphqlRoot>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -1755,22 +1627,34 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRoot {
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRoot {
-	type Format = FormatOwnedWithRule<
-		biome_graphql_syntax::GraphqlRoot,
-		crate::graphql::auxiliary::root::FormatGraphqlRoot,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_graphql_syntax::GraphqlRoot, crate::graphql::auxiliary::root::FormatGraphqlRoot>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::auxiliary::root::FormatGraphqlRoot::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::auxiliary::root::FormatGraphqlRoot::default())
 	}
 }
-impl FormatRule < biome_graphql_syntax :: GraphqlRootOperationTypeDefinition > for crate :: graphql :: definitions :: root_operation_type_definition :: FormatGraphqlRootOperationTypeDefinition { type Context = GraphqlFormatContext ; # [inline (always)] fn fmt (& self , node : & biome_graphql_syntax :: GraphqlRootOperationTypeDefinition , f : & mut GraphqlFormatter) -> FormatResult < () > { FormatNodeRule :: < biome_graphql_syntax :: GraphqlRootOperationTypeDefinition > :: fmt (self , node , f) } }
+impl FormatRule<biome_graphql_syntax::GraphqlRootOperationTypeDefinition>
+	for crate::graphql::definitions::root_operation_type_definition::FormatGraphqlRootOperationTypeDefinition
+{
+	type Context = GraphqlFormatContext;
+
+	#[inline(always)]
+	fn fmt(
+		&self,
+		node:&biome_graphql_syntax::GraphqlRootOperationTypeDefinition,
+		f:&mut GraphqlFormatter,
+	) -> FormatResult<()> {
+		FormatNodeRule::<biome_graphql_syntax::GraphqlRootOperationTypeDefinition>::fmt(self, node, f)
+	}
+}
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRootOperationTypeDefinition {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_graphql_syntax :: GraphqlRootOperationTypeDefinition , crate :: graphql :: definitions :: root_operation_type_definition :: FormatGraphqlRootOperationTypeDefinition > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_graphql_syntax::GraphqlRootOperationTypeDefinition,
+		crate::graphql::definitions::root_operation_type_definition::FormatGraphqlRootOperationTypeDefinition,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -1778,7 +1662,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRootOperati
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRootOperationTypeDefinition {
-	type Format = FormatOwnedWithRule < biome_graphql_syntax :: GraphqlRootOperationTypeDefinition , crate :: graphql :: definitions :: root_operation_type_definition :: FormatGraphqlRootOperationTypeDefinition > ;
+	type Format = FormatOwnedWithRule<
+		biome_graphql_syntax::GraphqlRootOperationTypeDefinition,
+		crate::graphql::definitions::root_operation_type_definition::FormatGraphqlRootOperationTypeDefinition,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -1791,11 +1678,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlRootOperationTypes>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlRootOperationTypes,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlRootOperationTypes, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlRootOperationTypes>::fmt(self, node, f)
 	}
 }
@@ -1808,7 +1691,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRootOperati
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: auxiliary :: root_operation_types :: FormatGraphqlRootOperationTypes :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::auxiliary::root_operation_types::FormatGraphqlRootOperationTypes::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRootOperationTypes {
@@ -1819,7 +1705,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRootOpera
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: auxiliary :: root_operation_types :: FormatGraphqlRootOperationTypes :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::auxiliary::root_operation_types::FormatGraphqlRootOperationTypes::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlScalarTypeDefinition>
@@ -1845,7 +1734,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlScalarTypeD
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: scalar_type_definition :: FormatGraphqlScalarTypeDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::scalar_type_definition::FormatGraphqlScalarTypeDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlScalarTypeDefinition {
@@ -1856,7 +1748,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlScalarTyp
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: scalar_type_definition :: FormatGraphqlScalarTypeDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::scalar_type_definition::FormatGraphqlScalarTypeDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlScalarTypeExtension>
@@ -1865,11 +1760,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlScalarTypeExtension>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlScalarTypeExtension,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlScalarTypeExtension, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlScalarTypeExtension>::fmt(self, node, f)
 	}
 }
@@ -1882,7 +1773,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlScalarTypeE
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: extensions :: scalar_type_extension :: FormatGraphqlScalarTypeExtension :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::extensions::scalar_type_extension::FormatGraphqlScalarTypeExtension::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlScalarTypeExtension {
@@ -1893,7 +1787,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlScalarTyp
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: extensions :: scalar_type_extension :: FormatGraphqlScalarTypeExtension :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::extensions::scalar_type_extension::FormatGraphqlScalarTypeExtension::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlSchemaDefinition>
@@ -1902,11 +1799,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlSchemaDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlSchemaDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlSchemaDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlSchemaDefinition>::fmt(self, node, f)
 	}
 }
@@ -1921,8 +1814,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlSchemaDefin
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::graphql::definitions::schema_definition::FormatGraphqlSchemaDefinition::default(
-			),
+			crate::graphql::definitions::schema_definition::FormatGraphqlSchemaDefinition::default(),
 		)
 	}
 }
@@ -1936,8 +1828,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlSchemaDef
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::graphql::definitions::schema_definition::FormatGraphqlSchemaDefinition::default(
-			),
+			crate::graphql::definitions::schema_definition::FormatGraphqlSchemaDefinition::default(),
 		)
 	}
 }
@@ -1947,11 +1838,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlSchemaExtension>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlSchemaExtension,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlSchemaExtension, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlSchemaExtension>::fmt(self, node, f)
 	}
 }
@@ -1990,11 +1877,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlSelectionSet>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlSelectionSet,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlSelectionSet, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlSelectionSet>::fmt(self, node, f)
 	}
 }
@@ -2033,11 +1916,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlStringValue>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlStringValue,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlStringValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlStringValue>::fmt(self, node, f)
 	}
 }
@@ -2050,10 +1929,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlStringValue
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::value::string_value::FormatGraphqlStringValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::value::string_value::FormatGraphqlStringValue::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlStringValue {
@@ -2064,10 +1940,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlStringVal
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::value::string_value::FormatGraphqlStringValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::value::string_value::FormatGraphqlStringValue::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlTypeCondition>
@@ -2076,11 +1949,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlTypeCondition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlTypeCondition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlTypeCondition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlTypeCondition>::fmt(self, node, f)
 	}
 }
@@ -2119,11 +1988,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlUnionMemberTypes>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlUnionMemberTypes,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlUnionMemberTypes, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlUnionMemberTypes>::fmt(self, node, f)
 	}
 }
@@ -2162,11 +2027,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlUnionTypeDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlUnionTypeDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlUnionTypeDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlUnionTypeDefinition>::fmt(self, node, f)
 	}
 }
@@ -2179,7 +2040,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlUnionTypeDe
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: union_type_definition :: FormatGraphqlUnionTypeDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::union_type_definition::FormatGraphqlUnionTypeDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlUnionTypeDefinition {
@@ -2190,7 +2054,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlUnionType
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: union_type_definition :: FormatGraphqlUnionTypeDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::union_type_definition::FormatGraphqlUnionTypeDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlUnionTypeExtension>
@@ -2199,11 +2066,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlUnionTypeExtension>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlUnionTypeExtension,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlUnionTypeExtension, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlUnionTypeExtension>::fmt(self, node, f)
 	}
 }
@@ -2216,7 +2079,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlUnionTypeEx
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: extensions :: union_type_extension :: FormatGraphqlUnionTypeExtension :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::extensions::union_type_extension::FormatGraphqlUnionTypeExtension::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlUnionTypeExtension {
@@ -2227,7 +2093,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlUnionType
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: extensions :: union_type_extension :: FormatGraphqlUnionTypeExtension :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::extensions::union_type_extension::FormatGraphqlUnionTypeExtension::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlVariableBinding>
@@ -2236,11 +2105,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlVariableBinding>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlVariableBinding,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlVariableBinding, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlVariableBinding>::fmt(self, node, f)
 	}
 }
@@ -2279,11 +2144,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlVariableDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlVariableDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlVariableDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlVariableDefinition>::fmt(self, node, f)
 	}
 }
@@ -2296,7 +2157,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableDef
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: definitions :: variable_definition :: FormatGraphqlVariableDefinition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::definitions::variable_definition::FormatGraphqlVariableDefinition::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableDefinition {
@@ -2307,7 +2171,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableD
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: definitions :: variable_definition :: FormatGraphqlVariableDefinition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::definitions::variable_definition::FormatGraphqlVariableDefinition::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlVariableDefinitions>
@@ -2316,11 +2183,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlVariableDefinitions>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlVariableDefinitions,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlVariableDefinitions, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlVariableDefinitions>::fmt(self, node, f)
 	}
 }
@@ -2333,7 +2196,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableDef
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: auxiliary :: variable_definitions :: FormatGraphqlVariableDefinitions :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::auxiliary::variable_definitions::FormatGraphqlVariableDefinitions::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableDefinitions {
@@ -2344,7 +2210,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableD
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: auxiliary :: variable_definitions :: FormatGraphqlVariableDefinitions :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::auxiliary::variable_definitions::FormatGraphqlVariableDefinitions::default(),
+		)
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlVariableReference>
@@ -2353,11 +2222,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlVariableReference>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlVariableReference,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlVariableReference, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_graphql_syntax::GraphqlVariableReference>::fmt(self, node, f)
 	}
 }
@@ -2372,8 +2237,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableRef
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::graphql::auxiliary::variable_reference::FormatGraphqlVariableReference::default(
-			),
+			crate::graphql::auxiliary::variable_reference::FormatGraphqlVariableReference::default(),
 		)
 	}
 }
@@ -2387,8 +2251,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableR
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::graphql::auxiliary::variable_reference::FormatGraphqlVariableReference::default(
-			),
+			crate::graphql::auxiliary::variable_reference::FormatGraphqlVariableReference::default(),
 		)
 	}
 }
@@ -2401,7 +2264,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgumentDef
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: lists :: argument_definition_list :: FormatGraphqlArgumentDefinitionList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::lists::argument_definition_list::FormatGraphqlArgumentDefinitionList::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgumentDefinitionList {
@@ -2412,7 +2278,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgumentD
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: lists :: argument_definition_list :: FormatGraphqlArgumentDefinitionList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::lists::argument_definition_list::FormatGraphqlArgumentDefinitionList::default(),
+		)
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgumentList {
@@ -2424,10 +2293,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgumentLis
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::lists::argument_list::FormatGraphqlArgumentList::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::lists::argument_list::FormatGraphqlArgumentList::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgumentList {
@@ -2438,10 +2304,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlArgumentL
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::lists::argument_list::FormatGraphqlArgumentList::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::lists::argument_list::FormatGraphqlArgumentList::default())
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDefinitionList {
@@ -2511,7 +2374,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirectiveLo
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: lists :: directive_location_list :: FormatGraphqlDirectiveLocationList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::lists::directive_location_list::FormatGraphqlDirectiveLocationList::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirectiveLocationList {
@@ -2522,7 +2388,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlDirective
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: lists :: directive_location_list :: FormatGraphqlDirectiveLocationList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::lists::directive_location_list::FormatGraphqlDirectiveLocationList::default(),
+		)
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlEnumValueList {
@@ -2565,8 +2434,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlFieldDefini
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::graphql::lists::field_definition_list::FormatGraphqlFieldDefinitionList::default(
-			),
+			crate::graphql::lists::field_definition_list::FormatGraphqlFieldDefinitionList::default(),
 		)
 	}
 }
@@ -2580,8 +2448,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlFieldDefi
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::graphql::lists::field_definition_list::FormatGraphqlFieldDefinitionList::default(
-			),
+			crate::graphql::lists::field_definition_list::FormatGraphqlFieldDefinitionList::default(),
 		)
 	}
 }
@@ -2594,7 +2461,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlImplementsI
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: lists :: implements_interface_list :: FormatGraphqlImplementsInterfaceList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::lists::implements_interface_list::FormatGraphqlImplementsInterfaceList::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlImplementsInterfaceList {
@@ -2605,7 +2475,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlImplement
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: lists :: implements_interface_list :: FormatGraphqlImplementsInterfaceList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::lists::implements_interface_list::FormatGraphqlImplementsInterfaceList::default(),
+		)
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlInputFieldList {
@@ -2646,7 +2519,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlListValueEl
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: lists :: list_value_element_list :: FormatGraphqlListValueElementList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::lists::list_value_element_list::FormatGraphqlListValueElementList::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlListValueElementList {
@@ -2657,7 +2533,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlListValue
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: lists :: list_value_element_list :: FormatGraphqlListValueElementList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::lists::list_value_element_list::FormatGraphqlListValueElementList::default(),
+		)
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectValueMemberList {
@@ -2669,7 +2548,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectValue
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: lists :: object_value_member_list :: FormatGraphqlObjectValueMemberList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::lists::object_value_member_list::FormatGraphqlObjectValueMemberList::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectValueMemberList {
@@ -2680,23 +2562,29 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlObjectVal
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: lists :: object_value_member_list :: FormatGraphqlObjectValueMemberList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::lists::object_value_member_list::FormatGraphqlObjectValueMemberList::default(),
+		)
 	}
 }
-impl AsFormat<GraphqlFormatContext>
-	for biome_graphql_syntax::GraphqlRootOperationTypeDefinitionList
-{
-	type Format < 'a > = FormatRefWithRule < 'a , biome_graphql_syntax :: GraphqlRootOperationTypeDefinitionList , crate :: graphql :: lists :: root_operation_type_definition_list :: FormatGraphqlRootOperationTypeDefinitionList > ;
+impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRootOperationTypeDefinitionList {
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_graphql_syntax::GraphqlRootOperationTypeDefinitionList,
+		crate::graphql::lists::root_operation_type_definition_list::FormatGraphqlRootOperationTypeDefinitionList,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule :: new (self , crate :: graphql :: lists :: root_operation_type_definition_list :: FormatGraphqlRootOperationTypeDefinitionList :: default ())
 	}
 }
-impl IntoFormat<GraphqlFormatContext>
-	for biome_graphql_syntax::GraphqlRootOperationTypeDefinitionList
-{
-	type Format = FormatOwnedWithRule < biome_graphql_syntax :: GraphqlRootOperationTypeDefinitionList , crate :: graphql :: lists :: root_operation_type_definition_list :: FormatGraphqlRootOperationTypeDefinitionList > ;
+impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlRootOperationTypeDefinitionList {
+	type Format = FormatOwnedWithRule<
+		biome_graphql_syntax::GraphqlRootOperationTypeDefinitionList,
+		crate::graphql::lists::root_operation_type_definition_list::FormatGraphqlRootOperationTypeDefinitionList,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -2741,7 +2629,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlUnionMember
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: lists :: union_member_type_list :: FormatGraphqlUnionMemberTypeList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::lists::union_member_type_list::FormatGraphqlUnionMemberTypeList::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlUnionMemberTypeList {
@@ -2752,7 +2643,10 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlUnionMemb
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: lists :: union_member_type_list :: FormatGraphqlUnionMemberTypeList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::lists::union_member_type_list::FormatGraphqlUnionMemberTypeList::default(),
+		)
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableDefinitionList {
@@ -2764,7 +2658,10 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableDef
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: graphql :: lists :: variable_definition_list :: FormatGraphqlVariableDefinitionList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::graphql::lists::variable_definition_list::FormatGraphqlVariableDefinitionList::default(),
+		)
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableDefinitionList {
@@ -2775,29 +2672,23 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlVariableD
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: graphql :: lists :: variable_definition_list :: FormatGraphqlVariableDefinitionList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::graphql::lists::variable_definition_list::FormatGraphqlVariableDefinitionList::default(),
+		)
 	}
 }
-impl FormatRule<biome_graphql_syntax::GraphqlBogus>
-	for crate::graphql::bogus::bogus::FormatGraphqlBogus
-{
+impl FormatRule<biome_graphql_syntax::GraphqlBogus> for crate::graphql::bogus::bogus::FormatGraphqlBogus {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlBogus,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlBogus, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_graphql_syntax::GraphqlBogus>::fmt(self, node, f)
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBogus {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_graphql_syntax::GraphqlBogus,
-		crate::graphql::bogus::bogus::FormatGraphqlBogus,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_graphql_syntax::GraphqlBogus, crate::graphql::bogus::bogus::FormatGraphqlBogus>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -2805,10 +2696,8 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBogus {
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBogus {
-	type Format = FormatOwnedWithRule<
-		biome_graphql_syntax::GraphqlBogus,
-		crate::graphql::bogus::bogus::FormatGraphqlBogus,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_graphql_syntax::GraphqlBogus, crate::graphql::bogus::bogus::FormatGraphqlBogus>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -2821,11 +2710,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlBogusDefinition>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlBogusDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlBogusDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_graphql_syntax::GraphqlBogusDefinition>::fmt(self, node, f)
 	}
 }
@@ -2864,11 +2749,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlBogusSelection>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlBogusSelection,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlBogusSelection, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_graphql_syntax::GraphqlBogusSelection>::fmt(self, node, f)
 	}
 }
@@ -2901,17 +2782,11 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBogusSele
 		)
 	}
 }
-impl FormatRule<biome_graphql_syntax::GraphqlBogusType>
-	for crate::graphql::bogus::bogus_type::FormatGraphqlBogusType
-{
+impl FormatRule<biome_graphql_syntax::GraphqlBogusType> for crate::graphql::bogus::bogus_type::FormatGraphqlBogusType {
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlBogusType,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlBogusType, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_graphql_syntax::GraphqlBogusType>::fmt(self, node, f)
 	}
 }
@@ -2924,10 +2799,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBogusType {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::bogus::bogus_type::FormatGraphqlBogusType::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::bogus::bogus_type::FormatGraphqlBogusType::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBogusType {
@@ -2938,10 +2810,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBogusType
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::bogus::bogus_type::FormatGraphqlBogusType::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::bogus::bogus_type::FormatGraphqlBogusType::default())
 	}
 }
 impl FormatRule<biome_graphql_syntax::GraphqlBogusValue>
@@ -2950,11 +2819,7 @@ impl FormatRule<biome_graphql_syntax::GraphqlBogusValue>
 	type Context = GraphqlFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_graphql_syntax::GraphqlBogusValue,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_graphql_syntax::GraphqlBogusValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_graphql_syntax::GraphqlBogusValue>::fmt(self, node, f)
 	}
 }
@@ -2967,10 +2832,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBogusValue 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::bogus::bogus_value::FormatGraphqlBogusValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::bogus::bogus_value::FormatGraphqlBogusValue::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBogusValue {
@@ -2981,10 +2843,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::GraphqlBogusValu
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::bogus::bogus_value::FormatGraphqlBogusValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::bogus::bogus_value::FormatGraphqlBogusValue::default())
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlDefinition {
@@ -2996,10 +2855,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlDefiniti
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::any::definition::FormatAnyGraphqlDefinition::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::any::definition::FormatAnyGraphqlDefinition::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlDefinition {
@@ -3010,10 +2866,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlDefini
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::any::definition::FormatAnyGraphqlDefinition::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::any::definition::FormatAnyGraphqlDefinition::default())
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlOperationDefinition {
@@ -3027,8 +2880,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlOperatio
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::graphql::any::operation_definition::FormatAnyGraphqlOperationDefinition::default(
-			),
+			crate::graphql::any::operation_definition::FormatAnyGraphqlOperationDefinition::default(),
 		)
 	}
 }
@@ -3042,8 +2894,7 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlOperat
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::graphql::any::operation_definition::FormatAnyGraphqlOperationDefinition::default(
-			),
+			crate::graphql::any::operation_definition::FormatAnyGraphqlOperationDefinition::default(),
 		)
 	}
 }
@@ -3085,10 +2936,7 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlSelectio
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::graphql::any::selection::FormatAnyGraphqlSelection::default(),
-		)
+		FormatRefWithRule::new(self, crate::graphql::any::selection::FormatAnyGraphqlSelection::default())
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlSelection {
@@ -3099,18 +2947,12 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlSelect
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::any::selection::FormatAnyGraphqlSelection::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::any::selection::FormatAnyGraphqlSelection::default())
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlType {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_graphql_syntax::AnyGraphqlType,
-		crate::graphql::any::ts_type::FormatAnyGraphqlType,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_graphql_syntax::AnyGraphqlType, crate::graphql::any::ts_type::FormatAnyGraphqlType>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -3118,17 +2960,12 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlType {
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlType {
-	type Format = FormatOwnedWithRule<
-		biome_graphql_syntax::AnyGraphqlType,
-		crate::graphql::any::ts_type::FormatAnyGraphqlType,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_graphql_syntax::AnyGraphqlType, crate::graphql::any::ts_type::FormatAnyGraphqlType>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::graphql::any::ts_type::FormatAnyGraphqlType::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::graphql::any::ts_type::FormatAnyGraphqlType::default())
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlTypeDefinition {
@@ -3190,11 +3027,8 @@ impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlTypeEx
 	}
 }
 impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlValue {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_graphql_syntax::AnyGraphqlValue,
-		crate::graphql::any::value::FormatAnyGraphqlValue,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_graphql_syntax::AnyGraphqlValue, crate::graphql::any::value::FormatAnyGraphqlValue>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -3202,10 +3036,8 @@ impl AsFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlValue {
 	}
 }
 impl IntoFormat<GraphqlFormatContext> for biome_graphql_syntax::AnyGraphqlValue {
-	type Format = FormatOwnedWithRule<
-		biome_graphql_syntax::AnyGraphqlValue,
-		crate::graphql::any::value::FormatAnyGraphqlValue,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_graphql_syntax::AnyGraphqlValue, crate::graphql::any::value::FormatAnyGraphqlValue>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]

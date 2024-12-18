@@ -1,183 +1,188 @@
-use super::parse_error::{expected_definition, too_many_patterns};
-use super::patterns::{parse_pattern, PatternList};
-use super::predicates::PredicateList;
+use biome_grit_syntax::{
+	GritSyntaxKind::{self, *},
+	T,
+};
+use biome_parser::{
+	Parser,
+	parse_lists::{ParseNodeList, ParseSeparatedList},
+	parse_recovery::ParseRecoveryTokenSet,
+	parsed_syntax::ParsedSyntax,
+	prelude::ParsedSyntax::*,
+};
+
 use super::{
-    parse_language_declaration, parse_name, parse_variable_list, GritParser, VariableList,
+	GritParser,
+	VariableList,
+	parse_error::{expected_definition, too_many_patterns},
+	parse_language_declaration,
+	parse_name,
+	parse_variable_list,
+	patterns::{PatternList, parse_pattern},
+	predicates::PredicateList,
 };
 use crate::constants::*;
-use biome_grit_syntax::GritSyntaxKind::{self, *};
-use biome_grit_syntax::T;
-use biome_parser::parse_lists::{ParseNodeList, ParseSeparatedList};
-use biome_parser::parse_recovery::ParseRecoveryTokenSet;
-use biome_parser::prelude::ParsedSyntax::*;
-use biome_parser::{parsed_syntax::ParsedSyntax, Parser};
 
 pub(crate) struct DefinitionList {
-    has_pattern: bool,
+	has_pattern:bool,
 }
 
 impl DefinitionList {
-    pub(crate) fn new() -> Self {
-        Self { has_pattern: false }
-    }
+	pub(crate) fn new() -> Self { Self { has_pattern:false } }
 }
 
 impl ParseNodeList for DefinitionList {
-    type Kind = GritSyntaxKind;
+	type Kind = GritSyntaxKind;
+	type Parser<'source> = GritParser<'source>;
 
-    type Parser<'source> = GritParser<'source>;
+	const LIST_KIND:Self::Kind = GRIT_DEFINITION_LIST;
 
-    const LIST_KIND: Self::Kind = GRIT_DEFINITION_LIST;
+	fn parse_element(&mut self, p:&mut Self::Parser<'_>) -> ParsedSyntax {
+		let mut syntax = parse_definition(p);
 
-    fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
-        let mut syntax = parse_definition(p);
+		if syntax == Absent {
+			if let Present(pattern) = parse_pattern(p) {
+				if self.has_pattern {
+					p.error(too_many_patterns(p, pattern.range(p)));
+				}
 
-        if syntax == Absent {
-            if let Present(pattern) = parse_pattern(p) {
-                if self.has_pattern {
-                    p.error(too_many_patterns(p, pattern.range(p)));
-                }
+				syntax = Present(pattern);
 
-                syntax = Present(pattern);
+				self.has_pattern = true
+			}
+		}
 
-                self.has_pattern = true
-            }
-        }
+		syntax
+	}
 
-        syntax
-    }
+	fn is_at_list_end(&self, p:&mut Self::Parser<'_>) -> bool { p.at(EOF) }
 
-    fn is_at_list_end(&self, p: &mut Self::Parser<'_>) -> bool {
-        p.at(EOF)
-    }
-
-    fn recover(
-        &mut self,
-        p: &mut Self::Parser<'_>,
-        parsed_element: ParsedSyntax,
-    ) -> biome_parser::parse_recovery::RecoveryResult {
-        parsed_element.or_recover_with_token_set(
-            p,
-            &ParseRecoveryTokenSet::new(GRIT_BOGUS_DEFINITION, DEFINITION_LIST_RECOVERY_SET)
-                .enable_recovery_on_line_break(),
-            expected_definition,
-        )
-    }
+	fn recover(
+		&mut self,
+		p:&mut Self::Parser<'_>,
+		parsed_element:ParsedSyntax,
+	) -> biome_parser::parse_recovery::RecoveryResult {
+		parsed_element.or_recover_with_token_set(
+			p,
+			&ParseRecoveryTokenSet::new(GRIT_BOGUS_DEFINITION, DEFINITION_LIST_RECOVERY_SET)
+				.enable_recovery_on_line_break(),
+			expected_definition,
+		)
+	}
 }
 
 #[inline]
-fn parse_definition(p: &mut GritParser) -> ParsedSyntax {
-    match p.cur() {
-        FUNCTION_KW => parse_function_definition(p),
-        PATTERN_KW | PRIVATE_KW => parse_pattern_definition(p),
-        PREDICATE_KW => parse_predicate_definition(p),
-        _ => Absent,
-    }
+fn parse_definition(p:&mut GritParser) -> ParsedSyntax {
+	match p.cur() {
+		FUNCTION_KW => parse_function_definition(p),
+		PATTERN_KW | PRIVATE_KW => parse_pattern_definition(p),
+		PREDICATE_KW => parse_predicate_definition(p),
+		_ => Absent,
+	}
 }
 
 #[inline]
-fn parse_function_definition(p: &mut GritParser) -> ParsedSyntax {
-    if !p.at(FUNCTION_KW) {
-        return Absent;
-    }
+fn parse_function_definition(p:&mut GritParser) -> ParsedSyntax {
+	if !p.at(FUNCTION_KW) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(FUNCTION_KW);
+	p.bump(FUNCTION_KW);
 
-    parse_name(p).ok();
+	parse_name(p).ok();
 
-    p.expect(T!['(']);
+	p.expect(T!['(']);
 
-    VariableList.parse_list(p);
+	VariableList.parse_list(p);
 
-    p.expect(T![')']);
+	p.expect(T![')']);
 
-    parse_curly_predicate_list(p).ok();
+	parse_curly_predicate_list(p).ok();
 
-    Present(m.complete(p, GRIT_FUNCTION_DEFINITION))
+	Present(m.complete(p, GRIT_FUNCTION_DEFINITION))
 }
 
 #[inline]
-fn parse_curly_predicate_list(p: &mut GritParser) -> ParsedSyntax {
-    if !p.at(T!['{']) {
-        return Absent;
-    }
+fn parse_curly_predicate_list(p:&mut GritParser) -> ParsedSyntax {
+	if !p.at(T!['{']) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T!['{']);
+	p.bump(T!['{']);
 
-    PredicateList.parse_list(p);
+	PredicateList.parse_list(p);
 
-    p.expect(T!['}']);
+	p.expect(T!['}']);
 
-    Present(m.complete(p, GRIT_PREDICATE_CURLY))
+	Present(m.complete(p, GRIT_PREDICATE_CURLY))
 }
 
 #[inline]
-fn parse_pattern_definition(p: &mut GritParser) -> ParsedSyntax {
-    if !p.at(PATTERN_KW) && (!p.at(PRIVATE_KW) || p.lookahead() != PATTERN_KW) {
-        return Absent;
-    }
+fn parse_pattern_definition(p:&mut GritParser) -> ParsedSyntax {
+	if !p.at(PATTERN_KW) && (!p.at(PRIVATE_KW) || p.lookahead() != PATTERN_KW) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.eat(PRIVATE_KW);
+	p.eat(PRIVATE_KW);
 
-    p.bump(PATTERN_KW);
+	p.bump(PATTERN_KW);
 
-    parse_name(p).ok();
+	parse_name(p).ok();
 
-    p.expect(T!['(']);
+	p.expect(T!['(']);
 
-    parse_variable_list(p);
+	parse_variable_list(p);
 
-    p.expect(T![')']);
+	p.expect(T![')']);
 
-    parse_language_declaration(p).ok();
+	parse_language_declaration(p).ok();
 
-    parse_pattern_definition_body(p).ok();
+	parse_pattern_definition_body(p).ok();
 
-    Present(m.complete(p, GRIT_PATTERN_DEFINITION))
+	Present(m.complete(p, GRIT_PATTERN_DEFINITION))
 }
 
 #[inline]
-fn parse_pattern_definition_body(p: &mut GritParser) -> ParsedSyntax {
-    if !p.at(T!['{']) {
-        return Absent;
-    }
+fn parse_pattern_definition_body(p:&mut GritParser) -> ParsedSyntax {
+	if !p.at(T!['{']) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T!['{']);
+	p.bump(T!['{']);
 
-    PatternList.parse_list(p);
+	PatternList.parse_list(p);
 
-    p.expect(T!['}']);
+	p.expect(T!['}']);
 
-    Present(m.complete(p, GRIT_PATTERN_DEFINITION_BODY))
+	Present(m.complete(p, GRIT_PATTERN_DEFINITION_BODY))
 }
 
 #[inline]
-fn parse_predicate_definition(p: &mut GritParser) -> ParsedSyntax {
-    if !p.at(PREDICATE_KW) {
-        return Absent;
-    }
+fn parse_predicate_definition(p:&mut GritParser) -> ParsedSyntax {
+	if !p.at(PREDICATE_KW) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(PREDICATE_KW);
+	p.bump(PREDICATE_KW);
 
-    parse_name(p).ok();
+	parse_name(p).ok();
 
-    p.expect(T!['(']);
+	p.expect(T!['(']);
 
-    parse_variable_list(p);
+	parse_variable_list(p);
 
-    p.expect(T![')']);
+	p.expect(T![')']);
 
-    parse_curly_predicate_list(p).ok();
+	parse_curly_predicate_list(p).ok();
 
-    Present(m.complete(p, GRIT_PREDICATE_DEFINITION))
+	Present(m.complete(p, GRIT_PREDICATE_DEFINITION))
 }

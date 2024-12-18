@@ -85,10 +85,9 @@ where
 				CommentKind::Block | CommentKind::InlineBlock => {
 					match comment.lines_after() {
 						0 => {
-							let should_nestle =
-								leading_comments_iter.peek().map_or(false, |next_comment| {
-									should_nestle_adjacent_doc_comments(comment, next_comment)
-								});
+							let should_nestle = leading_comments_iter.peek().map_or(false, |next_comment| {
+								should_nestle_adjacent_doc_comments(comment, next_comment)
+							});
 
 							write!(f, [maybe_space(!should_nestle)])?;
 						},
@@ -121,9 +120,7 @@ where
 }
 
 /// Formats the trailing comments of `node`.
-pub const fn format_trailing_comments<L:Language>(
-	node:&SyntaxNode<L>,
-) -> FormatTrailingComments<L> {
+pub const fn format_trailing_comments<L:Language>(node:&SyntaxNode<L>) -> FormatTrailingComments<L> {
 	FormatTrailingComments::Node(node)
 }
 
@@ -187,9 +184,9 @@ where
 									//   /**
 									//    * docs
 									//   */ /* still on the same line */
-									if previous_comment.map_or(false, |previous_comment| {
-										previous_comment.kind().is_line()
-									}) {
+									if previous_comment
+										.map_or(false, |previous_comment| previous_comment.kind().is_line())
+									{
 										write!(f, [hard_line_break()])?;
 									} else {
 										write!(f, [space()])?;
@@ -206,8 +203,7 @@ where
 					]
 				)?;
 			} else {
-				let content =
-					format_with(|f| write!(f, [maybe_space(!should_nestle), format_comment]));
+				let content = format_with(|f| write!(f, [maybe_space(!should_nestle), format_comment]));
 
 				if comment.kind().is_line() {
 					write!(f, [line_suffix(&content), expand_parent()])?;
@@ -226,9 +222,7 @@ where
 }
 
 /// Formats the dangling comments of `node`.
-pub const fn format_dangling_comments<L:Language>(
-	node:&SyntaxNode<L>,
-) -> FormatDanglingComments<L> {
+pub const fn format_dangling_comments<L:Language>(node:&SyntaxNode<L>) -> FormatDanglingComments<L> {
 	FormatDanglingComments::Node { node, indent:DanglingIndentMode::None }
 }
 
@@ -325,8 +319,7 @@ where
 			let mut previous_comment:Option<&SourceComment<Context::Language>> = None;
 
 			for comment in dangling_comments {
-				let format_comment =
-					FormatRefWithRule::new(comment, Context::CommentRule::default());
+				let format_comment = FormatRefWithRule::new(comment, Context::CommentRule::default());
 
 				let should_nestle = previous_comment.map_or(false, |previous_comment| {
 					should_nestle_adjacent_doc_comments(previous_comment, comment)
@@ -507,8 +500,7 @@ where
 			// Print the trivia otherwise
 			write!(
 				f,
-				[if_group_fits_on_line(&format_skipped_token_trivia(self.token))
-					.with_group_id(self.group_id)]
+				[if_group_fits_on_line(&format_skipped_token_trivia(self.token)).with_group_id(self.group_id)]
 			)?;
 		}
 
@@ -517,9 +509,7 @@ where
 }
 
 /// Formats the skipped token trivia of `token`.
-pub const fn format_skipped_token_trivia<L:Language>(
-	token:&SyntaxToken<L>,
-) -> FormatSkippedTokenTrivia<L> {
+pub const fn format_skipped_token_trivia<L:Language>(token:&SyntaxToken<L>) -> FormatSkippedTokenTrivia<L> {
 	FormatSkippedTokenTrivia { token }
 }
 
@@ -626,8 +616,7 @@ impl<L:Language> FormatSkippedTokenTrivia<'_, L> {
 			}
 		}
 
-		let skipped_range =
-			skipped_range.unwrap_or_else(|| TextRange::empty(self.token.text_range().start()));
+		let skipped_range = skipped_range.unwrap_or_else(|| TextRange::empty(self.token.text_range().start()));
 
 		f.write_element(FormatElement::Tag(Tag::StartVerbatim(VerbatimKind::Verbatim {
 			length:skipped_range.len(),
@@ -657,10 +646,7 @@ impl<L:Language> FormatSkippedTokenTrivia<'_, L> {
 
 			write!(
 				f,
-				[FormatDanglingComments::Comments {
-					comments:&dangling_comments,
-					indent:DanglingIndentMode::None
-				}]
+				[FormatDanglingComments::Comments { comments:&dangling_comments, indent:DanglingIndentMode::None }]
 			)?;
 
 			match lines {

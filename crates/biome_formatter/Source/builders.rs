@@ -47,7 +47,8 @@ use crate::{
 ///
 /// Soft line breaks are emitted if the enclosing `Group` doesn't fit on a
 /// single line ```
-/// use biome_formatter::{LineWidth, SimpleFormatOptions, format, format_args, prelude::*};
+/// use biome_formatter::{LineWidth, SimpleFormatOptions, format, format_args,
+/// prelude::*};
 ///
 /// # fn main() -> FormatResult<()> {
 /// let context = SimpleFormatContext::new(SimpleFormatOptions {
@@ -150,7 +151,7 @@ pub const fn empty_line() -> Line { Line::new(LineMode::Empty) }
 /// # Ok(())
 /// # }
 /// ```
-///
+/// 
 /// The printer breaks the lines if the enclosing `Group` doesn't fit on a
 /// single line: ```
 /// use biome_formatter::{LineWidth, SimpleFormatOptions, format, format_args, prelude::*};
@@ -190,9 +191,7 @@ impl Line {
 }
 
 impl<Context> Format<Context> for Line {
-	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> {
-		f.write_element(FormatElement::Line(self.mode))
-	}
+	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> { f.write_element(FormatElement::Line(self.mode)) }
 }
 
 impl std::fmt::Debug for Line {
@@ -257,9 +256,7 @@ impl<Context> Format<Context> for StaticText {
 }
 
 impl std::fmt::Debug for StaticText {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		std::write!(f, "StaticToken({})", self.text)
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { std::write!(f, "StaticToken({})", self.text) }
 }
 
 /// Creates a text from a dynamic string and a range of the input source
@@ -285,9 +282,7 @@ impl<Context> Format<Context> for DynamicText<'_> {
 }
 
 impl std::fmt::Debug for DynamicText<'_> {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		std::write!(f, "DynamicToken({})", self.text)
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { std::write!(f, "DynamicToken({})", self.text) }
 }
 
 /// String that is the same as in the input source text if `text` is
@@ -317,18 +312,15 @@ impl<L:Language, Context> Format<Context> for SyntaxTokenCowSlice<'_, L> {
 				debug_assert_eq!(
 					*text,
 					&self.token.text()[range - self.token.text_range().start()],
-					"The borrowed string doesn't match the specified token substring. Does the \
-					 borrowed string belong to this token and range?"
+					"The borrowed string doesn't match the specified token substring. Does the borrowed string belong \
+					 to this token and range?"
 				);
 
 				let relative_range = range - self.token.text_range().start();
 
 				let slice = self.token.token_text().slice(relative_range);
 
-				f.write_element(FormatElement::LocatedTokenText {
-					slice,
-					source_position:self.start,
-				})
+				f.write_element(FormatElement::LocatedTokenText { slice, source_position:self.start })
 			},
 
 			Cow::Owned(text) => {
@@ -381,9 +373,8 @@ impl std::fmt::Debug for LocatedTokenText {
 fn debug_assert_no_newlines(text:&str) {
 	debug_assert!(
 		!text.contains('\r'),
-		"The content '{text}' contains an unsupported '\\r' line terminator character but text \
-		 must only use line feeds '\\n' as line separator. Use '\\n' instead of '\\r' and \
-		 '\\r\\n' to insert a line break in strings."
+		"The content '{text}' contains an unsupported '\\r' line terminator character but text must only use line \
+		 feeds '\\n' as line separator. Use '\\n' instead of '\\r' and '\\r\\n' to insert a line break in strings."
 	);
 }
 
@@ -463,9 +454,7 @@ pub const fn line_suffix_boundary() -> LineSuffixBoundary { LineSuffixBoundary }
 pub struct LineSuffixBoundary;
 
 impl<Context> Format<Context> for LineSuffixBoundary {
-	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> {
-		f.write_element(FormatElement::LineSuffixBoundary)
-	}
+	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> { f.write_element(FormatElement::LineSuffixBoundary) }
 }
 
 /// Marks some content with a label.
@@ -650,26 +639,20 @@ pub const fn hard_space() -> HardSpace { HardSpace }
 /// # }
 /// ```
 #[inline]
-pub fn maybe_space(should_insert:bool) -> Option<Space> {
-	if should_insert { Some(Space) } else { None }
-}
+pub fn maybe_space(should_insert:bool) -> Option<Space> { if should_insert { Some(Space) } else { None } }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct Space;
 
 impl<Context> Format<Context> for Space {
-	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> {
-		f.write_element(FormatElement::Space)
-	}
+	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> { f.write_element(FormatElement::Space) }
 }
 
 #[derive(Debug, Copy, Clone, Eq, PartialEq)]
 pub struct HardSpace;
 
 impl<Context> Format<Context> for HardSpace {
-	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> {
-		f.write_element(FormatElement::HardSpace)
-	}
+	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> { f.write_element(FormatElement::HardSpace) }
 }
 /// It adds a level of indentation to the given content
 ///
@@ -717,8 +700,8 @@ impl<Context> Format<Context> for HardSpace {
 /// 		text("root"),
 /// 		indent(&format_args![align(
 /// 			2,
-/// 			&format_args![indent(&format_args![hard_line_break(), text("shoud be 3 tabs"),])]
-/// 		)])
+/// 			&format_args![indent(&format_args![hard_line_break(), text("shoud be 3
+/// tabs"),])] 		)])
 /// 	]
 /// )?;
 ///
@@ -1459,9 +1442,7 @@ pub fn soft_line_indent_or_space<Context>(content:&impl Format<Context>) -> Bloc
 /// ```
 
 #[inline]
-pub fn soft_line_indent_or_hard_space<Context>(
-	content:&impl Format<Context>,
-) -> BlockIndent<Context> {
+pub fn soft_line_indent_or_hard_space<Context>(content:&impl Format<Context>) -> BlockIndent<Context> {
 	BlockIndent { content:Argument::new(content), mode:IndentMode::HardSpace }
 }
 
@@ -1489,9 +1470,7 @@ impl<Context> Format<Context> for BlockIndent<'_, Context> {
 		match self.mode {
 			IndentMode::Soft => write!(f, [soft_line_break()])?,
 			IndentMode::Block => write!(f, [hard_line_break()])?,
-			IndentMode::SoftLineOrSpace | IndentMode::SoftSpace => {
-				write!(f, [soft_line_break_or_space()])?
-			},
+			IndentMode::SoftLineOrSpace | IndentMode::SoftSpace => write!(f, [soft_line_break_or_space()])?,
 
 			IndentMode::HardSpace => write!(f, [hard_space(), soft_line_break()])?,
 		}
@@ -1633,7 +1612,8 @@ pub fn soft_space_or_block_indent<Context>(content:&impl Format<Context>) -> Blo
 ///
 /// The printer breaks the `Group` over multiple lines if its content doesn't
 /// fit on a single line ```
-/// use biome_formatter::{LineWidth, SimpleFormatOptions, format, format_args, prelude::*};
+/// use biome_formatter::{LineWidth, SimpleFormatOptions, format, format_args,
+/// prelude::*};
 ///
 /// # fn main() -> FormatResult<()> {
 /// let context = SimpleFormatContext::new(SimpleFormatOptions {
@@ -1768,9 +1748,7 @@ pub const fn expand_parent() -> ExpandParent { ExpandParent }
 pub struct ExpandParent;
 
 impl<Context> Format<Context> for ExpandParent {
-	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> {
-		f.write_element(FormatElement::ExpandParent)
-	}
+	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> { f.write_element(FormatElement::ExpandParent) }
 }
 
 /// Adds a conditional content that is emitted only if it isn't inside an
@@ -1811,7 +1789,7 @@ impl<Context> Format<Context> for ExpandParent {
 /// # Ok(())
 /// # }
 /// ```
-///
+/// 
 /// Prints the trailing comma for the last array element if the `Group` doesn't
 /// fit on a single line ```
 /// use biome_formatter::{format_args, format, LineWidth, SimpleFormatOptions};
@@ -1886,7 +1864,7 @@ where
 /// # Ok(())
 /// # }
 /// ```
-///
+/// 
 /// Omits the trailing comma for the last array element if the `Group` doesn't
 /// fit on a single line ```
 /// use biome_formatter::{LineWidth, SimpleFormatOptions, format, format_args, prelude::*};
@@ -2059,7 +2037,8 @@ impl<Context> std::fmt::Debug for IfGroupBreaks<'_, Context> {
 ///
 /// Indent the body of an arrow function if the group wrapping the signature
 /// breaks: ```
-/// use biome_formatter::{LineWidth, SimpleFormatOptions, format, format_args, prelude::*, write};
+/// use biome_formatter::{LineWidth, SimpleFormatOptions, format, format_args,
+/// prelude::*, write};
 ///
 /// # fn main() -> FormatResult<()> {
 /// let content = format_with(|f| {
@@ -2070,8 +2049,8 @@ impl<Context> std::fmt::Debug for IfGroupBreaks<'_, Context> {
 /// 		[
 /// 			group(&text("(aLongHeaderThatBreaksForSomeReason) =>"))
 /// 				.with_group_id(Some(group_id)),
-/// 			indent_if_group_breaks(&format_args![hard_line_break(), text("a => b")], group_id)
-/// 		]
+/// 			indent_if_group_breaks(&format_args![hard_line_break(), text("a => b")],
+/// group_id) 		]
 /// 	)
 /// });
 ///
@@ -2089,10 +2068,11 @@ impl<Context> std::fmt::Debug for IfGroupBreaks<'_, Context> {
 /// # Ok(())
 /// # }
 /// ```
-///
+/// 
 /// It doesn't add an indent if the group wrapping the signature doesn't break:
 /// ```
-/// use biome_formatter::{LineWidth, SimpleFormatOptions, format, format_args, prelude::*, write};
+/// use biome_formatter::{LineWidth, SimpleFormatOptions, format, format_args,
+/// prelude::*, write};
 ///
 /// # fn main() -> FormatResult<()> {
 /// let content = format_with(|f| {
@@ -2103,22 +2083,19 @@ impl<Context> std::fmt::Debug for IfGroupBreaks<'_, Context> {
 /// 		[
 /// 			group(&text("(aLongHeaderThatBreaksForSomeReason) =>"))
 /// 				.with_group_id(Some(group_id)),
-/// 			indent_if_group_breaks(&format_args![hard_line_break(), text("a => b")], group_id)
-/// 		]
+/// 			indent_if_group_breaks(&format_args![hard_line_break(), text("a => b")],
+/// group_id) 		]
 /// 	)
 /// });
 ///
 /// let formatted = format!(SimpleFormatContext::default(), [content])?;
 ///
-/// assert_eq!("(aLongHeaderThatBreaksForSomeReason) =>\na => b", formatted.print()?.as_code());
-/// # Ok(())
+/// assert_eq!("(aLongHeaderThatBreaksForSomeReason) =>\na => b",
+/// formatted.print()?.as_code()); # Ok(())
 /// # }
 /// ```
 #[inline]
-pub fn indent_if_group_breaks<Content, Context>(
-	content:&Content,
-	group_id:GroupId,
-) -> IndentIfGroupBreaks<Context>
+pub fn indent_if_group_breaks<Content, Context>(content:&Content, group_id:GroupId) -> IndentIfGroupBreaks<Context>
 where
 	Content: Format<Context>, {
 	IndentIfGroupBreaks { group_id, content:Argument::new(content) }
@@ -2308,8 +2285,8 @@ where
 	#[inline(always)]
 	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> {
 		let formatter = self.formatter.take().expect(
-			"Tried to format a `format_once` at least twice. This is not allowed. You may want to \
-			 use `format_with` or `format.memoized` instead.",
+			"Tried to format a `format_once` at least twice. This is not allowed. You may want to use `format_with` \
+			 or `format.memoized` instead.",
 		);
 
 		(formatter)(f)
@@ -2498,11 +2475,7 @@ impl<'a, 'buf, Context> FillBuilder<'a, 'buf, Context> {
 
 	/// Adds a new entry to the fill output. The `separator` isn't written if
 	/// this is the first element in the list.
-	pub fn entry(
-		&mut self,
-		separator:&dyn Format<Context>,
-		entry:&dyn Format<Context>,
-	) -> &mut Self {
+	pub fn entry(&mut self, separator:&dyn Format<Context>, entry:&dyn Format<Context>) -> &mut Self {
 		self.result = self.result.and_then(|_| {
 			if self.empty {
 				self.empty = false;
@@ -2580,9 +2553,7 @@ impl<Context> Format<Context> for BestFitting<'_, Context> {
 		// variants. It's, therefore, safe to call into the unsafe
 		// `from_vec_unchecked` function
 		let element = unsafe {
-			FormatElement::BestFitting(format_element::BestFittingElement::from_vec_unchecked(
-				formatted_variants,
-			))
+			FormatElement::BestFitting(format_element::BestFittingElement::from_vec_unchecked(formatted_variants))
 		};
 
 		f.write_element(element)

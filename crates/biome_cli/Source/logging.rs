@@ -104,8 +104,7 @@ struct LoggingFilter {
 }
 
 /// Tracing filter used for spans emitted by `biome*` crates
-const SELF_FILTER:LevelFilter =
-	if cfg!(debug_assertions) { LevelFilter::TRACE } else { LevelFilter::DEBUG };
+const SELF_FILTER:LevelFilter = if cfg!(debug_assertions) { LevelFilter::TRACE } else { LevelFilter::DEBUG };
 
 impl LoggingFilter {
 	fn is_enabled(&self, meta:&Metadata<'_>) -> bool {

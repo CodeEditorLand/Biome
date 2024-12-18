@@ -40,8 +40,7 @@ where
 		LAST_PANIC.with(|cell| cell.set(Some(PanicError { info, backtrace:Some(backtrace) })))
 	}));
 
-	let result = std::panic::catch_unwind(f)
-		.map_err(|_| LAST_PANIC.with(|cell| cell.take()).unwrap_or_default());
+	let result = std::panic::catch_unwind(f).map_err(|_| LAST_PANIC.with(|cell| cell.take()).unwrap_or_default());
 
 	std::panic::set_hook(prev);
 

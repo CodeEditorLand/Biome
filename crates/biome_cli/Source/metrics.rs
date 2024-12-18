@@ -21,8 +21,7 @@ use tracing_subscriber::{
 /// spans into [Histogram]s
 struct MetricsLayer;
 
-static METRICS:LazyLock<RwLock<FxHashMap<CallsiteKey, Mutex<CallsiteEntry>>>> =
-	LazyLock::new(RwLock::default);
+static METRICS:LazyLock<RwLock<FxHashMap<CallsiteKey, Mutex<CallsiteEntry>>>> = LazyLock::new(RwLock::default);
 
 /// Static pointer to the metadata of a callsite, used as a unique identifier
 /// for collecting spans created from there in the global metrics map

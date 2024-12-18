@@ -1,16 +1,7 @@
 use std::io;
 
 use biome_console::{ConsoleExt, EnvConsole, markup};
-use biome_diagnostics::{
-	Advices,
-	Diagnostic,
-	Location,
-	LogCategory,
-	PrintDiagnostic,
-	Resource,
-	SourceCode,
-	Visit,
-};
+use biome_diagnostics::{Advices, Diagnostic, Location, LogCategory, PrintDiagnostic, Resource, SourceCode, Visit};
 use biome_rowan::{TextRange, TextSize};
 use biome_text_edit::TextEdit;
 
@@ -45,9 +36,8 @@ impl Advices for LintAdvices {
 	fn record(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 		visitor.record_log(
 			LogCategory::Info,
-			&"You should avoid declaring constants with a string that's the same value as the \
-			  variable name. It introduces a level of unnecessary indirection when it's only two \
-			  additional characters to inline.",
+			&"You should avoid declaring constants with a string that's the same value as the variable name. It \
+			  introduces a level of unnecessary indirection when it's only two additional characters to inline.",
 		)?;
 
 		visitor.record_log(LogCategory::Info, &"This constant is declared here")?;

@@ -2,615 +2,621 @@
 
 use biome_html_syntax::{HtmlSyntaxKind, HtmlSyntaxKind::*, T, *};
 use biome_rowan::{
-    AstNode, ParsedChildren, RawNodeSlots, RawSyntaxNode, SyntaxFactory, SyntaxKind,
+	AstNode,
+	ParsedChildren,
+	RawNodeSlots,
+	RawSyntaxNode,
+	SyntaxFactory,
+	SyntaxKind,
 };
 #[derive(Debug)]
 pub struct HtmlSyntaxFactory;
 impl SyntaxFactory for HtmlSyntaxFactory {
-    type Kind = HtmlSyntaxKind;
-    #[allow(unused_mut)]
-    fn make_syntax(
-        kind: Self::Kind,
-        children: ParsedChildren<Self::Kind>,
-    ) -> RawSyntaxNode<Self::Kind> {
-        match kind {
-            HTML_BOGUS | HTML_BOGUS_ATTRIBUTE | HTML_BOGUS_ELEMENT => {
-                RawSyntaxNode::new(kind, children.into_iter().map(Some))
-            }
+	type Kind = HtmlSyntaxKind;
 
-            HTML_ATTRIBUTE => {
-                let mut elements = (&children).into_iter();
+	#[allow(unused_mut)]
+	fn make_syntax(
+		kind:Self::Kind,
+		children:ParsedChildren<Self::Kind>,
+	) -> RawSyntaxNode<Self::Kind> {
+		match kind {
+			HTML_BOGUS | HTML_BOGUS_ATTRIBUTE | HTML_BOGUS_ELEMENT => {
+				RawSyntaxNode::new(kind, children.into_iter().map(Some))
+			},
 
-                let mut slots: RawNodeSlots<2usize> = RawNodeSlots::default();
+			HTML_ATTRIBUTE => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<2usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if HtmlName::can_cast(element.kind()) {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlName::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlAttributeInitializerClause::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlAttributeInitializerClause::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_ATTRIBUTE.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_ATTRIBUTE, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_ATTRIBUTE.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_ATTRIBUTE_INITIALIZER_CLAUSE => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_ATTRIBUTE, children)
+			},
 
-                let mut slots: RawNodeSlots<2usize> = RawNodeSlots::default();
+			HTML_ATTRIBUTE_INITIALIZER_CLAUSE => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<2usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [=] {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [=] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlString::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlString::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_ATTRIBUTE_INITIALIZER_CLAUSE.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_ATTRIBUTE_INITIALIZER_CLAUSE, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_ATTRIBUTE_INITIALIZER_CLAUSE.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_CLOSING_ELEMENT => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_ATTRIBUTE_INITIALIZER_CLAUSE, children)
+			},
 
-                let mut slots: RawNodeSlots<4usize> = RawNodeSlots::default();
+			HTML_CLOSING_ELEMENT => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<4usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [<] {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [<] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [/] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [/] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlName::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlName::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [>] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [>] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_CLOSING_ELEMENT.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_CLOSING_ELEMENT, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_CLOSING_ELEMENT.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_COMMENT => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_CLOSING_ELEMENT, children)
+			},
 
-                let mut slots: RawNodeSlots<3usize> = RawNodeSlots::default();
+			HTML_COMMENT => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<3usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [<!--] {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [<!--] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == HTML_LITERAL {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == HTML_LITERAL {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [-->] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [-->] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_COMMENT.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_COMMENT, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_COMMENT.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_CONTENT => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_COMMENT, children)
+			},
 
-                let mut slots: RawNodeSlots<1usize> = RawNodeSlots::default();
+			HTML_CONTENT => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<1usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if element.kind() == HTML_LITERAL {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == HTML_LITERAL {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_CONTENT.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_CONTENT, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_CONTENT.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_DIRECTIVE => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_CONTENT, children)
+			},
 
-                let mut slots: RawNodeSlots<8usize> = RawNodeSlots::default();
+			HTML_DIRECTIVE => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<8usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [<] {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [<] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T![!] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T![!] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T![doctype] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T![doctype] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T![html] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T![html] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == HTML_LITERAL {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == HTML_LITERAL {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == HTML_STRING_LITERAL {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == HTML_STRING_LITERAL {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == HTML_STRING_LITERAL {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == HTML_STRING_LITERAL {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [>] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [>] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_DIRECTIVE.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_DIRECTIVE, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_DIRECTIVE.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_ELEMENT => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_DIRECTIVE, children)
+			},
 
-                let mut slots: RawNodeSlots<3usize> = RawNodeSlots::default();
+			HTML_ELEMENT => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<3usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if HtmlOpeningElement::can_cast(element.kind()) {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlOpeningElement::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlElementList::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlElementList::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlClosingElement::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlClosingElement::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_ELEMENT.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_ELEMENT, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_ELEMENT.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_NAME => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_ELEMENT, children)
+			},
 
-                let mut slots: RawNodeSlots<1usize> = RawNodeSlots::default();
+			HTML_NAME => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<1usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if element.kind() == HTML_LITERAL {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == HTML_LITERAL {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_NAME.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_NAME, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_NAME.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_OPENING_ELEMENT => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_NAME, children)
+			},
 
-                let mut slots: RawNodeSlots<4usize> = RawNodeSlots::default();
+			HTML_OPENING_ELEMENT => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<4usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [<] {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [<] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlName::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlName::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlAttributeList::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlAttributeList::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [>] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [>] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_OPENING_ELEMENT.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_OPENING_ELEMENT, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_OPENING_ELEMENT.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_ROOT => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_OPENING_ELEMENT, children)
+			},
 
-                let mut slots: RawNodeSlots<4usize> = RawNodeSlots::default();
+			HTML_ROOT => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<4usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T![UNICODE_BOM] {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T![UNICODE_BOM] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlDirective::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlDirective::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlElementList::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlElementList::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T![EOF] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T![EOF] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_ROOT.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_ROOT, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_ROOT.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_SELF_CLOSING_ELEMENT => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_ROOT, children)
+			},
 
-                let mut slots: RawNodeSlots<5usize> = RawNodeSlots::default();
+			HTML_SELF_CLOSING_ELEMENT => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<5usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [<] {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [<] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlName::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlName::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if HtmlAttributeList::can_cast(element.kind()) {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if HtmlAttributeList::can_cast(element.kind()) {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [/] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [/] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if let Some(element) = &current_element {
-                    if element.kind() == T ! [>] {
-                        slots.mark_present();
+				slots.next_slot();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == T ! [>] {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_SELF_CLOSING_ELEMENT.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_SELF_CLOSING_ELEMENT, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_SELF_CLOSING_ELEMENT.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_STRING => {
-                let mut elements = (&children).into_iter();
+				slots.into_node(HTML_SELF_CLOSING_ELEMENT, children)
+			},
 
-                let mut slots: RawNodeSlots<1usize> = RawNodeSlots::default();
+			HTML_STRING => {
+				let mut elements = (&children).into_iter();
 
-                let mut current_element = elements.next();
+				let mut slots:RawNodeSlots<1usize> = RawNodeSlots::default();
 
-                if let Some(element) = &current_element {
-                    if element.kind() == HTML_STRING_LITERAL {
-                        slots.mark_present();
+				let mut current_element = elements.next();
 
-                        current_element = elements.next();
-                    }
-                }
+				if let Some(element) = &current_element {
+					if element.kind() == HTML_STRING_LITERAL {
+						slots.mark_present();
 
-                slots.next_slot();
+						current_element = elements.next();
+					}
+				}
 
-                if current_element.is_some() {
-                    return RawSyntaxNode::new(
-                        HTML_STRING.to_bogus(),
-                        children.into_iter().map(Some),
-                    );
-                }
+				slots.next_slot();
 
-                slots.into_node(HTML_STRING, children)
-            }
+				if current_element.is_some() {
+					return RawSyntaxNode::new(
+						HTML_STRING.to_bogus(),
+						children.into_iter().map(Some),
+					);
+				}
 
-            HTML_ATTRIBUTE_LIST => {
-                Self::make_node_list_syntax(kind, children, AnyHtmlAttribute::can_cast)
-            }
+				slots.into_node(HTML_STRING, children)
+			},
 
-            HTML_ELEMENT_LIST => {
-                Self::make_node_list_syntax(kind, children, AnyHtmlElement::can_cast)
-            }
+			HTML_ATTRIBUTE_LIST => {
+				Self::make_node_list_syntax(kind, children, AnyHtmlAttribute::can_cast)
+			},
 
-            _ => unreachable!("Is {:?} a token?", kind),
-        }
-    }
+			HTML_ELEMENT_LIST => {
+				Self::make_node_list_syntax(kind, children, AnyHtmlElement::can_cast)
+			},
+
+			_ => unreachable!("Is {:?} a token?", kind),
+		}
+	}
 }

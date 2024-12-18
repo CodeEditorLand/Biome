@@ -12,10 +12,7 @@ pub enum MarkupElements<'a> {
 
 impl<'a> MarkupElements<'a> {
 	/// Iterates on all the element slices depth-first
-	pub fn for_each(
-		&self,
-		func:&mut impl FnMut(&'a [MarkupElement]) -> io::Result<()>,
-	) -> io::Result<()> {
+	pub fn for_each(&self, func:&mut impl FnMut(&'a [MarkupElement]) -> io::Result<()>) -> io::Result<()> {
 		if let Self::Node(parent, elem) = self {
 			parent.for_each(func)?;
 
@@ -26,10 +23,7 @@ impl<'a> MarkupElements<'a> {
 	}
 
 	/// Iterates on all the element slices breadth-first
-	pub fn for_each_rev(
-		&self,
-		func:&mut impl FnMut(&'a [MarkupElement]) -> io::Result<()>,
-	) -> io::Result<()> {
+	pub fn for_each_rev(&self, func:&mut impl FnMut(&'a [MarkupElement]) -> io::Result<()>) -> io::Result<()> {
 		if let Self::Node(parent, elem) = self {
 			func(elem)?;
 
@@ -83,9 +77,7 @@ impl<'fmt> Formatter<'fmt> {
 	}
 
 	/// Write a slice of text into this formatter
-	pub fn write_str(&mut self, content:&str) -> io::Result<()> {
-		self.writer.write_str(&self.state, content)
-	}
+	pub fn write_str(&mut self, content:&str) -> io::Result<()> { self.writer.write_str(&self.state, content) }
 
 	/// Write formatted text into this formatter
 	pub fn write_fmt(&mut self, content:fmt::Arguments) -> io::Result<()> {

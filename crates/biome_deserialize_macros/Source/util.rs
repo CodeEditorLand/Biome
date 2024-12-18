@@ -1,9 +1,6 @@
 use syn::{Error, Meta, MetaList, NestedMeta, spanned::Spanned};
 
-pub(crate) fn parse_meta_list(
-	meta:&Meta,
-	mut consume:impl FnMut(&Meta) -> Result<(), Error>,
-) -> Result<(), Error> {
+pub(crate) fn parse_meta_list(meta:&Meta, mut consume:impl FnMut(&Meta) -> Result<(), Error>) -> Result<(), Error> {
 	let Meta::List(MetaList { nested, .. }) = meta else {
 		return Err(Error::new(meta.span(), "A list of attribute is expected"));
 	};

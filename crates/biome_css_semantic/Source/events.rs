@@ -1,11 +1,6 @@
 use std::{borrow::Cow, collections::VecDeque};
 
-use biome_css_syntax::{
-	AnyCssSelector,
-	CssDeclarationBlock,
-	CssRelativeSelector,
-	CssSyntaxKind::*,
-};
+use biome_css_syntax::{AnyCssSelector, CssDeclarationBlock, CssRelativeSelector, CssSyntaxKind::*};
 use biome_rowan::{AstNode, SyntaxNodeCast, SyntaxNodeOptionExt, TextRange};
 
 use crate::{
@@ -59,15 +54,11 @@ impl SemanticEventExtractor {
 			// This tracks the hierarchical structure of rules, including:
 			// 1. Standard rulesets Example: p { color: red; }
 			// 2. Nested selectors Example: .parent { .child { font-size: 14px; } }
-			// 3. At-rules like media queries Example: @media (min-width: 600px) { header { padding:
-			//    20px; } }
+			// 3. At-rules like media queries Example: @media (min-width: 600px) { header { padding: 20px; } }
 			//
 			// Each rule start is pushed onto a stack to maintain parent-child relationships,
 			// allowing for proper scoping and inheritance of styles.
-			kind if kind == CSS_QUALIFIED_RULE
-				|| kind == CSS_NESTED_QUALIFIED_RULE
-				|| kind == CSS_MEDIA_AT_RULE =>
-			{
+			kind if kind == CSS_QUALIFIED_RULE || kind == CSS_NESTED_QUALIFIED_RULE || kind == CSS_MEDIA_AT_RULE => {
 				let range = node.text_range();
 
 				self.stash.push_back(SemanticEvent::RuleStart(range));
@@ -76,10 +67,7 @@ impl SemanticEventExtractor {
 			},
 
 			CSS_SELECTOR_LIST => {
-				if !matches!(
-					node.parent().kind(),
-					Some(CSS_QUALIFIED_RULE | CSS_NESTED_QUALIFIED_RULE)
-				) {
+				if !matches!(node.parent().kind(), Some(CSS_QUALIFIED_RULE | CSS_NESTED_QUALIFIED_RULE)) {
 					return;
 				};
 
@@ -89,10 +77,7 @@ impl SemanticEventExtractor {
 			},
 
 			CSS_RELATIVE_SELECTOR_LIST => {
-				if !matches!(
-					node.parent().kind(),
-					Some(CSS_QUALIFIED_RULE | CSS_NESTED_QUALIFIED_RULE)
-				) {
+				if !matches!(node.parent().kind(), Some(CSS_QUALIFIED_RULE | CSS_NESTED_QUALIFIED_RULE)) {
 					return;
 				};
 
@@ -110,10 +95,7 @@ impl SemanticEventExtractor {
 								name:property_name.text_trimmed().to_string(),
 								range:property_name.text_trimmed_range(),
 							},
-							value:CssValue {
-								text:value.text_trimmed().to_string(),
-								range:value.text_trimmed_range(),
-							},
+							value:CssValue { text:value.text_trimmed().to_string(), range:value.text_trimmed_range() },
 							range:node.text_range(),
 						});
 					}
@@ -199,16 +181,12 @@ impl SemanticEventExtractor {
 		let mut inherits = None;
 
 		for declaration in decls.declarations().into_iter().filter_map(|d| d.declaration().ok()) {
-			if let Ok(biome_css_syntax::AnyCssProperty::CssGenericProperty(prop)) =
-				declaration.property()
-			{
+			if let Ok(biome_css_syntax::AnyCssProperty::CssGenericProperty(prop)) = declaration.property() {
 				if let Ok(prop_name) = prop.name() {
 					match prop_name.text().as_str() {
 						"initial-value" => {
-							initial_value = Some(CssValue {
-								text:prop.value().text().to_string(),
-								range:prop.value().range(),
-							});
+							initial_value =
+								Some(CssValue { text:prop.value().text().to_string(), range:prop.value().range() });
 						},
 						"syntax" => {
 							syntax = Some(prop.value().text().to_string());
@@ -224,10 +202,7 @@ impl SemanticEventExtractor {
 		}
 
 		self.stash.push_back(SemanticEvent::AtProperty {
-			property:CssProperty {
-				name:property_name.text_trimmed().to_string(),
-				range:property_name.text_range(),
-			},
+			property:CssProperty { name:property_name.text_trimmed().to_string(), range:property_name.text_range() },
 			initial_value,
 			syntax,
 			inherits,
@@ -235,13 +210,7 @@ impl SemanticEventExtractor {
 		});
 	}
 
-	fn add_selector_event(
-		&mut self,
-		name:Cow<str>,
-		range:TextRange,
-		original:AnyCssSelector,
-		specificity:Specificity,
-	) {
+	fn add_selector_event(&mut self, name:Cow<str>, range:TextRange, original:AnyCssSelector, specificity:Specificity) {
 		self.stash.push_back(SemanticEvent::SelectorDeclaration {
 			name:name.into_owned(),
 			range,
@@ -251,8 +220,7 @@ impl SemanticEventExtractor {
 	}
 
 	pub fn leave(&mut self, node:&biome_css_syntax::CssSyntaxNode) {
-		if matches!(node.kind(), CSS_QUALIFIED_RULE | CSS_NESTED_QUALIFIED_RULE | CSS_MEDIA_AT_RULE)
-		{
+		if matches!(node.kind(), CSS_QUALIFIED_RULE | CSS_NESTED_QUALIFIED_RULE | CSS_MEDIA_AT_RULE) {
 			self.current_rule_stack.pop();
 
 			self.stash.push_back(SemanticEvent::RuleEnd);

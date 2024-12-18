@@ -79,11 +79,7 @@ impl BiomeDiagnostic {
 
 	pub fn new_invalid_ignore_pattern(pattern:impl Into<String>, reason:impl Into<String>) -> Self {
 		Self::InvalidIgnorePattern(InvalidIgnorePattern {
-			message:format!(
-				"Couldn't parse the pattern \"{}\". Reason: {}",
-				pattern.into(),
-				reason.into()
-			),
+			message:format!("Couldn't parse the pattern \"{}\". Reason: {}", pattern.into(), reason.into()),
 			file_path:None,
 		})
 	}
@@ -94,11 +90,7 @@ impl BiomeDiagnostic {
 		file_path:Option<impl Into<String>>,
 	) -> Self {
 		Self::InvalidIgnorePattern(InvalidIgnorePattern {
-			message:format!(
-				"Couldn't parse the pattern \"{}\". Reason: {}",
-				pattern.into(),
-				reason.into()
-			),
+			message:format!("Couldn't parse the pattern \"{}\". Reason: {}", pattern.into(), reason.into()),
 			file_path:file_path.map(|f| f.into()),
 		})
 	}
@@ -251,8 +243,7 @@ impl EditorConfigDiagnostic {
 	pub fn incompatible(key:impl Into<String>, message:impl Into<String>) -> Self {
 		Self::Incompatible(IncompatibleDiagnostic {
 			message:MessageAndDescription::from(
-				markup! { "Key '"{key.into()}"' is incompatible with biome: "{message.into()}}
-					.to_owned(),
+				markup! { "Key '"{key.into()}"' is incompatible with biome: "{message.into()}}.to_owned(),
 			),
 		})
 	}
@@ -260,19 +251,17 @@ impl EditorConfigDiagnostic {
 	pub fn unknown_glob_pattern(pattern:impl Into<String>) -> Self {
 		Self::UnknownGlobPattern(UnknownGlobPatternDiagnostic {
 			message:MessageAndDescription::from(
-				markup! { "This glob pattern is incompatible with biome: "{pattern.into()}}
-					.to_owned(),
+				markup! { "This glob pattern is incompatible with biome: "{pattern.into()}}.to_owned(),
 			),
 		})
 	}
 
 	pub fn invalid_glob_pattern(pattern:impl Into<String>, reason:impl Into<String>) -> Self {
 		Self::InvalidGlobPattern(InvalidGlobPatternDiagnostic {
-            message: MessageAndDescription::from(
-                markup! { "This glob pattern is invalid: "{pattern.into()}" Reason: "{reason.into()}}
-                    .to_owned(),
-            ),
-        })
+			message:MessageAndDescription::from(
+				markup! { "This glob pattern is invalid: "{pattern.into()}" Reason: "{reason.into()}}.to_owned(),
+			),
+		})
 	}
 }
 
@@ -356,11 +345,7 @@ mod test {
 	fn deserialization_error() {
 		let content = "{ \n\n\"formatter\" }";
 
-		let result = deserialize_from_json_str::<PartialConfiguration>(
-			content,
-			JsonParserOptions::default(),
-			"",
-		);
+		let result = deserialize_from_json_str::<PartialConfiguration>(content, JsonParserOptions::default(), "");
 
 		assert!(result.has_errors());
 
@@ -385,12 +370,8 @@ mod test {
   }
 }"#;
 
-		let _result = deserialize_from_json_str::<PartialConfiguration>(
-			content,
-			JsonParserOptions::default(),
-			"",
-		)
-		.into_deserialized()
-		.unwrap_or_default();
+		let _result = deserialize_from_json_str::<PartialConfiguration>(content, JsonParserOptions::default(), "")
+			.into_deserialized()
+			.unwrap_or_default();
 	}
 }

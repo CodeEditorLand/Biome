@@ -6,11 +6,11 @@ pub mod organize_imports;
 pub mod use_sorted_attributes;
 
 declare_assists_group! {
-    pub Source {
-        name : "source" ,
-        rules : [
-            self :: organize_imports :: OrganizeImports ,
-            self :: use_sorted_attributes :: UseSortedAttributes ,
-        ]
-     }
+	pub Source {
+		name : "source" ,
+		rules : [
+			self :: organize_imports :: OrganizeImports ,
+			self :: use_sorted_attributes :: UseSortedAttributes ,
+		]
+	 }
 }

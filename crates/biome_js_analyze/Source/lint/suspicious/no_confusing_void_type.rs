@@ -1,131 +1,134 @@
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, FixKind, Rule, RuleDiagnostic, RuleSource,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
 use biome_diagnostics::Applicability;
 use biome_js_factory::make;
-use biome_js_syntax::{AnyTsType, JsSyntaxKind, JsSyntaxNode, TsConditionalType, TsVoidType, T};
+use biome_js_syntax::{AnyTsType, JsSyntaxKind, JsSyntaxNode, T, TsConditionalType, TsVoidType};
 use biome_rowan::{AstNode, BatchMutationExt};
 
 use crate::JsRuleAction;
 
 declare_lint_rule! {
-    /// Disallow `void` type outside of generic or return types.
-    ///
-    /// `void` in TypeScript refers to a function return that is meant to be ignored.
-    /// Attempting to use a void type outside of a return type or a type parameter is often a sign of programmer error.
-    /// `void` can also be misleading for other developers even if used correctly.
-    ///
-    /// > The `void` type means cannot be mixed with any other types, other than `never`, which accepts all types.
-    /// > If you think you need this then you probably want the `undefined` type instead.
-    ///
-    /// The code action suggests using `undefined` instead of `void`.
-    /// It is unsafe because a variable with the `void` type cannot be asigned to a variable with the `undefined` type.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```ts,expect_diagnostic
-    /// let foo: void;
-    /// ```
-    ///
-    /// ```ts,expect_diagnostic
-    /// function logSomething(thing: void) {}
-    /// ```
-    ///
-    /// ```ts,expect_diagnostic
-    /// interface Interface {
-    ///     prop: void;
-    /// }
-    /// ```
-    ///
-    /// ```ts,expect_diagnostic
-    /// type PossibleValues = number | void;
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```ts
-    /// function foo(): void {};
-    /// ```
-    ///
-    /// ```ts
-    /// function doSomething(this: void) {}
-    /// ```
-    ///
-    /// ```ts
-    /// function printArg<T = void>(arg: T) {}
-    /// ```
-    pub NoConfusingVoidType {
-        version: "1.2.0",
-        name: "noConfusingVoidType",
-        language: "ts",
-        sources: &[RuleSource::EslintTypeScript("no-invalid-void-type")],
-        recommended: true,
-        fix_kind: FixKind::Unsafe,
-    }
+	/// Disallow `void` type outside of generic or return types.
+	///
+	/// `void` in TypeScript refers to a function return that is meant to be ignored.
+	/// Attempting to use a void type outside of a return type or a type parameter is often a sign of programmer error.
+	/// `void` can also be misleading for other developers even if used correctly.
+	///
+	/// > The `void` type means cannot be mixed with any other types, other than `never`, which accepts all types.
+	/// > If you think you need this then you probably want the `undefined` type instead.
+	///
+	/// The code action suggests using `undefined` instead of `void`.
+	/// It is unsafe because a variable with the `void` type cannot be asigned to a variable with the `undefined` type.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```ts,expect_diagnostic
+	/// let foo: void;
+	/// ```
+	///
+	/// ```ts,expect_diagnostic
+	/// function logSomething(thing: void) {}
+	/// ```
+	///
+	/// ```ts,expect_diagnostic
+	/// interface Interface {
+	///     prop: void;
+	/// }
+	/// ```
+	///
+	/// ```ts,expect_diagnostic
+	/// type PossibleValues = number | void;
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```ts
+	/// function foo(): void {};
+	/// ```
+	///
+	/// ```ts
+	/// function doSomething(this: void) {}
+	/// ```
+	///
+	/// ```ts
+	/// function printArg<T = void>(arg: T) {}
+	/// ```
+	pub NoConfusingVoidType {
+		version: "1.2.0",
+		name: "noConfusingVoidType",
+		language: "ts",
+		sources: &[RuleSource::EslintTypeScript("no-invalid-void-type")],
+		recommended: true,
+		fix_kind: FixKind::Unsafe,
+	}
 }
 
 /// We only focus on union type
 pub enum VoidTypeContext {
-    Union,
-    Unknown,
+	Union,
+	Unknown,
 }
 
 impl Rule for NoConfusingVoidType {
-    type Query = Ast<TsVoidType>;
+	type Options = ();
+	type Query = Ast<TsVoidType>;
+	type Signals = Option<Self::State>;
+	type State = VoidTypeContext;
 
-    type State = VoidTypeContext;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		decide_void_type_context(node.syntax())
+	}
 
-    type Options = ();
+	fn diagnostic(ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+		let node = ctx.query();
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let node = ctx.query();
+		let message = match state {
+			VoidTypeContext::Union => "inside a union type.",
+			VoidTypeContext::Unknown => "outside a return type or a type parameter.",
+		};
 
-        decide_void_type_context(node.syntax())
-    }
+		Some(RuleDiagnostic::new(
+			rule_category!(),
+			node.range(),
+			markup! {
+			<Emphasis>"void"</Emphasis>" is confusing "{message}},
+		))
+	}
 
-    fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-        let node = ctx.query();
+	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
+		let node = ctx.query();
 
-        let message = match state {
-            VoidTypeContext::Union => "inside a union type.",
-            VoidTypeContext::Unknown => "outside a return type or a type parameter.",
-        };
+		let mut mutation = ctx.root().begin();
 
-        Some(RuleDiagnostic::new(
-            rule_category!(),
-            node.range(),
-            markup! {
-            <Emphasis>"void"</Emphasis>" is confusing "{message}},
-        ))
-    }
+		mutation.replace_node(
+			AnyTsType::from(node.clone()),
+			AnyTsType::from(make::ts_undefined_type(make::token(T![undefined]))),
+		);
 
-    fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
-        let node = ctx.query();
-
-        let mut mutation = ctx.root().begin();
-
-        mutation.replace_node(
-            AnyTsType::from(node.clone()),
-            AnyTsType::from(make::ts_undefined_type(make::token(T![undefined]))),
-        );
-
-        Some(JsRuleAction::new(
-            ctx.metadata().action_category(ctx.category(), ctx.group()),
-            Applicability::MaybeIncorrect,
-            markup! { "Use "<Emphasis>"undefined"</Emphasis>" instead." }.to_owned(),
-            mutation,
-        ))
-    }
+		Some(JsRuleAction::new(
+			ctx.metadata().action_category(ctx.category(), ctx.group()),
+			Applicability::MaybeIncorrect,
+			markup! { "Use "<Emphasis>"undefined"</Emphasis>" instead." }.to_owned(),
+			mutation,
+		))
+	}
 }
 
-fn decide_void_type_context(node: &JsSyntaxNode) -> Option<VoidTypeContext> {
-    for parent in node.parent()?.ancestors() {
-        match parent.kind() {
+fn decide_void_type_context(node:&JsSyntaxNode) -> Option<VoidTypeContext> {
+	for parent in node.parent()?.ancestors() {
+		match parent.kind() {
             JsSyntaxKind::TS_UNION_TYPE_VARIANT_LIST => {
                 // checks if the union type contains a generic type has a void type as argument
                 for child in parent.descendants() {
@@ -188,7 +191,7 @@ fn decide_void_type_context(node: &JsSyntaxNode) -> Option<VoidTypeContext> {
 
             _ => return Some(VoidTypeContext::Unknown),
         }
-    }
+	}
 
-    Some(VoidTypeContext::Unknown)
+	Some(VoidTypeContext::Unknown)
 }

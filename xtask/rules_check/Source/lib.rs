@@ -1,6 +1,5 @@
 //! This module is in charge of checking if the documentation and tests cases
 //! inside the Analyzer rules are correct.
-//!
 use std::{collections::BTreeMap, fmt::Write, path::PathBuf, slice, str::FromStr};
 
 use anyhow::{bail, ensure};

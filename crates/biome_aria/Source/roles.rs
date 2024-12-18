@@ -117,8 +117,8 @@ impl AriaRoles {
 						}
 					},
 					Some(
-						"color" | "date" | "datetime-local" | "file" | "hidden" | "month"
-						| "password" | "time" | "week",
+						"color" | "date" | "datetime-local" | "file" | "hidden" | "month" | "password" | "time"
+						| "week",
 					) => {
 						return None;
 					},
@@ -152,9 +152,7 @@ impl AriaRoles {
 							AriaRole::Img
 						} else {
 							let has_accessible_name = elt
-								.find_attribute_by_name(|n| {
-									matches!(n, "aria-labelledby" | "aria-label" | "title")
-								})
+								.find_attribute_by_name(|n| matches!(n, "aria-labelledby" | "aria-label" | "title"))
 								.is_some();
 
 							if has_accessible_name { AriaRole::Img } else { AriaRole::Presentation }
@@ -166,19 +164,13 @@ impl AriaRoles {
 			},
 			"section" => {
 				let has_accessible_name = elt
-					.find_attribute_by_name(|n| {
-						matches!(n, "aria-labelledby" | "aria-label" | "title")
-					})
+					.find_attribute_by_name(|n| matches!(n, "aria-labelledby" | "aria-label" | "title"))
 					.is_some();
 
 				if has_accessible_name { AriaRole::Region } else { AriaRole::Generic }
 			},
 			"select" => {
-				let size = match elt
-					.find_attribute_by_name(|n| n == "size")
-					.as_ref()
-					.and_then(|a| a.value())
-				{
+				let size = match elt.find_attribute_by_name(|n| n == "size").as_ref().and_then(|a| a.value()) {
 					Some(size) => size.as_ref().parse::<i32>().ok()?,
 					None => 0,
 				};
@@ -189,8 +181,9 @@ impl AriaRoles {
 					AriaRole::Listbox
 				}
 			},
-			"b" | "bdi" | "bdo" | "body" | "data" | "div" | "i" | "q" | "samp" | "small"
-			| "span" | "u" | "pre" => AriaRole::Generic,
+			"b" | "bdi" | "bdo" | "body" | "data" | "div" | "i" | "q" | "samp" | "small" | "span" | "u" | "pre" => {
+				AriaRole::Generic
+			},
 			"header" | "footer" => {
 				// This crate does not support checking a descendant of an element.
 				// header (maybe BannerRole): https://www.w3.org/WAI/ARIA/apg/patterns/landmarks/examples/banner.html
@@ -225,8 +218,8 @@ impl AriaRoles {
 			Some("svg") => true,
 			// Elements without any concept
 			Some(
-				"body" | "br" | "details" | "dir" | "frame" | "iframe" | "label" | "mark"
-				| "marquee" | "menu" | "meter" | "optgroup" | "pre" | "progress" | "ruby",
+				"body" | "br" | "details" | "dir" | "frame" | "iframe" | "label" | "mark" | "marquee" | "menu"
+				| "meter" | "optgroup" | "pre" | "progress" | "ruby",
 			) => true,
 			// `<input type="hidden">` is not interactive.
 			// `type=hidden` is not represented as concept information.
@@ -263,9 +256,7 @@ impl AriaRoles {
 			// ref: https://html.spec.whatwg.org/multipage/semantics.html#embedded-content
 			Some("canvas" | "embed" | "iframe" | "video" | "audio") => true,
 			// No corresponding role
-			Some("input" | "dl" | "label" | "legend" | "ruby" | "pre" | "figcaption" | "br") => {
-				true
-			},
+			Some("input" | "dl" | "label" | "legend" | "ruby" | "pre" | "figcaption" | "br") => true,
 
 			Some("s" | "hgroup") => false,
 			// FIXME: should we add `link`?

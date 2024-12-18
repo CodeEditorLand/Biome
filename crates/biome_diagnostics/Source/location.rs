@@ -21,9 +21,7 @@ pub struct Location<'a> {
 
 impl<'a> Location<'a> {
 	/// Creates a new instance of [LocationBuilder].
-	pub fn builder() -> LocationBuilder<'a> {
-		LocationBuilder { resource:None, span:None, source_code:None }
-	}
+	pub fn builder() -> LocationBuilder<'a> { LocationBuilder { resource:None, span:None, source_code:None } }
 }
 
 /// The implementation of [PartialEq] for [Location] only compares the `path`
@@ -106,10 +104,7 @@ impl BorrowedSourceCode<'_> {
 	/// Converts a `SourceCode<&str, &LineIndex>` to `SourceCode<String,
 	/// LineIndexBuf>`.
 	pub(crate) fn to_owned(self) -> OwnedSourceCode {
-		SourceCode {
-			text:self.text.to_owned(),
-			line_starts:self.line_starts.map(ToOwned::to_owned),
-		}
+		SourceCode { text:self.text.to_owned(), line_starts:self.line_starts.map(ToOwned::to_owned) }
 	}
 }
 
@@ -261,9 +256,7 @@ pub trait AsSourceCode {
 }
 
 impl<T:AsSourceCode> AsSourceCode for Option<T> {
-	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> {
-		self.as_ref().and_then(T::as_source_code)
-	}
+	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> { self.as_ref().and_then(T::as_source_code) }
 }
 
 impl<T:AsSourceCode + ?Sized> AsSourceCode for &'_ T {
@@ -281,15 +274,11 @@ impl AsSourceCode for OwnedSourceCode {
 }
 
 impl AsSourceCode for str {
-	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> {
-		Some(SourceCode { text:self, line_starts:None })
-	}
+	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> { Some(SourceCode { text:self, line_starts:None }) }
 }
 
 impl AsSourceCode for String {
-	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> {
-		Some(SourceCode { text:self, line_starts:None })
-	}
+	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> { Some(SourceCode { text:self, line_starts:None }) }
 }
 
 #[cfg(test)]

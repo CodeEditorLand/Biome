@@ -36,10 +36,7 @@ impl MissingServicesDiagnostic {
 
 pub trait FromServices: Sized {
 	#[allow(clippy::result_large_err)]
-	fn from_services(
-		rule_key:&RuleKey,
-		services:&ServiceBag,
-	) -> Result<Self, MissingServicesDiagnostic>;
+	fn from_services(rule_key:&RuleKey, services:&ServiceBag) -> Result<Self, MissingServicesDiagnostic>;
 }
 
 #[derive(Debug, Default)]
@@ -64,7 +61,5 @@ impl ServiceBag {
 }
 
 impl FromServices for () {
-	fn from_services(_:&RuleKey, _:&ServiceBag) -> Result<Self, MissingServicesDiagnostic> {
-		Ok(())
-	}
+	fn from_services(_:&RuleKey, _:&ServiceBag) -> Result<Self, MissingServicesDiagnostic> { Ok(()) }
 }

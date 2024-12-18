@@ -87,8 +87,9 @@ impl JsExport {
 	/// will return
 	/// ```js
 	/// [
-	///     ExportedItem { identifier: Some(AnyIdentifier::AnyJsBindingPattern("foo")), exported: None, is_default: true },
-	/// ]
+	///     ExportedItem { identifier:
+	/// Some(AnyIdentifier::AnyJsBindingPattern("foo")), exported: None,
+	/// is_default: true }, ]
 	/// ```
 	pub fn get_exported_items(&self) -> Vec<ExportedItem> {
 		self.export_clause()

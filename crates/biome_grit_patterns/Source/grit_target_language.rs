@@ -302,7 +302,7 @@ trait GritTargetLanguageImpl {
 	/// JavaScript: ```grit
 	/// `$async func name(args)` where $async <: .
 	/// ```
-	///
+	/// 
 	/// This method allows you to specify fields that should be (conditionally)
 	/// disregarded in snippets. The actual value of the field from the
 	/// snippet, if any, is passed in as the third argument.
@@ -311,7 +311,6 @@ trait GritTargetLanguageImpl {
 	/// ast_node syntax to match on these fields. For example, in
 	/// react_to_hooks we match on `arrow_function` and capture `$parenthesis`
 	/// for inspection.
-	///
 	/// ```grit
 	/// arrow_function(parameters=$props, $body, $parenthesis) where {
 	///     $props <: contains or { `props`, `inputProps` },

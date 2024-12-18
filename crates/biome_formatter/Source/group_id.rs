@@ -15,9 +15,7 @@ impl DebugGroupId {
 }
 
 impl std::fmt::Debug for DebugGroupId {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "#{}-{}", self.name, self.value)
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "#{}-{}", self.name, self.value) }
 }
 
 /// Unique identification for a group.
@@ -41,9 +39,7 @@ impl From<GroupId> for u32 {
 }
 
 impl std::fmt::Debug for ReleaseGroupId {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "#{}", self.value)
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "#{}", self.value) }
 }
 
 #[cfg(not(debug_assertions))]

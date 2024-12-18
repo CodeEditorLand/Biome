@@ -1,141 +1,140 @@
 use std::borrow::Cow;
 
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
-use biome_js_syntax::{jsx_ext::AnyJsxElement, AnyJsxAttribute, AnyJsxElementName};
+use biome_js_syntax::{AnyJsxAttribute, AnyJsxElementName, jsx_ext::AnyJsxElement};
 use biome_rowan::AstNode;
 use biome_string_case::StrLikeExtension;
 
 declare_lint_rule! {
-    /// Enforce onClick is accompanied by at least one of the following: `onKeyUp`, `onKeyDown`, `onKeyPress`.
-    ///
-    /// Coding for the keyboard is important for users with physical disabilities who cannot use a mouse, AT compatibility, and screenreader users.
-    /// This does not apply for interactive or hidden elements.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div onClick={() => {}} />
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```jsx
-    /// <div onClick={() => {}} onKeyDown={handleKeyDown} />
-    ///```
-    ///
-    /// ```jsx
-    /// <div onClick={() => {}} onKeyUp={handleKeyUp} />
-    ///```
-    ///
-    /// ```jsx
-    /// <div onClick={() => {}} onKeyPress={handleKeyPress} />
-    ///```
-    ///
-    /// ```jsx
-    /// // this rule doesn't apply to user created component
-    /// <MyComponent onClick={() => {}} />
-    ///```
-    ///
-    /// ```jsx,
-    /// <div onClick={() => {}} {...spread}></div>
-    /// ```
-    ///
-    /// ```jsx
-    /// <div {...spread} onClick={() => {}} ></div>
-    /// ```
-    ///
-    /// ```jsx
-    /// <button onClick={() => console.log("test")}>Submit</button>
-    /// ```
-    ///
-    /// ## Accessibility guidelines
-    ///
-    /// - [WCAG 2.1.1](https://www.w3.org/WAI/WCAG21/Understanding/keyboard)
-    ///
-    pub UseKeyWithClickEvents {
-        version: "1.0.0",
-        name: "useKeyWithClickEvents",
-        language: "jsx",
-        sources: &[RuleSource::EslintJsxA11y("click-events-have-key-events")],
-        recommended: true,
-    }
+	/// Enforce onClick is accompanied by at least one of the following: `onKeyUp`, `onKeyDown`, `onKeyPress`.
+	///
+	/// Coding for the keyboard is important for users with physical disabilities who cannot use a mouse, AT compatibility, and screenreader users.
+	/// This does not apply for interactive or hidden elements.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div onClick={() => {}} />
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```jsx
+	/// <div onClick={() => {}} onKeyDown={handleKeyDown} />
+	///```
+	///
+	/// ```jsx
+	/// <div onClick={() => {}} onKeyUp={handleKeyUp} />
+	///```
+	///
+	/// ```jsx
+	/// <div onClick={() => {}} onKeyPress={handleKeyPress} />
+	///```
+	///
+	/// ```jsx
+	/// // this rule doesn't apply to user created component
+	/// <MyComponent onClick={() => {}} />
+	///```
+	///
+	/// ```jsx,
+	/// <div onClick={() => {}} {...spread}></div>
+	/// ```
+	///
+	/// ```jsx
+	/// <div {...spread} onClick={() => {}} ></div>
+	/// ```
+	///
+	/// ```jsx
+	/// <button onClick={() => console.log("test")}>Submit</button>
+	/// ```
+	///
+	/// ## Accessibility guidelines
+	///
+	/// - [WCAG 2.1.1](https://www.w3.org/WAI/WCAG21/Understanding/keyboard)
+	///
+	pub UseKeyWithClickEvents {
+		version: "1.0.0",
+		name: "useKeyWithClickEvents",
+		language: "jsx",
+		sources: &[RuleSource::EslintJsxA11y("click-events-have-key-events")],
+		recommended: true,
+	}
 }
 
 impl Rule for UseKeyWithClickEvents {
-    type Query = Ast<AnyJsxElement>;
+	type Options = ();
+	type Query = Ast<AnyJsxElement>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-    type State = ();
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let element = ctx.query();
 
-    type Signals = Option<Self::State>;
+		match element.name() {
+			Ok(AnyJsxElementName::JsxName(name)) => {
+				let name_token = name.value_token().ok()?;
 
-    type Options = ();
+				let element_name = name_token.text_trimmed().to_ascii_lowercase_cow();
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let element = ctx.query();
+				// Don't handle interactive roles
+				// TODO Support aria roles https://github.com/rome/tools/issues/3640
+				if matches!(
+					element_name,
+					Cow::Borrowed("button" | "checkbox" | "combobox" | "a" | "input")
+				) {
+					return None;
+				}
+			},
 
-        match element.name() {
-            Ok(AnyJsxElementName::JsxName(name)) => {
-                let name_token = name.value_token().ok()?;
+			_ => {
+				return None;
+			},
+		}
 
-                let element_name = name_token.text_trimmed().to_ascii_lowercase_cow();
+		let attributes = element.attributes();
 
-                // Don't handle interactive roles
-                // TODO Support aria roles https://github.com/rome/tools/issues/3640
-                if matches!(
-                    element_name,
-                    Cow::Borrowed("button" | "checkbox" | "combobox" | "a" | "input")
-                ) {
-                    return None;
-                }
-            }
+		#[expect(clippy::question_mark)]
+		if attributes.find_by_name("onClick").is_none() {
+			return None;
+		}
 
-            _ => {
-                return None;
-            }
-        }
+		for attribute in attributes {
+			match attribute {
+				AnyJsxAttribute::JsxAttribute(attribute) => {
+					let attribute_name = attribute.name().ok()?;
 
-        let attributes = element.attributes();
+					let name = attribute_name.as_jsx_name()?;
 
-        #[expect(clippy::question_mark)]
-        if attributes.find_by_name("onClick").is_none() {
-            return None;
-        }
+					let name_token = name.value_token().ok()?;
 
-        for attribute in attributes {
-            match attribute {
-                AnyJsxAttribute::JsxAttribute(attribute) => {
-                    let attribute_name = attribute.name().ok()?;
+					if matches!(name_token.text_trimmed(), "onKeyDown" | "onKeyUp" | "onKeyPress") {
+						return None;
+					}
+				},
 
-                    let name = attribute_name.as_jsx_name()?;
+				AnyJsxAttribute::JsxSpreadAttribute(_) => {
+					return None;
+				},
+			}
+		}
 
-                    let name_token = name.value_token().ok()?;
+		Some(())
+	}
 
-                    if matches!(
-                        name_token.text_trimmed(),
-                        "onKeyDown" | "onKeyUp" | "onKeyPress"
-                    ) {
-                        return None;
-                    }
-                }
+	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
+		let node = ctx.query();
 
-                AnyJsxAttribute::JsxSpreadAttribute(_) => {
-                    return None;
-                }
-            }
-        }
-
-        Some(())
-    }
-
-    fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
-        let node = ctx.query();
-
-        Some(RuleDiagnostic::new(
+		Some(RuleDiagnostic::new(
             rule_category!(),
             node.range(),
             markup! {
@@ -144,5 +143,5 @@ impl Rule for UseKeyWithClickEvents {
         ).note(markup! {
             "Actions triggered using mouse events should have corresponding keyboard events to account for keyboard-only navigation."
         }))
-    }
+	}
 }

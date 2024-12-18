@@ -1,42 +1,44 @@
-use super::{and_compiler::AndCompiler, compilation_context::NodeCompilationContext};
-use crate::{grit_context::GritQueryContext, CompileError};
+use std::collections::BTreeMap;
+
 use biome_grit_syntax::GritPatternDefinition;
 use biome_rowan::AstNode;
 use grit_pattern_matcher::pattern::{Pattern, PatternDefinition};
-use std::collections::BTreeMap;
+
+use super::{and_compiler::AndCompiler, compilation_context::NodeCompilationContext};
+use crate::{CompileError, grit_context::GritQueryContext};
 
 pub struct PatternDefinitionCompiler;
 
 impl PatternDefinitionCompiler {
-    pub fn from_node(
-        node: GritPatternDefinition,
-        context: &mut NodeCompilationContext,
-    ) -> Result<PatternDefinition<GritQueryContext>, CompileError> {
-        let name = node.name()?.text();
+	pub fn from_node(
+		node:GritPatternDefinition,
+		context:&mut NodeCompilationContext,
+	) -> Result<PatternDefinition<GritQueryContext>, CompileError> {
+		let name = node.name()?.text();
 
-        let name = name.trim();
+		let name = name.trim();
 
-        let mut local_vars = BTreeMap::new();
+		let mut local_vars = BTreeMap::new();
 
-        let (scope_index, mut context) = create_scope!(context, local_vars);
-        // important that this occurs first, as calls assume
-        // that parameters are registered first
-        let params = context.get_variables(
-            &context
-                .compilation
-                .pattern_definition_info
-                .get(name)
-                .ok_or_else(|| CompileError::UnknownFunctionOrPattern(name.to_owned()))?
-                .parameters,
-        );
+		let (scope_index, mut context) = create_scope!(context, local_vars);
+		// important that this occurs first, as calls assume
+		// that parameters are registered first
+		let params = context.get_variables(
+			&context
+				.compilation
+				.pattern_definition_info
+				.get(name)
+				.ok_or_else(|| CompileError::UnknownFunctionOrPattern(name.to_owned()))?
+				.parameters,
+		);
 
-        let body = Pattern::And(Box::new(AndCompiler::from_patterns(
-            node.body()?.patterns(),
-            &mut context,
-        )?));
+		let body = Pattern::And(Box::new(AndCompiler::from_patterns(
+			node.body()?.patterns(),
+			&mut context,
+		)?));
 
-        let pattern_def = PatternDefinition::new(name.to_owned(), scope_index, params, body);
+		let pattern_def = PatternDefinition::new(name.to_owned(), scope_index, params, body);
 
-        Ok(pattern_def)
-    }
+		Ok(pattern_def)
+	}
 }

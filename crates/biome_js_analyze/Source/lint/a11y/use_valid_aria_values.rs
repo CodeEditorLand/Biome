@@ -1,110 +1,113 @@
 use std::str::FromStr;
 
-use biome_analyze::context::RuleContext;
-use biome_analyze::{declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource};
+use biome_analyze::{
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+};
 use biome_aria_metadata::{AriaAttribute, AriaValueType};
 use biome_console::markup;
 use biome_js_syntax::{JsSyntaxToken, JsxAttribute, TextRange};
 use biome_rowan::AstNode;
 
 declare_lint_rule! {
-    /// Enforce that ARIA state and property values are valid.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```jsx, expect_diagnostic
-    /// <span role="checkbox" aria-checked="test">some text</span>
-    /// ```
-    ///
-    /// ```jsx, expect_diagnostic
-    /// <span aria-labelledby="">some text</span>
-    /// ```
-    ///
-    /// ```jsx, expect_diagnostic
-    /// <span aria-valuemax="hey">some text</span>
-    /// ```
-    ///
-    /// ```jsx, expect_diagnostic
-    /// <span aria-orientation="hey">some text</span>
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```jsx
-    /// <>
-    ///     <span role="checkbox" aria-checked={checked} >some text</span>
-    ///     <span aria-labelledby="fooId barId" >some text</span>
-    /// </>
-    /// ```
-    ///
-    /// ## Accessibility guidelines
-    ///
-    /// - [WCAG 4.1.2](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)
-    ///
-    /// ### Resources
-    ///
-    /// - [ARIA Spec, States and Properties](https://www.w3.org/TR/wai-aria/#states_and_properties)
-    /// - [Chrome Audit Rules, AX_ARIA_04](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_04)
-    pub UseValidAriaValues {
-        version: "1.0.0",
-        name: "useValidAriaValues",
-        language: "jsx",
-        sources: &[RuleSource::EslintJsxA11y("aria-proptypes")],
-        recommended: true,
-    }
+	/// Enforce that ARIA state and property values are valid.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```jsx, expect_diagnostic
+	/// <span role="checkbox" aria-checked="test">some text</span>
+	/// ```
+	///
+	/// ```jsx, expect_diagnostic
+	/// <span aria-labelledby="">some text</span>
+	/// ```
+	///
+	/// ```jsx, expect_diagnostic
+	/// <span aria-valuemax="hey">some text</span>
+	/// ```
+	///
+	/// ```jsx, expect_diagnostic
+	/// <span aria-orientation="hey">some text</span>
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```jsx
+	/// <>
+	///     <span role="checkbox" aria-checked={checked} >some text</span>
+	///     <span aria-labelledby="fooId barId" >some text</span>
+	/// </>
+	/// ```
+	///
+	/// ## Accessibility guidelines
+	///
+	/// - [WCAG 4.1.2](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)
+	///
+	/// ### Resources
+	///
+	/// - [ARIA Spec, States and Properties](https://www.w3.org/TR/wai-aria/#states_and_properties)
+	/// - [Chrome Audit Rules, AX_ARIA_04](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_04)
+	pub UseValidAriaValues {
+		version: "1.0.0",
+		name: "useValidAriaValues",
+		language: "jsx",
+		sources: &[RuleSource::EslintJsxA11y("aria-proptypes")],
+		recommended: true,
+	}
 }
 
 pub struct UseValidAriaValuesState {
-    attribute_name: JsSyntaxToken,
-    attribute_value_range: TextRange,
-    property_type: AriaValueType,
+	attribute_name:JsSyntaxToken,
+	attribute_value_range:TextRange,
+	property_type:AriaValueType,
 }
 
 impl Rule for UseValidAriaValues {
-    type Query = Ast<JsxAttribute>;
+	type Options = ();
+	type Query = Ast<JsxAttribute>;
+	type Signals = Option<Self::State>;
+	type State = UseValidAriaValuesState;
 
-    type State = UseValidAriaValuesState;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let attribute_name = node.name().ok()?.as_jsx_name()?.value_token().ok()?;
 
-    type Options = ();
+		if let Ok(aria_property) = AriaAttribute::from_str(attribute_name.text_trimmed()) {
+			let attribute_static_value = node.as_static_value()?;
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let node = ctx.query();
+			let attribute_text = attribute_static_value.text();
 
-        let attribute_name = node.name().ok()?.as_jsx_name()?.value_token().ok()?;
+			if !aria_property.value_type().contains(attribute_text) {
+				return Some(UseValidAriaValuesState {
+					attribute_name,
+					attribute_value_range:node.range(),
+					property_type:aria_property.value_type(),
+				});
+			}
+		}
 
-        if let Ok(aria_property) = AriaAttribute::from_str(attribute_name.text_trimmed()) {
-            let attribute_static_value = node.as_static_value()?;
+		None
+	}
 
-            let attribute_text = attribute_static_value.text();
+	fn diagnostic(_ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+		let attribute_name = state.attribute_name.text_trimmed();
 
-            if !aria_property.value_type().contains(attribute_text) {
-                return Some(UseValidAriaValuesState {
-                    attribute_name,
-                    attribute_value_range: node.range(),
-                    property_type: aria_property.value_type(),
-                });
-            }
-        }
+		let diagnostic = RuleDiagnostic::new(
+			rule_category!(),
+			state.attribute_value_range,
+			markup! {
+				"The value of the ARIA attribute "<Emphasis>{attribute_name}</Emphasis>" is not correct."
+			},
+		);
 
-        None
-    }
-
-    fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-        let attribute_name = state.attribute_name.text_trimmed();
-
-        let diagnostic = RuleDiagnostic::new(
-            rule_category!(),
-            state.attribute_value_range,
-            markup! {
-                "The value of the ARIA attribute "<Emphasis>{attribute_name}</Emphasis>" is not correct."
-            },
-        );
-
-        let diagnostic = match state.property_type {
+		let diagnostic = match state.property_type {
             AriaValueType::Boolean => {
                 diagnostic.footer_list(
                     markup!{
@@ -191,6 +194,6 @@ impl Rule for UseValidAriaValues {
             }
         };
 
-        Some(diagnostic)
-    }
+		Some(diagnostic)
+	}
 }

@@ -11,9 +11,7 @@ use crate::{self as biome_deserialize, Merge};
 // To implement schemars trait, we encapsulate `IndexSet<String>` in a new type
 // `StringSet`.
 
-#[derive(
-	Clone, Default, Debug, Deserializable, Eq, PartialEq, serde::Deserialize, serde::Serialize,
-)]
+#[derive(Clone, Default, Debug, Deserializable, Eq, PartialEq, serde::Deserialize, serde::Serialize)]
 pub struct StringSet(IndexSet<String>);
 
 impl StringSet {
@@ -56,9 +54,7 @@ impl FromStr for StringSet {
 }
 
 impl FromIterator<String> for StringSet {
-	fn from_iter<T:IntoIterator<Item = String>>(iter:T) -> Self {
-		StringSet::new(IndexSet::from_iter(iter))
-	}
+	fn from_iter<T:IntoIterator<Item = String>>(iter:T) -> Self { StringSet::new(IndexSet::from_iter(iter)) }
 }
 
 impl IntoIterator for StringSet {

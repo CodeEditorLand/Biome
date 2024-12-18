@@ -1,171 +1,166 @@
-use crate::services::semantic::Semantic;
-use biome_analyze::{context::RuleContext, declare_lint_rule, Rule, RuleDiagnostic, RuleSource};
+use biome_analyze::{Rule, RuleDiagnostic, RuleSource, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_js_semantic::{Reference, ReferencesExtensions};
 use biome_js_syntax::{JsFunctionDeclaration, JsIdentifierBinding};
 use biome_rowan::AstNode;
 
+use crate::services::semantic::Semantic;
+
 declare_lint_rule! {
-    /// Disallow reassigning function declarations.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```js,expect_diagnostic
-    /// function foo() { };
-    /// foo = bar;
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// function foo() {
-    ///     foo = bar;
-    ///  }
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// foo = bar;
-    /// function foo() { };
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// [foo] = bar;
-    /// function foo() { };
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// ({ x: foo = 0 } = bar);
-    /// function foo() { };
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// function foo() {
-    ///     [foo] = bar;
-    ///  }
-    /// ```
-    /// ```js,expect_diagnostic
-    /// (function () {
-    ///     ({ x: foo = 0 } = bar);
-    ///     function foo() { };
-    ///  })();
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```js
-    /// function foo() {
-    ///     var foo = bar;
-    ///  }
-    /// ```
-    ///
-    /// ```js
-    /// function foo(foo) {
-    ///     foo = bar;
-    ///  }
-    /// ```
-    ///
-    /// ```js
-    /// function foo() {
-    ///     var foo;
-    ///     foo = bar;
-    ///  }
-    /// ```
-    ///
-    /// ```js
-    /// var foo = () => {};
-    /// foo = bar;
-    /// ```
-    ///
-    /// ```js
-    /// var foo = function() {};
-    /// foo = bar;
-    /// ```
-    ///
-    /// ```js
-    /// var foo = function() {
-    ///     foo = bar;
-    ///  };
-    /// ```
-    ///
-    /// ```js
-    /// import bar from 'bar';
-    /// function foo() {
-    ///     var foo = bar;
-    /// }
-    /// ```
-    pub NoFunctionAssign {
-        version: "1.0.0",
-        name: "noFunctionAssign",
-        language: "js",
-        sources: &[RuleSource::Eslint("no-func-assign")],
-        recommended: true,
-    }
+	/// Disallow reassigning function declarations.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```js,expect_diagnostic
+	/// function foo() { };
+	/// foo = bar;
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// function foo() {
+	///     foo = bar;
+	///  }
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// foo = bar;
+	/// function foo() { };
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// [foo] = bar;
+	/// function foo() { };
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// ({ x: foo = 0 } = bar);
+	/// function foo() { };
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// function foo() {
+	///     [foo] = bar;
+	///  }
+	/// ```
+	/// ```js,expect_diagnostic
+	/// (function () {
+	///     ({ x: foo = 0 } = bar);
+	///     function foo() { };
+	///  })();
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```js
+	/// function foo() {
+	///     var foo = bar;
+	///  }
+	/// ```
+	///
+	/// ```js
+	/// function foo(foo) {
+	///     foo = bar;
+	///  }
+	/// ```
+	///
+	/// ```js
+	/// function foo() {
+	///     var foo;
+	///     foo = bar;
+	///  }
+	/// ```
+	///
+	/// ```js
+	/// var foo = () => {};
+	/// foo = bar;
+	/// ```
+	///
+	/// ```js
+	/// var foo = function() {};
+	/// foo = bar;
+	/// ```
+	///
+	/// ```js
+	/// var foo = function() {
+	///     foo = bar;
+	///  };
+	/// ```
+	///
+	/// ```js
+	/// import bar from 'bar';
+	/// function foo() {
+	///     var foo = bar;
+	/// }
+	/// ```
+	pub NoFunctionAssign {
+		version: "1.0.0",
+		name: "noFunctionAssign",
+		language: "js",
+		sources: &[RuleSource::Eslint("no-func-assign")],
+		recommended: true,
+	}
 }
 
 pub struct State {
-    id: JsIdentifierBinding,
-    all_writes: Box<[Reference]>,
+	id:JsIdentifierBinding,
+	all_writes:Box<[Reference]>,
 }
 
 impl Rule for NoFunctionAssign {
-    type Query = Semantic<JsFunctionDeclaration>;
+	type Options = ();
+	type Query = Semantic<JsFunctionDeclaration>;
+	type Signals = Option<Self::State>;
+	type State = State;
 
-    type State = State;
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
+		let declaration = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let model = ctx.model();
 
-    type Options = ();
+		let id = declaration.id().ok()?;
 
-    fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
-        let declaration = ctx.query();
+		let id = id.as_js_identifier_binding()?;
 
-        let model = ctx.model();
+		let all_writes:Vec<Reference> = id.all_writes(model).collect();
 
-        let id = declaration.id().ok()?;
+		if all_writes.is_empty() {
+			None
+		} else {
+			Some(State { id:id.clone(), all_writes:all_writes.into_boxed_slice() })
+		}
+	}
 
-        let id = id.as_js_identifier_binding()?;
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+		let mut diag = RuleDiagnostic::new(
+			rule_category!(),
+			state.id.syntax().text_trimmed_range(),
+			markup! {
+				"Do not reassign a function declaration."
+			},
+		);
 
-        let all_writes: Vec<Reference> = id.all_writes(model).collect();
+		let mut hoisted_quantity = 0;
 
-        if all_writes.is_empty() {
-            None
-        } else {
-            Some(State {
-                id: id.clone(),
-                all_writes: all_writes.into_boxed_slice(),
-            })
-        }
-    }
+		for reference in state.all_writes.iter() {
+			let node = reference.syntax();
 
-    fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-        let mut diag = RuleDiagnostic::new(
-            rule_category!(),
-            state.id.syntax().text_trimmed_range(),
-            markup! {
-                "Do not reassign a function declaration."
-            },
-        );
+			diag = diag.detail(node.text_trimmed_range(), "Reassigned here.");
 
-        let mut hoisted_quantity = 0;
+			hoisted_quantity += i32::from(reference.is_using_hoisted_declaration());
+		}
 
-        for reference in state.all_writes.iter() {
-            let node = reference.syntax();
+		let diag = if hoisted_quantity > 0 {
+			diag.note(
+				markup! {"Reassignment happens here because the function declaration is hoisted."},
+			)
+		} else {
+			diag
+		};
 
-            diag = diag.detail(node.text_trimmed_range(), "Reassigned here.");
+		let diag = diag.note(markup! {"Use a local variable instead."});
 
-            hoisted_quantity += i32::from(reference.is_using_hoisted_declaration());
-        }
-
-        let diag = if hoisted_quantity > 0 {
-            diag.note(
-                markup! {"Reassignment happens here because the function declaration is hoisted."},
-            )
-        } else {
-            diag
-        };
-
-        let diag = diag.note(markup! {"Use a local variable instead."});
-
-        Some(diag)
-    }
+		Some(diag)
+	}
 }

@@ -20,11 +20,7 @@ pub struct FormatGraphqlLeadingComment;
 impl FormatRule<SourceComment<GraphqlLanguage>> for FormatGraphqlLeadingComment {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(
-		&self,
-		comment:&SourceComment<GraphqlLanguage>,
-		f:&mut Formatter<Self::Context>,
-	) -> FormatResult<()> {
+	fn fmt(&self, comment:&SourceComment<GraphqlLanguage>, f:&mut Formatter<Self::Context>) -> FormatResult<()> {
 		if is_doc_comment(comment.piece()) {
 			let mut source_offset = comment.piece().text_range().start();
 
@@ -44,10 +40,7 @@ impl FormatRule<SourceComment<GraphqlLanguage>> for FormatGraphqlLeadingComment 
 					1,
 					&format_once(|f| {
 						for line in lines {
-							write!(
-								f,
-								[hard_line_break(), dynamic_text(line.trim(), source_offset)]
-							)?;
+							write!(f, [hard_line_break(), dynamic_text(line.trim(), source_offset)])?;
 
 							source_offset += line.text_len();
 						}
@@ -75,7 +68,5 @@ impl CommentStyle for GraphqlCommentStyle {
 			.any(|(key, _)| key == category!("format"))
 	}
 
-	fn get_comment_kind(_comment:&SyntaxTriviaPieceComments<Self::Language>) -> CommentKind {
-		CommentKind::Line
-	}
+	fn get_comment_kind(_comment:&SyntaxTriviaPieceComments<Self::Language>) -> CommentKind { CommentKind::Line }
 }

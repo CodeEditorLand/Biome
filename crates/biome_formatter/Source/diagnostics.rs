@@ -36,24 +36,21 @@ pub enum FormatError {
 impl std::fmt::Display for FormatError {
 	fn fmt(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		match self {
-			FormatError::SyntaxError => {
-				fmt.write_str("Can't format code because it contains syntax errors")
-			},
+			FormatError::SyntaxError => fmt.write_str("Can't format code because it contains syntax errors"),
 			FormatError::RangeError { input, tree } => {
 				std::write!(fmt, "Formatting range {input:?} is larger than syntax tree {tree:?}")
 			},
 			FormatError::InvalidDocument(error) => {
 				std::write!(
 					fmt,
-					"Invalid document: {error}\n\n This is an internal Biome error. Please report \
-					 if necessary."
+					"Invalid document: {error}\n\n This is an internal Biome error. Please report if necessary."
 				)
 			},
 			FormatError::PoorLayout => {
 				std::write!(
 					fmt,
-					"Poor layout: The formatter wasn't able to pick a good layout for your \
-					 document. This is an internal Biome error. Please report if necessary."
+					"Poor layout: The formatter wasn't able to pick a good layout for your document. This is an \
+					 internal Biome error. Please report if necessary."
 				)
 			},
 		}
@@ -69,9 +66,7 @@ impl From<SyntaxError> for FormatError {
 impl From<&SyntaxError> for FormatError {
 	fn from(syntax_error:&SyntaxError) -> Self {
 		match syntax_error {
-			SyntaxError::MissingRequiredChild | SyntaxError::UnexpectedMetavariable => {
-				FormatError::SyntaxError
-			},
+			SyntaxError::MissingRequiredChild | SyntaxError::UnexpectedMetavariable => FormatError::SyntaxError,
 		}
 	}
 }
@@ -102,16 +97,11 @@ impl Diagnostic for FormatError {
 		}
 	}
 
-	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		std::fmt::Display::fmt(self, fmt)
-	}
+	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { std::fmt::Display::fmt(self, fmt) }
 
 	fn category(&self) -> Option<&'static Category> { Some(category!("format")) }
 
-	fn message(
-		&self,
-		fmt:&mut biome_diagnostics::console::fmt::Formatter<'_>,
-	) -> std::io::Result<()> {
+	fn message(&self, fmt:&mut biome_diagnostics::console::fmt::Formatter<'_>) -> std::io::Result<()> {
 		match self {
 			FormatError::SyntaxError => fmt.write_str("Syntax error."),
 			FormatError::RangeError { input, tree } => {
@@ -121,8 +111,7 @@ impl Diagnostic for FormatError {
 			FormatError::PoorLayout => {
 				std::write!(
 					fmt,
-					"Poor layout: The formatter wasn't able to pick a good layout for your \
-					 document."
+					"Poor layout: The formatter wasn't able to pick a good layout for your document."
 				)
 			},
 		}
@@ -186,35 +175,25 @@ impl std::fmt::Display for InvalidDocumentError {
 			InvalidDocumentError::ExpectedStart { expected_start, actual } => {
 				match actual {
 					ActualStart::EndOfDocument => {
-						std::write!(
-							f,
-							"Expected start tag of kind {expected_start:?} but at the end of \
-							 document."
-						)
+						std::write!(f, "Expected start tag of kind {expected_start:?} but at the end of document.")
 					},
 
 					ActualStart::Start(start) => {
 						std::write!(
 							f,
-							"Expected start tag of kind {expected_start:?} but found start tag of \
-							 kind {start:?}."
+							"Expected start tag of kind {expected_start:?} but found start tag of kind {start:?}."
 						)
 					},
 
 					ActualStart::End(end) => {
 						std::write!(
 							f,
-							"Expected start tag of kind {expected_start:?} but found end tag of \
-							 kind {end:?}."
+							"Expected start tag of kind {expected_start:?} but found end tag of kind {end:?}."
 						)
 					},
 
 					ActualStart::Content => {
-						std::write!(
-							f,
-							"Expected start tag of kind {expected_start:?} but found non-tag \
-							 element."
-						)
+						std::write!(f, "Expected start tag of kind {expected_start:?} but found non-tag element.")
 					},
 				}
 			},
@@ -281,16 +260,11 @@ mod test {
 
 	#[test]
 	fn formatter_syntax_error() {
-		snap_diagnostic(
-			"formatter_syntax_error",
-			FormatError::SyntaxError.with_file_path("example.js"),
-		)
+		snap_diagnostic("formatter_syntax_error", FormatError::SyntaxError.with_file_path("example.js"))
 	}
 
 	#[test]
-	fn poor_layout() {
-		snap_diagnostic("poor_layout", FormatError::PoorLayout.with_file_path("example.js"))
-	}
+	fn poor_layout() { snap_diagnostic("poor_layout", FormatError::PoorLayout.with_file_path("example.js")) }
 
 	#[test]
 	fn invalid_document() {

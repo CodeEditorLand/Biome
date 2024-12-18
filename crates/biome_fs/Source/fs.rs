@@ -108,8 +108,8 @@ pub trait FileSystem: Send + Sync + RefUnwindSafe {
 					Ok(content) => {
 						if is_searching_in_parent_dir {
 							info!(
-								"Biome auto discovered the file at the following path that isn't \
-								 in the working directory:\n{:?}",
+								"Biome auto discovered the file at the following path that isn't in the working \
+								 directory:\n{:?}",
 								curret_search_dir.display()
 							);
 						}
@@ -193,8 +193,7 @@ pub trait FileSystem: Send + Sync + RefUnwindSafe {
 
 	fn get_staged_files(&self) -> io::Result<Vec<String>>;
 
-	fn resolve_configuration(&self, specifier:&str, path:&Path)
-	-> Result<Resolution, ResolveError>;
+	fn resolve_configuration(&self, specifier:&str, path:&Path) -> Result<Resolution, ResolveError>;
 }
 
 /// Result of the auto search
@@ -367,17 +366,11 @@ where
 
 	fn path_is_symlink(&self, path:&Path) -> bool { T::path_is_symlink(self, path) }
 
-	fn get_changed_files(&self, base:&str) -> io::Result<Vec<String>> {
-		T::get_changed_files(self, base)
-	}
+	fn get_changed_files(&self, base:&str) -> io::Result<Vec<String>> { T::get_changed_files(self, base) }
 
 	fn get_staged_files(&self) -> io::Result<Vec<String>> { T::get_staged_files(self) }
 
-	fn resolve_configuration(
-		&self,
-		specifier:&str,
-		path:&Path,
-	) -> Result<Resolution, ResolveError> {
+	fn resolve_configuration(&self, specifier:&str, path:&Path) -> Result<Resolution, ResolveError> {
 		T::resolve_configuration(self, specifier, path)
 	}
 }
@@ -417,9 +410,7 @@ impl console::fmt::Display for ErrorKind {
 			ErrorKind::CantReadFile(_) => fmt.write_str("Cannot read file"),
 			ErrorKind::UnknownFileType => fmt.write_str("Unknown file type"),
 			ErrorKind::DereferencedSymlink(_) => fmt.write_str("Dereferenced symlink"),
-			ErrorKind::DeeplyNestedSymlinkExpansion(_) => {
-				fmt.write_str("Deeply nested symlink expansion")
-			},
+			ErrorKind::DeeplyNestedSymlinkExpansion(_) => fmt.write_str("Deeply nested symlink expansion"),
 		}
 	}
 }
@@ -444,8 +435,8 @@ impl Advices for ErrorKind {
 				visitor.record_log(
 					LogCategory::Error,
 					&format!(
-						"Biome can't read the following file, maybe for permissions reasons or it \
-						 doesn't exist: {path}"
+						"Biome can't read the following file, maybe for permissions reasons or it doesn't exist: \
+						 {path}"
 					),
 				)
 			},
@@ -453,25 +444,21 @@ impl Advices for ErrorKind {
 			ErrorKind::UnknownFileType => {
 				visitor.record_log(
 					LogCategory::Info,
-					&"Biome encountered a file system entry that's neither a file, directory or \
-					  symbolic link",
+					&"Biome encountered a file system entry that's neither a file, directory or symbolic link",
 				)
 			},
 			ErrorKind::DereferencedSymlink(path) => {
 				visitor.record_log(
 					LogCategory::Info,
-					&format!(
-						"Biome encountered a file system entry that is a broken symbolic link: \
-						 {path}"
-					),
+					&format!("Biome encountered a file system entry that is a broken symbolic link: {path}"),
 				)
 			},
 			ErrorKind::DeeplyNestedSymlinkExpansion(path) => {
 				visitor.record_log(
 					LogCategory::Error,
 					&format!(
-						"Biome encountered a file system entry with too many nested symbolic \
-						 links, possibly forming an infinite cycle: {path}"
+						"Biome encountered a file system entry with too many nested symbolic links, possibly forming \
+						 an infinite cycle: {path}"
 					),
 				)
 			},

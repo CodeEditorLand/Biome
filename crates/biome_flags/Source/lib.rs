@@ -38,10 +38,7 @@ impl BiomeEnv {
 				"BIOME_LOG_PREFIX_NAME",
 				"A prefix that's added to the name of the log. Default: `server.log.`",
 			),
-			biome_config_path:BiomeEnvVariable::new(
-				"BIOME_CONFIG_PATH",
-				"A path to the configuration file",
-			),
+			biome_config_path:BiomeEnvVariable::new("BIOME_CONFIG_PATH", "A path to the configuration file"),
 		}
 	}
 }
@@ -83,25 +80,21 @@ impl Display for BiomeEnv {
 
 		match self.biome_log_prefix.value() {
 			None => {
-				KeyValuePair(self.biome_log_prefix.name, markup! { <Dim>"unset"</Dim> })
-					.fmt(fmt)?;
+				KeyValuePair(self.biome_log_prefix.name, markup! { <Dim>"unset"</Dim> }).fmt(fmt)?;
 			},
 
 			Some(value) => {
-				KeyValuePair(self.biome_log_prefix.name, markup! {{DebugDisplay(value)}})
-					.fmt(fmt)?;
+				KeyValuePair(self.biome_log_prefix.name, markup! {{DebugDisplay(value)}}).fmt(fmt)?;
 			},
 		};
 
 		match self.biome_config_path.value() {
 			None => {
-				KeyValuePair(self.biome_config_path.name, markup! { <Dim>"unset"</Dim> })
-					.fmt(fmt)?;
+				KeyValuePair(self.biome_config_path.name, markup! { <Dim>"unset"</Dim> }).fmt(fmt)?;
 			},
 
 			Some(value) => {
-				KeyValuePair(self.biome_config_path.name, markup! {{DebugDisplay(value)}})
-					.fmt(fmt)?;
+				KeyValuePair(self.biome_config_path.name, markup! {{DebugDisplay(value)}}).fmt(fmt)?;
 			},
 		};
 

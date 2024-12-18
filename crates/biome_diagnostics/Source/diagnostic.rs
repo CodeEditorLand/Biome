@@ -110,9 +110,7 @@ pub trait Diagnostic: Debug {
 	fn source(&self) -> Option<&dyn Diagnostic> { None }
 }
 
-#[derive(
-	Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default,
-)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize, Default)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase")]
 /// The severity to associate to a diagnostic.
@@ -195,9 +193,7 @@ impl DiagnosticTags {
 
 	pub fn insert(&mut self, other:DiagnosticTags) { self.0 |= other.0; }
 
-	pub fn contains(self, other:impl Into<DiagnosticTags>) -> bool {
-		self.0.contains(other.into().0)
-	}
+	pub fn contains(self, other:impl Into<DiagnosticTags>) -> bool { self.0.contains(other.into().0) }
 
 	pub const fn union(self, other:Self) -> Self { Self(self.0.union_c(other.0)) }
 

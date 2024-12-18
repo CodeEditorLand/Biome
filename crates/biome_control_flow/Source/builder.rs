@@ -1,13 +1,6 @@
 use biome_rowan::{Language, SyntaxElement, SyntaxNode};
 
-use crate::{
-	BasicBlock,
-	ControlFlowGraph,
-	ExceptionHandler,
-	ExceptionHandlerKind,
-	Instruction,
-	InstructionKind,
-};
+use crate::{BasicBlock, ControlFlowGraph, ExceptionHandler, ExceptionHandlerKind, Instruction, InstructionKind};
 
 /// Identifier for a block in a [ControlFlowGraph]
 #[derive(Clone, Copy, Debug, PartialEq, Eq, Hash)]
@@ -112,28 +105,16 @@ impl<L:Language> FunctionBuilder<L> {
 		InstructionBuilder(&mut block.instructions[index])
 	}
 
-	pub fn append_statement(&mut self) -> InstructionBuilder<L> {
-		self.append_instruction(InstructionKind::Statement)
-	}
+	pub fn append_statement(&mut self) -> InstructionBuilder<L> { self.append_instruction(InstructionKind::Statement) }
 
-	pub fn append_return(&mut self) -> InstructionBuilder<L> {
-		self.append_instruction(InstructionKind::Return)
-	}
+	pub fn append_return(&mut self) -> InstructionBuilder<L> { self.append_instruction(InstructionKind::Return) }
 
 	pub fn append_jump(&mut self, conditional:bool, block:BlockId) -> InstructionBuilder<L> {
-		self.append_instruction(InstructionKind::Jump {
-			conditional,
-			block,
-			finally_fallthrough:false,
-		})
+		self.append_instruction(InstructionKind::Jump { conditional, block, finally_fallthrough:false })
 	}
 
 	pub fn append_finally_fallthrough(&mut self, block:BlockId) -> InstructionBuilder<L> {
-		self.append_instruction(InstructionKind::Jump {
-			conditional:false,
-			block,
-			finally_fallthrough:true,
-		})
+		self.append_instruction(InstructionKind::Jump { conditional:false, block, finally_fallthrough:true })
 	}
 }
 

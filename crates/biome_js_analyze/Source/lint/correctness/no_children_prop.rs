@@ -1,92 +1,91 @@
-use crate::react::{ReactApiCall, ReactCreateElementCall};
-use crate::services::semantic::Semantic;
-use biome_analyze::context::RuleContext;
-use biome_analyze::{declare_lint_rule, Rule, RuleDiagnostic, RuleSource};
+use biome_analyze::{Rule, RuleDiagnostic, RuleSource, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_js_syntax::{JsCallExpression, JsxAttribute};
-use biome_rowan::{declare_node_union, AstNode, TextRange};
+use biome_rowan::{AstNode, TextRange, declare_node_union};
+
+use crate::{
+	react::{ReactApiCall, ReactCreateElementCall},
+	services::semantic::Semantic,
+};
 declare_lint_rule! {
-    /// Prevent passing of **children** as props.
-    ///
-    /// When using JSX, the children should be nested between the opening and closing tags.
-    /// When not using JSX, the children should be passed as additional arguments to `React.createElement`.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <FirstComponent children={'foo'} />
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// React.createElement('div', { children: 'foo' });
-    /// ```
-    pub NoChildrenProp {
-        version: "1.0.0",
-        name: "noChildrenProp",
-        language: "jsx",
-        sources: &[RuleSource::EslintReact("no-children-prop")],
-        recommended: true,
-    }
+	/// Prevent passing of **children** as props.
+	///
+	/// When using JSX, the children should be nested between the opening and closing tags.
+	/// When not using JSX, the children should be passed as additional arguments to `React.createElement`.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```jsx,expect_diagnostic
+	/// <FirstComponent children={'foo'} />
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// React.createElement('div', { children: 'foo' });
+	/// ```
+	pub NoChildrenProp {
+		version: "1.0.0",
+		name: "noChildrenProp",
+		language: "jsx",
+		sources: &[RuleSource::EslintReact("no-children-prop")],
+		recommended: true,
+	}
 }
 
 declare_node_union! {
-    pub NoChildrenPropQuery = JsxAttribute | JsCallExpression
+	pub NoChildrenPropQuery = JsxAttribute | JsCallExpression
 }
 
 pub enum NoChildrenPropState {
-    JsxProp(TextRange),
-    MemberProp(TextRange),
+	JsxProp(TextRange),
+	MemberProp(TextRange),
 }
 
 impl Rule for NoChildrenProp {
-    type Query = Semantic<NoChildrenPropQuery>;
+	type Options = ();
+	type Query = Semantic<NoChildrenPropQuery>;
+	type Signals = Option<Self::State>;
+	type State = NoChildrenPropState;
 
-    type State = NoChildrenPropState;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		match node {
+			NoChildrenPropQuery::JsxAttribute(attribute) => {
+				let name = attribute.name().ok()?;
 
-    type Options = ();
+				let name = name.as_jsx_name()?;
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let node = ctx.query();
+				if name.value_token().ok()?.text_trimmed() == "children" {
+					return Some(NoChildrenPropState::JsxProp(name.range()));
+				}
 
-        match node {
-            NoChildrenPropQuery::JsxAttribute(attribute) => {
-                let name = attribute.name().ok()?;
+				None
+			},
 
-                let name = name.as_jsx_name()?;
+			NoChildrenPropQuery::JsCallExpression(call_expression) => {
+				let model = ctx.model();
 
-                if name.value_token().ok()?.text_trimmed() == "children" {
-                    return Some(NoChildrenPropState::JsxProp(name.range()));
-                }
+				if let Some(react_create_element) =
+					ReactCreateElementCall::from_call_expression(call_expression, model)
+				{
+					let children_prop = react_create_element.find_prop_by_name("children");
 
-                None
-            }
+					if let Some(children_prop) = children_prop {
+						return Some(NoChildrenPropState::MemberProp(
+							children_prop.name().ok()?.range(),
+						));
+					}
+				}
 
-            NoChildrenPropQuery::JsCallExpression(call_expression) => {
-                let model = ctx.model();
+				None
+			},
+		}
+	}
 
-                if let Some(react_create_element) =
-                    ReactCreateElementCall::from_call_expression(call_expression, model)
-                {
-                    let children_prop = react_create_element.find_prop_by_name("children");
-
-                    if let Some(children_prop) = children_prop {
-                        return Some(NoChildrenPropState::MemberProp(
-                            children_prop.name().ok()?.range(),
-                        ));
-                    }
-                }
-
-                None
-            }
-        }
-    }
-
-    fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-        let (range, footer_help) = match state {
+	fn diagnostic(_ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+		let (range, footer_help) = match state {
             NoChildrenPropState::JsxProp(jsx_name_range) => {
                 (
                     jsx_name_range,
@@ -104,15 +103,15 @@ impl Rule for NoChildrenProp {
             ),
         };
 
-        Some(
-            RuleDiagnostic::new(
-                rule_category!(),
-                range,
-                markup! {
-                    "Avoid passing "<Emphasis>"children"</Emphasis>" using a prop"
-                },
-            )
-            .note(footer_help),
-        )
-    }
+		Some(
+			RuleDiagnostic::new(
+				rule_category!(),
+				range,
+				markup! {
+					"Avoid passing "<Emphasis>"children"</Emphasis>" using a prop"
+				},
+			)
+			.note(footer_help),
+		)
+	}
 }

@@ -12,10 +12,7 @@ use self::{
 	container_attrs::{ContainerAttrs, UnknownFields},
 	struct_field_attrs::DeprecatedField,
 };
-use crate::deserializable_derive::{
-	enum_variant_attrs::EnumVariantAttrs,
-	struct_field_attrs::StructFieldAttrs,
-};
+use crate::deserializable_derive::{enum_variant_attrs::EnumVariantAttrs, struct_field_attrs::StructFieldAttrs};
 
 pub(crate) struct DeriveInput {
 	pub ident:Ident,
@@ -25,8 +22,7 @@ pub(crate) struct DeriveInput {
 
 impl DeriveInput {
 	pub fn parse(input:syn::DeriveInput) -> Self {
-		let attrs =
-			ContainerAttrs::try_from(&input.attrs).expect("Could not parse field attributes");
+		let attrs = ContainerAttrs::try_from(&input.attrs).expect("Could not parse field attributes");
 
 		let data = if let ContainerAttrs { with_validator, from: Some(from), .. } = attrs {
 			DeserializableData::From(DeserializableFromData { from, with_validator })
@@ -42,8 +38,8 @@ impl DeriveInput {
 							if !variant.fields.is_empty() {
 								abort!(
 									variant.fields,
-									"Deserializable derive cannot handle enum variants with \
-									 fields -- you may need a custom Deserializable implementation"
+									"Deserializable derive cannot handle enum variants with fields -- you may need a \
+									 custom Deserializable implementation"
 								)
 							}
 
@@ -52,18 +48,13 @@ impl DeriveInput {
 
 							let ident = variant.ident;
 
-							let key = attrs
-								.rename
-								.unwrap_or_else(|| Case::Camel.convert(&ident.to_string()));
+							let key = attrs.rename.unwrap_or_else(|| Case::Camel.convert(&ident.to_string()));
 
 							DeserializableVariantData { ident, key }
 						})
 						.collect();
 
-					DeserializableData::Enum(DeserializableEnumData {
-						variants,
-						with_validator:attrs.with_validator,
-					})
+					DeserializableData::Enum(DeserializableEnumData { variants, with_validator:attrs.with_validator })
 				},
 
 				Data::Struct(data) => {
@@ -73,22 +64,15 @@ impl DeriveInput {
 						let fields = data
 							.fields
 							.into_iter()
-							.filter_map(|field| {
-								field.ident.map(|ident| (ident, field.attrs, field.ty))
-							})
+							.filter_map(|field| field.ident.map(|ident| (ident, field.attrs, field.ty)))
 							.filter_map(|(ident, attrs, ty)| {
-								let attrs = StructFieldAttrs::try_from(&attrs)
-									.expect("Could not parse field attributes");
+								let attrs =
+									StructFieldAttrs::try_from(&attrs).expect("Could not parse field attributes");
 
-								let key = attrs
-									.rename
-									.unwrap_or_else(|| Case::Camel.convert(&ident.to_string()));
+								let key = attrs.rename.unwrap_or_else(|| Case::Camel.convert(&ident.to_string()));
 
 								if rest_field.is_some() && attrs.rest {
-									abort!(
-										ident,
-										"Cannot have multiple fields with #[deserializable(rest)]"
-									)
+									abort!(ident, "Cannot have multiple fields with #[deserializable(rest)]")
 								}
 
 								if attrs.rest {
@@ -111,13 +95,11 @@ impl DeriveInput {
 							})
 							.collect();
 
-						if rest_field.is_some()
-							&& matches!(attrs.unknown_fields, Some(UnknownFields::Deny))
-						{
+						if rest_field.is_some() && matches!(attrs.unknown_fields, Some(UnknownFields::Deny)) {
 							abort!(
 								rest_field.unwrap(),
-								"Cannot have a field with #[deserializable(rest)] and \
-								 #[deserializable(unknown_fields = \"deny\")]"
+								"Cannot have a field with #[deserializable(rest)] and #[deserializable(unknown_fields \
+								 = \"deny\")]"
 							)
 						}
 
@@ -128,15 +110,12 @@ impl DeriveInput {
 							unknown_fields:attrs.unknown_fields.unwrap_or_default(),
 						})
 					} else if data.fields.len() == 1 {
-						DeserializableData::Newtype(DeserializableNewtypeData {
-							with_validator:attrs.with_validator,
-						})
+						DeserializableData::Newtype(DeserializableNewtypeData { with_validator:attrs.with_validator })
 					} else {
 						abort!(
 							data.fields,
-							"Deserializable derive requires structs to have named fields or a \
-							 single unnamed one -- you may need a custom Deserializable \
-							 implementation"
+							"Deserializable derive requires structs to have named fields or a single unnamed one -- \
+							 you may need a custom Deserializable implementation"
 						)
 					}
 				},
@@ -209,33 +188,19 @@ pub struct DeserializableVariantData {
 
 pub(crate) fn generate_deserializable(input:DeriveInput) -> TokenStream {
 	match input.data {
-		DeserializableData::Enum(data) => {
-			generate_deserializable_enum(input.ident, input.generics, data)
-		},
+		DeserializableData::Enum(data) => generate_deserializable_enum(input.ident, input.generics, data),
 
-		DeserializableData::Newtype(data) => {
-			generate_deserializable_newtype(input.ident, input.generics, data)
-		},
+		DeserializableData::Newtype(data) => generate_deserializable_newtype(input.ident, input.generics, data),
 
-		DeserializableData::Struct(data) => {
-			generate_deserializable_struct(input.ident, input.generics, data)
-		},
+		DeserializableData::Struct(data) => generate_deserializable_struct(input.ident, input.generics, data),
 
-		DeserializableData::From(data) => {
-			generate_deserializable_from(input.ident, input.generics, data)
-		},
+		DeserializableData::From(data) => generate_deserializable_from(input.ident, input.generics, data),
 
-		DeserializableData::TryFrom(data) => {
-			generate_deserializable_try_from(input.ident, input.generics, data)
-		},
+		DeserializableData::TryFrom(data) => generate_deserializable_try_from(input.ident, input.generics, data),
 	}
 }
 
-fn generate_deserializable_enum(
-	ident:Ident,
-	generics:Generics,
-	data:DeserializableEnumData,
-) -> TokenStream {
+fn generate_deserializable_enum(ident:Ident, generics:Generics, data:DeserializableEnumData) -> TokenStream {
 	let allowed_variants:Vec<_> = data
 		.variants
 		.iter()
@@ -290,11 +255,7 @@ fn generate_deserializable_enum(
 	}
 }
 
-fn generate_deserializable_newtype(
-	ident:Ident,
-	generics:Generics,
-	data:DeserializableNewtypeData,
-) -> TokenStream {
+fn generate_deserializable_newtype(ident:Ident, generics:Generics, data:DeserializableNewtypeData) -> TokenStream {
 	let validator = if data.with_validator {
 		quote! {
 			if !biome_deserialize::DeserializableValidator::validate(&mut result, name, value.range(), diagnostics) {
@@ -324,11 +285,7 @@ fn generate_deserializable_newtype(
 	}
 }
 
-fn generate_deserializable_struct(
-	ident:Ident,
-	generics:Generics,
-	data:DeserializableStructData,
-) -> TokenStream {
+fn generate_deserializable_struct(ident:Ident, generics:Generics, data:DeserializableStructData) -> TokenStream {
 	let allowed_keys:Vec<_> = data
         .fields
         .iter()
@@ -402,8 +359,7 @@ fn generate_deserializable_struct(
 	let validator = if required_fields.is_empty() {
 		quote! {}
 	} else {
-		let required_keys:Vec<_> =
-			required_fields.iter().map(|field_data| &field_data.key).collect();
+		let required_keys:Vec<_> = required_fields.iter().map(|field_data| &field_data.key).collect();
 
 		let required_fields = required_fields.iter().map(|field_data| {
 			let DeserializableFieldData { ident: field_ident, key, ty, .. } = field_data;
@@ -526,11 +482,7 @@ fn generate_deserializable_struct(
 	}
 }
 
-fn generate_deserializable_from(
-	ident:Ident,
-	generics:Generics,
-	data:DeserializableFromData,
-) -> TokenStream {
+fn generate_deserializable_from(ident:Ident, generics:Generics, data:DeserializableFromData) -> TokenStream {
 	let trait_bounds = generate_trait_bounds(&generics);
 
 	let generics = generate_generics_without_trait_bounds(&generics);
@@ -564,11 +516,7 @@ fn generate_deserializable_from(
 	}
 }
 
-fn generate_deserializable_try_from(
-	ident:Ident,
-	generics:Generics,
-	data:DeserializableTryFromData,
-) -> TokenStream {
+fn generate_deserializable_try_from(ident:Ident, generics:Generics, data:DeserializableTryFromData) -> TokenStream {
 	let trait_bounds = generate_trait_bounds(&generics);
 
 	let generics = generate_generics_without_trait_bounds(&generics);

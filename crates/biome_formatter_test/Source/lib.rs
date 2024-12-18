@@ -16,9 +16,7 @@ pub mod utils;
 pub trait TestFormatLanguage {
 	type ServiceLanguage: ServiceLanguage + 'static;
 
-	type Context: CstFormatContext<
-		Options = <Self::ServiceLanguage as ServiceLanguage>::FormatOptions,
-	>;
+	type Context: CstFormatContext<Options = <Self::ServiceLanguage as ServiceLanguage>::FormatOptions>;
 
 	type FormatLanguage: FormatLanguage<Context = Self::Context, SyntaxLanguage = Self::ServiceLanguage>
 		+ 'static
@@ -43,9 +41,5 @@ pub trait TestFormatLanguage {
 		biome_formatter::format_range(node, range, language)
 	}
 
-	fn to_format_language(
-		&self,
-		settings:&Settings,
-		file_source:&DocumentFileSource,
-	) -> Self::FormatLanguage;
+	fn to_format_language(&self, settings:&Settings, file_source:&DocumentFileSource) -> Self::FormatLanguage;
 }

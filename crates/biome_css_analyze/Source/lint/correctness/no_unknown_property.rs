@@ -1,6 +1,4 @@
-use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
-};
+use biome_analyze::{Ast, Rule, RuleDiagnostic, RuleSource, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_css_syntax::CssGenericProperty;
 use biome_rowan::{AstNode, TextRange};
@@ -9,93 +7,90 @@ use biome_string_case::StrLikeExtension;
 use crate::utils::{is_known_properties, vendor_prefixed};
 
 declare_lint_rule! {
-    /// Disallow unknown properties.
-    ///
-    /// This rule considers properties defined in the CSS Specifications and browser specific properties to be known.
-    /// https://github.com/known-css/known-css-properties#source
-    ///
-    ///
-    /// This rule ignores:
-    ///
-    /// - custom variables e.g. `--custom-property`
-    /// - vendor-prefixed properties (e.g., `-moz-align-self,` `-webkit-align-self`)
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```css,expect_diagnostic
-    /// a {
-    ///   colr: blue;
-    /// }
-    /// ```
-    ///
-    /// ```css,expect_diagnostic
-    /// a {
-    ///   my-property: 1;
-    /// }
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```css
-    /// a {
-    ///   color: green;
-    /// }
-    /// ```
-    ///
-    /// ```css
-    /// a {
-    ///   fill: black;
-    /// }
-    /// ```
-    ///
-    /// ```css
-    /// a {
-    ///   -moz-align-self: center;
-    /// }
-    /// ```
-    ///
-    pub NoUnknownProperty {
-        version: "1.8.0",
-        name: "noUnknownProperty",
-        language: "css",
-        recommended: true,
-        sources: &[RuleSource::Stylelint("property-no-unknown")],
-    }
+	/// Disallow unknown properties.
+	///
+	/// This rule considers properties defined in the CSS Specifications and browser specific properties to be known.
+	/// https://github.com/known-css/known-css-properties#source
+	///
+	///
+	/// This rule ignores:
+	///
+	/// - custom variables e.g. `--custom-property`
+	/// - vendor-prefixed properties (e.g., `-moz-align-self,` `-webkit-align-self`)
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```css,expect_diagnostic
+	/// a {
+	///   colr: blue;
+	/// }
+	/// ```
+	///
+	/// ```css,expect_diagnostic
+	/// a {
+	///   my-property: 1;
+	/// }
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```css
+	/// a {
+	///   color: green;
+	/// }
+	/// ```
+	///
+	/// ```css
+	/// a {
+	///   fill: black;
+	/// }
+	/// ```
+	///
+	/// ```css
+	/// a {
+	///   -moz-align-self: center;
+	/// }
+	/// ```
+	///
+	pub NoUnknownProperty {
+		version: "1.8.0",
+		name: "noUnknownProperty",
+		language: "css",
+		recommended: true,
+		sources: &[RuleSource::Stylelint("property-no-unknown")],
+	}
 }
 
 impl Rule for NoUnknownProperty {
-    type Query = Ast<CssGenericProperty>;
+	type Options = ();
+	type Query = Ast<CssGenericProperty>;
+	type Signals = Option<Self::State>;
+	type State = TextRange;
 
-    type State = TextRange;
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let property_name = node.name().ok()?.text();
 
-    type Options = ();
+		let property_name_lower = property_name.to_ascii_lowercase_cow();
 
-    fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
-        let node = ctx.query();
-
-        let property_name = node.name().ok()?.text();
-
-        let property_name_lower = property_name.to_ascii_lowercase_cow();
-
-        if !property_name_lower.starts_with("--")
+		if !property_name_lower.starts_with("--")
             // Ignore `composes` property.
             // See https://github.com/css-modules/css-modules/blob/master/docs/composition.md for more details.
             && property_name_lower != "composes"
             && !is_known_properties(&property_name_lower)
             && !vendor_prefixed(&property_name_lower)
-        {
-            return Some(node.name().ok()?.range());
-        }
+		{
+			return Some(node.name().ok()?.range());
+		}
 
-        None
-    }
+		None
+	}
 
-    fn diagnostic(_: &RuleContext<Self>, range: &Self::State) -> Option<RuleDiagnostic> {
-        Some(
+	fn diagnostic(_:&RuleContext<Self>, range:&Self::State) -> Option<RuleDiagnostic> {
+		Some(
             RuleDiagnostic::new(
                 rule_category!(),
                 range,
@@ -110,5 +105,5 @@ impl Rule for NoUnknownProperty {
                 "To resolve this issue, replace the unknown property with a valid CSS property."
             })
         )
-    }
+	}
 }

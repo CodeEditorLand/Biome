@@ -35,8 +35,8 @@ impl<'a> PrettierTestFile<'a> {
 			input_file.display()
 		);
 
-		let mut input_code = read_to_string(input_file)
-			.unwrap_or_else(|err| panic!("failed to read {input_file:?}: {err:?}"));
+		let mut input_code =
+			read_to_string(input_file).unwrap_or_else(|err| panic!("failed to read {input_file:?}: {err:?}"));
 
 		let (_, range_start_index, range_end_index) = strip_prettier_placeholders(&mut input_code);
 
@@ -54,9 +54,7 @@ impl<'a> PrettierTestFile<'a> {
 		}
 	}
 
-	fn range(&self) -> (Option<usize>, Option<usize>) {
-		(self.range_start_index, self.range_end_index)
-	}
+	fn range(&self) -> (Option<usize>, Option<usize>) { (self.range_start_index, self.range_end_index) }
 
 	pub fn input_file(&self) -> &Path { self.input_file }
 
@@ -69,16 +67,12 @@ impl<'a> PrettierTestFile<'a> {
 			.expect("failed to get file name")
 	}
 
-	pub fn file_extension(&self) -> &OsStr {
-		self.input_file.extension().expect("failed to get file extension")
-	}
+	pub fn file_extension(&self) -> &OsStr { self.input_file.extension().expect("failed to get file extension") }
 
 	pub fn relative_file_name(&self) -> &'static str {
 		self.input_file
 			.strip_prefix(self.root_path)
-			.unwrap_or_else(|_| {
-				panic!("failed to strip prefix {:?} from {:?}", self.root_path, self.input_file)
-			})
+			.unwrap_or_else(|_| panic!("failed to strip prefix {:?} from {:?}", self.root_path, self.input_file))
 			.to_str()
 			.expect("failed to get relative file name")
 	}
@@ -97,11 +91,7 @@ impl<'a, L> PrettierSnapshot<'a, L>
 where
 	L: TestFormatLanguage,
 {
-	pub fn new(
-		test_file:PrettierTestFile<'a>,
-		language:L,
-		format_language:L::FormatLanguage,
-	) -> Self {
+	pub fn new(test_file:PrettierTestFile<'a>, language:L, format_language:L::FormatLanguage) -> Self {
 		PrettierSnapshot { test_file, language, format_language }
 	}
 
@@ -123,10 +113,7 @@ where
 				self.language.format_range(
 					self.format_language.clone(),
 					&syntax,
-					TextRange::new(
-						TextSize::try_from(start).unwrap(),
-						TextSize::try_from(end).unwrap(),
-					),
+					TextRange::new(TextSize::try_from(start).unwrap(), TextSize::try_from(end).unwrap()),
 				)
 			},
 
@@ -141,8 +128,7 @@ where
 
 		let formatted = match range {
 			(Some(_), Some(_)) => {
-				let range =
-					formatted.range().expect("the result of format_range should have a range");
+				let range = formatted.range().expect("the result of format_range should have a range");
 
 				let formatted = formatted.as_code();
 

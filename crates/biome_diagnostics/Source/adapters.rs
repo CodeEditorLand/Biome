@@ -22,9 +22,7 @@ impl<E:std::error::Error + Send + Sync + 'static> From<E> for StdError {
 }
 
 impl Diagnostic for StdError {
-	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(fmt, "{}", self.error)
-	}
+	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(fmt, "{}", self.error) }
 
 	fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
 		fmt.write_markup(markup!({ AsConsoleDisplay(&self.error) }))
@@ -34,9 +32,7 @@ impl Diagnostic for StdError {
 struct AsConsoleDisplay<'a, T>(&'a T);
 
 impl<T:std::fmt::Display> fmt::Display for AsConsoleDisplay<'_, T> {
-	fn fmt(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
-		fmt.write_fmt(format_args!("{}", self.0))
-	}
+	fn fmt(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> { fmt.write_fmt(format_args!("{}", self.0)) }
 }
 
 /// Implements [Diagnostic] over for [io::Error].
@@ -52,9 +48,7 @@ impl From<io::Error> for IoError {
 impl Diagnostic for IoError {
 	fn category(&self) -> Option<&'static Category> { Some(category!("internalError/io")) }
 
-	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(fmt, "{}", self.error)
-	}
+	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(fmt, "{}", self.error) }
 
 	fn tags(&self) -> DiagnosticTags { DiagnosticTags::INTERNAL }
 
@@ -109,9 +103,7 @@ impl From<oxc_resolver::ResolveError> for ResolveError {
 impl Diagnostic for ResolveError {
 	fn category(&self) -> Option<&'static Category> { Some(category!("internalError/io")) }
 
-	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(fmt, "{}", self.error)
-	}
+	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(fmt, "{}", self.error) }
 
 	fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
 		fmt.write_markup(markup!({ AsConsoleDisplay(&self.error) }))
@@ -130,9 +122,7 @@ impl From<serde_json::Error> for SerdeJsonError {
 impl Diagnostic for SerdeJsonError {
 	fn category(&self) -> Option<&'static Category> { Some(category!("internalError/io")) }
 
-	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(fmt, "{}", self.error)
-	}
+	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(fmt, "{}", self.error) }
 
 	fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
 		fmt.write_markup(markup!({ AsConsoleDisplay(&self.error) }))
@@ -149,9 +139,7 @@ impl Diagnostic for IniError {
 
 	fn severity(&self) -> crate::Severity { crate::Severity::Error }
 
-	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(fmt, "{}", self.error)
-	}
+	fn description(&self, fmt:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(fmt, "{}", self.error) }
 
 	fn message(&self, fmt:&mut fmt::Formatter<'_>) -> std::io::Result<()> {
 		fmt.write_markup(markup!({ AsConsoleDisplay(&self.error) }))
@@ -159,9 +147,7 @@ impl Diagnostic for IniError {
 }
 
 impl Display for IniError {
-	fn fmt(&self, fmt:&mut fmt::Formatter<'_>) -> std::io::Result<()> {
-		write!(fmt, "{:?}", self.error)
-	}
+	fn fmt(&self, fmt:&mut fmt::Formatter<'_>) -> std::io::Result<()> { write!(fmt, "{:?}", self.error) }
 }
 
 impl From<serde_ini::de::Error> for IniError {

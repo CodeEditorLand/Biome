@@ -7,10 +7,7 @@ pub(crate) struct CssSuppressionAction;
 impl SuppressionAction for CssSuppressionAction {
 	type Language = CssLanguage;
 
-	fn find_token_to_apply_suppression(
-		&self,
-		token:CssSyntaxToken,
-	) -> Option<ApplySuppression<Self::Language>> {
+	fn find_token_to_apply_suppression(&self, token:CssSyntaxToken) -> Option<ApplySuppression<Self::Language>> {
 		let mut apply_suppression = ApplySuppression {
 			token_has_trailing_comments:false,
 			token_to_apply_suppression:token.clone(),
@@ -56,8 +53,7 @@ impl SuppressionAction for CssSuppressionAction {
 
 		let mut new_token = token_to_apply_suppression.clone();
 
-		let has_leading_whitespace =
-			new_token.leading_trivia().pieces().any(|trivia| trivia.is_whitespace());
+		let has_leading_whitespace = new_token.leading_trivia().pieces().any(|trivia| trivia.is_whitespace());
 
 		if token_has_trailing_comments {
 			new_token = new_token.with_trailing_trivia([
@@ -75,8 +71,7 @@ impl SuppressionAction for CssSuppressionAction {
 				(TriviaPieceKind::Newline, "\n"),
 			];
 
-			let leading_whitespace:Vec<_> =
-				new_token.leading_trivia().pieces().filter(|p| p.is_whitespace()).collect();
+			let leading_whitespace:Vec<_> = new_token.leading_trivia().pieces().filter(|p| p.is_whitespace()).collect();
 
 			for w in leading_whitespace.iter() {
 				trivia.push((TriviaPieceKind::Whitespace, w.text()));

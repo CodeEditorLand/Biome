@@ -56,8 +56,7 @@ pub fn deserialize_from_json_str<Output:Deserializable>(
 ) -> Deserialized<Output> {
 	let parse = parse_json(source, options);
 
-	let Deserialized { diagnostics, deserialized } =
-		deserialize_from_json_ast::<Output>(&parse.tree(), name);
+	let Deserialized { diagnostics, deserialized } = deserialize_from_json_ast::<Output>(&parse.tree(), name);
 
 	let errors = parse
 		.into_diagnostics()
@@ -78,10 +77,7 @@ pub fn deserialize_from_str<Output:Deserializable>(source:&str) -> Deserialized<
 ///
 /// `name` corresponds to the name used in a diagnostic to designate the
 /// deserialized value.
-pub fn deserialize_from_json_ast<Output:Deserializable>(
-	parse:&JsonRoot,
-	name:&str,
-) -> Deserialized<Output> {
+pub fn deserialize_from_json_ast<Output:Deserializable>(parse:&JsonRoot, name:&str) -> Deserialized<Output> {
 	let mut diagnostics = vec![];
 
 	let deserialized = parse
@@ -241,9 +237,7 @@ impl Deserializable for serde_json::Value {
 
 			fn visit_map(
 				self,
-				members:impl Iterator<
-					Item = Option<(impl DeserializableValue, impl DeserializableValue)>,
-				>,
+				members:impl Iterator<Item = Option<(impl DeserializableValue, impl DeserializableValue)>>,
 				_range:biome_rowan::TextRange,
 				_name:&str,
 				diagnostics:&mut Vec<DeserializationDiagnostic>,
@@ -818,11 +812,8 @@ mod tests {
 	fn test_hash_map() {
 		let source = r#"{ "a": 0, "b": 1 }"#;
 
-		let Deserialized { deserialized, diagnostics } = deserialize_from_json_str::<
-			HashMap<String, u8>,
-		>(
-			source, JsonParserOptions::default(), ""
-		);
+		let Deserialized { deserialized, diagnostics } =
+			deserialize_from_json_str::<HashMap<String, u8>>(source, JsonParserOptions::default(), "");
 
 		assert!(diagnostics.is_empty());
 
@@ -833,11 +824,8 @@ mod tests {
 
 		let source = "0";
 
-		let Deserialized { deserialized, diagnostics } = deserialize_from_json_str::<
-			HashMap<String, u8>,
-		>(
-			source, JsonParserOptions::default(), ""
-		);
+		let Deserialized { deserialized, diagnostics } =
+			deserialize_from_json_str::<HashMap<String, u8>>(source, JsonParserOptions::default(), "");
 
 		assert!(!diagnostics.is_empty());
 
@@ -848,11 +836,8 @@ mod tests {
 	fn test_b_tree_map_map() {
 		let source = r#"{ "a": 0, "b": 1 }"#;
 
-		let Deserialized { deserialized, diagnostics } = deserialize_from_json_str::<
-			BTreeMap<String, u8>,
-		>(
-			source, JsonParserOptions::default(), ""
-		);
+		let Deserialized { deserialized, diagnostics } =
+			deserialize_from_json_str::<BTreeMap<String, u8>>(source, JsonParserOptions::default(), "");
 
 		assert!(diagnostics.is_empty());
 
@@ -863,11 +848,8 @@ mod tests {
 
 		let source = "0";
 
-		let Deserialized { deserialized, diagnostics } = deserialize_from_json_str::<
-			BTreeMap<String, u8>,
-		>(
-			source, JsonParserOptions::default(), ""
-		);
+		let Deserialized { deserialized, diagnostics } =
+			deserialize_from_json_str::<BTreeMap<String, u8>>(source, JsonParserOptions::default(), "");
 
 		assert!(!diagnostics.is_empty());
 
@@ -878,11 +860,8 @@ mod tests {
 	fn test_index_map() {
 		let source = r#"{ "a": 0, "b": 1 }"#;
 
-		let Deserialized { deserialized, diagnostics } = deserialize_from_json_str::<
-			IndexMap<String, u8>,
-		>(
-			source, JsonParserOptions::default(), ""
-		);
+		let Deserialized { deserialized, diagnostics } =
+			deserialize_from_json_str::<IndexMap<String, u8>>(source, JsonParserOptions::default(), "");
 
 		assert!(diagnostics.is_empty());
 
@@ -893,11 +872,8 @@ mod tests {
 
 		let source = "0";
 
-		let Deserialized { deserialized, diagnostics } = deserialize_from_json_str::<
-			IndexMap<String, u8>,
-		>(
-			source, JsonParserOptions::default(), ""
-		);
+		let Deserialized { deserialized, diagnostics } =
+			deserialize_from_json_str::<IndexMap<String, u8>>(source, JsonParserOptions::default(), "");
 
 		assert!(!diagnostics.is_empty());
 

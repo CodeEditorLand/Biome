@@ -1,199 +1,204 @@
-use crate::JsRuleAction;
+use std::ops::Range;
+
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, FixKind, Rule, RuleDiagnostic, RuleSource,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
 use biome_js_factory::make;
 use biome_js_syntax::{AnyJsxChild, JsSyntaxKind, JsSyntaxToken, JsxText};
 use biome_rowan::{AstNode, BatchMutationExt, TextRange, TextSize};
-use std::ops::Range;
+
+use crate::JsRuleAction;
 
 declare_lint_rule! {
-    /// Prevent comments from being inserted as text nodes
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div>// comment</div>;
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div>/* comment */</div>;
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div>/** comment */</div>;
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div>text /* comment */</div>;
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div>/* comment */ text</div>;
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div>
-    ///     text
-    ///     // comment
-    /// </div>;
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div>
-    ///     // comment
-    ///    text
-    /// </div>;
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div>
-    ///     /* comment */
-    ///     text
-    /// </div>;
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```jsx
-    /// <>
-    ///    <div>{/* comment */}</div>;
-    ///    <div>{/** comment */}</div>;
-    ///    <div className={"cls" /* comment */}></div>;
-    ///    <div>text {/* comment */}</div>;
-    ///    <div>{/* comment */} text</div>;
-    /// </>
-    /// ```
-    pub NoCommentText {
-        version: "1.0.0",
-        name: "noCommentText",
-        language: "jsx",
-        sources: &[RuleSource::EslintReact("jsx-no-comment-textnodes")],
-        recommended: true,
-        fix_kind: FixKind::Unsafe,
-    }
+	/// Prevent comments from being inserted as text nodes
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div>// comment</div>;
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div>/* comment */</div>;
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div>/** comment */</div>;
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div>text /* comment */</div>;
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div>/* comment */ text</div>;
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div>
+	///     text
+	///     // comment
+	/// </div>;
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div>
+	///     // comment
+	///    text
+	/// </div>;
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div>
+	///     /* comment */
+	///     text
+	/// </div>;
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```jsx
+	/// <>
+	///    <div>{/* comment */}</div>;
+	///    <div>{/** comment */}</div>;
+	///    <div className={"cls" /* comment */}></div>;
+	///    <div>text {/* comment */}</div>;
+	///    <div>{/* comment */} text</div>;
+	/// </>
+	/// ```
+	pub NoCommentText {
+		version: "1.0.0",
+		name: "noCommentText",
+		language: "jsx",
+		sources: &[RuleSource::EslintReact("jsx-no-comment-textnodes")],
+		recommended: true,
+		fix_kind: FixKind::Unsafe,
+	}
 }
 
 impl Rule for NoCommentText {
-    type Query = Ast<JsxText>;
+	type Options = ();
+	type Query = Ast<JsxText>;
+	type Signals = Option<Self::State>;
+	type State = Range<usize>;
 
-    type State = Range<usize>;
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let jsx_value = node.value_token().ok()?;
 
-    type Options = ();
+		let jsx_value = jsx_value.text();
 
-    fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
-        let node = ctx.query();
+		let bytes = jsx_value.as_bytes();
 
-        let jsx_value = node.value_token().ok()?;
+		let mut bytes_iter = jsx_value.bytes().enumerate();
 
-        let jsx_value = jsx_value.text();
+		while let Some((index, byte)) = bytes_iter.next() {
+			if byte != b'/' {
+				continue;
+			}
 
-        let bytes = jsx_value.as_bytes();
+			match bytes_iter.next()? {
+				(_, b'/') => {
+					// Ignore `://` (`https://`, ...)
+					if index == 0 || bytes.get(index - 1) != Some(&b':') {
+						let end = bytes_iter
+							.find(|(_, c)| c == &b'\n')
+							.map_or(bytes.len(), |(index, _)| index);
 
-        let mut bytes_iter = jsx_value.bytes().enumerate();
+						return Some(index..end);
+					}
+				},
+				(_, b'*') => {
+					let mut end = 0;
 
-        while let Some((index, byte)) = bytes_iter.next() {
-            if byte != b'/' {
-                continue;
-            }
+					while let Some((_, byte)) = bytes_iter.next() {
+						if byte != b'*' {
+							continue;
+						}
 
-            match bytes_iter.next()? {
-                (_, b'/') => {
-                    // Ignore `://` (`https://`, ...)
-                    if index == 0 || bytes.get(index - 1) != Some(&b':') {
-                        let end = bytes_iter
-                            .find(|(_, c)| c == &b'\n')
-                            .map_or(bytes.len(), |(index, _)| index);
+						let Some((index, b'/')) = bytes_iter.next() else {
+							continue;
+						};
 
-                        return Some(index..end);
-                    }
-                }
-                (_, b'*') => {
-                    let mut end = 0;
+						end = index + 1;
 
-                    while let Some((_, byte)) = bytes_iter.next() {
-                        if byte != b'*' {
-                            continue;
-                        }
+						break;
+					}
 
-                        let Some((index, b'/')) = bytes_iter.next() else {
-                            continue;
-                        };
+					if end > 0 {
+						return Some(index..end);
+					}
+				},
 
-                        end = index + 1;
+				_ => {},
+			}
+		}
 
-                        break;
-                    }
+		None
+	}
 
-                    if end > 0 {
-                        return Some(index..end);
-                    }
-                }
+	fn diagnostic(ctx:&RuleContext<Self>, range:&Self::State) -> Option<RuleDiagnostic> {
+		let node_range_start = ctx.query().range().start();
 
-                _ => {}
-            }
-        }
+		Some(RuleDiagnostic::new(
+			rule_category!(),
+			TextRange::new(
+				node_range_start + TextSize::from(range.start as u32),
+				node_range_start + TextSize::from(range.end as u32),
+			),
+			markup! {
+				"Wrap "<Emphasis>"comments"</Emphasis>" inside children within "<Emphasis>"braces"</Emphasis>"."
+			},
+		))
+	}
 
-        None
-    }
+	fn action(ctx:&RuleContext<Self>, range:&Self::State) -> Option<JsRuleAction> {
+		let node = ctx.query();
 
-    fn diagnostic(ctx: &RuleContext<Self>, range: &Self::State) -> Option<RuleDiagnostic> {
-        let node_range_start = ctx.query().range().start();
+		let jsx_value = node.value_token().ok()?;
 
-        Some(RuleDiagnostic::new(
-            rule_category!(),
-            TextRange::new(
-                node_range_start + TextSize::from(range.start as u32),
-                node_range_start + TextSize::from(range.end as u32),
-            ),
-            markup! {
-                "Wrap "<Emphasis>"comments"</Emphasis>" inside children within "<Emphasis>"braces"</Emphasis>"."
-            },
-        ))
-    }
+		let jsx_value = jsx_value.text();
 
-    fn action(ctx: &RuleContext<Self>, range: &Self::State) -> Option<JsRuleAction> {
-        let node = ctx.query();
+		let before_comment = &jsx_value[..range.start];
 
-        let jsx_value = node.value_token().ok()?;
+		let after_comment = &jsx_value[range.end..];
 
-        let jsx_value = jsx_value.text();
+		let new_jsx_value = if jsx_value.as_bytes()[range.start + 1] == b'*' {
+			let comment = &jsx_value[range.start..range.end];
 
-        let before_comment = &jsx_value[..range.start];
+			format!("{before_comment}{{{comment}}}{after_comment}")
+		} else {
+			let comment_text = &jsx_value[range.start + 2..range.end].trim();
 
-        let after_comment = &jsx_value[range.end..];
+			format!("{before_comment}{{/* {comment_text} */}}{after_comment}")
+		};
 
-        let new_jsx_value = if jsx_value.as_bytes()[range.start + 1] == b'*' {
-            let comment = &jsx_value[range.start..range.end];
+		let new_jsx_text = AnyJsxChild::JsxText(make::jsx_text(JsSyntaxToken::new_detached(
+			JsSyntaxKind::JSX_TEXT,
+			&new_jsx_value,
+			[],
+			[],
+		)));
 
-            format!("{before_comment}{{{comment}}}{after_comment}")
-        } else {
-            let comment_text = &jsx_value[range.start + 2..range.end].trim();
+		let mut mutation = ctx.root().begin();
 
-            format!("{before_comment}{{/* {comment_text} */}}{after_comment}")
-        };
+		mutation.replace_node(AnyJsxChild::from(node.clone()), new_jsx_text);
 
-        let new_jsx_text = AnyJsxChild::JsxText(make::jsx_text(JsSyntaxToken::new_detached(
-            JsSyntaxKind::JSX_TEXT,
-            &new_jsx_value,
-            [],
-            [],
-        )));
-
-        let mut mutation = ctx.root().begin();
-
-        mutation.replace_node(AnyJsxChild::from(node.clone()), new_jsx_text);
-
-        Some(JsRuleAction::new(
-            ctx.metadata().action_category(ctx.category(), ctx.group()),
-            ctx.metadata().applicability(),
-            markup! { "Wrap the comments with braces" }.to_owned(),
-            mutation,
-        ))
-    }
+		Some(JsRuleAction::new(
+			ctx.metadata().action_category(ctx.category(), ctx.group()),
+			ctx.metadata().applicability(),
+			markup! { "Wrap the comments with braces" }.to_owned(),
+			mutation,
+		))
+	}
 }

@@ -3,14 +3,7 @@
 
 use biome_formatter::{FormatOwnedWithRule, FormatRefWithRule, FormatResult, FormatRule};
 
-use crate::{
-	AsFormat,
-	CssFormatContext,
-	CssFormatter,
-	FormatBogusNodeRule,
-	FormatNodeRule,
-	IntoFormat,
-};
+use crate::{AsFormat, CssFormatContext, CssFormatter, FormatBogusNodeRule, FormatNodeRule, IntoFormat};
 impl FormatRule<biome_css_syntax::CssAtRule> for crate::css::statements::at_rule::FormatCssAtRule {
 	type Context = CssFormatContext;
 
@@ -20,11 +13,8 @@ impl FormatRule<biome_css_syntax::CssAtRule> for crate::css::statements::at_rule
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssAtRule {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssAtRule,
-		crate::css::statements::at_rule::FormatCssAtRule,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssAtRule, crate::css::statements::at_rule::FormatCssAtRule>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -32,10 +22,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssAtRule {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssAtRule {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssAtRule,
-		crate::css::statements::at_rule::FormatCssAtRule,
-	>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::CssAtRule, crate::css::statements::at_rule::FormatCssAtRule>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -48,11 +35,7 @@ impl FormatRule<biome_css_syntax::CssAttributeMatcher>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssAttributeMatcher,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssAttributeMatcher, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssAttributeMatcher>::fmt(self, node, f)
 	}
 }
@@ -91,11 +74,7 @@ impl FormatRule<biome_css_syntax::CssAttributeMatcherValue>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssAttributeMatcherValue,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssAttributeMatcherValue, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssAttributeMatcherValue>::fmt(self, node, f)
 	}
 }
@@ -110,8 +89,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssAttributeMatcherValue {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::auxiliary::attribute_matcher_value::FormatCssAttributeMatcherValue::default(
-			),
+			crate::css::auxiliary::attribute_matcher_value::FormatCssAttributeMatcherValue::default(),
 		)
 	}
 }
@@ -125,22 +103,15 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssAttributeMatcherValue
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::auxiliary::attribute_matcher_value::FormatCssAttributeMatcherValue::default(
-			),
+			crate::css::auxiliary::attribute_matcher_value::FormatCssAttributeMatcherValue::default(),
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssAttributeName>
-	for crate::css::auxiliary::attribute_name::FormatCssAttributeName
-{
+impl FormatRule<biome_css_syntax::CssAttributeName> for crate::css::auxiliary::attribute_name::FormatCssAttributeName {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssAttributeName,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssAttributeName, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssAttributeName>::fmt(self, node, f)
 	}
 }
@@ -153,10 +124,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssAttributeName {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::attribute_name::FormatCssAttributeName::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::attribute_name::FormatCssAttributeName::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssAttributeName {
@@ -167,10 +135,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssAttributeName {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::attribute_name::FormatCssAttributeName::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::attribute_name::FormatCssAttributeName::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssAttributeSelector>
@@ -179,11 +144,7 @@ impl FormatRule<biome_css_syntax::CssAttributeSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssAttributeSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssAttributeSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssAttributeSelector>::fmt(self, node, f)
 	}
 }
@@ -222,11 +183,7 @@ impl FormatRule<biome_css_syntax::CssBinaryExpression>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBinaryExpression,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBinaryExpression, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssBinaryExpression>::fmt(self, node, f)
 	}
 }
@@ -265,11 +222,7 @@ impl FormatRule<biome_css_syntax::CssBracketedValue>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBracketedValue,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBracketedValue, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssBracketedValue>::fmt(self, node, f)
 	}
 }
@@ -282,10 +235,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBracketedValue {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::bracketed_value::FormatCssBracketedValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::bracketed_value::FormatCssBracketedValue::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBracketedValue {
@@ -296,10 +246,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBracketedValue {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::bracketed_value::FormatCssBracketedValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::bracketed_value::FormatCssBracketedValue::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssCharsetAtRule>
@@ -308,11 +255,7 @@ impl FormatRule<biome_css_syntax::CssCharsetAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssCharsetAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssCharsetAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssCharsetAtRule>::fmt(self, node, f)
 	}
 }
@@ -325,10 +268,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssCharsetAtRule {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::statements::charset_at_rule::FormatCssCharsetAtRule::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::statements::charset_at_rule::FormatCssCharsetAtRule::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssCharsetAtRule {
@@ -339,23 +279,14 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssCharsetAtRule {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::statements::charset_at_rule::FormatCssCharsetAtRule::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::statements::charset_at_rule::FormatCssCharsetAtRule::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssClassSelector>
-	for crate::css::selectors::class_selector::FormatCssClassSelector
-{
+impl FormatRule<biome_css_syntax::CssClassSelector> for crate::css::selectors::class_selector::FormatCssClassSelector {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssClassSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssClassSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssClassSelector>::fmt(self, node, f)
 	}
 }
@@ -368,10 +299,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssClassSelector {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::selectors::class_selector::FormatCssClassSelector::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::selectors::class_selector::FormatCssClassSelector::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssClassSelector {
@@ -382,10 +310,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssClassSelector {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::selectors::class_selector::FormatCssClassSelector::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::selectors::class_selector::FormatCssClassSelector::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssColor> for crate::css::value::color::FormatCssColor {
@@ -397,8 +322,7 @@ impl FormatRule<biome_css_syntax::CssColor> for crate::css::value::color::Format
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssColor {
-	type Format<'a> =
-		FormatRefWithRule<'a, biome_css_syntax::CssColor, crate::css::value::color::FormatCssColor>;
+	type Format<'a> = FormatRefWithRule<'a, biome_css_syntax::CssColor, crate::css::value::color::FormatCssColor>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -406,8 +330,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssColor {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssColor {
-	type Format =
-		FormatOwnedWithRule<biome_css_syntax::CssColor, crate::css::value::color::FormatCssColor>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::CssColor, crate::css::value::color::FormatCssColor>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -420,11 +343,7 @@ impl FormatRule<biome_css_syntax::CssColorProfileAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssColorProfileAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssColorProfileAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssColorProfileAtRule>::fmt(self, node, f)
 	}
 }
@@ -463,11 +382,7 @@ impl FormatRule<biome_css_syntax::CssComplexSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssComplexSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssComplexSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssComplexSelector>::fmt(self, node, f)
 	}
 }
@@ -506,11 +421,7 @@ impl FormatRule<biome_css_syntax::CssComposesImportSpecifier>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssComposesImportSpecifier,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssComposesImportSpecifier, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssComposesImportSpecifier>::fmt(self, node, f)
 	}
 }
@@ -523,7 +434,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssComposesImportSpecifier
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: composes_import_specifier :: FormatCssComposesImportSpecifier :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::composes_import_specifier::FormatCssComposesImportSpecifier::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssComposesImportSpecifier {
@@ -534,7 +448,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssComposesImportSpecifi
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: composes_import_specifier :: FormatCssComposesImportSpecifier :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::composes_import_specifier::FormatCssComposesImportSpecifier::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssComposesProperty>
@@ -543,11 +460,7 @@ impl FormatRule<biome_css_syntax::CssComposesProperty>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssComposesProperty,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssComposesProperty, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssComposesProperty>::fmt(self, node, f)
 	}
 }
@@ -586,11 +499,7 @@ impl FormatRule<biome_css_syntax::CssComposesPropertyValue>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssComposesPropertyValue,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssComposesPropertyValue, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssComposesPropertyValue>::fmt(self, node, f)
 	}
 }
@@ -605,8 +514,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssComposesPropertyValue {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::auxiliary::composes_property_value::FormatCssComposesPropertyValue::default(
-			),
+			crate::css::auxiliary::composes_property_value::FormatCssComposesPropertyValue::default(),
 		)
 	}
 }
@@ -620,8 +528,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssComposesPropertyValue
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::auxiliary::composes_property_value::FormatCssComposesPropertyValue::default(
-			),
+			crate::css::auxiliary::composes_property_value::FormatCssComposesPropertyValue::default(),
 		)
 	}
 }
@@ -631,11 +538,7 @@ impl FormatRule<biome_css_syntax::CssCompoundSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssCompoundSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssCompoundSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssCompoundSelector>::fmt(self, node, f)
 	}
 }
@@ -674,11 +577,7 @@ impl FormatRule<biome_css_syntax::CssContainerAndQuery>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerAndQuery,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerAndQuery, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerAndQuery>::fmt(self, node, f)
 	}
 }
@@ -717,11 +616,7 @@ impl FormatRule<biome_css_syntax::CssContainerAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerAtRule>::fmt(self, node, f)
 	}
 }
@@ -760,11 +655,7 @@ impl FormatRule<biome_css_syntax::CssContainerNotQuery>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerNotQuery,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerNotQuery, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerNotQuery>::fmt(self, node, f)
 	}
 }
@@ -803,11 +694,7 @@ impl FormatRule<biome_css_syntax::CssContainerOrQuery>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerOrQuery,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerOrQuery, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerOrQuery>::fmt(self, node, f)
 	}
 }
@@ -846,11 +733,7 @@ impl FormatRule<biome_css_syntax::CssContainerQueryInParens>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerQueryInParens,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerQueryInParens, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerQueryInParens>::fmt(self, node, f)
 	}
 }
@@ -863,7 +746,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssContainerQueryInParens 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: container_query_in_parens :: FormatCssContainerQueryInParens :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::container_query_in_parens::FormatCssContainerQueryInParens::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerQueryInParens {
@@ -874,7 +760,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerQueryInParen
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: container_query_in_parens :: FormatCssContainerQueryInParens :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::container_query_in_parens::FormatCssContainerQueryInParens::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssContainerSizeFeatureInParens>
@@ -883,28 +772,37 @@ impl FormatRule<biome_css_syntax::CssContainerSizeFeatureInParens>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerSizeFeatureInParens,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerSizeFeatureInParens, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerSizeFeatureInParens>::fmt(self, node, f)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssContainerSizeFeatureInParens {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssContainerSizeFeatureInParens , crate :: css :: auxiliary :: container_size_feature_in_parens :: FormatCssContainerSizeFeatureInParens > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssContainerSizeFeatureInParens,
+		crate::css::auxiliary::container_size_feature_in_parens::FormatCssContainerSizeFeatureInParens,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: container_size_feature_in_parens :: FormatCssContainerSizeFeatureInParens :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::container_size_feature_in_parens::FormatCssContainerSizeFeatureInParens::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerSizeFeatureInParens {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssContainerSizeFeatureInParens , crate :: css :: auxiliary :: container_size_feature_in_parens :: FormatCssContainerSizeFeatureInParens > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssContainerSizeFeatureInParens,
+		crate::css::auxiliary::container_size_feature_in_parens::FormatCssContainerSizeFeatureInParens,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: container_size_feature_in_parens :: FormatCssContainerSizeFeatureInParens :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::container_size_feature_in_parens::FormatCssContainerSizeFeatureInParens::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssContainerStyleAndQuery>
@@ -913,11 +811,7 @@ impl FormatRule<biome_css_syntax::CssContainerStyleAndQuery>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerStyleAndQuery,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerStyleAndQuery, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerStyleAndQuery>::fmt(self, node, f)
 	}
 }
@@ -930,7 +824,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleAndQuery 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: container_style_and_query :: FormatCssContainerStyleAndQuery :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::container_style_and_query::FormatCssContainerStyleAndQuery::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleAndQuery {
@@ -941,7 +838,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleAndQuer
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: container_style_and_query :: FormatCssContainerStyleAndQuery :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::container_style_and_query::FormatCssContainerStyleAndQuery::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssContainerStyleInParens>
@@ -950,11 +850,7 @@ impl FormatRule<biome_css_syntax::CssContainerStyleInParens>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerStyleInParens,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerStyleInParens, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerStyleInParens>::fmt(self, node, f)
 	}
 }
@@ -967,7 +863,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleInParens 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: container_style_in_parens :: FormatCssContainerStyleInParens :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::container_style_in_parens::FormatCssContainerStyleInParens::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleInParens {
@@ -978,7 +877,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleInParen
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: container_style_in_parens :: FormatCssContainerStyleInParens :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::container_style_in_parens::FormatCssContainerStyleInParens::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssContainerStyleNotQuery>
@@ -987,11 +889,7 @@ impl FormatRule<biome_css_syntax::CssContainerStyleNotQuery>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerStyleNotQuery,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerStyleNotQuery, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerStyleNotQuery>::fmt(self, node, f)
 	}
 }
@@ -1004,7 +902,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleNotQuery 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: container_style_not_query :: FormatCssContainerStyleNotQuery :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::container_style_not_query::FormatCssContainerStyleNotQuery::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleNotQuery {
@@ -1015,7 +916,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleNotQuer
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: container_style_not_query :: FormatCssContainerStyleNotQuery :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::container_style_not_query::FormatCssContainerStyleNotQuery::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssContainerStyleOrQuery>
@@ -1024,11 +928,7 @@ impl FormatRule<biome_css_syntax::CssContainerStyleOrQuery>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerStyleOrQuery,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerStyleOrQuery, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerStyleOrQuery>::fmt(self, node, f)
 	}
 }
@@ -1041,7 +941,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleOrQuery {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: container_style_or_query :: FormatCssContainerStyleOrQuery :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::container_style_or_query::FormatCssContainerStyleOrQuery::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleOrQuery {
@@ -1052,7 +955,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleOrQuery
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: container_style_or_query :: FormatCssContainerStyleOrQuery :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::container_style_or_query::FormatCssContainerStyleOrQuery::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssContainerStyleQueryInParens>
@@ -1061,28 +967,37 @@ impl FormatRule<biome_css_syntax::CssContainerStyleQueryInParens>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssContainerStyleQueryInParens,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssContainerStyleQueryInParens, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssContainerStyleQueryInParens>::fmt(self, node, f)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleQueryInParens {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssContainerStyleQueryInParens , crate :: css :: auxiliary :: container_style_query_in_parens :: FormatCssContainerStyleQueryInParens > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssContainerStyleQueryInParens,
+		crate::css::auxiliary::container_style_query_in_parens::FormatCssContainerStyleQueryInParens,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: container_style_query_in_parens :: FormatCssContainerStyleQueryInParens :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::container_style_query_in_parens::FormatCssContainerStyleQueryInParens::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssContainerStyleQueryInParens {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssContainerStyleQueryInParens , crate :: css :: auxiliary :: container_style_query_in_parens :: FormatCssContainerStyleQueryInParens > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssContainerStyleQueryInParens,
+		crate::css::auxiliary::container_style_query_in_parens::FormatCssContainerStyleQueryInParens,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: container_style_query_in_parens :: FormatCssContainerStyleQueryInParens :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::container_style_query_in_parens::FormatCssContainerStyleQueryInParens::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssCounterStyleAtRule>
@@ -1091,11 +1006,7 @@ impl FormatRule<biome_css_syntax::CssCounterStyleAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssCounterStyleAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssCounterStyleAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssCounterStyleAtRule>::fmt(self, node, f)
 	}
 }
@@ -1134,11 +1045,7 @@ impl FormatRule<biome_css_syntax::CssCustomIdentifier>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssCustomIdentifier,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssCustomIdentifier, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssCustomIdentifier>::fmt(self, node, f)
 	}
 }
@@ -1151,10 +1058,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssCustomIdentifier {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::value::custom_identifier::FormatCssCustomIdentifier::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::value::custom_identifier::FormatCssCustomIdentifier::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssCustomIdentifier {
@@ -1165,10 +1069,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssCustomIdentifier {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::value::custom_identifier::FormatCssCustomIdentifier::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::value::custom_identifier::FormatCssCustomIdentifier::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssDashedIdentifier>
@@ -1177,11 +1078,7 @@ impl FormatRule<biome_css_syntax::CssDashedIdentifier>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssDashedIdentifier,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssDashedIdentifier, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssDashedIdentifier>::fmt(self, node, f)
 	}
 }
@@ -1194,10 +1091,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssDashedIdentifier {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::value::dashed_identifier::FormatCssDashedIdentifier::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::value::dashed_identifier::FormatCssDashedIdentifier::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDashedIdentifier {
@@ -1208,15 +1102,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDashedIdentifier {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::value::dashed_identifier::FormatCssDashedIdentifier::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::value::dashed_identifier::FormatCssDashedIdentifier::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssDeclaration>
-	for crate::css::auxiliary::declaration::FormatCssDeclaration
-{
+impl FormatRule<biome_css_syntax::CssDeclaration> for crate::css::auxiliary::declaration::FormatCssDeclaration {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -1233,24 +1122,16 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssDeclaration {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::declaration::FormatCssDeclaration::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::declaration::FormatCssDeclaration::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclaration {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssDeclaration,
-		crate::css::auxiliary::declaration::FormatCssDeclaration,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssDeclaration, crate::css::auxiliary::declaration::FormatCssDeclaration>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::declaration::FormatCssDeclaration::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::declaration::FormatCssDeclaration::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssDeclarationBlock>
@@ -1259,11 +1140,7 @@ impl FormatRule<biome_css_syntax::CssDeclarationBlock>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssDeclarationBlock,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssDeclarationBlock, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssDeclarationBlock>::fmt(self, node, f)
 	}
 }
@@ -1302,11 +1179,7 @@ impl FormatRule<biome_css_syntax::CssDeclarationImportant>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssDeclarationImportant,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssDeclarationImportant, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssDeclarationImportant>::fmt(self, node, f)
 	}
 }
@@ -1345,11 +1218,7 @@ impl FormatRule<biome_css_syntax::CssDeclarationOrAtRuleBlock>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssDeclarationOrAtRuleBlock,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssDeclarationOrAtRuleBlock, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssDeclarationOrAtRuleBlock>::fmt(self, node, f)
 	}
 }
@@ -1362,7 +1231,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrAtRuleBloc
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: declaration_or_at_rule_block :: FormatCssDeclarationOrAtRuleBlock :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::declaration_or_at_rule_block::FormatCssDeclarationOrAtRuleBlock::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrAtRuleBlock {
@@ -1373,7 +1245,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrAtRuleBl
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: declaration_or_at_rule_block :: FormatCssDeclarationOrAtRuleBlock :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::declaration_or_at_rule_block::FormatCssDeclarationOrAtRuleBlock::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssDeclarationOrRuleBlock>
@@ -1382,11 +1257,7 @@ impl FormatRule<biome_css_syntax::CssDeclarationOrRuleBlock>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssDeclarationOrRuleBlock,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssDeclarationOrRuleBlock, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssDeclarationOrRuleBlock>::fmt(self, node, f)
 	}
 }
@@ -1399,7 +1270,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrRuleBlock 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: declaration_or_rule_block :: FormatCssDeclarationOrRuleBlock :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::declaration_or_rule_block::FormatCssDeclarationOrRuleBlock::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrRuleBlock {
@@ -1410,7 +1284,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrRuleBloc
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: declaration_or_rule_block :: FormatCssDeclarationOrRuleBlock :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::declaration_or_rule_block::FormatCssDeclarationOrRuleBlock::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssDeclarationWithSemicolon>
@@ -1419,11 +1296,7 @@ impl FormatRule<biome_css_syntax::CssDeclarationWithSemicolon>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssDeclarationWithSemicolon,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssDeclarationWithSemicolon, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssDeclarationWithSemicolon>::fmt(self, node, f)
 	}
 }
@@ -1436,7 +1309,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssDeclarationWithSemicolo
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: declaration_with_semicolon :: FormatCssDeclarationWithSemicolon :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::declaration_with_semicolon::FormatCssDeclarationWithSemicolon::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclarationWithSemicolon {
@@ -1447,7 +1323,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclarationWithSemico
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: declaration_with_semicolon :: FormatCssDeclarationWithSemicolon :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::declaration_with_semicolon::FormatCssDeclarationWithSemicolon::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssDocumentAtRule>
@@ -1456,11 +1335,7 @@ impl FormatRule<biome_css_syntax::CssDocumentAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssDocumentAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssDocumentAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssDocumentAtRule>::fmt(self, node, f)
 	}
 }
@@ -1499,11 +1374,7 @@ impl FormatRule<biome_css_syntax::CssDocumentCustomMatcher>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssDocumentCustomMatcher,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssDocumentCustomMatcher, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssDocumentCustomMatcher>::fmt(self, node, f)
 	}
 }
@@ -1518,8 +1389,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssDocumentCustomMatcher {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::auxiliary::document_custom_matcher::FormatCssDocumentCustomMatcher::default(
-			),
+			crate::css::auxiliary::document_custom_matcher::FormatCssDocumentCustomMatcher::default(),
 		)
 	}
 }
@@ -1533,8 +1403,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDocumentCustomMatcher
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::auxiliary::document_custom_matcher::FormatCssDocumentCustomMatcher::default(
-			),
+			crate::css::auxiliary::document_custom_matcher::FormatCssDocumentCustomMatcher::default(),
 		)
 	}
 }
@@ -1544,11 +1413,7 @@ impl FormatRule<biome_css_syntax::CssEmptyDeclaration>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssEmptyDeclaration,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssEmptyDeclaration, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssEmptyDeclaration>::fmt(self, node, f)
 	}
 }
@@ -1587,11 +1452,7 @@ impl FormatRule<biome_css_syntax::CssFontFaceAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssFontFaceAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssFontFaceAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssFontFaceAtRule>::fmt(self, node, f)
 	}
 }
@@ -1630,11 +1491,7 @@ impl FormatRule<biome_css_syntax::CssFontFamilyName>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssFontFamilyName,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssFontFamilyName, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssFontFamilyName>::fmt(self, node, f)
 	}
 }
@@ -1673,11 +1530,7 @@ impl FormatRule<biome_css_syntax::CssFontFeatureValuesAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssFontFeatureValuesAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssFontFeatureValuesAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssFontFeatureValuesAtRule>::fmt(self, node, f)
 	}
 }
@@ -1690,7 +1543,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesAtRule
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: statements :: font_feature_values_at_rule :: FormatCssFontFeatureValuesAtRule :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::statements::font_feature_values_at_rule::FormatCssFontFeatureValuesAtRule::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesAtRule {
@@ -1701,7 +1557,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesAtRu
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: statements :: font_feature_values_at_rule :: FormatCssFontFeatureValuesAtRule :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::statements::font_feature_values_at_rule::FormatCssFontFeatureValuesAtRule::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssFontFeatureValuesBlock>
@@ -1710,11 +1569,7 @@ impl FormatRule<biome_css_syntax::CssFontFeatureValuesBlock>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssFontFeatureValuesBlock,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssFontFeatureValuesBlock, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssFontFeatureValuesBlock>::fmt(self, node, f)
 	}
 }
@@ -1727,7 +1582,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesBlock 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: font_feature_values_block :: FormatCssFontFeatureValuesBlock :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::font_feature_values_block::FormatCssFontFeatureValuesBlock::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesBlock {
@@ -1738,7 +1596,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesBloc
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: font_feature_values_block :: FormatCssFontFeatureValuesBlock :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::font_feature_values_block::FormatCssFontFeatureValuesBlock::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssFontFeatureValuesItem>
@@ -1747,11 +1608,7 @@ impl FormatRule<biome_css_syntax::CssFontFeatureValuesItem>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssFontFeatureValuesItem,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssFontFeatureValuesItem, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssFontFeatureValuesItem>::fmt(self, node, f)
 	}
 }
@@ -1764,7 +1621,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesItem {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: font_feature_values_item :: FormatCssFontFeatureValuesItem :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::font_feature_values_item::FormatCssFontFeatureValuesItem::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesItem {
@@ -1775,7 +1635,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesItem
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: font_feature_values_item :: FormatCssFontFeatureValuesItem :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::font_feature_values_item::FormatCssFontFeatureValuesItem::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssFontPaletteValuesAtRule>
@@ -1784,11 +1647,7 @@ impl FormatRule<biome_css_syntax::CssFontPaletteValuesAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssFontPaletteValuesAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssFontPaletteValuesAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssFontPaletteValuesAtRule>::fmt(self, node, f)
 	}
 }
@@ -1801,7 +1660,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssFontPaletteValuesAtRule
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: statements :: font_palette_values_at_rule :: FormatCssFontPaletteValuesAtRule :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::statements::font_palette_values_at_rule::FormatCssFontPaletteValuesAtRule::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFontPaletteValuesAtRule {
@@ -1812,12 +1674,13 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFontPaletteValuesAtRu
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: statements :: font_palette_values_at_rule :: FormatCssFontPaletteValuesAtRule :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::statements::font_palette_values_at_rule::FormatCssFontPaletteValuesAtRule::default(),
+		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssFunction>
-	for crate::css::auxiliary::function::FormatCssFunction
-{
+impl FormatRule<biome_css_syntax::CssFunction> for crate::css::auxiliary::function::FormatCssFunction {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -1826,11 +1689,8 @@ impl FormatRule<biome_css_syntax::CssFunction>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssFunction {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssFunction,
-		crate::css::auxiliary::function::FormatCssFunction,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssFunction, crate::css::auxiliary::function::FormatCssFunction>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -1838,17 +1698,12 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssFunction {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFunction {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssFunction,
-		crate::css::auxiliary::function::FormatCssFunction,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssFunction, crate::css::auxiliary::function::FormatCssFunction>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::function::FormatCssFunction::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::function::FormatCssFunction::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssGenericDelimiter>
@@ -1857,11 +1712,7 @@ impl FormatRule<biome_css_syntax::CssGenericDelimiter>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssGenericDelimiter,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssGenericDelimiter, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssGenericDelimiter>::fmt(self, node, f)
 	}
 }
@@ -1900,11 +1751,7 @@ impl FormatRule<biome_css_syntax::CssGenericProperty>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssGenericProperty,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssGenericProperty, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssGenericProperty>::fmt(self, node, f)
 	}
 }
@@ -1937,9 +1784,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssGenericProperty {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssIdSelector>
-	for crate::css::selectors::id_selector::FormatCssIdSelector
-{
+impl FormatRule<biome_css_syntax::CssIdSelector> for crate::css::selectors::id_selector::FormatCssIdSelector {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -1948,37 +1793,24 @@ impl FormatRule<biome_css_syntax::CssIdSelector>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssIdSelector {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssIdSelector,
-		crate::css::selectors::id_selector::FormatCssIdSelector,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssIdSelector, crate::css::selectors::id_selector::FormatCssIdSelector>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::selectors::id_selector::FormatCssIdSelector::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::selectors::id_selector::FormatCssIdSelector::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssIdSelector {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssIdSelector,
-		crate::css::selectors::id_selector::FormatCssIdSelector,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssIdSelector, crate::css::selectors::id_selector::FormatCssIdSelector>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::selectors::id_selector::FormatCssIdSelector::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::selectors::id_selector::FormatCssIdSelector::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssIdentifier>
-	for crate::css::value::identifier::FormatCssIdentifier
-{
+impl FormatRule<biome_css_syntax::CssIdentifier> for crate::css::value::identifier::FormatCssIdentifier {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -1987,11 +1819,8 @@ impl FormatRule<biome_css_syntax::CssIdentifier>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssIdentifier {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssIdentifier,
-		crate::css::value::identifier::FormatCssIdentifier,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssIdentifier, crate::css::value::identifier::FormatCssIdentifier>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -1999,17 +1828,12 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssIdentifier {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssIdentifier {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssIdentifier,
-		crate::css::value::identifier::FormatCssIdentifier,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssIdentifier, crate::css::value::identifier::FormatCssIdentifier>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::value::identifier::FormatCssIdentifier::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::value::identifier::FormatCssIdentifier::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssImportAnonymousLayer>
@@ -2018,11 +1842,7 @@ impl FormatRule<biome_css_syntax::CssImportAnonymousLayer>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssImportAnonymousLayer,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssImportAnonymousLayer, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssImportAnonymousLayer>::fmt(self, node, f)
 	}
 }
@@ -2055,17 +1875,11 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssImportAnonymousLayer 
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssImportAtRule>
-	for crate::css::statements::import_at_rule::FormatCssImportAtRule
-{
+impl FormatRule<biome_css_syntax::CssImportAtRule> for crate::css::statements::import_at_rule::FormatCssImportAtRule {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssImportAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssImportAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssImportAtRule>::fmt(self, node, f)
 	}
 }
@@ -2078,10 +1892,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssImportAtRule {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::statements::import_at_rule::FormatCssImportAtRule::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::statements::import_at_rule::FormatCssImportAtRule::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssImportAtRule {
@@ -2092,10 +1903,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssImportAtRule {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::statements::import_at_rule::FormatCssImportAtRule::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::statements::import_at_rule::FormatCssImportAtRule::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssImportNamedLayer>
@@ -2104,11 +1912,7 @@ impl FormatRule<biome_css_syntax::CssImportNamedLayer>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssImportNamedLayer,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssImportNamedLayer, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssImportNamedLayer>::fmt(self, node, f)
 	}
 }
@@ -2147,11 +1951,7 @@ impl FormatRule<biome_css_syntax::CssImportSupports>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssImportSupports,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssImportSupports, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssImportSupports>::fmt(self, node, f)
 	}
 }
@@ -2164,10 +1964,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssImportSupports {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::import_supports::FormatCssImportSupports::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::import_supports::FormatCssImportSupports::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssImportSupports {
@@ -2178,10 +1975,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssImportSupports {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::import_supports::FormatCssImportSupports::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::import_supports::FormatCssImportSupports::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssKeyframesAtRule>
@@ -2190,11 +1984,7 @@ impl FormatRule<biome_css_syntax::CssKeyframesAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssKeyframesAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssKeyframesAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssKeyframesAtRule>::fmt(self, node, f)
 	}
 }
@@ -2233,11 +2023,7 @@ impl FormatRule<biome_css_syntax::CssKeyframesBlock>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssKeyframesBlock,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssKeyframesBlock, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssKeyframesBlock>::fmt(self, node, f)
 	}
 }
@@ -2250,10 +2036,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssKeyframesBlock {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::keyframes_block::FormatCssKeyframesBlock::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::keyframes_block::FormatCssKeyframesBlock::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesBlock {
@@ -2264,10 +2047,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesBlock {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::keyframes_block::FormatCssKeyframesBlock::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::keyframes_block::FormatCssKeyframesBlock::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssKeyframesIdentSelector>
@@ -2276,11 +2056,7 @@ impl FormatRule<biome_css_syntax::CssKeyframesIdentSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssKeyframesIdentSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssKeyframesIdentSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssKeyframesIdentSelector>::fmt(self, node, f)
 	}
 }
@@ -2293,7 +2069,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssKeyframesIdentSelector 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: selectors :: keyframes_ident_selector :: FormatCssKeyframesIdentSelector :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::selectors::keyframes_ident_selector::FormatCssKeyframesIdentSelector::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesIdentSelector {
@@ -2304,20 +2083,17 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesIdentSelecto
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: selectors :: keyframes_ident_selector :: FormatCssKeyframesIdentSelector :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::selectors::keyframes_ident_selector::FormatCssKeyframesIdentSelector::default(),
+		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssKeyframesItem>
-	for crate::css::auxiliary::keyframes_item::FormatCssKeyframesItem
-{
+impl FormatRule<biome_css_syntax::CssKeyframesItem> for crate::css::auxiliary::keyframes_item::FormatCssKeyframesItem {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssKeyframesItem,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssKeyframesItem, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssKeyframesItem>::fmt(self, node, f)
 	}
 }
@@ -2330,10 +2106,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssKeyframesItem {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::keyframes_item::FormatCssKeyframesItem::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::keyframes_item::FormatCssKeyframesItem::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesItem {
@@ -2344,10 +2117,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesItem {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::keyframes_item::FormatCssKeyframesItem::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::keyframes_item::FormatCssKeyframesItem::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssKeyframesPercentageSelector>
@@ -2356,11 +2126,7 @@ impl FormatRule<biome_css_syntax::CssKeyframesPercentageSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssKeyframesPercentageSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssKeyframesPercentageSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssKeyframesPercentageSelector>::fmt(self, node, f)
 	}
 }
@@ -2373,7 +2139,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssKeyframesPercentageSele
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: selectors :: keyframes_percentage_selector :: FormatCssKeyframesPercentageSelector :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::selectors::keyframes_percentage_selector::FormatCssKeyframesPercentageSelector::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesPercentageSelector {
@@ -2384,7 +2153,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesPercentageSe
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: selectors :: keyframes_percentage_selector :: FormatCssKeyframesPercentageSelector :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::selectors::keyframes_percentage_selector::FormatCssKeyframesPercentageSelector::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssKeyframesScopeFunction>
@@ -2393,11 +2165,7 @@ impl FormatRule<biome_css_syntax::CssKeyframesScopeFunction>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssKeyframesScopeFunction,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssKeyframesScopeFunction, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssKeyframesScopeFunction>::fmt(self, node, f)
 	}
 }
@@ -2410,7 +2178,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssKeyframesScopeFunction 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: keyframes_scope_function :: FormatCssKeyframesScopeFunction :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::keyframes_scope_function::FormatCssKeyframesScopeFunction::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesScopeFunction {
@@ -2421,7 +2192,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesScopeFunctio
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: keyframes_scope_function :: FormatCssKeyframesScopeFunction :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::keyframes_scope_function::FormatCssKeyframesScopeFunction::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssKeyframesScopePrefix>
@@ -2430,11 +2204,7 @@ impl FormatRule<biome_css_syntax::CssKeyframesScopePrefix>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssKeyframesScopePrefix,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssKeyframesScopePrefix, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssKeyframesScopePrefix>::fmt(self, node, f)
 	}
 }
@@ -2473,11 +2243,7 @@ impl FormatRule<biome_css_syntax::CssKeyframesScopedName>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssKeyframesScopedName,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssKeyframesScopedName, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssKeyframesScopedName>::fmt(self, node, f)
 	}
 }
@@ -2510,9 +2276,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssKeyframesScopedName {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssLayerAtRule>
-	for crate::css::statements::layer_at_rule::FormatCssLayerAtRule
-{
+impl FormatRule<biome_css_syntax::CssLayerAtRule> for crate::css::statements::layer_at_rule::FormatCssLayerAtRule {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -2529,10 +2293,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssLayerAtRule {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::statements::layer_at_rule::FormatCssLayerAtRule::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::statements::layer_at_rule::FormatCssLayerAtRule::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssLayerAtRule {
@@ -2543,10 +2304,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssLayerAtRule {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::statements::layer_at_rule::FormatCssLayerAtRule::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::statements::layer_at_rule::FormatCssLayerAtRule::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssLayerDeclaration>
@@ -2555,11 +2313,7 @@ impl FormatRule<biome_css_syntax::CssLayerDeclaration>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssLayerDeclaration,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssLayerDeclaration, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssLayerDeclaration>::fmt(self, node, f)
 	}
 }
@@ -2598,11 +2352,7 @@ impl FormatRule<biome_css_syntax::CssLayerReference>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssLayerReference,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssLayerReference, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssLayerReference>::fmt(self, node, f)
 	}
 }
@@ -2615,10 +2365,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssLayerReference {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::layer_reference::FormatCssLayerReference::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::layer_reference::FormatCssLayerReference::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssLayerReference {
@@ -2629,15 +2376,25 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssLayerReference {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::layer_reference::FormatCssLayerReference::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::layer_reference::FormatCssLayerReference::default())
 	}
 }
-impl FormatRule < biome_css_syntax :: CssListOfComponentValuesExpression > for crate :: css :: auxiliary :: list_of_component_values_expression :: FormatCssListOfComponentValuesExpression { type Context = CssFormatContext ; # [inline (always)] fn fmt (& self , node : & biome_css_syntax :: CssListOfComponentValuesExpression , f : & mut CssFormatter) -> FormatResult < () > { FormatNodeRule :: < biome_css_syntax :: CssListOfComponentValuesExpression > :: fmt (self , node , f) } }
+impl FormatRule<biome_css_syntax::CssListOfComponentValuesExpression>
+	for crate::css::auxiliary::list_of_component_values_expression::FormatCssListOfComponentValuesExpression
+{
+	type Context = CssFormatContext;
+
+	#[inline(always)]
+	fn fmt(&self, node:&biome_css_syntax::CssListOfComponentValuesExpression, f:&mut CssFormatter) -> FormatResult<()> {
+		FormatNodeRule::<biome_css_syntax::CssListOfComponentValuesExpression>::fmt(self, node, f)
+	}
+}
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssListOfComponentValuesExpression {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssListOfComponentValuesExpression , crate :: css :: auxiliary :: list_of_component_values_expression :: FormatCssListOfComponentValuesExpression > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssListOfComponentValuesExpression,
+		crate::css::auxiliary::list_of_component_values_expression::FormatCssListOfComponentValuesExpression,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -2645,24 +2402,21 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssListOfComponentValuesEx
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssListOfComponentValuesExpression {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssListOfComponentValuesExpression , crate :: css :: auxiliary :: list_of_component_values_expression :: FormatCssListOfComponentValuesExpression > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssListOfComponentValuesExpression,
+		crate::css::auxiliary::list_of_component_values_expression::FormatCssListOfComponentValuesExpression,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: list_of_component_values_expression :: FormatCssListOfComponentValuesExpression :: default ())
 	}
 }
-impl FormatRule<biome_css_syntax::CssMarginAtRule>
-	for crate::css::statements::margin_at_rule::FormatCssMarginAtRule
-{
+impl FormatRule<biome_css_syntax::CssMarginAtRule> for crate::css::statements::margin_at_rule::FormatCssMarginAtRule {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssMarginAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssMarginAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssMarginAtRule>::fmt(self, node, f)
 	}
 }
@@ -2675,10 +2429,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssMarginAtRule {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::statements::margin_at_rule::FormatCssMarginAtRule::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::statements::margin_at_rule::FormatCssMarginAtRule::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMarginAtRule {
@@ -2689,10 +2440,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMarginAtRule {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::statements::margin_at_rule::FormatCssMarginAtRule::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::statements::margin_at_rule::FormatCssMarginAtRule::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssMediaAndCondition>
@@ -2701,11 +2449,7 @@ impl FormatRule<biome_css_syntax::CssMediaAndCondition>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssMediaAndCondition,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssMediaAndCondition, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssMediaAndCondition>::fmt(self, node, f)
 	}
 }
@@ -2744,11 +2488,7 @@ impl FormatRule<biome_css_syntax::CssMediaAndTypeQuery>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssMediaAndTypeQuery,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssMediaAndTypeQuery, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssMediaAndTypeQuery>::fmt(self, node, f)
 	}
 }
@@ -2781,9 +2521,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaAndTypeQuery {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssMediaAtRule>
-	for crate::css::statements::media_at_rule::FormatCssMediaAtRule
-{
+impl FormatRule<biome_css_syntax::CssMediaAtRule> for crate::css::statements::media_at_rule::FormatCssMediaAtRule {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -2800,10 +2538,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssMediaAtRule {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::statements::media_at_rule::FormatCssMediaAtRule::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::statements::media_at_rule::FormatCssMediaAtRule::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaAtRule {
@@ -2814,10 +2549,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaAtRule {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::statements::media_at_rule::FormatCssMediaAtRule::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::statements::media_at_rule::FormatCssMediaAtRule::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssMediaConditionInParens>
@@ -2826,11 +2558,7 @@ impl FormatRule<biome_css_syntax::CssMediaConditionInParens>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssMediaConditionInParens,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssMediaConditionInParens, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssMediaConditionInParens>::fmt(self, node, f)
 	}
 }
@@ -2843,7 +2571,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssMediaConditionInParens 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: media_condition_in_parens :: FormatCssMediaConditionInParens :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::media_condition_in_parens::FormatCssMediaConditionInParens::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaConditionInParens {
@@ -2854,7 +2585,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaConditionInParen
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: media_condition_in_parens :: FormatCssMediaConditionInParens :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::media_condition_in_parens::FormatCssMediaConditionInParens::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssMediaConditionQuery>
@@ -2863,11 +2597,7 @@ impl FormatRule<biome_css_syntax::CssMediaConditionQuery>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssMediaConditionQuery,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssMediaConditionQuery, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssMediaConditionQuery>::fmt(self, node, f)
 	}
 }
@@ -2906,11 +2636,7 @@ impl FormatRule<biome_css_syntax::CssMediaFeatureInParens>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssMediaFeatureInParens,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssMediaFeatureInParens, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssMediaFeatureInParens>::fmt(self, node, f)
 	}
 }
@@ -2925,8 +2651,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssMediaFeatureInParens {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::auxiliary::media_feature_in_parens::FormatCssMediaFeatureInParens::default(
-			),
+			crate::css::auxiliary::media_feature_in_parens::FormatCssMediaFeatureInParens::default(),
 		)
 	}
 }
@@ -2940,8 +2665,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaFeatureInParens 
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::auxiliary::media_feature_in_parens::FormatCssMediaFeatureInParens::default(
-			),
+			crate::css::auxiliary::media_feature_in_parens::FormatCssMediaFeatureInParens::default(),
 		)
 	}
 }
@@ -2951,11 +2675,7 @@ impl FormatRule<biome_css_syntax::CssMediaNotCondition>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssMediaNotCondition,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssMediaNotCondition, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssMediaNotCondition>::fmt(self, node, f)
 	}
 }
@@ -2994,11 +2714,7 @@ impl FormatRule<biome_css_syntax::CssMediaOrCondition>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssMediaOrCondition,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssMediaOrCondition, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssMediaOrCondition>::fmt(self, node, f)
 	}
 }
@@ -3031,9 +2747,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaOrCondition {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssMediaType>
-	for crate::css::auxiliary::media_type::FormatCssMediaType
-{
+impl FormatRule<biome_css_syntax::CssMediaType> for crate::css::auxiliary::media_type::FormatCssMediaType {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -3042,32 +2756,21 @@ impl FormatRule<biome_css_syntax::CssMediaType>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssMediaType {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssMediaType,
-		crate::css::auxiliary::media_type::FormatCssMediaType,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssMediaType, crate::css::auxiliary::media_type::FormatCssMediaType>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::media_type::FormatCssMediaType::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::media_type::FormatCssMediaType::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaType {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssMediaType,
-		crate::css::auxiliary::media_type::FormatCssMediaType,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssMediaType, crate::css::auxiliary::media_type::FormatCssMediaType>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::media_type::FormatCssMediaType::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::media_type::FormatCssMediaType::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssMediaTypeQuery>
@@ -3076,11 +2779,7 @@ impl FormatRule<biome_css_syntax::CssMediaTypeQuery>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssMediaTypeQuery,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssMediaTypeQuery, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssMediaTypeQuery>::fmt(self, node, f)
 	}
 }
@@ -3113,17 +2812,11 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaTypeQuery {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssMetavariable>
-	for crate::css::auxiliary::metavariable::FormatCssMetavariable
-{
+impl FormatRule<biome_css_syntax::CssMetavariable> for crate::css::auxiliary::metavariable::FormatCssMetavariable {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssMetavariable,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssMetavariable, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssMetavariable>::fmt(self, node, f)
 	}
 }
@@ -3136,10 +2829,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssMetavariable {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::metavariable::FormatCssMetavariable::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::metavariable::FormatCssMetavariable::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMetavariable {
@@ -3150,10 +2840,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMetavariable {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::metavariable::FormatCssMetavariable::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::metavariable::FormatCssMetavariable::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssNamedNamespacePrefix>
@@ -3162,11 +2849,7 @@ impl FormatRule<biome_css_syntax::CssNamedNamespacePrefix>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssNamedNamespacePrefix,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssNamedNamespacePrefix, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssNamedNamespacePrefix>::fmt(self, node, f)
 	}
 }
@@ -3199,9 +2882,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssNamedNamespacePrefix 
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssNamespace>
-	for crate::css::auxiliary::namespace::FormatCssNamespace
-{
+impl FormatRule<biome_css_syntax::CssNamespace> for crate::css::auxiliary::namespace::FormatCssNamespace {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -3210,32 +2891,21 @@ impl FormatRule<biome_css_syntax::CssNamespace>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssNamespace {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssNamespace,
-		crate::css::auxiliary::namespace::FormatCssNamespace,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssNamespace, crate::css::auxiliary::namespace::FormatCssNamespace>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::namespace::FormatCssNamespace::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::namespace::FormatCssNamespace::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssNamespace {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssNamespace,
-		crate::css::auxiliary::namespace::FormatCssNamespace,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssNamespace, crate::css::auxiliary::namespace::FormatCssNamespace>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::namespace::FormatCssNamespace::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::namespace::FormatCssNamespace::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssNamespaceAtRule>
@@ -3244,11 +2914,7 @@ impl FormatRule<biome_css_syntax::CssNamespaceAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssNamespaceAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssNamespaceAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssNamespaceAtRule>::fmt(self, node, f)
 	}
 }
@@ -3287,11 +2953,7 @@ impl FormatRule<biome_css_syntax::CssNestedQualifiedRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssNestedQualifiedRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssNestedQualifiedRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssNestedQualifiedRule>::fmt(self, node, f)
 	}
 }
@@ -3330,11 +2992,7 @@ impl FormatRule<biome_css_syntax::CssNestedSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssNestedSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssNestedSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssNestedSelector>::fmt(self, node, f)
 	}
 }
@@ -3347,10 +3005,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssNestedSelector {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::selectors::nested_selector::FormatCssNestedSelector::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::selectors::nested_selector::FormatCssNestedSelector::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssNestedSelector {
@@ -3361,15 +3016,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssNestedSelector {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::selectors::nested_selector::FormatCssNestedSelector::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::selectors::nested_selector::FormatCssNestedSelector::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssNthOffset>
-	for crate::css::auxiliary::nth_offset::FormatCssNthOffset
-{
+impl FormatRule<biome_css_syntax::CssNthOffset> for crate::css::auxiliary::nth_offset::FormatCssNthOffset {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -3378,32 +3028,21 @@ impl FormatRule<biome_css_syntax::CssNthOffset>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssNthOffset {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssNthOffset,
-		crate::css::auxiliary::nth_offset::FormatCssNthOffset,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssNthOffset, crate::css::auxiliary::nth_offset::FormatCssNthOffset>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::nth_offset::FormatCssNthOffset::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::nth_offset::FormatCssNthOffset::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssNthOffset {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssNthOffset,
-		crate::css::auxiliary::nth_offset::FormatCssNthOffset,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssNthOffset, crate::css::auxiliary::nth_offset::FormatCssNthOffset>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::nth_offset::FormatCssNthOffset::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::nth_offset::FormatCssNthOffset::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssNumber> for crate::css::value::number::FormatCssNumber {
@@ -3415,11 +3054,7 @@ impl FormatRule<biome_css_syntax::CssNumber> for crate::css::value::number::Form
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssNumber {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssNumber,
-		crate::css::value::number::FormatCssNumber,
-	>;
+	type Format<'a> = FormatRefWithRule<'a, biome_css_syntax::CssNumber, crate::css::value::number::FormatCssNumber>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -3427,19 +3062,14 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssNumber {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssNumber {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssNumber,
-		crate::css::value::number::FormatCssNumber,
-	>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::CssNumber, crate::css::value::number::FormatCssNumber>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(self, crate::css::value::number::FormatCssNumber::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssPageAtRule>
-	for crate::css::statements::page_at_rule::FormatCssPageAtRule
-{
+impl FormatRule<biome_css_syntax::CssPageAtRule> for crate::css::statements::page_at_rule::FormatCssPageAtRule {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -3456,24 +3086,16 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPageAtRule {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::statements::page_at_rule::FormatCssPageAtRule::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::statements::page_at_rule::FormatCssPageAtRule::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPageAtRule {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssPageAtRule,
-		crate::css::statements::page_at_rule::FormatCssPageAtRule,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssPageAtRule, crate::css::statements::page_at_rule::FormatCssPageAtRule>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::statements::page_at_rule::FormatCssPageAtRule::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::statements::page_at_rule::FormatCssPageAtRule::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssPageAtRuleBlock>
@@ -3482,11 +3104,7 @@ impl FormatRule<biome_css_syntax::CssPageAtRuleBlock>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPageAtRuleBlock,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPageAtRuleBlock, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPageAtRuleBlock>::fmt(self, node, f)
 	}
 }
@@ -3519,17 +3137,11 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPageAtRuleBlock {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssPageSelector>
-	for crate::css::selectors::page_selector::FormatCssPageSelector
-{
+impl FormatRule<biome_css_syntax::CssPageSelector> for crate::css::selectors::page_selector::FormatCssPageSelector {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPageSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPageSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPageSelector>::fmt(self, node, f)
 	}
 }
@@ -3542,10 +3154,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPageSelector {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::selectors::page_selector::FormatCssPageSelector::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::selectors::page_selector::FormatCssPageSelector::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPageSelector {
@@ -3556,10 +3165,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPageSelector {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::selectors::page_selector::FormatCssPageSelector::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::selectors::page_selector::FormatCssPageSelector::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssPageSelectorPseudo>
@@ -3568,11 +3174,7 @@ impl FormatRule<biome_css_syntax::CssPageSelectorPseudo>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPageSelectorPseudo,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPageSelectorPseudo, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPageSelectorPseudo>::fmt(self, node, f)
 	}
 }
@@ -3605,9 +3207,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPageSelectorPseudo {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssParameter>
-	for crate::css::auxiliary::parameter::FormatCssParameter
-{
+impl FormatRule<biome_css_syntax::CssParameter> for crate::css::auxiliary::parameter::FormatCssParameter {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -3616,32 +3216,21 @@ impl FormatRule<biome_css_syntax::CssParameter>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssParameter {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssParameter,
-		crate::css::auxiliary::parameter::FormatCssParameter,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssParameter, crate::css::auxiliary::parameter::FormatCssParameter>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::parameter::FormatCssParameter::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::parameter::FormatCssParameter::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssParameter {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssParameter,
-		crate::css::auxiliary::parameter::FormatCssParameter,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssParameter, crate::css::auxiliary::parameter::FormatCssParameter>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::parameter::FormatCssParameter::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::parameter::FormatCssParameter::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssParenthesizedExpression>
@@ -3650,11 +3239,7 @@ impl FormatRule<biome_css_syntax::CssParenthesizedExpression>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssParenthesizedExpression,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssParenthesizedExpression, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssParenthesizedExpression>::fmt(self, node, f)
 	}
 }
@@ -3667,7 +3252,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssParenthesizedExpression
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: parenthesized_expression :: FormatCssParenthesizedExpression :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::parenthesized_expression::FormatCssParenthesizedExpression::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssParenthesizedExpression {
@@ -3678,12 +3266,13 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssParenthesizedExpressi
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: parenthesized_expression :: FormatCssParenthesizedExpression :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::parenthesized_expression::FormatCssParenthesizedExpression::default(),
+		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssPercentage>
-	for crate::css::value::percentage::FormatCssPercentage
-{
+impl FormatRule<biome_css_syntax::CssPercentage> for crate::css::value::percentage::FormatCssPercentage {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -3692,11 +3281,8 @@ impl FormatRule<biome_css_syntax::CssPercentage>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssPercentage {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssPercentage,
-		crate::css::value::percentage::FormatCssPercentage,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssPercentage, crate::css::value::percentage::FormatCssPercentage>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -3704,17 +3290,12 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPercentage {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPercentage {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssPercentage,
-		crate::css::value::percentage::FormatCssPercentage,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssPercentage, crate::css::value::percentage::FormatCssPercentage>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::value::percentage::FormatCssPercentage::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::value::percentage::FormatCssPercentage::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssPropertyAtRule>
@@ -3723,11 +3304,7 @@ impl FormatRule<biome_css_syntax::CssPropertyAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPropertyAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPropertyAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPropertyAtRule>::fmt(self, node, f)
 	}
 }
@@ -3760,9 +3337,26 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPropertyAtRule {
 		)
 	}
 }
-impl FormatRule < biome_css_syntax :: CssPseudoClassFunctionCompoundSelector > for crate :: css :: selectors :: pseudo_class_function_compound_selector :: FormatCssPseudoClassFunctionCompoundSelector { type Context = CssFormatContext ; # [inline (always)] fn fmt (& self , node : & biome_css_syntax :: CssPseudoClassFunctionCompoundSelector , f : & mut CssFormatter) -> FormatResult < () > { FormatNodeRule :: < biome_css_syntax :: CssPseudoClassFunctionCompoundSelector > :: fmt (self , node , f) } }
+impl FormatRule<biome_css_syntax::CssPseudoClassFunctionCompoundSelector>
+	for crate::css::selectors::pseudo_class_function_compound_selector::FormatCssPseudoClassFunctionCompoundSelector
+{
+	type Context = CssFormatContext;
+
+	#[inline(always)]
+	fn fmt(
+		&self,
+		node:&biome_css_syntax::CssPseudoClassFunctionCompoundSelector,
+		f:&mut CssFormatter,
+	) -> FormatResult<()> {
+		FormatNodeRule::<biome_css_syntax::CssPseudoClassFunctionCompoundSelector>::fmt(self, node, f)
+	}
+}
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionCompoundSelector {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssPseudoClassFunctionCompoundSelector , crate :: css :: selectors :: pseudo_class_function_compound_selector :: FormatCssPseudoClassFunctionCompoundSelector > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssPseudoClassFunctionCompoundSelector,
+		crate::css::selectors::pseudo_class_function_compound_selector::FormatCssPseudoClassFunctionCompoundSelector,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -3770,14 +3364,30 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionComp
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionCompoundSelector {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssPseudoClassFunctionCompoundSelector , crate :: css :: selectors :: pseudo_class_function_compound_selector :: FormatCssPseudoClassFunctionCompoundSelector > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssPseudoClassFunctionCompoundSelector,
+		crate::css::selectors::pseudo_class_function_compound_selector::FormatCssPseudoClassFunctionCompoundSelector,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule :: new (self , crate :: css :: selectors :: pseudo_class_function_compound_selector :: FormatCssPseudoClassFunctionCompoundSelector :: default ())
 	}
 }
-impl FormatRule < biome_css_syntax :: CssPseudoClassFunctionCompoundSelectorList > for crate :: css :: pseudo :: pseudo_class_function_compound_selector_list :: FormatCssPseudoClassFunctionCompoundSelectorList { type Context = CssFormatContext ; # [inline (always)] fn fmt (& self , node : & biome_css_syntax :: CssPseudoClassFunctionCompoundSelectorList , f : & mut CssFormatter) -> FormatResult < () > { FormatNodeRule :: < biome_css_syntax :: CssPseudoClassFunctionCompoundSelectorList > :: fmt (self , node , f) } }
+impl FormatRule<biome_css_syntax::CssPseudoClassFunctionCompoundSelectorList>
+	for crate::css::pseudo::pseudo_class_function_compound_selector_list::FormatCssPseudoClassFunctionCompoundSelectorList
+{
+	type Context = CssFormatContext;
+
+	#[inline(always)]
+	fn fmt(
+		&self,
+		node:&biome_css_syntax::CssPseudoClassFunctionCompoundSelectorList,
+		f:&mut CssFormatter,
+	) -> FormatResult<()> {
+		FormatNodeRule::<biome_css_syntax::CssPseudoClassFunctionCompoundSelectorList>::fmt(self, node, f)
+	}
+}
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionCompoundSelectorList {
 	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssPseudoClassFunctionCompoundSelectorList , crate :: css :: pseudo :: pseudo_class_function_compound_selector_list :: FormatCssPseudoClassFunctionCompoundSelectorList > ;
 
@@ -3800,28 +3410,37 @@ impl FormatRule<biome_css_syntax::CssPseudoClassFunctionIdentifier>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassFunctionIdentifier,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassFunctionIdentifier, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassFunctionIdentifier>::fmt(self, node, f)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionIdentifier {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssPseudoClassFunctionIdentifier , crate :: css :: pseudo :: pseudo_class_function_identifier :: FormatCssPseudoClassFunctionIdentifier > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssPseudoClassFunctionIdentifier,
+		crate::css::pseudo::pseudo_class_function_identifier::FormatCssPseudoClassFunctionIdentifier,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: pseudo :: pseudo_class_function_identifier :: FormatCssPseudoClassFunctionIdentifier :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_class_function_identifier::FormatCssPseudoClassFunctionIdentifier::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionIdentifier {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssPseudoClassFunctionIdentifier , crate :: css :: pseudo :: pseudo_class_function_identifier :: FormatCssPseudoClassFunctionIdentifier > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssPseudoClassFunctionIdentifier,
+		crate::css::pseudo::pseudo_class_function_identifier::FormatCssPseudoClassFunctionIdentifier,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: pseudo :: pseudo_class_function_identifier :: FormatCssPseudoClassFunctionIdentifier :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_class_function_identifier::FormatCssPseudoClassFunctionIdentifier::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssPseudoClassFunctionNth>
@@ -3830,11 +3449,7 @@ impl FormatRule<biome_css_syntax::CssPseudoClassFunctionNth>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassFunctionNth,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassFunctionNth, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassFunctionNth>::fmt(self, node, f)
 	}
 }
@@ -3849,8 +3464,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionNth 
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::pseudo::pseudo_class_function_nth::FormatCssPseudoClassFunctionNth::default(
-			),
+			crate::css::pseudo::pseudo_class_function_nth::FormatCssPseudoClassFunctionNth::default(),
 		)
 	}
 }
@@ -3864,12 +3478,24 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionNt
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::pseudo::pseudo_class_function_nth::FormatCssPseudoClassFunctionNth::default(
-			),
+			crate::css::pseudo::pseudo_class_function_nth::FormatCssPseudoClassFunctionNth::default(),
 		)
 	}
 }
-impl FormatRule < biome_css_syntax :: CssPseudoClassFunctionRelativeSelectorList > for crate :: css :: pseudo :: pseudo_class_function_relative_selector_list :: FormatCssPseudoClassFunctionRelativeSelectorList { type Context = CssFormatContext ; # [inline (always)] fn fmt (& self , node : & biome_css_syntax :: CssPseudoClassFunctionRelativeSelectorList , f : & mut CssFormatter) -> FormatResult < () > { FormatNodeRule :: < biome_css_syntax :: CssPseudoClassFunctionRelativeSelectorList > :: fmt (self , node , f) } }
+impl FormatRule<biome_css_syntax::CssPseudoClassFunctionRelativeSelectorList>
+	for crate::css::pseudo::pseudo_class_function_relative_selector_list::FormatCssPseudoClassFunctionRelativeSelectorList
+{
+	type Context = CssFormatContext;
+
+	#[inline(always)]
+	fn fmt(
+		&self,
+		node:&biome_css_syntax::CssPseudoClassFunctionRelativeSelectorList,
+		f:&mut CssFormatter,
+	) -> FormatResult<()> {
+		FormatNodeRule::<biome_css_syntax::CssPseudoClassFunctionRelativeSelectorList>::fmt(self, node, f)
+	}
+}
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionRelativeSelectorList {
 	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssPseudoClassFunctionRelativeSelectorList , crate :: css :: pseudo :: pseudo_class_function_relative_selector_list :: FormatCssPseudoClassFunctionRelativeSelectorList > ;
 
@@ -3892,11 +3518,7 @@ impl FormatRule<biome_css_syntax::CssPseudoClassFunctionSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassFunctionSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassFunctionSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassFunctionSelector>::fmt(self, node, f)
 	}
 }
@@ -3909,7 +3531,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionSele
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: selectors :: pseudo_class_function_selector :: FormatCssPseudoClassFunctionSelector :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::selectors::pseudo_class_function_selector::FormatCssPseudoClassFunctionSelector::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionSelector {
@@ -3920,24 +3545,51 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionSe
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: selectors :: pseudo_class_function_selector :: FormatCssPseudoClassFunctionSelector :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::selectors::pseudo_class_function_selector::FormatCssPseudoClassFunctionSelector::default(),
+		)
 	}
 }
-impl FormatRule < biome_css_syntax :: CssPseudoClassFunctionSelectorList > for crate :: css :: pseudo :: pseudo_class_function_selector_list :: FormatCssPseudoClassFunctionSelectorList { type Context = CssFormatContext ; # [inline (always)] fn fmt (& self , node : & biome_css_syntax :: CssPseudoClassFunctionSelectorList , f : & mut CssFormatter) -> FormatResult < () > { FormatNodeRule :: < biome_css_syntax :: CssPseudoClassFunctionSelectorList > :: fmt (self , node , f) } }
+impl FormatRule<biome_css_syntax::CssPseudoClassFunctionSelectorList>
+	for crate::css::pseudo::pseudo_class_function_selector_list::FormatCssPseudoClassFunctionSelectorList
+{
+	type Context = CssFormatContext;
+
+	#[inline(always)]
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassFunctionSelectorList, f:&mut CssFormatter) -> FormatResult<()> {
+		FormatNodeRule::<biome_css_syntax::CssPseudoClassFunctionSelectorList>::fmt(self, node, f)
+	}
+}
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionSelectorList {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssPseudoClassFunctionSelectorList , crate :: css :: pseudo :: pseudo_class_function_selector_list :: FormatCssPseudoClassFunctionSelectorList > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssPseudoClassFunctionSelectorList,
+		crate::css::pseudo::pseudo_class_function_selector_list::FormatCssPseudoClassFunctionSelectorList,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: pseudo :: pseudo_class_function_selector_list :: FormatCssPseudoClassFunctionSelectorList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_class_function_selector_list::FormatCssPseudoClassFunctionSelectorList::default(
+			),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionSelectorList {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssPseudoClassFunctionSelectorList , crate :: css :: pseudo :: pseudo_class_function_selector_list :: FormatCssPseudoClassFunctionSelectorList > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssPseudoClassFunctionSelectorList,
+		crate::css::pseudo::pseudo_class_function_selector_list::FormatCssPseudoClassFunctionSelectorList,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: pseudo :: pseudo_class_function_selector_list :: FormatCssPseudoClassFunctionSelectorList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_class_function_selector_list::FormatCssPseudoClassFunctionSelectorList::default(
+			),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssPseudoClassFunctionValueList>
@@ -3946,11 +3598,7 @@ impl FormatRule<biome_css_syntax::CssPseudoClassFunctionValueList>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassFunctionValueList,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassFunctionValueList, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassFunctionValueList>::fmt(self, node, f)
 	}
 }
@@ -3963,7 +3611,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionValu
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: pseudo :: pseudo_class_function_value_list :: FormatCssPseudoClassFunctionValueList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_class_function_value_list::FormatCssPseudoClassFunctionValueList::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionValueList {
@@ -3974,7 +3625,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassFunctionVa
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: pseudo :: pseudo_class_function_value_list :: FormatCssPseudoClassFunctionValueList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_class_function_value_list::FormatCssPseudoClassFunctionValueList::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssPseudoClassIdentifier>
@@ -3983,11 +3637,7 @@ impl FormatRule<biome_css_syntax::CssPseudoClassIdentifier>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassIdentifier,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassIdentifier, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassIdentifier>::fmt(self, node, f)
 	}
 }
@@ -4020,17 +3670,11 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassIdentifier
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssPseudoClassNth>
-	for crate::css::pseudo::pseudo_class_nth::FormatCssPseudoClassNth
-{
+impl FormatRule<biome_css_syntax::CssPseudoClassNth> for crate::css::pseudo::pseudo_class_nth::FormatCssPseudoClassNth {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassNth,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassNth, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassNth>::fmt(self, node, f)
 	}
 }
@@ -4043,10 +3687,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassNth {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::pseudo::pseudo_class_nth::FormatCssPseudoClassNth::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::pseudo::pseudo_class_nth::FormatCssPseudoClassNth::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassNth {
@@ -4057,10 +3698,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassNth {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::pseudo::pseudo_class_nth::FormatCssPseudoClassNth::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::pseudo::pseudo_class_nth::FormatCssPseudoClassNth::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssPseudoClassNthIdentifier>
@@ -4069,11 +3707,7 @@ impl FormatRule<biome_css_syntax::CssPseudoClassNthIdentifier>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassNthIdentifier,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassNthIdentifier, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassNthIdentifier>::fmt(self, node, f)
 	}
 }
@@ -4086,7 +3720,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassNthIdentifie
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: pseudo :: pseudo_class_nth_identifier :: FormatCssPseudoClassNthIdentifier :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_class_nth_identifier::FormatCssPseudoClassNthIdentifier::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassNthIdentifier {
@@ -4097,7 +3734,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassNthIdentif
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: pseudo :: pseudo_class_nth_identifier :: FormatCssPseudoClassNthIdentifier :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_class_nth_identifier::FormatCssPseudoClassNthIdentifier::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssPseudoClassNthNumber>
@@ -4106,11 +3746,7 @@ impl FormatRule<biome_css_syntax::CssPseudoClassNthNumber>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassNthNumber,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassNthNumber, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassNthNumber>::fmt(self, node, f)
 	}
 }
@@ -4149,11 +3785,7 @@ impl FormatRule<biome_css_syntax::CssPseudoClassNthSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassNthSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassNthSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassNthSelector>::fmt(self, node, f)
 	}
 }
@@ -4166,7 +3798,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassNthSelector 
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: selectors :: pseudo_class_nth_selector :: FormatCssPseudoClassNthSelector :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::selectors::pseudo_class_nth_selector::FormatCssPseudoClassNthSelector::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassNthSelector {
@@ -4177,7 +3812,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassNthSelecto
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: selectors :: pseudo_class_nth_selector :: FormatCssPseudoClassNthSelector :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::selectors::pseudo_class_nth_selector::FormatCssPseudoClassNthSelector::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssPseudoClassOfNthSelector>
@@ -4186,11 +3824,7 @@ impl FormatRule<biome_css_syntax::CssPseudoClassOfNthSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassOfNthSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassOfNthSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassOfNthSelector>::fmt(self, node, f)
 	}
 }
@@ -4203,7 +3837,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassOfNthSelecto
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: selectors :: pseudo_class_of_nth_selector :: FormatCssPseudoClassOfNthSelector :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::selectors::pseudo_class_of_nth_selector::FormatCssPseudoClassOfNthSelector::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassOfNthSelector {
@@ -4214,7 +3851,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassOfNthSelec
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: selectors :: pseudo_class_of_nth_selector :: FormatCssPseudoClassOfNthSelector :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::selectors::pseudo_class_of_nth_selector::FormatCssPseudoClassOfNthSelector::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssPseudoClassSelector>
@@ -4223,11 +3863,7 @@ impl FormatRule<biome_css_syntax::CssPseudoClassSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoClassSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoClassSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoClassSelector>::fmt(self, node, f)
 	}
 }
@@ -4260,21 +3896,43 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoClassSelector {
 		)
 	}
 }
-impl FormatRule < biome_css_syntax :: CssPseudoElementFunctionIdentifier > for crate :: css :: pseudo :: pseudo_element_function_identifier :: FormatCssPseudoElementFunctionIdentifier { type Context = CssFormatContext ; # [inline (always)] fn fmt (& self , node : & biome_css_syntax :: CssPseudoElementFunctionIdentifier , f : & mut CssFormatter) -> FormatResult < () > { FormatNodeRule :: < biome_css_syntax :: CssPseudoElementFunctionIdentifier > :: fmt (self , node , f) } }
+impl FormatRule<biome_css_syntax::CssPseudoElementFunctionIdentifier>
+	for crate::css::pseudo::pseudo_element_function_identifier::FormatCssPseudoElementFunctionIdentifier
+{
+	type Context = CssFormatContext;
+
+	#[inline(always)]
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoElementFunctionIdentifier, f:&mut CssFormatter) -> FormatResult<()> {
+		FormatNodeRule::<biome_css_syntax::CssPseudoElementFunctionIdentifier>::fmt(self, node, f)
+	}
+}
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoElementFunctionIdentifier {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssPseudoElementFunctionIdentifier , crate :: css :: pseudo :: pseudo_element_function_identifier :: FormatCssPseudoElementFunctionIdentifier > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssPseudoElementFunctionIdentifier,
+		crate::css::pseudo::pseudo_element_function_identifier::FormatCssPseudoElementFunctionIdentifier,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: pseudo :: pseudo_element_function_identifier :: FormatCssPseudoElementFunctionIdentifier :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_element_function_identifier::FormatCssPseudoElementFunctionIdentifier::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoElementFunctionIdentifier {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssPseudoElementFunctionIdentifier , crate :: css :: pseudo :: pseudo_element_function_identifier :: FormatCssPseudoElementFunctionIdentifier > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssPseudoElementFunctionIdentifier,
+		crate::css::pseudo::pseudo_element_function_identifier::FormatCssPseudoElementFunctionIdentifier,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: pseudo :: pseudo_element_function_identifier :: FormatCssPseudoElementFunctionIdentifier :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_element_function_identifier::FormatCssPseudoElementFunctionIdentifier::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssPseudoElementFunctionSelector>
@@ -4283,28 +3941,37 @@ impl FormatRule<biome_css_syntax::CssPseudoElementFunctionSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoElementFunctionSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoElementFunctionSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoElementFunctionSelector>::fmt(self, node, f)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoElementFunctionSelector {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssPseudoElementFunctionSelector , crate :: css :: selectors :: pseudo_element_function_selector :: FormatCssPseudoElementFunctionSelector > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssPseudoElementFunctionSelector,
+		crate::css::selectors::pseudo_element_function_selector::FormatCssPseudoElementFunctionSelector,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: selectors :: pseudo_element_function_selector :: FormatCssPseudoElementFunctionSelector :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::selectors::pseudo_element_function_selector::FormatCssPseudoElementFunctionSelector::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoElementFunctionSelector {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssPseudoElementFunctionSelector , crate :: css :: selectors :: pseudo_element_function_selector :: FormatCssPseudoElementFunctionSelector > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssPseudoElementFunctionSelector,
+		crate::css::selectors::pseudo_element_function_selector::FormatCssPseudoElementFunctionSelector,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: selectors :: pseudo_element_function_selector :: FormatCssPseudoElementFunctionSelector :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::selectors::pseudo_element_function_selector::FormatCssPseudoElementFunctionSelector::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssPseudoElementIdentifier>
@@ -4313,11 +3980,7 @@ impl FormatRule<biome_css_syntax::CssPseudoElementIdentifier>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoElementIdentifier,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoElementIdentifier, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoElementIdentifier>::fmt(self, node, f)
 	}
 }
@@ -4330,7 +3993,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoElementIdentifier
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: pseudo :: pseudo_element_identifier :: FormatCssPseudoElementIdentifier :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_element_identifier::FormatCssPseudoElementIdentifier::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoElementIdentifier {
@@ -4341,7 +4007,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoElementIdentifi
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: pseudo :: pseudo_element_identifier :: FormatCssPseudoElementIdentifier :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::pseudo::pseudo_element_identifier::FormatCssPseudoElementIdentifier::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssPseudoElementSelector>
@@ -4350,11 +4019,7 @@ impl FormatRule<biome_css_syntax::CssPseudoElementSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssPseudoElementSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssPseudoElementSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssPseudoElementSelector>::fmt(self, node, f)
 	}
 }
@@ -4369,8 +4034,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoElementSelector {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::selectors::pseudo_element_selector::FormatCssPseudoElementSelector::default(
-			),
+			crate::css::selectors::pseudo_element_selector::FormatCssPseudoElementSelector::default(),
 		)
 	}
 }
@@ -4384,22 +4048,15 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoElementSelector
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::selectors::pseudo_element_selector::FormatCssPseudoElementSelector::default(
-			),
+			crate::css::selectors::pseudo_element_selector::FormatCssPseudoElementSelector::default(),
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssQualifiedRule>
-	for crate::css::auxiliary::qualified_rule::FormatCssQualifiedRule
-{
+impl FormatRule<biome_css_syntax::CssQualifiedRule> for crate::css::auxiliary::qualified_rule::FormatCssQualifiedRule {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssQualifiedRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssQualifiedRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssQualifiedRule>::fmt(self, node, f)
 	}
 }
@@ -4412,10 +4069,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssQualifiedRule {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::qualified_rule::FormatCssQualifiedRule::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::qualified_rule::FormatCssQualifiedRule::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssQualifiedRule {
@@ -4426,10 +4080,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssQualifiedRule {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::qualified_rule::FormatCssQualifiedRule::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::qualified_rule::FormatCssQualifiedRule::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssQueryFeatureBoolean>
@@ -4438,11 +4089,7 @@ impl FormatRule<biome_css_syntax::CssQueryFeatureBoolean>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssQueryFeatureBoolean,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssQueryFeatureBoolean, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssQueryFeatureBoolean>::fmt(self, node, f)
 	}
 }
@@ -4481,11 +4128,7 @@ impl FormatRule<biome_css_syntax::CssQueryFeaturePlain>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssQueryFeaturePlain,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssQueryFeaturePlain, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssQueryFeaturePlain>::fmt(self, node, f)
 	}
 }
@@ -4524,11 +4167,7 @@ impl FormatRule<biome_css_syntax::CssQueryFeatureRange>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssQueryFeatureRange,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssQueryFeatureRange, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssQueryFeatureRange>::fmt(self, node, f)
 	}
 }
@@ -4567,11 +4206,7 @@ impl FormatRule<biome_css_syntax::CssQueryFeatureRangeComparison>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssQueryFeatureRangeComparison,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssQueryFeatureRangeComparison, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssQueryFeatureRangeComparison>::fmt(self, node, f)
 	}
 }
@@ -4584,7 +4219,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssQueryFeatureRangeCompar
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: query_feature_range_comparison :: FormatCssQueryFeatureRangeComparison :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::query_feature_range_comparison::FormatCssQueryFeatureRangeComparison::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssQueryFeatureRangeComparison {
@@ -4595,7 +4233,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssQueryFeatureRangeComp
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: query_feature_range_comparison :: FormatCssQueryFeatureRangeComparison :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::query_feature_range_comparison::FormatCssQueryFeatureRangeComparison::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssQueryFeatureRangeInterval>
@@ -4604,11 +4245,7 @@ impl FormatRule<biome_css_syntax::CssQueryFeatureRangeInterval>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssQueryFeatureRangeInterval,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssQueryFeatureRangeInterval, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssQueryFeatureRangeInterval>::fmt(self, node, f)
 	}
 }
@@ -4621,7 +4258,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssQueryFeatureRangeInterv
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: query_feature_range_interval :: FormatCssQueryFeatureRangeInterval :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::query_feature_range_interval::FormatCssQueryFeatureRangeInterval::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssQueryFeatureRangeInterval {
@@ -4632,7 +4272,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssQueryFeatureRangeInte
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: query_feature_range_interval :: FormatCssQueryFeatureRangeInterval :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::query_feature_range_interval::FormatCssQueryFeatureRangeInterval::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssQueryFeatureReverseRange>
@@ -4641,11 +4284,7 @@ impl FormatRule<biome_css_syntax::CssQueryFeatureReverseRange>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssQueryFeatureReverseRange,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssQueryFeatureReverseRange, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssQueryFeatureReverseRange>::fmt(self, node, f)
 	}
 }
@@ -4658,7 +4297,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssQueryFeatureReverseRang
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: query_feature_reverse_range :: FormatCssQueryFeatureReverseRange :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::query_feature_reverse_range::FormatCssQueryFeatureReverseRange::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssQueryFeatureReverseRange {
@@ -4669,7 +4311,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssQueryFeatureReverseRa
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: query_feature_reverse_range :: FormatCssQueryFeatureReverseRange :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::query_feature_reverse_range::FormatCssQueryFeatureReverseRange::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssRatio> for crate::css::value::ratio::FormatCssRatio {
@@ -4681,8 +4326,7 @@ impl FormatRule<biome_css_syntax::CssRatio> for crate::css::value::ratio::Format
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssRatio {
-	type Format<'a> =
-		FormatRefWithRule<'a, biome_css_syntax::CssRatio, crate::css::value::ratio::FormatCssRatio>;
+	type Format<'a> = FormatRefWithRule<'a, biome_css_syntax::CssRatio, crate::css::value::ratio::FormatCssRatio>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -4690,8 +4334,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssRatio {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssRatio {
-	type Format =
-		FormatOwnedWithRule<biome_css_syntax::CssRatio, crate::css::value::ratio::FormatCssRatio>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::CssRatio, crate::css::value::ratio::FormatCssRatio>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -4704,11 +4347,7 @@ impl FormatRule<biome_css_syntax::CssRegularDimension>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssRegularDimension,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssRegularDimension, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssRegularDimension>::fmt(self, node, f)
 	}
 }
@@ -4721,10 +4360,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssRegularDimension {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::value::regular_dimension::FormatCssRegularDimension::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::value::regular_dimension::FormatCssRegularDimension::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssRegularDimension {
@@ -4735,10 +4371,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssRegularDimension {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::value::regular_dimension::FormatCssRegularDimension::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::value::regular_dimension::FormatCssRegularDimension::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssRelativeSelector>
@@ -4747,11 +4380,7 @@ impl FormatRule<biome_css_syntax::CssRelativeSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssRelativeSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssRelativeSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssRelativeSelector>::fmt(self, node, f)
 	}
 }
@@ -4793,11 +4422,7 @@ impl FormatRule<biome_css_syntax::CssRoot> for crate::css::auxiliary::root::Form
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssRoot {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssRoot,
-		crate::css::auxiliary::root::FormatCssRoot,
-	>;
+	type Format<'a> = FormatRefWithRule<'a, biome_css_syntax::CssRoot, crate::css::auxiliary::root::FormatCssRoot>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -4805,17 +4430,14 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssRoot {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssRoot {
-	type Format =
-		FormatOwnedWithRule<biome_css_syntax::CssRoot, crate::css::auxiliary::root::FormatCssRoot>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::CssRoot, crate::css::auxiliary::root::FormatCssRoot>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(self, crate::css::auxiliary::root::FormatCssRoot::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssRuleBlock>
-	for crate::css::auxiliary::rule_block::FormatCssRuleBlock
-{
+impl FormatRule<biome_css_syntax::CssRuleBlock> for crate::css::auxiliary::rule_block::FormatCssRuleBlock {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -4824,37 +4446,24 @@ impl FormatRule<biome_css_syntax::CssRuleBlock>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssRuleBlock {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssRuleBlock,
-		crate::css::auxiliary::rule_block::FormatCssRuleBlock,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssRuleBlock, crate::css::auxiliary::rule_block::FormatCssRuleBlock>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::rule_block::FormatCssRuleBlock::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::rule_block::FormatCssRuleBlock::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssRuleBlock {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssRuleBlock,
-		crate::css::auxiliary::rule_block::FormatCssRuleBlock,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssRuleBlock, crate::css::auxiliary::rule_block::FormatCssRuleBlock>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::rule_block::FormatCssRuleBlock::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::rule_block::FormatCssRuleBlock::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssScopeAtRule>
-	for crate::css::statements::scope_at_rule::FormatCssScopeAtRule
-{
+impl FormatRule<biome_css_syntax::CssScopeAtRule> for crate::css::statements::scope_at_rule::FormatCssScopeAtRule {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -4871,10 +4480,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssScopeAtRule {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::statements::scope_at_rule::FormatCssScopeAtRule::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::statements::scope_at_rule::FormatCssScopeAtRule::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssScopeAtRule {
@@ -4885,15 +4491,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssScopeAtRule {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::statements::scope_at_rule::FormatCssScopeAtRule::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::statements::scope_at_rule::FormatCssScopeAtRule::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssScopeEdge>
-	for crate::css::auxiliary::scope_edge::FormatCssScopeEdge
-{
+impl FormatRule<biome_css_syntax::CssScopeEdge> for crate::css::auxiliary::scope_edge::FormatCssScopeEdge {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -4902,45 +4503,28 @@ impl FormatRule<biome_css_syntax::CssScopeEdge>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssScopeEdge {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssScopeEdge,
-		crate::css::auxiliary::scope_edge::FormatCssScopeEdge,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssScopeEdge, crate::css::auxiliary::scope_edge::FormatCssScopeEdge>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::scope_edge::FormatCssScopeEdge::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::scope_edge::FormatCssScopeEdge::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssScopeEdge {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssScopeEdge,
-		crate::css::auxiliary::scope_edge::FormatCssScopeEdge,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssScopeEdge, crate::css::auxiliary::scope_edge::FormatCssScopeEdge>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::scope_edge::FormatCssScopeEdge::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::scope_edge::FormatCssScopeEdge::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssScopeRangeEnd>
-	for crate::css::auxiliary::scope_range_end::FormatCssScopeRangeEnd
-{
+impl FormatRule<biome_css_syntax::CssScopeRangeEnd> for crate::css::auxiliary::scope_range_end::FormatCssScopeRangeEnd {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssScopeRangeEnd,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssScopeRangeEnd, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssScopeRangeEnd>::fmt(self, node, f)
 	}
 }
@@ -4953,10 +4537,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssScopeRangeEnd {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::scope_range_end::FormatCssScopeRangeEnd::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::scope_range_end::FormatCssScopeRangeEnd::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssScopeRangeEnd {
@@ -4967,10 +4548,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssScopeRangeEnd {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::scope_range_end::FormatCssScopeRangeEnd::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::scope_range_end::FormatCssScopeRangeEnd::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssScopeRangeInterval>
@@ -4979,11 +4557,7 @@ impl FormatRule<biome_css_syntax::CssScopeRangeInterval>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssScopeRangeInterval,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssScopeRangeInterval, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssScopeRangeInterval>::fmt(self, node, f)
 	}
 }
@@ -5022,11 +4596,7 @@ impl FormatRule<biome_css_syntax::CssScopeRangeStart>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssScopeRangeStart,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssScopeRangeStart, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssScopeRangeStart>::fmt(self, node, f)
 	}
 }
@@ -5065,11 +4635,7 @@ impl FormatRule<biome_css_syntax::CssStartingStyleAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssStartingStyleAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssStartingStyleAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssStartingStyleAtRule>::fmt(self, node, f)
 	}
 }
@@ -5111,11 +4677,7 @@ impl FormatRule<biome_css_syntax::CssString> for crate::css::value::string::Form
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssString {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssString,
-		crate::css::value::string::FormatCssString,
-	>;
+	type Format<'a> = FormatRefWithRule<'a, biome_css_syntax::CssString, crate::css::value::string::FormatCssString>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -5123,10 +4685,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssString {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssString {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssString,
-		crate::css::value::string::FormatCssString,
-	>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::CssString, crate::css::value::string::FormatCssString>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -5139,11 +4698,7 @@ impl FormatRule<biome_css_syntax::CssSupportsAndCondition>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssSupportsAndCondition,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssSupportsAndCondition, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssSupportsAndCondition>::fmt(self, node, f)
 	}
 }
@@ -5182,11 +4737,7 @@ impl FormatRule<biome_css_syntax::CssSupportsAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssSupportsAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssSupportsAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssSupportsAtRule>::fmt(self, node, f)
 	}
 }
@@ -5225,11 +4776,7 @@ impl FormatRule<biome_css_syntax::CssSupportsConditionInParens>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssSupportsConditionInParens,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssSupportsConditionInParens, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssSupportsConditionInParens>::fmt(self, node, f)
 	}
 }
@@ -5242,7 +4789,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssSupportsConditionInPare
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: supports_condition_in_parens :: FormatCssSupportsConditionInParens :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::supports_condition_in_parens::FormatCssSupportsConditionInParens::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssSupportsConditionInParens {
@@ -5253,7 +4803,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssSupportsConditionInPa
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: supports_condition_in_parens :: FormatCssSupportsConditionInParens :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::supports_condition_in_parens::FormatCssSupportsConditionInParens::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssSupportsFeatureDeclaration>
@@ -5262,11 +4815,7 @@ impl FormatRule<biome_css_syntax::CssSupportsFeatureDeclaration>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssSupportsFeatureDeclaration,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssSupportsFeatureDeclaration, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssSupportsFeatureDeclaration>::fmt(self, node, f)
 	}
 }
@@ -5279,7 +4828,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssSupportsFeatureDeclarat
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: supports_feature_declaration :: FormatCssSupportsFeatureDeclaration :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::supports_feature_declaration::FormatCssSupportsFeatureDeclaration::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssSupportsFeatureDeclaration {
@@ -5290,7 +4842,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssSupportsFeatureDeclar
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: supports_feature_declaration :: FormatCssSupportsFeatureDeclaration :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::supports_feature_declaration::FormatCssSupportsFeatureDeclaration::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssSupportsFeatureSelector>
@@ -5299,11 +4854,7 @@ impl FormatRule<biome_css_syntax::CssSupportsFeatureSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssSupportsFeatureSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssSupportsFeatureSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssSupportsFeatureSelector>::fmt(self, node, f)
 	}
 }
@@ -5316,7 +4867,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssSupportsFeatureSelector
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: selectors :: supports_feature_selector :: FormatCssSupportsFeatureSelector :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::selectors::supports_feature_selector::FormatCssSupportsFeatureSelector::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssSupportsFeatureSelector {
@@ -5327,7 +4881,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssSupportsFeatureSelect
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: selectors :: supports_feature_selector :: FormatCssSupportsFeatureSelector :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::selectors::supports_feature_selector::FormatCssSupportsFeatureSelector::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssSupportsNotCondition>
@@ -5336,11 +4893,7 @@ impl FormatRule<biome_css_syntax::CssSupportsNotCondition>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssSupportsNotCondition,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssSupportsNotCondition, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssSupportsNotCondition>::fmt(self, node, f)
 	}
 }
@@ -5379,11 +4932,7 @@ impl FormatRule<biome_css_syntax::CssSupportsOrCondition>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssSupportsOrCondition,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssSupportsOrCondition, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssSupportsOrCondition>::fmt(self, node, f)
 	}
 }
@@ -5416,17 +4965,11 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssSupportsOrCondition {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssTypeSelector>
-	for crate::css::selectors::type_selector::FormatCssTypeSelector
-{
+impl FormatRule<biome_css_syntax::CssTypeSelector> for crate::css::selectors::type_selector::FormatCssTypeSelector {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssTypeSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssTypeSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssTypeSelector>::fmt(self, node, f)
 	}
 }
@@ -5439,10 +4982,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssTypeSelector {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::selectors::type_selector::FormatCssTypeSelector::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::selectors::type_selector::FormatCssTypeSelector::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssTypeSelector {
@@ -5453,10 +4993,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssTypeSelector {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::selectors::type_selector::FormatCssTypeSelector::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::selectors::type_selector::FormatCssTypeSelector::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssUnicodeCodepoint>
@@ -5465,11 +5002,7 @@ impl FormatRule<biome_css_syntax::CssUnicodeCodepoint>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssUnicodeCodepoint,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssUnicodeCodepoint, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssUnicodeCodepoint>::fmt(self, node, f)
 	}
 }
@@ -5502,17 +5035,11 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUnicodeCodepoint {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssUnicodeRange>
-	for crate::css::auxiliary::unicode_range::FormatCssUnicodeRange
-{
+impl FormatRule<biome_css_syntax::CssUnicodeRange> for crate::css::auxiliary::unicode_range::FormatCssUnicodeRange {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssUnicodeRange,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssUnicodeRange, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssUnicodeRange>::fmt(self, node, f)
 	}
 }
@@ -5525,10 +5052,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssUnicodeRange {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::unicode_range::FormatCssUnicodeRange::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::unicode_range::FormatCssUnicodeRange::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUnicodeRange {
@@ -5539,10 +5063,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUnicodeRange {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::unicode_range::FormatCssUnicodeRange::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::unicode_range::FormatCssUnicodeRange::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssUnicodeRangeInterval>
@@ -5551,11 +5072,7 @@ impl FormatRule<biome_css_syntax::CssUnicodeRangeInterval>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssUnicodeRangeInterval,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssUnicodeRangeInterval, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssUnicodeRangeInterval>::fmt(self, node, f)
 	}
 }
@@ -5594,11 +5111,7 @@ impl FormatRule<biome_css_syntax::CssUnicodeRangeWildcard>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssUnicodeRangeWildcard,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssUnicodeRangeWildcard, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssUnicodeRangeWildcard>::fmt(self, node, f)
 	}
 }
@@ -5637,11 +5150,7 @@ impl FormatRule<biome_css_syntax::CssUniversalNamespacePrefix>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssUniversalNamespacePrefix,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssUniversalNamespacePrefix, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssUniversalNamespacePrefix>::fmt(self, node, f)
 	}
 }
@@ -5654,7 +5163,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssUniversalNamespacePrefi
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: universal_namespace_prefix :: FormatCssUniversalNamespacePrefix :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::universal_namespace_prefix::FormatCssUniversalNamespacePrefix::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUniversalNamespacePrefix {
@@ -5665,7 +5177,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUniversalNamespacePre
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: universal_namespace_prefix :: FormatCssUniversalNamespacePrefix :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::universal_namespace_prefix::FormatCssUniversalNamespacePrefix::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssUniversalSelector>
@@ -5674,11 +5189,7 @@ impl FormatRule<biome_css_syntax::CssUniversalSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssUniversalSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssUniversalSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssUniversalSelector>::fmt(self, node, f)
 	}
 }
@@ -5717,11 +5228,7 @@ impl FormatRule<biome_css_syntax::CssUnknownBlockAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssUnknownBlockAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssUnknownBlockAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssUnknownBlockAtRule>::fmt(self, node, f)
 	}
 }
@@ -5760,11 +5267,7 @@ impl FormatRule<biome_css_syntax::CssUnknownDimension>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssUnknownDimension,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssUnknownDimension, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssUnknownDimension>::fmt(self, node, f)
 	}
 }
@@ -5777,10 +5280,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssUnknownDimension {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::value::unknown_dimension::FormatCssUnknownDimension::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::value::unknown_dimension::FormatCssUnknownDimension::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUnknownDimension {
@@ -5791,10 +5291,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUnknownDimension {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::value::unknown_dimension::FormatCssUnknownDimension::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::value::unknown_dimension::FormatCssUnknownDimension::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssUnknownValueAtRule>
@@ -5803,11 +5300,7 @@ impl FormatRule<biome_css_syntax::CssUnknownValueAtRule>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssUnknownValueAtRule,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssUnknownValueAtRule, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssUnknownValueAtRule>::fmt(self, node, f)
 	}
 }
@@ -5840,9 +5333,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUnknownValueAtRule {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssUrlFunction>
-	for crate::css::auxiliary::url_function::FormatCssUrlFunction
-{
+impl FormatRule<biome_css_syntax::CssUrlFunction> for crate::css::auxiliary::url_function::FormatCssUrlFunction {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -5859,10 +5350,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssUrlFunction {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::auxiliary::url_function::FormatCssUrlFunction::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::auxiliary::url_function::FormatCssUrlFunction::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUrlFunction {
@@ -5873,15 +5361,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUrlFunction {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::auxiliary::url_function::FormatCssUrlFunction::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::auxiliary::url_function::FormatCssUrlFunction::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssUrlValueRaw>
-	for crate::css::value::url_value_raw::FormatCssUrlValueRaw
-{
+impl FormatRule<biome_css_syntax::CssUrlValueRaw> for crate::css::value::url_value_raw::FormatCssUrlValueRaw {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -5890,37 +5373,24 @@ impl FormatRule<biome_css_syntax::CssUrlValueRaw>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssUrlValueRaw {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssUrlValueRaw,
-		crate::css::value::url_value_raw::FormatCssUrlValueRaw,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssUrlValueRaw, crate::css::value::url_value_raw::FormatCssUrlValueRaw>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::value::url_value_raw::FormatCssUrlValueRaw::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::value::url_value_raw::FormatCssUrlValueRaw::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUrlValueRaw {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssUrlValueRaw,
-		crate::css::value::url_value_raw::FormatCssUrlValueRaw,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssUrlValueRaw, crate::css::value::url_value_raw::FormatCssUrlValueRaw>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::value::url_value_raw::FormatCssUrlValueRaw::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::value::url_value_raw::FormatCssUrlValueRaw::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssValueAtRule>
-	for crate::css::statements::value_at_rule::FormatCssValueAtRule
-{
+impl FormatRule<biome_css_syntax::CssValueAtRule> for crate::css::statements::value_at_rule::FormatCssValueAtRule {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -5937,10 +5407,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRule {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::statements::value_at_rule::FormatCssValueAtRule::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::statements::value_at_rule::FormatCssValueAtRule::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRule {
@@ -5951,10 +5418,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRule {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::statements::value_at_rule::FormatCssValueAtRule::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::statements::value_at_rule::FormatCssValueAtRule::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssValueAtRuleDeclarationClause>
@@ -5963,28 +5427,37 @@ impl FormatRule<biome_css_syntax::CssValueAtRuleDeclarationClause>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssValueAtRuleDeclarationClause,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssValueAtRuleDeclarationClause, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssValueAtRuleDeclarationClause>::fmt(self, node, f)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleDeclarationClause {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssValueAtRuleDeclarationClause , crate :: css :: auxiliary :: value_at_rule_declaration_clause :: FormatCssValueAtRuleDeclarationClause > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssValueAtRuleDeclarationClause,
+		crate::css::auxiliary::value_at_rule_declaration_clause::FormatCssValueAtRuleDeclarationClause,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: value_at_rule_declaration_clause :: FormatCssValueAtRuleDeclarationClause :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::value_at_rule_declaration_clause::FormatCssValueAtRuleDeclarationClause::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleDeclarationClause {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssValueAtRuleDeclarationClause , crate :: css :: auxiliary :: value_at_rule_declaration_clause :: FormatCssValueAtRuleDeclarationClause > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssValueAtRuleDeclarationClause,
+		crate::css::auxiliary::value_at_rule_declaration_clause::FormatCssValueAtRuleDeclarationClause,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: value_at_rule_declaration_clause :: FormatCssValueAtRuleDeclarationClause :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::value_at_rule_declaration_clause::FormatCssValueAtRuleDeclarationClause::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssValueAtRuleGenericProperty>
@@ -5993,11 +5466,7 @@ impl FormatRule<biome_css_syntax::CssValueAtRuleGenericProperty>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssValueAtRuleGenericProperty,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssValueAtRuleGenericProperty, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssValueAtRuleGenericProperty>::fmt(self, node, f)
 	}
 }
@@ -6010,7 +5479,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleGenericPrope
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: properties :: value_at_rule_generic_property :: FormatCssValueAtRuleGenericProperty :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::properties::value_at_rule_generic_property::FormatCssValueAtRuleGenericProperty::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleGenericProperty {
@@ -6021,7 +5493,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleGenericPro
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: properties :: value_at_rule_generic_property :: FormatCssValueAtRuleGenericProperty :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::properties::value_at_rule_generic_property::FormatCssValueAtRuleGenericProperty::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssValueAtRuleImportClause>
@@ -6030,11 +5505,7 @@ impl FormatRule<biome_css_syntax::CssValueAtRuleImportClause>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssValueAtRuleImportClause,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssValueAtRuleImportClause, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssValueAtRuleImportClause>::fmt(self, node, f)
 	}
 }
@@ -6047,7 +5518,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleImportClause
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: value_at_rule_import_clause :: FormatCssValueAtRuleImportClause :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::value_at_rule_import_clause::FormatCssValueAtRuleImportClause::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleImportClause {
@@ -6058,7 +5532,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleImportClau
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: value_at_rule_import_clause :: FormatCssValueAtRuleImportClause :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::value_at_rule_import_clause::FormatCssValueAtRuleImportClause::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssValueAtRuleImportSpecifier>
@@ -6067,11 +5544,7 @@ impl FormatRule<biome_css_syntax::CssValueAtRuleImportSpecifier>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssValueAtRuleImportSpecifier,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssValueAtRuleImportSpecifier, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatNodeRule::<biome_css_syntax::CssValueAtRuleImportSpecifier>::fmt(self, node, f)
 	}
 }
@@ -6084,7 +5557,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleImportSpecif
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: auxiliary :: value_at_rule_import_specifier :: FormatCssValueAtRuleImportSpecifier :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::auxiliary::value_at_rule_import_specifier::FormatCssValueAtRuleImportSpecifier::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleImportSpecifier {
@@ -6095,12 +5571,28 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleImportSpec
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: auxiliary :: value_at_rule_import_specifier :: FormatCssValueAtRuleImportSpecifier :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::auxiliary::value_at_rule_import_specifier::FormatCssValueAtRuleImportSpecifier::default(),
+		)
 	}
 }
-impl FormatRule < biome_css_syntax :: CssValueAtRuleNamedImportSpecifier > for crate :: css :: auxiliary :: value_at_rule_named_import_specifier :: FormatCssValueAtRuleNamedImportSpecifier { type Context = CssFormatContext ; # [inline (always)] fn fmt (& self , node : & biome_css_syntax :: CssValueAtRuleNamedImportSpecifier , f : & mut CssFormatter) -> FormatResult < () > { FormatNodeRule :: < biome_css_syntax :: CssValueAtRuleNamedImportSpecifier > :: fmt (self , node , f) } }
+impl FormatRule<biome_css_syntax::CssValueAtRuleNamedImportSpecifier>
+	for crate::css::auxiliary::value_at_rule_named_import_specifier::FormatCssValueAtRuleNamedImportSpecifier
+{
+	type Context = CssFormatContext;
+
+	#[inline(always)]
+	fn fmt(&self, node:&biome_css_syntax::CssValueAtRuleNamedImportSpecifier, f:&mut CssFormatter) -> FormatResult<()> {
+		FormatNodeRule::<biome_css_syntax::CssValueAtRuleNamedImportSpecifier>::fmt(self, node, f)
+	}
+}
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleNamedImportSpecifier {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssValueAtRuleNamedImportSpecifier , crate :: css :: auxiliary :: value_at_rule_named_import_specifier :: FormatCssValueAtRuleNamedImportSpecifier > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssValueAtRuleNamedImportSpecifier,
+		crate::css::auxiliary::value_at_rule_named_import_specifier::FormatCssValueAtRuleNamedImportSpecifier,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -6108,7 +5600,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleNamedImportS
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleNamedImportSpecifier {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssValueAtRuleNamedImportSpecifier , crate :: css :: auxiliary :: value_at_rule_named_import_specifier :: FormatCssValueAtRuleNamedImportSpecifier > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssValueAtRuleNamedImportSpecifier,
+		crate::css::auxiliary::value_at_rule_named_import_specifier::FormatCssValueAtRuleNamedImportSpecifier,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -6269,10 +5764,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssDeclarationList {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::lists::declaration_list::FormatCssDeclarationList::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::lists::declaration_list::FormatCssDeclarationList::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclarationList {
@@ -6283,10 +5775,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclarationList {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::lists::declaration_list::FormatCssDeclarationList::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::lists::declaration_list::FormatCssDeclarationList::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrAtRuleList {
@@ -6298,7 +5787,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrAtRuleList
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: lists :: declaration_or_at_rule_list :: FormatCssDeclarationOrAtRuleList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::lists::declaration_or_at_rule_list::FormatCssDeclarationOrAtRuleList::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrAtRuleList {
@@ -6309,7 +5801,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrAtRuleLi
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: lists :: declaration_or_at_rule_list :: FormatCssDeclarationOrAtRuleList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::lists::declaration_or_at_rule_list::FormatCssDeclarationOrAtRuleList::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssDeclarationOrRuleList {
@@ -6408,7 +5903,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesItemLi
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: lists :: font_feature_values_item_list :: FormatCssFontFeatureValuesItemList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::lists::font_feature_values_item_list::FormatCssFontFeatureValuesItemList::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesItemList {
@@ -6419,7 +5917,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssFontFeatureValuesItem
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: lists :: font_feature_values_item_list :: FormatCssFontFeatureValuesItemList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::lists::font_feature_values_item_list::FormatCssFontFeatureValuesItemList::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssGenericComponentValueList {
@@ -6431,7 +5932,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssGenericComponentValueLi
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: lists :: generic_component_value_list :: FormatCssGenericComponentValueList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::lists::generic_component_value_list::FormatCssGenericComponentValueList::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssGenericComponentValueList {
@@ -6442,7 +5946,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssGenericComponentValue
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: lists :: generic_component_value_list :: FormatCssGenericComponentValueList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::lists::generic_component_value_list::FormatCssGenericComponentValueList::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssKeyframesItemList {
@@ -6512,10 +6019,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssLayerNameList {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::lists::layer_name_list::FormatCssLayerNameList::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::lists::layer_name_list::FormatCssLayerNameList::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssLayerNameList {
@@ -6526,10 +6030,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssLayerNameList {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::lists::layer_name_list::FormatCssLayerNameList::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::lists::layer_name_list::FormatCssLayerNameList::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssLayerReferenceList {
@@ -6570,10 +6071,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssMediaQueryList {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::lists::media_query_list::FormatCssMediaQueryList::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::lists::media_query_list::FormatCssMediaQueryList::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaQueryList {
@@ -6584,10 +6082,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssMediaQueryList {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::lists::media_query_list::FormatCssMediaQueryList::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::lists::media_query_list::FormatCssMediaQueryList::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssNestedSelectorList {
@@ -6688,8 +6183,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPageSelectorPseudoList 
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::lists::page_selector_pseudo_list::FormatCssPageSelectorPseudoList::default(
-			),
+			crate::css::lists::page_selector_pseudo_list::FormatCssPageSelectorPseudoList::default(),
 		)
 	}
 }
@@ -6703,8 +6197,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPageSelectorPseudoLis
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::lists::page_selector_pseudo_list::FormatCssPageSelectorPseudoList::default(
-			),
+			crate::css::lists::page_selector_pseudo_list::FormatCssPageSelectorPseudoList::default(),
 		)
 	}
 }
@@ -6717,10 +6210,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssParameterList {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::lists::parameter_list::FormatCssParameterList::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::lists::parameter_list::FormatCssParameterList::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssParameterList {
@@ -6731,10 +6221,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssParameterList {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::lists::parameter_list::FormatCssParameterList::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::lists::parameter_list::FormatCssParameterList::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoValueList {
@@ -6746,10 +6233,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssPseudoValueList {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::lists::pseudo_value_list::FormatCssPseudoValueList::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::lists::pseudo_value_list::FormatCssPseudoValueList::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoValueList {
@@ -6760,10 +6244,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssPseudoValueList {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::lists::pseudo_value_list::FormatCssPseudoValueList::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::lists::pseudo_value_list::FormatCssPseudoValueList::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssRelativeSelectorList {
@@ -6796,11 +6277,8 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssRelativeSelectorList 
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssRuleList {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssRuleList,
-		crate::css::lists::rule_list::FormatCssRuleList,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssRuleList, crate::css::lists::rule_list::FormatCssRuleList>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -6808,10 +6286,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssRuleList {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssRuleList {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssRuleList,
-		crate::css::lists::rule_list::FormatCssRuleList,
-	>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::CssRuleList, crate::css::lists::rule_list::FormatCssRuleList>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -6827,24 +6302,16 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssSelectorList {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::lists::selector_list::FormatCssSelectorList::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::lists::selector_list::FormatCssSelectorList::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssSelectorList {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssSelectorList,
-		crate::css::lists::selector_list::FormatCssSelectorList,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssSelectorList, crate::css::lists::selector_list::FormatCssSelectorList>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::lists::selector_list::FormatCssSelectorList::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::lists::selector_list::FormatCssSelectorList::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssSubSelectorList {
@@ -6856,10 +6323,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssSubSelectorList {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::lists::sub_selector_list::FormatCssSubSelectorList::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::lists::sub_selector_list::FormatCssSubSelectorList::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssSubSelectorList {
@@ -6870,10 +6334,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssSubSelectorList {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::lists::sub_selector_list::FormatCssSubSelectorList::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::lists::sub_selector_list::FormatCssSubSelectorList::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssUrlModifierList {
@@ -6885,10 +6346,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssUrlModifierList {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::lists::url_modifier_list::FormatCssUrlModifierList::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::lists::url_modifier_list::FormatCssUrlModifierList::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUrlModifierList {
@@ -6899,26 +6357,36 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUrlModifierList {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::lists::url_modifier_list::FormatCssUrlModifierList::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::lists::url_modifier_list::FormatCssUrlModifierList::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleImportSpecifierList {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: CssValueAtRuleImportSpecifierList , crate :: css :: lists :: value_at_rule_import_specifier_list :: FormatCssValueAtRuleImportSpecifierList > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::CssValueAtRuleImportSpecifierList,
+		crate::css::lists::value_at_rule_import_specifier_list::FormatCssValueAtRuleImportSpecifierList,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: lists :: value_at_rule_import_specifier_list :: FormatCssValueAtRuleImportSpecifierList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::lists::value_at_rule_import_specifier_list::FormatCssValueAtRuleImportSpecifierList::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleImportSpecifierList {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: CssValueAtRuleImportSpecifierList , crate :: css :: lists :: value_at_rule_import_specifier_list :: FormatCssValueAtRuleImportSpecifierList > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::CssValueAtRuleImportSpecifierList,
+		crate::css::lists::value_at_rule_import_specifier_list::FormatCssValueAtRuleImportSpecifierList,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: lists :: value_at_rule_import_specifier_list :: FormatCssValueAtRuleImportSpecifierList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::lists::value_at_rule_import_specifier_list::FormatCssValueAtRuleImportSpecifierList::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRulePropertyList {
@@ -6930,7 +6398,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRulePropertyList
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: lists :: value_at_rule_property_list :: FormatCssValueAtRulePropertyList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::lists::value_at_rule_property_list::FormatCssValueAtRulePropertyList::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRulePropertyList {
@@ -6941,7 +6412,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRulePropertyLi
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: lists :: value_at_rule_property_list :: FormatCssValueAtRulePropertyList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::lists::value_at_rule_property_list::FormatCssValueAtRulePropertyList::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssBogus> for crate::css::bogus::bogus::FormatCssBogus {
@@ -6953,8 +6427,7 @@ impl FormatRule<biome_css_syntax::CssBogus> for crate::css::bogus::bogus::Format
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogus {
-	type Format<'a> =
-		FormatRefWithRule<'a, biome_css_syntax::CssBogus, crate::css::bogus::bogus::FormatCssBogus>;
+	type Format<'a> = FormatRefWithRule<'a, biome_css_syntax::CssBogus, crate::css::bogus::bogus::FormatCssBogus>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -6962,17 +6435,14 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogus {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogus {
-	type Format =
-		FormatOwnedWithRule<biome_css_syntax::CssBogus, crate::css::bogus::bogus::FormatCssBogus>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::CssBogus, crate::css::bogus::bogus::FormatCssBogus>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(self, crate::css::bogus::bogus::FormatCssBogus::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssBogusAtRule>
-	for crate::css::bogus::bogus_at_rule::FormatCssBogusAtRule
-{
+impl FormatRule<biome_css_syntax::CssBogusAtRule> for crate::css::bogus::bogus_at_rule::FormatCssBogusAtRule {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -6981,37 +6451,24 @@ impl FormatRule<biome_css_syntax::CssBogusAtRule>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusAtRule {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssBogusAtRule,
-		crate::css::bogus::bogus_at_rule::FormatCssBogusAtRule,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssBogusAtRule, crate::css::bogus::bogus_at_rule::FormatCssBogusAtRule>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::bogus::bogus_at_rule::FormatCssBogusAtRule::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::bogus::bogus_at_rule::FormatCssBogusAtRule::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusAtRule {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssBogusAtRule,
-		crate::css::bogus::bogus_at_rule::FormatCssBogusAtRule,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssBogusAtRule, crate::css::bogus::bogus_at_rule::FormatCssBogusAtRule>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::bogus::bogus_at_rule::FormatCssBogusAtRule::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::bogus::bogus_at_rule::FormatCssBogusAtRule::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssBogusBlock>
-	for crate::css::bogus::bogus_block::FormatCssBogusBlock
-{
+impl FormatRule<biome_css_syntax::CssBogusBlock> for crate::css::bogus::bogus_block::FormatCssBogusBlock {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -7020,11 +6477,8 @@ impl FormatRule<biome_css_syntax::CssBogusBlock>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusBlock {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssBogusBlock,
-		crate::css::bogus::bogus_block::FormatCssBogusBlock,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssBogusBlock, crate::css::bogus::bogus_block::FormatCssBogusBlock>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -7032,17 +6486,12 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusBlock {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusBlock {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssBogusBlock,
-		crate::css::bogus::bogus_block::FormatCssBogusBlock,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssBogusBlock, crate::css::bogus::bogus_block::FormatCssBogusBlock>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::bogus::bogus_block::FormatCssBogusBlock::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::bogus::bogus_block::FormatCssBogusBlock::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssBogusCustomIdentifier>
@@ -7051,11 +6500,7 @@ impl FormatRule<biome_css_syntax::CssBogusCustomIdentifier>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusCustomIdentifier,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusCustomIdentifier, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusCustomIdentifier>::fmt(self, node, f)
 	}
 }
@@ -7094,11 +6539,7 @@ impl FormatRule<biome_css_syntax::CssBogusDeclarationItem>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusDeclarationItem,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusDeclarationItem, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusDeclarationItem>::fmt(self, node, f)
 	}
 }
@@ -7137,11 +6578,7 @@ impl FormatRule<biome_css_syntax::CssBogusDocumentMatcher>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusDocumentMatcher,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusDocumentMatcher, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusDocumentMatcher>::fmt(self, node, f)
 	}
 }
@@ -7180,11 +6617,7 @@ impl FormatRule<biome_css_syntax::CssBogusFontFamilyName>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusFontFamilyName,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusFontFamilyName, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusFontFamilyName>::fmt(self, node, f)
 	}
 }
@@ -7223,11 +6656,7 @@ impl FormatRule<biome_css_syntax::CssBogusFontFeatureValuesItem>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusFontFeatureValuesItem,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusFontFeatureValuesItem, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusFontFeatureValuesItem>::fmt(self, node, f)
 	}
 }
@@ -7240,7 +6669,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusFontFeatureValuesI
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: bogus :: bogus_font_feature_values_item :: FormatCssBogusFontFeatureValuesItem :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::bogus::bogus_font_feature_values_item::FormatCssBogusFontFeatureValuesItem::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusFontFeatureValuesItem {
@@ -7251,7 +6683,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusFontFeatureValue
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: bogus :: bogus_font_feature_values_item :: FormatCssBogusFontFeatureValuesItem :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::bogus::bogus_font_feature_values_item::FormatCssBogusFontFeatureValuesItem::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssBogusKeyframesItem>
@@ -7260,11 +6695,7 @@ impl FormatRule<biome_css_syntax::CssBogusKeyframesItem>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusKeyframesItem,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusKeyframesItem, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusKeyframesItem>::fmt(self, node, f)
 	}
 }
@@ -7303,11 +6734,7 @@ impl FormatRule<biome_css_syntax::CssBogusKeyframesName>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusKeyframesName,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusKeyframesName, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusKeyframesName>::fmt(self, node, f)
 	}
 }
@@ -7340,9 +6767,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusKeyframesName {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssBogusLayer>
-	for crate::css::bogus::bogus_layer::FormatCssBogusLayer
-{
+impl FormatRule<biome_css_syntax::CssBogusLayer> for crate::css::bogus::bogus_layer::FormatCssBogusLayer {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -7351,11 +6776,8 @@ impl FormatRule<biome_css_syntax::CssBogusLayer>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusLayer {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssBogusLayer,
-		crate::css::bogus::bogus_layer::FormatCssBogusLayer,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssBogusLayer, crate::css::bogus::bogus_layer::FormatCssBogusLayer>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -7363,17 +6785,12 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusLayer {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusLayer {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssBogusLayer,
-		crate::css::bogus::bogus_layer::FormatCssBogusLayer,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssBogusLayer, crate::css::bogus::bogus_layer::FormatCssBogusLayer>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::bogus::bogus_layer::FormatCssBogusLayer::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::bogus::bogus_layer::FormatCssBogusLayer::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssBogusMediaQuery>
@@ -7382,11 +6799,7 @@ impl FormatRule<biome_css_syntax::CssBogusMediaQuery>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusMediaQuery,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusMediaQuery, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusMediaQuery>::fmt(self, node, f)
 	}
 }
@@ -7399,10 +6812,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusMediaQuery {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::bogus::bogus_media_query::FormatCssBogusMediaQuery::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::bogus::bogus_media_query::FormatCssBogusMediaQuery::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusMediaQuery {
@@ -7413,10 +6823,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusMediaQuery {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::bogus::bogus_media_query::FormatCssBogusMediaQuery::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::bogus::bogus_media_query::FormatCssBogusMediaQuery::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssBogusPageSelectorPseudo>
@@ -7425,11 +6832,7 @@ impl FormatRule<biome_css_syntax::CssBogusPageSelectorPseudo>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusPageSelectorPseudo,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusPageSelectorPseudo, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusPageSelectorPseudo>::fmt(self, node, f)
 	}
 }
@@ -7442,7 +6845,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusPageSelectorPseudo
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: bogus :: bogus_page_selector_pseudo :: FormatCssBogusPageSelectorPseudo :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::bogus::bogus_page_selector_pseudo::FormatCssBogusPageSelectorPseudo::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusPageSelectorPseudo {
@@ -7453,20 +6859,17 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusPageSelectorPseu
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: bogus :: bogus_page_selector_pseudo :: FormatCssBogusPageSelectorPseudo :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::bogus::bogus_page_selector_pseudo::FormatCssBogusPageSelectorPseudo::default(),
+		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssBogusParameter>
-	for crate::css::bogus::bogus_parameter::FormatCssBogusParameter
-{
+impl FormatRule<biome_css_syntax::CssBogusParameter> for crate::css::bogus::bogus_parameter::FormatCssBogusParameter {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusParameter,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusParameter, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusParameter>::fmt(self, node, f)
 	}
 }
@@ -7479,10 +6882,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusParameter {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::bogus::bogus_parameter::FormatCssBogusParameter::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::bogus::bogus_parameter::FormatCssBogusParameter::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusParameter {
@@ -7493,23 +6893,14 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusParameter {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::bogus::bogus_parameter::FormatCssBogusParameter::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::bogus::bogus_parameter::FormatCssBogusParameter::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssBogusProperty>
-	for crate::css::bogus::bogus_property::FormatCssBogusProperty
-{
+impl FormatRule<biome_css_syntax::CssBogusProperty> for crate::css::bogus::bogus_property::FormatCssBogusProperty {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusProperty,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusProperty, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusProperty>::fmt(self, node, f)
 	}
 }
@@ -7522,10 +6913,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusProperty {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::bogus::bogus_property::FormatCssBogusProperty::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::bogus::bogus_property::FormatCssBogusProperty::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusProperty {
@@ -7536,10 +6924,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusProperty {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::bogus::bogus_property::FormatCssBogusProperty::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::bogus::bogus_property::FormatCssBogusProperty::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssBogusPropertyValue>
@@ -7548,11 +6933,7 @@ impl FormatRule<biome_css_syntax::CssBogusPropertyValue>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusPropertyValue,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusPropertyValue, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusPropertyValue>::fmt(self, node, f)
 	}
 }
@@ -7591,11 +6972,7 @@ impl FormatRule<biome_css_syntax::CssBogusPseudoClass>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusPseudoClass,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusPseudoClass, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusPseudoClass>::fmt(self, node, f)
 	}
 }
@@ -7634,11 +7011,7 @@ impl FormatRule<biome_css_syntax::CssBogusPseudoElement>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusPseudoElement,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusPseudoElement, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusPseudoElement>::fmt(self, node, f)
 	}
 }
@@ -7671,9 +7044,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusPseudoElement {
 		)
 	}
 }
-impl FormatRule<biome_css_syntax::CssBogusRule>
-	for crate::css::bogus::bogus_rule::FormatCssBogusRule
-{
+impl FormatRule<biome_css_syntax::CssBogusRule> for crate::css::bogus::bogus_rule::FormatCssBogusRule {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
@@ -7682,11 +7053,8 @@ impl FormatRule<biome_css_syntax::CssBogusRule>
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusRule {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::CssBogusRule,
-		crate::css::bogus::bogus_rule::FormatCssBogusRule,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::CssBogusRule, crate::css::bogus::bogus_rule::FormatCssBogusRule>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -7694,10 +7062,8 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusRule {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusRule {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::CssBogusRule,
-		crate::css::bogus::bogus_rule::FormatCssBogusRule,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::CssBogusRule, crate::css::bogus::bogus_rule::FormatCssBogusRule>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -7710,11 +7076,7 @@ impl FormatRule<biome_css_syntax::CssBogusScopeRange>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusScopeRange,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusScopeRange, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusScopeRange>::fmt(self, node, f)
 	}
 }
@@ -7727,10 +7089,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusScopeRange {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::bogus::bogus_scope_range::FormatCssBogusScopeRange::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::bogus::bogus_scope_range::FormatCssBogusScopeRange::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusScopeRange {
@@ -7741,23 +7100,14 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusScopeRange {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::bogus::bogus_scope_range::FormatCssBogusScopeRange::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::bogus::bogus_scope_range::FormatCssBogusScopeRange::default())
 	}
 }
-impl FormatRule<biome_css_syntax::CssBogusSelector>
-	for crate::css::bogus::bogus_selector::FormatCssBogusSelector
-{
+impl FormatRule<biome_css_syntax::CssBogusSelector> for crate::css::bogus::bogus_selector::FormatCssBogusSelector {
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusSelector>::fmt(self, node, f)
 	}
 }
@@ -7770,10 +7120,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusSelector {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::bogus::bogus_selector::FormatCssBogusSelector::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::bogus::bogus_selector::FormatCssBogusSelector::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusSelector {
@@ -7784,10 +7131,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusSelector {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::bogus::bogus_selector::FormatCssBogusSelector::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::bogus::bogus_selector::FormatCssBogusSelector::default())
 	}
 }
 impl FormatRule<biome_css_syntax::CssBogusSubSelector>
@@ -7796,11 +7140,7 @@ impl FormatRule<biome_css_syntax::CssBogusSubSelector>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusSubSelector,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusSubSelector, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusSubSelector>::fmt(self, node, f)
 	}
 }
@@ -7839,11 +7179,7 @@ impl FormatRule<biome_css_syntax::CssBogusUnicodeRangeValue>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusUnicodeRangeValue,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusUnicodeRangeValue, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusUnicodeRangeValue>::fmt(self, node, f)
 	}
 }
@@ -7858,8 +7194,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssBogusUnicodeRangeValue 
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::bogus::bogus_unicode_range_value::FormatCssBogusUnicodeRangeValue::default(
-			),
+			crate::css::bogus::bogus_unicode_range_value::FormatCssBogusUnicodeRangeValue::default(),
 		)
 	}
 }
@@ -7873,8 +7208,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssBogusUnicodeRangeValu
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::bogus::bogus_unicode_range_value::FormatCssBogusUnicodeRangeValue::default(
-			),
+			crate::css::bogus::bogus_unicode_range_value::FormatCssBogusUnicodeRangeValue::default(),
 		)
 	}
 }
@@ -7884,11 +7218,7 @@ impl FormatRule<biome_css_syntax::CssBogusUrlModifier>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssBogusUrlModifier,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssBogusUrlModifier, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssBogusUrlModifier>::fmt(self, node, f)
 	}
 }
@@ -7927,11 +7257,7 @@ impl FormatRule<biome_css_syntax::CssUnknownAtRuleComponentList>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssUnknownAtRuleComponentList,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssUnknownAtRuleComponentList, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssUnknownAtRuleComponentList>::fmt(self, node, f)
 	}
 }
@@ -7944,7 +7270,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssUnknownAtRuleComponentL
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: bogus :: unknown_at_rule_component_list :: FormatCssUnknownAtRuleComponentList :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::bogus::unknown_at_rule_component_list::FormatCssUnknownAtRuleComponentList::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUnknownAtRuleComponentList {
@@ -7955,7 +7284,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssUnknownAtRuleComponen
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: bogus :: unknown_at_rule_component_list :: FormatCssUnknownAtRuleComponentList :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::bogus::unknown_at_rule_component_list::FormatCssUnknownAtRuleComponentList::default(),
+		)
 	}
 }
 impl FormatRule<biome_css_syntax::CssValueAtRuleGenericValue>
@@ -7964,11 +7296,7 @@ impl FormatRule<biome_css_syntax::CssValueAtRuleGenericValue>
 	type Context = CssFormatContext;
 
 	#[inline(always)]
-	fn fmt(
-		&self,
-		node:&biome_css_syntax::CssValueAtRuleGenericValue,
-		f:&mut CssFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node:&biome_css_syntax::CssValueAtRuleGenericValue, f:&mut CssFormatter) -> FormatResult<()> {
 		FormatBogusNodeRule::<biome_css_syntax::CssValueAtRuleGenericValue>::fmt(self, node, f)
 	}
 }
@@ -7981,7 +7309,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleGenericValue
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: bogus :: value_at_rule_generic_value :: FormatCssValueAtRuleGenericValue :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::bogus::value_at_rule_generic_value::FormatCssValueAtRuleGenericValue::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleGenericValue {
@@ -7992,15 +7323,15 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::CssValueAtRuleGenericVal
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: bogus :: value_at_rule_generic_value :: FormatCssValueAtRuleGenericValue :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::bogus::value_at_rule_generic_value::FormatCssValueAtRuleGenericValue::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssAtRule {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssAtRule,
-		crate::css::any::at_rule::FormatAnyCssAtRule,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssAtRule, crate::css::any::at_rule::FormatAnyCssAtRule>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -8008,10 +7339,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssAtRule {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssAtRule {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssAtRule,
-		crate::css::any::at_rule::FormatAnyCssAtRule,
-	>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::AnyCssAtRule, crate::css::any::at_rule::FormatAnyCssAtRule>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -8143,7 +7471,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerAndCombinab
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: container_and_combinable_query :: FormatAnyCssContainerAndCombinableQuery :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::container_and_combinable_query::FormatAnyCssContainerAndCombinableQuery::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerAndCombinableQuery {
@@ -8154,7 +7485,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerAndCombin
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: container_and_combinable_query :: FormatAnyCssContainerAndCombinableQuery :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::container_and_combinable_query::FormatAnyCssContainerAndCombinableQuery::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerOrCombinableQuery {
@@ -8166,7 +7500,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerOrCombinabl
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: container_or_combinable_query :: FormatAnyCssContainerOrCombinableQuery :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::container_or_combinable_query::FormatAnyCssContainerOrCombinableQuery::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerOrCombinableQuery {
@@ -8177,7 +7514,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerOrCombina
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: container_or_combinable_query :: FormatAnyCssContainerOrCombinableQuery :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::container_or_combinable_query::FormatAnyCssContainerOrCombinableQuery::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerQuery {
@@ -8189,10 +7529,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerQuery {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::container_query::FormatAnyCssContainerQuery::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::container_query::FormatAnyCssContainerQuery::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerQuery {
@@ -8203,10 +7540,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerQuery {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::container_query::FormatAnyCssContainerQuery::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::container_query::FormatAnyCssContainerQuery::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerQueryInParens {
@@ -8220,8 +7554,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerQueryInPare
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::any::container_query_in_parens::FormatAnyCssContainerQueryInParens::default(
-			),
+			crate::css::any::container_query_in_parens::FormatAnyCssContainerQueryInParens::default(),
 		)
 	}
 }
@@ -8235,13 +7568,16 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerQueryInPa
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::any::container_query_in_parens::FormatAnyCssContainerQueryInParens::default(
-			),
+			crate::css::any::container_query_in_parens::FormatAnyCssContainerQueryInParens::default(),
 		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerStyleAndCombinableQuery {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: AnyCssContainerStyleAndCombinableQuery , crate :: css :: any :: container_style_and_combinable_query :: FormatAnyCssContainerStyleAndCombinableQuery > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::AnyCssContainerStyleAndCombinableQuery,
+		crate::css::any::container_style_and_combinable_query::FormatAnyCssContainerStyleAndCombinableQuery,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -8249,7 +7585,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerStyleAndCom
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerStyleAndCombinableQuery {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: AnyCssContainerStyleAndCombinableQuery , crate :: css :: any :: container_style_and_combinable_query :: FormatAnyCssContainerStyleAndCombinableQuery > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::AnyCssContainerStyleAndCombinableQuery,
+		crate::css::any::container_style_and_combinable_query::FormatAnyCssContainerStyleAndCombinableQuery,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -8267,8 +7606,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerStyleInPare
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::any::container_style_in_parens::FormatAnyCssContainerStyleInParens::default(
-			),
+			crate::css::any::container_style_in_parens::FormatAnyCssContainerStyleInParens::default(),
 		)
 	}
 }
@@ -8282,25 +7620,39 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerStyleInPa
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::any::container_style_in_parens::FormatAnyCssContainerStyleInParens::default(
-			),
+			crate::css::any::container_style_in_parens::FormatAnyCssContainerStyleInParens::default(),
 		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerStyleOrCombinableQuery {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: AnyCssContainerStyleOrCombinableQuery , crate :: css :: any :: container_style_or_combinable_query :: FormatAnyCssContainerStyleOrCombinableQuery > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::AnyCssContainerStyleOrCombinableQuery,
+		crate::css::any::container_style_or_combinable_query::FormatAnyCssContainerStyleOrCombinableQuery,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: container_style_or_combinable_query :: FormatAnyCssContainerStyleOrCombinableQuery :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::container_style_or_combinable_query::FormatAnyCssContainerStyleOrCombinableQuery::default(
+			),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerStyleOrCombinableQuery {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: AnyCssContainerStyleOrCombinableQuery , crate :: css :: any :: container_style_or_combinable_query :: FormatAnyCssContainerStyleOrCombinableQuery > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::AnyCssContainerStyleOrCombinableQuery,
+		crate::css::any::container_style_or_combinable_query::FormatAnyCssContainerStyleOrCombinableQuery,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: container_style_or_combinable_query :: FormatAnyCssContainerStyleOrCombinableQuery :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::container_style_or_combinable_query::FormatAnyCssContainerStyleOrCombinableQuery::default(
+			),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssContainerStyleQuery {
@@ -8399,10 +7751,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssDeclarationName {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::declaration_name::FormatAnyCssDeclarationName::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::declaration_name::FormatAnyCssDeclarationName::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssDeclarationName {
@@ -8413,10 +7762,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssDeclarationName {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::declaration_name::FormatAnyCssDeclarationName::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::declaration_name::FormatAnyCssDeclarationName::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssDeclarationOrAtRule {
@@ -8457,7 +7803,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssDeclarationOrAtRuleB
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: declaration_or_at_rule_block :: FormatAnyCssDeclarationOrAtRuleBlock :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::declaration_or_at_rule_block::FormatAnyCssDeclarationOrAtRuleBlock::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssDeclarationOrAtRuleBlock {
@@ -8468,7 +7817,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssDeclarationOrAtRul
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: declaration_or_at_rule_block :: FormatAnyCssDeclarationOrAtRuleBlock :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::declaration_or_at_rule_block::FormatAnyCssDeclarationOrAtRuleBlock::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssDeclarationOrRule {
@@ -8511,8 +7863,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssDeclarationOrRuleBlo
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::any::declaration_or_rule_block::FormatAnyCssDeclarationOrRuleBlock::default(
-			),
+			crate::css::any::declaration_or_rule_block::FormatAnyCssDeclarationOrRuleBlock::default(),
 		)
 	}
 }
@@ -8526,17 +7877,13 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssDeclarationOrRuleB
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::any::declaration_or_rule_block::FormatAnyCssDeclarationOrRuleBlock::default(
-			),
+			crate::css::any::declaration_or_rule_block::FormatAnyCssDeclarationOrRuleBlock::default(),
 		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssDimension {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssDimension,
-		crate::css::any::dimension::FormatAnyCssDimension,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssDimension, crate::css::any::dimension::FormatAnyCssDimension>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -8544,10 +7891,8 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssDimension {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssDimension {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssDimension,
-		crate::css::any::dimension::FormatAnyCssDimension,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::AnyCssDimension, crate::css::any::dimension::FormatAnyCssDimension>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -8563,10 +7908,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssDocumentMatcher {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::document_matcher::FormatAnyCssDocumentMatcher::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::document_matcher::FormatAnyCssDocumentMatcher::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssDocumentMatcher {
@@ -8577,18 +7919,12 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssDocumentMatcher {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::document_matcher::FormatAnyCssDocumentMatcher::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::document_matcher::FormatAnyCssDocumentMatcher::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssExpression {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssExpression,
-		crate::css::any::expression::FormatAnyCssExpression,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssExpression, crate::css::any::expression::FormatAnyCssExpression>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -8596,17 +7932,12 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssExpression {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssExpression {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssExpression,
-		crate::css::any::expression::FormatAnyCssExpression,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::AnyCssExpression, crate::css::any::expression::FormatAnyCssExpression>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::expression::FormatAnyCssExpression::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::expression::FormatAnyCssExpression::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssFontFamilyName {
@@ -8618,10 +7949,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssFontFamilyName {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::font_family_name::FormatAnyCssFontFamilyName::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::font_family_name::FormatAnyCssFontFamilyName::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssFontFamilyName {
@@ -8632,10 +7960,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssFontFamilyName {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::font_family_name::FormatAnyCssFontFamilyName::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::font_family_name::FormatAnyCssFontFamilyName::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssFontFeatureValuesBlock {
@@ -8649,8 +7974,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssFontFeatureValuesBlo
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::any::font_feature_values_block::FormatAnyCssFontFeatureValuesBlock::default(
-			),
+			crate::css::any::font_feature_values_block::FormatAnyCssFontFeatureValuesBlock::default(),
 		)
 	}
 }
@@ -8664,8 +7988,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssFontFeatureValuesB
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::any::font_feature_values_block::FormatAnyCssFontFeatureValuesBlock::default(
-			),
+			crate::css::any::font_feature_values_block::FormatAnyCssFontFeatureValuesBlock::default(),
 		)
 	}
 }
@@ -8699,11 +8022,8 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssFontFeatureValuesI
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssFunction {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssFunction,
-		crate::css::any::function::FormatAnyCssFunction,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssFunction, crate::css::any::function::FormatAnyCssFunction>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -8711,10 +8031,8 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssFunction {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssFunction {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssFunction,
-		crate::css::any::function::FormatAnyCssFunction,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::AnyCssFunction, crate::css::any::function::FormatAnyCssFunction>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -8759,10 +8077,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssImportLayer {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::import_layer::FormatAnyCssImportLayer::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::import_layer::FormatAnyCssImportLayer::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssImportLayer {
@@ -8773,10 +8088,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssImportLayer {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::import_layer::FormatAnyCssImportLayer::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::import_layer::FormatAnyCssImportLayer::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssImportSupportsCondition {
@@ -8788,7 +8100,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssImportSupportsCondit
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: import_supports_condition :: FormatAnyCssImportSupportsCondition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::import_supports_condition::FormatAnyCssImportSupportsCondition::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssImportSupportsCondition {
@@ -8799,15 +8114,15 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssImportSupportsCond
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: import_supports_condition :: FormatAnyCssImportSupportsCondition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::import_supports_condition::FormatAnyCssImportSupportsCondition::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssImportUrl {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssImportUrl,
-		crate::css::any::import_url::FormatAnyCssImportUrl,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssImportUrl, crate::css::any::import_url::FormatAnyCssImportUrl>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -8815,17 +8130,12 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssImportUrl {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssImportUrl {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssImportUrl,
-		crate::css::any::import_url::FormatAnyCssImportUrl,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::AnyCssImportUrl, crate::css::any::import_url::FormatAnyCssImportUrl>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::import_url::FormatAnyCssImportUrl::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::import_url::FormatAnyCssImportUrl::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesBlock {
@@ -8837,10 +8147,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesBlock {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::keyframes_block::FormatAnyCssKeyframesBlock::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::keyframes_block::FormatAnyCssKeyframesBlock::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesBlock {
@@ -8851,10 +8158,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesBlock {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::keyframes_block::FormatAnyCssKeyframesBlock::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::keyframes_block::FormatAnyCssKeyframesBlock::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesIdentifier {
@@ -8895,10 +8199,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesItem {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::keyframes_item::FormatAnyCssKeyframesItem::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::keyframes_item::FormatAnyCssKeyframesItem::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesItem {
@@ -8909,10 +8210,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesItem {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::keyframes_item::FormatAnyCssKeyframesItem::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::keyframes_item::FormatAnyCssKeyframesItem::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesName {
@@ -8924,10 +8222,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesName {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::keyframes_name::FormatAnyCssKeyframesName::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::keyframes_name::FormatAnyCssKeyframesName::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesName {
@@ -8938,10 +8233,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesName {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::keyframes_name::FormatAnyCssKeyframesName::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::keyframes_name::FormatAnyCssKeyframesName::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesScope {
@@ -8953,10 +8245,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesScope {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::keyframes_scope::FormatAnyCssKeyframesScope::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::keyframes_scope::FormatAnyCssKeyframesScope::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesScope {
@@ -8967,10 +8256,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesScope {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::keyframes_scope::FormatAnyCssKeyframesScope::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::keyframes_scope::FormatAnyCssKeyframesScope::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesSelector {
@@ -9003,11 +8289,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssKeyframesSelector 
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssLayer {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssLayer,
-		crate::css::any::layer::FormatAnyCssLayer,
-	>;
+	type Format<'a> = FormatRefWithRule<'a, biome_css_syntax::AnyCssLayer, crate::css::any::layer::FormatAnyCssLayer>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -9015,10 +8297,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssLayer {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssLayer {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssLayer,
-		crate::css::any::layer::FormatAnyCssLayer,
-	>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::AnyCssLayer, crate::css::any::layer::FormatAnyCssLayer>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -9034,7 +8313,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaAndCombinableCo
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: media_and_combinable_condition :: FormatAnyCssMediaAndCombinableCondition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::media_and_combinable_condition::FormatAnyCssMediaAndCombinableCondition::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaAndCombinableCondition {
@@ -9045,7 +8327,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaAndCombinable
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: media_and_combinable_condition :: FormatAnyCssMediaAndCombinableCondition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::media_and_combinable_condition::FormatAnyCssMediaAndCombinableCondition::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaCondition {
@@ -9057,10 +8342,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaCondition {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::media_condition::FormatAnyCssMediaCondition::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::media_condition::FormatAnyCssMediaCondition::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaCondition {
@@ -9071,10 +8353,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaCondition {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::media_condition::FormatAnyCssMediaCondition::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::media_condition::FormatAnyCssMediaCondition::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaInParens {
@@ -9086,10 +8365,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaInParens {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::media_in_parens::FormatAnyCssMediaInParens::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::media_in_parens::FormatAnyCssMediaInParens::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaInParens {
@@ -9100,10 +8376,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaInParens {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::media_in_parens::FormatAnyCssMediaInParens::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::media_in_parens::FormatAnyCssMediaInParens::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaOrCombinableCondition {
@@ -9115,7 +8388,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaOrCombinableCon
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: media_or_combinable_condition :: FormatAnyCssMediaOrCombinableCondition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::media_or_combinable_condition::FormatAnyCssMediaOrCombinableCondition::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaOrCombinableCondition {
@@ -9126,36 +8402,28 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaOrCombinableC
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: media_or_combinable_condition :: FormatAnyCssMediaOrCombinableCondition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::media_or_combinable_condition::FormatAnyCssMediaOrCombinableCondition::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaQuery {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssMediaQuery,
-		crate::css::any::media_query::FormatAnyCssMediaQuery,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssMediaQuery, crate::css::any::media_query::FormatAnyCssMediaQuery>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::media_query::FormatAnyCssMediaQuery::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::media_query::FormatAnyCssMediaQuery::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaQuery {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssMediaQuery,
-		crate::css::any::media_query::FormatAnyCssMediaQuery,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::AnyCssMediaQuery, crate::css::any::media_query::FormatAnyCssMediaQuery>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::media_query::FormatAnyCssMediaQuery::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::media_query::FormatAnyCssMediaQuery::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaTypeCondition {
@@ -9196,10 +8464,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaTypeQuery {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::media_type_query::FormatAnyCssMediaTypeQuery::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::media_type_query::FormatAnyCssMediaTypeQuery::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaTypeQuery {
@@ -9210,10 +8475,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssMediaTypeQuery {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::media_type_query::FormatAnyCssMediaTypeQuery::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::media_type_query::FormatAnyCssMediaTypeQuery::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssNamespacePrefix {
@@ -9225,10 +8487,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssNamespacePrefix {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::namespace_prefix::FormatAnyCssNamespacePrefix::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::namespace_prefix::FormatAnyCssNamespacePrefix::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssNamespacePrefix {
@@ -9239,10 +8498,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssNamespacePrefix {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::namespace_prefix::FormatAnyCssNamespacePrefix::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::namespace_prefix::FormatAnyCssNamespacePrefix::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssNamespaceUrl {
@@ -9254,10 +8510,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssNamespaceUrl {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::namespace_url::FormatAnyCssNamespaceUrl::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::namespace_url::FormatAnyCssNamespaceUrl::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssNamespaceUrl {
@@ -9268,10 +8521,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssNamespaceUrl {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::namespace_url::FormatAnyCssNamespaceUrl::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::namespace_url::FormatAnyCssNamespaceUrl::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPageAtRuleBlock {
@@ -9312,10 +8562,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPageAtRuleItem {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::page_at_rule_item::FormatAnyCssPageAtRuleItem::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::page_at_rule_item::FormatAnyCssPageAtRuleItem::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPageAtRuleItem {
@@ -9326,10 +8573,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPageAtRuleItem {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::page_at_rule_item::FormatAnyCssPageAtRuleItem::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::page_at_rule_item::FormatAnyCssPageAtRuleItem::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPageSelector {
@@ -9341,10 +8585,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPageSelector {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::page_selector::FormatAnyCssPageSelector::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::page_selector::FormatAnyCssPageSelector::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPageSelector {
@@ -9355,10 +8596,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPageSelector {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::page_selector::FormatAnyCssPageSelector::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::page_selector::FormatAnyCssPageSelector::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPageSelectorPseudo {
@@ -9391,11 +8629,8 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPageSelectorPseudo
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssProperty {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssProperty,
-		crate::css::any::property::FormatAnyCssProperty,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssProperty, crate::css::any::property::FormatAnyCssProperty>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -9403,10 +8638,8 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssProperty {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssProperty {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssProperty,
-		crate::css::any::property::FormatAnyCssProperty,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::AnyCssProperty, crate::css::any::property::FormatAnyCssProperty>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -9422,10 +8655,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoClass {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::pseudo_class::FormatAnyCssPseudoClass::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::pseudo_class::FormatAnyCssPseudoClass::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoClass {
@@ -9436,10 +8666,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoClass {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::pseudo_class::FormatAnyCssPseudoClass::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::pseudo_class::FormatAnyCssPseudoClass::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoClassNth {
@@ -9451,10 +8678,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoClassNth {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::pseudo_class_nth::FormatAnyCssPseudoClassNth::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::pseudo_class_nth::FormatAnyCssPseudoClassNth::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoClassNth {
@@ -9465,10 +8689,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoClassNth {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::pseudo_class_nth::FormatAnyCssPseudoClassNth::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::pseudo_class_nth::FormatAnyCssPseudoClassNth::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoClassNthSelector {
@@ -9482,8 +8703,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoClassNthSelect
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatRefWithRule::new(
 			self,
-			crate::css::any::pseudo_class_nth_selector::FormatAnyCssPseudoClassNthSelector::default(
-			),
+			crate::css::any::pseudo_class_nth_selector::FormatAnyCssPseudoClassNthSelector::default(),
 		)
 	}
 }
@@ -9497,8 +8717,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoClassNthSele
 		#![allow(clippy::default_constructed_unit_structs)]
 		FormatOwnedWithRule::new(
 			self,
-			crate::css::any::pseudo_class_nth_selector::FormatAnyCssPseudoClassNthSelector::default(
-			),
+			crate::css::any::pseudo_class_nth_selector::FormatAnyCssPseudoClassNthSelector::default(),
 		)
 	}
 }
@@ -9511,10 +8730,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoElement {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::pseudo_element::FormatAnyCssPseudoElement::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::pseudo_element::FormatAnyCssPseudoElement::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoElement {
@@ -9525,10 +8741,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoElement {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::pseudo_element::FormatAnyCssPseudoElement::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::pseudo_element::FormatAnyCssPseudoElement::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoValue {
@@ -9540,10 +8753,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoValue {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::pseudo_value::FormatAnyCssPseudoValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::pseudo_value::FormatAnyCssPseudoValue::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoValue {
@@ -9554,10 +8764,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssPseudoValue {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::pseudo_value::FormatAnyCssPseudoValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::pseudo_value::FormatAnyCssPseudoValue::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssQueryFeature {
@@ -9569,10 +8776,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssQueryFeature {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::query_feature::FormatAnyCssQueryFeature::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::query_feature::FormatAnyCssQueryFeature::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssQueryFeature {
@@ -9583,10 +8787,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssQueryFeature {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::query_feature::FormatAnyCssQueryFeature::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::query_feature::FormatAnyCssQueryFeature::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssQueryFeatureValue {
@@ -9648,11 +8849,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssRelativeSelector {
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssRule {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssRule,
-		crate::css::any::rule::FormatAnyCssRule,
-	>;
+	type Format<'a> = FormatRefWithRule<'a, biome_css_syntax::AnyCssRule, crate::css::any::rule::FormatAnyCssRule>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -9660,8 +8857,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssRule {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssRule {
-	type Format =
-		FormatOwnedWithRule<biome_css_syntax::AnyCssRule, crate::css::any::rule::FormatAnyCssRule>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::AnyCssRule, crate::css::any::rule::FormatAnyCssRule>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -9669,11 +8865,8 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssRule {
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssRuleBlock {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssRuleBlock,
-		crate::css::any::rule_block::FormatAnyCssRuleBlock,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssRuleBlock, crate::css::any::rule_block::FormatAnyCssRuleBlock>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -9681,54 +8874,35 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssRuleBlock {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssRuleBlock {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssRuleBlock,
-		crate::css::any::rule_block::FormatAnyCssRuleBlock,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::AnyCssRuleBlock, crate::css::any::rule_block::FormatAnyCssRuleBlock>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::rule_block::FormatAnyCssRuleBlock::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::rule_block::FormatAnyCssRuleBlock::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssScopeRange {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssScopeRange,
-		crate::css::any::scope_range::FormatAnyCssScopeRange,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssScopeRange, crate::css::any::scope_range::FormatAnyCssScopeRange>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::scope_range::FormatAnyCssScopeRange::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::scope_range::FormatAnyCssScopeRange::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssScopeRange {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssScopeRange,
-		crate::css::any::scope_range::FormatAnyCssScopeRange,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::AnyCssScopeRange, crate::css::any::scope_range::FormatAnyCssScopeRange>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::scope_range::FormatAnyCssScopeRange::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::scope_range::FormatAnyCssScopeRange::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssSelector {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssSelector,
-		crate::css::any::selector::FormatAnyCssSelector,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssSelector, crate::css::any::selector::FormatAnyCssSelector>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -9736,10 +8910,8 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssSelector {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssSelector {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssSelector,
-		crate::css::any::selector::FormatAnyCssSelector,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::AnyCssSelector, crate::css::any::selector::FormatAnyCssSelector>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -9755,10 +8927,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssSimpleSelector {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::simple_selector::FormatAnyCssSimpleSelector::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::simple_selector::FormatAnyCssSimpleSelector::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssSimpleSelector {
@@ -9769,10 +8938,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssSimpleSelector {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::simple_selector::FormatAnyCssSimpleSelector::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::simple_selector::FormatAnyCssSimpleSelector::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssStartingStyleBlock {
@@ -9813,10 +8979,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssSubSelector {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::sub_selector::FormatAnyCssSubSelector::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::sub_selector::FormatAnyCssSubSelector::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssSubSelector {
@@ -9827,26 +8990,36 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssSubSelector {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::sub_selector::FormatAnyCssSubSelector::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::sub_selector::FormatAnyCssSubSelector::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssSupportsAndCombinableCondition {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: AnyCssSupportsAndCombinableCondition , crate :: css :: any :: supports_and_combinable_condition :: FormatAnyCssSupportsAndCombinableCondition > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::AnyCssSupportsAndCombinableCondition,
+		crate::css::any::supports_and_combinable_condition::FormatAnyCssSupportsAndCombinableCondition,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: supports_and_combinable_condition :: FormatAnyCssSupportsAndCombinableCondition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::supports_and_combinable_condition::FormatAnyCssSupportsAndCombinableCondition::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssSupportsAndCombinableCondition {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: AnyCssSupportsAndCombinableCondition , crate :: css :: any :: supports_and_combinable_condition :: FormatAnyCssSupportsAndCombinableCondition > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::AnyCssSupportsAndCombinableCondition,
+		crate::css::any::supports_and_combinable_condition::FormatAnyCssSupportsAndCombinableCondition,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: supports_and_combinable_condition :: FormatAnyCssSupportsAndCombinableCondition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::supports_and_combinable_condition::FormatAnyCssSupportsAndCombinableCondition::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssSupportsCondition {
@@ -9908,19 +9081,32 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssSupportsInParens {
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssSupportsOrCombinableCondition {
-	type Format < 'a > = FormatRefWithRule < 'a , biome_css_syntax :: AnyCssSupportsOrCombinableCondition , crate :: css :: any :: supports_or_combinable_condition :: FormatAnyCssSupportsOrCombinableCondition > ;
+	type Format<'a> = FormatRefWithRule<
+		'a,
+		biome_css_syntax::AnyCssSupportsOrCombinableCondition,
+		crate::css::any::supports_or_combinable_condition::FormatAnyCssSupportsOrCombinableCondition,
+	>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: supports_or_combinable_condition :: FormatAnyCssSupportsOrCombinableCondition :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::supports_or_combinable_condition::FormatAnyCssSupportsOrCombinableCondition::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssSupportsOrCombinableCondition {
-	type Format = FormatOwnedWithRule < biome_css_syntax :: AnyCssSupportsOrCombinableCondition , crate :: css :: any :: supports_or_combinable_condition :: FormatAnyCssSupportsOrCombinableCondition > ;
+	type Format = FormatOwnedWithRule<
+		biome_css_syntax::AnyCssSupportsOrCombinableCondition,
+		crate::css::any::supports_or_combinable_condition::FormatAnyCssSupportsOrCombinableCondition,
+	>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: supports_or_combinable_condition :: FormatAnyCssSupportsOrCombinableCondition :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::supports_or_combinable_condition::FormatAnyCssSupportsOrCombinableCondition::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssUnicodeValue {
@@ -9932,10 +9118,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssUnicodeValue {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::unicode_value::FormatAnyCssUnicodeValue::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::unicode_value::FormatAnyCssUnicodeValue::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssUnicodeValue {
@@ -9946,10 +9129,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssUnicodeValue {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::unicode_value::FormatAnyCssUnicodeValue::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::unicode_value::FormatAnyCssUnicodeValue::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssUrlModifier {
@@ -9961,10 +9141,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssUrlModifier {
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule::new(
-			self,
-			crate::css::any::url_modifier::FormatAnyCssUrlModifier::default(),
-		)
+		FormatRefWithRule::new(self, crate::css::any::url_modifier::FormatAnyCssUrlModifier::default())
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssUrlModifier {
@@ -9975,18 +9152,12 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssUrlModifier {
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule::new(
-			self,
-			crate::css::any::url_modifier::FormatAnyCssUrlModifier::default(),
-		)
+		FormatOwnedWithRule::new(self, crate::css::any::url_modifier::FormatAnyCssUrlModifier::default())
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssUrlValue {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssUrlValue,
-		crate::css::any::url_value::FormatAnyCssUrlValue,
-	>;
+	type Format<'a> =
+		FormatRefWithRule<'a, biome_css_syntax::AnyCssUrlValue, crate::css::any::url_value::FormatAnyCssUrlValue>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -9994,10 +9165,8 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssUrlValue {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssUrlValue {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssUrlValue,
-		crate::css::any::url_value::FormatAnyCssUrlValue,
-	>;
+	type Format =
+		FormatOwnedWithRule<biome_css_syntax::AnyCssUrlValue, crate::css::any::url_value::FormatAnyCssUrlValue>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -10005,11 +9174,7 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssUrlValue {
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssValue {
-	type Format<'a> = FormatRefWithRule<
-		'a,
-		biome_css_syntax::AnyCssValue,
-		crate::css::any::value::FormatAnyCssValue,
-	>;
+	type Format<'a> = FormatRefWithRule<'a, biome_css_syntax::AnyCssValue, crate::css::any::value::FormatAnyCssValue>;
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -10017,10 +9182,7 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssValue {
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssValue {
-	type Format = FormatOwnedWithRule<
-		biome_css_syntax::AnyCssValue,
-		crate::css::any::value::FormatAnyCssValue,
-	>;
+	type Format = FormatOwnedWithRule<biome_css_syntax::AnyCssValue, crate::css::any::value::FormatAnyCssValue>;
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
@@ -10065,7 +9227,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssValueAtRuleImportSou
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: value_at_rule_import_source :: FormatAnyCssValueAtRuleImportSource :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::value_at_rule_import_source::FormatAnyCssValueAtRuleImportSource::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssValueAtRuleImportSource {
@@ -10076,7 +9241,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssValueAtRuleImportS
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: value_at_rule_import_source :: FormatAnyCssValueAtRuleImportSource :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::value_at_rule_import_source::FormatAnyCssValueAtRuleImportSource::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssValueAtRuleImportSpecifier {
@@ -10088,7 +9256,10 @@ impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssValueAtRuleImportSpe
 
 	fn format(&self) -> Self::Format<'_> {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatRefWithRule :: new (self , crate :: css :: any :: value_at_rule_import_specifier :: FormatAnyCssValueAtRuleImportSpecifier :: default ())
+		FormatRefWithRule::new(
+			self,
+			crate::css::any::value_at_rule_import_specifier::FormatAnyCssValueAtRuleImportSpecifier::default(),
+		)
 	}
 }
 impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssValueAtRuleImportSpecifier {
@@ -10099,7 +9270,10 @@ impl IntoFormat<CssFormatContext> for biome_css_syntax::AnyCssValueAtRuleImportS
 
 	fn into_format(self) -> Self::Format {
 		#![allow(clippy::default_constructed_unit_structs)]
-		FormatOwnedWithRule :: new (self , crate :: css :: any :: value_at_rule_import_specifier :: FormatAnyCssValueAtRuleImportSpecifier :: default ())
+		FormatOwnedWithRule::new(
+			self,
+			crate::css::any::value_at_rule_import_specifier::FormatAnyCssValueAtRuleImportSpecifier::default(),
+		)
 	}
 }
 impl AsFormat<CssFormatContext> for biome_css_syntax::AnyCssValueAtRuleProperty {

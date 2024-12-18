@@ -110,9 +110,7 @@ impl Default for JsonFormatter {
 }
 
 impl PartialJsonFormatter {
-	pub fn get_linter_configuration(&self) -> JsonLinter {
-		JsonLinter { enabled:self.enabled.unwrap_or_default() }
-	}
+	pub fn get_linter_configuration(&self) -> JsonLinter { JsonLinter { enabled:self.enabled.unwrap_or_default() } }
 }
 
 /// Linter options specific to the JSON linter
@@ -131,9 +129,7 @@ impl Default for JsonLinter {
 }
 
 impl PartialJsonLinter {
-	pub fn get_linter_configuration(&self) -> JsonLinter {
-		JsonLinter { enabled:self.enabled.unwrap_or_default() }
-	}
+	pub fn get_linter_configuration(&self) -> JsonLinter { JsonLinter { enabled:self.enabled.unwrap_or_default() } }
 }
 
 /// Linter options specific to the JSON linter

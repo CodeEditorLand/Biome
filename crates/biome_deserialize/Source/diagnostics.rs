@@ -54,9 +54,7 @@ impl DeserializableTypes {
 
 	pub const fn empty() -> Self { Self(BitFlags::EMPTY) }
 
-	pub fn contains(self, other:impl Into<DeserializableTypes>) -> bool {
-		self.0.contains(other.into().0)
-	}
+	pub fn contains(self, other:impl Into<DeserializableTypes>) -> bool { self.0.contains(other.into().0) }
 
 	pub const fn union(self, other:Self) -> Self { Self(self.0.union_c(other.0)) }
 
@@ -140,8 +138,7 @@ impl DeserializationDiagnostic {
 	/// Emitted when a key is missing, against a set of required ones
 	pub fn new_missing_key(key_name:&str, range:impl AsSpan, required_keys:&[&str]) -> Self {
 		let diagnostic =
-			Self::new(markup!("The key `"<Emphasis>{key_name}</Emphasis>"` is missing." ))
-				.with_range(range);
+			Self::new(markup!("The key `"<Emphasis>{key_name}</Emphasis>"` is missing." )).with_range(range);
 
 		if required_keys.len() > 1 {
 			diagnostic.note_with_list("Required keys", required_keys)
@@ -151,11 +148,7 @@ impl DeserializationDiagnostic {
 	}
 
 	/// Emitted when a generic node has an incorrect type
-	pub fn new_out_of_bound_integer(
-		min:impl std::fmt::Display,
-		max:impl std::fmt::Display,
-		range:impl AsSpan,
-	) -> Self {
+	pub fn new_out_of_bound_integer(min:impl std::fmt::Display, max:impl std::fmt::Display, range:impl AsSpan) -> Self {
 		Self::new(markup! {
             "The number should be an integer between "<Emphasis>{format_args!("{}", min)}</Emphasis>" and "<Emphasis>{format_args!("{}", max)}</Emphasis>"."
         })
@@ -170,11 +163,7 @@ impl DeserializationDiagnostic {
 	}
 
 	/// Emitted when there's an unknown value, against a set of known ones
-	pub fn new_unknown_value(
-		variant_name:&str,
-		range:impl AsSpan,
-		allowed_variants:&[&str],
-	) -> Self {
+	pub fn new_unknown_value(variant_name:&str, range:impl AsSpan, allowed_variants:&[&str]) -> Self {
 		Self::new(markup! {"Found an unknown value `"<Emphasis>{variant_name}</Emphasis>"`."})
 			.with_range(range)
 			.note_with_list("Accepted values:", allowed_variants)
@@ -260,8 +249,7 @@ impl Advices for DeserializationAdvice {
 			visitor.record_log(LogCategory::Info, message)?;
 
 			if !known_keys.is_empty() {
-				let list:Vec<_> =
-					known_keys.iter().map(|message| message as &dyn Display).collect();
+				let list:Vec<_> = known_keys.iter().map(|message| message as &dyn Display).collect();
 
 				visitor.record_list(&list)?;
 			}

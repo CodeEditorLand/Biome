@@ -1,12 +1,5 @@
 use biome_deserialize_macros::{Deserializable, Merge, Partial};
-use biome_formatter::{
-	BracketSpacing,
-	IndentStyle,
-	IndentWidth,
-	LineEnding,
-	LineWidth,
-	QuoteStyle,
-};
+use biome_formatter::{BracketSpacing, IndentStyle, IndentWidth, LineEnding, LineWidth, QuoteStyle};
 use bpaf::Bpaf;
 use serde::{Deserialize, Serialize};
 

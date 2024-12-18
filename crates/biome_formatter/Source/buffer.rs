@@ -160,15 +160,11 @@ impl BufferSnapshot {
 impl<W:Buffer<Context = Context> + ?Sized, Context> Buffer for &mut W {
 	type Context = Context;
 
-	fn write_element(&mut self, element:FormatElement) -> FormatResult<()> {
-		(**self).write_element(element)
-	}
+	fn write_element(&mut self, element:FormatElement) -> FormatResult<()> { (**self).write_element(element) }
 
 	fn elements(&self) -> &[FormatElement] { (**self).elements() }
 
-	fn write_fmt(&mut self, args:Arguments<Context>) -> FormatResult<()> {
-		(**self).write_fmt(args)
-	}
+	fn write_fmt(&mut self, args:Arguments<Context>) -> FormatResult<()> { (**self).write_fmt(args) }
 
 	fn state(&self) -> &FormatState<Self::Context> { (**self).state() }
 
@@ -400,9 +396,7 @@ pub struct Inspect<'inner, Context, Inspector> {
 }
 
 impl<'inner, Context, Inspector> Inspect<'inner, Context, Inspector> {
-	fn new(inner:&'inner mut dyn Buffer<Context = Context>, inspector:Inspector) -> Self {
-		Self { inner, inspector }
-	}
+	fn new(inner:&'inner mut dyn Buffer<Context = Context>, inspector:Inspector) -> Self { Self { inner, inspector } }
 }
 
 impl<'inner, Context, Inspector> Buffer for Inspect<'inner, Context, Inspector>
@@ -425,9 +419,7 @@ where
 
 	fn snapshot(&self) -> BufferSnapshot { self.inner.snapshot() }
 
-	fn restore_snapshot(&mut self, snapshot:BufferSnapshot) {
-		self.inner.restore_snapshot(snapshot)
-	}
+	fn restore_snapshot(&mut self, snapshot:BufferSnapshot) { self.inner.restore_snapshot(snapshot) }
 }
 
 /// A Buffer that removes any soft line breaks.
@@ -441,8 +433,10 @@ where
 ///
 /// ```
 /// # fn main() -> FormatResult<()> {
-/// use biome_formatter::{RemoveSoftLinesBuffer, SimpleFormatContext, VecBuffer};
 /// use biome_formatter::{
+/// 	RemoveSoftLinesBuffer,
+/// 	SimpleFormatContext,
+/// 	VecBuffer,
 /// 	format,
 /// 	prelude::{format_with, *},
 /// 	write,
@@ -537,9 +531,7 @@ fn clean_interned(
 			let result = interned.iter().enumerate().find_map(|(index, element)| {
 				match element {
 					FormatElement::Line(LineMode::Soft | LineMode::SoftOrSpace)
-					| FormatElement::Tag(
-						Tag::StartConditionalContent(_) | Tag::EndConditionalContent,
-					)
+					| FormatElement::Tag(Tag::StartConditionalContent(_) | Tag::EndConditionalContent)
 					| FormatElement::BestFitting(_) => {
 						let mut cleaned = Vec::new();
 
@@ -549,8 +541,7 @@ fn clean_interned(
 					},
 
 					FormatElement::Interned(inner) => {
-						let cleaned_inner =
-							clean_interned(inner, interned_cache, condition_content_stack);
+						let cleaned_inner = clean_interned(inner, interned_cache, condition_content_stack);
 
 						if &cleaned_inner != inner {
 							let mut cleaned = Vec::with_capacity(interned.len());
@@ -599,9 +590,7 @@ fn clean_interned(
 							},
 
 							FormatElement::Line(LineMode::Soft) => continue,
-							FormatElement::Line(LineMode::SoftOrSpace) => {
-								cleaned.push(FormatElement::Space)
-							},
+							FormatElement::Line(LineMode::SoftOrSpace) => cleaned.push(FormatElement::Space),
 
 							FormatElement::Interned(interned) => {
 								cleaned.push(FormatElement::Interned(clean_interned(
@@ -616,10 +605,7 @@ fn clean_interned(
 							FormatElement::BestFitting(best_fitting) => {
 								let most_flat = best_fitting.most_flat();
 
-								most_flat
-									.iter()
-									.rev()
-									.for_each(|element| element_stack.push(element));
+								most_flat.iter().rev().for_each(|element| element_stack.push(element));
 							},
 
 							element => cleaned.push(element.clone()),
@@ -661,9 +647,7 @@ impl<Context> Buffer for RemoveSoftLinesBuffer<'_, Context> {
 				_ if self.is_in_expanded_conditional_content() => continue,
 
 				FormatElement::Line(LineMode::Soft) => continue,
-				FormatElement::Line(LineMode::SoftOrSpace) => {
-					self.inner.write_element(FormatElement::Space)?
-				},
+				FormatElement::Line(LineMode::SoftOrSpace) => self.inner.write_element(FormatElement::Space)?,
 
 				FormatElement::Interned(interned) => {
 					let cleaned = self.clean_interned(&interned);
@@ -694,9 +678,7 @@ impl<Context> Buffer for RemoveSoftLinesBuffer<'_, Context> {
 
 	fn snapshot(&self) -> BufferSnapshot { self.inner.snapshot() }
 
-	fn restore_snapshot(&mut self, snapshot:BufferSnapshot) {
-		self.inner.restore_snapshot(snapshot)
-	}
+	fn restore_snapshot(&mut self, snapshot:BufferSnapshot) { self.inner.restore_snapshot(snapshot) }
 }
 
 pub trait BufferExtensions: Buffer + Sized {
@@ -784,9 +766,7 @@ where
 	}
 
 	#[inline(always)]
-	pub fn write_element(&mut self, element:FormatElement) -> FormatResult<()> {
-		self.buffer.write_element(element)
-	}
+	pub fn write_element(&mut self, element:FormatElement) -> FormatResult<()> { self.buffer.write_element(element) }
 
 	pub fn stop(self) -> Recorded<'buf> {
 		let buffer:&'buf B = self.buffer;

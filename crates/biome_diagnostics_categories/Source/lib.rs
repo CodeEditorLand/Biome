@@ -50,9 +50,8 @@ struct CategoryVisitor;
 
 #[cfg(feature = "serde")]
 fn deserialize_parse<E:serde::de::Error>(code:&str) -> Result<&'static Category, E> {
-	code.parse().map_err(|()| {
-		serde::de::Error::custom(format_args!("failed to deserialize category from {code}"))
-	})
+	code.parse()
+		.map_err(|()| serde::de::Error::custom(format_args!("failed to deserialize category from {code}")))
 }
 
 #[cfg(feature = "serde")]

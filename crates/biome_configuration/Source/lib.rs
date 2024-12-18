@@ -40,11 +40,7 @@ pub use css::{
 	PartialCssFormatter,
 	partial_css_configuration,
 };
-pub use formatter::{
-	FormatterConfiguration,
-	PartialFormatterConfiguration,
-	partial_formatter_configuration,
-};
+pub use formatter::{FormatterConfiguration, PartialFormatterConfiguration, partial_formatter_configuration};
 pub use graphql::{
 	GraphqlConfiguration,
 	GraphqlFormatter,
@@ -80,11 +76,7 @@ use serde::{Deserialize, Serialize};
 use vcs::VcsClientKind;
 
 use crate::{
-	analyzer::assists::{
-		AssistsConfiguration,
-		PartialAssistsConfiguration,
-		partial_assists_configuration,
-	},
+	analyzer::assists::{AssistsConfiguration, PartialAssistsConfiguration, partial_assists_configuration},
 	css::CssLinter,
 	javascript::JavascriptLinter,
 	json::JsonLinter,
@@ -189,10 +181,7 @@ impl PartialConfiguration {
 				indent_style:Some(IndentStyle::Tab),
 				..Default::default()
 			}),
-			organize_imports:Some(PartialOrganizeImports {
-				enabled:Some(true),
-				..Default::default()
-			}),
+			organize_imports:Some(PartialOrganizeImports { enabled:Some(true), ..Default::default() }),
 			linter:Some(PartialLinterConfiguration {
 				enabled:Some(true),
 				rules:Some(Rules { recommended:Some(true), ..Default::default() }),
@@ -209,9 +198,7 @@ impl PartialConfiguration {
 		}
 	}
 
-	pub fn is_formatter_disabled(&self) -> bool {
-		self.formatter.as_ref().map_or(false, |f| f.is_disabled())
-	}
+	pub fn is_formatter_disabled(&self) -> bool { self.formatter.as_ref().map_or(false, |f| f.is_disabled()) }
 
 	pub fn get_formatter_configuration(&self) -> FormatterConfiguration {
 		self.formatter
@@ -296,13 +283,9 @@ impl PartialConfiguration {
 			.unwrap_or_default()
 	}
 
-	pub fn is_linter_disabled(&self) -> bool {
-		self.linter.as_ref().map_or(false, |f| f.is_disabled())
-	}
+	pub fn is_linter_disabled(&self) -> bool { self.linter.as_ref().map_or(false, |f| f.is_disabled()) }
 
-	pub fn get_linter_rules(&self) -> Rules {
-		self.linter.as_ref().map(|f| f.get_rules()).unwrap_or_default()
-	}
+	pub fn get_linter_rules(&self) -> Rules { self.linter.as_ref().map(|f| f.get_rules()).unwrap_or_default() }
 
 	pub fn is_organize_imports_disabled(&self) -> bool {
 		self.organize_imports.as_ref().map_or(false, |f| f.is_disabled())
@@ -313,9 +296,7 @@ impl PartialConfiguration {
 	pub fn is_vcs_enabled(&self) -> bool { !self.is_vcs_disabled() }
 
 	/// Whether Biome should check for `.editorconfig` file
-	pub fn use_editorconfig(&self) -> Option<bool> {
-		self.formatter.as_ref().and_then(|f| f.use_editorconfig)
-	}
+	pub fn use_editorconfig(&self) -> Option<bool> { self.formatter.as_ref().and_then(|f| f.use_editorconfig) }
 }
 
 /// The configuration of the filesystem

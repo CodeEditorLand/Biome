@@ -64,45 +64,30 @@ where
 			)
 		}
 
-		let re_formatted =
-			match self.language.format_node(self.format_language.clone(), &re_parse.syntax()) {
-				Ok(formatted) => formatted,
-				Err(err) => {
-					panic!("failed to format: {}", err);
-				},
-			};
+		let re_formatted = match self.language.format_node(self.format_language.clone(), &re_parse.syntax()) {
+			Ok(formatted) => formatted,
+			Err(err) => {
+				panic!("failed to format: {}", err);
+			},
+		};
 
 		let re_printed = re_formatted.print().unwrap();
 
 		if self.text != re_printed.as_code() {
-			let input_format_element =
-				self.language.format_node(self.format_language.clone(), self.root).unwrap();
+			let input_format_element = self.language.format_node(self.format_language.clone(), self.root).unwrap();
 
 			let pretty_reformat_ir = format!("{}", re_formatted.into_document());
 
 			let pretty_input_ir = format!("{}", input_format_element.into_document());
 
 			// Print a diff of the Formatter IR emitted for the input and the output
-			let diff = similar_asserts::SimpleDiff::from_str(
-				&pretty_input_ir,
-				&pretty_reformat_ir,
-				"input",
-				"output",
-			);
+			let diff = similar_asserts::SimpleDiff::from_str(&pretty_input_ir, &pretty_reformat_ir, "input", "output");
 
 			println!("{diff}");
 
-			similar_asserts::assert_eq!(
-				re_printed.as_code(),
-				self.text,
-				"left is the re-formatted"
-			);
+			similar_asserts::assert_eq!(re_printed.as_code(), self.text, "left is the re-formatted");
 
-			similar_asserts::assert_eq!(
-				pretty_reformat_ir,
-				pretty_input_ir,
-				"left is the re-formatted"
-			);
+			similar_asserts::assert_eq!(pretty_reformat_ir, pretty_input_ir, "left is the re-formatted");
 		}
 	}
 }

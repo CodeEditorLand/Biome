@@ -82,10 +82,7 @@ impl<E:AsDiagnostic> DiagnosticExt for E {
 	fn with_file_path(self, path:impl AsResource) -> Error
 	where
 		Error: From<internal::FilePathDiagnostic<E>>, {
-		Error::from(internal::FilePathDiagnostic {
-			path:path.as_resource().map(Resource::to_owned),
-			source:self,
-		})
+		Error::from(internal::FilePathDiagnostic { path:path.as_resource().map(Resource::to_owned), source:self })
 	}
 
 	fn with_file_span(self, span:impl AsSpan) -> Error
@@ -284,13 +281,9 @@ mod internal {
 			fmt.write_markup(markup!({ self.message })).map_err(|_| std::fmt::Error)
 		}
 
-		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
-			fmt::Display::fmt(&self.message, fmt)
-		}
+		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> { fmt::Display::fmt(&self.message, fmt) }
 
-		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-			self.source.as_diagnostic().advices(visitor)
-		}
+		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> { self.source.as_diagnostic().advices(visitor) }
 
 		fn verbose_advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 			self.source.as_diagnostic().verbose_advices(visitor)
@@ -335,11 +328,7 @@ mod internal {
 				.map_err(|error| io::Error::new(io::ErrorKind::Other, error))
 		}
 
-		fn write_fmt(
-			&mut self,
-			_:&fmt::MarkupElements<'_>,
-			content:std::fmt::Arguments<'_>,
-		) -> io::Result<()> {
+		fn write_fmt(&mut self, _:&fmt::MarkupElements<'_>, content:std::fmt::Arguments<'_>) -> io::Result<()> {
 			self.0
 				.write_fmt(content)
 				.map_err(|error| io::Error::new(io::ErrorKind::Other, error))
@@ -373,13 +362,9 @@ mod internal {
 			self.source.as_diagnostic().description(fmt)
 		}
 
-		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
-			self.source.as_diagnostic().message(fmt)
-		}
+		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> { self.source.as_diagnostic().message(fmt) }
 
-		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-			self.source.as_diagnostic().advices(visitor)
-		}
+		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> { self.source.as_diagnostic().advices(visitor) }
 
 		fn verbose_advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 			self.source.as_diagnostic().verbose_advices(visitor)
@@ -415,13 +400,9 @@ mod internal {
 			self.source.as_diagnostic().description(fmt)
 		}
 
-		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
-			self.source.as_diagnostic().message(fmt)
-		}
+		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> { self.source.as_diagnostic().message(fmt) }
 
-		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-			self.source.as_diagnostic().advices(visitor)
-		}
+		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> { self.source.as_diagnostic().advices(visitor) }
 
 		fn verbose_advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 			self.source.as_diagnostic().verbose_advices(visitor)
@@ -478,13 +459,9 @@ mod internal {
 			self.source.as_diagnostic().description(fmt)
 		}
 
-		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
-			self.source.as_diagnostic().message(fmt)
-		}
+		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> { self.source.as_diagnostic().message(fmt) }
 
-		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-			self.source.as_diagnostic().advices(visitor)
-		}
+		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> { self.source.as_diagnostic().advices(visitor) }
 
 		fn verbose_advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 			self.source.as_diagnostic().verbose_advices(visitor)
@@ -493,11 +470,7 @@ mod internal {
 		fn location(&self) -> Location<'_> {
 			let loc = self.source.as_diagnostic().location();
 
-			Location {
-				resource:loc.resource,
-				span:self.span.or(loc.span),
-				source_code:loc.source_code,
-			}
+			Location { resource:loc.resource, span:self.span.or(loc.span), source_code:loc.source_code }
 		}
 
 		fn tags(&self) -> DiagnosticTags { self.source.as_diagnostic().tags() }
@@ -529,14 +502,11 @@ mod internal {
 			self.source.as_diagnostic().description(fmt)
 		}
 
-		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
-			self.source.as_diagnostic().message(fmt)
-		}
+		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> { self.source.as_diagnostic().message(fmt) }
 
 		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 			if let Some(source_code) = &self.source_code {
-				let mut visitor =
-					FileSourceCodeVisitor { visitor, source_code:source_code.as_deref() };
+				let mut visitor = FileSourceCodeVisitor { visitor, source_code:source_code.as_deref() };
 
 				self.source.as_diagnostic().advices(&mut visitor)
 			} else {
@@ -546,8 +516,7 @@ mod internal {
 
 		fn verbose_advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 			if let Some(source_code) = &self.source_code {
-				let mut visitor =
-					FileSourceCodeVisitor { visitor, source_code:source_code.as_deref() };
+				let mut visitor = FileSourceCodeVisitor { visitor, source_code:source_code.as_deref() };
 
 				self.source.as_diagnostic().verbose_advices(&mut visitor)
 			} else {
@@ -559,9 +528,7 @@ mod internal {
 			let location = self.source.as_diagnostic().location();
 
 			Location {
-				source_code:location
-					.source_code
-					.or_else(|| Some(self.source_code.as_ref()?.as_deref())),
+				source_code:location.source_code.or_else(|| Some(self.source_code.as_ref()?.as_deref())),
 				..location
 			}
 		}
@@ -581,9 +548,7 @@ mod internal {
 			self.visitor.record_log(category, text)
 		}
 
-		fn record_list(&mut self, list:&[&dyn fmt::Display]) -> io::Result<()> {
-			self.visitor.record_list(list)
-		}
+		fn record_list(&mut self, list:&[&dyn fmt::Display]) -> io::Result<()> { self.visitor.record_list(list) }
 
 		fn record_frame(&mut self, location:Location<'_>) -> io::Result<()> {
 			self.visitor.record_frame(Location {
@@ -592,21 +557,13 @@ mod internal {
 			})
 		}
 
-		fn record_diff(&mut self, diff:&TextEdit) -> io::Result<()> {
-			self.visitor.record_diff(diff)
-		}
+		fn record_diff(&mut self, diff:&TextEdit) -> io::Result<()> { self.visitor.record_diff(diff) }
 
-		fn record_backtrace(
-			&mut self,
-			title:&dyn fmt::Display,
-			backtrace:&Backtrace,
-		) -> io::Result<()> {
+		fn record_backtrace(&mut self, title:&dyn fmt::Display, backtrace:&Backtrace) -> io::Result<()> {
 			self.visitor.record_backtrace(title, backtrace)
 		}
 
-		fn record_command(&mut self, command:&str) -> io::Result<()> {
-			self.visitor.record_command(command)
-		}
+		fn record_command(&mut self, command:&str) -> io::Result<()> { self.visitor.record_command(command) }
 
 		fn record_group(&mut self, title:&dyn fmt::Display, advice:&dyn Advices) -> io::Result<()> {
 			self.visitor.record_group(title, advice)
@@ -638,13 +595,9 @@ mod internal {
 			self.source.as_diagnostic().description(fmt)
 		}
 
-		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
-			self.source.as_diagnostic().message(fmt)
-		}
+		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> { self.source.as_diagnostic().message(fmt) }
 
-		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-			self.source.as_diagnostic().advices(visitor)
-		}
+		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> { self.source.as_diagnostic().advices(visitor) }
 
 		fn verbose_advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 			self.source.as_diagnostic().verbose_advices(visitor)
@@ -680,13 +633,9 @@ mod internal {
 			self.source.as_diagnostic().description(fmt)
 		}
 
-		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> {
-			self.source.as_diagnostic().message(fmt)
-		}
+		fn message(&self, fmt:&mut fmt::Formatter<'_>) -> io::Result<()> { self.source.as_diagnostic().message(fmt) }
 
-		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-			self.source.as_diagnostic().advices(visitor)
-		}
+		fn advices(&self, visitor:&mut dyn Visit) -> io::Result<()> { self.source.as_diagnostic().advices(visitor) }
 
 		fn verbose_advices(&self, visitor:&mut dyn Visit) -> io::Result<()> {
 			self.source.as_diagnostic().verbose_advices(visitor)

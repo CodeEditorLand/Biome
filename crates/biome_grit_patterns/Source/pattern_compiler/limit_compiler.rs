@@ -1,26 +1,23 @@
-use super::{compilation_context::NodeCompilationContext, PatternCompiler};
-use crate::{grit_context::GritQueryContext, CompileError};
 use biome_grit_syntax::GritPatternLimit;
 use grit_pattern_matcher::pattern::Limit;
+
+use super::{PatternCompiler, compilation_context::NodeCompilationContext};
+use crate::{CompileError, grit_context::GritQueryContext};
 
 pub(crate) struct LimitCompiler;
 
 impl LimitCompiler {
-    pub(crate) fn from_node(
-        node: &GritPatternLimit,
-        context: &mut NodeCompilationContext,
-    ) -> Result<Limit<GritQueryContext>, CompileError> {
-        let body = PatternCompiler::from_node(&node.pattern()?, context)?;
+	pub(crate) fn from_node(
+		node:&GritPatternLimit,
+		context:&mut NodeCompilationContext,
+	) -> Result<Limit<GritQueryContext>, CompileError> {
+		let body = PatternCompiler::from_node(&node.pattern()?, context)?;
 
-        let limit = node
-            .limit()?
-            .value_token()?
-            .text_trimmed()
-            .parse::<usize>()
-            .map_err(|err| {
-                CompileError::LiteralOutOfRange(format!("Error parsing limit: {err}"))
-            })?;
+		let limit =
+			node.limit()?.value_token()?.text_trimmed().parse::<usize>().map_err(|err| {
+				CompileError::LiteralOutOfRange(format!("Error parsing limit: {err}"))
+			})?;
 
-        Ok(Limit::new(body, limit))
-    }
+		Ok(Limit::new(body, limit))
+	}
 }

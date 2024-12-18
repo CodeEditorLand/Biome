@@ -1,69 +1,67 @@
-use crate::services::semantic::SemanticServices;
-use biome_analyze::{context::RuleContext, declare_lint_rule, Rule, RuleDiagnostic, RuleSource};
+use biome_analyze::{Rule, RuleDiagnostic, RuleSource, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_js_syntax::TextRange;
 
+use crate::services::semantic::SemanticServices;
+
 declare_lint_rule! {
-    /// Disallow the use of `arguments`.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```js,expect_diagnostic
-    /// function f() {
-    ///    console.log(arguments);
-    /// }
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```cjs
-    /// function f() {
-    ///     let arguments = 1;
-    ///     console.log(arguments);
-    /// }
-    /// ```
-    pub NoArguments {
-        version: "1.0.0",
-        name: "noArguments",
-        language: "js",
-        sources: &[RuleSource::Eslint("prefer-rest-params")],
-        recommended: true,
-    }
+	/// Disallow the use of `arguments`.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```js,expect_diagnostic
+	/// function f() {
+	///    console.log(arguments);
+	/// }
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```cjs
+	/// function f() {
+	///     let arguments = 1;
+	///     console.log(arguments);
+	/// }
+	/// ```
+	pub NoArguments {
+		version: "1.0.0",
+		name: "noArguments",
+		language: "js",
+		sources: &[RuleSource::Eslint("prefer-rest-params")],
+		recommended: true,
+	}
 }
 
 impl Rule for NoArguments {
-    type Query = SemanticServices;
+	type Options = ();
+	type Query = SemanticServices;
+	type Signals = Box<[Self::State]>;
+	type State = TextRange;
 
-    type State = TextRange;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let model = ctx.query();
 
-    type Signals = Box<[Self::State]>;
+		let mut found_arguments = vec![];
 
-    type Options = ();
+		for unresolved_reference in model.all_unresolved_references() {
+			let name = unresolved_reference.syntax().text_trimmed();
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let model = ctx.query();
+			if name == "arguments" {
+				found_arguments.push(unresolved_reference.range());
+			}
+		}
 
-        let mut found_arguments = vec![];
+		found_arguments.into_boxed_slice()
+	}
 
-        for unresolved_reference in model.all_unresolved_references() {
-            let name = unresolved_reference.syntax().text_trimmed();
-
-            if name == "arguments" {
-                found_arguments.push(unresolved_reference.range());
-            }
-        }
-
-        found_arguments.into_boxed_slice()
-    }
-
-    fn diagnostic(_: &RuleContext<Self>, range: &Self::State) -> Option<RuleDiagnostic> {
-        Some(RuleDiagnostic::new(rule_category!(),
+	fn diagnostic(_:&RuleContext<Self>, range:&Self::State) -> Option<RuleDiagnostic> {
+		Some(RuleDiagnostic::new(rule_category!(),
             range,
             markup! {
                 "Use the "<Emphasis>"rest parameters"</Emphasis>" instead of "<Emphasis>"arguments"</Emphasis>"."
             },
         ).note(markup! {<Emphasis>"arguments"</Emphasis>" does not have "<Emphasis>"Array.prototype"</Emphasis>" methods and can be inconvenient to use."}))
-    }
+	}
 }

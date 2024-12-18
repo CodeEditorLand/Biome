@@ -133,9 +133,7 @@ pub struct SignalEntry<'phase, L:Language> {
 
 // SignalEntry is ordered based on the starting point of its `text_range`
 impl<'phase, L:Language> Ord for SignalEntry<'phase, L> {
-	fn cmp(&self, other:&Self) -> Ordering {
-		other.text_range.start().cmp(&self.text_range.start())
-	}
+	fn cmp(&self, other:&Self) -> Ordering { other.text_range.start().cmp(&self.text_range.start()) }
 }
 
 impl<'phase, L:Language> PartialOrd for SignalEntry<'phase, L> {
@@ -266,12 +264,7 @@ mod tests {
 
 			builder.finish_node();
 
-			builder.token_with_trivia(
-				RawLanguageKind::SEMICOLON_TOKEN,
-				";\n",
-				&[],
-				&[TriviaPiece::newline(1)],
-			);
+			builder.token_with_trivia(RawLanguageKind::SEMICOLON_TOKEN, ";\n", &[], &[TriviaPiece::newline(1)]);
 
 			builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
 
@@ -284,12 +277,7 @@ mod tests {
 
 			builder.finish_node();
 
-			builder.token_with_trivia(
-				RawLanguageKind::SEMICOLON_TOKEN,
-				";\n",
-				&[],
-				&[TriviaPiece::newline(1)],
-			);
+			builder.token_with_trivia(RawLanguageKind::SEMICOLON_TOKEN, ";\n", &[], &[TriviaPiece::newline(1)]);
 
 			builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
 
@@ -302,12 +290,7 @@ mod tests {
 
 			builder.finish_node();
 
-			builder.token_with_trivia(
-				RawLanguageKind::SEMICOLON_TOKEN,
-				";\n",
-				&[],
-				&[TriviaPiece::newline(1)],
-			);
+			builder.token_with_trivia(RawLanguageKind::SEMICOLON_TOKEN, ";\n", &[], &[TriviaPiece::newline(1)]);
 
 			builder.start_node(RawLanguageKind::LITERAL_EXPRESSION);
 
@@ -320,12 +303,7 @@ mod tests {
 
 			builder.finish_node();
 
-			builder.token_with_trivia(
-				RawLanguageKind::SEMICOLON_TOKEN,
-				";\n",
-				&[],
-				&[TriviaPiece::newline(1)],
-			);
+			builder.token_with_trivia(RawLanguageKind::SEMICOLON_TOKEN, ";\n", &[], &[TriviaPiece::newline(1)]);
 
 			builder.token_with_trivia(
 				RawLanguageKind::SEMICOLON_TOKEN,
@@ -357,9 +335,7 @@ mod tests {
 			ControlFlow::Continue(())
 		};
 
-		fn parse_suppression_comment(
-			comment:&'_ str,
-		) -> Vec<Result<SuppressionKind<'_>, Infallible>> {
+		fn parse_suppression_comment(comment:&'_ str) -> Vec<Result<SuppressionKind<'_>, Infallible>> {
 			comment
 				.trim_start_matches("//")
 				.split(' ')

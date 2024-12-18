@@ -1,46 +1,43 @@
-use biome_analyze::{context::RuleContext, declare_syntax_rule, Ast, Rule, RuleDiagnostic};
+use biome_analyze::{Ast, Rule, RuleDiagnostic, context::RuleContext, declare_syntax_rule};
 use biome_js_syntax::{JsVariableDeclarator, TextRange, TsDefiniteVariableAnnotation};
 use biome_rowan::AstNode;
 
 declare_syntax_rule! {
-    /// Disallow initializing a variable with a definite assertion to prevent `SyntaxError`.
-    ///
-    /// ## Examples
-    ///
-    /// ```ts
-    /// let foo!: string = "bar";
-    /// ```
-    pub NoInitializerWithDefinite {
-        version: "1.4.0",
-        name: "noInitializerWithDefinite",
-        language: "js",
-    }
+	/// Disallow initializing a variable with a definite assertion to prevent `SyntaxError`.
+	///
+	/// ## Examples
+	///
+	/// ```ts
+	/// let foo!: string = "bar";
+	/// ```
+	pub NoInitializerWithDefinite {
+		version: "1.4.0",
+		name: "noInitializerWithDefinite",
+		language: "js",
+	}
 }
 
 impl Rule for NoInitializerWithDefinite {
-    type Query = Ast<TsDefiniteVariableAnnotation>;
+	type Options = ();
+	type Query = Ast<TsDefiniteVariableAnnotation>;
+	type Signals = Option<Self::State>;
+	type State = TextRange;
 
-    type State = TextRange;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		node.parent::<JsVariableDeclarator>()
+			.and_then(|var_declarator| var_declarator.initializer())
+			.map(|init| init.into_syntax().text_range())
+	}
 
-    type Options = ();
+	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+		let diagnostic = RuleDiagnostic::new(
+			rule_category!(),
+			state,
+			"Declarations with initializers cannot also have definite assignment assertions.",
+		);
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let node = ctx.query();
-
-        node.parent::<JsVariableDeclarator>()
-            .and_then(|var_declarator| var_declarator.initializer())
-            .map(|init| init.into_syntax().text_range())
-    }
-
-    fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-        let diagnostic = RuleDiagnostic::new(
-            rule_category!(),
-            state,
-            "Declarations with initializers cannot also have definite assignment assertions.",
-        );
-
-        Some(diagnostic)
-    }
+		Some(diagnostic)
+	}
 }

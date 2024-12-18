@@ -1,120 +1,118 @@
 use std::rc::Rc;
 
 use biome_graphql_syntax::{
-    GraphqlDirective, GraphqlDirectiveDefinition, GraphqlFragmentDefinition, GraphqlFragmentSpread,
-    GraphqlNameBinding, GraphqlNameReference, GraphqlSyntaxNode,
+	GraphqlDirective,
+	GraphqlDirectiveDefinition,
+	GraphqlFragmentDefinition,
+	GraphqlFragmentSpread,
+	GraphqlNameBinding,
+	GraphqlNameReference,
+	GraphqlSyntaxNode,
 };
 use biome_rowan::{AstNode, SyntaxNodeCast, TextRange};
 
-use crate::SemanticModel;
-
 use super::{
-    model::{SemanticIndex, SemanticModelData},
-    reference::Reference,
+	model::{SemanticIndex, SemanticModelData},
+	reference::Reference,
 };
+use crate::SemanticModel;
 
 /// Internal type with all the semantic data of a specific binding
 #[derive(Debug)]
 pub(crate) struct SemanticModelBinding {
-    pub index: SemanticIndex,
-    pub range: TextRange,
+	pub index:SemanticIndex,
+	pub range:TextRange,
 }
 
 /// Provides access to all semantic data of a specific binding.
 pub struct Binding {
-    pub(crate) data: Rc<SemanticModelData>,
-    pub(crate) index: SemanticIndex,
+	pub(crate) data:Rc<SemanticModelData>,
+	pub(crate) index:SemanticIndex,
 }
 
 impl std::fmt::Debug for Binding {
-    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        f.debug_struct("Binding").field("id", &self.index).finish()
-    }
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+		f.debug_struct("Binding").field("id", &self.index).finish()
+	}
 }
 
 impl Binding {
-    /// Returns the syntax node associated with this binding.
-    pub fn syntax(&self) -> &GraphqlSyntaxNode {
-        let binding = &self.data.bindings[self.index.0];
-        &self.data.node_by_range[&binding.range]
-    }
+	/// Returns the syntax node associated with this binding.
+	pub fn syntax(&self) -> &GraphqlSyntaxNode {
+		let binding = &self.data.bindings[self.index.0];
+		&self.data.node_by_range[&binding.range]
+	}
 
-    /// Returns the typed AST node associated with this binding.
-    pub fn tree(&self) -> GraphqlNameBinding {
-        let node = self.syntax();
+	/// Returns the typed AST node associated with this binding.
+	pub fn tree(&self) -> GraphqlNameBinding {
+		let node = self.syntax();
 
-        let binding = GraphqlNameBinding::cast_ref(node);
+		let binding = GraphqlNameBinding::cast_ref(node);
 
-        debug_assert!(binding.is_some());
+		debug_assert!(binding.is_some());
 
-        binding.unwrap()
-    }
+		binding.unwrap()
+	}
 
-    /// Returns an iterator to all references of this binding.
-    pub fn all_references(&self) -> Vec<Reference> {
-        self.data.bindings_to_references[self.index.0]
-            .iter()
-            .map(|&x| Reference {
-                data: self.data.clone(),
-                index: x.into(),
-            })
-            .collect::<Vec<_>>()
-    }
+	/// Returns an iterator to all references of this binding.
+	pub fn all_references(&self) -> Vec<Reference> {
+		self.data.bindings_to_references[self.index.0]
+			.iter()
+			.map(|&x| Reference { data:self.data.clone(), index:x.into() })
+			.collect::<Vec<_>>()
+	}
 }
 
 pub trait ReferenceExtensions {
-    fn all_references(&self, model: &SemanticModel) -> Vec<Reference>;
+	fn all_references(&self, model:&SemanticModel) -> Vec<Reference>;
 }
 
 impl ReferenceExtensions for GraphqlNameBinding {
-    fn all_references(&self, model: &SemanticModel) -> Vec<Reference> {
-        model.as_binding(self).all_references()
-    }
+	fn all_references(&self, model:&SemanticModel) -> Vec<Reference> {
+		model.as_binding(self).all_references()
+	}
 }
 
 pub trait IsBindingAstNode {
-    type ReferenceAstNode;
+	type ReferenceAstNode;
 
-    fn all_reference_nodes(&self, model: &SemanticModel) -> Vec<Self::ReferenceAstNode>;
+	fn all_reference_nodes(&self, model:&SemanticModel) -> Vec<Self::ReferenceAstNode>;
 }
 
 impl IsBindingAstNode for GraphqlNameBinding {
-    type ReferenceAstNode = GraphqlNameReference;
+	type ReferenceAstNode = GraphqlNameReference;
 
-    fn all_reference_nodes(&self, model: &SemanticModel) -> Vec<Self::ReferenceAstNode> {
-        self.all_references(model)
-            .iter()
-            .map(|r| r.tree())
-            .collect()
-    }
+	fn all_reference_nodes(&self, model:&SemanticModel) -> Vec<Self::ReferenceAstNode> {
+		self.all_references(model).iter().map(|r| r.tree()).collect()
+	}
 }
 
 impl IsBindingAstNode for GraphqlDirectiveDefinition {
-    type ReferenceAstNode = GraphqlDirective;
+	type ReferenceAstNode = GraphqlDirective;
 
-    fn all_reference_nodes(&self, model: &SemanticModel) -> Vec<Self::ReferenceAstNode> {
-        let Ok(name) = self.name() else {
-            return vec![];
-        };
+	fn all_reference_nodes(&self, model:&SemanticModel) -> Vec<Self::ReferenceAstNode> {
+		let Ok(name) = self.name() else {
+			return vec![];
+		};
 
-        name.all_reference_nodes(model)
-            .into_iter()
-            .filter_map(|r| r.syntax().parent()?.cast())
-            .collect()
-    }
+		name.all_reference_nodes(model)
+			.into_iter()
+			.filter_map(|r| r.syntax().parent()?.cast())
+			.collect()
+	}
 }
 
 impl IsBindingAstNode for GraphqlFragmentDefinition {
-    type ReferenceAstNode = GraphqlFragmentSpread;
+	type ReferenceAstNode = GraphqlFragmentSpread;
 
-    fn all_reference_nodes(&self, model: &SemanticModel) -> Vec<Self::ReferenceAstNode> {
-        let Ok(name) = self.name() else {
-            return vec![];
-        };
+	fn all_reference_nodes(&self, model:&SemanticModel) -> Vec<Self::ReferenceAstNode> {
+		let Ok(name) = self.name() else {
+			return vec![];
+		};
 
-        name.all_reference_nodes(model)
-            .into_iter()
-            .filter_map(|r| r.syntax().parent()?.cast())
-            .collect()
-    }
+		name.all_reference_nodes(model)
+			.into_iter()
+			.filter_map(|r| r.syntax().parent()?.cast())
+			.collect()
+	}
 }

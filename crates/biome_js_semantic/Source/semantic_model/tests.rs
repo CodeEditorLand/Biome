@@ -1,358 +1,356 @@
 #[cfg(test)]
 mod test {
-    use crate::{
-        semantic_model, BindingExtensions, CanBeImportedExported, SemanticModelOptions,
-        SemanticScopeExtensions,
-    };
+	use biome_js_parser::JsParserOptions;
+	use biome_js_syntax::{
+		JsFileSource,
+		JsIdentifierAssignment,
+		JsIdentifierBinding,
+		JsReferenceIdentifier,
+		JsSyntaxKind,
+		TsIdentifierBinding,
+	};
+	use biome_rowan::{AstNode, SyntaxNodeCast};
 
-    use biome_js_parser::JsParserOptions;
+	use crate::{
+		BindingExtensions,
+		CanBeImportedExported,
+		SemanticModelOptions,
+		SemanticScopeExtensions,
+		semantic_model,
+	};
 
-    use biome_js_syntax::{
-        JsFileSource, JsIdentifierAssignment, JsIdentifierBinding, JsReferenceIdentifier,
-        JsSyntaxKind, TsIdentifierBinding,
-    };
+	#[test]
+	pub fn ok_semantic_model() {
+		let r = biome_js_parser::parse(
+			"function f(){let a = arguments[0]; let b = a + 1; b = 2; console.log(b)}",
+			JsFileSource::js_module(),
+			JsParserOptions::default(),
+		);
 
-    use biome_rowan::{AstNode, SyntaxNodeCast};
+		let model = semantic_model(&r.tree(), SemanticModelOptions::default());
 
-    #[test]
-    pub fn ok_semantic_model() {
-        let r = biome_js_parser::parse(
-            "function f(){let a = arguments[0]; let b = a + 1; b = 2; console.log(b)}",
-            JsFileSource::js_module(),
-            JsParserOptions::default(),
-        );
+		let arguments_reference = r
+			.syntax()
+			.descendants()
+			.filter_map(|x| x.cast::<JsReferenceIdentifier>())
+			.find(|x| x.text() == "arguments")
+			.unwrap();
 
-        let model = semantic_model(&r.tree(), SemanticModelOptions::default());
+		let b_from_b_equals_2 = r
+			.syntax()
+			.descendants()
+			.filter_map(|x| x.cast::<JsIdentifierAssignment>())
+			.find(|x| x.text() == "b")
+			.unwrap();
 
-        let arguments_reference = r
-            .syntax()
-            .descendants()
-            .filter_map(|x| x.cast::<JsReferenceIdentifier>())
-            .find(|x| x.text() == "arguments")
-            .unwrap();
+		// Scope hierarchy  navigation
 
-        let b_from_b_equals_2 = r
-            .syntax()
-            .descendants()
-            .filter_map(|x| x.cast::<JsIdentifierAssignment>())
-            .find(|x| x.text() == "b")
-            .unwrap();
+		let block_scope = arguments_reference.scope(&model);
 
-        // Scope hierarchy  navigation
+		let func_scope = block_scope.parent().unwrap();
 
-        let block_scope = arguments_reference.scope(&model);
+		let global_scope = func_scope.parent().unwrap();
 
-        let func_scope = block_scope.parent().unwrap();
+		assert!(global_scope.parent().is_none());
 
-        let global_scope = func_scope.parent().unwrap();
+		assert_eq!(global_scope, model.global_scope());
 
-        assert!(global_scope.parent().is_none());
+		assert_eq!(block_scope.ancestors().count(), 3);
 
-        assert_eq!(global_scope, model.global_scope());
+		// Scope equality
 
-        assert_eq!(block_scope.ancestors().count(), 3);
+		assert_eq!(block_scope, block_scope);
 
-        // Scope equality
+		assert_eq!(func_scope, func_scope);
 
-        assert_eq!(block_scope, block_scope);
+		assert_eq!(global_scope, global_scope);
 
-        assert_eq!(func_scope, func_scope);
+		assert_ne!(block_scope, func_scope);
 
-        assert_eq!(global_scope, global_scope);
+		assert_ne!(block_scope, global_scope);
 
-        assert_ne!(block_scope, func_scope);
+		// Bindings
 
-        assert_ne!(block_scope, global_scope);
+		// block scope must have two bindings: a and b
+		let bindings = block_scope.bindings().collect::<Vec<_>>();
 
-        // Bindings
+		match bindings.as_slice() {
+			[a, b] => {
+				assert_eq!("a", a.syntax().text_trimmed());
 
-        // block scope must have two bindings: a and b
-        let bindings = block_scope.bindings().collect::<Vec<_>>();
+				assert_eq!("b", b.syntax().text_trimmed());
+			},
 
-        match bindings.as_slice() {
-            [a, b] => {
-                assert_eq!("a", a.syntax().text_trimmed());
+			_ => {
+				panic!("wrong number of bindings");
+			},
+		}
 
-                assert_eq!("b", b.syntax().text_trimmed());
-            }
+		// function scope must have zero bindings
+		// "f" was actually hoisted to the global scope
+		let mut bindings = func_scope.bindings();
 
-            _ => {
-                panic!("wrong number of bindings");
-            }
-        }
+		assert!(bindings.next().is_none());
 
-        // function scope must have zero bindings
-        // "f" was actually hoisted to the global scope
-        let mut bindings = func_scope.bindings();
+		assert!(global_scope.get_binding("f").is_some());
 
-        assert!(bindings.next().is_none());
+		// Binding by name
 
-        assert!(global_scope.get_binding("f").is_some());
+		let binding = block_scope.get_binding("arguments");
 
-        // Binding by name
+		assert!(binding.is_none());
 
-        let binding = block_scope.get_binding("arguments");
+		let binding = block_scope.get_binding("a").unwrap();
 
-        assert!(binding.is_none());
+		assert_eq!("a", binding.syntax().text_trimmed());
 
-        let binding = block_scope.get_binding("a").unwrap();
+		// Declaration (from Read reference)
 
-        assert_eq!("a", binding.syntax().text_trimmed());
+		let arguments_declaration = arguments_reference.binding(&model);
 
-        // Declaration (from Read reference)
+		assert!(arguments_declaration.is_none());
 
-        let arguments_declaration = arguments_reference.binding(&model);
+		let a_from_a_plus_1 = r
+			.syntax()
+			.descendants()
+			.filter_map(|x| x.cast::<JsReferenceIdentifier>())
+			.find(|x| x.text() == "a")
+			.unwrap();
 
-        assert!(arguments_declaration.is_none());
+		let a_declaration = a_from_a_plus_1.binding(&model).unwrap();
 
-        let a_from_a_plus_1 = r
-            .syntax()
-            .descendants()
-            .filter_map(|x| x.cast::<JsReferenceIdentifier>())
-            .find(|x| x.text() == "a")
-            .unwrap();
+		assert_eq!("a", a_declaration.syntax().text_trimmed());
 
-        let a_declaration = a_from_a_plus_1.binding(&model).unwrap();
+		// Declarations (from Write reference)
 
-        assert_eq!("a", a_declaration.syntax().text_trimmed());
+		let b_declaration = b_from_b_equals_2.binding(&model).unwrap();
 
-        // Declarations (from Write reference)
+		assert_eq!("b", b_declaration.syntax().text_trimmed());
 
-        let b_declaration = b_from_b_equals_2.binding(&model).unwrap();
+		// All references
 
-        assert_eq!("b", b_declaration.syntax().text_trimmed());
+		assert_eq!(1, a_declaration.all_references().count());
 
-        // All references
+		assert_eq!(1, a_declaration.all_reads().count());
 
-        assert_eq!(1, a_declaration.all_references().count());
+		assert!(a_declaration.all_reads().all(|r| r.is_read()));
 
-        assert_eq!(1, a_declaration.all_reads().count());
+		assert!(a_declaration.all_writes().all(|r| r.is_write()));
 
-        assert!(a_declaration.all_reads().all(|r| r.is_read()));
+		assert_eq!(2, b_declaration.all_references().count());
 
-        assert!(a_declaration.all_writes().all(|r| r.is_write()));
+		assert_eq!(1, b_declaration.all_reads().count());
 
-        assert_eq!(2, b_declaration.all_references().count());
+		assert_eq!(1, b_declaration.all_writes().count());
 
-        assert_eq!(1, b_declaration.all_reads().count());
+		assert!(b_declaration.all_reads().all(|r| r.is_read()));
 
-        assert_eq!(1, b_declaration.all_writes().count());
+		assert!(b_declaration.all_writes().all(|r| r.is_write()));
+	}
 
-        assert!(b_declaration.all_reads().all(|r| r.is_read()));
+	#[test]
+	pub fn ok_semantic_model_function_scope() {
+		let r = biome_js_parser::parse(
+			"function f() {} function g() {}",
+			JsFileSource::js_module(),
+			JsParserOptions::default(),
+		);
 
-        assert!(b_declaration.all_writes().all(|r| r.is_write()));
-    }
+		let model = semantic_model(&r.tree(), SemanticModelOptions::default());
 
-    #[test]
-    pub fn ok_semantic_model_function_scope() {
-        let r = biome_js_parser::parse(
-            "function f() {} function g() {}",
-            JsFileSource::js_module(),
-            JsParserOptions::default(),
-        );
+		let function_f = r
+			.syntax()
+			.descendants()
+			.filter_map(|x| x.cast::<JsIdentifierBinding>())
+			.find(|x| x.text() == "f")
+			.unwrap();
 
-        let model = semantic_model(&r.tree(), SemanticModelOptions::default());
+		let function_g = r
+			.syntax()
+			.descendants()
+			.filter_map(|x| x.cast::<JsIdentifierBinding>())
+			.find(|x| x.text() == "g")
+			.unwrap();
 
-        let function_f = r
-            .syntax()
-            .descendants()
-            .filter_map(|x| x.cast::<JsIdentifierBinding>())
-            .find(|x| x.text() == "f")
-            .unwrap();
+		// "f" and "g" tokens are not in the same scope, because
+		// the keyword "function" starts a new scope
+		// but they are both hoisted to the same scope
+		assert_ne!(function_f.scope(&model), function_g.scope(&model));
 
-        let function_g = r
-            .syntax()
-            .descendants()
-            .filter_map(|x| x.cast::<JsIdentifierBinding>())
-            .find(|x| x.text() == "g")
-            .unwrap();
+		assert_eq!(function_f.scope_hoisted_to(&model), function_g.scope_hoisted_to(&model));
 
-        // "f" and "g" tokens are not in the same scope, because
-        // the keyword "function" starts a new scope
-        // but they are both hoisted to the same scope
-        assert_ne!(function_f.scope(&model), function_g.scope(&model));
+		// they are hoisted to the global scope
+		let global_scope = model.global_scope();
 
-        assert_eq!(
-            function_f.scope_hoisted_to(&model),
-            function_g.scope_hoisted_to(&model)
-        );
+		assert_eq!(function_f.scope_hoisted_to(&model).unwrap(), global_scope);
 
-        // they are hoisted to the global scope
-        let global_scope = model.global_scope();
+		assert_eq!(function_g.scope_hoisted_to(&model).unwrap(), global_scope);
 
-        assert_eq!(function_f.scope_hoisted_to(&model).unwrap(), global_scope);
+		// And we can find their binding inside the global scope
+		assert!(global_scope.get_binding("g").is_some());
 
-        assert_eq!(function_g.scope_hoisted_to(&model).unwrap(), global_scope);
+		assert!(global_scope.get_binding("f").is_some());
+	}
 
-        // And we can find their binding inside the global scope
-        assert!(global_scope.get_binding("g").is_some());
+	/// Finds the last time a token named "name" is used and see if its node is
+	/// marked as exported
+	fn assert_is_exported(is_exported:bool, name:&str, code:&str) {
+		let r = biome_js_parser::parse(code, JsFileSource::tsx(), JsParserOptions::default());
 
-        assert!(global_scope.get_binding("f").is_some());
-    }
+		let model = semantic_model(&r.tree(), SemanticModelOptions::default());
 
-    /// Finds the last time a token named "name" is used and see if its node is marked as exported
-    fn assert_is_exported(is_exported: bool, name: &str, code: &str) {
-        let r = biome_js_parser::parse(code, JsFileSource::tsx(), JsParserOptions::default());
+		let node = r.syntax().descendants().filter(|x| x.text_trimmed() == name).last().unwrap();
 
-        let model = semantic_model(&r.tree(), SemanticModelOptions::default());
+		match node.kind() {
+			JsSyntaxKind::JS_IDENTIFIER_BINDING => {
+				let binding = JsIdentifierBinding::cast(node).unwrap();
+				// These do the same thing, but with different APIs
+				assert!(is_exported == model.is_exported(&binding), "at \"{code}\"");
 
-        let node = r
-            .syntax()
-            .descendants()
-            .filter(|x| x.text_trimmed() == name)
-            .last()
-            .unwrap();
+				assert!(is_exported == binding.is_exported(&model), "at \"{code}\"");
+			},
 
-        match node.kind() {
-            JsSyntaxKind::JS_IDENTIFIER_BINDING => {
-                let binding = JsIdentifierBinding::cast(node).unwrap();
-                // These do the same thing, but with different APIs
-                assert!(is_exported == model.is_exported(&binding), "at \"{code}\"");
+			JsSyntaxKind::TS_IDENTIFIER_BINDING => {
+				let binding = TsIdentifierBinding::cast(node).unwrap();
+				// These do the same thing, but with different APIs
+				assert!(is_exported == model.is_exported(&binding), "at \"{code}\"");
 
-                assert!(is_exported == binding.is_exported(&model), "at \"{code}\"");
-            }
+				assert!(is_exported == binding.is_exported(&model), "at \"{code}\"");
+			},
 
-            JsSyntaxKind::TS_IDENTIFIER_BINDING => {
-                let binding = TsIdentifierBinding::cast(node).unwrap();
-                // These do the same thing, but with different APIs
-                assert!(is_exported == model.is_exported(&binding), "at \"{code}\"");
+			JsSyntaxKind::JS_REFERENCE_IDENTIFIER => {
+				// Do nothing.
+			},
 
-                assert!(is_exported == binding.is_exported(&model), "at \"{code}\"");
-            }
+			x => {
+				panic!("This node cannot be exported! {x:?}");
+			},
+		};
+	}
 
-            JsSyntaxKind::JS_REFERENCE_IDENTIFIER => {
-                // Do nothing.
-            }
+	#[test]
+	pub fn ok_semantic_model_is_exported() {
+		// Variables
+		assert_is_exported(false, "A", "const A = 1");
 
-            x => {
-                panic!("This node cannot be exported! {x:?}");
-            }
-        };
-    }
+		assert_is_exported(true, "A", "export const A = 1");
 
-    #[test]
-    pub fn ok_semantic_model_is_exported() {
-        // Variables
-        assert_is_exported(false, "A", "const A = 1");
+		assert_is_exported(true, "A", "const A = 1; export default A");
 
-        assert_is_exported(true, "A", "export const A = 1");
+		assert_is_exported(true, "A", "const A = 1; export {A}");
 
-        assert_is_exported(true, "A", "const A = 1; export default A");
+		assert_is_exported(false, "A", "const A = 1; export {type A}");
 
-        assert_is_exported(true, "A", "const A = 1; export {A}");
+		assert_is_exported(false, "A", "const A = 1; export type {A}");
 
-        assert_is_exported(false, "A", "const A = 1; export {type A}");
+		// Functions
+		assert_is_exported(false, "f", "function f() {}");
 
-        assert_is_exported(false, "A", "const A = 1; export type {A}");
+		assert_is_exported(true, "f", "export function f() {}");
 
-        // Functions
-        assert_is_exported(false, "f", "function f() {}");
+		assert_is_exported(true, "f", "export default function f() {}");
 
-        assert_is_exported(true, "f", "export function f() {}");
+		assert_is_exported(true, "f", "function f() {} export default f");
 
-        assert_is_exported(true, "f", "export default function f() {}");
+		assert_is_exported(true, "f", "function f() {} export {f}");
 
-        assert_is_exported(true, "f", "function f() {} export default f");
+		assert_is_exported(false, "f", "function f() {} export {type f}");
 
-        assert_is_exported(true, "f", "function f() {} export {f}");
+		assert_is_exported(false, "f", "function f() {} export type {f}");
 
-        assert_is_exported(false, "f", "function f() {} export {type f}");
+		assert_is_exported(true, "f", "function f() {} export {f as g}");
 
-        assert_is_exported(false, "f", "function f() {} export type {f}");
+		// Classes
+		assert_is_exported(false, "A", "class A{}");
 
-        assert_is_exported(true, "f", "function f() {} export {f as g}");
+		assert_is_exported(true, "A", "export class A{}");
 
-        // Classes
-        assert_is_exported(false, "A", "class A{}");
+		assert_is_exported(true, "A", "export default class A{}");
 
-        assert_is_exported(true, "A", "export class A{}");
+		assert_is_exported(true, "A", "class A{} export default A");
 
-        assert_is_exported(true, "A", "export default class A{}");
+		assert_is_exported(true, "A", "class A{} export {A}");
 
-        assert_is_exported(true, "A", "class A{} export default A");
+		assert_is_exported(true, "A", "class A{} export {type A}");
 
-        assert_is_exported(true, "A", "class A{} export {A}");
+		assert_is_exported(true, "A", "class A{} export {A as B}");
 
-        assert_is_exported(true, "A", "class A{} export {type A}");
+		assert_is_exported(true, "A", "class A{} export {type A as B}");
 
-        assert_is_exported(true, "A", "class A{} export {A as B}");
+		// Interfaces
+		assert_is_exported(false, "A", "interface A{}");
 
-        assert_is_exported(true, "A", "class A{} export {type A as B}");
+		assert_is_exported(true, "A", "export interface A{}");
 
-        // Interfaces
-        assert_is_exported(false, "A", "interface A{}");
+		assert_is_exported(true, "A", "export default interface A{}");
 
-        assert_is_exported(true, "A", "export interface A{}");
+		assert_is_exported(true, "A", "interface A{} export default A");
 
-        assert_is_exported(true, "A", "export default interface A{}");
+		assert_is_exported(true, "A", "interface A{} export {A}");
 
-        assert_is_exported(true, "A", "interface A{} export default A");
+		assert_is_exported(true, "A", "interface A{} export {type A}");
 
-        assert_is_exported(true, "A", "interface A{} export {A}");
+		assert_is_exported(true, "A", "interface A{} export type {A}");
 
-        assert_is_exported(true, "A", "interface A{} export {type A}");
+		assert_is_exported(true, "A", "interface A{} export {A as B}");
 
-        assert_is_exported(true, "A", "interface A{} export type {A}");
+		assert_is_exported(true, "A", "interface A{} export {type A as B}");
 
-        assert_is_exported(true, "A", "interface A{} export {A as B}");
+		// Type Aliases
+		assert_is_exported(false, "A", "type A = number;");
 
-        assert_is_exported(true, "A", "interface A{} export {type A as B}");
+		assert_is_exported(true, "A", "export type A = number;");
 
-        // Type Aliases
-        assert_is_exported(false, "A", "type A = number;");
+		assert_is_exported(true, "A", "type A = number; export default A");
 
-        assert_is_exported(true, "A", "export type A = number;");
+		assert_is_exported(true, "A", "type A = number; export {A}");
 
-        assert_is_exported(true, "A", "type A = number; export default A");
+		assert_is_exported(true, "A", "type A = number; export {type A}");
 
-        assert_is_exported(true, "A", "type A = number; export {A}");
+		assert_is_exported(true, "A", "type A = number; export type {A}");
 
-        assert_is_exported(true, "A", "type A = number; export {type A}");
+		assert_is_exported(true, "A", "type A = number; export {A as B}");
 
-        assert_is_exported(true, "A", "type A = number; export type {A}");
+		assert_is_exported(true, "A", "type A = number; export {type A as B}");
 
-        assert_is_exported(true, "A", "type A = number; export {A as B}");
+		// Enums
+		assert_is_exported(false, "A", "enum A {};");
 
-        assert_is_exported(true, "A", "type A = number; export {type A as B}");
+		assert_is_exported(true, "A", "export enum A {};");
 
-        // Enums
-        assert_is_exported(false, "A", "enum A {};");
+		assert_is_exported(true, "A", "enum A {}; export default A");
 
-        assert_is_exported(true, "A", "export enum A {};");
+		assert_is_exported(true, "A", "enum A {}; export {A}");
 
-        assert_is_exported(true, "A", "enum A {}; export default A");
+		assert_is_exported(true, "A", "enum A {}; export {type A}");
 
-        assert_is_exported(true, "A", "enum A {}; export {A}");
+		assert_is_exported(true, "A", "enum A {}; export type {A}");
 
-        assert_is_exported(true, "A", "enum A {}; export {type A}");
+		assert_is_exported(true, "A", "enum A {}; export {A as B}");
 
-        assert_is_exported(true, "A", "enum A {}; export type {A}");
+		assert_is_exported(true, "A", "enum A {}; export {type A as B}");
+	}
 
-        assert_is_exported(true, "A", "enum A {}; export {A as B}");
+	#[test]
+	pub fn ok_semantic_model_globals() {
+		let r = biome_js_parser::parse(
+			"console.log()",
+			JsFileSource::js_module(),
+			JsParserOptions::default(),
+		);
 
-        assert_is_exported(true, "A", "enum A {}; export {type A as B}");
-    }
+		let mut options = SemanticModelOptions::default();
 
-    #[test]
-    pub fn ok_semantic_model_globals() {
-        let r = biome_js_parser::parse(
-            "console.log()",
-            JsFileSource::js_module(),
-            JsParserOptions::default(),
-        );
+		options.globals.insert("console".into());
 
-        let mut options = SemanticModelOptions::default();
+		let model = semantic_model(&r.tree(), options);
 
-        options.globals.insert("console".into());
+		let globals:Vec<_> = model.all_global_references().collect();
 
-        let model = semantic_model(&r.tree(), options);
+		assert_eq!(globals.len(), 1);
 
-        let globals: Vec<_> = model.all_global_references().collect();
+		assert!(globals[0].is_read());
 
-        assert_eq!(globals.len(), 1);
-
-        assert!(globals[0].is_read());
-
-        assert_eq!(globals[0].syntax().text_trimmed(), "console");
-    }
+		assert_eq!(globals[0].syntax().text_trimmed(), "console");
+	}
 }

@@ -67,9 +67,7 @@ where
 	pub fn group(&self) -> &'static str { <R::Group as RuleGroup>::NAME }
 
 	/// Returns the category that belongs to the current rule
-	pub fn category(&self) -> RuleCategory {
-		<<R::Group as RuleGroup>::Category as GroupCategory>::CATEGORY
-	}
+	pub fn category(&self) -> RuleCategory { <<R::Group as RuleGroup>::Category as GroupCategory>::CATEGORY }
 
 	/// Returns a clone of the AST root
 	pub fn root(&self) -> RuleRoot<R> { self.root.clone() }
@@ -146,17 +144,13 @@ where
 	pub fn options(&self) -> &R::Options { self.options }
 
 	/// Returns the JSX runtime in use.
-	pub fn jsx_runtime(&self) -> JsxRuntime {
-		self.jsx_runtime.expect("jsx_runtime should be provided")
-	}
+	pub fn jsx_runtime(&self) -> JsxRuntime { self.jsx_runtime.expect("jsx_runtime should be provided") }
 
 	/// Checks whether the provided text belongs to globals
 	pub fn is_global(&self, text:&str) -> bool { self.globals.contains(&text) }
 
 	/// Returns the source type of the current file
-	pub fn source_type<T:'static>(&self) -> &T {
-		self.bag.get_service::<T>().expect("Source type is not registered")
-	}
+	pub fn source_type<T:'static>(&self) -> &T { self.bag.get_service::<T>().expect("Source type is not registered") }
 
 	/// The file path of the current file
 	pub fn file_path(&self) -> &Path { self.file_path }

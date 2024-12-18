@@ -123,9 +123,7 @@ impl BiomePath {
 	}
 
 	/// Creates a new [BiomePath], marked as fixed
-	pub fn to_written(&self) -> Self {
-		Self { path:self.path.clone(), kind:self.kind.clone(), was_written:true }
-	}
+	pub fn to_written(&self) -> Self { Self { path:self.path.clone(), kind:self.kind.clone(), was_written:true } }
 
 	pub fn was_written(&self) -> bool { self.was_written }
 
@@ -238,11 +236,7 @@ impl Aliases {
 	pub fn new() -> Self { Self { aliases:vec![] } }
 
 	#[allow(dead_code)]
-	pub fn with_alias<'a>(
-		mut self,
-		name:impl Into<String>,
-		paths:impl Iterator<Item = &'a Path>,
-	) -> Self {
+	pub fn with_alias<'a>(mut self, name:impl Into<String>, paths:impl Iterator<Item = &'a Path>) -> Self {
 		let mut alias = AliasPath::new(name);
 
 		for path in paths {

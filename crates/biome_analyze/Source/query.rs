@@ -17,10 +17,7 @@ pub trait Queryable: Sized {
 
 	/// Registers one or more [Visitor] that will emit `Self::Input` query
 	/// matches during the analyzer run
-	fn build_visitor(
-		analyzer:&mut impl AddVisitor<Self::Language>,
-		root:&<Self::Language as Language>::Root,
-	);
+	fn build_visitor(analyzer:&mut impl AddVisitor<Self::Language>, root:&<Self::Language as Language>::Root);
 
 	/// Returns the type of query matches this [Queryable] expects as inputs
 	///

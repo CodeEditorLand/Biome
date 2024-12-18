@@ -3,13 +3,7 @@ use std::io;
 use biome_console::{MarkupBuf, fmt, markup};
 use biome_text_size::{TextRange, TextSize};
 
-use crate::{
-	Diagnostic,
-	Resource,
-	Severity,
-	diagnostic::internal::AsDiagnostic,
-	display::frame::SourceFile,
-};
+use crate::{Diagnostic, Resource, Severity, diagnostic::internal::AsDiagnostic, display::frame::SourceFile};
 
 /// Helper struct for printing a diagnostic as markup into any formatter
 /// implementing [biome_console::fmt::Write].

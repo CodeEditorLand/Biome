@@ -1,137 +1,136 @@
-use crate::services::semantic::Semantic;
-use crate::JsRuleAction;
-use biome_analyze::context::RuleContext;
-use biome_analyze::{declare_lint_rule, FixKind, Rule, RuleDiagnostic, RuleSource};
+use biome_analyze::{
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
+};
 use biome_console::markup;
 use biome_js_factory::make::{self};
-use biome_js_syntax::binding_ext::AnyJsBindingDeclaration;
-use biome_js_syntax::{JsIdentifierAssignment, JsSyntaxKind};
+use biome_js_syntax::{JsIdentifierAssignment, JsSyntaxKind, binding_ext::AnyJsBindingDeclaration};
 use biome_rowan::{AstNode, BatchMutationExt, TextRange};
 
+use crate::{JsRuleAction, services::semantic::Semantic};
+
 declare_lint_rule! {
-    /// Prevents from having `const` variables being re-assigned.
-    ///
-    /// Trying to assign a value to a `const` will cause an `TypeError` when the code is executed.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```js,expect_diagnostic
-    /// const a = 1;
-    /// a = 4;
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// const a = 2;
-    /// a += 1;
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// const a = 1;
-    /// ++a;
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// const a = 1, b = 2;
-    ///
-    /// a = 2;
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```js
-    /// const a = 10;
-    /// let b = 10;
-    /// b = 20;
-    /// ```
-    ///
-    pub NoConstAssign {
-        version: "1.0.0",
-        name: "noConstAssign",
-        language: "js",
-        sources: &[RuleSource::Eslint("no-const-assign")],
-        recommended: true,
-        fix_kind: FixKind::Unsafe,
-    }
+	/// Prevents from having `const` variables being re-assigned.
+	///
+	/// Trying to assign a value to a `const` will cause an `TypeError` when the code is executed.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```js,expect_diagnostic
+	/// const a = 1;
+	/// a = 4;
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// const a = 2;
+	/// a += 1;
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// const a = 1;
+	/// ++a;
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// const a = 1, b = 2;
+	///
+	/// a = 2;
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```js
+	/// const a = 10;
+	/// let b = 10;
+	/// b = 20;
+	/// ```
+	///
+	pub NoConstAssign {
+		version: "1.0.0",
+		name: "noConstAssign",
+		language: "js",
+		sources: &[RuleSource::Eslint("no-const-assign")],
+		recommended: true,
+		fix_kind: FixKind::Unsafe,
+	}
 }
 
 impl Rule for NoConstAssign {
-    type Query = Semantic<JsIdentifierAssignment>;
+	type Options = ();
+	type Query = Semantic<JsIdentifierAssignment>;
+	type Signals = Option<Self::State>;
+	type State = TextRange;
 
-    type State = TextRange;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let model = ctx.model();
 
-    type Options = ();
+		let id_binding = model.binding(node)?.tree();
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let node = ctx.query();
+		let decl = id_binding.declaration()?;
 
-        let model = ctx.model();
+		if let AnyJsBindingDeclaration::JsVariableDeclarator(declarator) =
+			decl.parent_binding_pattern_declaration().unwrap_or(decl)
+		{
+			if declarator.declaration()?.is_const() {
+				return Some(id_binding.range());
+			}
+		};
 
-        let id_binding = model.binding(node)?.tree();
+		None
+	}
 
-        let decl = id_binding.declaration()?;
+	fn diagnostic(ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+		let node = ctx.query();
 
-        if let AnyJsBindingDeclaration::JsVariableDeclarator(declarator) =
-            decl.parent_binding_pattern_declaration().unwrap_or(decl)
-        {
-            if declarator.declaration()?.is_const() {
-                return Some(id_binding.range());
-            }
-        };
+		let name = node.name_token().ok()?;
 
-        None
-    }
+		let name = name.text_trimmed();
 
-    fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-        let node = ctx.query();
+		Some(
+			RuleDiagnostic::new(
+				rule_category!(),
+				node.syntax().text_trimmed_range(),
+				markup! {"Can't assign "<Emphasis>{name}</Emphasis>" because it's a constant"},
+			)
+			.detail(state, markup! {"This is where the variable is defined as constant"}),
+		)
+	}
 
-        let name = node.name_token().ok()?;
+	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
+		let node = ctx.query();
 
-        let name = name.text_trimmed();
+		let model = ctx.model();
 
-        Some(
-            RuleDiagnostic::new(
-                rule_category!(),
-                node.syntax().text_trimmed_range(),
-                markup! {"Can't assign "<Emphasis>{name}</Emphasis>" because it's a constant"},
-            )
-            .detail(
-                state,
-                markup! {"This is where the variable is defined as constant"},
-            ),
-        )
-    }
+		let mut mutation = ctx.root().begin();
 
-    fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
-        let node = ctx.query();
+		let decl = model.binding(node)?.tree().declaration()?;
 
-        let model = ctx.model();
+		if let AnyJsBindingDeclaration::JsVariableDeclarator(declarator) =
+			decl.parent_binding_pattern_declaration().unwrap_or(decl)
+		{
+			let const_token = declarator.declaration()?.kind_token().ok()?;
 
-        let mut mutation = ctx.root().begin();
+			let let_token = make::token(JsSyntaxKind::LET_KW);
 
-        let decl = model.binding(node)?.tree().declaration()?;
+			mutation.replace_token(const_token, let_token);
 
-        if let AnyJsBindingDeclaration::JsVariableDeclarator(declarator) =
-            decl.parent_binding_pattern_declaration().unwrap_or(decl)
-        {
-            let const_token = declarator.declaration()?.kind_token().ok()?;
-
-            let let_token = make::token(JsSyntaxKind::LET_KW);
-
-            mutation.replace_token(const_token, let_token);
-
-            return Some(JsRuleAction::new(
+			return Some(JsRuleAction::new(
                             ctx.metadata().action_category(ctx.category(), ctx.group()),
                             ctx.metadata().applicability(),
                              markup! { "Replace "<Emphasis>"const"</Emphasis>" with "<Emphasis>"let"</Emphasis>" if you assign it to a new value." }
                                 .to_owned(),
                             mutation,
             ));
-        }
+		}
 
-        None
-    }
+		None
+	}
 }

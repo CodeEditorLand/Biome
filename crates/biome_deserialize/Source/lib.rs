@@ -44,12 +44,7 @@ use std::fmt::Debug;
 
 use biome_diagnostics::{Error, Severity};
 pub use biome_rowan::TextRange;
-pub use diagnostics::{
-	DeserializableType,
-	DeserializableTypes,
-	DeserializationAdvice,
-	DeserializationDiagnostic,
-};
+pub use diagnostics::{DeserializableType, DeserializableTypes, DeserializationAdvice, DeserializationDiagnostic};
 pub use impls::*;
 pub use merge::Merge;
 pub use string_set::StringSet;
@@ -475,13 +470,9 @@ impl<T> Deserialized<T> {
 	/// The deserialized result, or `None` if the deserialization failed.
 	pub fn into_deserialized(self) -> Option<T> { self.deserialized }
 
-	pub fn has_errors(&self) -> bool {
-		self.diagnostics.iter().any(|d| d.severity() == Severity::Error)
-	}
+	pub fn has_errors(&self) -> bool { self.diagnostics.iter().any(|d| d.severity() == Severity::Error) }
 
-	pub fn has_warnings(&self) -> bool {
-		self.diagnostics.iter().any(|d| d.severity() == Severity::Warning)
-	}
+	pub fn has_warnings(&self) -> bool { self.diagnostics.iter().any(|d| d.severity() == Severity::Warning) }
 
 	/// Consume itself to return the deserialized result and its diagnostics.
 	pub fn consume(self) -> (Option<T>, Vec<Error>) { (self.deserialized, self.diagnostics) }

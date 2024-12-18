@@ -1,226 +1,233 @@
-use crate::{
-    services::control_flow::AnyJsControlFlowRoot, services::semantic::Semantic, JsRuleAction,
-};
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, FixKind, Rule, RuleDiagnostic, RuleSource,
-    RuleSourceKind,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	RuleSourceKind,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
 use biome_js_factory::make;
 use biome_js_semantic::ReferencesExtensions;
 use biome_js_syntax::{
-    AnyJsBinding, AnyJsBindingPattern, AnyJsExpression, JsArrowFunctionExpression,
-    JsAssignmentExpression, JsExpressionStatement, JsIdentifierBinding, JsIdentifierExpression,
-    JsThisExpression, JsVariableDeclaration, JsVariableDeclarator, JsVariableStatement, T,
+	AnyJsBinding,
+	AnyJsBindingPattern,
+	AnyJsExpression,
+	JsArrowFunctionExpression,
+	JsAssignmentExpression,
+	JsExpressionStatement,
+	JsIdentifierBinding,
+	JsIdentifierExpression,
+	JsThisExpression,
+	JsVariableDeclaration,
+	JsVariableDeclarator,
+	JsVariableStatement,
+	T,
 };
 use biome_rowan::{AstNode, AstSeparatedList, BatchMutationExt};
 
+use crate::{
+	JsRuleAction,
+	services::{control_flow::AnyJsControlFlowRoot, semantic::Semantic},
+};
+
 declare_lint_rule! {
-    /// Disallow useless `this` aliasing.
-    ///
-    /// Arrow functions inherits `this` from their enclosing scope;
-    /// this makes `this` aliasing useless in this situation.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```js,expect_diagnostic
-    /// class A {
-    ///     method() {
-    ///         const self = this;
-    ///         return () => {
-    ///             return self;
-    ///         }
-    ///     }
-    /// }
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```js
-    /// class A {
-    ///     method() {
-    ///         const self = this;
-    ///         return function() {
-    ///             this.g();
-    ///             return self;
-    ///         }
-    ///     }
-    /// }
-    /// ```
-    ///
-    pub NoUselessThisAlias {
-        version: "1.0.0",
-        name: "noUselessThisAlias",
-        language: "js",
-        sources: &[RuleSource::EslintTypeScript("no-this-alias")],
-        source_kind: RuleSourceKind::Inspired,
-        recommended: true,
-        fix_kind: FixKind::Safe,
-    }
+	/// Disallow useless `this` aliasing.
+	///
+	/// Arrow functions inherits `this` from their enclosing scope;
+	/// this makes `this` aliasing useless in this situation.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```js,expect_diagnostic
+	/// class A {
+	///     method() {
+	///         const self = this;
+	///         return () => {
+	///             return self;
+	///         }
+	///     }
+	/// }
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```js
+	/// class A {
+	///     method() {
+	///         const self = this;
+	///         return function() {
+	///             this.g();
+	///             return self;
+	///         }
+	///     }
+	/// }
+	/// ```
+	///
+	pub NoUselessThisAlias {
+		version: "1.0.0",
+		name: "noUselessThisAlias",
+		language: "js",
+		sources: &[RuleSource::EslintTypeScript("no-this-alias")],
+		source_kind: RuleSourceKind::Inspired,
+		recommended: true,
+		fix_kind: FixKind::Safe,
+	}
 }
 
 impl Rule for NoUselessThisAlias {
-    type Query = Semantic<JsVariableDeclarator>;
+	type Options = ();
+	type Query = Semantic<JsVariableDeclarator>;
+	type Signals = Option<Self::State>;
+	type State = JsIdentifierBinding;
 
-    type State = JsIdentifierBinding;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let declarator = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let model = ctx.model();
 
-    type Options = ();
+		let mut is_this_alias = if let Some(initializer) = declarator.initializer() {
+			let initializer = initializer.expression().ok()?.omit_parentheses();
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let declarator = ctx.query();
+			if !JsThisExpression::can_cast(initializer.syntax().kind()) {
+				return None;
+			}
 
-        let model = ctx.model();
+			true
+		} else {
+			false
+		};
 
-        let mut is_this_alias = if let Some(initializer) = declarator.initializer() {
-            let initializer = initializer.expression().ok()?.omit_parentheses();
+		let Ok(AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(id))) =
+			declarator.id()
+		else {
+			// Ignore destructuring
+			return None;
+		};
 
-            if !JsThisExpression::can_cast(initializer.syntax().kind()) {
-                return None;
-            }
+		let this_scope = declarator.syntax().ancestors().find_map(AnyJsControlFlowRoot::cast)?;
 
-            true
-        } else {
-            false
-        };
+		for write in id.all_writes(model) {
+			let assign = JsAssignmentExpression::cast(write.syntax().parent()?)?;
 
-        let Ok(AnyJsBindingPattern::AnyJsBinding(AnyJsBinding::JsIdentifierBinding(id))) =
-            declarator.id()
-        else {
-            // Ignore destructuring
-            return None;
-        };
+			let assign_right = assign.right().ok()?.omit_parentheses();
 
-        let this_scope = declarator
-            .syntax()
-            .ancestors()
-            .find_map(AnyJsControlFlowRoot::cast)?;
+			if !JsThisExpression::can_cast(assign_right.syntax().kind()) {
+				return None;
+			}
 
-        for write in id.all_writes(model) {
-            let assign = JsAssignmentExpression::cast(write.syntax().parent()?)?;
+			is_this_alias = true;
+		}
+		// This cehck is useful when the loop is not executed (no write).
+		if !is_this_alias {
+			return None;
+		}
 
-            let assign_right = assign.right().ok()?.omit_parentheses();
+		for reference in id.all_references(model) {
+			let current_this_scope = reference
+				.syntax()
+				.ancestors()
+				.filter(|x| !JsArrowFunctionExpression::can_cast(x.kind()))
+				.find_map(AnyJsControlFlowRoot::cast)?;
 
-            if !JsThisExpression::can_cast(assign_right.syntax().kind()) {
-                return None;
-            }
+			if this_scope != current_this_scope {
+				// The aliasing is required because they have not the same `this` scope.
+				return None;
+			}
+		}
 
-            is_this_alias = true;
-        }
-        // This cehck is useful when the loop is not executed (no write).
-        if !is_this_alias {
-            return None;
-        }
+		Some(id)
+	}
 
-        for reference in id.all_references(model) {
-            let current_this_scope = reference
-                .syntax()
-                .ancestors()
-                .filter(|x| !JsArrowFunctionExpression::can_cast(x.kind()))
-                .find_map(AnyJsControlFlowRoot::cast)?;
+	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
+		let declarator = ctx.query();
 
-            if this_scope != current_this_scope {
-                // The aliasing is required because they have not the same `this` scope.
-                return None;
-            }
-        }
+		Some(
+			RuleDiagnostic::new(
+				rule_category!(),
+				declarator.range(),
+				markup! {
+					"This aliasing of "<Emphasis>"this"</Emphasis>" is unnecessary."
+				},
+			)
+			.note(markup! {
+				"Arrow functions inherits `this` from their enclosing scope."
+			}),
+		)
+	}
 
-        Some(id)
-    }
+	fn action(ctx:&RuleContext<Self>, id:&Self::State) -> Option<JsRuleAction> {
+		let declarator = ctx.query();
 
-    fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
-        let declarator = ctx.query();
+		let model = ctx.model();
 
-        Some(
-            RuleDiagnostic::new(
-                rule_category!(),
-                declarator.range(),
-                markup! {
-                    "This aliasing of "<Emphasis>"this"</Emphasis>" is unnecessary."
-                },
-            )
-            .note(markup! {
-                "Arrow functions inherits `this` from their enclosing scope."
-            }),
-        )
-    }
+		let var_decl = declarator.syntax().ancestors().find_map(JsVariableDeclaration::cast)?;
 
-    fn action(ctx: &RuleContext<Self>, id: &Self::State) -> Option<JsRuleAction> {
-        let declarator = ctx.query();
+		let mut mutation = ctx.root().begin();
 
-        let model = ctx.model();
+		let this_expr = AnyJsExpression::from(make::js_this_expression(make::token(T![this])));
 
-        let var_decl = declarator
-            .syntax()
-            .ancestors()
-            .find_map(JsVariableDeclaration::cast)?;
+		for read in id.all_reads(model) {
+			let syntax = read.syntax();
 
-        let mut mutation = ctx.root().begin();
+			let syntax = syntax.parent()?;
 
-        let this_expr = AnyJsExpression::from(make::js_this_expression(make::token(T![this])));
+			let expr = JsIdentifierExpression::cast(syntax)?;
 
-        for read in id.all_reads(model) {
-            let syntax = read.syntax();
+			mutation.replace_node(expr.into(), this_expr.clone());
+		}
 
-            let syntax = syntax.parent()?;
+		for write in id.all_writes(model) {
+			let syntax = write.syntax();
 
-            let expr = JsIdentifierExpression::cast(syntax)?;
+			let syntax = syntax.parent()?;
 
-            mutation.replace_node(expr.into(), this_expr.clone());
-        }
+			let statement = JsExpressionStatement::cast(syntax.parent()?)?;
 
-        for write in id.all_writes(model) {
-            let syntax = write.syntax();
+			mutation.remove_node(statement);
+		}
 
-            let syntax = syntax.parent()?;
+		let var_declarator_list = var_decl.declarators();
 
-            let statement = JsExpressionStatement::cast(syntax.parent()?)?;
+		if var_declarator_list.len() == 1 {
+			if let Some(statement) = JsVariableStatement::cast(var_decl.syntax().parent()?) {
+				if statement.semicolon_token().is_some() {
+					mutation.remove_token(statement.semicolon_token()?);
+				}
+			}
 
-            mutation.remove_node(statement);
-        }
+			mutation.remove_node(var_decl);
+		} else {
+			let mut deleted_comma = None;
 
-        let var_declarator_list = var_decl.declarators();
+			for (current_declarator, current_comma) in
+				var_declarator_list.iter().zip(var_declarator_list.separators())
+			{
+				deleted_comma = current_comma.ok();
 
-        if var_declarator_list.len() == 1 {
-            if let Some(statement) = JsVariableStatement::cast(var_decl.syntax().parent()?) {
-                if statement.semicolon_token().is_some() {
-                    mutation.remove_token(statement.semicolon_token()?);
-                }
-            }
+				let current_declarator = current_declarator.ok()?;
 
-            mutation.remove_node(var_decl);
-        } else {
-            let mut deleted_comma = None;
+				if &current_declarator == declarator {
+					break;
+				}
+			}
 
-            for (current_declarator, current_comma) in var_declarator_list
-                .iter()
-                .zip(var_declarator_list.separators())
-            {
-                deleted_comma = current_comma.ok();
+			mutation.remove_node(declarator.clone());
 
-                let current_declarator = current_declarator.ok()?;
+			mutation.remove_token(deleted_comma?);
+		}
 
-                if &current_declarator == declarator {
-                    break;
-                }
-            }
-
-            mutation.remove_node(declarator.clone());
-
-            mutation.remove_token(deleted_comma?);
-        }
-
-        Some(JsRuleAction::new(
-            ctx.metadata().action_category(ctx.category(), ctx.group()),
-            ctx.metadata().applicability(),
-            markup! {
-                "Use "<Emphasis>"this"</Emphasis>" instead of an alias."
-            }
-            .to_owned(),
-            mutation,
-        ))
-    }
+		Some(JsRuleAction::new(
+			ctx.metadata().action_category(ctx.category(), ctx.group()),
+			ctx.metadata().applicability(),
+			markup! {
+				"Use "<Emphasis>"this"</Emphasis>" instead of an alias."
+			}
+			.to_owned(),
+			mutation,
+		))
+	}
 }

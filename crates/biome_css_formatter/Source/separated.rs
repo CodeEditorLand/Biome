@@ -25,20 +25,14 @@ where
 
 	fn format_node<'a>(&self, node:&'a N) -> Self::FormatNode<'a> { node.format() }
 
-	fn format_separator<'a>(&self, separator:&'a CssSyntaxToken) -> Self::FormatSeparator<'a> {
-		separator.format()
-	}
+	fn format_separator<'a>(&self, separator:&'a CssSyntaxToken) -> Self::FormatSeparator<'a> { separator.format() }
 }
 
-type CssFormatSeparatedIter<Node> = FormatSeparatedIter<
-	AstSeparatedListElementsIterator<CssLanguage, Node>,
-	Node,
-	CssFormatSeparatedElementRule<Node>,
->;
+type CssFormatSeparatedIter<Node> =
+	FormatSeparatedIter<AstSeparatedListElementsIterator<CssLanguage, Node>, Node, CssFormatSeparatedElementRule<Node>>;
 
 /// AST Separated list formatting extension methods
-pub(crate) trait FormatAstSeparatedListExtension:
-	AstSeparatedList<Language = CssLanguage> {
+pub(crate) trait FormatAstSeparatedListExtension: AstSeparatedList<Language = CssLanguage> {
 	/// Prints a separated list of nodes
 	///
 	/// Trailing separators will be reused from the original list or created by
@@ -46,12 +40,8 @@ pub(crate) trait FormatAstSeparatedListExtension:
 	/// will not be printed by default. Use `with_trailing_separator` to add it
 	/// in where necessary.
 	fn format_separated(&self, separator:&'static str) -> CssFormatSeparatedIter<Self::Node> {
-		CssFormatSeparatedIter::new(
-			self.elements(),
-			separator,
-			CssFormatSeparatedElementRule { node:PhantomData },
-		)
-		.with_trailing_separator(TrailingSeparator::Disallowed)
+		CssFormatSeparatedIter::new(self.elements(), separator, CssFormatSeparatedElementRule { node:PhantomData })
+			.with_trailing_separator(TrailingSeparator::Disallowed)
 	}
 }
 
@@ -79,13 +69,9 @@ where
 	type FormatNode<'a> = FormatRefWithRule<'a, N, R>;
 	type FormatSeparator<'a> = FormatRefWithRule<'a, CssSyntaxToken, FormatCssSyntaxToken>;
 
-	fn format_node<'a>(&self, node:&'a N) -> Self::FormatNode<'a> {
-		node.format().with_options(self.options)
-	}
+	fn format_node<'a>(&self, node:&'a N) -> Self::FormatNode<'a> { node.format().with_options(self.options) }
 
-	fn format_separator<'a>(&self, separator:&'a CssSyntaxToken) -> Self::FormatSeparator<'a> {
-		separator.format()
-	}
+	fn format_separator<'a>(&self, separator:&'a CssSyntaxToken) -> Self::FormatSeparator<'a> { separator.format() }
 }
 
 type CssFormatSeparatedIterWithOptions<Node, Options> = FormatSeparatedIter<

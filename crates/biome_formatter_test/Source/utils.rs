@@ -17,18 +17,11 @@ struct StripPlaceholders {
 /// Find and replace the cursor, range start and range end placeholders in a
 /// snapshot tests and return their indices in the resulting string
 impl StripPlaceholders {
-	pub fn new(
-		cursor:String,
-		range_start_placeholder:String,
-		range_end_placeholder:String,
-	) -> Self {
+	pub fn new(cursor:String, range_start_placeholder:String, range_end_placeholder:String) -> Self {
 		StripPlaceholders { cursor, range_start_placeholder, range_end_placeholder }
 	}
 
-	pub fn transform(
-		&self,
-		input_code:&mut String,
-	) -> (Option<usize>, Option<usize>, Option<usize>) {
+	pub fn transform(&self, input_code:&mut String) -> (Option<usize>, Option<usize>, Option<usize>) {
 		let mut cursor_index = None;
 
 		let mut range_start_index = None;
@@ -80,9 +73,7 @@ const PRETTIER_CURSOR_PLACEHOLDER:&str = "<|>";
 const PRETTIER_RANGE_START_PLACEHOLDER:&str = "<<<PRETTIER_RANGE_START>>>";
 const PRETTIER_RANGE_END_PLACEHOLDER:&str = "<<<PRETTIER_RANGE_END>>>";
 
-pub(crate) fn strip_prettier_placeholders(
-	input_code:&mut String,
-) -> (Option<usize>, Option<usize>, Option<usize>) {
+pub(crate) fn strip_prettier_placeholders(input_code:&mut String) -> (Option<usize>, Option<usize>, Option<usize>) {
 	StripPlaceholders::new(
 		PRETTIER_CURSOR_PLACEHOLDER.to_string(),
 		PRETTIER_RANGE_START_PLACEHOLDER.to_string(),
@@ -95,9 +86,7 @@ const ROME_CURSOR_PLACEHOLDER:&str = "<|>";
 const ROME_RANGE_START_PLACEHOLDER:&str = "<<<ROME_RANGE_START>>>";
 const ROME_RANGE_END_PLACEHOLDER:&str = "<<<ROME_RANGE_END>>>";
 
-pub(crate) fn strip_rome_placeholders(
-	input_code:&mut String,
-) -> (Option<usize>, Option<usize>, Option<usize>) {
+pub(crate) fn strip_rome_placeholders(input_code:&mut String) -> (Option<usize>, Option<usize>, Option<usize>) {
 	StripPlaceholders::new(
 		ROME_CURSOR_PLACEHOLDER.to_string(),
 		ROME_RANGE_START_PLACEHOLDER.to_string(),
@@ -111,11 +100,7 @@ pub enum PrettierDiff {
 	Same,
 }
 
-pub fn get_prettier_diff(
-	input_file:&Path,
-	relative_file_name:&'static str,
-	formatted:&str,
-) -> PrettierDiff {
+pub fn get_prettier_diff(input_file:&Path, relative_file_name:&'static str, formatted:&str) -> PrettierDiff {
 	let input_extension = input_file.extension().and_then(OsStr::to_str);
 
 	let prettier_snapshot_path = input_extension
@@ -141,8 +126,7 @@ pub fn get_prettier_diff(
 				remove_file(snapshot_file_name).ok(); // not the end of the world if it fails
 			}
 
-			let new_snapshot_file_name =
-				input_file.with_extension(format!("{input_extension}.snap.new"));
+			let new_snapshot_file_name = input_file.with_extension(format!("{input_extension}.snap.new"));
 
 			if new_snapshot_file_name.exists() && new_snapshot_file_name.is_file() {
 				remove_file(new_snapshot_file_name).ok(); // not the end of the world if it fails
@@ -159,8 +143,6 @@ pub fn get_prettier_diff(
 			.to_writer(&mut prettier_differences)
 			.unwrap();
 
-		PrettierDiff::Diff(
-			String::from_utf8(prettier_differences).expect("Input file to be in UTF8"),
-		)
+		PrettierDiff::Diff(String::from_utf8(prettier_differences).expect("Input file to be in UTF8"))
 	}
 }

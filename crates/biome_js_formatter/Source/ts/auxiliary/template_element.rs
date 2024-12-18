@@ -1,34 +1,34 @@
-use crate::prelude::*;
 use biome_formatter::FormatRuleWithOptions;
-
-use crate::js::auxiliary::template_element::{
-    AnyTemplateElement, FormatTemplateElement, TemplateElementOptions,
-};
 use biome_js_syntax::TsTemplateElement;
+
+use crate::{
+	js::auxiliary::template_element::{
+		AnyTemplateElement,
+		FormatTemplateElement,
+		TemplateElementOptions,
+	},
+	prelude::*,
+};
 
 #[derive(Debug, Clone, Default)]
 pub struct FormatTsTemplateElement {
-    options: TemplateElementOptions,
+	options:TemplateElementOptions,
 }
 
 impl FormatRuleWithOptions<TsTemplateElement> for FormatTsTemplateElement {
-    type Options = TemplateElementOptions;
+	type Options = TemplateElementOptions;
 
-    fn with_options(mut self, options: Self::Options) -> Self {
-        self.options = options;
+	fn with_options(mut self, options:Self::Options) -> Self {
+		self.options = options;
 
-        self
-    }
+		self
+	}
 }
 
 impl FormatNodeRule<TsTemplateElement> for FormatTsTemplateElement {
-    fn fmt_fields(
-        &self,
-        node: &TsTemplateElement,
-        formatter: &mut JsFormatter,
-    ) -> FormatResult<()> {
-        let element = AnyTemplateElement::from(node.clone());
+	fn fmt_fields(&self, node:&TsTemplateElement, formatter:&mut JsFormatter) -> FormatResult<()> {
+		let element = AnyTemplateElement::from(node.clone());
 
-        FormatTemplateElement::new(element, self.options).fmt(formatter)
-    }
+		FormatTemplateElement::new(element, self.options).fmt(formatter)
+	}
 }

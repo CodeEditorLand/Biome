@@ -37,11 +37,7 @@ pub struct FormatCssLeadingComment;
 impl FormatRule<SourceComment<CssLanguage>> for FormatCssLeadingComment {
 	type Context = CssFormatContext;
 
-	fn fmt(
-		&self,
-		comment:&SourceComment<CssLanguage>,
-		f:&mut Formatter<Self::Context>,
-	) -> FormatResult<()> {
+	fn fmt(&self, comment:&SourceComment<CssLanguage>, f:&mut Formatter<Self::Context>) -> FormatResult<()> {
 		if is_doc_comment(comment.piece()) {
 			let mut source_offset = comment.piece().text_range().start();
 
@@ -61,10 +57,7 @@ impl FormatRule<SourceComment<CssLanguage>> for FormatCssLeadingComment {
 					1,
 					&format_once(|f| {
 						for line in lines {
-							write!(
-								f,
-								[hard_line_break(), dynamic_text(line.trim(), source_offset)]
-							)?;
+							write!(f, [hard_line_break(), dynamic_text(line.trim(), source_offset)])?;
 
 							source_offset += line.text_len();
 						}
@@ -104,10 +97,7 @@ impl CommentStyle for CssCommentStyle {
 		}
 	}
 
-	fn place_comment(
-		&self,
-		comment:DecoratedComment<Self::Language>,
-	) -> CommentPlacement<Self::Language> {
+	fn place_comment(&self, comment:DecoratedComment<Self::Language>) -> CommentPlacement<Self::Language> {
 		match comment.text_position() {
 			CommentTextPosition::EndOfLine => {
 				handle_function_comment(comment)
@@ -128,9 +118,7 @@ impl CommentStyle for CssCommentStyle {
 	}
 }
 
-fn handle_declaration_name_comment(
-	comment:DecoratedComment<CssLanguage>,
-) -> CommentPlacement<CssLanguage> {
+fn handle_declaration_name_comment(comment:DecoratedComment<CssLanguage>) -> CommentPlacement<CssLanguage> {
 	match comment.preceding_node() {
 		Some(following_node) if AnyCssDeclarationName::can_cast(following_node.kind()) => {
 			if following_node
@@ -148,9 +136,7 @@ fn handle_declaration_name_comment(
 }
 
 fn handle_function_comment(comment:DecoratedComment<CssLanguage>) -> CommentPlacement<CssLanguage> {
-	let (Some(preceding_node), Some(following_node)) =
-		(comment.preceding_node(), comment.following_node())
-	else {
+	let (Some(preceding_node), Some(following_node)) = (comment.preceding_node(), comment.following_node()) else {
 		return CommentPlacement::Default(comment);
 	};
 
@@ -165,9 +151,7 @@ fn handle_function_comment(comment:DecoratedComment<CssLanguage>) -> CommentPlac
 	}
 }
 
-fn handle_complex_selector_comment(
-	comment:DecoratedComment<CssLanguage>,
-) -> CommentPlacement<CssLanguage> {
+fn handle_complex_selector_comment(comment:DecoratedComment<CssLanguage>) -> CommentPlacement<CssLanguage> {
 	if let Some(complex) = CssComplexSelector::cast_ref(comment.enclosing_node()) {
 		if let Ok(right) = complex.right() {
 			return CommentPlacement::leading(right.into_syntax(), comment);

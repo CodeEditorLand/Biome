@@ -18,34 +18,30 @@ const GRAPHICS_ARIA:&str = "../../packages/aria-data/graphics-aria-1-0.json";
 const DPUB_ARIA:&str = "../../packages/aria-data/dpub-aria-1-1.json";
 
 const ISO_COUNTRIES:&[&str] = &[
-	"AF", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS",
-	"BH", "BD", "BB", "BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BR", "IO", "VG", "BN",
-	"BG", "BF", "MM", "BI", "KH", "CM", "CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO",
-	"KM", "CK", "CR", "HR", "CU", "CY", "CZ", "CD", "DK", "DJ", "DM", "DO", "EC", "EG", "SV", "GQ",
-	"ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "PF", "GA", "GM", "GE", "DE", "GH", "GI", "GR",
-	"GL", "GD", "GU", "GT", "GN", "GW", "GY", "HT", "VA", "HN", "HK", "HU", "IS", "IN", "ID", "IR",
-	"IQ", "IE", "IM", "IL", "IT", "CI", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KW", "KG", "LA",
-	"LV", "LB", "LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT",
-	"MH", "MR", "MU", "YT", "MX", "FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "NA", "NR", "NP",
-	"NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU", "KP", "MP", "NO", "OM", "PK", "PW", "PA", "PG",
-	"PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "CG", "RO", "RU", "RW", "BL", "SH", "KN", "LC",
-	"MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI", "SB", "SO",
-	"ZA", "KR", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL",
-	"TG", "TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UY", "VI",
-	"UZ", "VU", "VE", "VN", "WF", "EH", "YE", "ZM", "ZW",
+	"AF", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB",
+	"BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BR", "IO", "VG", "BN", "BG", "BF", "MM", "BI", "KH", "CM",
+	"CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CK", "CR", "HR", "CU", "CY", "CZ", "CD", "DK",
+	"DJ", "DM", "DO", "EC", "EG", "SV", "GQ", "ER", "EE", "ET", "FK", "FO", "FJ", "FI", "FR", "PF", "GA", "GM", "GE",
+	"DE", "GH", "GI", "GR", "GL", "GD", "GU", "GT", "GN", "GW", "GY", "HT", "VA", "HN", "HK", "HU", "IS", "IN", "ID",
+	"IR", "IQ", "IE", "IM", "IL", "IT", "CI", "JM", "JP", "JE", "JO", "KZ", "KE", "KI", "KW", "KG", "LA", "LV", "LB",
+	"LS", "LR", "LY", "LI", "LT", "LU", "MO", "MK", "MG", "MW", "MY", "MV", "ML", "MT", "MH", "MR", "MU", "YT", "MX",
+	"FM", "MD", "MC", "MN", "ME", "MS", "MA", "MZ", "NA", "NR", "NP", "NL", "AN", "NC", "NZ", "NI", "NE", "NG", "NU",
+	"KP", "MP", "NO", "OM", "PK", "PW", "PA", "PG", "PY", "PE", "PH", "PN", "PL", "PT", "PR", "QA", "CG", "RO", "RU",
+	"RW", "BL", "SH", "KN", "LC", "MF", "PM", "VC", "WS", "SM", "ST", "SA", "SN", "RS", "SC", "SL", "SG", "SK", "SI",
+	"SB", "SO", "ZA", "KR", "ES", "LK", "SD", "SR", "SJ", "SZ", "SE", "CH", "SY", "TW", "TJ", "TZ", "TH", "TL", "TG",
+	"TK", "TO", "TT", "TN", "TR", "TM", "TC", "TV", "UG", "UA", "AE", "GB", "US", "UY", "VI", "UZ", "VU", "VE", "VN",
+	"WF", "EH", "YE", "ZM", "ZW",
 ];
 
 const ISO_LANGUAGES:&[&str] = &[
-	"ab", "aa", "af", "sq", "am", "ar", "an", "hy", "as", "ay", "az", "ba", "eu", "bn", "dz", "bh",
-	"bi", "br", "bg", "my", "be", "km", "ca", "zh", "zh-Hans", "zh-Hant", "co", "hr", "cs", "da",
-	"nl", "en", "eo", "et", "fo", "fa", "fj", "fi", "fr", "fy", "gl", "gd", "gv", "ka", "de", "el",
-	"kl", "gn", "gu", "ht", "ha", "he", "iw", "hi", "hu", "is", "io", "id", "in", "ia", "ie", "iu",
-	"ik", "ga", "it", "ja", "jv", "kn", "ks", "kk", "rw", "ky", "rn", "ko", "ku", "lo", "la", "lv",
-	"li", "ln", "lt", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mo", "mn", "na", "ne", "no", "oc",
-	"or", "om", "ps", "pl", "pt", "pa", "qu", "rm", "ro", "ru", "sm", "sg", "sa", "sr", "sh", "st",
-	"tn", "sn", "ii", "sd", "si", "ss", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta",
-	"tt", "te", "th", "bo", "ti", "to", "ts", "tr", "tk", "tw", "ug", "uk", "ur", "uz", "vi", "vo",
-	"wa", "cy", "wo", "xh", "yi", "ji", "yo", "zu",
+	"ab", "aa", "af", "sq", "am", "ar", "an", "hy", "as", "ay", "az", "ba", "eu", "bn", "dz", "bh", "bi", "br", "bg",
+	"my", "be", "km", "ca", "zh", "zh-Hans", "zh-Hant", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "fo", "fa",
+	"fj", "fi", "fr", "fy", "gl", "gd", "gv", "ka", "de", "el", "kl", "gn", "gu", "ht", "ha", "he", "iw", "hi", "hu",
+	"is", "io", "id", "in", "ia", "ie", "iu", "ik", "ga", "it", "ja", "jv", "kn", "ks", "kk", "rw", "ky", "rn", "ko",
+	"ku", "lo", "la", "lv", "li", "ln", "lt", "mk", "mg", "ms", "ml", "mt", "mi", "mr", "mo", "mn", "na", "ne", "no",
+	"oc", "or", "om", "ps", "pl", "pt", "pa", "qu", "rm", "ro", "ru", "sm", "sg", "sa", "sr", "sh", "st", "tn", "sn",
+	"ii", "sd", "si", "ss", "sk", "sl", "so", "es", "su", "sw", "sv", "tl", "tg", "ta", "tt", "te", "th", "bo", "ti",
+	"to", "ts", "tr", "tk", "tw", "ug", "uk", "ur", "uz", "vi", "vo", "wa", "cy", "wo", "xh", "yi", "ji", "yo", "zu",
 ];
 
 #[derive(Debug, Default, biome_deserialize_macros::Merge, serde::Deserialize)]
@@ -169,9 +165,7 @@ struct AriaAttributeReference {
 impl From<AriaAttributeReferenceShortcut> for AriaAttributeReference {
 	fn from(value:AriaAttributeReferenceShortcut) -> Self {
 		match value {
-			AriaAttributeReferenceShortcut::Active(name) => {
-				Self { name, deprecated_in_version:None }
-			},
+			AriaAttributeReferenceShortcut::Active(name) => Self { name, deprecated_in_version:None },
 			AriaAttributeReferenceShortcut::Deprecated { name, deprecated_in_version } => {
 				Self { name, deprecated_in_version }
 			},
@@ -199,9 +193,7 @@ struct AriaAttribute {
 	values:BTreeMap<String, ValueDefinition>,
 }
 
-#[derive(
-	Clone, Copy, Debug, Default, Eq, PartialEq, biome_deserialize_macros::Merge, serde::Deserialize,
-)]
+#[derive(Clone, Copy, Debug, Default, Eq, PartialEq, biome_deserialize_macros::Merge, serde::Deserialize)]
 enum AriaValueType {
 	#[default]
 	#[serde(rename = "true/false")]
@@ -406,25 +398,22 @@ fn generate_aria_attributes(attributes:&BTreeMap<String, AriaAttribute>) -> Toke
 			AriaValueType::Tristate => quote! { Tristate },
 		};
 
-		let params = if !data.values.is_empty()
-			&& matches!(data.value_type, AriaValueType::Token | AriaValueType::TokenList)
-		{
-			let default_value =
-				data.values.iter().find(|(_, data)| data.is_default).map(|(name, _)| name);
+		let params =
+			if !data.values.is_empty() && matches!(data.value_type, AriaValueType::Token | AriaValueType::TokenList) {
+				let default_value = data.values.iter().find(|(_, data)| data.is_default).map(|(name, _)| name);
 
-			let other_values =
-				data.values.iter().filter(|(_, data)| !data.is_default).map(|(name, _)| name);
+				let other_values = data.values.iter().filter(|(_, data)| !data.is_default).map(|(name, _)| name);
 
-			let values = default_value.into_iter().chain(other_values);
+				let values = default_value.into_iter().chain(other_values);
 
-			quote! {
-				(&[
-					#( #values ),*
-				])
-			}
-		} else {
-			Default::default()
-		};
+				quote! {
+					(&[
+						#( #values ),*
+					])
+				}
+			} else {
+				Default::default()
+			};
 
 		value_type_match_lines.push(quote! {
 			Self::#name => AriaValueType::#value_type_variant_name #params
@@ -457,13 +446,11 @@ fn generate_aria_attributes(attributes:&BTreeMap<String, AriaAttribute>) -> Toke
 }
 
 fn generate_aria_roles(aria:&Aria) -> TokenStream {
-	let aria_abstract_role_names =
-		aria.roles.iter().filter(|(_, data)| data.is_abstract).map(|(name, _)| name);
+	let aria_abstract_role_names = aria.roles.iter().filter(|(_, data)| data.is_abstract).map(|(name, _)| name);
 
 	let aria_abstarct_role_enum = generate_enums(aria_abstract_role_names, "AriaAbstractRole");
 
-	let aria_concrete_role_names =
-		aria.roles.iter().filter(|(_, data)| !data.is_abstract).map(|(name, _)| name);
+	let aria_concrete_role_names = aria.roles.iter().filter(|(_, data)| !data.is_abstract).map(|(name, _)| name);
 
 	let aria_concrete_role_enum = generate_enums(aria_concrete_role_names, "AriaRole");
 
@@ -499,10 +486,7 @@ fn generate_aria_roles(aria:&Aria) -> TokenStream {
 				variants.clear();
 
 				for global_attribute in &data.supported_attributes {
-					let variant = Ident::new(
-						&Case::Pascal.convert(&global_attribute.name),
-						Span::call_site(),
-					);
+					let variant = Ident::new(&Case::Pascal.convert(&global_attribute.name), Span::call_site());
 
 					global_attribute_variants.push(variant);
 				}
@@ -579,8 +563,7 @@ fn generate_aria_roles(aria:&Aria) -> TokenStream {
 					for (attribute_name, value) in attributes {
 						html_attributes_names.insert(attribute_name.as_str());
 
-						let attribute_name =
-							format_ident!("{}", Case::Pascal.convert(attribute_name));
+						let attribute_name = format_ident!("{}", Case::Pascal.convert(attribute_name));
 
 						attribute_instances.push(quote! {
 							HtmlAttributeInstance {
@@ -622,8 +605,7 @@ fn generate_aria_roles(aria:&Aria) -> TokenStream {
 					for (attribute_name, value) in attributes {
 						html_attributes_names.insert(attribute_name.as_str());
 
-						let attribute_name =
-							format_ident!("{}", Case::Pascal.convert(attribute_name));
+						let attribute_name = format_ident!("{}", Case::Pascal.convert(attribute_name));
 
 						attribute_instances.push(quote! {
 							HtmlAttributeInstance {

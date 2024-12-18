@@ -154,9 +154,7 @@ impl Glob {
 	pub fn is_negated(&self) -> bool { self.is_negated }
 
 	/// Tests whether the given path matches this pattern.
-	pub fn is_match(&self, path:impl AsRef<std::path::Path>) -> bool {
-		self.is_raw_match(path) != self.is_negated
-	}
+	pub fn is_match(&self, path:impl AsRef<std::path::Path>) -> bool { self.is_raw_match(path) != self.is_negated }
 
 	/// Tests whether the given path matches this pattern, ignoring the
 	/// negation.
@@ -169,14 +167,10 @@ impl Glob {
 
 	/// Tests whether the given path matches this pattern, ignoring the
 	/// negation.
-	fn is_raw_match_candidate(&self, path:&CandidatePath<'_>) -> bool {
-		self.glob.is_match_candidate(&path.0)
-	}
+	fn is_raw_match_candidate(&self, path:&CandidatePath<'_>) -> bool { self.glob.is_match_candidate(&path.0) }
 }
 impl PartialEq for Glob {
-	fn eq(&self, other:&Self) -> bool {
-		self.is_negated == other.is_negated && self.glob.glob() == other.glob.glob()
-	}
+	fn eq(&self, other:&Self) -> bool { self.is_negated == other.is_negated && self.glob.glob() == other.glob.glob() }
 }
 impl Eq for Glob {}
 impl std::hash::Hash for Glob {
@@ -240,10 +234,8 @@ impl biome_deserialize::Deserializable for Glob {
 						1u32.into(),
 					)
 				});
-				diagnostics.push(
-					biome_deserialize::DeserializationDiagnostic::new(format_args!("{error}"))
-						.with_range(range),
-				);
+				diagnostics
+					.push(biome_deserialize::DeserializationDiagnostic::new(format_args!("{error}")).with_range(range));
 				None
 			},
 		}
@@ -253,9 +245,7 @@ impl biome_deserialize::Deserializable for Glob {
 impl schemars::JsonSchema for Glob {
 	fn schema_name() -> String { "Regex".to_string() }
 
-	fn json_schema(gen:&mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-		String::json_schema(gen)
-	}
+	fn json_schema(gen:&mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema { String::json_schema(gen) }
 }
 
 /// A candidate path for matching.
@@ -408,9 +398,7 @@ impl std::fmt::Display for GlobErrorKind {
 			Self::UnsupportedCharacterClass => {
 				r"Character class `[]` are not supported. Use `\[` and `\]` to escape the characters."
 			},
-			Self::UnsupportedAnyCharacter => {
-				r"`?` matcher is not supported. Use `\?` to escape the character."
-			},
+			Self::UnsupportedAnyCharacter => r"`?` matcher is not supported. Use `\?` to escape the character.",
 		};
 		write!(f, "{desc}")
 	}
@@ -426,10 +414,7 @@ fn validate_glob(pattern:&str) -> Result<(), GlobError> {
 				let mut lookahead = it.clone();
 				if matches!(lookahead.next(), Some((_, b'*'))) {
 					if !allow_globstar || !matches!(lookahead.next(), None | Some((_, b'/'))) {
-						return Err(GlobError::Regular {
-							kind:GlobErrorKind::InvalidGlobStar,
-							index:i as u32,
-						});
+						return Err(GlobError::Regular { kind:GlobErrorKind::InvalidGlobStar, index:i as u32 });
 					}
 					// Eat `*`
 					it.next();
@@ -441,35 +426,20 @@ fn validate_glob(pattern:&str) -> Result<(), GlobError> {
 				// Accept a restrictive set of escape sequence
 				if let Some((_, c)) = it.next() {
 					if !matches!(c, b'!' | b'*' | b'?' | b'{' | b'}' | b'[' | b']' | b'\\') {
-						return Err(GlobError::Regular {
-							kind:GlobErrorKind::InvalidEscape,
-							index:i as u32,
-						});
+						return Err(GlobError::Regular { kind:GlobErrorKind::InvalidEscape, index:i as u32 });
 					}
 				} else {
-					return Err(GlobError::Regular {
-						kind:GlobErrorKind::DanglingEscape,
-						index:i as u32,
-					});
+					return Err(GlobError::Regular { kind:GlobErrorKind::DanglingEscape, index:i as u32 });
 				}
 			},
 			b'?' => {
-				return Err(GlobError::Regular {
-					kind:GlobErrorKind::UnsupportedAnyCharacter,
-					index:i as u32,
-				});
+				return Err(GlobError::Regular { kind:GlobErrorKind::UnsupportedAnyCharacter, index:i as u32 });
 			},
 			b'[' | b']' => {
-				return Err(GlobError::Regular {
-					kind:GlobErrorKind::UnsupportedCharacterClass,
-					index:i as u32,
-				});
+				return Err(GlobError::Regular { kind:GlobErrorKind::UnsupportedCharacterClass, index:i as u32 });
 			},
 			b'{' | b'}' => {
-				return Err(GlobError::Regular {
-					kind:GlobErrorKind::UnsupportedAlternates,
-					index:i as u32,
-				});
+				return Err(GlobError::Regular { kind:GlobErrorKind::UnsupportedAlternates, index:i as u32 });
 			},
 			_ => {},
 		}
@@ -547,14 +517,8 @@ mod tests {
 	fn test_matches_with_exceptions() {
 		let a = CandidatePath::new(&"a");
 
-		assert!(a.matches_with_exceptions(&[
-			Glob::from_str("*").unwrap(),
-			Glob::from_str("!b").unwrap(),
-		]));
-		assert!(!a.matches_with_exceptions(&[
-			Glob::from_str("*").unwrap(),
-			Glob::from_str("!a*").unwrap(),
-		]));
+		assert!(a.matches_with_exceptions(&[Glob::from_str("*").unwrap(), Glob::from_str("!b").unwrap(),]));
+		assert!(!a.matches_with_exceptions(&[Glob::from_str("*").unwrap(), Glob::from_str("!a*").unwrap(),]));
 		assert!(a.matches_with_exceptions(&[
 			Glob::from_str("*").unwrap(),
 			Glob::from_str("!a*").unwrap(),

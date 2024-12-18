@@ -24,9 +24,7 @@ pub struct OrganizeImports {
 }
 
 impl Default for OrganizeImports {
-	fn default() -> Self {
-		Self { enabled:true, ignore:Default::default(), include:Default::default() }
-	}
+	fn default() -> Self { Self { enabled:true, ignore:Default::default(), include:Default::default() } }
 }
 
 impl PartialOrganizeImports {

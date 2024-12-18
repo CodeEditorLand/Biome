@@ -47,9 +47,7 @@ impl HorizontalLine {
 }
 
 impl Display for HorizontalLine {
-	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> {
-		fmt.write_str(&"\u{2501}".repeat(self.width))
-	}
+	fn fmt(&self, fmt:&mut Formatter) -> io::Result<()> { fmt.write_str(&"\u{2501}".repeat(self.width)) }
 }
 
 // It prints `\n`

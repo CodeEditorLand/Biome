@@ -83,12 +83,7 @@ impl DiffReport {
 		&REPORTER
 	}
 
-	pub fn report(
-		&self,
-		file_name:&'static str,
-		biome_formatted_result:&str,
-		prettier_formatted_result:&str,
-	) {
+	pub fn report(&self, file_name:&'static str, biome_formatted_result:&str, prettier_formatted_result:&str) {
 		match env::var("REPORT_PRETTIER") {
 			Ok(value) if value == "1" => {
 				if !Self::is_ignored(file_name) {
@@ -294,8 +289,7 @@ impl DiffReport {
 					_ => ReportType::Markdown,
 				};
 
-				let incompatible_only =
-					matches!(env::var("INCOMPATIBLE_ONLY"), Ok(value) if value == "1");
+				let incompatible_only = matches!(env::var("INCOMPATIBLE_ONLY"), Ok(value) if value == "1");
 
 				let report_filename = match env::var("REPORT_FILENAME") {
 					Ok(value) => value,
@@ -327,12 +321,7 @@ impl DiffReport {
 		}
 	}
 
-	fn report_prettier(
-		&self,
-		report_type:ReportType,
-		report_filename:String,
-		incompatible_only:bool,
-	) {
+	fn report_prettier(&self, report_type:ReportType, report_filename:String, incompatible_only:bool) {
 		let mut state = self.state.lock().unwrap();
 
 		state.sort_by_key(|DiffReportItem { file_name, .. }| *file_name);
@@ -347,41 +336,34 @@ impl DiffReport {
 
 		let mut file_count = 0;
 
-		for DiffReportItem { file_name, biome_formatted_result, prettier_formatted_result } in
-			state.iter()
-		{
+		for DiffReportItem { file_name, biome_formatted_result, prettier_formatted_result } in state.iter() {
 			file_count += 1;
 
 			let biome_lines = biome_formatted_result.lines().count();
 
 			let prettier_lines = prettier_formatted_result.lines().count();
 
-			let (matched_lines, ratio, diff) =
-				if biome_formatted_result == prettier_formatted_result {
-					(biome_lines, 1f64, None)
-				} else {
-					let mut matched_lines = 0;
+			let (matched_lines, ratio, diff) = if biome_formatted_result == prettier_formatted_result {
+				(biome_lines, 1f64, None)
+			} else {
+				let mut matched_lines = 0;
 
-					let mut diff = String::new();
+				let mut diff = String::new();
 
-					for (tag, line) in diff_lines(
-						Algorithm::default(),
-						prettier_formatted_result,
-						biome_formatted_result,
-					) {
-						if matches!(tag, ChangeTag::Equal) {
-							matched_lines += 1;
-						}
-
-						let line = line.strip_suffix('\n').unwrap_or(line);
-
-						writeln!(diff, "{tag}{line}").unwrap();
+				for (tag, line) in diff_lines(Algorithm::default(), prettier_formatted_result, biome_formatted_result) {
+					if matches!(tag, ChangeTag::Equal) {
+						matched_lines += 1;
 					}
 
-					let ratio = matched_lines as f64 / biome_lines.max(prettier_lines) as f64;
+					let line = line.strip_suffix('\n').unwrap_or(line);
 
-					(matched_lines, ratio, Some(diff))
-				};
+					writeln!(diff, "{tag}{line}").unwrap();
+				}
+
+				let ratio = matched_lines as f64 / biome_lines.max(prettier_lines) as f64;
+
+				(matched_lines, ratio, Some(diff))
+			};
 
 			total_lines += biome_lines.max(prettier_lines);
 
@@ -389,11 +371,8 @@ impl DiffReport {
 
 			file_ratio_sum += ratio;
 
-			let single_file_metric_data = SingleFileMetricData {
-				diff,
-				filename:(*file_name).to_string(),
-				single_file_compatibility:ratio,
-			};
+			let single_file_metric_data =
+				SingleFileMetricData { diff, filename:(*file_name).to_string(), single_file_compatibility:ratio };
 
 			// We'll skip compatible tests and only track incompatible ones
 			if incompatible_only && single_file_metric_data.is_compatible() {
@@ -403,11 +382,9 @@ impl DiffReport {
 			report_metric_data.files.push(single_file_metric_data);
 		}
 
-		report_metric_data.file_based_average_prettier_similarity =
-			file_ratio_sum / f64::from(file_count);
+		report_metric_data.file_based_average_prettier_similarity = file_ratio_sum / f64::from(file_count);
 
-		report_metric_data.line_based_average_prettier_similarity =
-			total_matched_lines as f64 / total_lines as f64;
+		report_metric_data.line_based_average_prettier_similarity = total_matched_lines as f64 / total_lines as f64;
 
 		match report_type {
 			ReportType::Json => self.report_json(report_filename, report_metric_data),
@@ -415,16 +392,10 @@ impl DiffReport {
 		}
 	}
 
-	fn report_markdown(
-		&self,
-		report_filename:String,
-		report_metric_data:PrettierCompatibilityMetricData,
-	) {
+	fn report_markdown(&self, report_filename:String, report_metric_data:PrettierCompatibilityMetricData) {
 		let mut report = String::new();
 
-		for SingleFileMetricData { filename, single_file_compatibility, diff } in
-			report_metric_data.files.iter()
-		{
+		for SingleFileMetricData { filename, single_file_compatibility, diff } in report_metric_data.files.iter() {
 			writeln!(report, "### {filename}").unwrap();
 
 			if let Some(diff) = diff {
@@ -437,12 +408,7 @@ impl DiffReport {
 
 			writeln!(report).unwrap();
 
-			writeln!(
-				report,
-				"**Prettier Similarity**: {:.2}%",
-				single_file_compatibility * 100_f64
-			)
-			.unwrap();
+			writeln!(report, "**Prettier Similarity**: {:.2}%", single_file_compatibility * 100_f64).unwrap();
 
 			writeln!(report).unwrap();
 
@@ -477,7 +443,7 @@ impl DiffReport {
 		.unwrap();
 
 		header.push_str(
-                r"
+			r"
 
 <details>
     <summary>Definition</summary>
@@ -488,18 +454,14 @@ impl DiffReport {
 [Metric definition discussion](https://github.com/rome/tools/issues/2555#issuecomment-1124787893)
 
 ## Test cases",
-            );
+		);
 
 		let report = format!("{header}\n\n{report}");
 
 		write(report_filename, report).unwrap();
 	}
 
-	fn report_json(
-		&self,
-		report_filename:String,
-		report_metric_data:PrettierCompatibilityMetricData,
-	) {
+	fn report_json(&self, report_filename:String, report_metric_data:PrettierCompatibilityMetricData) {
 		let json_content = serde_json::to_string(&report_metric_data).unwrap();
 
 		write(report_filename, json_content).unwrap();

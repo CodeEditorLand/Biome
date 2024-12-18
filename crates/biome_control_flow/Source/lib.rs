@@ -21,9 +21,7 @@ pub struct ControlFlowGraph<L:Language> {
 }
 
 impl<L:Language> ControlFlowGraph<L> {
-	fn new(node:SyntaxNode<L>) -> Self {
-		ControlFlowGraph { blocks:vec![BasicBlock::new(None, None)], node }
-	}
+	fn new(node:SyntaxNode<L>) -> Self { ControlFlowGraph { blocks:vec![BasicBlock::new(None, None)], node } }
 
 	/// Returns the block identified by `id`.
 	pub fn get(&self, id:BlockId) -> &BasicBlock<L> {

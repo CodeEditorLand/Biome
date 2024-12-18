@@ -7,10 +7,7 @@ pub(crate) struct GraphqlSuppressionAction;
 impl SuppressionAction for GraphqlSuppressionAction {
 	type Language = GraphqlLanguage;
 
-	fn find_token_to_apply_suppression(
-		&self,
-		token:GraphqlSyntaxToken,
-	) -> Option<ApplySuppression<Self::Language>> {
+	fn find_token_to_apply_suppression(&self, token:GraphqlSyntaxToken) -> Option<ApplySuppression<Self::Language>> {
 		let mut apply_suppression = ApplySuppression {
 			token_has_trailing_comments:false,
 			token_to_apply_suppression:token.clone(),

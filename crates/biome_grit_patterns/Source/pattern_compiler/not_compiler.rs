@@ -1,63 +1,65 @@
-use super::{
-    compilation_context::NodeCompilationContext, predicate_compiler::PredicateCompiler,
-    PatternCompiler,
-};
-use crate::{diagnostics::CompilerDiagnostic, grit_context::GritQueryContext, CompileError};
 use biome_grit_syntax::{GritPatternNot, GritPredicateNot};
 use biome_rowan::AstNode;
 use grit_pattern_matcher::{
-    context::StaticDefinitions,
-    pattern::{Not, Pattern, PatternOrPredicate, PrNot, Predicate},
+	context::StaticDefinitions,
+	pattern::{Not, Pattern, PatternOrPredicate, PrNot, Predicate},
 };
+
+use super::{
+	PatternCompiler,
+	compilation_context::NodeCompilationContext,
+	predicate_compiler::PredicateCompiler,
+};
+use crate::{CompileError, diagnostics::CompilerDiagnostic, grit_context::GritQueryContext};
 
 pub(crate) struct NotCompiler;
 
 impl NotCompiler {
-    pub(crate) fn from_node(
-        node: &GritPatternNot,
-        context: &mut NodeCompilationContext,
-    ) -> Result<Not<GritQueryContext>, CompileError> {
-        let pattern = PatternCompiler::from_node(&node.pattern()?, context)?;
+	pub(crate) fn from_node(
+		node:&GritPatternNot,
+		context:&mut NodeCompilationContext,
+	) -> Result<Not<GritQueryContext>, CompileError> {
+		let pattern = PatternCompiler::from_node(&node.pattern()?, context)?;
 
-        if pattern.iter(&StaticDefinitions::default()).any(|p| {
-            matches!(
-                p,
-                PatternOrPredicate::Pattern(Pattern::Rewrite(_))
-                    | PatternOrPredicate::Predicate(Predicate::Rewrite(_))
-            )
-        }) {
-            context.log(CompilerDiagnostic::new_warning(
-                "Rewrites inside of a not will never be applied",
-                node.syntax().text_range(),
-            ));
-        }
+		if pattern.iter(&StaticDefinitions::default()).any(|p| {
+			matches!(
+				p,
+				PatternOrPredicate::Pattern(Pattern::Rewrite(_))
+					| PatternOrPredicate::Predicate(Predicate::Rewrite(_))
+			)
+		}) {
+			context.log(CompilerDiagnostic::new_warning(
+				"Rewrites inside of a not will never be applied",
+				node.syntax().text_range(),
+			));
+		}
 
-        Ok(Not::new(pattern))
-    }
+		Ok(Not::new(pattern))
+	}
 }
 
 pub(crate) struct PrNotCompiler;
 
 impl PrNotCompiler {
-    pub(crate) fn from_node(
-        node: &GritPredicateNot,
-        context: &mut NodeCompilationContext,
-    ) -> Result<PrNot<GritQueryContext>, CompileError> {
-        let predicate = PredicateCompiler::from_node(&node.predicate()?, context)?;
+	pub(crate) fn from_node(
+		node:&GritPredicateNot,
+		context:&mut NodeCompilationContext,
+	) -> Result<PrNot<GritQueryContext>, CompileError> {
+		let predicate = PredicateCompiler::from_node(&node.predicate()?, context)?;
 
-        if predicate.iter(&StaticDefinitions::default()).any(|p| {
-            matches!(
-                p,
-                PatternOrPredicate::Pattern(Pattern::Rewrite(_))
-                    | PatternOrPredicate::Predicate(Predicate::Rewrite(_))
-            )
-        }) {
-            context.log(CompilerDiagnostic::new_warning(
-                "Rewrites inside of a not will never be applied",
-                node.syntax().text_range(),
-            ));
-        }
+		if predicate.iter(&StaticDefinitions::default()).any(|p| {
+			matches!(
+				p,
+				PatternOrPredicate::Pattern(Pattern::Rewrite(_))
+					| PatternOrPredicate::Predicate(Predicate::Rewrite(_))
+			)
+		}) {
+			context.log(CompilerDiagnostic::new_warning(
+				"Rewrites inside of a not will never be applied",
+				node.syntax().text_range(),
+			));
+		}
 
-        Ok(PrNot::new(predicate))
-    }
+		Ok(PrNot::new(predicate))
+	}
 }

@@ -97,11 +97,9 @@ impl EnvConsole {
 			ColorMode::Enabled => (ColorChoice::Always, ColorChoice::Always),
 			ColorMode::Disabled => (ColorChoice::Never, ColorChoice::Never),
 			ColorMode::Auto => {
-				let stdout =
-					if io::stdout().is_terminal() { ColorChoice::Auto } else { ColorChoice::Never };
+				let stdout = if io::stdout().is_terminal() { ColorChoice::Auto } else { ColorChoice::Never };
 
-				let stderr =
-					if io::stderr().is_terminal() { ColorChoice::Auto } else { ColorChoice::Never };
+				let stderr = if io::stderr().is_terminal() { ColorChoice::Auto } else { ColorChoice::Never };
 
 				(stdout, stderr)
 			},

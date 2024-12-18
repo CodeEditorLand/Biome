@@ -432,20 +432,16 @@ pub trait AriaPropertyDefinition: Debug {
 		match self.property_type() {
 			AriaPropertyTypeEnum::String => true,
 			AriaPropertyTypeEnum::Id => is_valid_html_id(input_value),
-			AriaPropertyTypeEnum::Idlist => {
-				input_value.split_ascii_whitespace().all(is_valid_html_id)
-			},
+			AriaPropertyTypeEnum::Idlist => input_value.split_ascii_whitespace().all(is_valid_html_id),
 			// A numerical value without a fractional component.
 			AriaPropertyTypeEnum::Integer => input_value.parse::<u32>().is_ok(),
 			AriaPropertyTypeEnum::Number => input_value.parse::<f32>().is_ok(),
 			AriaPropertyTypeEnum::Boolean => matches!(input_value, "false" | "true"),
-			AriaPropertyTypeEnum::Token => {
-				self.values().any(|allowed_token| *allowed_token == input_value)
-			},
+			AriaPropertyTypeEnum::Token => self.values().any(|allowed_token| *allowed_token == input_value),
 			AriaPropertyTypeEnum::Tokenlist => {
-				input_value.split_ascii_whitespace().all(|input_token| {
-					self.values().any(|allowed_token| allowed_token.trim() == input_token)
-				})
+				input_value
+					.split_ascii_whitespace()
+					.all(|input_token| self.values().any(|allowed_token| allowed_token.trim() == input_token))
 			},
 
 			AriaPropertyTypeEnum::Tristate => matches!(input_value, "false" | "true" | "mixed"),
@@ -461,6 +457,4 @@ pub trait AriaPropertyDefinition: Debug {
 /// Whitespaces are usedd to separate two identifier in a list of identifiers.
 ///
 /// See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id#syntax
-fn is_valid_html_id(id:&str) -> bool {
-	!id.is_empty() && !id.bytes().any(|b| b.is_ascii_whitespace())
-}
+fn is_valid_html_id(id:&str) -> bool { !id.is_empty() && !id.bytes().any(|b| b.is_ascii_whitespace()) }

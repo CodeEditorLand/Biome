@@ -1,96 +1,86 @@
-use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource, RuleSourceKind,
-};
+use biome_analyze::{Ast, Rule, RuleDiagnostic, RuleSource, RuleSourceKind, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_graphql_syntax::GraphqlDirective;
 use biome_rowan::AstNode;
 
 declare_lint_rule! {
-    /// Require specifying the reason argument when using `@deprecated` directive
-    ///
-    /// This rule checks the parameter of `@deprecated` directive for the use of reason argument,
-    /// suggesting user to add it in case the argument is missing.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```graphql,expect_diagnostic
-    /// query {
-    ///   member @deprecated
-    /// }
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```graphql
-    /// query {
-    ///   member @deprecated(reason: "Why?")
-    /// }
-    /// ```
-    pub UseDeprecatedReason {
-        version: "1.9.0",
-        name: "useDeprecatedReason",
-        language: "graphql",
-        sources: &[RuleSource::EslintGraphql("require-deprecation-reason")],
-        source_kind: RuleSourceKind::SameLogic,
-        recommended: true,
-    }
+	/// Require specifying the reason argument when using `@deprecated` directive
+	///
+	/// This rule checks the parameter of `@deprecated` directive for the use of reason argument,
+	/// suggesting user to add it in case the argument is missing.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```graphql,expect_diagnostic
+	/// query {
+	///   member @deprecated
+	/// }
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```graphql
+	/// query {
+	///   member @deprecated(reason: "Why?")
+	/// }
+	/// ```
+	pub UseDeprecatedReason {
+		version: "1.9.0",
+		name: "useDeprecatedReason",
+		language: "graphql",
+		sources: &[RuleSource::EslintGraphql("require-deprecation-reason")],
+		source_kind: RuleSourceKind::SameLogic,
+		recommended: true,
+	}
 }
 
 impl Rule for UseDeprecatedReason {
-    type Query = Ast<GraphqlDirective>;
+	type Options = ();
+	type Query = Ast<GraphqlDirective>;
+	type Signals = Option<Self::State>;
+	type State = GraphqlDirective;
 
-    type State = GraphqlDirective;
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let name = node.name().ok()?;
 
-    type Options = ();
+		if name.text() != "deprecated" {
+			return None;
+		}
+		// Fire diagnostic if the directive does not have any arguments
+		let Some(arguments) = node.arguments() else {
+			return Some(node.clone());
+		};
 
-    fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
-        let node = ctx.query();
+		let arguments = arguments.arguments();
 
-        let name = node.name().ok()?;
+		let has_reason = arguments
+			.into_iter()
+			.any(|argument| argument.name().is_ok_and(|name| name.text() == "reason"));
 
-        if name.text() != "deprecated" {
-            return None;
-        }
-        // Fire diagnostic if the directive does not have any arguments
-        let Some(arguments) = node.arguments() else {
-            return Some(node.clone());
-        };
+		if has_reason { None } else { Some(node.clone()) }
+	}
 
-        let arguments = arguments.arguments();
+	fn diagnostic(ctx:&RuleContext<Self>, _state:&Self::State) -> Option<RuleDiagnostic> {
+		// Read our guidelines to write great diagnostics:
+		// https://docs.rs/biome_analyze/latest/biome_analyze/#what-a-rule-should-say-to-the-user
+		//
+		let span = ctx.query().range();
 
-        let has_reason = arguments
-            .into_iter()
-            .any(|argument| argument.name().is_ok_and(|name| name.text() == "reason"));
-
-        if has_reason {
-            None
-        } else {
-            Some(node.clone())
-        }
-    }
-
-    fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
-        //
-        // Read our guidelines to write great diagnostics:
-        // https://docs.rs/biome_analyze/latest/biome_analyze/#what-a-rule-should-say-to-the-user
-        //
-        let span = ctx.query().range();
-
-        Some(
-            RuleDiagnostic::new(
-                rule_category!(),
-                span,
-                markup! {
-                    "The directive `@deprecated` should have a `reason` argument."
-                },
-            )
-            .note(markup! {
-                    "Add a `reason` argument to the directive."
-            }),
-        )
-    }
+		Some(
+			RuleDiagnostic::new(
+				rule_category!(),
+				span,
+				markup! {
+					"The directive `@deprecated` should have a `reason` argument."
+				},
+			)
+			.note(markup! {
+					"Add a `reason` argument to the directive."
+			}),
+		)
+	}
 }

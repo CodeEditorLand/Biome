@@ -1,217 +1,211 @@
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, FixKind, Rule, RuleDiagnostic, RuleSource,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
 use biome_js_factory::make;
-use biome_js_syntax::parentheses::NeedsParentheses;
-use biome_js_syntax::{AnyJsStatement, JsIfStatement, T};
+use biome_js_syntax::{AnyJsStatement, JsIfStatement, T, parentheses::NeedsParentheses};
 use biome_rowan::{AstNode, AstNodeList, BatchMutationExt};
 
 use crate::JsRuleAction;
 
 declare_lint_rule! {
-    /// Enforce using single `if` instead of nested `if` clauses.
-    ///
-    /// If an `if (b)` statement is the only statement in an `if (a)` block, it is often clearer to use an `if (a && b)` form.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```js,expect_diagnostic
-    /// if (condition) {
-    ///     if (anotherCondition) {
-    ///         // ...
-    ///     }
-    /// }
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// if (condition) {
-    ///     // Comment
-    ///     if (anotherCondition) {
-    ///         // ...
-    ///     }
-    /// }
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```js
-    /// if (condition && anotherCondition) {
-    ///     // ...
-    /// }
-    /// ```
-    ///
-    /// ```js
-    /// if (condition) {
-    ///     if (anotherCondition) {
-    ///         // ...
-    ///     }
-    ///     doSomething();
-    /// }
-    /// ```
-    ///
-    /// ```js
-    /// if (condition) {
-    ///     if (anotherCondition) {
-    ///         // ...
-    ///     } else {
-    ///         // ...
-    ///     }
-    /// }
-    /// ```
-    ///
-    pub UseCollapsedIf {
-        version: "1.9.4",
-        name: "useCollapsedIf",
-        language: "js",
-        sources: &[
-            RuleSource::EslintUnicorn("no-lonely-if"),
-            RuleSource::Clippy("collapsible_if")
-        ],
-        recommended: false,
-        fix_kind: FixKind::Safe,
-    }
+	/// Enforce using single `if` instead of nested `if` clauses.
+	///
+	/// If an `if (b)` statement is the only statement in an `if (a)` block, it is often clearer to use an `if (a && b)` form.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```js,expect_diagnostic
+	/// if (condition) {
+	///     if (anotherCondition) {
+	///         // ...
+	///     }
+	/// }
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// if (condition) {
+	///     // Comment
+	///     if (anotherCondition) {
+	///         // ...
+	///     }
+	/// }
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```js
+	/// if (condition && anotherCondition) {
+	///     // ...
+	/// }
+	/// ```
+	///
+	/// ```js
+	/// if (condition) {
+	///     if (anotherCondition) {
+	///         // ...
+	///     }
+	///     doSomething();
+	/// }
+	/// ```
+	///
+	/// ```js
+	/// if (condition) {
+	///     if (anotherCondition) {
+	///         // ...
+	///     } else {
+	///         // ...
+	///     }
+	/// }
+	/// ```
+	///
+	pub UseCollapsedIf {
+		version: "1.9.4",
+		name: "useCollapsedIf",
+		language: "js",
+		sources: &[
+			RuleSource::EslintUnicorn("no-lonely-if"),
+			RuleSource::Clippy("collapsible_if")
+		],
+		recommended: false,
+		fix_kind: FixKind::Safe,
+	}
 }
 
 pub struct RuleState {
-    parent_if_statement: JsIfStatement,
-    child_if_statement: JsIfStatement,
+	parent_if_statement:JsIfStatement,
+	child_if_statement:JsIfStatement,
 }
 
 impl Rule for UseCollapsedIf {
-    type Query = Ast<JsIfStatement>;
+	type Options = ();
+	type Query = Ast<JsIfStatement>;
+	type Signals = Option<Self::State>;
+	type State = RuleState;
 
-    type State = RuleState;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let if_stmt = ctx.query();
 
-    type Signals = Option<Self::State>;
+		// Ignore `if` with an `else` clause
+		if if_stmt.else_clause().is_some() {
+			return None;
+		}
 
-    type Options = ();
+		let child_if_statement = match if_stmt.consequent().ok()? {
+			// If `consequent` is a `JsBlockStatement` and the block contains only one
+			// `JsIfStatement`, the child `if` statement should be merged.
+			AnyJsStatement::JsBlockStatement(parent_block_statement) => {
+				let statements = parent_block_statement.statements();
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let if_stmt = ctx.query();
+				if statements.len() != 1 {
+					return None;
+				}
 
-        // Ignore `if` with an `else` clause
-        if if_stmt.else_clause().is_some() {
-            return None;
-        }
+				let AnyJsStatement::JsIfStatement(child_if_statement) = statements.first()? else {
+					return None;
+				};
 
-        let child_if_statement = match if_stmt.consequent().ok()? {
-            // If `consequent` is a `JsBlockStatement` and the block contains only one
-            // `JsIfStatement`, the child `if` statement should be merged.
-            AnyJsStatement::JsBlockStatement(parent_block_statement) => {
-                let statements = parent_block_statement.statements();
+				Some(child_if_statement)
+			},
+			// If `consequent` is a `JsIfStatement` without any block, it should be merged.
+			AnyJsStatement::JsIfStatement(child_if_statement) => Some(child_if_statement),
+			_ => None,
+		}?;
 
-                if statements.len() != 1 {
-                    return None;
-                }
+		// It cannot be merged if the child `if` statement has any else clause(s).
+		if child_if_statement.else_clause().is_some() {
+			return None;
+		}
 
-                let AnyJsStatement::JsIfStatement(child_if_statement) = statements.first()? else {
-                    return None;
-                };
+		Some(RuleState { parent_if_statement:if_stmt.clone(), child_if_statement })
+	}
 
-                Some(child_if_statement)
-            }
-            // If `consequent` is a `JsIfStatement` without any block, it should be merged.
-            AnyJsStatement::JsIfStatement(child_if_statement) => Some(child_if_statement),
-            _ => None,
-        }?;
+	fn diagnostic(_ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+		Some(RuleDiagnostic::new(
+			rule_category!(),
+			state.child_if_statement.syntax().text_range(),
+			markup! {
+				"This "<Emphasis>"if"</Emphasis>" statement can be collapsed into another "<Emphasis>"if"</Emphasis>" statement."
+			},
+		))
+	}
 
-        // It cannot be merged if the child `if` statement has any else clause(s).
-        if child_if_statement.else_clause().is_some() {
-            return None;
-        }
+	fn action(ctx:&RuleContext<Self>, state:&Self::State) -> Option<JsRuleAction> {
+		let RuleState { parent_if_statement, child_if_statement } = state;
 
-        Some(RuleState {
-            parent_if_statement: if_stmt.clone(),
-            child_if_statement,
-        })
-    }
+		let parent_consequent = parent_if_statement.consequent().ok()?;
 
-    fn diagnostic(_ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
-        Some(RuleDiagnostic::new(
-            rule_category!(),
-            state.child_if_statement.syntax().text_range(),
-            markup! {
-                "This "<Emphasis>"if"</Emphasis>" statement can be collapsed into another "<Emphasis>"if"</Emphasis>" statement."
-            },
-        ))
-    }
+		let parent_test = parent_if_statement.test().ok()?;
 
-    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
-        let RuleState {
-            parent_if_statement,
-            child_if_statement,
-        } = state;
+		let child_consequent = child_if_statement.consequent().ok()?;
 
-        let parent_consequent = parent_if_statement.consequent().ok()?;
+		let child_test = child_if_statement.test().ok()?;
 
-        let parent_test = parent_if_statement.test().ok()?;
+		let parent_has_comments = match &parent_consequent {
+			AnyJsStatement::JsBlockStatement(block_stmt) => {
+				block_stmt.l_curly_token().ok()?.has_trailing_comments()
+					|| block_stmt.r_curly_token().ok()?.has_leading_comments()
+			},
 
-        let child_consequent = child_if_statement.consequent().ok()?;
+			_ => false,
+		};
 
-        let child_test = child_if_statement.test().ok()?;
+		let has_comments = parent_has_comments
+			|| child_if_statement.syntax().has_comments_direct()
+			|| child_if_statement.r_paren_token().ok()?.has_trailing_comments();
 
-        let parent_has_comments = match &parent_consequent {
-            AnyJsStatement::JsBlockStatement(block_stmt) => {
-                block_stmt.l_curly_token().ok()?.has_trailing_comments()
-                    || block_stmt.r_curly_token().ok()?.has_leading_comments()
-            }
+		if has_comments {
+			return None;
+		}
 
-            _ => false,
-        };
+		let operator = make::token_decorated_with_space(T![&&]);
 
-        let has_comments = parent_has_comments
-            || child_if_statement.syntax().has_comments_direct()
-            || child_if_statement
-                .r_paren_token()
-                .ok()?
-                .has_trailing_comments();
+		let mut expr =
+			make::js_logical_expression(parent_test.clone(), operator, child_test.clone());
 
-        if has_comments {
-            return None;
-        }
+		// Parenthesize arms of the `&&` expression if needed
+		let left = expr.left().ok()?;
 
-        let operator = make::token_decorated_with_space(T![&&]);
+		if left.needs_parentheses() {
+			expr = expr.with_left(make::parenthesized(left).into());
+		}
 
-        let mut expr =
-            make::js_logical_expression(parent_test.clone(), operator, child_test.clone());
+		let right = expr.right().ok()?;
 
-        // Parenthesize arms of the `&&` expression if needed
-        let left = expr.left().ok()?;
+		if right.needs_parentheses() {
+			expr = expr.with_right(make::parenthesized(right).into());
+		}
 
-        if left.needs_parentheses() {
-            expr = expr.with_left(make::parenthesized(left).into());
-        }
+		// If the inner `if` statement has no block and the statement does not end with
+		// semicolon, it cannot be fixed automatically because that will break the ASI
+		// rule.
+		if !matches!(&child_consequent, AnyJsStatement::JsBlockStatement(_)) {
+			let last_token = child_consequent.syntax().last_token()?;
 
-        let right = expr.right().ok()?;
+			if last_token.kind() != T![;] {
+				return None;
+			}
+		}
 
-        if right.needs_parentheses() {
-            expr = expr.with_right(make::parenthesized(right).into());
-        }
+		let mut mutation = ctx.root().begin();
 
-        // If the inner `if` statement has no block and the statement does not end with semicolon,
-        // it cannot be fixed automatically because that will break the ASI rule.
-        if !matches!(&child_consequent, AnyJsStatement::JsBlockStatement(_)) {
-            let last_token = child_consequent.syntax().last_token()?;
+		mutation.replace_node(parent_test, expr.into());
 
-            if last_token.kind() != T![;] {
-                return None;
-            }
-        }
+		mutation.replace_node(parent_consequent, child_consequent);
 
-        let mut mutation = ctx.root().begin();
-
-        mutation.replace_node(parent_test, expr.into());
-
-        mutation.replace_node(parent_consequent, child_consequent);
-
-        Some(JsRuleAction::new(
-            ctx.metadata().action_category(ctx.category(), ctx.group()),
-            ctx.metadata().applicability(),
-            markup! { "Use collapsed "<Emphasis>"if"</Emphasis>" instead." }.to_owned(),
-            mutation,
-        ))
-    }
+		Some(JsRuleAction::new(
+			ctx.metadata().action_category(ctx.category(), ctx.group()),
+			ctx.metadata().applicability(),
+			markup! { "Use collapsed "<Emphasis>"if"</Emphasis>" instead." }.to_owned(),
+			mutation,
+		))
+	}
 }

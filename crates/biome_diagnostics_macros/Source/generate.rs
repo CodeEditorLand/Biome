@@ -2,13 +2,7 @@ use proc_macro_error::*;
 use proc_macro2::{Ident, Span, TokenStream};
 use quote::quote;
 
-use crate::parse::{
-	DeriveEnumInput,
-	DeriveInput,
-	DeriveStructInput,
-	StaticOrDynamic,
-	StringOrMarkup,
-};
+use crate::parse::{DeriveEnumInput, DeriveInput, DeriveStructInput, StaticOrDynamic, StringOrMarkup};
 
 pub(crate) fn generate_diagnostic(input:DeriveInput) -> TokenStream {
 	match input {

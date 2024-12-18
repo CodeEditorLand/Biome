@@ -89,12 +89,10 @@ where
 
 			let leading_comments = comments.leading_comments(self.node);
 
-			let outside_trimmed_range = leading_comments.partition_point(|comment| {
-				comment.piece().text_range().end() <= trimmed_source_range.start()
-			});
+			let outside_trimmed_range = leading_comments
+				.partition_point(|comment| comment.piece().text_range().end() <= trimmed_source_range.start());
 
-			let (outside_trimmed_range, in_trimmed_range) =
-				leading_comments.split_at(outside_trimmed_range);
+			let (outside_trimmed_range, in_trimmed_range) = leading_comments.split_at(outside_trimmed_range);
 
 			write!(f, [FormatLeadingComments::Comments(outside_trimmed_range)])?;
 
@@ -147,8 +145,7 @@ where
 				source_range(f, comment.piece().text_range()).end() <= trimmed_source_range.end()
 			});
 
-			let (in_trimmed_range, outside_trimmed_range) =
-				trailing_comments.split_at(outside_trimmed_range_start);
+			let (in_trimmed_range, outside_trimmed_range) = trailing_comments.split_at(outside_trimmed_range_start);
 
 			for comment in in_trimmed_range {
 				comment.mark_formatted();
@@ -184,9 +181,7 @@ pub fn format_suppressed_node<L:Language>(node:&SyntaxNode<L>) -> FormatVerbatim
 /// Formats an object using its [`Format`] implementation but falls back to
 /// printing the object as it is in the source document if formatting it returns
 /// an [`FormatError::SyntaxError`].
-pub const fn format_or_verbatim<F>(inner:F) -> FormatNodeOrVerbatim<F> {
-	FormatNodeOrVerbatim { inner }
-}
+pub const fn format_or_verbatim<F>(inner:F) -> FormatNodeOrVerbatim<F> { FormatNodeOrVerbatim { inner } }
 
 /// Formats a node or falls back to verbatim printing if formating this node
 /// fails.

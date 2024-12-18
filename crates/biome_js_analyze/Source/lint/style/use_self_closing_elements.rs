@@ -1,5 +1,11 @@
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, FixKind, Rule, RuleDiagnostic, RuleSource,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
 use biome_deserialize_macros::Deserializable;
@@ -13,190 +19,187 @@ use serde::{Deserialize, Serialize};
 use crate::JsRuleAction;
 
 declare_lint_rule! {
-    /// Prevent extra closing tags for components without children
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <div></div>
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <Component></Component>
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <Foo.bar></Foo.bar>
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```js
-    /// <div />
-    ///```
-    ///
-    /// ```js
-    /// <div>child</div>
-    ///```
-    ///
-    /// ```js
-    /// <Component />
-    ///```
-    ///
-    /// ```js
-    /// <Component>child</Component>
-    ///```
-    ///
-    /// ```js
-    /// <Foo.bar />
-    ///```
-    ///
-    /// ```js
-    /// <Foo.bar>child</Foo.bar>
-    ///```
-    ///
-    /// ## Options
-    ///
-    /// ### `ignoreHtmlElements`
-    ///
-    /// **Since version 2.0.0**.
-    ///
-    /// Default: `false`
-    ///
-    /// This option allows you to specify whether to ignore checking native HTML elements.
-    ///
-    /// In the following example, when the option is set to "true", it will not self close native HTML elements.
-    ///
-    /// ```json
-    /// {
-    ///     "//":"...",
-    ///     "options": {
-    ///         "ignoreHtmlElements": true
-    ///     }
-    /// }
-    /// ```
-    ///
-    /// ```jsx,ignore
-    /// <div></div>
-    /// ```
-    ///
-    ///
-    pub UseSelfClosingElements {
-        version: "1.0.0",
-        name: "useSelfClosingElements",
-        language: "js",
-        sources: &[RuleSource::EslintStylistic("jsx-self-closing-comp")],
-        recommended: true,
-        fix_kind: FixKind::Unsafe,
-    }
+	/// Prevent extra closing tags for components without children
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```jsx,expect_diagnostic
+	/// <div></div>
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <Component></Component>
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <Foo.bar></Foo.bar>
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```js
+	/// <div />
+	///```
+	///
+	/// ```js
+	/// <div>child</div>
+	///```
+	///
+	/// ```js
+	/// <Component />
+	///```
+	///
+	/// ```js
+	/// <Component>child</Component>
+	///```
+	///
+	/// ```js
+	/// <Foo.bar />
+	///```
+	///
+	/// ```js
+	/// <Foo.bar>child</Foo.bar>
+	///```
+	///
+	/// ## Options
+	///
+	/// ### `ignoreHtmlElements`
+	///
+	/// **Since version 2.0.0**.
+	///
+	/// Default: `false`
+	///
+	/// This option allows you to specify whether to ignore checking native HTML elements.
+	///
+	/// In the following example, when the option is set to "true", it will not self close native HTML elements.
+	///
+	/// ```json
+	/// {
+	///     "//":"...",
+	///     "options": {
+	///         "ignoreHtmlElements": true
+	///     }
+	/// }
+	/// ```
+	///
+	/// ```jsx,ignore
+	/// <div></div>
+	/// ```
+	///
+	///
+	pub UseSelfClosingElements {
+		version: "1.0.0",
+		name: "useSelfClosingElements",
+		language: "js",
+		sources: &[RuleSource::EslintStylistic("jsx-self-closing-comp")],
+		recommended: true,
+		fix_kind: FixKind::Unsafe,
+	}
 }
 
 impl Rule for UseSelfClosingElements {
-    type Query = Ast<JsxElement>;
+	type Options = Box<UseSelfClosingElementsOptions>;
+	type Query = Ast<JsxElement>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-    type State = ();
+	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let is_html_element = node
+			.opening_element()
+			.is_ok_and(|node| node.name().is_ok_and(|name| name.as_jsx_name().is_some()));
 
-    type Options = Box<UseSelfClosingElementsOptions>;
+		if node.children().is_empty() && !(ctx.options().ignore_html_elements && is_html_element) {
+			Some(())
+		} else {
+			None
+		}
+	}
 
-    fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
-        let node = ctx.query();
+	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
+		Some(RuleDiagnostic::new(
+			rule_category!(),
+			ctx.query().range(),
+			markup! {
+				"JSX elements without children should be marked as self-closing. In JSX, it is valid for any element to be self-closing."
+			},
+		))
+	}
 
-        let is_html_element = node
-            .opening_element()
-            .is_ok_and(|node| node.name().is_ok_and(|name| name.as_jsx_name().is_some()));
+	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
+		let mut mutation = ctx.root().begin();
 
-        if node.children().is_empty() && !(ctx.options().ignore_html_elements && is_html_element) {
-            Some(())
-        } else {
-            None
-        }
-    }
+		let open_element = ctx.query().opening_element().ok()?;
 
-    fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
-        Some(RuleDiagnostic::new(
-            rule_category!(),
-            ctx.query().range(),
-            markup! {
-                "JSX elements without children should be marked as self-closing. In JSX, it is valid for any element to be self-closing."
-            },
-        ))
-    }
+		let JsxOpeningElementFields {
+			l_angle_token,
+			name,
+			type_arguments,
+			attributes,
+			r_angle_token,
+		} = open_element.as_fields();
 
-    fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
-        let mut mutation = ctx.root().begin();
+		let mut r_angle_token = r_angle_token.ok()?;
 
-        let open_element = ctx.query().opening_element().ok()?;
+		let mut leading_trivia = vec![];
 
-        let JsxOpeningElementFields {
-            l_angle_token,
-            name,
-            type_arguments,
-            attributes,
-            r_angle_token,
-        } = open_element.as_fields();
+		let mut slash_token = String::new();
 
-        let mut r_angle_token = r_angle_token.ok()?;
+		for trivia in r_angle_token.leading_trivia().pieces() {
+			leading_trivia.push(TriviaPiece::new(trivia.kind(), trivia.text_len()));
 
-        let mut leading_trivia = vec![];
+			slash_token.push_str(trivia.text());
+		}
+		// check if previous `open_element` have a whitespace before `>`
+		// this step make sure we could convert <div></div> -> <div />
+		// <div test="some""></div> -> <div test="some" />
+		let prev_token = r_angle_token.prev_token();
 
-        let mut slash_token = String::new();
+		let need_extra_whitespace = prev_token
+			.as_ref()
+			.map_or(true, |token| !token.trailing_trivia().text().ends_with(' '));
 
-        for trivia in r_angle_token.leading_trivia().pieces() {
-            leading_trivia.push(TriviaPiece::new(trivia.kind(), trivia.text_len()));
+		// drop the leading trivia of `r_angle_token`
+		r_angle_token = r_angle_token.with_leading_trivia([]);
 
-            slash_token.push_str(trivia.text());
-        }
-        // check if previous `open_element` have a whitespace before `>`
-        // this step make sure we could convert <div></div> -> <div />
-        // <div test="some""></div> -> <div test="some" />
-        let prev_token = r_angle_token.prev_token();
+		if leading_trivia.is_empty() && need_extra_whitespace {
+			slash_token.push(' ');
 
-        let need_extra_whitespace = prev_token
-            .as_ref()
-            .map_or(true, |token| !token.trailing_trivia().text().ends_with(' '));
+			leading_trivia.push(TriviaPiece::whitespace(1));
+		}
 
-        // drop the leading trivia of `r_angle_token`
-        r_angle_token = r_angle_token.with_leading_trivia([]);
+		slash_token += "/";
 
-        if leading_trivia.is_empty() && need_extra_whitespace {
-            slash_token.push(' ');
+		let mut self_closing_element_builder = make::jsx_self_closing_element(
+			l_angle_token.ok()?,
+			name.ok()?,
+			attributes,
+			JsSyntaxToken::new_detached(T![/], &slash_token, leading_trivia, []),
+			r_angle_token,
+		);
 
-            leading_trivia.push(TriviaPiece::whitespace(1));
-        }
+		if let Some(type_arguments) = type_arguments {
+			self_closing_element_builder =
+				self_closing_element_builder.with_type_arguments(type_arguments);
+		}
 
-        slash_token += "/";
+		let self_closing_element = self_closing_element_builder.build();
 
-        let mut self_closing_element_builder = make::jsx_self_closing_element(
-            l_angle_token.ok()?,
-            name.ok()?,
-            attributes,
-            JsSyntaxToken::new_detached(T![/], &slash_token, leading_trivia, []),
-            r_angle_token,
-        );
+		mutation.replace_node(
+			AnyJsxTag::JsxElement(ctx.query().clone()),
+			AnyJsxTag::JsxSelfClosingElement(self_closing_element),
+		);
 
-        if let Some(type_arguments) = type_arguments {
-            self_closing_element_builder =
-                self_closing_element_builder.with_type_arguments(type_arguments);
-        }
-
-        let self_closing_element = self_closing_element_builder.build();
-
-        mutation.replace_node(
-            AnyJsxTag::JsxElement(ctx.query().clone()),
-            AnyJsxTag::JsxSelfClosingElement(self_closing_element),
-        );
-
-        Some(JsRuleAction::new(
-            ctx.metadata().action_category(ctx.category(), ctx.group()),
-            ctx.metadata().applicability(),
-            markup! { "Use a SelfClosingElement instead" }.to_owned(),
-            mutation,
-        ))
-    }
+		Some(JsRuleAction::new(
+			ctx.metadata().action_category(ctx.category(), ctx.group()),
+			ctx.metadata().applicability(),
+			markup! { "Use a SelfClosingElement instead" }.to_owned(),
+			mutation,
+		))
+	}
 }
 
 /// Options for the `useSelfClosingElements` rule.
@@ -204,6 +207,6 @@ impl Rule for UseSelfClosingElements {
 #[cfg_attr(feature = "schemars", derive(JsonSchema))]
 #[serde(rename_all = "camelCase", deny_unknown_fields, default)]
 pub struct UseSelfClosingElementsOptions {
-    // Whether or not to ignore checking native HTML elements. Default is false.
-    pub ignore_html_elements: bool,
+	// Whether or not to ignore checking native HTML elements. Default is false.
+	pub ignore_html_elements:bool,
 }

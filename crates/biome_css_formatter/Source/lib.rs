@@ -198,9 +198,7 @@ where
 
 	/// Returns `true` if the node has a suppression comment and should use the
 	/// same formatting as in the source document.
-	fn is_suppressed(&self, node:&N, f:&CssFormatter) -> bool {
-		f.context().comments().is_suppressed(node.syntax())
-	}
+	fn is_suppressed(&self, node:&N, f:&CssFormatter) -> bool { f.context().comments().is_suppressed(node.syntax()) }
 
 	/// Formats the [leading
 	/// comments](biome_formatter::comments#leading-comments) of the node.
@@ -241,9 +239,7 @@ where
 pub(crate) trait FormatBogusNodeRule<N>
 where
 	N: AstNode<Language = CssLanguage>, {
-	fn fmt(&self, node:&N, f:&mut CssFormatter) -> FormatResult<()> {
-		format_bogus_node(node.syntax()).fmt(f)
-	}
+	fn fmt(&self, node:&N, f:&mut CssFormatter) -> FormatResult<()> { format_bogus_node(node.syntax()).fmt(f) }
 }
 
 #[derive(Debug, Default, Clone)]
@@ -280,11 +276,7 @@ impl FormatLanguage for CssFormatLanguage {
 
 	fn options(&self) -> &<Self::Context as FormatContext>::Options { &self.options }
 
-	fn create_context(
-		self,
-		root:&CssSyntaxNode,
-		source_map:Option<TransformSourceMap>,
-	) -> Self::Context {
+	fn create_context(self, root:&CssSyntaxNode, source_map:Option<TransformSourceMap>) -> Self::Context {
 		let comments = Comments::from_node(root, &CssCommentStyle, source_map.as_ref());
 
 		CssFormatContext::new(self.options, comments).with_source_map(source_map)
@@ -345,21 +337,14 @@ impl IntoFormat<CssFormatContext> for CssSyntaxToken {
 ///
 /// It returns a [Printed] result with a range corresponding to the
 /// range of the input that was effectively overwritten by the formatter
-pub fn format_range(
-	options:CssFormatOptions,
-	root:&CssSyntaxNode,
-	range:TextRange,
-) -> FormatResult<Printed> {
+pub fn format_range(options:CssFormatOptions, root:&CssSyntaxNode, range:TextRange) -> FormatResult<Printed> {
 	biome_formatter::format_range(root, range, CssFormatLanguage::new(options))
 }
 
 /// Formats a CSS syntax tree.
 ///
 /// It returns the [Formatted] document that can be printed to a string.
-pub fn format_node(
-	options:CssFormatOptions,
-	root:&CssSyntaxNode,
-) -> FormatResult<Formatted<CssFormatContext>> {
+pub fn format_node(options:CssFormatOptions, root:&CssSyntaxNode) -> FormatResult<Formatted<CssFormatContext>> {
 	biome_formatter::format_node(root, CssFormatLanguage::new(options))
 }
 

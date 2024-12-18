@@ -35,10 +35,7 @@ impl<'fmt, Context> Argument<'fmt, Context> {
 	#[inline]
 	pub fn new<F:Format<Context>>(value:&'fmt F) -> Self {
 		#[inline(always)]
-		fn formatter<F:Format<Context>, Context>(
-			ptr:*const c_void,
-			fmt:&mut Formatter<Context>,
-		) -> FormatResult<()> {
+		fn formatter<F:Format<Context>, Context>(ptr:*const c_void, fmt:&mut Formatter<Context>) -> FormatResult<()> {
 			// SAFETY: Safe because the 'fmt lifetime is captured by the 'lifetime' field.
 			F::fmt(unsafe { &*ptr.cast::<F>() }, fmt)
 		}
@@ -52,9 +49,7 @@ impl<'fmt, Context> Argument<'fmt, Context> {
 
 	/// Formats the value stored by this argument using the given formatter.
 	#[inline(always)]
-	pub(super) fn format(&self, f:&mut Formatter<Context>) -> FormatResult<()> {
-		(self.formatter)(self.value, f)
-	}
+	pub(super) fn format(&self, f:&mut Formatter<Context>) -> FormatResult<()> { (self.formatter)(self.value, f) }
 }
 
 impl<'fmt, Context> Format<Context> for Argument<'fmt, Context> {
@@ -101,21 +96,15 @@ impl<Context> Clone for Arguments<'_, Context> {
 
 impl<Context> Format<Context> for Arguments<'_, Context> {
 	#[inline(always)]
-	fn fmt(&self, formatter:&mut Formatter<Context>) -> FormatResult<()> {
-		formatter.write_fmt(*self)
-	}
+	fn fmt(&self, formatter:&mut Formatter<Context>) -> FormatResult<()> { formatter.write_fmt(*self) }
 }
 
 impl<Context> std::fmt::Debug for Arguments<'_, Context> {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		f.write_str("Arguments[...]")
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { f.write_str("Arguments[...]") }
 }
 
 impl<'fmt, Context> From<&'fmt Argument<'fmt, Context>> for Arguments<'fmt, Context> {
-	fn from(argument:&'fmt Argument<'fmt, Context>) -> Self {
-		Arguments::new(std::slice::from_ref(argument))
-	}
+	fn from(argument:&'fmt Argument<'fmt, Context>) -> Self { Arguments::new(std::slice::from_ref(argument)) }
 }
 
 #[cfg(test)]

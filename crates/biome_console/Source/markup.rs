@@ -205,9 +205,7 @@ impl MarkupBuf {
 
 	pub fn len(&self) -> TextSize { self.0.iter().map(|node| TextSize::of(&node.content)).sum() }
 
-	pub fn text_len(&self) -> usize {
-		self.0.iter().fold(0, |acc, string| acc + string.content.len())
-	}
+	pub fn text_len(&self) -> usize { self.0.iter().fold(0, |acc, string| acc + string.content.len()) }
 }
 
 impl Write for MarkupBuf {

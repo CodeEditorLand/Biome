@@ -109,13 +109,9 @@ impl CssFormatOptions {
 		self
 	}
 
-	pub fn set_indent_style(&mut self, indent_style:IndentStyle) {
-		self.indent_style = indent_style;
-	}
+	pub fn set_indent_style(&mut self, indent_style:IndentStyle) { self.indent_style = indent_style; }
 
-	pub fn set_indent_width(&mut self, indent_width:IndentWidth) {
-		self.indent_width = indent_width;
-	}
+	pub fn set_indent_width(&mut self, indent_width:IndentWidth) { self.indent_width = indent_width; }
 
 	pub fn set_line_ending(&mut self, line_ending:LineEnding) { self.line_ending = line_ending; }
 

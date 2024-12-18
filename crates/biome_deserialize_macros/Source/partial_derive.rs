@@ -48,10 +48,7 @@ impl DeriveInput {
 												match args.args.first() {
 													Some(GenericArgument::Type(ty)) => (ty, false),
 													_ => {
-														abort!(
-															segment,
-															"Expected type argument in Option"
-														)
+														abort!(segment, "Expected type argument in Option")
 													},
 												}
 											},
@@ -72,8 +69,7 @@ impl DeriveInput {
 							ident:ident.clone(),
 							ty:ty.clone(),
 							should_wrap,
-							attrs:FieldAttrs::try_from(attrs)
-								.expect("Could not parse field attributes"),
+							attrs:FieldAttrs::try_from(attrs).expect("Could not parse field attributes"),
 						}
 					})
 					.collect()
@@ -114,8 +110,7 @@ pub(crate) fn generate_partial(input:DeriveInput) -> TokenStream {
 
 				if let Type::Path(type_path) = &mut ty {
 					if let Some(segment) = type_path.path.segments.first_mut() {
-						segment.ident =
-							Ident::new(&format!("Partial{}", segment.ident), Span::call_site())
+						segment.ident = Ident::new(&format!("Partial{}", segment.ident), Span::call_site())
 					}
 				}
 
@@ -139,18 +134,17 @@ pub(crate) fn generate_partial(input:DeriveInput) -> TokenStream {
 		}
 	});
 
-	let from_partial_fields =
-		input.fields.iter().map(|FieldData { ident, ty, should_wrap, .. }| {
-			if *should_wrap {
-				quote! {
-					#ident: partial.#ident.map(#ty::from).unwrap_or(default.#ident)
-				}
-			} else {
-				quote! {
-					#ident: partial.#ident.map(#ty::from)
-				}
+	let from_partial_fields = input.fields.iter().map(|FieldData { ident, ty, should_wrap, .. }| {
+		if *should_wrap {
+			quote! {
+				#ident: partial.#ident.map(#ty::from).unwrap_or(default.#ident)
 			}
-		});
+		} else {
+			quote! {
+				#ident: partial.#ident.map(#ty::from)
+			}
+		}
+	});
 
 	quote! {
 		#( #doc_lines )*

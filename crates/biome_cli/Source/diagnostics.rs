@@ -292,9 +292,7 @@ struct CliAdvice {
 }
 
 impl CliAdvice {
-	fn new_with_help(sub_command:impl Into<String>) -> Self {
-		Self { sub_command:sub_command.into() }
-	}
+	fn new_with_help(sub_command:impl Into<String>) -> Self { Self { sub_command:sub_command.into() } }
 }
 
 impl Advices for CliAdvice {
@@ -317,10 +315,7 @@ impl Advices for CliAdvice {
 impl CliDiagnostic {
 	/// Returned when a subcommand is called with an unsupported combination of
 	/// arguments
-	pub fn incompatible_arguments(
-		first_argument:impl Into<String>,
-		second_argument:impl Into<String>,
-	) -> Self {
+	pub fn incompatible_arguments(first_argument:impl Into<String>, second_argument:impl Into<String>) -> Self {
 		Self::IncompatibleArguments(IncompatibleArguments {
 			first_argument:first_argument.into(),
 			second_argument:second_argument.into(),
@@ -345,10 +340,7 @@ impl CliDiagnostic {
 
 	/// Returned when a required argument is not present in the command line
 	pub fn missing_argument(argument:impl Into<String>, subcommand:impl Into<String>) -> Self {
-		Self::MissingArgument(MissingArgument {
-			argument:argument.into(),
-			advice:CliAdvice::new_with_help(subcommand),
-		})
+		Self::MissingArgument(MissingArgument { argument:argument.into(), advice:CliAdvice::new_with_help(subcommand) })
 	}
 
 	/// When no files were processed while traversing the file system
@@ -373,53 +365,53 @@ impl CliDiagnostic {
 	/// Emitted when errors were emitted while running `check` command
 	pub fn check_error(category:&'static Category) -> Self {
 		Self::CheckError(CheckError {
-            category,
-            message: MessageAndDescription::from(
-                markup! {
-                    "Some "<Emphasis>"errors"</Emphasis>" were emitted while "<Emphasis>"running checks"</Emphasis>"."
-                }
-                .to_owned(),
-            ),
-        })
+			category,
+			message:MessageAndDescription::from(
+				markup! {
+					"Some "<Emphasis>"errors"</Emphasis>" were emitted while "<Emphasis>"running checks"</Emphasis>"."
+				}
+				.to_owned(),
+			),
+		})
 	}
 
 	/// Emitted when warnings were emitted while running `check` command
 	pub fn check_warnings(category:&'static Category) -> Self {
 		Self::CheckError(CheckError {
-            category,
-            message: MessageAndDescription::from(
-                markup! {
-                    "Some "<Emphasis>"warnings"</Emphasis>" were emitted while "<Emphasis>"running checks"</Emphasis>"."
-                }
-                .to_owned(),
-            ),
-        })
+			category,
+			message:MessageAndDescription::from(
+				markup! {
+					"Some "<Emphasis>"warnings"</Emphasis>" were emitted while "<Emphasis>"running checks"</Emphasis>"."
+				}
+				.to_owned(),
+			),
+		})
 	}
 
 	/// Emitted when errors were emitted while apply code fixes
 	pub fn apply_error(category:&'static Category) -> Self {
 		Self::CheckError(CheckError {
-            category,
-            message: MessageAndDescription::from(
-                markup! {
-                    "Some "<Emphasis>"errors"</Emphasis>" were emitted while "<Emphasis>"applying fixes"</Emphasis>"."
-                }
-                .to_owned(),
-            ),
-        })
+			category,
+			message:MessageAndDescription::from(
+				markup! {
+					"Some "<Emphasis>"errors"</Emphasis>" were emitted while "<Emphasis>"applying fixes"</Emphasis>"."
+				}
+				.to_owned(),
+			),
+		})
 	}
 
 	/// Emitted when warnings were emitted while apply code fixes
 	pub fn apply_warnings(category:&'static Category) -> Self {
 		Self::CheckError(CheckError {
-            category,
-            message: MessageAndDescription::from(
-                markup! {
-                    "Some "<Emphasis>"warnings"</Emphasis>" were emitted while "<Emphasis>"running checks"</Emphasis>"."
-                }
-                .to_owned(),
-            ),
-        })
+			category,
+			message:MessageAndDescription::from(
+				markup! {
+					"Some "<Emphasis>"warnings"</Emphasis>" were emitted while "<Emphasis>"running checks"</Emphasis>"."
+				}
+				.to_owned(),
+			),
+		})
 	}
 
 	pub fn stdin() -> Self { Self::Stdin(StdinDiagnostic::default()) }

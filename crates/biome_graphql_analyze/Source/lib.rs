@@ -67,9 +67,7 @@ where
 	V: FnMut(&MatchQueryParams<GraphqlLanguage>) + 'a,
 	F: FnMut(&dyn AnalyzerSignal<GraphqlLanguage>) -> ControlFlow<B> + 'a,
 	B: 'a, {
-	fn parse_linter_suppression_comment(
-		text:&str,
-	) -> Vec<Result<SuppressionKind, SuppressionDiagnostic>> {
+	fn parse_linter_suppression_comment(text:&str) -> Vec<Result<SuppressionKind, SuppressionDiagnostic>> {
 		let mut result = Vec::new();
 
 		for comment in parse_suppression_comment(text) {
@@ -133,12 +131,7 @@ where
 	}
 
 	(
-		analyzer.run(biome_analyze::AnalyzerContext {
-			root:root.clone(),
-			range:filter.range,
-			services,
-			options,
-		}),
+		analyzer.run(biome_analyze::AnalyzerContext { root:root.clone(), range:filter.range, services, options }),
 		diagnostics,
 	)
 }
@@ -153,13 +146,7 @@ mod tests {
 		fmt::{Formatter, Termcolor},
 		markup,
 	};
-	use biome_diagnostics::{
-		Diagnostic,
-		DiagnosticExt,
-		PrintDiagnostic,
-		Severity,
-		termcolor::NoColor,
-	};
+	use biome_diagnostics::{Diagnostic, DiagnosticExt, PrintDiagnostic, Severity, termcolor::NoColor};
 	use biome_graphql_parser::parse_graphql;
 	use biome_rowan::TextRange;
 
@@ -192,10 +179,7 @@ mod tests {
 
 		analyze(
 			&parsed.tree(),
-			AnalysisFilter {
-				enabled_rules:Some(slice::from_ref(&rule_filter)),
-				..AnalysisFilter::default()
-			},
+			AnalysisFilter { enabled_rules:Some(slice::from_ref(&rule_filter)), ..AnalysisFilter::default() },
 			&options,
 			|signal| {
 				if let Some(diag) = signal.diagnostic() {

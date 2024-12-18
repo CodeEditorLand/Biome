@@ -41,9 +41,7 @@ pub struct AnalyzerRules(FxHashMap<RuleKey, RuleOptions>);
 
 impl AnalyzerRules {
 	/// It tracks the options of a specific rule
-	pub fn push_rule(&mut self, rule_key:RuleKey, options:RuleOptions) {
-		self.0.insert(rule_key, options);
-	}
+	pub fn push_rule(&mut self, rule_key:RuleKey, options:RuleOptions) { self.0.insert(rule_key, options); }
 
 	/// It retrieves the options of a stored rule, given its name
 	pub fn get_rule_options<O:'static>(&self, rule_key:&RuleKey) -> Option<&O> {
@@ -90,9 +88,7 @@ pub struct AnalyzerOptions {
 }
 
 impl AnalyzerOptions {
-	pub fn globals(&self) -> Vec<&str> {
-		self.configuration.globals.iter().map(|global| global.as_str()).collect()
-	}
+	pub fn globals(&self) -> Vec<&str> { self.configuration.globals.iter().map(|global| global.as_str()).collect() }
 
 	pub fn jsx_runtime(&self) -> Option<JsxRuntime> { self.configuration.jsx_runtime }
 

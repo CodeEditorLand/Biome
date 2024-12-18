@@ -56,11 +56,7 @@ pub trait Visit {
 	}
 
 	/// Prints a Rust backtrace.
-	fn record_backtrace(
-		&mut self,
-		title:&dyn fmt::Display,
-		backtrace:&Backtrace,
-	) -> io::Result<()> {
+	fn record_backtrace(&mut self, title:&dyn fmt::Display, backtrace:&Backtrace) -> io::Result<()> {
 		let _ = (title, backtrace);
 
 		Ok(())
@@ -84,12 +80,7 @@ pub trait Visit {
 	///
 	/// The implementation of the table, for now, is tailored for two columns,
 	/// and it assumes that the longest cell is on top.
-	fn record_table(
-		&mut self,
-		padding:usize,
-		headers:&[MarkupBuf],
-		columns:&[&[MarkupBuf]],
-	) -> io::Result<()> {
+	fn record_table(&mut self, padding:usize, headers:&[MarkupBuf], columns:&[&[MarkupBuf]]) -> io::Result<()> {
 		let _ = (headers, columns, padding);
 
 		Ok(())
@@ -122,9 +113,7 @@ pub struct LogAdvice<T> {
 }
 
 impl<T:Display> Advices for LogAdvice<T> {
-	fn record(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-		visitor.record_log(self.category, &self.text)
-	}
+	fn record(&self, visitor:&mut dyn Visit) -> io::Result<()> { visitor.record_log(self.category, &self.text) }
 }
 
 /// Utility advice that prints a list of items.
@@ -138,8 +127,7 @@ impl<T:Display> Advices for ListAdvice<T> {
 		if self.list.is_empty() {
 			visitor.record_log(LogCategory::Warn, &"The list is empty.")
 		} else {
-			let pattern_list:Vec<_> =
-				self.list.iter().map(|pattern| pattern as &dyn Display).collect();
+			let pattern_list:Vec<_> = self.list.iter().map(|pattern| pattern as &dyn Display).collect();
 
 			visitor.record_list(&pattern_list)
 		}
@@ -185,9 +173,7 @@ impl<D> Advices for DiffAdvice<D>
 where
 	D: AsRef<TextEdit>,
 {
-	fn record(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-		visitor.record_diff(self.diff.as_ref())
-	}
+	fn record(&self, visitor:&mut dyn Visit) -> io::Result<()> { visitor.record_diff(self.diff.as_ref()) }
 }
 
 /// Utility type implementing [Advices] that emits a command advice with
@@ -201,9 +187,7 @@ impl<T> Advices for CommandAdvice<T>
 where
 	T: AsRef<str>,
 {
-	fn record(&self, visitor:&mut dyn Visit) -> io::Result<()> {
-		visitor.record_command(self.command.as_ref())
-	}
+	fn record(&self, visitor:&mut dyn Visit) -> io::Result<()> { visitor.record_command(self.command.as_ref()) }
 }
 
 #[derive(Debug)]

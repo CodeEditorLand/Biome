@@ -17,10 +17,7 @@ where
 
 	fn format_node<'a>(&self, node:&'a N) -> Self::FormatNode<'a>;
 
-	fn format_separator<'a>(
-		&self,
-		separator:&'a SyntaxToken<N::Language>,
-	) -> Self::FormatSeparator<'a>;
+	fn format_separator<'a>(&self, separator:&'a SyntaxToken<N::Language>) -> Self::FormatSeparator<'a>;
 }
 
 /// Formats a single element inside a separated list.
@@ -102,11 +99,7 @@ where
 		} else if self.is_last {
 			match self.options.trailing_separator {
 				TrailingSeparator::Allowed => {
-					write!(
-						f,
-						[if_group_breaks(&text(self.separator))
-							.with_group_id(self.options.group_id)]
-					)?;
+					write!(f, [if_group_breaks(&text(self.separator)).with_group_id(self.options.group_id)])?;
 				},
 
 				TrailingSeparator::Mandatory => {
@@ -116,9 +109,7 @@ where
 				TrailingSeparator::Omit | TrailingSeparator::Disallowed => { /* no op */ },
 			}
 		} else {
-			unreachable!(
-				"This is a syntax error, separator must be present between every two elements"
-			);
+			unreachable!("This is a syntax error, separator must be present between every two elements");
 		};
 
 		Ok(())

@@ -1,91 +1,90 @@
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource, RuleSourceKind,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	RuleSourceKind,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
 use biome_js_syntax::{JsFileSource, JsImport};
 use biome_rowan::AstNode;
 
 declare_lint_rule! {
-    /// Prevents importing `next/document` outside of `pages/_document.jsx` in Next.js projects.
-    ///
-    /// The `next/document` module is intended for customizing the document structure globally in Next.js.
-    /// Importing it outside of `pages/_document.js` can cause unexpected behavior and break certain features of the framework.
-    ///
-    /// ## Examples
-    ///
-    /// ### Valid
-    ///
-    /// ```jsx
-    /// import { Document, Html } from 'next/document'
-    ///
-    /// export default class MyDocument extends Document {
-    ///   render() {
-    ///     return (
-    ///       <Html lang="en">
-    ///         {/* */}
-    ///       </Html>
-    ///     )
-    ///   }
-    /// }
-    /// ```
-    ///
-    pub NoDocumentImportInPage {
-        version: "1.9.4",
-        name: "noDocumentImportInPage",
-        language: "jsx",
-        sources: &[RuleSource::EslintNext("no-document-import-in-page")],
-        source_kind: RuleSourceKind::SameLogic,
-        recommended: false,
-    }
+	/// Prevents importing `next/document` outside of `pages/_document.jsx` in Next.js projects.
+	///
+	/// The `next/document` module is intended for customizing the document structure globally in Next.js.
+	/// Importing it outside of `pages/_document.js` can cause unexpected behavior and break certain features of the framework.
+	///
+	/// ## Examples
+	///
+	/// ### Valid
+	///
+	/// ```jsx
+	/// import { Document, Html } from 'next/document'
+	///
+	/// export default class MyDocument extends Document {
+	///   render() {
+	///     return (
+	///       <Html lang="en">
+	///         {/* */}
+	///       </Html>
+	///     )
+	///   }
+	/// }
+	/// ```
+	///
+	pub NoDocumentImportInPage {
+		version: "1.9.4",
+		name: "noDocumentImportInPage",
+		language: "jsx",
+		sources: &[RuleSource::EslintNext("no-document-import-in-page")],
+		source_kind: RuleSourceKind::SameLogic,
+		recommended: false,
+	}
 }
 
 impl Rule for NoDocumentImportInPage {
-    type Query = Ast<JsImport>;
+	type Options = ();
+	type Query = Ast<JsImport>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-    type State = ();
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		if !ctx.source_type::<JsFileSource>().is_jsx() {
+			return None;
+		}
 
-    type Signals = Option<Self::State>;
+		let import = ctx.query();
 
-    type Options = ();
+		let import_source = import.import_clause().ok()?.source().ok()?;
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        if !ctx.source_type::<JsFileSource>().is_jsx() {
-            return None;
-        }
+		let module_name = import_source.inner_string_text().ok()?;
 
-        let import = ctx.query();
+		if module_name != "next/document" {
+			return None;
+		}
 
-        let import_source = import.import_clause().ok()?.source().ok()?;
+		let path = ctx.file_path();
 
-        let module_name = import_source.inner_string_text().ok()?;
+		if !path.ancestors().filter_map(|a| a.file_name()).any(|f| f == "pages") {
+			return None;
+		}
 
-        if module_name != "next/document" {
-            return None;
-        }
+		let file_name = path.file_stem()?.to_str()?;
 
-        let path = ctx.file_path();
+		let parent_name = path.parent()?.file_stem()?.to_str()?;
 
-        if !path
-            .ancestors()
-            .filter_map(|a| a.file_name())
-            .any(|f| f == "pages")
-        {
-            return None;
-        }
+		if parent_name == "_document" || file_name == "_document" {
+			return None;
+		}
 
-        let file_name = path.file_stem()?.to_str()?;
+		Some(())
+	}
 
-        let parent_name = path.parent()?.file_stem()?.to_str()?;
-
-        if parent_name == "_document" || file_name == "_document" {
-            return None;
-        }
-
-        Some(())
-    }
-
-    fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
-        return Some(
+	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
+		return Some(
             RuleDiagnostic::new(
                 rule_category!(),
                 ctx.query().range(),
@@ -97,5 +96,5 @@ impl Rule for NoDocumentImportInPage {
                 "Only import "<Emphasis>"next/document"</Emphasis>" within "<Emphasis>"pages/_document.jsx"</Emphasis>" to customize the global document structure."
             })
         );
-    }
+	}
 }

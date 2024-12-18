@@ -1,123 +1,126 @@
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
-use biome_js_syntax::{jsx_ext::AnyJsxElement, JsxElement};
+use biome_js_syntax::{JsxElement, jsx_ext::AnyJsxElement};
 use biome_rowan::AstNode;
 
 declare_lint_rule! {
-    /// Enforce that heading elements (h1, h2, etc.) have content and that the content is accessible to screen readers. Accessible means that it is not hidden using the aria-hidden prop.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <h1 />
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <h1><div aria-hidden /></h1>
-    /// ```
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <h1 aria-label="Screen reader content" aria-hidden>invisible content</h1>
-    /// ```
-    ///
-    ///
-    /// ```jsx,expect_diagnostic
-    /// <h1></h1>
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```jsx
-    /// <h1>heading</h1>
-    /// ```
-    ///
-    /// ```jsx
-    /// <h1><div aria-hidden="true"></div>visible content</h1>
-    /// ```
-    ///
-    /// ```jsx
-    /// <h1 aria-label="Screen reader content"><div aria-hidden="true">invisible content</div></h1>
-    /// ```
-    ///
-    /// ```jsx
-    /// <h1 dangerouslySetInnerHTML={{ __html: "heading" }} />
-    /// ```
-    ///
-    /// ```jsx
-    /// <h1><div aria-hidden />visible content</h1>
-    /// ```
-    ///
-    /// ## Accessibility guidelines
-    ///
-    /// - [WCAG 2.4.6](https://www.w3.org/TR/UNDERSTANDING-WCAG20/navigation-mechanisms-descriptive.html)
-    ///
-    pub UseHeadingContent {
-        version: "1.0.0",
-        name: "useHeadingContent",
-        language: "jsx",
-        sources: &[RuleSource::EslintJsxA11y("heading-has-content")],
-        recommended: true,
-    }
+	/// Enforce that heading elements (h1, h2, etc.) have content and that the content is accessible to screen readers. Accessible means that it is not hidden using the aria-hidden prop.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```jsx,expect_diagnostic
+	/// <h1 />
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <h1><div aria-hidden /></h1>
+	/// ```
+	///
+	/// ```jsx,expect_diagnostic
+	/// <h1 aria-label="Screen reader content" aria-hidden>invisible content</h1>
+	/// ```
+	///
+	///
+	/// ```jsx,expect_diagnostic
+	/// <h1></h1>
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```jsx
+	/// <h1>heading</h1>
+	/// ```
+	///
+	/// ```jsx
+	/// <h1><div aria-hidden="true"></div>visible content</h1>
+	/// ```
+	///
+	/// ```jsx
+	/// <h1 aria-label="Screen reader content"><div aria-hidden="true">invisible content</div></h1>
+	/// ```
+	///
+	/// ```jsx
+	/// <h1 dangerouslySetInnerHTML={{ __html: "heading" }} />
+	/// ```
+	///
+	/// ```jsx
+	/// <h1><div aria-hidden />visible content</h1>
+	/// ```
+	///
+	/// ## Accessibility guidelines
+	///
+	/// - [WCAG 2.4.6](https://www.w3.org/TR/UNDERSTANDING-WCAG20/navigation-mechanisms-descriptive.html)
+	///
+	pub UseHeadingContent {
+		version: "1.0.0",
+		name: "useHeadingContent",
+		language: "jsx",
+		sources: &[RuleSource::EslintJsxA11y("heading-has-content")],
+		recommended: true,
+	}
 }
 
-const HEADING_ELEMENTS: [&str; 6] = ["h1", "h2", "h3", "h4", "h5", "h6"];
+const HEADING_ELEMENTS:[&str; 6] = ["h1", "h2", "h3", "h4", "h5", "h6"];
 
 impl Rule for UseHeadingContent {
-    type Query = Ast<AnyJsxElement>;
+	type Options = ();
+	type Query = Ast<AnyJsxElement>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-    type State = ();
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let name = node.name().ok()?.name_value_token().ok()?;
 
-    type Options = ();
+		if HEADING_ELEMENTS.contains(&name.text_trimmed()) {
+			if node.has_truthy_attribute("aria-hidden") {
+				return Some(());
+			}
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let node = ctx.query();
+			// When node has `aria-label` (and doesn't have `aria-hidden`), the label will
+			// be read by screen readers
+			if node.has_truthy_attribute("aria-label") {
+				return None;
+			}
 
-        let name = node.name().ok()?.name_value_token().ok()?;
+			if has_valid_heading_content(node) {
+				return None;
+			}
 
-        if HEADING_ELEMENTS.contains(&name.text_trimmed()) {
-            if node.has_truthy_attribute("aria-hidden") {
-                return Some(());
-            }
+			match node {
+				AnyJsxElement::JsxOpeningElement(opening_element) => {
+					if !opening_element.has_accessible_child() {
+						return Some(());
+					}
+				},
 
-            // When node has `aria-label` (and doesn't have `aria-hidden`), the label will be read by screen readers
-            if node.has_truthy_attribute("aria-label") {
-                return None;
-            }
+				AnyJsxElement::JsxSelfClosingElement(_) => return Some(()),
+			}
+		}
 
-            if has_valid_heading_content(node) {
-                return None;
-            }
+		None
+	}
 
-            match node {
-                AnyJsxElement::JsxOpeningElement(opening_element) => {
-                    if !opening_element.has_accessible_child() {
-                        return Some(());
-                    }
-                }
+	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
+		let range = match ctx.query() {
+			AnyJsxElement::JsxOpeningElement(node) => {
+				node.parent::<JsxElement>()?.syntax().text_range()
+			},
 
-                AnyJsxElement::JsxSelfClosingElement(_) => return Some(()),
-            }
-        }
+			AnyJsxElement::JsxSelfClosingElement(node) => node.syntax().text_trimmed_range(),
+		};
 
-        None
-    }
-
-    fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
-        let range = match ctx.query() {
-            AnyJsxElement::JsxOpeningElement(node) => {
-                node.parent::<JsxElement>()?.syntax().text_range()
-            }
-
-            AnyJsxElement::JsxSelfClosingElement(node) => node.syntax().text_trimmed_range(),
-        };
-
-        Some(RuleDiagnostic::new(
+		Some(RuleDiagnostic::new(
             rule_category!(),
             range,
             markup! {
@@ -126,23 +129,17 @@ impl Rule for UseHeadingContent {
         ).note(
             "All headings on a page should have content that is accessible to screen readers."
         ))
-    }
+	}
 }
 
 /// check if the node has a valid heading attribute
-fn has_valid_heading_content(node: &AnyJsxElement) -> bool {
-    node.find_attribute_by_name("dangerouslySetInnerHTML")
-        .is_some()
-        || node
-            .find_attribute_by_name("children")
-            .map_or(false, |attribute| {
-                if attribute.initializer().is_none() {
-                    return false;
-                }
+fn has_valid_heading_content(node:&AnyJsxElement) -> bool {
+	node.find_attribute_by_name("dangerouslySetInnerHTML").is_some()
+		|| node.find_attribute_by_name("children").map_or(false, |attribute| {
+			if attribute.initializer().is_none() {
+				return false;
+			}
 
-                attribute
-                    .as_static_value()
-                    .map_or(true, |attribute| !attribute.is_falsy())
-            })
-        || node.has_spread_prop()
+			attribute.as_static_value().map_or(true, |attribute| !attribute.is_falsy())
+		}) || node.has_spread_prop()
 }

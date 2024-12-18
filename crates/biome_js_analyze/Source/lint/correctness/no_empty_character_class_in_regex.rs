@@ -1,142 +1,144 @@
 use std::ops::Range;
 
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, Rule, RuleDiagnostic, RuleSource,
+	Ast,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
 use biome_js_syntax::JsRegexLiteralExpression;
 use biome_rowan::{TextRange, TextSize};
 
 declare_lint_rule! {
-    /// Disallow empty character classes in regular expression literals.
-    ///
-    /// Empty character classes don't match anything.
-    /// In contrast, negated empty classes match any character.
-    /// They are often the result of a typing mistake.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```js,expect_diagnostic
-    /// /^a[]/.test("a"); // false
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// /^a[^]/.test("ax"); // true
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```js
-    /// /^a[xy]/.test("ay"); // true
-    /// ```
-    ///
-    /// ```js
-    /// /^a[^xy]/.test("ab"); // true
-    /// ```
-    ///
-    /// ```js
-    /// /^a\[]/.test("a[]"); // true
-    /// ```
-    ///
-    pub NoEmptyCharacterClassInRegex {
-        version: "1.3.0",
-        name: "noEmptyCharacterClassInRegex",
-        language: "js",
-        sources: &[RuleSource::Eslint("no-empty-character-class")],
-        recommended: true,
-    }
+	/// Disallow empty character classes in regular expression literals.
+	///
+	/// Empty character classes don't match anything.
+	/// In contrast, negated empty classes match any character.
+	/// They are often the result of a typing mistake.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```js,expect_diagnostic
+	/// /^a[]/.test("a"); // false
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// /^a[^]/.test("ax"); // true
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```js
+	/// /^a[xy]/.test("ay"); // true
+	/// ```
+	///
+	/// ```js
+	/// /^a[^xy]/.test("ab"); // true
+	/// ```
+	///
+	/// ```js
+	/// /^a\[]/.test("a[]"); // true
+	/// ```
+	///
+	pub NoEmptyCharacterClassInRegex {
+		version: "1.3.0",
+		name: "noEmptyCharacterClassInRegex",
+		language: "js",
+		sources: &[RuleSource::Eslint("no-empty-character-class")],
+		recommended: true,
+	}
 }
 
 impl Rule for NoEmptyCharacterClassInRegex {
-    type Query = Ast<JsRegexLiteralExpression>;
+	type Options = ();
+	type Query = Ast<JsRegexLiteralExpression>;
+	type Signals = Box<[Self::State]>;
+	type State = Range<usize>;
 
-    type State = Range<usize>;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let mut empty_classes = vec![];
 
-    type Signals = Box<[Self::State]>;
+		let regex = ctx.query();
 
-    type Options = ();
+		let Ok((pattern, flags)) = regex.decompose() else {
+			return empty_classes.into_boxed_slice();
+		};
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let mut empty_classes = vec![];
+		let has_v_flag = flags.text().contains('v');
 
-        let regex = ctx.query();
+		let trimmed_text = pattern.text();
 
-        let Ok((pattern, flags)) = regex.decompose() else {
-            return empty_classes.into_boxed_slice();
-        };
+		let mut class_start_index = None;
 
-        let has_v_flag = flags.text().contains('v');
+		let mut is_negated_class = false;
 
-        let trimmed_text = pattern.text();
+		let mut enumerated_char_iter = trimmed_text.bytes().enumerate();
 
-        let mut class_start_index = None;
+		while let Some((i, ch)) = enumerated_char_iter.next() {
+			match ch {
+				b'\\' => {
+					// We eat the next character because it is escaped with `\`
+					enumerated_char_iter.next();
+				},
 
-        let mut is_negated_class = false;
+				b'[' => {
+					// The `v` flag allows to embed a class in another class.
+					if class_start_index.is_none() || has_v_flag {
+						class_start_index = Some(i);
 
-        let mut enumerated_char_iter = trimmed_text.bytes().enumerate();
+						is_negated_class = false;
+					}
+				},
 
-        while let Some((i, ch)) = enumerated_char_iter.next() {
-            match ch {
-                b'\\' => {
-                    // We eat the next character because it is escaped with `\`
-                    enumerated_char_iter.next();
-                }
+				b'^' => {
+					if let Some(class_start_index) = class_start_index {
+						is_negated_class = (i - class_start_index) == 1;
+					}
+				},
 
-                b'[' => {
-                    // The `v` flag allows to embed a class in another class.
-                    if class_start_index.is_none() || has_v_flag {
-                        class_start_index = Some(i);
+				b']' => {
+					if let Some(class_start_index) = class_start_index.take() {
+						let empty_class_len = if is_negated_class { 2 } else { 1 };
 
-                        is_negated_class = false;
-                    }
-                }
+						if (i - class_start_index) == empty_class_len {
+							empty_classes.push(class_start_index..i)
+						}
+					}
+				},
 
-                b'^' => {
-                    if let Some(class_start_index) = class_start_index {
-                        is_negated_class = (i - class_start_index) == 1;
-                    }
-                }
+				_ => {},
+			}
+		}
 
-                b']' => {
-                    if let Some(class_start_index) = class_start_index.take() {
-                        let empty_class_len = if is_negated_class { 2 } else { 1 };
+		empty_classes.into_boxed_slice()
+	}
 
-                        if (i - class_start_index) == empty_class_len {
-                            empty_classes.push(class_start_index..i)
-                        }
-                    }
-                }
+	fn diagnostic(
+		ctx:&RuleContext<Self>,
+		empty_class_range:&Self::State,
+	) -> Option<RuleDiagnostic> {
+		let regex = ctx.query();
 
-                _ => {}
-            }
-        }
+		let regex_token = regex.value_token().ok()?;
 
-        empty_classes.into_boxed_slice()
-    }
+		let regex_token_range = regex_token.text_trimmed_range();
 
-    fn diagnostic(
-        ctx: &RuleContext<Self>,
-        empty_class_range: &Self::State,
-    ) -> Option<RuleDiagnostic> {
-        let regex = ctx.query();
+		let is_negated = empty_class_range.len() > 1;
 
-        let regex_token = regex.value_token().ok()?;
+		let maybe_negated = if is_negated { "negated " } else { "" };
 
-        let regex_token_range = regex_token.text_trimmed_range();
+		let specific_note = if is_negated {
+			"Negated empty character classes match anything."
+		} else {
+			"Empty character classes don't match anything."
+		};
 
-        let is_negated = empty_class_range.len() > 1;
-
-        let maybe_negated = if is_negated { "negated " } else { "" };
-
-        let specific_note = if is_negated {
-            "Negated empty character classes match anything."
-        } else {
-            "Empty character classes don't match anything."
-        };
-
-        Some(
+		Some(
             RuleDiagnostic::new(
                 rule_category!(),
                 TextRange::new(
@@ -151,5 +153,5 @@ impl Rule for NoEmptyCharacterClassInRegex {
                 {specific_note}"\nIf you want to match against "<Emphasis>"["</Emphasis>", escape it "<Emphasis>"\\["</Emphasis>".\nOtherwise, remove the character class or fill it."
             }),
         )
-    }
+	}
 }

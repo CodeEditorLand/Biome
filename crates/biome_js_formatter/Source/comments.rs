@@ -383,7 +383,7 @@ fn handle_continue_break_comment(
 ///         break;
 /// }
 /// ```
-///
+/// 
 /// All other comments become `Dangling` comments that are handled inside of the
 /// default case formatting.
 fn handle_switch_default_case_comment(

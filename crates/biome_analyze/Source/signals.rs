@@ -39,13 +39,7 @@ pub struct DiagnosticSignal<D, A, L, T, Tr> {
 }
 
 impl<L:Language, D, T>
-	DiagnosticSignal<
-		D,
-		fn() -> Option<AnalyzerAction<L>>,
-		L,
-		T,
-		fn() -> Option<AnalyzerTransformation<L>>,
-	>
+	DiagnosticSignal<D, fn() -> Option<AnalyzerAction<L>>, L, T, fn() -> Option<AnalyzerTransformation<L>>>
 where
 	D: Fn() -> T,
 	Error: From<T>,
@@ -229,9 +223,7 @@ impl<L:Language> AnalyzerActionIter<L> {
 	}
 
 	/// Returns an iterator that yields [CodeAction]
-	pub fn into_code_action_iter(self) -> CodeActionIter<L> {
-		CodeActionIter { iter:self.analyzer_actions }
-	}
+	pub fn into_code_action_iter(self) -> CodeActionIter<L> { CodeActionIter { iter:self.analyzer_actions } }
 }
 
 pub struct AnalyzerTransformationIter<L:Language> {
@@ -294,9 +286,7 @@ where
 		query_result:<<R as Rule>::Query as Queryable>::Output,
 		state:R::State,
 		services:&'phase ServiceBag,
-		suppression_action:&'phase dyn SuppressionAction<
-			Language = <<R as Rule>::Query as Queryable>::Language,
-		>,
+		suppression_action:&'phase dyn SuppressionAction<Language = <<R as Rule>::Query as Queryable>::Language>,
 		options:&'phase AnalyzerOptions,
 	) -> Self {
 		Self { root, query_result, state, services, suppression_action, options }

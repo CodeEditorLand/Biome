@@ -57,9 +57,7 @@ impl Deref for Text {
 	fn deref(&self) -> &Self::Target { self.text() }
 }
 impl std::fmt::Display for Text {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "{}", self.text())
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{}", self.text()) }
 }
 impl Deserializable for Text {
 	fn deserialize(
@@ -102,9 +100,7 @@ impl Deref for TextNumber {
 	fn deref(&self) -> &Self::Target { self.text() }
 }
 impl std::fmt::Display for TextNumber {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-		write!(f, "{}", self.text())
-	}
+	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result { write!(f, "{}", self.text()) }
 }
 impl Deserializable for TextNumber {
 	fn deserialize(
@@ -192,9 +188,8 @@ impl Deserializable for f32 {
 			return Some(value);
 		}
 
-		let diagnostic =
-			DeserializationDiagnostic::new("The number should be a float representable on 32 bits")
-				.with_range(value.range());
+		let diagnostic = DeserializationDiagnostic::new("The number should be a float representable on 32 bits")
+			.with_range(value.range());
 
 		diagnostics.push(diagnostic);
 
@@ -214,9 +209,8 @@ impl Deserializable for f64 {
 			return Some(value);
 		}
 
-		let diagnostic =
-			DeserializationDiagnostic::new("The number should be a float representable on 64 bits")
-				.with_range(value.range());
+		let diagnostic = DeserializationDiagnostic::new("The number should be a float representable on 64 bits")
+			.with_range(value.range());
 
 		diagnostics.push(diagnostic);
 
@@ -687,9 +681,7 @@ impl<T:Deserializable + Eq + Hash, S:BuildHasher + Default> Deserializable for H
 	) -> Option<Self> {
 		struct Visitor<T, S>(PhantomData<(T, S)>);
 
-		impl<T:Deserializable + Eq + Hash, S:BuildHasher + Default> DeserializationVisitor
-			for Visitor<T, S>
-		{
+		impl<T:Deserializable + Eq + Hash, S:BuildHasher + Default> DeserializationVisitor for Visitor<T, S> {
 			type Output = HashSet<T, S>;
 
 			const EXPECTED_TYPE:DeserializableTypes = DeserializableTypes::ARRAY;
@@ -745,9 +737,7 @@ impl<T:Hash + Eq + Deserializable> Deserializable for IndexSet<T> {
 	}
 }
 
-impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher> Deserializable
-	for HashMap<K, V, S>
-{
+impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher> Deserializable for HashMap<K, V, S> {
 	fn deserialize(
 		value:&impl DeserializableValue,
 		name:&str,
@@ -755,8 +745,8 @@ impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher> De
 	) -> Option<Self> {
 		struct Visitor<K, V, S>(PhantomData<(K, V, S)>);
 
-		impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher>
-			DeserializationVisitor for Visitor<K, V, S>
+		impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher> DeserializationVisitor
+			for Visitor<K, V, S>
 		{
 			type Output = HashMap<K, V, S>;
 
@@ -764,9 +754,7 @@ impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher> De
 
 			fn visit_map(
 				self,
-				members:impl Iterator<
-					Item = Option<(impl DeserializableValue, impl DeserializableValue)>,
-				>,
+				members:impl Iterator<Item = Option<(impl DeserializableValue, impl DeserializableValue)>>,
 				_range:TextRange,
 				_name:&str,
 				diagnostics:&mut Vec<DeserializationDiagnostic>,
@@ -806,9 +794,7 @@ impl<K:Ord + Deserializable, V:Deserializable> Deserializable for BTreeMap<K, V>
 
 			fn visit_map(
 				self,
-				members:impl Iterator<
-					Item = Option<(impl DeserializableValue, impl DeserializableValue)>,
-				>,
+				members:impl Iterator<Item = Option<(impl DeserializableValue, impl DeserializableValue)>>,
 				_range:TextRange,
 				_name:&str,
 				diagnostics:&mut Vec<DeserializationDiagnostic>,
@@ -833,9 +819,7 @@ impl<K:Ord + Deserializable, V:Deserializable> Deserializable for BTreeMap<K, V>
 	}
 }
 
-impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher> Deserializable
-	for IndexMap<K, V, S>
-{
+impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher> Deserializable for IndexMap<K, V, S> {
 	fn deserialize(
 		value:&impl DeserializableValue,
 		name:&str,
@@ -843,8 +827,8 @@ impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher> De
 	) -> Option<Self> {
 		struct Visitor<K, V, S>(PhantomData<(K, V, S)>);
 
-		impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher>
-			DeserializationVisitor for Visitor<K, V, S>
+		impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher> DeserializationVisitor
+			for Visitor<K, V, S>
 		{
 			type Output = IndexMap<K, V, S>;
 
@@ -852,9 +836,7 @@ impl<K:Hash + Eq + Deserializable, V:Deserializable, S:Default + BuildHasher> De
 
 			fn visit_map(
 				self,
-				members:impl Iterator<
-					Item = Option<(impl DeserializableValue, impl DeserializableValue)>,
-				>,
+				members:impl Iterator<Item = Option<(impl DeserializableValue, impl DeserializableValue)>>,
 				_range:TextRange,
 				_name:&str,
 				diagnostics:&mut Vec<DeserializationDiagnostic>,

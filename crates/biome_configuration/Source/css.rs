@@ -116,9 +116,7 @@ impl Default for CssLinter {
 }
 
 impl PartialCssLinter {
-	pub fn get_linter_configuration(&self) -> CssLinter {
-		CssLinter { enabled:self.enabled.unwrap_or_default() }
-	}
+	pub fn get_linter_configuration(&self) -> CssLinter { CssLinter { enabled:self.enabled.unwrap_or_default() } }
 }
 
 /// Options that changes how the CSS assists behaves

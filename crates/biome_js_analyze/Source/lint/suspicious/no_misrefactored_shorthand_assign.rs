@@ -1,160 +1,166 @@
 use biome_analyze::{
-    context::RuleContext, declare_lint_rule, Ast, FixKind, Rule, RuleDiagnostic, RuleSource,
+	Ast,
+	FixKind,
+	Rule,
+	RuleDiagnostic,
+	RuleSource,
+	context::RuleContext,
+	declare_lint_rule,
 };
 use biome_console::markup;
 use biome_js_syntax::{
-    AnyJsExpression, JsAssignmentExpression, JsAssignmentOperator, JsBinaryExpression,
+	AnyJsExpression,
+	JsAssignmentExpression,
+	JsAssignmentOperator,
+	JsBinaryExpression,
 };
 use biome_rowan::{AstNode, BatchMutationExt};
 
 use crate::{
-    utils::{find_variable_position, VariablePosition},
-    JsRuleAction,
+	JsRuleAction,
+	utils::{VariablePosition, find_variable_position},
 };
 
 declare_lint_rule! {
-    /// Disallow shorthand assign when variable appears on both sides.
-    ///
-    /// This rule helps to avoid potential bugs related to incorrect assignments or unintended
-    /// side effects that may occur during refactoring.
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```js,expect_diagnostic
-    /// a += a + b
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// a -= a - b
-    /// ```
-    ///
-    /// ```js,expect_diagnostic
-    /// a *= a * b
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```js
-    /// a += b
-    /// ```
-    ///
-    /// ```js
-    /// a = a + b
-    /// ```
-    ///
-    /// ```js
-    /// a = a - b
-    /// ```
-    pub NoMisrefactoredShorthandAssign {
-        version: "1.3.0",
-        name: "noMisrefactoredShorthandAssign",
-        language: "js",
-        sources: &[RuleSource::Clippy("misrefactored_assign_op")],
-        recommended: true,
-        fix_kind: FixKind::Unsafe,
-    }
+	/// Disallow shorthand assign when variable appears on both sides.
+	///
+	/// This rule helps to avoid potential bugs related to incorrect assignments or unintended
+	/// side effects that may occur during refactoring.
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```js,expect_diagnostic
+	/// a += a + b
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// a -= a - b
+	/// ```
+	///
+	/// ```js,expect_diagnostic
+	/// a *= a * b
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```js
+	/// a += b
+	/// ```
+	///
+	/// ```js
+	/// a = a + b
+	/// ```
+	///
+	/// ```js
+	/// a = a - b
+	/// ```
+	pub NoMisrefactoredShorthandAssign {
+		version: "1.3.0",
+		name: "noMisrefactoredShorthandAssign",
+		language: "js",
+		sources: &[RuleSource::Clippy("misrefactored_assign_op")],
+		recommended: true,
+		fix_kind: FixKind::Unsafe,
+	}
 }
 
 impl Rule for NoMisrefactoredShorthandAssign {
-    type Query = Ast<JsAssignmentExpression>;
+	type Options = ();
+	type Query = Ast<JsAssignmentExpression>;
+	type Signals = Option<Self::State>;
+	type State = AnyJsExpression;
 
-    type State = AnyJsExpression;
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let node = ctx.query();
 
-    type Signals = Option<Self::State>;
+		if matches!(node.operator(), Ok(JsAssignmentOperator::Assign)) {
+			return None;
+		}
 
-    type Options = ();
+		let right = node.right().ok()?;
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let node = ctx.query();
+		let operator = node.operator_token().ok()?;
 
-        if matches!(node.operator(), Ok(JsAssignmentOperator::Assign)) {
-            return None;
-        }
+		let operator = operator.text_trimmed();
 
-        let right = node.right().ok()?;
+		let operator = &operator[0..operator.len() - 1];
 
-        let operator = node.operator_token().ok()?;
+		let binary_expression = match right {
+			AnyJsExpression::JsBinaryExpression(binary_expression) => binary_expression,
+			AnyJsExpression::JsParenthesizedExpression(param) => {
+				JsBinaryExpression::cast(param.expression().ok()?.into_syntax())?
+			},
 
-        let operator = operator.text_trimmed();
+			_ => return None,
+		};
 
-        let operator = &operator[0..operator.len() - 1];
+		let bin_operator = binary_expression.operator_token().ok()?;
 
-        let binary_expression = match right {
-            AnyJsExpression::JsBinaryExpression(binary_expression) => binary_expression,
-            AnyJsExpression::JsParenthesizedExpression(param) => {
-                JsBinaryExpression::cast(param.expression().ok()?.into_syntax())?
-            }
+		let bin_operator = bin_operator.text_trimmed();
 
-            _ => return None,
-        };
+		let not_same_operator_from_shorthand = operator != bin_operator;
 
-        let bin_operator = binary_expression.operator_token().ok()?;
+		if not_same_operator_from_shorthand {
+			return None;
+		}
 
-        let bin_operator = bin_operator.text_trimmed();
+		let left = node.left().ok()?;
 
-        let not_same_operator_from_shorthand = operator != bin_operator;
+		let left = left.as_any_js_assignment()?;
 
-        if not_same_operator_from_shorthand {
-            return None;
-        }
+		let left_text = left.text();
 
-        let left = node.left().ok()?;
+		let variable_position_in_expression =
+			find_variable_position(&binary_expression, &left_text)?;
 
-        let left = left.as_any_js_assignment()?;
+		if !binary_expression.operator().ok()?.is_commutative()
+			&& matches!(variable_position_in_expression, VariablePosition::Right)
+		{
+			return None;
+		}
 
-        let left_text = left.text();
+		match variable_position_in_expression {
+			VariablePosition::Left => binary_expression.right(),
+			VariablePosition::Right => binary_expression.left(),
+		}
+		.ok()
+	}
 
-        let variable_position_in_expression =
-            find_variable_position(&binary_expression, &left_text)?;
+	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
+		let node = ctx.query();
 
-        if !binary_expression.operator().ok()?.is_commutative()
-            && matches!(variable_position_in_expression, VariablePosition::Right)
-        {
-            return None;
-        }
+		Some(
+			RuleDiagnostic::new(
+				rule_category!(),
+				node.range(),
+				markup! {
+					"Variable appears on both sides of an assignment operation."
+				},
+			)
+			.note(markup! {
+				"This assignment might be the result of a wrong refactoring."
+			}),
+		)
+	}
 
-        match variable_position_in_expression {
-            VariablePosition::Left => binary_expression.right(),
-            VariablePosition::Right => binary_expression.left(),
-        }
-        .ok()
-    }
+	fn action(ctx:&RuleContext<Self>, state:&Self::State) -> Option<JsRuleAction> {
+		let node = ctx.query();
 
-    fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
-        let node = ctx.query();
+		let mut mutation = ctx.root().begin();
 
-        Some(
-            RuleDiagnostic::new(
-                rule_category!(),
-                node.range(),
-                markup! {
-                    "Variable appears on both sides of an assignment operation."
-                },
-            )
-            .note(markup! {
-                "This assignment might be the result of a wrong refactoring."
-            }),
-        )
-    }
+		let replacement_node = node.clone().with_right(state.clone());
 
-    fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
-        let node = ctx.query();
+		let replacement_text = replacement_node.clone().syntax().text_trimmed().to_string();
 
-        let mut mutation = ctx.root().begin();
+		mutation.replace_node(node.clone(), replacement_node);
 
-        let replacement_node = node.clone().with_right(state.clone());
-
-        let replacement_text = replacement_node.clone().syntax().text_trimmed().to_string();
-
-        mutation.replace_node(node.clone(), replacement_node);
-
-        Some(JsRuleAction::new(
-            ctx.metadata().action_category(ctx.category(), ctx.group()),
-            ctx.metadata().applicability(),
-            markup! { "Use "<Emphasis>""{replacement_text}""</Emphasis>" instead." }.to_owned(),
-            mutation,
-        ))
-    }
+		Some(JsRuleAction::new(
+			ctx.metadata().action_category(ctx.category(), ctx.group()),
+			ctx.metadata().applicability(),
+			markup! { "Use "<Emphasis>""{replacement_text}""</Emphasis>" instead." }.to_owned(),
+			mutation,
+		))
+	}
 }

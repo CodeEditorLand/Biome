@@ -1,83 +1,84 @@
-use crate::{services::semantic::Semantic, JsRuleAction};
-use biome_analyze::{context::RuleContext, declare_lint_rule, FixKind, Rule, RuleDiagnostic};
+use biome_analyze::{FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_js_syntax::{
-    global_identifier, AnyJsMemberExpression, JsCallExpression, JsExpressionStatement,
+	AnyJsMemberExpression,
+	JsCallExpression,
+	JsExpressionStatement,
+	global_identifier,
 };
 use biome_rowan::{AstNode, BatchMutationExt};
 
+use crate::{JsRuleAction, services::semantic::Semantic};
+
 declare_lint_rule! {
-    /// Disallow the use of `console.log`
-    ///
-    /// ## Examples
-    ///
-    /// ### Invalid
-    ///
-    /// ```js,expect_diagnostic
-    /// console.log()
-    /// ```
-    ///
-    /// ### Valid
-    ///
-    /// ```js
-    /// console.info("info");
-    /// console.warn("warn");
-    /// console.error("error");
-    /// console.assert(true);
-    /// console.table(["foo", "bar"]);
-    /// const console = { log() {} };
-    /// console.log();
-    /// ```
-    ///
-    pub NoConsoleLog {
-        version: "1.0.0",
-        name: "noConsoleLog",
-        language: "js",
-        recommended: false,
-        deprecated: "Use the rule noConsole instead.",
-        fix_kind: FixKind::Unsafe,
-    }
+	/// Disallow the use of `console.log`
+	///
+	/// ## Examples
+	///
+	/// ### Invalid
+	///
+	/// ```js,expect_diagnostic
+	/// console.log()
+	/// ```
+	///
+	/// ### Valid
+	///
+	/// ```js
+	/// console.info("info");
+	/// console.warn("warn");
+	/// console.error("error");
+	/// console.assert(true);
+	/// console.table(["foo", "bar"]);
+	/// const console = { log() {} };
+	/// console.log();
+	/// ```
+	///
+	pub NoConsoleLog {
+		version: "1.0.0",
+		name: "noConsoleLog",
+		language: "js",
+		recommended: false,
+		deprecated: "Use the rule noConsole instead.",
+		fix_kind: FixKind::Unsafe,
+	}
 }
 
 impl Rule for NoConsoleLog {
-    type Query = Semantic<JsCallExpression>;
+	type Options = ();
+	type Query = Semantic<JsCallExpression>;
+	type Signals = Option<Self::State>;
+	type State = ();
 
-    type State = ();
+	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+		let call_expression = ctx.query();
 
-    type Signals = Option<Self::State>;
+		let model = ctx.model();
 
-    type Options = ();
+		let callee = call_expression.callee().ok()?;
 
-    fn run(ctx: &RuleContext<Self>) -> Self::Signals {
-        let call_expression = ctx.query();
+		let member_expression = AnyJsMemberExpression::cast(callee.into_syntax())?;
 
-        let model = ctx.model();
+		if member_expression.member_name()?.text() != "log" {
+			return None;
+		}
 
-        let callee = call_expression.callee().ok()?;
+		let object = member_expression.object().ok()?;
 
-        let member_expression = AnyJsMemberExpression::cast(callee.into_syntax())?;
+		let (reference, name) = global_identifier(&object)?;
 
-        if member_expression.member_name()?.text() != "log" {
-            return None;
-        }
+		if name.text() != "console" {
+			return None;
+		}
 
-        let object = member_expression.object().ok()?;
+		model.binding(&reference).is_none().then_some(())
+	}
 
-        let (reference, name) = global_identifier(&object)?;
+	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
+		let node = ctx.query();
 
-        if name.text() != "console" {
-            return None;
-        }
+		let node = JsExpressionStatement::cast(node.syntax().parent()?)?;
 
-        model.binding(&reference).is_none().then_some(())
-    }
-
-    fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
-        let node = ctx.query();
-
-        let node = JsExpressionStatement::cast(node.syntax().parent()?)?;
-
-        Some(
+		Some(
             RuleDiagnostic::new(
                 rule_category!(),
                 node.syntax().text_trimmed_range(),
@@ -92,28 +93,28 @@ impl Rule for NoConsoleLog {
                 "If it is not for debugging purpose then using "<Emphasis>"console.info"</Emphasis>" might be more appropriate."
             }),
         )
-    }
+	}
 
-    fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
-        let call_expression = ctx.query();
+	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
+		let call_expression = ctx.query();
 
-        let mut mutation = ctx.root().begin();
+		let mut mutation = ctx.root().begin();
 
-        match JsExpressionStatement::cast(call_expression.syntax().parent()?) {
-            Some(stmt) if stmt.semicolon_token().is_some() => {
-                mutation.remove_node(stmt);
-            }
+		match JsExpressionStatement::cast(call_expression.syntax().parent()?) {
+			Some(stmt) if stmt.semicolon_token().is_some() => {
+				mutation.remove_node(stmt);
+			},
 
-            _ => {
-                mutation.remove_node(call_expression.clone());
-            }
-        }
+			_ => {
+				mutation.remove_node(call_expression.clone());
+			},
+		}
 
-        Some(JsRuleAction::new(
-            ctx.metadata().action_category(ctx.category(), ctx.group()),
-            ctx.metadata().applicability(),
-            markup! { "Remove console.log" }.to_owned(),
-            mutation,
-        ))
-    }
+		Some(JsRuleAction::new(
+			ctx.metadata().action_category(ctx.category(), ctx.group()),
+			ctx.metadata().applicability(),
+			markup! { "Remove console.log" }.to_owned(),
+			mutation,
+		))
+	}
 }
