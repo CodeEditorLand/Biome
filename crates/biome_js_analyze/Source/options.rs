@@ -173,7 +173,9 @@ pub type NoPositiveTabindex =
 pub type NoPrecisionLoss =
 	<lint::correctness::no_precision_loss::NoPrecisionLoss as biome_analyze::Rule>::Options;
 pub type NoProcessEnv =
-	<lint::nursery::no_process_env::NoProcessEnv as biome_analyze::Rule>::Options;
+    <lint::nursery::no_process_env::NoProcessEnv as biome_analyze::Rule>::Options;
+pub type NoProcessGlobal =
+    <lint::nursery::no_process_global::NoProcessGlobal as biome_analyze::Rule>::Options;
 pub type NoPrototypeBuiltins =
 	<lint::suspicious::no_prototype_builtins::NoPrototypeBuiltins as biome_analyze::Rule>::Options;
 pub type NoReExportAll =
@@ -379,7 +381,9 @@ pub type UseNumberToFixedDigitsArgument = < lint :: suspicious :: use_number_to_
 pub type UseNumericLiterals =
 	<lint::style::use_numeric_literals::UseNumericLiterals as biome_analyze::Rule>::Options;
 pub type UseOptionalChain =
-	<lint::complexity::use_optional_chain::UseOptionalChain as biome_analyze::Rule>::Options;
+    <lint::complexity::use_optional_chain::UseOptionalChain as biome_analyze::Rule>::Options;
+pub type UseParseIntRadix =
+    <lint::nursery::use_parse_int_radix::UseParseIntRadix as biome_analyze::Rule>::Options;
 pub type UseRegexLiterals =
 	<lint::complexity::use_regex_literals::UseRegexLiterals as biome_analyze::Rule>::Options;
 pub type UseSelfClosingElements = < lint :: style :: use_self_closing_elements :: UseSelfClosingElements as biome_analyze :: Rule > :: Options ;

@@ -14,19 +14,19 @@
   [![VSCode version][vscode-badge]][vscode-url]
   [![Open VSX version][open-vsx-badge]][open-vsx-url]
   [![Polar bounties][polar-badge]][polar-url]
-  
-  [ci-badge]: HTTPS://github.com/biomejs/biome/actions/workflows/main.yml/badge.svg
-  [ci-url]: HTTPS://github.com/biomejs/biome/actions/workflows/main.yml
-  [discord-badge]: HTTPS://badgen.net/discord/online-members/BypW39g6Yc?icon=discord&label=discord&color=60a5fa
-  [discord-url]: HTTPS://biomejs.dev/chat
-  [npm-badge]: HTTPS://badgen.net/npm/v/@biomejs/biome?icon=npm&color=60a5fa&label=%40biomejs%2Fbiome
-  [npm-url]: HTTPS://www.npmjs.com/package/@biomejs/biome/v/latest
-  [vscode-badge]: HTTPS://badgen.net/vs-marketplace/v/biomejs.biome?label=vscode&icon=visualstudio&color=60a5fa
-  [vscode-url]: HTTPS://marketplace.visualstudio.com/items?itemName=biomejs.biome
-  [open-vsx-badge]: HTTPS://badgen.net/open-vsx/version/biomejs/biome?label=open-vsx&color=60a5fa
-  [open-vsx-url]: HTTPS://open-vsx.org/extension/biomejs/biome
-  [polar-badge]: HTTPS://polar.sh/embed/seeks-funding-shield.svg?org=biomejs
-  [polar-url]: HTTPS://polar.sh/biomejs
+
+  [ci-badge]: https://github.com/biomejs/biome/actions/workflows/main.yml/badge.svg
+  [ci-url]: https://github.com/biomejs/biome/actions/workflows/main.yml
+  [discord-badge]: https://badgen.net/discord/online-members/BypW39g6Yc?icon=discord&label=discord&color=60a5fa
+  [discord-url]: https://biomejs.dev/chat
+  [npm-badge]: https://badgen.net/npm/v/@biomejs/biome?icon=npm&color=60a5fa&label=%40biomejs%2Fbiome
+  [npm-url]: https://www.npmjs.com/package/@biomejs/biome/v/latest
+  [vscode-badge]: https://badgen.net/vs-marketplace/v/biomejs.biome?label=vscode&icon=visualstudio&color=60a5fa
+  [vscode-url]: https://marketplace.visualstudio.com/items?itemName=biomejs.biome
+  [open-vsx-badge]: https://badgen.net/open-vsx/version/biomejs/biome?label=open-vsx&color=60a5fa
+  [open-vsx-url]: https://open-vsx.org/extension/biomejs/biome
+  [polar-badge]: https://polar.sh/embed/seeks-funding-shield.svg?org=biomejs
+  [polar-url]: https://polar.sh/biomejs
 
 <!-- Insert new entries lexicographically by language code.
      For example given below is the same order as these files appear on page:
@@ -108,16 +108,35 @@ Biome предлагает простую спонсорскую програм�
 
 ## Спонсоры
 
+### Gold Sponsors
+
+<table>
+  <tbody>
+    <tr>
+      <td align="center" valign="middle">
+        <a href="https://vercel.com/?utm_source=biome&utm_medium=readme" target="_blank">
+          <picture>
+            <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/biomejs/resources/refs/heads/main/sponsors/vercel-dark.png" />
+            <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/biomejs/resources/refs/heads/main/sponsors/vercel-light.png" />
+            <img src="https://raw.githubusercontent.com/biomejs/resources/refs/heads/main/sponsors/vercel-light.png" width="400" alt="Vercel" />
+          </picture>
+        </a>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+
 ### Серебряные спонсоры
 
 <table>
   <tbody>
     <tr>
       <td align="center" valign="middle">
-        <a href="HTTPS://l2beat.com/" target="_blank"><img src="https://images.opencollective.com/l2beat/c2b2a27/logo/256.png" height="100"></a>
+        <a href="https://l2beat.com/?utm_source=biome&utm_medium=readme" target="_blank"><img src="https://images.opencollective.com/l2beat/c2b2a27/logo/256.png" height="100"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://www.phoenixlabs.dev/" target="_blank"><img src="https://images.opencollective.com/phoenix-labs/2824ed4/logo/100.png?height=100" height="100"></a>
+        <a href="https://www.phoenixlabs.dev/?utm_source=biome&utm_medium=readme" target="_blank"><img src="https://images.opencollective.com/phoenix-labs/2824ed4/logo/100.png?height=100" height="100"></a>
       </td>
     </tr>
   </tbody>
@@ -129,28 +148,29 @@ Biome предлагает простую спонсорскую програм�
   <tbody>
     <tr>
       <td align="center" valign="middle">
-        <a href="HTTPS://www.kanamekey.com" target="_blank"><img src="https://images.opencollective.com/kaname/d15fd98/logo/256.png?height=80" width="80"></a>
+        <a href="https://www.kanamekey.com?utm_source=biome&utm_medium=readme" target="_blank"><img src="https://images.opencollective.com/kaname/d15fd98/logo/256.png?height=80" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://nanabit.dev/" target="_blank"><img src="https://images.opencollective.com/nanabit/d15fd98/logo/256.png?height=80" width="80"></a>
+        <a href="https://nanabit.dev/?utm_source=biome&utm_medium=readme" target="_blank"><img src="https://images.opencollective.com/nanabit/d15fd98/logo/256.png?height=80" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://vital.io/" target="_blank"><img src="https://avatars.githubusercontent.com/u/25357309?s=200" width="80"></a>
+        <a href="https://vital.io/?utm_source=biome&utm_medium=readme" target="_blank"><img src="https://avatars.githubusercontent.com/u/25357309?s=200" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://coderabbit.ai/" target="_blank"><img src="https://avatars.githubusercontent.com/u/132028505?s=200&v=4" width="80"></a>
+        <a href="https://coderabbit.ai/?utm_source=biome&utm_medium=readme" target="_blank"><img src="https://avatars.githubusercontent.com/u/132028505?s=200&v=4" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTPS://forge42.dev/" target="_blank"><img src="https://avatars.githubusercontent.com/u/161314831?s=200&v=4" width="80"></a>
+        <a href="https://forge42.dev/?utm_source=biome&utm_medium=readme" target="_blank"><img src="https://avatars.githubusercontent.com/u/161314831?s=200&v=4" width="80"></a>
       </td>
       <td align="center" valign="middle">
-        <a href="HTTP://rstudio.org/" target="_blank"><img src="https://avatars.githubusercontent.com/u/513560?s=200&v=4" width="80"></a>
+        <a href="http://rstudio.org/?utm_source=biome&utm_medium=readme" target="_blank"><img src="https://avatars.githubusercontent.com/u/513560?s=200&v=4" width="80"></a>
       </td>
     </tr>
   </tbody>
 </table>
 
-[biomejs]: HTTPS://biomejs.dev/
-[biome-philosophy]: HTTPS://biomejs.dev/internals/philosophy/
-[language-support]: HTTPS://biomejs.dev/internals/language-support/
-[getting-started]: HTTPS://biomejs.dev/guides/getting-started/
+
+[biomejs]: https://biomejs.dev/
+[biome-philosophy]: https://biomejs.dev/internals/philosophy/
+[language-support]: https://biomejs.dev/internals/language-support/
+[getting-started]: https://biomejs.dev/guides/getting-started/

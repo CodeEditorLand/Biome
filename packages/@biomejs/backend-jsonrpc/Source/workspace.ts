@@ -1333,6 +1333,10 @@ export interface Nursery {
 	 */
 	noProcessEnv?: RuleConfiguration_for_Null;
 	/**
+	 * Disallow the use of process global.
+	 */
+	noProcessGlobal?: RuleFixConfiguration_for_Null;
+	/**
 	 * Disallow specified modules when loaded by import or require.
 	 */
 	noRestrictedImports?: RuleConfiguration_for_RestrictedImportsOptions;
@@ -1456,6 +1460,10 @@ export interface Nursery {
 	 * Validates that all enum values are capitalized.
 	 */
 	useNamingConvention?: RuleConfiguration_for_Null;
+	/**
+	 * Enforce the consistent use of the radix argument when using parseInt().
+	 */
+	useParseIntRadix?: RuleFixConfiguration_for_Null;
 	/**
 	 * Enforce the sorting of CSS utility classes.
 	 */
@@ -3218,6 +3226,7 @@ export type Category =
 	| "lint/nursery/noNestedTernary"
 	| "lint/nursery/noOctalEscape"
 	| "lint/nursery/noProcessEnv"
+	| "lint/nursery/noProcessGlobal"
 	| "lint/nursery/noReactSpecificProps"
 	| "lint/nursery/noRestrictedImports"
 	| "lint/nursery/noRestrictedTypes"
@@ -3262,6 +3271,7 @@ export type Category =
 	| "lint/nursery/useJsxCurlyBraceConvention"
 	| "lint/nursery/useNamedOperation"
 	| "lint/nursery/useNamingConvention"
+	| "lint/nursery/useParseIntRadix"
 	| "lint/nursery/useSortedClasses"
 	| "lint/nursery/useStrictMode"
 	| "lint/nursery/useTrimStartEnd"
