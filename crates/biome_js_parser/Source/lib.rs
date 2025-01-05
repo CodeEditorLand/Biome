@@ -100,12 +100,11 @@ pub use crate::{
 };
 
 pub enum JsSyntaxFeature {
-	#[allow(unused)]
-	#[doc(alias = "LooseMode")]
-	SloppyMode,
-	StrictMode,
-	TypeScript,
-	Jsx,
+    #[doc(alias = "LooseMode")]
+    SloppyMode,
+    StrictMode,
+    TypeScript,
+    Jsx,
 }
 
 impl SyntaxFeature for JsSyntaxFeature {

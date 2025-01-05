@@ -2,30 +2,30 @@
 
 #[derive(Debug)]
 pub struct LicenseList {
-	#[allow(unused)]
-	pub(crate) license_list_version:&'static str,
-	pub(crate) license_list:&'static [&'static Licence],
-	#[allow(unused)]
-	pub(crate) release_date:&'static str,
+    #[expect(unused)]
+    pub(crate) license_list_version: &'static str,
+    pub(crate) license_list: &'static [&'static Licence],
+    #[expect(unused)]
+    pub(crate) release_date: &'static str,
 }
 #[derive(Debug)]
 pub struct Licence {
-	#[allow(unused)]
-	pub(crate) reference:&'static str,
-	pub(crate) is_deprecated_license_id:bool,
-	#[allow(unused)]
-	pub(crate) details_url:&'static str,
-	#[allow(unused)]
-	pub(crate) reference_number:u16,
-	#[allow(unused)]
-	pub(crate) name:&'static str,
-	pub(crate) license_id:&'static str,
-	#[allow(unused)]
-	pub(crate) see_also:&'static [&'static str],
-	#[allow(unused)]
-	pub(crate) is_osi_approved:bool,
-	#[allow(unused)]
-	pub(crate) is_fsf_libre:bool,
+    #[expect(unused)]
+    pub(crate) reference: &'static str,
+    pub(crate) is_deprecated_license_id: bool,
+    #[expect(unused)]
+    pub(crate) details_url: &'static str,
+    #[expect(unused)]
+    pub(crate) reference_number: u16,
+    #[expect(unused)]
+    pub(crate) name: &'static str,
+    pub(crate) license_id: &'static str,
+    #[expect(unused)]
+    pub(crate) see_also: &'static [&'static str],
+    #[expect(unused)]
+    pub(crate) is_osi_approved: bool,
+    #[expect(unused)]
+    pub(crate) is_fsf_libre: bool,
 }
 pub const LICENSE_LIST:LicenseList = LicenseList {
 	license_list_version:"8347fd3",
