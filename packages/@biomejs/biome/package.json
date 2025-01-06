@@ -44,7 +44,7 @@
 	},
 	"dependencies": {},
 	"devDependencies": {
-		"@playform/build": "0.2.0"
+		"@playform/build": "0.2.1"
 	},
 	"optionalDependencies": {
 		"@biomejs/cli-darwin-arm64": "1.9.4",

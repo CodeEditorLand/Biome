@@ -52,7 +52,7 @@
 		"@codeeditorland/wasm-bundler": "0.0.1",
 		"@codeeditorland/wasm-nodejs": "0.0.1",
 		"@codeeditorland/wasm-web": "0.0.1",
-		"@playform/build": "0.2.0"
+		"@playform/build": "0.2.1"
 	},
 	"peerDependenciesMeta": {
 		"@biomejs/wasm-bundler": {
