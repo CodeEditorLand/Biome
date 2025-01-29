@@ -1,17 +1,38 @@
 {
-  "name": "tailwindcss-config-analyzer",
-  "version": "1.0.0",
-  "description": "Tools to introspect Tailwind CSS configurations for integration with Biome",
-  "private": true,
-  "license": "MIT OR Apache-2.0",
-  "author": "Dani Guardiola",
-  "type": "module",
-  "dependencies": {
-    "tailwindcss": "^3.4.17"
-  },
-  "devDependencies": {
-    "@types/bun": "1.2.0",
-    "read-package-up": "11.0.0",
-    "typescript": "5.7.3"
-  }
+	"name": "tailwindcss-config-analyzer",
+	"version": "0.0.1",
+	"private": false,
+	"description": "Tools to introspect Tailwind CSS configurations for integration with Biome",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "Source 🖋️ Open 👐🏻",
+		"email": "Source/Open@Editor.Land",
+		"url": "HTTPS://Editor.Land"
+	},
+	"type": "module",
+	"scripts": {
+		"prepublishOnly": "Build 'Source/**/*.ts'"
+	},
+	"dependencies": {},
+	"devDependencies": {
+		"@playform/build": "0.2.1",
+		"@types/bun": "1.2.0",
+		"read-package-up": "11.0.0"
+	},
+	"publishConfig": {
+		"access": "public"
+	}
 }
