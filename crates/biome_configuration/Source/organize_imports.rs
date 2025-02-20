@@ -8,27 +8,43 @@ use serde::{Deserialize, Serialize};
 #[partial(cfg_attr(feature = "schema", derive(schemars::JsonSchema)))]
 #[partial(serde(rename_all = "camelCase", default, deny_unknown_fields))]
 pub struct OrganizeImports {
-	/// Enables the organization of imports
-	#[partial(bpaf(hide))]
-	pub enabled:bool,
+    /// Enables the organization of imports
+    #[partial(bpaf(hide))]
+    pub enabled: bool,
 
-	/// A list of Unix shell style patterns. The formatter will ignore
-	/// files/folders that will match these patterns.
-	#[partial(bpaf(hide))]
-	pub ignore:StringSet,
+    /// A list of Unix shell style patterns. The import organizer will ignore files/folders that will
+    /// match these patterns.
+    #[partial(bpaf(hide))]
+    pub ignore: StringSet,
 
-	/// A list of Unix shell style patterns. The formatter will include
-	/// files/folders that will match these patterns.
-	#[partial(bpaf(hide))]
-	pub include:StringSet,
+    /// A list of Unix shell style patterns. The import organizer will include files/folders that will
+    /// match these patterns.
+    #[partial(bpaf(hide))]
+    pub include: StringSet,
+
+    /// A list of glob patterns. The import organizer will include files/folders that will
+    /// match these patterns.
+    #[partial(bpaf(pure(Default::default()), hide))]
+    pub includes: Vec<biome_glob::Glob>,
 }
 
 impl Default for OrganizeImports {
-	fn default() -> Self { Self { enabled:true, ignore:Default::default(), include:Default::default() } }
+    fn default() -> Self {
+        Self {
+            enabled: true,
+            ignore: Default::default(),
+            include: Default::default(),
+            includes: Default::default(),
+        }
+    }
 }
 
 impl PartialOrganizeImports {
-	pub const fn is_disabled(&self) -> bool { matches!(self.enabled, Some(false)) }
+    pub const fn is_disabled(&self) -> bool {
+        matches!(self.enabled, Some(false))
+    }
 
-	pub const fn is_enabled(&self) -> bool { !self.is_disabled() }
+    pub const fn is_enabled(&self) -> bool {
+        !self.is_disabled()
+    }
 }

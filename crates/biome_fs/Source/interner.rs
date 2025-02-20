@@ -1,34 +1,41 @@
-use std::{path::PathBuf, sync::RwLock};
+use camino::Utf8PathBuf;
+use crossbeam::channel::{unbounded, Receiver, Sender};
+use papaya::HashSet;
+use rustc_hash::FxBuildHasher;
 
-use crossbeam::channel::{Receiver, Sender, unbounded};
-use rustc_hash::FxHashSet;
+pub type PathInternerSet = HashSet<Utf8PathBuf, FxBuildHasher>;
 
 /// File paths interner cache
 ///
 /// The path interner stores an instance of [PathBuf]
 pub struct PathInterner {
-	storage:RwLock<FxHashSet<PathBuf>>,
-	handler:Sender<PathBuf>,
+    storage: PathInternerSet,
+    handler: Sender<Utf8PathBuf>,
 }
 
 impl PathInterner {
-	pub fn new() -> (Self, Receiver<PathBuf>) {
-		let (send, recv) = unbounded();
+    pub fn new() -> (Self, Receiver<Utf8PathBuf>) {
+        let (send, recv) = unbounded();
+        let interner = Self {
+            storage: HashSet::default(),
+            handler: send,
+        };
 
-		let interner = Self { storage:RwLock::new(FxHashSet::default()), handler:send };
+        (interner, recv)
+    }
 
-		(interner, recv)
-	}
+    /// Inserts the path.
+    ///
+    /// Returns `true` if the path was not previously inserted.
+    pub fn intern_path(&self, path: Utf8PathBuf) -> bool {
+        let result = self.storage.pin().insert(path.clone());
+        if result {
+            self.handler.send(path).ok();
+        }
+        result
+    }
 
-	/// Insert the path.
-	/// Returns `true` if the path was not previously inserted.
-	pub fn intern_path(&self, path:PathBuf) -> bool {
-		let result = self.storage.write().unwrap().insert(path.clone());
-
-		if result {
-			self.handler.send(path).ok();
-		}
-
-		result
-	}
+    pub fn into_paths(self) -> PathInternerSet {
+        self.storage
+    }
 }
