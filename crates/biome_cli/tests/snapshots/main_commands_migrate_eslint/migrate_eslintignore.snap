@@ -1,0 +1,61 @@
+---
+source: crates/biome_cli/tests/snap_test.rs
+expression: redactor(content)
+---
+## `biome.json`
+
+```json
+{ "linter": { "enabled": true } }
+```
+
+## `.eslintignore`
+
+```eslintignore
+
+# Comment
+/src
+*.test.js
+**/*.spec.js
+test/main.js
+
+```
+
+## `.eslintrc.json`
+
+```json
+{ "rules": { "eqeqeq": "off" } }
+```
+
+# Emitted Messages
+
+```block
+biome.json migrate ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i Configuration file can be updated.
+  
+    1    │ - {·"linter":·{·"enabled":·true·}·}
+       1 │ + {
+       2 │ + → "linter":·{
+       3 │ + → → "enabled":·true,
+       4 │ + → → "rules":·{
+       5 │ + → → → "recommended":·false,
+       6 │ + → → → "suspicious":·{·"noDoubleEquals":·"off"·}
+       7 │ + → → },
+       8 │ + → → "includes":·[
+       9 │ + → → → "**",
+      10 │ + → → → "**",
+      11 │ + → → → "!./src",
+      12 │ + → → → "!**/*.test.js",
+      13 │ + → → → "!**/*.spec.js",
+      14 │ + → → → "!test/main.js"
+      15 │ + → → ]
+      16 │ + → }
+      17 │ + }
+      18 │ + 
+  
+
+```
+
+```block
+Run the command with the option --write to apply the changes.
+```

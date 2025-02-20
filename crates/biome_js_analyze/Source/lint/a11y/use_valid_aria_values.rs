@@ -10,56 +10,58 @@ use biome_analyze::{
 };
 use biome_aria_metadata::{AriaAttribute, AriaValueType};
 use biome_console::markup;
+use biome_diagnostics::Severity;
 use biome_js_syntax::{JsSyntaxToken, JsxAttribute, TextRange};
 use biome_rowan::AstNode;
 
 declare_lint_rule! {
-	/// Enforce that ARIA state and property values are valid.
-	///
-	/// ## Examples
-	///
-	/// ### Invalid
-	///
-	/// ```jsx, expect_diagnostic
-	/// <span role="checkbox" aria-checked="test">some text</span>
-	/// ```
-	///
-	/// ```jsx, expect_diagnostic
-	/// <span aria-labelledby="">some text</span>
-	/// ```
-	///
-	/// ```jsx, expect_diagnostic
-	/// <span aria-valuemax="hey">some text</span>
-	/// ```
-	///
-	/// ```jsx, expect_diagnostic
-	/// <span aria-orientation="hey">some text</span>
-	/// ```
-	///
-	/// ### Valid
-	///
-	/// ```jsx
-	/// <>
-	///     <span role="checkbox" aria-checked={checked} >some text</span>
-	///     <span aria-labelledby="fooId barId" >some text</span>
-	/// </>
-	/// ```
-	///
-	/// ## Accessibility guidelines
-	///
-	/// - [WCAG 4.1.2](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)
-	///
-	/// ### Resources
-	///
-	/// - [ARIA Spec, States and Properties](https://www.w3.org/TR/wai-aria/#states_and_properties)
-	/// - [Chrome Audit Rules, AX_ARIA_04](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_04)
-	pub UseValidAriaValues {
-		version: "1.0.0",
-		name: "useValidAriaValues",
-		language: "jsx",
-		sources: &[RuleSource::EslintJsxA11y("aria-proptypes")],
-		recommended: true,
-	}
+    /// Enforce that ARIA state and property values are valid.
+    ///
+    /// ## Examples
+    ///
+    /// ### Invalid
+    ///
+    /// ```jsx, expect_diagnostic
+    /// <span role="checkbox" aria-checked="test">some text</span>
+    /// ```
+    ///
+    /// ```jsx, expect_diagnostic
+    /// <span aria-labelledby="">some text</span>
+    /// ```
+    ///
+    /// ```jsx, expect_diagnostic
+    /// <span aria-valuemax="hey">some text</span>
+    /// ```
+    ///
+    /// ```jsx, expect_diagnostic
+    /// <span aria-orientation="hey">some text</span>
+    /// ```
+    ///
+    /// ### Valid
+    ///
+    /// ```jsx
+    /// <>
+    ///     <span role="checkbox" aria-checked={checked} >some text</span>
+    ///     <span aria-labelledby="fooId barId" >some text</span>
+    /// </>
+    /// ```
+    ///
+    /// ## Accessibility guidelines
+    ///
+    /// - [WCAG 4.1.2](https://www.w3.org/WAI/WCAG21/Understanding/name-role-value)
+    ///
+    /// ### Resources
+    ///
+    /// - [ARIA Spec, States and Properties](https://www.w3.org/TR/wai-aria/#states_and_properties)
+    /// - [Chrome Audit Rules, AX_ARIA_04](https://github.com/GoogleChrome/accessibility-developer-tools/wiki/Audit-Rules#ax_aria_04)
+    pub UseValidAriaValues {
+        version: "1.0.0",
+        name: "useValidAriaValues",
+        language: "jsx",
+        sources: &[RuleSource::EslintJsxA11y("aria-proptypes")],
+        recommended: true,
+        severity: Severity::Error,
+    }
 }
 
 pub struct UseValidAriaValuesState {

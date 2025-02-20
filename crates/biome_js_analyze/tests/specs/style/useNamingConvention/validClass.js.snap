@@ -1,0 +1,20 @@
+---
+source: crates/biome_js_analyze/tests/spec_tests.rs
+expression: validClass.js
+snapshot_kind: text
+---
+# Input
+```js
+class C {}
+
+class _C {}
+
+class PascalCase {}
+
+class _PascalCase {}
+
+export default class DefaultClass {}
+
+const x = class ClassExpression {}
+
+```

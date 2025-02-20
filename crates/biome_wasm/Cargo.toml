@@ -2,14 +2,15 @@
 authors = ["Biome Developers and Contributors"]
 categories = ["development-tools", "web-programming"]
 description = "WebAssembly bindings to the Biome workspace API"
-edition = "2021"
-homepage = "https://biomejs.dev/"
-keywords = ["parser", "linter", "formatter", "wasm"]
-license-file = "LICENSE"
-name = "biome_wasm"
-publish = false
-repository = "https://github.com/biomejs/biome"
-version = "1.7.3"
+edition     = "2021"
+homepage    = "https://biomejs.dev/"
+keywords    = ["parser", "linter", "formatter", "wasm"]
+license     = "MIT OR Apache-2.0"
+name        = "biome_wasm"
+publish     = false
+repository  = "https://github.com/biomejs/biome"
+version     = "1.9.4"
+
 
 [lib]
 crate-type = ["cdylib", "rlib"]
@@ -21,6 +22,7 @@ experimental-html = ["biome_service/experimental-html"]
 [dependencies]
 biome_console      = { workspace = true }
 biome_diagnostics  = { workspace = true }
+biome_fs           = { workspace = true }
 biome_service      = { workspace = true }
 js-sys             = "0.3.77"
 serde              = { workspace = true }
@@ -36,9 +38,10 @@ console_error_panic_hook = { version = "0.1.7", optional = true }
 [build-dependencies]
 biome_js_factory = { workspace = true }
 biome_js_formatter = { workspace = true }
-biome_rowan = { workspace = true }
-biome_service = { workspace = true, features = ["schema"] }
-quote = { version = "1.0.14" }
+biome_rowan        = { workspace = true }
+biome_service      = { workspace = true, features = ["schema"] }
+quote              = "1.0.14"
+schemars           = { workspace = true }
 
 [lints]
 workspace = true

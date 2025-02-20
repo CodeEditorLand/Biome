@@ -15,12 +15,12 @@ serde          = { workspace = true, optional = true }
 ureq           = "3.0.3"
 xtask          = { path = '../', version = "0.0" }
 
-biome_analyze = { workspace = true, optional = true }
-biome_cli = { workspace = true, optional = true }
-biome_configuration = { workspace = true, optional = true }
-biome_css_analyze = { workspace = true, optional = true }
-biome_css_syntax = { workspace = true, optional = true }
-biome_diagnostics = { workspace = true, optional = true }
+biome_analyze         = { workspace = true, features = ["schema"], optional = true }
+biome_cli             = { workspace = true, optional = true }
+biome_configuration   = { workspace = true, features = ["schema"], optional = true }
+biome_css_analyze     = { workspace = true, optional = true }
+biome_css_syntax      = { workspace = true, optional = true }
+biome_diagnostics     = { workspace = true, optional = true }
 biome_graphql_analyze = { workspace = true, optional = true }
 biome_graphql_parser = { workspace = true, optional = true }
 biome_graphql_syntax = { workspace = true, optional = true }
@@ -42,31 +42,33 @@ serde_json = { workspace = true, optional = true }
 
 [features]
 configuration = [
-	"biome_analyze",
-	"biome_js_analyze",
-	"biome_js_syntax",
-	"biome_json_analyze",
-	"biome_json_syntax",
-	"biome_css_analyze",
-	"biome_css_syntax",
-	"biome_graphql_analyze",
-	"biome_graphql_syntax",
-	"biome_rowan",
-	"pulldown-cmark",
+  "biome_analyze",
+  "biome_js_analyze",
+  "biome_js_syntax",
+  "biome_json_analyze",
+  "biome_json_syntax",
+  "biome_css_analyze",
+  "biome_css_syntax",
+  "biome_graphql_analyze",
+  "biome_graphql_syntax",
+  "biome_rowan",
+  "pulldown-cmark",
+  "biome_diagnostics",
 ]
 license = ["ureq/default", "ureq/json", "serde", "serde_json"]
 schema = [
-	"schemars",
-	"serde_json",
-	"biome_rowan",
-	"biome_service",
-	"biome_js_syntax",
-	"biome_js_factory",
-	"biome_js_formatter",
-	"biome_json_formatter",
-	"biome_json_parser",
-	"biome_diagnostics",
-	"biome_configuration",
+  "schemars",
+  "serde_json",
+  "biome_analyze",
+  "biome_rowan",
+  "biome_service",
+  "biome_js_syntax",
+  "biome_js_factory",
+  "biome_js_formatter",
+  "biome_json_formatter",
+  "biome_json_parser",
+  "biome_diagnostics",
+  "biome_configuration",
 ]
 
 [lints]

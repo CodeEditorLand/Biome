@@ -1,0 +1,215 @@
+---
+source: crates/biome_cli/tests/snap_test.rs
+expression: redactor(content)
+---
+## `biome.json`
+
+```json
+{ "linter": { "enabled": true } }
+```
+
+## `.eslintrc.json`
+
+```json
+{
+        "rules": {
+            "no-restricted-globals": ["error", "event", "fdescribe"],
+            "jsx-a11y/aria-role": ["error", {
+                "allowedInvalidRoles": ["text"],
+                "ignoreNonDOM": true
+            }],
+            "@typescript-eslint/array-type": ["error", { "default": "generic" }],
+            "@typescript-eslint/naming-convention": ["error",
+                {
+                    "selector": "property",
+                    "leadingUnderscore": "forbid"
+                },
+                {
+                    "selector": "property",
+                    "modifiers": ["private"],
+                    "format": ["strictCamelCase"],
+                    "leadingUnderscore": "require"
+                },
+                {
+                    "selector": "interface",
+                    "prefix": ["I", "IO"]
+                },
+                {
+                    "selector": "enumMember",
+                    "format": ["UPPER_CASE"]
+                },
+                {
+                    "selector": "variable",
+                    "types": ["boolean"],
+                    "format": ["UPPER_CASE"]
+                }
+            ],
+            "unicorn/filename-case": ["error", {
+                "cases": {
+                    "camelCase": true,
+                    "pascalCase": true
+                }
+            }]
+        },
+        "overrides": [{
+            "files": "default.js",
+            "rules": {
+                "no-restricted-globals": "error",
+                "jsx-a11y/aria-role": "error",
+                "@typescript-eslint/array-type": "error",
+                "@typescript-eslint/naming-convention": "error",
+                "unicorn/filename-case": "error"
+            }
+        }, {
+            "files": ["alternative.js"],
+            "rules": {
+                "no-restricted-globals": ["error",
+                    {
+                        "name": "event",
+                        "message": "Use local parameter instead."
+                    },
+                    {
+                        "name": "fdescribe",
+                        "message": "Do not commit fdescribe. Use describe instead."
+                    }
+                ],
+                "@typescript-eslint/array-type": ["error", { "default": "array" }],
+                "@typescript-eslint/naming-convention": ["error",
+                    {
+                        "selector": "default",
+                        "format": ["UPPER_CASE"]
+                    }
+                ],
+                "unicorn/filename-case": ["error", {
+                    "case": "kebabCase",
+                    "multipleFileExtensions": true
+                }]
+            }
+        }]
+    }
+```
+
+# Emitted Messages
+
+```block
+biome.json migrate ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i Configuration file can be updated.
+  
+    1     │ - {·"linter":·{·"enabled":·true·}·}
+        1 │ + {
+        2 │ + → "linter":·{
+        3 │ + → → "enabled":·true,
+        4 │ + → → "rules":·{
+        5 │ + → → → "recommended":·false,
+        6 │ + → → → "a11y":·{
+        7 │ + → → → → "useValidAriaRole":·{
+        8 │ + → → → → → "level":·"error",
+        9 │ + → → → → → "options":·{·"allowInvalidRoles":·["text"],·"ignoreNonDom":·true·}
+       10 │ + → → → → }
+       11 │ + → → → },
+       12 │ + → → → "style":·{
+       13 │ + → → → → "noRestrictedGlobals":·{
+       14 │ + → → → → → "level":·"error",
+       15 │ + → → → → → "options":·{·"deniedGlobals":·["event",·"fdescribe"]·}
+       16 │ + → → → → },
+       17 │ + → → → → "useConsistentArrayType":·{
+       18 │ + → → → → → "level":·"error",
+       19 │ + → → → → → "options":·{·"syntax":·"generic"·}
+       20 │ + → → → → },
+       21 │ + → → → → "useFilenamingConvention":·{
+       22 │ + → → → → → "level":·"error",
+       23 │ + → → → → → "options":·{·"filenameCases":·["camelCase",·"PascalCase"]·}
+       24 │ + → → → → },
+       25 │ + → → → → "useNamingConvention":·{
+       26 │ + → → → → → "level":·"error",
+       27 │ + → → → → → "options":·{
+       28 │ + → → → → → → "strictCase":·false,
+       29 │ + → → → → → → "requireAscii":·false,
+       30 │ + → → → → → → "conventions":·[
+       31 │ + → → → → → → → {
+       32 │ + → → → → → → → → "selector":·{·"kind":·"enumMember"·},
+       33 │ + → → → → → → → → "formats":·["CONSTANT_CASE"]
+       34 │ + → → → → → → → },
+       35 │ + → → → → → → → {·"selector":·{·"kind":·"interface"·},·"match":·"(?:I|IO)(.*)"·},
+       36 │ + → → → → → → → {
+       37 │ + → → → → → → → → "selector":·{
+       38 │ + → → → → → → → → → "kind":·"classProperty",
+       39 │ + → → → → → → → → → "modifiers":·["private"]
+       40 │ + → → → → → → → → },
+       41 │ + → → → → → → → → "match":·"_([^_]*)",
+       42 │ + → → → → → → → → "formats":·["camelCase"]
+       43 │ + → → → → → → → },
+       44 │ + → → → → → → → {·"selector":·{·"kind":·"classProperty"·},·"match":·"([^_]*)"·},
+       45 │ + → → → → → → → {·"selector":·{·"kind":·"typeProperty"·},·"match":·"([^_]*)"·},
+       46 │ + → → → → → → → {
+       47 │ + → → → → → → → → "selector":·{·"kind":·"objectLiteralProperty"·},
+       48 │ + → → → → → → → → "match":·"([^_]*)"
+       49 │ + → → → → → → → }
+       50 │ + → → → → → → ]
+       51 │ + → → → → → }
+       52 │ + → → → → }
+       53 │ + → → → }
+       54 │ + → → },
+       55 │ + → → "includes":·["**"]
+       56 │ + → },
+       57 │ + → "overrides":·[
+       58 │ + → → {
+       59 │ + → → → "includes":·["default.js"],
+       60 │ + → → → "linter":·{
+       61 │ + → → → → "rules":·{
+       62 │ + → → → → → "a11y":·{·"useValidAriaRole":·"error"·},
+       63 │ + → → → → → "style":·{
+       64 │ + → → → → → → "noRestrictedGlobals":·{·"level":·"error",·"options":·{}·},
+       65 │ + → → → → → → "useConsistentArrayType":·"error",
+       66 │ + → → → → → → "useFilenamingConvention":·{
+       67 │ + → → → → → → → "level":·"error",
+       68 │ + → → → → → → → "options":·{·"filenameCases":·["kebab-case"]·}
+       69 │ + → → → → → → },
+       70 │ + → → → → → → "useNamingConvention":·{
+       71 │ + → → → → → → → "level":·"error",
+       72 │ + → → → → → → → "options":·{·"strictCase":·false,·"requireAscii":·false·}
+       73 │ + → → → → → → }
+       74 │ + → → → → → }
+       75 │ + → → → → }
+       76 │ + → → → }
+       77 │ + → → },
+       78 │ + → → {
+       79 │ + → → → "includes":·["alternative.js"],
+       80 │ + → → → "linter":·{
+       81 │ + → → → → "rules":·{
+       82 │ + → → → → → "style":·{
+       83 │ + → → → → → → "noRestrictedGlobals":·{
+       84 │ + → → → → → → → "level":·"error",
+       85 │ + → → → → → → → "options":·{·"deniedGlobals":·["event",·"fdescribe"]·}
+       86 │ + → → → → → → },
+       87 │ + → → → → → → "useConsistentArrayType":·{
+       88 │ + → → → → → → → "level":·"error",
+       89 │ + → → → → → → → "options":·{·"syntax":·"shorthand"·}
+       90 │ + → → → → → → },
+       91 │ + → → → → → → "useFilenamingConvention":·{
+       92 │ + → → → → → → → "level":·"error",
+       93 │ + → → → → → → → "options":·{·"filenameCases":·["kebab-case"]·}
+       94 │ + → → → → → → },
+       95 │ + → → → → → → "useNamingConvention":·{
+       96 │ + → → → → → → → "level":·"error",
+       97 │ + → → → → → → → "options":·{
+       98 │ + → → → → → → → → "strictCase":·false,
+       99 │ + → → → → → → → → "requireAscii":·false,
+      100 │ + → → → → → → → → "conventions":·[{·"formats":·["CONSTANT_CASE"]·}]
+      101 │ + → → → → → → → }
+      102 │ + → → → → → → }
+      103 │ + → → → → → }
+      104 │ + → → → → }
+      105 │ + → → → }
+      106 │ + → → }
+      107 │ + → ]
+      108 │ + }
+      109 │ + 
+  
+
+```
+
+```block
+Run the command with the option --write to apply the changes.
+```

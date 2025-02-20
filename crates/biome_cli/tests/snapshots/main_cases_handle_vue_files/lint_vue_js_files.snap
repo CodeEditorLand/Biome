@@ -1,0 +1,61 @@
+---
+source: crates/biome_cli/tests/snap_test.rs
+expression: redactor(content)
+snapshot_kind: text
+---
+## `file.vue`
+
+```vue
+<script setup lang="js">
+a == b;
+delete a.c;
+
+var foo = "";
+</script>
+<template></template>
+```
+
+# Termination Message
+
+```block
+lint ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Some errors were emitted while running checks.
+  
+
+
+```
+
+# Emitted Messages
+
+```block
+file.vue:2:3 lint/suspicious/noDoubleEquals  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Use === instead of ==
+  
+    1 │ <script setup lang="js">
+  > 2 │ a == b;
+      │   ^^
+    3 │ delete a.c;
+    4 │ 
+  
+  i == is only allowed when comparing against null
+  
+  > 1 │ <script setup lang="js">
+      │   ^^
+    2 │ a == b;
+    3 │ delete a.c;
+  
+  i Using == may be unsafe if you are relying on type coercion
+  
+  i Unsafe fix: Use ===
+  
+    1 │ a·===·b;
+      │     +   
+
+```
+
+```block
+Checked 1 file in <TIME>. No fixes applied.
+Found 1 error.
+```

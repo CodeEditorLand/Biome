@@ -1,8 +1,15 @@
-use std::{collections::HashMap, path::Path};
+use biome_grit_patterns::{
+    compile_pattern_with_options, CompilePatternOptions, GritTargetFile, GritTargetLanguage,
+    JsTargetLanguage,
+};
+use camino::Utf8Path;
+use criterion::measurement::WallTime;
+use std::collections::HashMap;
+use xtask_bench::TestCase;
 
-use biome_grit_patterns::{GritTargetFile, GritTargetLanguage, JsTargetLanguage, compile_pattern};
-use biome_js_parser::{JsParserOptions, parse};
-use biome_js_syntax::JsFileSource;
+#[cfg(not(feature = "codspeed"))]
+pub use criterion::*;
+
 #[cfg(feature = "codspeed")]
 pub use codspeed_criterion_compat::*;
 use criterion::measurement::WallTime;
@@ -49,41 +56,33 @@ fn bench_gritql_search(criterion:&mut Criterion) {
 	group.finish();
 }
 
-pub fn bench_search_group(group:&mut BenchmarkGroup<WallTime>, test_case:TestCase) {
-	let query = compile_pattern(
-		"`getEntityNameForExtendingInterface(errorLocation)`",
-		Some(Path::new("bench.grit")),
-		GritTargetLanguage::JsTargetLanguage(JsTargetLanguage),
-	)
-	.unwrap();
+pub fn bench_search_group(group: &mut BenchmarkGroup<WallTime>, test_case: TestCase) {
+    let target_language = GritTargetLanguage::JsTargetLanguage(JsTargetLanguage);
 
-	let code = test_case.code();
+    let query = compile_pattern_with_options(
+        "`getEntityNameForExtendingInterface(errorLocation)`",
+        CompilePatternOptions::default().with_path(Utf8Path::new("bench.grit")),
+    )
+    .unwrap();
 
-	let source_type = if test_case.extension() == "d.ts" {
-		JsFileSource::d_ts()
-	} else {
-		JsFileSource::ts()
-	};
+    let code = test_case.code();
+    let target_file = GritTargetFile::parse(code, test_case.path().to_owned(), target_language);
 
-	let target_file = GritTargetFile {
-		parse:parse(code, source_type, JsParserOptions::default()).into(),
-		path:test_case.path().to_owned(),
-	};
-
-	group.throughput(Throughput::Bytes(code.len() as u64));
-
-	group.sample_size(10);
-
-	group.bench_with_input(BenchmarkId::new(test_case.filename(), "execute"), &code, |b, _| {
-		b.iter(|| {
-			let (_results, logs) =
-				black_box(query.execute(target_file.clone())).expect("Couldn't execute query");
-
-			for log in logs.logs() {
-				println!("{log}");
-			}
-		})
-	});
+    group.throughput(Throughput::Bytes(code.len() as u64));
+    group.sample_size(10);
+    group.bench_with_input(
+        BenchmarkId::new(test_case.filename(), "execute"),
+        &code,
+        |b, _| {
+            b.iter(|| {
+                let query_result =
+                    black_box(query.execute(target_file.clone())).expect("Couldn't execute query");
+                for log in query_result.logs.logs() {
+                    println!("{log}");
+                }
+            })
+        },
+    );
 }
 
 criterion_group!(gritql_search, bench_gritql_search);

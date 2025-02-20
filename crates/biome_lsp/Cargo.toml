@@ -22,16 +22,18 @@ biome_deserialize = { workspace = true }
 biome_diagnostics = { workspace = true }
 biome_fs = { workspace = true }
 biome_lsp_converters = { workspace = true }
-biome_rowan = { workspace = true }
-biome_service = { workspace = true }
-biome_text_edit = { workspace = true }
-futures = { version = "0.3.31" }
-rustc-hash = { workspace = true }
-serde = { workspace = true, features = ["derive"] }
-serde_json = { workspace = true }
-tokio = { workspace = true, features = ["rt", "io-std"] }
-tower-lsp = { version = "0.20.0" }
-tracing = { workspace = true, features = ["attributes"] }
+biome_rowan          = { workspace = true }
+biome_service        = { workspace = true }
+biome_text_edit      = { workspace = true }
+camino               = { workspace = true }
+futures              = "0.3.31"
+papaya               = { workspace = true }
+rustc-hash           = { workspace = true }
+serde                = { workspace = true, features = ["derive"] }
+serde_json           = { workspace = true }
+tokio                = { workspace = true, features = ["rt", "io-std"] }
+tower-lsp            = { version = "0.20.0" }
+tracing              = { workspace = true, features = ["attributes"] }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["rt", "rt-multi-thread", "macros"] }

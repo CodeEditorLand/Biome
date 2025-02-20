@@ -1,0 +1,48 @@
+---
+source: crates/biome_cli/tests/snap_test.rs
+expression: redactor(content)
+---
+## `biome.json`
+
+```json
+{
+  "linter": {
+    "rules": {
+      "recommended": true,
+      "suspicious": { "noDoubleEquals": "error" }
+    }
+  }
+}
+```
+
+## `.eslintrc.json`
+
+```json
+{ "rules": { "eqeqeq": "off" } }
+```
+
+# Emitted Messages
+
+```block
+biome.json migrate ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  i Configuration file can be updated.
+  
+    1    │ - {·"linter":·{·"rules":·{·"recommended":·true,·"suspicious":·{·"noDoubleEquals":·"error"·}·}·}·}
+       1 │ + {
+       2 │ + → "linter":·{
+       3 │ + → → "rules":·{
+       4 │ + → → → "recommended":·false,
+       5 │ + → → → "suspicious":·{·"noDoubleEquals":·"off"·}
+       6 │ + → → },
+       7 │ + → → "includes":·["**"]
+       8 │ + → }
+       9 │ + }
+      10 │ + 
+  
+
+```
+
+```block
+Run the command with the option --write to apply the changes.
+```

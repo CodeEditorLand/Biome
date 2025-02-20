@@ -26,18 +26,18 @@ pub struct VisitorContext<'phase, 'query, L:Language> {
 	pub options:&'phase AnalyzerOptions,
 }
 
-impl<'phase, 'query, L:Language> VisitorContext<'phase, 'query, L> {
-	pub fn match_query<T:QueryMatch>(&mut self, query:T) {
-		self.query_matcher.match_query(MatchQueryParams {
-			phase:self.phase,
-			root:self.root,
-			query:Query::new(query),
-			services:self.services,
-			signal_queue:self.signal_queue,
-			suppression_action:self.suppression_action,
-			options:self.options,
-		})
-	}
+impl<L: Language> VisitorContext<'_, '_, L> {
+    pub fn match_query<T: QueryMatch>(&mut self, query: T) {
+        self.query_matcher.match_query(MatchQueryParams {
+            phase: self.phase,
+            root: self.root,
+            query: Query::new(query),
+            services: self.services,
+            signal_queue: self.signal_queue,
+            suppression_action: self.suppression_action,
+            options: self.options,
+        })
+    }
 }
 
 /// Mutable context objects provided to the finish hook of visitors

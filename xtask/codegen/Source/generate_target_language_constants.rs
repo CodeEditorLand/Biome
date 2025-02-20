@@ -7,8 +7,8 @@ use crate::{
 };
 
 pub fn generate_target_language_constants(
-	ast:&AstSrc,
-	_language_kind:LanguageKind,
+    ast: &AstSrc,
+    language_kind: LanguageKind,
 ) -> Result<String> {
 	let disregarded_slots:Vec<String> = ast
 		.nodes
@@ -34,13 +34,22 @@ pub fn generate_target_language_constants(
 		})
 		.collect();
 
-	let disregarded_slots = disregarded_slots.join("\n    ");
+    let syntax_kind = match language_kind {
+        LanguageKind::Css => "CssSyntaxKind",
+        LanguageKind::Js => "JsSyntaxKind",
+        _ => unimplemented!(),
+    };
+    let syntax_kind_module = match language_kind {
+        LanguageKind::Css => "biome_css_syntax",
+        LanguageKind::Js => "biome_js_syntax",
+        _ => unimplemented!(),
+    };
 
-	let result = format!(
-		"use crate::grit_target_language::DisregardedSlotCondition::{{self, *}};
-use biome_js_syntax::JsSyntaxKind::{{self, *}};
+    let result = format!(
+        "use crate::grit_target_language::DisregardedSlotCondition::{{self, *}};
+use {syntax_kind_module}::{syntax_kind}::{{self, *}};
 
-pub(crate) const DISREGARDED_SNIPPET_SLOTS: &[(JsSyntaxKind, u32, DisregardedSlotCondition)] = &[
+pub(crate) const DISREGARDED_SNIPPET_SLOTS: &[({syntax_kind}, u32, DisregardedSlotCondition)] = &[
     {disregarded_slots}
 ];
 "

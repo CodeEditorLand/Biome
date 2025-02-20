@@ -117,27 +117,28 @@ macro_rules! declare_visitor {
 }
 
 declare_visitor! {
-	ControlFlowVisitor {
-		statement: StatementVisitor,
-		block: BlockVisitor,
-		try_stmt: TryVisitor,
-		catch: CatchVisitor,
-		finally: FinallyVisitor,
-		if_stmt: IfVisitor,
-		else_stmt: ElseVisitor,
-		switch: SwitchVisitor,
-		case: CaseVisitor,
-		for_stmt: ForVisitor,
-		for_in: ForInVisitor,
-		for_of: ForOfVisitor,
-		while_stmt: WhileVisitor,
-		do_while: DoWhileVisitor,
-		break_stmt: BreakVisitor,
-		continue_stmt: ContinueVisitor,
-		return_stmt: ReturnVisitor,
-		throw: ThrowVisitor,
-		variable: VariableVisitor,
-	}
+    ControlFlowVisitor {
+        statement: StatementVisitor,
+        block: BlockVisitor,
+        try_stmt: TryVisitor,
+        catch: CatchVisitor,
+        finally: FinallyVisitor,
+        if_stmt: IfVisitor,
+        else_stmt: ElseVisitor,
+        switch: SwitchVisitor,
+        case: CaseVisitor,
+        for_stmt: ForVisitor,
+        for_in: ForInVisitor,
+        for_of: ForOfVisitor,
+        while_stmt: WhileVisitor,
+        do_while: DoWhileVisitor,
+        break_stmt: BreakVisitor,
+        continue_stmt: ContinueVisitor,
+        return_stmt: ReturnVisitor,
+        throw: ThrowVisitor,
+        variable: VariableVisitor,
+        bogus: BogusVisitor,
+    }
 }
 
 /// Utility implemented for [StatementStack] in the [declare_visitor] macro,

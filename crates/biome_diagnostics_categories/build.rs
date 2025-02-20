@@ -46,9 +46,11 @@ pub fn main() -> io::Result<()> {
 			(#name) => { &$crate::registry::#meta_ident };
 		});
 
-		parse_arms.push(quote! {
-			#name => Ok(&crate::registry::#meta_ident),
-		});
+        #[cfg(feature = "schema")]
+        impl schemars::JsonSchema for &'static Category {
+            fn schema_name() -> String {
+                String::from("Category")
+            }
 
 		enum_variants.push(*name);
 

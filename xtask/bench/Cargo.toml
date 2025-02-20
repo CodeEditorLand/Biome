@@ -13,24 +13,25 @@ biome_css_syntax = { workspace = true }
 biome_diagnostics = { workspace = true }
 biome_formatter = { workspace = true }
 biome_graphql_formatter = { workspace = true }
-biome_graphql_parser = { workspace = true }
-biome_graphql_syntax = { workspace = true }
-biome_grit_patterns = { workspace = true }
-biome_js_analyze = { workspace = true }
-biome_js_formatter = { workspace = true }
-biome_js_parser = { workspace = true }
-biome_js_syntax = { workspace = true }
-biome_json_formatter = { workspace = true }
-biome_json_parser = { workspace = true }
-biome_json_syntax = { workspace = true }
-biome_parser = { workspace = true }
-biome_rowan = { workspace = true }
+biome_graphql_parser    = { workspace = true }
+biome_graphql_syntax    = { workspace = true }
+biome_grit_patterns     = { workspace = true }
+biome_js_analyze        = { workspace = true }
+biome_js_formatter      = { workspace = true }
+biome_js_parser         = { workspace = true }
+biome_js_syntax         = { workspace = true }
+biome_json_formatter    = { workspace = true }
+biome_json_parser       = { workspace = true }
+biome_json_syntax       = { workspace = true }
+biome_parser            = { workspace = true }
+biome_rowan             = { workspace = true }
+camino                  = { workspace = true }
 
 ansi_rgb = { version = "0.2.0" }
 codspeed-criterion-compat = { version = "2.7.2", optional = true }
 criterion                 = "0.5.1"
 ureq                      = "3.0.3"
-url                       = "2.5.3"
+url                       = "2.5.4"
 
 [target.'cfg(target_os = "windows")'.dependencies]
 mimalloc = { version = "0.1.43" }

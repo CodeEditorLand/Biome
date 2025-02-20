@@ -21,13 +21,13 @@ use crate::{AstNode, Language};
 /// let root = builder.finish();
 ///
 /// let text = match_ast! {
-/// 	match &root {
-/// 		RawLanguageRoot(root) => { format!("root: {}", root.text()) },
-/// 		LiteralExpression(literal) => { format!("literal: {}", literal.text()) },
-/// 		_ => {
-/// 			root.text().to_string()
-/// 		}
-/// 	}
+///     match &root {
+///         RawLanguageRoot(root) => { format!("root: {}", root.to_trimmed_string()) },
+///         LiteralExpression(literal) => { format!("literal: {}", literal.to_trimmed_string()) },
+///         _ => {
+///             root.text_with_trivia().to_string()
+///         }
+///     }
 /// };
 ///
 /// assert_eq!(text, "root: 5");

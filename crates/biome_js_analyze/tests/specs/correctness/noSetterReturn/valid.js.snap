@@ -1,0 +1,32 @@
+---
+source: crates/biome_js_analyze/tests/spec_tests.rs
+expression: valid.js
+snapshot_kind: text
+---
+# Input
+```js
+// early-return
+class A {
+	set foo(x) {
+		if (x) {
+			return;
+		}
+	}
+}
+
+// not a setter
+class B {
+	set(x) {
+		return x;
+	}
+}
+
+class C {
+	set(x) {
+		void (() => {
+		return x;
+		})();
+	}
+}
+
+```
