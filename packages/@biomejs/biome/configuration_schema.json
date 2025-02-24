@@ -397,16 +397,6 @@
 					"description": "Whether Biome should enable assist via LSP.",
 					"anyOf": [{ "$ref": "#/definitions/Bool" }, { "type": "null" }]
 				},
-				"ignore": {
-					"description": "A list of Unix shell style patterns. Biome will ignore files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "type": "string" }
-				},
-				"include": {
-					"description": "A list of Unix shell style patterns. Biome will include files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "type": "string" }
-				},
 				"includes": {
 					"description": "A list of glob patterns. Biome will include files/folders that will match these patterns.",
 					"type": ["array", "null"],
@@ -1381,19 +1371,9 @@
 			"description": "The configuration of the filesystem",
 			"type": "object",
 			"properties": {
-				"ignore": {
-					"description": "A list of Unix shell style patterns. Biome will ignore files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "type": "string" }
-				},
 				"ignoreUnknown": {
 					"description": "Tells Biome to not emit diagnostics when handling files that doesn't know",
 					"anyOf": [{ "$ref": "#/definitions/Bool" }, { "type": "null" }]
-				},
-				"include": {
-					"description": "A list of Unix shell style patterns. Biome will handle only those files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "type": "string" }
 				},
 				"includes": {
 					"description": "A list of glob patterns. Biome will handle only those files/folders that will match these patterns.",
@@ -1469,16 +1449,6 @@
 					"description": "Stores whether formatting should be allowed to proceed if a given file has syntax errors",
 					"anyOf": [{ "$ref": "#/definitions/Bool" }, { "type": "null" }]
 				},
-				"ignore": {
-					"description": "A list of Unix shell style patterns. The formatter will ignore files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "type": "string" }
-				},
-				"include": {
-					"description": "A list of Unix shell style patterns. The formatter will include files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "type": "string" }
-				},
 				"includes": {
 					"description": "A list of glob patterns. The formatter will include files/folders that will match these patterns.",
 					"type": ["array", "null"],
@@ -1499,6 +1469,10 @@
 				"lineWidth": {
 					"description": "What's the max width of a line. Defaults to 80.",
 					"anyOf": [{ "$ref": "#/definitions/LineWidth" }, { "type": "null" }]
+				},
+				"objectWrap": {
+					"description": "Whether to enforce collapsing object literals when possible. Defaults to preserve.",
+					"anyOf": [{ "$ref": "#/definitions/ObjectWrap" }, { "type": "null" }]
 				},
 				"useEditorconfig": {
 					"description": "Use any `.editorconfig` files to configure the formatter. Configuration in `biome.json` will override `.editorconfig` configuration.\n\nDefault: `false`.",
@@ -2088,6 +2062,10 @@
 					"description": "What's the max width of a line applied to JSON (and its super languages) files. Defaults to 80.",
 					"anyOf": [{ "$ref": "#/definitions/LineWidth" }, { "type": "null" }]
 				},
+				"objectWrap": {
+					"description": "Whether to enforce collapsing object literals when possible. Defaults to preserve.",
+					"anyOf": [{ "$ref": "#/definitions/ObjectWrap" }, { "type": "null" }]
+				},
 				"trailingCommas": {
 					"description": "Print trailing commas wherever possible in multi-line comma-separated syntactic structures. Defaults to \"none\".",
 					"anyOf": [
@@ -2279,16 +2257,6 @@
 					"description": "if `false`, it disables the feature and the linter won't be executed. `true` by default",
 					"anyOf": [{ "$ref": "#/definitions/Bool" }, { "type": "null" }]
 				},
-				"ignore": {
-					"description": "A list of Unix shell style patterns. The formatter will ignore files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "type": "string" }
-				},
-				"include": {
-					"description": "A list of Unix shell style patterns. The analyzer will include files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "type": "string" }
-				},
 				"includes": {
 					"description": "A list of glob patterns. The analyzer will handle only those files/folders that will match these patterns.",
 					"type": ["array", "null"],
@@ -2321,10 +2289,6 @@
 					"description": "Custom conventions.",
 					"type": "array",
 					"items": { "$ref": "#/definitions/Convention" }
-				},
-				"enumMemberCase": {
-					"description": "Allowed cases for _TypeScript_ `enum` member names.",
-					"allOf": [{ "$ref": "#/definitions/Format" }]
 				},
 				"requireAscii": {
 					"description": "If `false`, then non-ASCII characters are allowed.",
@@ -3017,9 +2981,17 @@
 				"lineWidth": {
 					"description": "What's the max width of a line. Defaults to 80.",
 					"anyOf": [{ "$ref": "#/definitions/LineWidth" }, { "type": "null" }]
+				},
+				"objectWrap": {
+					"description": "Whether to enforce collapsing object literals when possible. Defaults to preserve.",
+					"anyOf": [{ "$ref": "#/definitions/ObjectWrap" }, { "type": "null" }]
 				}
 			},
 			"additionalProperties": false
+		},
+		"OverrideGlobs": {
+			"type": "array",
+			"items": { "$ref": "#/definitions/Glob" }
 		},
 		"OverrideLinterConfiguration": {
 			"type": "object",
@@ -3085,20 +3057,12 @@
 						{ "type": "null" }
 					]
 				},
-				"ignore": {
-					"description": "A list of Unix shell style patterns. Biome will ignore files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "type": "string" }
-				},
-				"include": {
-					"description": "A list of Unix shell style patterns. Biome will include files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "type": "string" }
-				},
 				"includes": {
 					"description": "A list of glob patterns. Biome will include files/folders that will match these patterns.",
-					"type": ["array", "null"],
-					"items": { "$ref": "#/definitions/Glob" }
+					"anyOf": [
+						{ "$ref": "#/definitions/OverrideGlobs" },
+						{ "type": "null" }
+					]
 				},
 				"javascript": {
 					"description": "Specific configuration for the JavaScript language",

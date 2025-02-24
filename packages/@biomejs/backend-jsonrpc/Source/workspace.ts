@@ -100,14 +100,6 @@ export interface AssistConfiguration {
 	 */
 	enabled?: Bool;
 	/**
-	 * A list of Unix shell style patterns. Biome will ignore files/folders that will match these patterns.
-	 */
-	ignore?: string[];
-	/**
-	 * A list of Unix shell style patterns. Biome will include files/folders that will match these patterns.
-	 */
-	include?: string[];
-	/**
 	 * A list of glob patterns. Biome will include files/folders that will match these patterns.
 	 */
 	includes?: Glob[];
@@ -142,17 +134,9 @@ export interface CssConfiguration {
  */
 export interface FilesConfiguration {
 	/**
-	 * A list of Unix shell style patterns. Biome will ignore files/folders that will match these patterns.
-	 */
-	ignore?: string[];
-	/**
 	 * Tells Biome to not emit diagnostics when handling files that doesn't know
 	 */
 	ignoreUnknown?: Bool;
-	/**
-	 * A list of Unix shell style patterns. Biome will handle only those files/folders that will match these patterns.
-	 */
-	include?: string[];
 	/**
 	 * A list of glob patterns. Biome will handle only those files/folders that will match these patterns.
 	 */
@@ -184,14 +168,6 @@ export interface FormatterConfiguration {
 	 */
 	formatWithErrors?: Bool;
 	/**
-	 * A list of Unix shell style patterns. The formatter will ignore files/folders that will match these patterns.
-	 */
-	ignore?: string[];
-	/**
-	 * A list of Unix shell style patterns. The formatter will include files/folders that will match these patterns.
-	 */
-	include?: string[];
-	/**
 	 * A list of glob patterns. The formatter will include files/folders that will match these patterns.
 	 */
 	includes?: Glob[];
@@ -211,6 +187,10 @@ export interface FormatterConfiguration {
 	 * What's the max width of a line. Defaults to 80.
 	 */
 	lineWidth?: LineWidth;
+	/**
+	 * Whether to enforce collapsing object literals when possible. Defaults to preserve.
+	 */
+	objectWrap?: ObjectWrap;
 	/**
 	* Use any `.editorconfig` files to configure the formatter. Configuration in `biome.json` will override `.editorconfig` configuration.
 
@@ -323,14 +303,6 @@ export interface LinterConfiguration {
 	 * if `false`, it disables the feature and the linter won't be executed. `true` by default
 	 */
 	enabled?: Bool;
-	/**
-	 * A list of Unix shell style patterns. The formatter will ignore files/folders that will match these patterns.
-	 */
-	ignore?: string[];
-	/**
-	 * A list of Unix shell style patterns. The analyzer will include files/folders that will match these patterns.
-	 */
-	include?: string[];
 	/**
 	 * A list of glob patterns. The analyzer will handle only those files/folders that will match these patterns.
 	 */
@@ -454,6 +426,7 @@ export type LineEnding = "lf" | "crlf" | "cr";
 The allowed range of values is 1..=320 
 	 */
 export type LineWidth = number;
+export type ObjectWrap = "preserve" | "collapse";
 /**
  * Options that changes how the GraphQL linter behaves
  */
@@ -729,6 +702,10 @@ export interface JsonFormatterConfiguration {
 	 */
 	lineWidth?: LineWidth;
 	/**
+	 * Whether to enforce collapsing object literals when possible. Defaults to preserve.
+	 */
+	objectWrap?: ObjectWrap;
+	/**
 	 * Print trailing commas wherever possible in multi-line comma-separated syntactic structures. Defaults to "none".
 	 */
 	trailingCommas?: TrailingCommas2;
@@ -795,17 +772,9 @@ export interface OverridePattern {
 	 */
 	html?: HtmlConfiguration;
 	/**
-	 * A list of Unix shell style patterns. Biome will ignore files/folders that will match these patterns.
-	 */
-	ignore?: string[];
-	/**
-	 * A list of Unix shell style patterns. Biome will include files/folders that will match these patterns.
-	 */
-	include?: string[];
-	/**
 	 * A list of glob patterns. Biome will include files/folders that will match these patterns.
 	 */
-	includes?: Glob[];
+	includes?: OverrideGlobs;
 	/**
 	 * Specific configuration for the JavaScript language
 	 */
@@ -868,7 +837,6 @@ Note that this is only necessary for inline elements. Block elements do not have
 	 */
 export type WhitespaceSensitivity = "css" | "strict" | "ignore";
 export type ArrowParentheses = "always" | "asNeeded";
-export type ObjectWrap = "preserve" | "collapse";
 export type QuoteProperties = "asNeeded" | "preserve";
 
 export type Semicolons = "always" | "asNeeded";
@@ -942,7 +910,12 @@ export interface OverrideFormatterConfiguration {
 	 * What's the max width of a line. Defaults to 80.
 	 */
 	lineWidth?: LineWidth;
+	/**
+	 * Whether to enforce collapsing object literals when possible. Defaults to preserve.
+	 */
+	objectWrap?: ObjectWrap;
 }
+export type OverrideGlobs = Glob[];
 export interface OverrideLinterConfiguration {
 	/**
 	 * List of rules
@@ -2876,10 +2849,6 @@ export interface NamingConventionOptions {
 	 */
 	conventions: Convention[];
 	/**
-	 * Allowed cases for _TypeScript_ `enum` member names.
-	 */
-	enumMemberCase: Format;
-	/**
 	 * If `false`, then non-ASCII characters are allowed.
 	 */
 	requireAscii: boolean;
@@ -2966,14 +2935,6 @@ export interface Convention {
 	 */
 	selector: Selector;
 }
-/**
- * Supported cases.
- */
-export type Format =
-	| "camelCase"
-	| "CONSTANT_CASE"
-	| "PascalCase"
-	| "snake_case";
 export type StableHookResult = boolean | number[];
 /**
  * Supported cases for file names.
@@ -3001,6 +2962,14 @@ export interface Selector {
 	 */
 	scope: Scope;
 }
+/**
+ * Supported cases.
+ */
+export type Format =
+	| "camelCase"
+	| "CONSTANT_CASE"
+	| "PascalCase"
+	| "snake_case";
 export type Kind =
 	| "class"
 	| "enum"
