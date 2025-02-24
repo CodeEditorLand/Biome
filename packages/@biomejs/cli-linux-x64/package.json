@@ -1,19 +1,44 @@
 {
-	"cpu": [
-		"x64"
+	"name": "@codeeditorland/cli-linux-x64",
+	"version": "0.0.1",
+	"private": false,
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
 	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "Source 🖋️ Open 👐🏻",
+		"email": "Source/Open@Editor.Land",
+		"url": "HTTPS://Editor.Land"
+	},
+	"type": "module",
+	"scripts": {
+		"prepublishOnly": "Build 'Source/**/*.ts'"
+	},
 	"dependencies": {},
 	"devDependencies": {
 		"@playform/build": "0.2.1"
 	},
-	"libc": [
-		"glibc"
-	],
-	"name": "@codeeditorland/cli-linux-x64",
 	"os": [
 		"linux"
 	],
-	"scripts": {
-		"prepublishOnly": "Build 'Source/**/*.ts'"
-	}
+	"cpu": [
+		"x64"
+	],
+	"publishConfig": {
+		"access": "public"
+	},
+	"libc": [
+		"glibc"
+	]
 }

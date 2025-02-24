@@ -1,6 +1,28 @@
 {
 	"name": "@codeeditorland/backend-jsonrpc",
+	"version": "0.0.1",
+	"private": false,
 	"description": "Bindings to the JSON-RPC Workspace API of the Biome daemon",
+	"keywords": [
+		"codeeditorland",
+		"land",
+		"playform"
+	],
+	"homepage": "HTTPS://GitHub.Com/CodeEditorLand/Biome#readme",
+	"bugs": {
+		"url": "HTTPS://GitHub.Com/CodeEditorLand/Biome/issues"
+	},
+	"repository": {
+		"type": "git",
+		"url": "git+HTTPS://github.com/CodeEditorLand/Biome.git"
+	},
+	"license": "SEE LICENSE IN LICENSE",
+	"author": {
+		"name": "Source 🖋️ Open 👐🏻",
+		"email": "Source/Open@Editor.Land",
+		"url": "HTTPS://Editor.Land"
+	},
+	"type": "module",
 	"main": "dist/index.js",
 	"files": [
 		"dist/",
@@ -28,5 +50,8 @@
 		"@biomejs/cli-linux-x64-musl": "1.9.4",
 		"@biomejs/cli-win32-arm64": "1.9.4",
 		"@biomejs/cli-win32-x64": "1.9.4"
+	},
+	"publishConfig": {
+		"access": "public"
 	}
 }
