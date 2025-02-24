@@ -2,7 +2,7 @@
 //!
 //! If you're curious about how to use it, check Biome's [website]
 //!
-//! [website]: https://biomejs.dev
+//! [WebSite 🗾]: https://biomejs.dev
 
 use biome_cli::{
     biome_command, open_transport, setup_panic_handler, to_color_mode, BiomeCommand, CliDiagnostic,
