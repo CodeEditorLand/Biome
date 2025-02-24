@@ -185,7 +185,7 @@ biome_test_utils     = { path = "./crates/biome_test_utils" }
 tests_macros         = { path = "./crates/tests_macros" }
 
 # Crates needed in the workspace
-anyhow               = "1.0.95"
+anyhow               = "1.0.96"
 bpaf                 = { version = "0.9.16", features = ["derive"] }
 camino               = "1.1.9"
 cfg-if               = "1"
@@ -213,11 +213,12 @@ rayon                = "1.10.0"
 regex                = "1.11.1"
 rustc-hash           = "2.1.1"
 schemars             = { version = "0.8.21", features = ["indexmap2", "smallvec"] }
-serde                = { version = "1.0.217", features = ["derive"] }
+serde                = { version = "1.0.218", features = ["derive"] }
 serde_ini            = "0.2.0"
 serde_json           = "1.0.139"
 similar              = "2.7.0"
 smallvec             = { version = "1.13.2", features = ["union", "const_new", "serde"] }
+static_assertions    = "1.1"
 syn                  = "1.0.109"
 termcolor            = "1.4.1"
 terminal_size        = "0.4.1"

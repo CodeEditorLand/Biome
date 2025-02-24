@@ -3418,6 +3418,7 @@ export type Category =
 	| "lint/security"
 	| "lint/style"
 	| "lint/suspicious"
+	| "lint/plugin"
 	| "suppressions/parse"
 	| "suppressions/unknownGroup"
 	| "suppressions/unknownRule"
