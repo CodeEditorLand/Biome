@@ -8,42 +8,69 @@
   <br>
   <br>
 
-  [![CI on main][ci-badge]][ci-url]
-  [![Discord chat][discord-badge]][discord-url]
-  [![npm version][npm-badge]][npm-url]
-  [![VSCode version][vscode-badge]][vscode-url]
-  [![Open VSX version][open-vsx-badge]][open-vsx-url]
-  [![Polar bounties][polar-badge]][polar-url]
+[![CI on main][ci-badge]][ci-url] [![Discord chat][discord-badge]][discord-url]
+[![npm version][npm-badge]][npm-url]
+[![VSCode version][vscode-badge]][vscode-url]
+[![Open VSX version][open-vsx-badge]][open-vsx-url]
+[![Polar bounties][polar-badge]][polar-url]
 
-  [ci-badge]: HTTPS://github.com/biomejs/biome/actions/workflows/main.yml/badge.svg
-  [ci-url]: HTTPS://github.com/biomejs/biome/actions/workflows/main.yml
-  [discord-badge]: HTTPS://badgen.net/discord/online-members/BypW39g6Yc?icon=discord&label=discord&color=60a5fa
-  [discord-url]: HTTPS://biomejs.dev/chat
-  [npm-badge]: HTTPS://badgen.net/npm/v/@biomejs/biome?icon=npm&color=60a5fa&label=%40biomejs%2Fbiome
-  [npm-url]: HTTPS://www.npmjs.com/package/@biomejs/biome/v/latest
-  [vscode-badge]: HTTPS://badgen.net/vs-marketplace/v/biomejs.biome?label=vscode&icon=visualstudio&color=60a5fa
-  [vscode-url]: HTTPS://marketplace.visualstudio.com/items?itemName=biomejs.biome
-  [open-vsx-badge]: HTTPS://badgen.net/open-vsx/version/biomejs/biome?label=open-vsx&color=60a5fa
-  [open-vsx-url]: HTTPS://open-vsx.org/extension/biomejs/biome
-  [polar-badge]: HTTPS://polar.sh/embed/seeks-funding-shield.svg?org=biomejs
-  [polar-url]: HTTPS://polar.sh/biomejs
+[ci-badge]:
+	HTTPS://github.com/biomejs/biome/actions/workflows/main.yml/badge.svg
+[ci-url]: HTTPS://github.com/biomejs/biome/actions/workflows/main.yml
+[discord-badge]:
+	HTTPS://badgen.net/discord/online-members/BypW39g6Yc?icon=discord&label=discord&color=60a5fa
+[discord-url]: HTTPS://biomejs.dev/chat
+[npm-badge]:
+	HTTPS://badgen.net/npm/v/@biomejs/biome?icon=npm&color=60a5fa&label=%40biomejs%2Fbiome
+[npm-url]: HTTPS://www.npmjs.com/package/@biomejs/biome/v/latest
+[vscode-badge]:
+	HTTPS://badgen.net/vs-marketplace/v/biomejs.biome?label=vscode&icon=visualstudio&color=60a5fa
+[vscode-url]: HTTPS://marketplace.visualstudio.com/items?itemName=biomejs.biome
+[open-vsx-badge]:
+	HTTPS://badgen.net/open-vsx/version/biomejs/biome?label=open-vsx&color=60a5fa
+[open-vsx-url]: HTTPS://open-vsx.org/extension/biomejs/biome
+[polar-badge]: HTTPS://polar.sh/embed/seeks-funding-shield.svg?org=biomejs
+[polar-url]: HTTPS://polar.sh/biomejs
 
   <!-- Insert new entries lexicographically by language code.
      For example given below is the same order as these files appear on page:
      HTTPS://github.com/biomejs/biome/tree/main/packages/@biomejs/biome -->
 
-  [हिन्दी](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.hi.md) | [English](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.md) | [Français](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.fr.md) | [繁體中文](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.zh-TW.md) | 简体中文 | [日本語](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.ja.md) | [Português do Brasil](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.pt-BR.md) | [한국어](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.kr.md) | [Русский](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.ru.md) | [Українська](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.uk.md)
+[हिन्दी](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.hi.md)
+|
+[English](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.md)
+|
+[Français](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.fr.md)
+|
+[繁體中文](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.zh-TW.md)
+| 简体中文 |
+[日本語](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.ja.md)
+|
+[Português do Brasil](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.pt-BR.md)
+|
+[한국어](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.kr.md)
+|
+[Русский](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.ru.md)
+|
+[Українська](https://github.com/biomejs/biome/blob/main/packages/%40biomejs/biome/README.uk.md)
+
 </div>
 
 <br>
 
 **Biome** 是一个用于 Web 项目的高性能工具链，旨在为开发者提供维护项目的工具。
 
-**Biome 是一个[快速的格式化工具](./benchmark#formatting)**，适用于 _JavaScript_、_TypeScript_、_JSX_、_JSON_ 等，与 _Prettier_ 的兼容性达到了 **[97%](HTTPS://console.algora.io/challenges/prettier)**。
+**Biome 是一个[快速的格式化工具](./benchmark#formatting)**，适用于
+_JavaScript_、_TypeScript_、_JSX_、_JSON_ 等，与 _Prettier_ 的兼容性达到了
+**[97%](HTTPS://console.algora.io/challenges/prettier)**。
 
-**Biome 是一个[高性能的 Linter](HTTPS://github.com/biomejs/biome/tree/main/benchmark#linting)**，适用于 _JavaScript_、_TypeScript_、_JSX_ 等，包含了来自 ESLint、typescript-eslint 和[其他来源](HTTPS://github.com/biomejs/biome/discussions/3)的 **[270 余项规则](HTTPS://biomejs.dev/zh-cn/linter/rules/)**。它**输出详细且有上下文诊断信息**，能帮助你优化代码，成为一名更好的程序员！
+**Biome 是一个[高性能的 Linter](HTTPS://github.com/biomejs/biome/tree/main/benchmark#linting)**，适用于
+_JavaScript_、_TypeScript_、_JSX_
+等，包含了来自 ESLint、typescript-eslint 和[其他来源](HTTPS://github.com/biomejs/biome/discussions/3)的
+**[270 余项规则](HTTPS://biomejs.dev/zh-cn/linter/rules/)**。它**输出详细且有上下文诊断信息**，能帮助你优化代码，成为一名更好的程序员！
 
-**Biome** 从一开始就设计为[在编辑器中交互式使用](HTTPS://biomejs.dev/zh-cn/guides/integrate-in-editor/)。它可以在你编写代码时格式化并检查出不规范的代码。
+**Biome**
+从一开始就设计为[在编辑器中交互式使用](HTTPS://biomejs.dev/zh-cn/guides/integrate-in-editor/)。它可以在你编写代码时格式化并检查出不规范的代码。
 
 ### 安装
 
@@ -79,15 +106,23 @@ npx @biomejs/biome ci ./src
 
 **Biome** 旨在支持[所有主要的现代网络开发语言][language-support]。
 
-**Biome** [不需要 Node.js](HTTPS://biomejs.dev/zh-cn/guides/manual-installation/) 就可以运行。
+**Biome**
+[不需要 Node.js](HTTPS://biomejs.dev/zh-cn/guides/manual-installation/)
+就可以运行。
 
-**Biome** 有一流的 LSP 支持，具有精密的解析器，可以完全保真地表示源文本，并具有顶级的错误恢复能力。
+**Biome**
+有一流的 LSP 支持，具有精密的解析器，可以完全保真地表示源文本，并具有顶级的错误恢复能力。
 
-**Biome** 统一了以前分散的功能。基于共享的基础，我们可以提供一个处理代码、显示错误、并行工作、缓存和配置的一致体验。
+**Biome**
+统一了以前分散的功能。基于共享的基础，我们可以提供一个处理代码、显示错误、并行工作、缓存和配置的一致体验。
 
 阅读更多关于我们的[项目理念][biome-philosophy]。
 
-**Biome** 采用 [MIT 许可](HTTPS://github.com/biomejs/biome/tree/main/LICENSE-MIT) 或 [Apache 2.0 许可](HTTPS://github.com/biomejs/biome/tree/main/LICENSE-APACHE)，并在 [贡献者公约行为准则](HTTPS://github.com/biomejs/biome/tree/main/CODE_OF_CONDUCT.md) 下进行管理。
+**Biome** 采用
+[MIT 许可](HTTPS://github.com/biomejs/biome/tree/main/LICENSE-MIT) 或
+[Apache 2.0 许可](HTTPS://github.com/biomejs/biome/tree/main/LICENSE-APACHE)，并在
+[贡献者公约行为准则](HTTPS://github.com/biomejs/biome/tree/main/CODE_OF_CONDUCT.md)
+下进行管理。
 
 ## 赞助商
 
