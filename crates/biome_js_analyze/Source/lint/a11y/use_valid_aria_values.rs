@@ -1,13 +1,7 @@
 use std::str::FromStr;
 
-use biome_analyze::{
-	Ast,
-	Rule,
-	RuleDiagnostic,
-	RuleSource,
-	context::RuleContext,
-	declare_lint_rule,
-};
+use biome_analyze::context::RuleContext;
+use biome_analyze::{Ast, Rule, RuleDiagnostic, RuleSource, declare_lint_rule};
 use biome_aria_metadata::{AriaAttribute, AriaValueType};
 use biome_console::markup;
 use biome_diagnostics::Severity;

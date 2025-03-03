@@ -1,23 +1,23 @@
 use crate::{
-    open_transport,
+    CliDiagnostic, CliSession, open_transport,
     service::{self, ensure_daemon, open_socket, run_daemon},
-    CliDiagnostic, CliSession,
 };
-use biome_console::{markup, ConsoleExt};
+use biome_console::{ConsoleExt, markup};
 use biome_fs::OsFileSystem;
 use biome_lsp::ServerFactory;
-use biome_service::{workspace::WorkspaceClient, TransportError, WorkspaceError};
+use biome_service::{TransportError, WorkspaceError, WorkspaceWatcher, workspace::WorkspaceClient};
 use camino::{Utf8Path, Utf8PathBuf};
 use std::{env, fs};
 use tokio::io;
 use tokio::runtime::Runtime;
 use tracing::subscriber::Interest;
-use tracing::{debug_span, metadata::LevelFilter, Instrument, Metadata};
+use tracing::{Instrument, Metadata, debug_span, metadata::LevelFilter};
 use tracing_appender::rolling::Rotation;
 use tracing_subscriber::{
+    Layer,
     layer::{Context, Filter},
     prelude::*,
-    registry, Layer,
+    registry,
 };
 use tracing_tree::HierarchicalLayer;
 
@@ -80,8 +80,10 @@ pub(crate) fn run_server(
 ) -> Result<(), CliDiagnostic> {
     setup_tracing_subscriber(log_path.as_deref(), log_file_name_prefix.as_deref());
 
+    let (mut watcher, instruction_channel) = WorkspaceWatcher::new()?;
+
     let rt = Runtime::new()?;
-    let factory = ServerFactory::new(stop_on_disconnect);
+    let factory = ServerFactory::new(stop_on_disconnect, instruction_channel.sender.clone());
     let cancellation = factory.cancellation();
     let span = debug_span!("Running Server",
         pid = std::process::id(),
@@ -89,6 +91,11 @@ pub(crate) fn run_server(
         log_path = ?log_path.as_ref(),
         log_file_name_prefix = &log_file_name_prefix.as_deref(),
     );
+
+    let workspace = factory.workspace();
+    rt.spawn_blocking(move || {
+        watcher.run(workspace.as_ref());
+    });
 
     rt.block_on(async move {
         tokio::select! {

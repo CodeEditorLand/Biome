@@ -93,10 +93,10 @@ verbose_file_reads = "warn"
 [workspace.package]
 authors = ["Biome Developers and Contributors"]
 categories = ["development-tools", "web-programming"]
-edition = "2021"
-homepage = "https://biomejs.dev/"
-keywords = ["parser", "linter", "formatter"]
-license-file = "LICENSE"
+edition    = "2024"
+homepage   = "https://biomejs.dev/"
+keywords   = ["parser", "linter", "formatter"]
+license    = "MIT OR Apache-2.0"
 repository = "https://github.com/biomejs/biome"
 
 [profile.release-with-debug]
@@ -212,7 +212,7 @@ quote                = "1.0.38"
 rayon                = "1.10.0"
 regex                = "1.11.1"
 rustc-hash           = "2.1.1"
-schemars             = { version = "0.8.21", features = ["indexmap2", "smallvec"] }
+schemars             = { version = "0.8.22", features = ["indexmap2", "smallvec"] }
 serde                = { version = "1.0.218", features = ["derive"] }
 serde_ini            = "0.2.0"
 serde_json           = "1.0.139"

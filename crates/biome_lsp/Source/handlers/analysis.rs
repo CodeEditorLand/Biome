@@ -3,7 +3,7 @@ use crate::session::Session;
 use crate::utils;
 use anyhow::{Context, Result};
 use biome_analyze::{
-    ActionCategory, RuleCategoriesBuilder, SourceActionKind, SUPPRESSION_INLINE_ACTION_CATEGORY,
+    ActionCategory, RuleCategoriesBuilder, SUPPRESSION_INLINE_ACTION_CATEGORY, SourceActionKind,
 };
 use biome_configuration::analyzer::RuleSelector;
 use biome_diagnostics::{Applicability, Error};
@@ -11,12 +11,12 @@ use biome_fs::BiomePath;
 use biome_lsp_converters::from_proto;
 use biome_lsp_converters::line_index::LineIndex;
 use biome_rowan::{TextRange, TextSize};
+use biome_service::WorkspaceError;
 use biome_service::file_handlers::{AstroFileHandler, SvelteFileHandler, VueFileHandler};
 use biome_service::workspace::{
     CheckFileSizeParams, FeaturesBuilder, FixFileMode, FixFileParams, GetFileContentParams,
-    PullActionsParams, SupportsFeatureParams,
+    IsPathIgnoredParams, PullActionsParams, SupportsFeatureParams,
 };
-use biome_service::WorkspaceError;
 use std::borrow::Cow;
 use std::collections::HashMap;
 use std::ops::Sub;
@@ -46,14 +46,22 @@ pub(crate) fn code_actions(
     let path = session.file_path(&url)?;
     let doc = session.document(&url)?;
 
+    let features = FeaturesBuilder::new().with_linter().with_assist().build();
     let file_features = &session.workspace.file_features(SupportsFeatureParams {
         project_key: doc.project_key,
         path: path.clone(),
-        features: FeaturesBuilder::new().with_linter().with_assist().build(),
+        features,
     })?;
 
     if !file_features.supports_lint() && !file_features.supports_assist() {
         info!("Linter, assist and organize imports are disabled");
+        return Ok(Some(Vec::new()));
+    }
+    if session.workspace.is_path_ignored(IsPathIgnoredParams {
+        path: path.clone(),
+        project_key: doc.project_key,
+        features,
+    })? {
         return Ok(Some(Vec::new()));
     }
 
@@ -258,6 +266,16 @@ fn fix_all(
             features: FeaturesBuilder::new().with_formatter().build(),
         })?
         .supports_format();
+
+    let features = FeaturesBuilder::new().with_linter().with_assist().build();
+    if session.workspace.is_path_ignored(IsPathIgnoredParams {
+        path: path.clone(),
+        project_key: doc.project_key,
+        features,
+    })? {
+        return Ok(None);
+    }
+
     let size_limit_result = session.workspace.check_file_size(CheckFileSizeParams {
         project_key: doc.project_key,
         path: path.clone(),

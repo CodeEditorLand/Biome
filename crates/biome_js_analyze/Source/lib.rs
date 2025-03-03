@@ -2,9 +2,9 @@
 
 use crate::suppression_action::JsSuppressionAction;
 use biome_analyze::{
-    to_analyzer_suppressions, AnalysisFilter, Analyzer, AnalyzerContext, AnalyzerOptions,
-    AnalyzerPluginSlice, AnalyzerSignal, AnalyzerSuppression, ControlFlow, InspectMatcher,
-    LanguageRoot, MatchQueryParams, MetadataRegistry, RuleAction, RuleRegistry,
+    AnalysisFilter, Analyzer, AnalyzerContext, AnalyzerOptions, AnalyzerPluginSlice,
+    AnalyzerSignal, AnalyzerSuppression, ControlFlow, InspectMatcher, LanguageRoot,
+    MatchQueryParams, MetadataRegistry, RuleAction, RuleRegistry, to_analyzer_suppressions,
 };
 use biome_aria::AriaRoles;
 use biome_dependency_graph::DependencyGraph;
@@ -12,7 +12,7 @@ use biome_diagnostics::Error as DiagnosticError;
 use biome_js_syntax::{JsFileSource, JsLanguage};
 use biome_project_layout::ProjectLayout;
 use biome_rowan::TextRange;
-use biome_suppression::{parse_suppression_comment, SuppressionDiagnostic};
+use biome_suppression::{SuppressionDiagnostic, parse_suppression_comment};
 use std::ops::Deref;
 use std::sync::{Arc, LazyLock};
 
@@ -190,33 +190,26 @@ where
 mod tests {
     use biome_analyze::{AnalyzerOptions, Never, RuleCategoriesBuilder, RuleFilter};
     use biome_diagnostics::category;
-    use biome_diagnostics::{print_diagnostic_to_string, Diagnostic, DiagnosticExt, Severity};
-    use biome_js_parser::{parse, JsParserOptions};
+    use biome_diagnostics::{Diagnostic, DiagnosticExt, Severity, print_diagnostic_to_string};
+    use biome_js_parser::{JsParserOptions, parse};
     use biome_js_syntax::{JsFileSource, TextRange, TextSize};
     use biome_package::{Dependencies, PackageJson};
     use std::slice;
 
     use super::*;
 
-    // #[ignore]
+    #[ignore]
     #[test]
     fn quick_test() {
         const SOURCE: &str = r#"
-
-        /**
-* biome-ignore lint/style/useConst: reason
- */
-
-
-let foo = 2;
-let bar = 33;
+let Component = (props) => <ol>{props.data.map(d => <li>{d.text}</li>)}</ol>;
         "#;
 
         let parsed = parse(SOURCE, JsFileSource::tsx(), JsParserOptions::default());
 
         let mut error_ranges: Vec<TextRange> = Vec::new();
         let options = AnalyzerOptions::default();
-        let rule_filter = RuleFilter::Rule("style", "useConst");
+        let rule_filter = RuleFilter::Rule("nursery", "useForComponent");
 
         let mut dependencies = Dependencies::default();
         dependencies.add("buffer", "latest");

@@ -1,5 +1,5 @@
 use biome_css_syntax::CssNumber;
-use biome_formatter::token::number::{format_number_token, NumberFormatOptions};
+use biome_formatter::token::number::{NumberFormatOptions, format_number_token};
 
 use crate::prelude::*;
 

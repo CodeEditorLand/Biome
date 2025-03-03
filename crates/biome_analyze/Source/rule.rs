@@ -5,7 +5,7 @@ use crate::{
     Phase, Phases, Queryable, SourceActionKind, SuppressionAction, SuppressionCommentEmitterPayload,
 };
 use biome_console::fmt::{Display, Formatter};
-use biome_console::{markup, MarkupBuf, Padding};
+use biome_console::{MarkupBuf, Padding, markup};
 use biome_diagnostics::advice::CodeSuggestionAdvice;
 use biome_diagnostics::location::AsSpan;
 use biome_diagnostics::{
@@ -85,7 +85,7 @@ impl biome_console::fmt::Display for RuleMetadata {
 
         if self.domains.is_empty() && self.recommended {
             fmt.write_markup(markup! {
-                "- This rule is not recommended"
+                "- This rule is recommended"
             })?;
         }
 

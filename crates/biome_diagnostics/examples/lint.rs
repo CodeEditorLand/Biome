@@ -1,7 +1,9 @@
 use std::io;
 
 use biome_console::{ConsoleExt, EnvConsole, markup};
-use biome_diagnostics::{Advices, Diagnostic, Location, LogCategory, PrintDiagnostic, Resource, SourceCode, Visit};
+use biome_diagnostics::{
+    Advices, Diagnostic, Location, LogCategory, PrintDiagnostic, Resource, SourceCode, Visit,
+};
 use biome_rowan::{TextRange, TextSize};
 use biome_text_edit::TextEdit;
 

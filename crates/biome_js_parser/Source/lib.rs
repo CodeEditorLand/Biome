@@ -83,8 +83,13 @@ mod state;
 pub mod syntax;
 mod token_source;
 
-use std::fmt::Debug;
-
+pub(crate) use crate::ParsedSyntax::{Absent, Present};
+use crate::prelude::*;
+pub use crate::{
+    lexer::{JsLexContext, JsReLexContext},
+    options::JsParserOptions,
+    parse::*,
+};
 use biome_js_factory::JsSyntaxFactory;
 use biome_js_syntax::{JsSyntaxKind, LanguageVariant};
 use biome_parser::tree_sink::LosslessTreeSink;

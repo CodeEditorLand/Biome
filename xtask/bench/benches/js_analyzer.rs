@@ -1,6 +1,6 @@
 use std::collections::HashMap;
-
-use xtask_bench::{BenchmarkId, Criterion, Parse, TestCase, criterion_group, criterion_main};
+use xtask_bench::{BenchmarkId, Criterion, criterion_group, criterion_main};
+use xtask_bench::{Parse, TestCase};
 #[cfg(target_os = "windows")]
 #[global_allocator]
 static GLOBAL:mimalloc::MiMalloc = mimalloc::MiMalloc;

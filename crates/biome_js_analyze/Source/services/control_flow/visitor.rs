@@ -21,6 +21,8 @@ use biome_rowan::{AstNode, SyntaxError, SyntaxResult, declare_node_union};
 use super::{FunctionBuilder, nodes::*};
 use crate::ControlFlowGraph;
 
+use super::{FunctionBuilder, nodes::*};
+
 /// Return a new instance of the [ControlFlowVisitor]
 pub(crate) fn make_visitor() -> impl Visitor<Language = JsLanguage> { ControlFlowVisitor::new() }
 

@@ -125,7 +125,8 @@ export class Biome {
 	 *
 	 * If fails when the configuration is incorrect.
 	 *
-	 * @param configuration
+	 * @param {ProjectKey} projectKey The identifier of the project
+	 * @param {Configuration} configuration
 	 */
 	applyConfiguration(
 		projectKey: ProjectKey,
@@ -135,7 +136,6 @@ export class Biome {
 			this.workspace.updateSettings({
 				projectKey,
 				configuration,
-				gitignoreMatches: [],
 				workspaceDirectory: "./",
 			});
 		} catch (e) {
@@ -172,8 +172,7 @@ export class Biome {
 		return this.tryCatchWrapper(() => {
 			this.workspace.openFile({
 				projectKey,
-				content: { type: "fromClient", content },
-				version: 0,
+				content: { type: "fromClient", content, version: 0 },
 				path,
 			});
 
@@ -202,6 +201,7 @@ export class Biome {
 	/**
 	 * If formats some content.
 	 *
+	 * @param {ProjectKey} projectKey The identifier of the project
 	 * @param {String} content The content to format
 	 * @param {FormatContentOptions | FormatContentDebugOptions} options Options needed when formatting some content
 	 */
@@ -269,6 +269,7 @@ export class Biome {
 	/**
 	 * Lint the content of a file.
 	 *
+	 * @param {ProjectKey} projectKey The identifier of the project
 	 * @param {String} content The content to lint
 	 * @param {LintContentOptions} options Options needed when linting some content
 	 */

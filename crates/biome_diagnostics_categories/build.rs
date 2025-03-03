@@ -52,7 +52,14 @@ pub fn main() -> io::Result<()> {
                 String::from("Category")
             }
 
-		enum_variants.push(*name);
+            fn json_schema(_gen: &mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+                schemars::schema::Schema::Object(schemars::schema::SchemaObject {
+                    instance_type: Some(schemars::schema::InstanceType::String.into()),
+                    enum_values: Some(vec![#( #enum_variants.into() ),*]),
+                    ..Default::default()
+                })
+            }
+        }
 
 		let parts = name.split('/');
 

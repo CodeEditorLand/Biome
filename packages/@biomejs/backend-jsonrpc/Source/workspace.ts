@@ -16,9 +16,7 @@ export interface FileFeaturesResult {
 }
 export interface UpdateSettingsParams {
 	configuration: Configuration;
-	gitignoreMatches: string[];
 	projectKey: ProjectKey;
-	vcsBasePath?: BiomePath;
 	workspaceDirectory?: BiomePath;
 }
 /**
@@ -28,7 +26,7 @@ export interface Configuration {
 	/**
 	 * A field for the [JSON schema](https://json-schema.org/) specification
 	 */
-	$schema?: string;
+	$schema?: Schema;
 	/**
 	 * Specific configuration for assists
 	 */
@@ -90,6 +88,7 @@ export interface Configuration {
 	 */
 	vcs?: VcsConfiguration;
 }
+export type Schema = string;
 export interface AssistConfiguration {
 	/**
 	 * Whether Biome should fail in CLI if the assist were not applied to the code.
@@ -1465,6 +1464,10 @@ export interface Nursery {
 	 */
 	noDescendingSpecificity?: RuleConfiguration_for_Null;
 	/**
+	 * Disallow destructuring props inside JSX components in Solid projects.
+	 */
+	noDestructuredProps?: RuleConfiguration_for_Null;
+	/**
 	 * Disallow direct assignments to document.cookie.
 	 */
 	noDocumentCookie?: RuleConfiguration_for_Null;
@@ -1609,6 +1612,10 @@ export interface Nursery {
 	 */
 	noUselessEscapeInRegex?: RuleFixConfiguration_for_Null;
 	/**
+	 * Disallow unnecessary escapes in string literals.
+	 */
+	noUselessEscapeInString?: RuleFixConfiguration_for_Null;
+	/**
 	 * Disallow unnecessary String.raw function in template string literals without any escape sequence.
 	 */
 	noUselessStringRaw?: RuleConfiguration_for_Null;
@@ -1653,6 +1660,10 @@ export interface Nursery {
 	 */
 	useConsistentMemberAccessibility?: RuleConfiguration_for_ConsistentMemberAccessibilityOptions;
 	/**
+	 * Require the consistent declaration of object literals. Defaults to explicit definitions.
+	 */
+	useConsistentObjectDefinition?: RuleConfiguration_for_UseConsistentObjectDefinitionOptions;
+	/**
 	 * Require specifying the reason argument when using @deprecated directive
 	 */
 	useDeprecatedReason?: RuleConfiguration_for_Null;
@@ -1664,6 +1675,10 @@ export interface Nursery {
 	 * Require that all exports are declared after all non-export statements.
 	 */
 	useExportsLast?: RuleConfiguration_for_Null;
+	/**
+	 * Enforce using Solid's \<For /> component for mapping an array to JSX elements.
+	 */
+	useForComponent?: RuleConfiguration_for_Null;
 	/**
 	 * Enforces the use of a recommended display strategy with Google Fonts.
 	 */
@@ -2009,7 +2024,7 @@ export interface Suspicious {
 	 */
 	noConstEnum?: RuleFixConfiguration_for_Null;
 	/**
-	 * Prevents from having control characters and some escape sequences that match control characters in regular expressions.
+	 * Prevents from having control characters and some escape sequences that match control characters in regular expression literals.
 	 */
 	noControlCharactersInRegex?: RuleConfiguration_for_Null;
 	/**
@@ -2319,7 +2334,9 @@ export type RuleConfiguration_for_UseComponentExportOnlyModulesOptions =
 export type RuleConfiguration_for_ConsistentMemberAccessibilityOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_ConsistentMemberAccessibilityOptions;
-
+export type RuleConfiguration_for_UseConsistentObjectDefinitionOptions =
+	| RulePlainConfiguration
+	| RuleWithOptions_for_UseConsistentObjectDefinitionOptions;
 export type RuleFixConfiguration_for_UtilityClassSortingOptions =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_UtilityClassSortingOptions;
@@ -2549,6 +2566,16 @@ export interface RuleWithOptions_for_ConsistentMemberAccessibilityOptions {
 	 * Rule's options
 	 */
 	options: ConsistentMemberAccessibilityOptions;
+}
+export interface RuleWithOptions_for_UseConsistentObjectDefinitionOptions {
+	/**
+	 * The severity of the emitted diagnostics by the rule
+	 */
+	level: RulePlainConfiguration;
+	/**
+	 * Rule's options
+	 */
+	options: UseConsistentObjectDefinitionOptions;
 }
 export interface RuleWithFixOptions_for_UtilityClassSortingOptions {
 	/**
@@ -2791,6 +2818,12 @@ export interface UseComponentExportOnlyModulesOptions {
 export interface ConsistentMemberAccessibilityOptions {
 	accessibility?: Accessibility;
 }
+export interface UseConsistentObjectDefinitionOptions {
+	/**
+	 * The preferred syntax to enforce.
+	 */
+	syntax?: ObjectPropertySyntax;
+}
 export interface UtilityClassSortingOptions {
 	/**
 	 * Additional attributes that will be sorted.
@@ -2914,7 +2947,7 @@ For example, for React's `useRef()` hook the value would be `true`, while for `u
 	stableResult?: StableHookResult;
 }
 export type Accessibility = "noPublic" | "explicit" | "none";
-
+export type ObjectPropertySyntax = "explicit" | "shorthand";
 export type ConsistentArrayType = "shorthand" | "generic";
 
 export type FilenameCases = FilenameCase[];
@@ -3179,6 +3212,7 @@ export type Category =
 	| "lint/nursery/noConsole"
 	| "lint/nursery/noConstantBinaryExpression"
 	| "lint/nursery/noDescendingSpecificity"
+	| "lint/nursery/noDestructuredProps"
 	| "lint/nursery/noDocumentCookie"
 	| "lint/nursery/noDocumentImportInPage"
 	| "lint/nursery/noDoneCallback"
@@ -3233,6 +3267,7 @@ export type Category =
 	| "lint/nursery/noUnusedFunctionParameters"
 	| "lint/nursery/noUnwantedPolyfillio"
 	| "lint/nursery/noUselessEscapeInRegex"
+	| "lint/nursery/noUselessEscapeInString"
 	| "lint/nursery/noUselessStringRaw"
 	| "lint/nursery/noUselessUndefined"
 	| "lint/nursery/noValueAtRule"
@@ -3244,10 +3279,12 @@ export type Category =
 	| "lint/nursery/useComponentExportOnlyModules"
 	| "lint/nursery/useConsistentCurlyBraces"
 	| "lint/nursery/useConsistentMemberAccessibility"
+	| "lint/nursery/useConsistentObjectDefinition"
 	| "lint/nursery/useDeprecatedReason"
 	| "lint/nursery/useExplicitFunctionReturnType"
 	| "lint/nursery/useExplicitType"
 	| "lint/nursery/useExportsLast"
+	| "lint/nursery/useForComponent"
 	| "lint/nursery/useGoogleFontDisplay"
 	| "lint/nursery/useGoogleFontPreconnect"
 	| "lint/nursery/useGuardForIn"
@@ -3553,12 +3590,12 @@ This should only be enabled if reparsing is to be expected, such as when the fil
 	 */
 	persistNodeCache?: boolean;
 	projectKey: ProjectKey;
-	version: number;
 }
 export type FileContent =
-	| { content: string; type: "fromClient" }
+	| { content: string; type: "fromClient"; version: number }
 	| { type: "fromServer" };
 export type DocumentFileSource =
+	| "Ignore"
 	| "Unknown"
 	| { Js: JsFileSource }
 	| { Json: JsonFileSource }
