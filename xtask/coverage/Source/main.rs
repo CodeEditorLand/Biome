@@ -1,41 +1,36 @@
 use pico_args::Arguments;
 use xtask::{Result, project_root, pushd};
+
 use xtask_coverage::{SummaryDetailLevel, compare::coverage_compare, run};
 
 fn main() -> Result<()> {
-	tracing_subscriber::fmt()
-		.with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
-		.with_writer(std::io::stderr)
-		.init();
+    tracing_subscriber::fmt()
+        .with_env_filter(tracing_subscriber::EnvFilter::from_default_env())
+        .with_writer(std::io::stderr)
+        .init();
 
-	let _d = pushd(project_root());
+    let _d = pushd(project_root());
 
-	let mut args = Arguments::from_env();
+    let mut args = Arguments::from_env();
+    let sub_command = args.subcommand()?;
 
-	let sub_command = args.subcommand()?;
+    if sub_command.as_deref() == Some("compare") {
+        // on pr branch, run
+        // git checkout main
+        // cargo coverage js --json > base_results.json
+        // git checkout -
+        // cargo coverage js --json > new_results.json
+        // cargo coverage compare ./base_results.json ./new_results.json --markdown
+        let markdown = args.contains("--markdown");
+        let free = args.finish();
+        let base_result_path = free.first().and_then(|arg| arg.to_str());
+        let new_result_path = free.get(1).and_then(|arg| arg.to_str());
+        coverage_compare(base_result_path, new_result_path, markdown);
+        return Ok(());
+    }
 
-	if sub_command.as_deref() == Some("compare") {
-		// on pr branch, run
-		// git checkout main
-		// cargo coverage js --json > base_results.json
-		// git checkout -
-		// cargo coverage js --json > new_results.json
-		// cargo coverage compare ./base_results.json ./new_results.json --markdown
-		let markdown = args.contains("--markdown");
-
-		let free = args.finish();
-
-		let base_result_path = free.first().and_then(|arg| arg.to_str());
-
-		let new_result_path = free.get(1).and_then(|arg| arg.to_str());
-
-		coverage_compare(base_result_path, new_result_path, markdown);
-
-		return Ok(());
-	}
-
-	if args.contains("--help") {
-		eprintln!(
+    if args.contains("--help") {
+        eprintln!(
             "\
 cargo coverage
 Run coverage command.
@@ -51,13 +46,9 @@ OPTIONS
                         Valid values are:
                             *: will run all suites
                             js: will run all javascript suites; Same as \"js/262\";
-
                             ts: will run all typescript suites; Same as \"ts/microsoft,ts/babel\";
-
                             jsx: will run all jsx suites; Same as \"jsx/babel\";
-
                             js/262: will run https://github.com/tc39/test262/tree/main/test;
-
                             ts/microsoft: will run https://github.com/microsoft/Typescript/tree/main/tests/cases
                             ts/babel: will run https://github.com/babel/babel/tree/main/packages/babel-parser/test/fixtures/typescript
                             jsx/babel: will run https://github.com/babel/babel/tree/main/packages/babel-parser/test/fixtures/jsx/basic
@@ -66,33 +57,30 @@ OPTIONS
     --help              Prints this help.
 			"
         );
+        return Ok(());
+    }
 
-		return Ok(());
-	}
+    let json = args.contains("--json");
+    let suites: Option<String> = args.opt_value_from_str("--suites").unwrap();
+    let filter: Option<String> = args.opt_value_from_str("--filter").unwrap();
 
-	let json = args.contains("--json");
+    let detail_level: Option<SummaryDetailLevel> =
+        args.opt_value_from_str("--detailed").unwrap_or_else(|_| {
+            if args.contains("--detailed") {
+                Some(SummaryDetailLevel::Failing)
+            } else {
+                Some(SummaryDetailLevel::Coverage)
+            }
+        });
 
-	let suites:Option<String> = args.opt_value_from_str("--suites").unwrap();
+    args.finish();
 
-	let filter:Option<String> = args.opt_value_from_str("--filter").unwrap();
+    run(
+        suites.as_deref(),
+        filter.as_deref(),
+        json,
+        detail_level.unwrap_or(SummaryDetailLevel::Coverage),
+    );
 
-	let detail_level:Option<SummaryDetailLevel> =
-		args.opt_value_from_str("--detailed").unwrap_or_else(|_| {
-			if args.contains("--detailed") {
-				Some(SummaryDetailLevel::Failing)
-			} else {
-				Some(SummaryDetailLevel::Coverage)
-			}
-		});
-
-	args.finish();
-
-	run(
-		suites.as_deref(),
-		filter.as_deref(),
-		json,
-		detail_level.unwrap_or(SummaryDetailLevel::Coverage),
-	);
-
-	Ok(())
+    Ok(())
 }
