@@ -27,7 +27,7 @@
 		"prepublishOnly": "Build 'Source/**/*.ts'"
 	},
 	"dependencies": {
-		"happy-dom": "^15.11.7"
+		"happy-dom": "17.1.9"
 	},
 	"devDependencies": {
 		"@playform/build": "0.2.1"
