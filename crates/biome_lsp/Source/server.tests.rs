@@ -396,7 +396,7 @@ where
 #[tokio::test]
 async fn basic_lifecycle() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -506,7 +506,7 @@ const EXPECTED_CST: &str = "0: JS_MODULE@0..57
 #[tokio::test]
 async fn document_lifecycle() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -566,7 +566,7 @@ async fn lifecycle_with_multiple_connections() -> Result<()> {
 
     // First connection:
     {
-        let (service, client) = factory.create(None).into_inner();
+        let (service, client) = factory.create().into_inner();
         let (stream, sink) = client.split();
         let mut server = Server::new(service);
 
@@ -618,7 +618,7 @@ async fn lifecycle_with_multiple_connections() -> Result<()> {
 
     // Second connection, the document will still be there:
     {
-        let (service, client) = factory.create(None).into_inner();
+        let (service, client) = factory.create().into_inner();
         let (stream, sink) = client.split();
         let mut server = Server::new(service);
 
@@ -666,7 +666,7 @@ async fn lifecycle_with_multiple_connections() -> Result<()> {
 #[tokio::test]
 async fn document_no_extension() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -737,7 +737,7 @@ async fn document_no_extension() -> Result<()> {
 #[tokio::test]
 async fn pull_diagnostics() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -819,7 +819,7 @@ async fn pull_diagnostics() -> Result<()> {
 #[tokio::test]
 async fn pull_diagnostics_of_syntax_rules() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -881,7 +881,7 @@ async fn pull_diagnostics_of_syntax_rules() -> Result<()> {
 #[tokio::test]
 async fn pull_diagnostics_from_new_file() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -963,7 +963,7 @@ async fn pull_diagnostics_from_new_file() -> Result<()> {
 #[tokio::test]
 async fn pull_quick_fixes() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -1066,7 +1066,7 @@ async fn pull_quick_fixes() -> Result<()> {
 
     let expected_inline_suppression_action =
         lsp::CodeActionOrCommand::CodeAction(lsp::CodeAction {
-            title: String::from("Suppress rule lint/suspicious/noCompareNegZero"),
+            title: String::from("Suppress rule lint/suspicious/noCompareNegZero for this line."),
             kind: Some(lsp::CodeActionKind::new(
                 "quickfix.suppressRule.inline.biome",
             )),
@@ -1097,7 +1097,7 @@ async fn pull_quick_fixes() -> Result<()> {
                 },
             },
             new_text: String::from(
-                "/** biome-ignore-all lint/suspicious/noCompareNegZero: <explanation> */\n\n",
+                "/** biome-ignore-all lint/suspicious/noCompareNegZero: <explanation> */\n",
             ),
         }],
     );
@@ -1125,9 +1125,9 @@ async fn pull_quick_fixes() -> Result<()> {
     assert_eq!(
         res,
         vec![
-            expected_top_level_suppression_action,
+            expected_code_action,
             expected_inline_suppression_action,
-            expected_code_action
+            expected_top_level_suppression_action,
         ]
     );
 
@@ -1142,7 +1142,7 @@ async fn pull_quick_fixes() -> Result<()> {
 #[tokio::test]
 async fn pull_biome_quick_fixes_ignore_unsafe() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -1224,7 +1224,7 @@ async fn pull_biome_quick_fixes_ignore_unsafe() -> Result<()> {
 #[tokio::test]
 async fn pull_biome_quick_fixes() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -1320,7 +1320,7 @@ async fn pull_biome_quick_fixes() -> Result<()> {
 #[tokio::test]
 async fn pull_quick_fixes_include_unsafe() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -1446,7 +1446,7 @@ async fn pull_quick_fixes_include_unsafe() -> Result<()> {
 
     let expected_inline_suppression_action =
         lsp::CodeActionOrCommand::CodeAction(lsp::CodeAction {
-            title: String::from("Suppress rule lint/suspicious/noDoubleEquals"),
+            title: String::from("Suppress rule lint/suspicious/noDoubleEquals for this line."),
             kind: Some(lsp::CodeActionKind::new(
                 "quickfix.suppressRule.inline.biome",
             )),
@@ -1477,7 +1477,7 @@ async fn pull_quick_fixes_include_unsafe() -> Result<()> {
                 },
             },
             new_text: String::from(
-                "/** biome-ignore-all lint/suspicious/noDoubleEquals: <explanation> */\n\n",
+                "/** biome-ignore-all lint/suspicious/noDoubleEquals: <explanation> */\n",
             ),
         }],
     );
@@ -1503,9 +1503,9 @@ async fn pull_quick_fixes_include_unsafe() -> Result<()> {
     assert_eq!(
         res,
         vec![
-            expected_toplevel_suppression_action,
-            expected_inline_suppression_action,
             expected_code_action,
+            expected_inline_suppression_action,
+            expected_toplevel_suppression_action,
         ]
     );
 
@@ -1520,7 +1520,7 @@ async fn pull_quick_fixes_include_unsafe() -> Result<()> {
 #[tokio::test]
 async fn pull_diagnostics_for_rome_json() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -1602,7 +1602,7 @@ async fn pull_diagnostics_for_css_files() -> Result<()> {
     );
 
     let factory = ServerFactory::new_with_fs(Box::new(fs));
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
 
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
@@ -1673,7 +1673,7 @@ async fn pull_diagnostics_for_css_files() -> Result<()> {
 #[tokio::test]
 async fn no_code_actions_for_ignored_json_files() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -1757,7 +1757,7 @@ async fn no_code_actions_for_ignored_json_files() -> Result<()> {
 #[tokio::test]
 async fn pull_code_actions_with_import_sorting() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -1970,7 +1970,7 @@ async fn does_not_pull_action_for_disabled_rule_in_override_issue_2782() -> Resu
     );
 
     let factory = ServerFactory::new_with_fs(Box::new(fs));
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2045,7 +2045,7 @@ async fn does_not_pull_action_for_disabled_rule_in_override_issue_2782() -> Resu
 #[tokio::test]
 async fn pull_refactors() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2155,7 +2155,7 @@ async fn pull_refactors() -> Result<()> {
 #[tokio::test]
 async fn pull_fix_all() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2258,7 +2258,7 @@ async fn pull_fix_all() -> Result<()> {
 #[tokio::test]
 async fn change_document_remove_line() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2343,7 +2343,7 @@ isSpreadAssignment;
 #[tokio::test]
 async fn format_with_syntax_errors() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2392,7 +2392,7 @@ async fn format_with_syntax_errors() -> Result<()> {
 #[tokio::test]
 async fn format_jsx_in_javascript_file() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2470,7 +2470,7 @@ async fn does_not_format_ignored_files() -> Result<()> {
     );
 
     let factory = ServerFactory::new_with_fs(Box::new(fs));
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2528,7 +2528,7 @@ async fn does_not_format_ignored_files() -> Result<()> {
 #[ignore = "Find a way to retrieve the last notification sent"]
 async fn pull_diagnostics_from_manifest() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2633,7 +2633,7 @@ async fn pull_diagnostics_from_manifest() -> Result<()> {
 #[tokio::test]
 async fn server_shutdown() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2658,7 +2658,7 @@ async fn server_shutdown() -> Result<()> {
 #[tokio::test]
 async fn multiple_projects() -> Result<()> {
     let factory = ServerFactory::default();
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2794,7 +2794,7 @@ async fn pull_source_assist_action() -> Result<()> {
     );
 
     let factory = ServerFactory::new_with_fs(Box::new(fs));
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -2953,6 +2953,25 @@ async fn pull_source_assist_action() -> Result<()> {
 
 #[tokio::test]
 async fn watcher_updates_dependency_graph() -> Result<()> {
+    const FOO_CONTENT: &str = r#"import { bar } from "./bar.ts";
+
+export function foo() {
+    bar();
+}
+"#;
+    const BAR_CONTENT: &str = r#"import { foo } from "./foo.ts";
+
+export function bar() {
+    foo();
+}
+"#;
+    const BAR_CONTENT_FIXED: &str = r#"import { foo } from "./shared.ts";
+
+export function bar() {
+    foo();
+}
+"#;
+
     // ARRANGE: Set up FS and LSP connection in order to test import cycles.
     let mut fs = TemporaryFs::new("watcher_updates_dependency_graph");
     fs.create_file(
@@ -2970,27 +2989,10 @@ async fn watcher_updates_dependency_graph() -> Result<()> {
 "#,
     );
 
-    fs.create_file(
-        "foo.ts",
-        r#"import { bar } from "./bar.ts";
+    fs.create_file("foo.ts", FOO_CONTENT);
+    fs.create_file("bar.ts", BAR_CONTENT);
 
-export function foo() {
-    bar();
-}
-"#,
-    );
-
-    fs.create_file(
-        "bar.ts",
-        r#"import { foo } from "./foo.ts";
-
-export function bar() {
-    foo();
-}
-"#,
-    );
-
-    let (mut watcher, instruction_channel) = WorkspaceWatcher::new()?;
+    let (mut watcher, instruction_channel, notification_channel) = WorkspaceWatcher::new()?;
 
     let factory = ServerFactory::new(true, instruction_channel.sender.clone());
 
@@ -2999,7 +3001,7 @@ export function bar() {
         watcher.run(workspace.as_ref());
     });
 
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -3060,12 +3062,15 @@ export function bar() {
         "This import is part of a cycle."
     );
 
+    let _ = notification_channel.receiver.try_recv(); // Clear notification, if any.
+
     // ARRANGE: Remove `bar.ts`.
     std::fs::remove_file(fs.working_directory.join("bar.ts")).expect("Cannot remove bar.ts");
 
-    // FIXME: If this test is unstable, we may need to wait here.
-    //        Right now, we don't know if the watcher already processed the
-    //        removal. It seems everything works fine though :D
+    notification_channel
+        .receiver
+        .recv()
+        .expect("Expected notification");
 
     // ACT: Pull diagnostics.
     let result: PullDiagnosticsResult = server
@@ -3089,15 +3094,14 @@ export function bar() {
     assert_eq!(result.diagnostics.len(), 0);
 
     // ARRANGE: Recreate `bar.ts`.
-    fs.create_file(
-        "bar.ts",
-        r#"import { foo } from "./foo.ts";
+    let _ = notification_channel.receiver.try_recv(); // Clear notification, if any.
 
-    export function bar() {
-        foo();
-    }
-    "#,
-    );
+    fs.create_file("bar.ts", BAR_CONTENT);
+
+    notification_channel
+        .receiver
+        .recv()
+        .expect("Expected notification");
 
     // ACT: Pull diagnostics.
     let result: PullDiagnosticsResult = server
@@ -3125,15 +3129,14 @@ export function bar() {
     );
 
     // ARRANGE: Fix `bar.ts`.
-    fs.create_file(
-        "bar.ts",
-        r#"import { foo } from "./shared.ts";
+    let _ = notification_channel.receiver.try_recv(); // Clear notification, if any.
 
-    export function bar() {
-        foo();
-    }
-    "#,
-    );
+    fs.create_file("bar.ts", BAR_CONTENT_FIXED);
+
+    notification_channel
+        .receiver
+        .recv()
+        .expect("Expected notification");
 
     // ACT: Pull diagnostics.
     let result: PullDiagnosticsResult = server
@@ -3156,6 +3159,7 @@ export function bar() {
     // ASSERT: Diagnostic should disappear again with a fixed `bar.ts`.
     assert_eq!(result.diagnostics.len(), 0);
 
+    let _ = instruction_channel.sender.send(WatcherInstruction::Stop);
     server.shutdown().await?;
     reader.abort();
 
@@ -3164,6 +3168,19 @@ export function bar() {
 
 #[tokio::test]
 async fn watcher_updates_dependency_graph_with_directories() -> Result<()> {
+    const FOO_CONTENT: &str = r#"import { bar } from "./utils/bar.ts";
+
+export function foo() {
+    bar();
+}
+"#;
+    const BAR_CONTENT: &str = r#"import { foo } from "../foo.ts";
+
+export function bar() {
+    foo();
+}
+"#;
+
     // ARRANGE: Set up FS and LSP connection in order to test import cycles.
     let mut fs = TemporaryFs::new("watcher_updates_dependency_graph_with_directories");
     fs.create_file(
@@ -3181,27 +3198,10 @@ async fn watcher_updates_dependency_graph_with_directories() -> Result<()> {
 "#,
     );
 
-    fs.create_file(
-        "foo.ts",
-        r#"import { bar } from "./utils/bar.ts";
+    fs.create_file("foo.ts", FOO_CONTENT);
+    fs.create_file("utils/bar.ts", BAR_CONTENT);
 
-export function foo() {
-    bar();
-}
-"#,
-    );
-
-    fs.create_file(
-        "utils/bar.ts",
-        r#"import { foo } from "../foo.ts";
-
-export function bar() {
-    foo();
-}
-"#,
-    );
-
-    let (mut watcher, instruction_channel) = WorkspaceWatcher::new()?;
+    let (mut watcher, instruction_channel, notification_channel) = WorkspaceWatcher::new()?;
 
     let factory = ServerFactory::new(true, instruction_channel.sender.clone());
 
@@ -3210,7 +3210,7 @@ export function bar() {
         watcher.run(workspace.as_ref());
     });
 
-    let (service, client) = factory.create(None).into_inner();
+    let (service, client) = factory.create().into_inner();
     let (stream, sink) = client.split();
     let mut server = Server::new(service);
 
@@ -3271,6 +3271,8 @@ export function bar() {
         "This import is part of a cycle."
     );
 
+    let _ = notification_channel.receiver.try_recv(); // Clear notification, if any.
+
     // ARRANGE: Move `utils` directory.
     std::fs::rename(
         fs.working_directory.join("utils"),
@@ -3278,9 +3280,10 @@ export function bar() {
     )
     .expect("Cannot move utils");
 
-    // FIXME: If this test is unstable, we may need to wait here.
-    //        Right now, we don't know if the watcher already processed the
-    //        move. It seems everything works fine though :D
+    notification_channel
+        .receiver
+        .recv()
+        .expect("Expected notification");
 
     // ACT: Pull diagnostics.
     let result: PullDiagnosticsResult = server
@@ -3305,11 +3308,18 @@ export function bar() {
     assert_eq!(result.diagnostics.len(), 0);
 
     // ARRANGE: Move `utils` back.
+    let _ = notification_channel.receiver.try_recv(); // Clear notification, if any.
+
     std::fs::rename(
         fs.working_directory.join("bin"),
         fs.working_directory.join("utils"),
     )
     .expect("Cannot restore utils");
+
+    notification_channel
+        .receiver
+        .recv()
+        .expect("Expected notification");
 
     // ACT: Pull diagnostics.
     let result: PullDiagnosticsResult = server
@@ -3336,6 +3346,7 @@ export function bar() {
         "This import is part of a cycle."
     );
 
+    let _ = instruction_channel.sender.send(WatcherInstruction::Stop);
     server.shutdown().await?;
     reader.abort();
 

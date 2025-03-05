@@ -885,36 +885,7 @@ mod tests {
 			&built_ins,
 		);
 
-		let mut vars = BTreeMap::new();
-
-		let mut vars_array = vec![Vec::new()];
-
-		let mut global_vars = BTreeMap::new();
-
-		let mut diagnostics = Vec::new();
-
-		let mut context = NodeCompilationContext::new(
-			&compilation_context,
-			&mut vars,
-			&mut vars_array,
-			&mut global_vars,
-			&mut diagnostics,
-		);
-
-		let snippet_source = "µfn && µfn()";
-
-		let range = ByteRange::new(0, snippet_source.len());
-
-		let pattern = parse_snippet_content(snippet_source, range, &mut context, false)
-			.expect("cannot parse snippet");
-
-		let formatted = format!("{pattern:#?}");
-
-		let snapshot = Regex::new("normalizer: 0x[0-9a-f]{16}")
-			.unwrap()
-			.replace_all(&formatted, "normalizer: [address redacted]");
-
-		insta::assert_snapshot!(&snapshot, @r###"
+        insta::assert_snapshot!(&snapshot, @r#"
         CodeSnippet(
             GritCodeSnippet {
                 patterns: [
@@ -1232,32 +1203,6 @@ mod tests {
                     ),
                     (
                         JsSyntaxKind(
-                            JSX_TEXT,
-                        ),
-                        AstNode(
-                            GritNodePattern {
-                                kind: JsSyntaxKind(
-                                    JSX_TEXT,
-                                ),
-                                args: [
-                                    GritNodePatternArg {
-                                        slot_index: 0,
-                                        pattern: AstLeafNode(
-                                            GritLeafNodePattern {
-                                                kind: JsSyntaxKind(
-                                                    JSX_TEXT_LITERAL,
-                                                ),
-                                                equivalence_class: None,
-                                                text: "µfn && µfn()",
-                                            },
-                                        ),
-                                    },
-                                ],
-                            },
-                        ),
-                    ),
-                    (
-                        JsSyntaxKind(
                             JS_PROPERTY_OBJECT_MEMBER,
                         ),
                         AstNode(
@@ -1447,6 +1392,6 @@ mod tests {
                 ),
             },
         )
-        "###);
-	}
+        "#);
+    }
 }

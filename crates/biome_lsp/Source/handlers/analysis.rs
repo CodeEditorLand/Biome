@@ -3,7 +3,8 @@ use crate::session::Session;
 use crate::utils;
 use anyhow::{Context, Result};
 use biome_analyze::{
-    ActionCategory, RuleCategoriesBuilder, SUPPRESSION_INLINE_ACTION_CATEGORY, SourceActionKind,
+    ActionCategory, RuleCategoriesBuilder, SUPPRESSION_INLINE_ACTION_CATEGORY,
+    SUPPRESSION_TOP_LEVEL_ACTION_CATEGORY, SourceActionKind,
 };
 use biome_configuration::analyzer::RuleSelector;
 use biome_diagnostics::{Applicability, Error};
@@ -54,7 +55,7 @@ pub(crate) fn code_actions(
     })?;
 
     if !file_features.supports_lint() && !file_features.supports_assist() {
-        info!("Linter, assist and organize imports are disabled");
+        info!("Linter and assist are disabled.");
         return Ok(Some(Vec::new()));
     }
     if session.workspace.is_path_ignored(IsPathIgnoredParams {
@@ -163,6 +164,7 @@ pub(crate) fn code_actions(
         .actions
         .into_iter()
         .filter_map(|action| {
+            debug!("Action: {:?}", &action.category);
             // Don't apply unsafe fixes when the code action is on-save quick-fixes
             if has_quick_fix && action.suggestion.applicability == Applicability::MaybeIncorrect {
                 return None;
@@ -180,7 +182,9 @@ pub(crate) fn code_actions(
 
             // Filter out suppressions if the linter isn't supported
             if (action.category.matches(SUPPRESSION_INLINE_ACTION_CATEGORY)
-                || action.category.matches(SUPPRESSION_INLINE_ACTION_CATEGORY))
+                || action
+                    .category
+                    .matches(SUPPRESSION_TOP_LEVEL_ACTION_CATEGORY))
                 && !file_features.supports_lint()
             {
                 return None;
@@ -190,7 +194,9 @@ pub(crate) fn code_actions(
             // Fix all should apply only the safe changes.
             if has_fix_all
                 && (action.category.matches(SUPPRESSION_INLINE_ACTION_CATEGORY)
-                    || action.category.matches(SUPPRESSION_INLINE_ACTION_CATEGORY))
+                    || action
+                        .category
+                        .matches(SUPPRESSION_TOP_LEVEL_ACTION_CATEGORY))
             {
                 return None;
             }
@@ -200,14 +206,8 @@ pub(crate) fn code_actions(
             }
             // Remove actions that do not match the categories requested by the
             // language client
-            let matches_filters = filters.iter().any(|filter| {
-                debug!(
-                    "Filter {:?}, category {:?}",
-                    filter,
-                    action.category.to_str()
-                );
-                action.category.matches(filter)
-            });
+            let matches_filters = filters.iter().any(|filter| action.category.matches(filter));
+
             if !filters.is_empty() && !matches_filters {
                 return None;
             }
@@ -225,7 +225,6 @@ pub(crate) fn code_actions(
             has_fixes |= action.diagnostics.is_some();
             Some(CodeActionOrCommand::CodeAction(action))
         })
-        .rev()
         .chain(fix_all)
         .collect();
 
@@ -241,7 +240,16 @@ pub(crate) fn code_actions(
         });
     }
 
-    debug!("Suggested actions: \n{:?}", &actions);
+    for action in &actions {
+        match action {
+            CodeActionOrCommand::Command(cmd) => {
+                debug!("Suggested command: {}", cmd.title)
+            }
+            CodeActionOrCommand::CodeAction(action) => {
+                debug!("Suggested action: {}", &action.title);
+            }
+        }
+    }
 
     Ok(Some(actions))
 }
