@@ -1,5 +1,5 @@
 {
-	"name": "@biomejs/backend-jsonrpc",
+	"name": "@codeeditorland/backend-jsonrpc",
 	"version": "0.0.1",
 	"private": false,
 	"description": "Bindings to the JSON-RPC Workspace API of the Biome daemon",
@@ -36,6 +36,7 @@
 		"prepublishOnly": "Build 'Source/**/*.ts'",
 		"test:ci": "pnpm build && vitest run"
 	},
+	"dependencies": {},
 	"devDependencies": {
 		"@playform/build": "0.2.1",
 		"@types/node": "20.17.24"

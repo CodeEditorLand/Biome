@@ -1,5 +1,5 @@
 {
-	"name": "@biomejs/benchmark",
+	"name": "@codeeditorland/benchmark",
 	"version": "0.0.1",
 	"private": false,
 	"description": "",
@@ -27,6 +27,7 @@
 	"scripts": {
 		"prepublishOnly": "Build 'Source/**/*.ts'"
 	},
+	"dependencies": {},
 	"devDependencies": {
 		"@playform/build": "0.2.1",
 		"dprint": "0.49.0"
