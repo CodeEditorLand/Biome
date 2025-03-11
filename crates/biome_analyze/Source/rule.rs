@@ -513,6 +513,19 @@ impl Display for RuleDomain {
     }
 }
 
+impl Ord for RuleDomain {
+    fn cmp(&self, other: &Self) -> Ordering {
+        // Rule domains should be in alphabetical order
+        format!("{self:?}").cmp(&format!("{other:?}"))
+    }
+}
+
+impl PartialOrd for RuleDomain {
+    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+        Some(self.cmp(other))
+    }
+}
+
 impl RuleDomain {
     /// If the project has one of these dependencies, the domain will be automatically enabled, unless it's explicitly disabled by the configuration.
     ///

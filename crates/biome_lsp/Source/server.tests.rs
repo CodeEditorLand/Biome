@@ -52,6 +52,17 @@ macro_rules! url {
     };
 }
 
+macro_rules! clear_notifications {
+    ($channel:expr) => {
+        if $channel
+            .has_changed()
+            .expect("Channel should not be closed")
+        {
+            let _ = $channel.changed().await;
+        }
+    };
+}
+
 fn fixable_diagnostic(line: u32) -> Result<lsp::Diagnostic> {
     Ok(lsp::Diagnostic {
         range: Range {
@@ -346,6 +357,40 @@ const CHANNEL_BUFFER_SIZE: usize = 8;
 #[derive(Debug, PartialEq, Eq)]
 enum ServerNotification {
     PublishDiagnostics(PublishDiagnosticsParams),
+    ShowMessage(ShowMessageParams),
+}
+impl ServerNotification {
+    pub fn is_publish_diagnostics(&self) -> bool {
+        matches!(self, ServerNotification::PublishDiagnostics(_))
+    }
+
+    pub fn is_show_message(&self) -> bool {
+        matches!(self, ServerNotification::ShowMessage(_))
+    }
+}
+
+async fn wait_for_notification(
+    receiver: &mut (impl futures::stream::Stream<Item = ServerNotification> + Unpin),
+    check: impl Fn(&ServerNotification) -> bool,
+) -> Option<ServerNotification> {
+    loop {
+        let notification = tokio::select! {
+            msg = receiver.next() => msg,
+            _ = sleep(Duration::from_secs(1)) => {
+                panic!("timed out waiting for the server to send diagnostics")
+            }
+        };
+
+        match notification {
+            Some(notification) => {
+                if check(&notification) {
+                    return Some(notification);
+                }
+                continue;
+            }
+            None => break None,
+        }
+    }
 }
 
 /// Basic handler for requests and notifications coming from the server for tests
@@ -361,10 +406,16 @@ where
     O: Sink<Response> + Unpin,
 {
     while let Some(req) = stream.next().await {
-        if req.method() == "textDocument/publishDiagnostics" {
-            let params = req.params().expect("invalid request");
-            let diagnostics = from_value(params.clone()).expect("invalid params");
-            let notification = ServerNotification::PublishDiagnostics(diagnostics);
+        let params = req.params().expect("invalid request").clone();
+        if let Some(notification) = match req.method() {
+            "textDocument/publishDiagnostics" => Some(ServerNotification::PublishDiagnostics(
+                from_value(params).expect("invalid params"),
+            )),
+            "window/showMessage" => Some(ServerNotification::ShowMessage(
+                from_value(params).expect("invalid params"),
+            )),
+            _ => None,
+        } {
             match notify.send(notification).await {
                 Ok(_) => continue,
                 Err(_) => break,
@@ -749,12 +800,7 @@ async fn pull_diagnostics() -> Result<()> {
 
     server.open_document("if(a == b) {}").await?;
 
-    let notification = tokio::select! {
-        msg = receiver.next() => msg,
-        _ = sleep(Duration::from_secs(1)) => {
-            panic!("timed out waiting for the server to send diagnostics")
-        }
-    };
+    let notification = wait_for_notification(&mut receiver, |n| n.is_publish_diagnostics()).await;
 
     assert_eq!(
         notification,
@@ -831,12 +877,7 @@ async fn pull_diagnostics_of_syntax_rules() -> Result<()> {
 
     server.open_document("class A { #foo; #foo }").await?;
 
-    let notification = tokio::select! {
-        msg = receiver.next() => msg,
-        _ = sleep(Duration::from_secs(1)) => {
-            panic!("timed out waiting for the server to send diagnostics")
-        }
-    };
+    let notification = wait_for_notification(&mut receiver, |n| n.is_publish_diagnostics()).await;
 
     assert_eq!(
         notification,
@@ -893,12 +934,7 @@ async fn pull_diagnostics_from_new_file() -> Result<()> {
 
     server.open_untitled_document("if(a == b) {}").await?;
 
-    let notification = tokio::select! {
-        msg = receiver.next() => msg,
-        _ = sleep(Duration::from_secs(1)) => {
-            panic!("timed out waiting for the server to send diagnostics")
-        }
-    };
+    let notification = wait_for_notification(&mut receiver, |n| n.is_publish_diagnostics()).await;
 
     assert_eq!(
         notification,
@@ -1539,12 +1575,7 @@ async fn pull_diagnostics_for_rome_json() -> Result<()> {
         .open_named_document(incorrect_config, url!("biome.json"), "json")
         .await?;
 
-    let notification = tokio::select! {
-        msg = receiver.next() => msg,
-        _ = sleep(Duration::from_secs(1)) => {
-            panic!("timed out waiting for the server to send diagnostics")
-        }
-    };
+    let notification = wait_for_notification(&mut receiver, |n| n.is_publish_diagnostics()).await;
 
     assert_eq!(
         notification,
@@ -1575,6 +1606,64 @@ async fn pull_diagnostics_for_rome_json() -> Result<()> {
             }
         ))
     );
+
+    server.close_document().await?;
+
+    server.shutdown().await?;
+    reader.abort();
+
+    Ok(())
+}
+
+#[tokio::test]
+async fn plugin_load_error_show_message() -> Result<()> {
+    let mut fs = MemoryFileSystem::default();
+    let config = r#"{
+        "css": {
+            "linter": { "enabled": true }
+        },
+        "plugins": ["./plugin"],
+        "linter": {
+            "rules": { "correctness": { "noUnknownProperty": "error" } }
+        }
+    }"#;
+
+    const INVALID_PLUGIN_CONTENT: &[u8] = br#"foo"#;
+
+    fs.insert(
+        Utf8PathBuf::from_path_buf(url!("biome.json").to_file_path().unwrap()).unwrap(),
+        config,
+    );
+    fs.insert(
+        Utf8PathBuf::from_path_buf(url!("plugin").to_file_path().unwrap()).unwrap(),
+        INVALID_PLUGIN_CONTENT,
+    );
+
+    let factory = ServerFactory::new_with_fs(Box::new(fs));
+    let (service, client) = factory.create().into_inner();
+
+    let (stream, sink) = client.split();
+    let mut server = Server::new(service);
+
+    let (sender, mut receiver) = channel(CHANNEL_BUFFER_SIZE);
+    let reader = tokio::spawn(client_handler(stream, sink, sender));
+
+    server.initialize().await?;
+    server.initialized().await?;
+
+    server.load_configuration().await?;
+
+    let incorrect_config = r#"a {colr: blue;}"#;
+    server
+        .open_named_document(incorrect_config, url!("document.css"), "css")
+        .await?;
+
+    let notification = wait_for_notification(&mut receiver, |n| n.is_show_message()).await;
+
+    assert_eq!(notification, Some(ServerNotification::ShowMessage(ShowMessageParams {
+        typ: MessageType::WARNING,
+        message: "The plugin loading has failed. Biome will report only parsing errors until the file is fixed or its usage is disabled.".to_string(),
+    })));
 
     server.close_document().await?;
 
@@ -1620,12 +1709,7 @@ async fn pull_diagnostics_for_css_files() -> Result<()> {
         .open_named_document(incorrect_config, url!("document.css"), "css")
         .await?;
 
-    let notification = tokio::select! {
-        msg = receiver.next() => msg,
-        _ = sleep(Duration::from_secs(1)) => {
-            panic!("timed out waiting for the server to send diagnostics")
-        }
-    };
+    let notification = wait_for_notification(&mut receiver, |n| n.is_publish_diagnostics()).await;
 
     assert_eq!(
         notification,
@@ -1694,12 +1778,7 @@ async fn no_code_actions_for_ignored_json_files() -> Result<()> {
         )
         .await?;
 
-    let notification = tokio::select! {
-        msg = receiver.next() => msg,
-        _ = sleep(Duration::from_secs(1)) => {
-            panic!("timed out waiting for the server to send diagnostics")
-        }
-    };
+    let notification = wait_for_notification(&mut receiver, |n| n.is_publish_diagnostics()).await;
 
     assert_eq!(
         notification,
@@ -2563,12 +2642,7 @@ async fn pull_diagnostics_from_manifest() -> Result<()> {
         .open_document(r#"import "lodash"; import "react"; "#)
         .await?;
 
-    let notification = tokio::select! {
-        msg = receiver.next() => msg,
-        _ = sleep(Duration::from_secs(1)) => {
-            panic!("timed out waiting for the server to send diagnostics")
-        }
-    };
+    let notification = wait_for_notification(&mut receiver, |n| n.is_publish_diagnostics()).await;
 
     assert_eq!(
         notification,
@@ -2992,9 +3066,9 @@ export function bar() {
     fs.create_file("foo.ts", FOO_CONTENT);
     fs.create_file("bar.ts", BAR_CONTENT);
 
-    let (mut watcher, instruction_channel, notification_channel) = WorkspaceWatcher::new()?;
+    let (mut watcher, instruction_channel) = WorkspaceWatcher::new()?;
 
-    let factory = ServerFactory::new(true, instruction_channel.sender.clone());
+    let mut factory = ServerFactory::new(true, instruction_channel.sender.clone());
 
     let workspace = factory.workspace();
     tokio::task::spawn_blocking(move || {
@@ -3031,6 +3105,7 @@ export function bar() {
                 project_key,
                 path: None,
                 watch: true,
+                force: false,
             },
         )
         .await?
@@ -3062,14 +3137,15 @@ export function bar() {
         "This import is part of a cycle."
     );
 
-    let _ = notification_channel.receiver.try_recv(); // Clear notification, if any.
+    clear_notifications!(factory.service_data_rx);
 
     // ARRANGE: Remove `bar.ts`.
     std::fs::remove_file(fs.working_directory.join("bar.ts")).expect("Cannot remove bar.ts");
 
-    notification_channel
-        .receiver
-        .recv()
+    factory
+        .service_data_rx
+        .changed()
+        .await
         .expect("Expected notification");
 
     // ACT: Pull diagnostics.
@@ -3094,13 +3170,14 @@ export function bar() {
     assert_eq!(result.diagnostics.len(), 0);
 
     // ARRANGE: Recreate `bar.ts`.
-    let _ = notification_channel.receiver.try_recv(); // Clear notification, if any.
+    clear_notifications!(factory.service_data_rx);
 
     fs.create_file("bar.ts", BAR_CONTENT);
 
-    notification_channel
-        .receiver
-        .recv()
+    factory
+        .service_data_rx
+        .changed()
+        .await
         .expect("Expected notification");
 
     // ACT: Pull diagnostics.
@@ -3129,13 +3206,14 @@ export function bar() {
     );
 
     // ARRANGE: Fix `bar.ts`.
-    let _ = notification_channel.receiver.try_recv(); // Clear notification, if any.
+    clear_notifications!(factory.service_data_rx);
 
     fs.create_file("bar.ts", BAR_CONTENT_FIXED);
 
-    notification_channel
-        .receiver
-        .recv()
+    factory
+        .service_data_rx
+        .changed()
+        .await
         .expect("Expected notification");
 
     // ACT: Pull diagnostics.
@@ -3159,7 +3237,6 @@ export function bar() {
     // ASSERT: Diagnostic should disappear again with a fixed `bar.ts`.
     assert_eq!(result.diagnostics.len(), 0);
 
-    let _ = instruction_channel.sender.send(WatcherInstruction::Stop);
     server.shutdown().await?;
     reader.abort();
 
@@ -3201,9 +3278,9 @@ export function bar() {
     fs.create_file("foo.ts", FOO_CONTENT);
     fs.create_file("utils/bar.ts", BAR_CONTENT);
 
-    let (mut watcher, instruction_channel, notification_channel) = WorkspaceWatcher::new()?;
+    let (mut watcher, instruction_channel) = WorkspaceWatcher::new()?;
 
-    let factory = ServerFactory::new(true, instruction_channel.sender.clone());
+    let mut factory = ServerFactory::new(true, instruction_channel.sender.clone());
 
     let workspace = factory.workspace();
     tokio::task::spawn_blocking(move || {
@@ -3240,6 +3317,7 @@ export function bar() {
                 project_key,
                 path: None,
                 watch: true,
+                force: false,
             },
         )
         .await?
@@ -3271,7 +3349,7 @@ export function bar() {
         "This import is part of a cycle."
     );
 
-    let _ = notification_channel.receiver.try_recv(); // Clear notification, if any.
+    clear_notifications!(factory.service_data_rx);
 
     // ARRANGE: Move `utils` directory.
     std::fs::rename(
@@ -3280,9 +3358,10 @@ export function bar() {
     )
     .expect("Cannot move utils");
 
-    notification_channel
-        .receiver
-        .recv()
+    factory
+        .service_data_rx
+        .changed()
+        .await
         .expect("Expected notification");
 
     // ACT: Pull diagnostics.
@@ -3308,7 +3387,7 @@ export function bar() {
     assert_eq!(result.diagnostics.len(), 0);
 
     // ARRANGE: Move `utils` back.
-    let _ = notification_channel.receiver.try_recv(); // Clear notification, if any.
+    clear_notifications!(factory.service_data_rx);
 
     std::fs::rename(
         fs.working_directory.join("bin"),
@@ -3316,9 +3395,10 @@ export function bar() {
     )
     .expect("Cannot restore utils");
 
-    notification_channel
-        .receiver
-        .recv()
+    factory
+        .service_data_rx
+        .changed()
+        .await
         .expect("Expected notification");
 
     // ACT: Pull diagnostics.
@@ -3346,7 +3426,6 @@ export function bar() {
         "This import is part of a cycle."
     );
 
-    let _ = instruction_channel.sender.send(WatcherInstruction::Stop);
     server.shutdown().await?;
     reader.abort();
 

@@ -1,7 +1,6 @@
 use crate::diagnostics::LspError;
 use crate::documents::Document;
-use crate::extension_settings::CONFIGURATION_SECTION;
-use crate::extension_settings::ExtensionSettings;
+use crate::extension_settings::{CONFIGURATION_SECTION, ExtensionSettings};
 use crate::utils;
 use anyhow::Result;
 use biome_analyze::RuleCategoriesBuilder;
@@ -17,6 +16,7 @@ use biome_service::configuration::{LoadedConfiguration, load_configuration, load
 use biome_service::file_handlers::{AstroFileHandler, SvelteFileHandler, VueFileHandler};
 use biome_service::projects::ProjectKey;
 use biome_service::workspace::ScanProjectFolderParams;
+use biome_service::workspace::ServiceDataNotification;
 use biome_service::workspace::{
     FeaturesBuilder, GetFileContentParams, OpenProjectParams, PullDiagnosticsParams,
     SupportsFeatureParams,
@@ -34,8 +34,10 @@ use std::sync::Arc;
 use std::sync::RwLock;
 use std::sync::atomic::Ordering;
 use std::sync::atomic::{AtomicBool, AtomicU8};
+use tokio::spawn;
 use tokio::sync::Notify;
 use tokio::sync::OnceCell;
+use tokio::sync::watch;
 use tokio::task::spawn_blocking;
 use tower_lsp::lsp_types;
 use tower_lsp::lsp_types::{Diagnostic, Url};
@@ -85,6 +87,12 @@ pub(crate) struct Session {
     documents: HashMap<lsp_types::Url, Document, FxBuildHasher>,
 
     pub(crate) cancellation: Arc<Notify>,
+
+    /// Receiver for service data notifications.
+    ///
+    /// If we receive a notification here, diagnostics for open documents are
+    /// all refreshed.
+    service_data_rx: watch::Receiver<ServiceDataNotification>,
 }
 
 /// The parameters provided by the client in the "initialize" request
@@ -108,6 +116,8 @@ pub(crate) enum ConfigurationStatus {
     EditorConfigError = 3,
     /// Currently loading the configuration
     Loading = 4,
+    /// The configuration file is correct, but the plugins cannot be loaded
+    PluginError = 5,
 }
 
 impl ConfigurationStatus {
@@ -117,6 +127,10 @@ impl ConfigurationStatus {
 
     pub(crate) const fn is_editorconfig_error(&self) -> bool {
         matches!(self, ConfigurationStatus::EditorConfigError)
+    }
+
+    pub(crate) const fn is_plugin_error(&self) -> bool {
+        matches!(self, ConfigurationStatus::PluginError)
     }
 
     pub(crate) const fn is_loaded(&self) -> bool {
@@ -134,6 +148,7 @@ impl TryFrom<u8> for ConfigurationStatus {
             2 => Ok(Self::Error),
             3 => Ok(Self::EditorConfigError),
             4 => Ok(Self::Loading),
+            5 => Ok(Self::PluginError),
             _ => Err(()),
         }
     }
@@ -173,6 +188,7 @@ impl Session {
         client: tower_lsp::Client,
         workspace: Arc<dyn Workspace>,
         cancellation: Arc<Notify>,
+        service_data_rx: watch::Receiver<ServiceDataNotification>,
     ) -> Self {
         let config = RwLock::new(ExtensionSettings::new());
         Self {
@@ -186,12 +202,13 @@ impl Session {
             extension_settings: config,
             cancellation,
             notified_broken_configuration: AtomicBool::new(false),
+            service_data_rx,
         }
     }
 
     /// Initialize this session instance with the incoming initialization parameters from the client
     pub(crate) fn initialize(
-        &self,
+        self: &Arc<Self>,
         client_capabilities: lsp_types::ClientCapabilities,
         client_information: Option<ClientInformation>,
         root_uri: Option<Url>,
@@ -207,6 +224,24 @@ impl Session {
         if let Err(err) = result {
             error!("Failed to initialize session: {err}");
         }
+
+        let session = self.clone();
+        tokio::task::spawn(async move {
+            let mut service_data_rx = session.service_data_rx.clone();
+            while let Ok(()) = service_data_rx.changed().await {
+                match *session.service_data_rx.borrow() {
+                    ServiceDataNotification::Updated => {
+                        let session = session.clone();
+                        tokio::task::spawn(async move {
+                            session.update_all_diagnostics().await;
+                        });
+                    }
+                    ServiceDataNotification::Stop => {
+                        break;
+                    }
+                }
+            }
+        });
     }
 
     /// Register a set of capabilities with the client
@@ -269,9 +304,18 @@ impl Session {
             .map(|(_project_path, project_key)| *project_key)
     }
 
-    /// Registers an open project with its root path.
-    pub(crate) fn insert_project(&self, path: BiomePath, project_key: ProjectKey) {
-        self.projects.pin().insert(path, project_key);
+    /// Registers an open project with its root path and scans the folder.
+    #[tracing::instrument(level = "debug", skip(self))]
+    pub(crate) fn insert_and_scan_project(
+        self: &Arc<Self>,
+        project_key: ProjectKey,
+        path: BiomePath,
+    ) {
+        self.projects.pin().insert(path.clone(), project_key);
+
+        // Spawn the scan in the background, to avoid timing out the LSP request.
+        let session = self.clone();
+        tokio::spawn(async move { session.scan_project_folder(project_key, path).await });
     }
 
     /// Get a [`Document`] matching the provided [`lsp_types::Url`]
@@ -341,6 +385,9 @@ impl Session {
                 self.client
                     .show_message(MessageType::WARNING, "The configuration file has errors. Biome will report only parsing errors until the configuration is fixed.")
                     .await;
+            } else if self.configuration_status().is_plugin_error() {
+                self.set_notified_broken_configuration();
+                self.client.show_message(MessageType::WARNING, "The plugin loading has failed. Biome will report only parsing errors until the file is fixed or its usage is disabled.").await
             }
         }
 
@@ -420,6 +467,7 @@ impl Session {
     }
 
     /// Updates diagnostics for every [`Document`] in this [`Session`]
+    #[tracing::instrument(level = "debug", skip(self))]
     pub(crate) async fn update_all_diagnostics(&self) {
         let mut futures: FuturesUnordered<_> = self
             .documents
@@ -535,42 +583,41 @@ impl Session {
         project_path: BiomePath,
     ) {
         let session = self.clone();
-        // NOTE: we use an inline function because async closures aren't supported yet
-        // Once we switch to Rust 2024 edition, we should be able to inline the function
-        async fn scan_project(
-            session: Arc<Session>,
-            project_key: ProjectKey,
-            project_path: BiomePath,
-        ) {
+        let scan_project = move || {
             let result = session
                 .workspace
                 .scan_project_folder(ScanProjectFolderParams {
                     project_key,
                     path: Some(project_path),
                     watch: true,
+                    force: false,
                 });
 
             match result {
                 Ok(result) => {
-                    for diagnostic in result.diagnostics {
-                        let message = PrintDescription(&diagnostic).to_string();
+                    spawn(async move {
+                        for diagnostic in result.diagnostics {
+                            let message = PrintDescription(&diagnostic).to_string();
+                            session
+                                .client
+                                .log_message(MessageType::ERROR, message)
+                                .await;
+                        }
+                    });
+                }
+                Err(err) => {
+                    let message = PrintDescription(&err).to_string();
+                    spawn(async move {
                         session
                             .client
                             .log_message(MessageType::ERROR, message)
                             .await;
-                    }
-                }
-                Err(err) => {
-                    let message = PrintDescription(&err).to_string();
-                    session
-                        .client
-                        .log_message(MessageType::ERROR, message)
-                        .await;
+                    });
                 }
             }
-        }
+        };
 
-        let _ = spawn_blocking(move || scan_project(session, project_key, project_path)).await;
+        let _ = spawn_blocking(scan_project).await;
     }
 
     #[tracing::instrument(level = "debug", skip(self))]
@@ -640,17 +687,16 @@ impl Session {
 
         configuration.merge_with(fs_configuration);
 
-        let path = match &base_path {
-            ConfigurationPathHint::FromLsp(path) | ConfigurationPathHint::FromWorkspace(path) => {
-                path.as_path().into()
-            }
-            _ => fs
-                .working_directory()
-                .map(BiomePath::from)
-                .unwrap_or_default(),
+        let path = match (&configuration_path, &base_path) {
+            (Some(configuration_path), _) => configuration_path.as_path(),
+            (
+                None,
+                ConfigurationPathHint::FromLsp(path) | ConfigurationPathHint::FromWorkspace(path),
+            ) => path,
+            (None, _) => &fs.working_directory().unwrap_or_default(),
         };
         let register_result = self.workspace.open_project(OpenProjectParams {
-            path: path.clone(),
+            path: path.into(),
             open_uninitialized: true,
         });
         let project_key = match register_result {
@@ -664,13 +710,22 @@ impl Session {
 
         let result = self.workspace.update_settings(UpdateSettingsParams {
             project_key,
-            workspace_directory: configuration_path.map(BiomePath::from),
+            workspace_directory: configuration_path
+                .as_ref()
+                .map(Utf8PathBuf::as_path)
+                .map(BiomePath::from),
             configuration,
         });
 
-        self.scan_project_folder(project_key, path).await;
+        self.insert_and_scan_project(project_key, path.into());
 
-        if let Err(error) = result {
+        if let Err(WorkspaceError::PluginErrors(error)) = result {
+            error!("Failed to load plugins: {error:?}");
+            self.client
+                .log_message(MessageType::ERROR, format!("{error:?}"))
+                .await;
+            ConfigurationStatus::PluginError
+        } else if let Err(error) = result {
             error!("Failed to set workspace settings: {error}");
             self.client.log_message(MessageType::ERROR, &error).await;
             ConfigurationStatus::Error
@@ -760,7 +815,9 @@ impl Session {
                 .read()
                 .unwrap()
                 .requires_configuration(),
-            ConfigurationStatus::Error | ConfigurationStatus::EditorConfigError => false,
+            ConfigurationStatus::Error
+            | ConfigurationStatus::EditorConfigError
+            | ConfigurationStatus::PluginError => false,
             ConfigurationStatus::Loading => true,
         }
     }

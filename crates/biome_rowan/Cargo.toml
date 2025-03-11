@@ -20,8 +20,8 @@ schemars        = { workspace = true, optional = true }
 serde           = { workspace = true, optional = true }
 
 [dev-dependencies]
-iai = { version = "0.1.1" }
-quickcheck = { workspace = true }
+iai               = "=0.1.1"
+quickcheck        = { workspace = true }
 quickcheck_macros = { workspace = true }
 serde_json = { workspace = true }
 
