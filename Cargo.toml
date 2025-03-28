@@ -1,16 +1,23 @@
 [workspace]
 # Use the newer version of the cargo resolver
 # https://doc.rust-lang.org/cargo/reference/resolver.html#resolver-versions
-members  = ["crates/*", "xtask/bench", "xtask/codegen", "xtask/coverage", "xtask/libs_bench", "xtask/rules_check"]
+members = [
+	"crates/*",
+	"xtask/bench",
+	"xtask/codegen",
+	"xtask/coverage",
+	"xtask/libs_bench",
+	"xtask/rules_check",
+]
 resolver = "2"
 
 [workspace.lints.rust]
 absolute_paths_not_starting_with_crate = "warn"
-dead_code                              = "warn"
-trivial_numeric_casts                  = "warn"
-unused_import_braces                   = "warn"
-unused_lifetimes                       = "warn"
-unused_macro_rules                     = "warn"
+dead_code = "warn"
+trivial_numeric_casts = "warn"
+unused_import_braces = "warn"
+unused_lifetimes = "warn"
+unused_macro_rules = "warn"
 
 [workspace.lints.clippy]
 allow_attributes        = "deny"
@@ -19,72 +26,72 @@ empty_docs              = "allow" # there are some false positives inside biome_
 multiple_crate_versions = "allow"
 
 # pedantic
-assigning_clones             = "warn"
-checked_conversions          = "warn"
-cloned_instead_of_copied     = "warn"
-copy_iterator                = "warn"
-dbg_macro                    = "warn"
-doc_link_with_quotes         = "warn"
-empty_enum                   = "warn"
-expl_impl_clone_on_copy      = "warn"
-explicit_into_iter_loop      = "warn"
-filter_map_next              = "warn"
-flat_map_option              = "warn"
-fn_params_excessive_bools    = "warn"
+assigning_clones = "warn"
+checked_conversions = "warn"
+cloned_instead_of_copied = "warn"
+copy_iterator = "warn"
+dbg_macro = "warn"
+doc_link_with_quotes = "warn"
+empty_enum = "warn"
+expl_impl_clone_on_copy = "warn"
+explicit_into_iter_loop = "warn"
+filter_map_next = "warn"
+flat_map_option = "warn"
+fn_params_excessive_bools = "warn"
 from_iter_instead_of_collect = "warn"
-implicit_clone               = "warn"
-implicit_hasher              = "warn"
-index_refutable_slice        = "warn"
-inefficient_to_string        = "warn"
-invalid_upcast_comparisons   = "warn"
-iter_filter_is_ok            = "warn"
-iter_not_returning_iterator  = "warn"
-large_stack_arrays           = "warn"
-large_types_passed_by_value  = "warn"
-macro_use_imports            = "warn"
-manual_is_variant_and        = "warn"
-manual_ok_or                 = "warn"
-manual_string_new            = "warn"
-map_flatten                  = "warn"
-map_unwrap_or                = "warn"
+implicit_clone = "warn"
+implicit_hasher = "warn"
+index_refutable_slice = "warn"
+inefficient_to_string = "warn"
+invalid_upcast_comparisons = "warn"
+iter_filter_is_ok = "warn"
+iter_not_returning_iterator = "warn"
+large_stack_arrays = "warn"
+large_types_passed_by_value = "warn"
+macro_use_imports = "warn"
+manual_is_variant_and = "warn"
+manual_ok_or = "warn"
+manual_string_new = "warn"
+map_flatten = "warn"
+map_unwrap_or = "warn"
 mismatching_type_param_order = "warn"
-mut_mut                      = "warn"
-naive_bytecount              = "warn"
-needless_bitwise_bool        = "warn"
-needless_continue            = "warn"
-needless_for_each            = "warn"
+mut_mut = "warn"
+naive_bytecount = "warn"
+needless_bitwise_bool = "warn"
+needless_continue = "warn"
+needless_for_each = "warn"
 no_effect_underscore_binding = "warn"
-option_as_ref_cloned         = "warn"
-ref_binding_to_reference     = "warn"
-ref_option_ref               = "warn"
-single_char_pattern          = "warn"
-stable_sort_primitive        = "warn"
-str_split_at_newline         = "warn"
-unnecessary_box_returns      = "warn"
-unnecessary_join             = "warn"
-unnested_or_patterns         = "warn"
-unreadable_literal           = "warn"
-verbose_bit_mask             = "warn"
-zero_sized_map_values        = "warn"
+option_as_ref_cloned = "warn"
+ref_binding_to_reference = "warn"
+ref_option_ref = "warn"
+single_char_pattern = "warn"
+stable_sort_primitive = "warn"
+str_split_at_newline = "warn"
+unnecessary_box_returns = "warn"
+unnecessary_join = "warn"
+unnested_or_patterns = "warn"
+unreadable_literal = "warn"
+verbose_bit_mask = "warn"
+zero_sized_map_values = "warn"
 
 # restriction
-cfg_not_test                      = "warn"
-empty_drop                        = "warn"
+cfg_not_test = "warn"
+empty_drop = "warn"
 empty_enum_variants_with_brackets = "warn"
-float_cmp_const                   = "warn"
-get_unwrap                        = "warn"
-infinite_loop                     = "warn"
-lossy_float_literal               = "warn"
-rc_buffer                         = "warn"
-rc_mutex                          = "warn"
-rest_pat_in_fully_bound_structs   = "warn"
-string_lit_chars_any              = "warn"
-verbose_file_reads                = "warn"
+float_cmp_const = "warn"
+get_unwrap = "warn"
+infinite_loop = "warn"
+lossy_float_literal = "warn"
+rc_buffer = "warn"
+rc_mutex = "warn"
+rest_pat_in_fully_bound_structs = "warn"
+string_lit_chars_any = "warn"
+verbose_file_reads = "warn"
 # https://github.com/rustwasm/wasm-bindgen/issues/3944
 #mem_forget                      = "warn"
 
 [workspace.package]
-authors    = ["Biome Developers and Contributors"]
+authors = ["Biome Developers and Contributors"]
 categories = ["development-tools", "web-programming"]
 edition    = "2024"
 homepage   = "https://biomejs.dev/"
@@ -93,7 +100,7 @@ license    = "MIT OR Apache-2.0"
 repository = "https://github.com/biomejs/biome"
 
 [profile.release-with-debug]
-debug    = true
+debug = true
 inherits = "release"
 
 [workspace.dependencies]
@@ -167,9 +174,9 @@ biome_text_size     = { version = "0.5.7", path = "./crates/biome_text_size" }
 biome_unicode_table = { version = "0.5.7", path = "./crates/biome_unicode_table" }
 
 # not publish
-biome_cli            = { path = "./crates/biome_cli" }
-biome_configuration  = { path = "./crates/biome_configuration" }
-biome_flags          = { path = "./crates/biome_flags" }
+biome_cli = { path = "./crates/biome_cli" }
+biome_configuration = { path = "./crates/biome_configuration" }
+biome_flags = { path = "./crates/biome_flags" }
 biome_formatter_test = { path = "./crates/biome_formatter_test" }
 biome_lsp            = { path = "./crates/biome_lsp" }
 biome_migrate        = { path = "./crates/biome_migrate" }
@@ -221,15 +228,15 @@ unicode-bom          = "2.0.3"
 unicode-width        = "0.1.12"
 
 [profile.dev.package.biome_wasm]
-debug     = true
+debug = true
 opt-level = "s"
 
 [profile.test.package.biome_wasm]
-debug     = true
+debug = true
 opt-level = "s"
 
 [profile.release.package.biome_wasm]
-debug     = false
+debug = false
 opt-level = 3
 
 #[patch.crates-io]

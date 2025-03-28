@@ -1,6 +1,6 @@
 [package]
-authors     = ["Biome Developers and Contributors"]
-categories  = ["development-tools", "web-programming"]
+authors = ["Biome Developers and Contributors"]
+categories = ["development-tools", "web-programming"]
 description = "WebAssembly bindings to the Biome workspace API"
 edition     = "2024"
 homepage    = "https://biomejs.dev/"
@@ -34,9 +34,8 @@ wasm-bindgen       = { version = "0.2.100", features = ["serde-serialize"] }
 # code size when deploying.
 console_error_panic_hook = { version = "0.1.7", optional = true }
 
-
 [build-dependencies]
-biome_js_factory   = { workspace = true }
+biome_js_factory = { workspace = true }
 biome_js_formatter = { workspace = true }
 biome_rowan        = { workspace = true }
 biome_service      = { workspace = true, features = ["schema"] }

@@ -1,19 +1,19 @@
 [package]
-authors.workspace    = true
+authors.workspace = true
 categories.workspace = true
-description          = "Biome's JSON formatter"
-edition.workspace    = true
-homepage.workspace   = true
-keywords.workspace   = true
-license.workspace    = true
-name                 = "biome_json_formatter"
+description = "Biome's JSON formatter"
+edition.workspace = true
+homepage.workspace = true
+keywords.workspace = true
+license-file.workspace = true
+name = "biome_json_formatter"
 repository.workspace = true
-version              = "0.5.7"
+version = "0.5.7"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-biome_deserialize        = { workspace = true }
+biome_deserialize = { workspace = true }
 biome_deserialize_macros = { workspace = true }
 biome_diagnostics        = { workspace = true }
 biome_formatter          = { workspace = true }

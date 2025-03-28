@@ -1,5 +1,6 @@
-use quote::{format_ident, quote};
 use std::{env, fs, io, path::PathBuf};
+
+use quote::{format_ident, quote};
 
 macro_rules! define_categories {
     ( $( $name_link:literal : $link:literal, )* ; $( $name:literal , )* ) => {
@@ -13,56 +14,37 @@ macro_rules! define_categories {
 include!("src/categories.rs");
 
 pub fn main() -> io::Result<()> {
-    let mut metadata = Vec::with_capacity(CATEGORIES.len());
-    let mut macro_arms = Vec::with_capacity(CATEGORIES.len());
-    let mut parse_arms = Vec::with_capacity(CATEGORIES.len());
-    let mut enum_variants = Vec::with_capacity(CATEGORIES.len());
-    let mut concat_macro_arms = Vec::with_capacity(CATEGORIES.len());
+	let mut metadata = Vec::with_capacity(CATEGORIES.len());
 
-    for (name, link) in CATEGORIES {
-        let meta_name = name.replace('/', "_").to_uppercase();
-        let meta_ident = format_ident!("{meta_name}");
+	let mut macro_arms = Vec::with_capacity(CATEGORIES.len());
 
-        let link = if let Some(link) = link {
-            quote! { Some(#link) }
-        } else {
-            quote! { None }
-        };
+	let mut parse_arms = Vec::with_capacity(CATEGORIES.len());
 
-        metadata.push(quote! {
-            pub static #meta_ident: crate::Category = crate::Category {
-                name: #name,
-                link: #link,
-            };
-        });
+	let mut enum_variants = Vec::with_capacity(CATEGORIES.len());
 
-        macro_arms.push(quote! {
-            (#name) => { &$crate::registry::#meta_ident };
-        });
+	let mut concat_macro_arms = Vec::with_capacity(CATEGORIES.len());
 
-        parse_arms.push(quote! {
-            #name => Ok(&crate::registry::#meta_ident),
-        });
+	for (name, link) in CATEGORIES {
+		let meta_name = name.replace('/', "_").to_uppercase();
 
-        enum_variants.push(*name);
+		let meta_ident = format_ident!("{meta_name}");
 
-        let parts = name.split('/');
-        concat_macro_arms.push(quote! {
-            ( #( #parts ),* ) => { &$crate::registry::#meta_ident };
-        });
-    }
+		let link = if let Some(link) = link {
+			quote! { Some(#link) }
+		} else {
+			quote! { None }
+		};
 
-    let tokens = quote! {
-        impl FromStr for &'static Category {
-            type Err = ();
+		metadata.push(quote! {
+			pub static #meta_ident: crate::Category = crate::Category {
+				name: #name,
+				link: #link,
+			};
+		});
 
-            fn from_str(name: &str) -> Result<Self, ()> {
-                match name {
-                    #( #parse_arms )*
-                    _ => Err(()),
-                }
-            }
-        }
+		macro_arms.push(quote! {
+			(#name) => { &$crate::registry::#meta_ident };
+		});
 
         #[cfg(feature = "schema")]
         impl schemars::JsonSchema for &'static Category {
@@ -79,57 +61,89 @@ pub fn main() -> io::Result<()> {
             }
         }
 
-        /// The `category!` macro can be used to statically lookup a category
-        /// by name from the registry
-        ///
-        /// # Example
-        ///
-        /// ```
-        /// # use biome_diagnostics_categories::{Category, category};
-        /// let category: &'static Category = category!("internalError/io");
-        /// assert_eq!(category.name(), "internalError/io");
-        /// assert_eq!(category.link(), None);
-        /// ```
-        #[macro_export]
-        macro_rules! category {
-            #( #macro_arms )*
+		let parts = name.split('/');
 
-            ( $name:literal ) => {
-                compile_error!(concat!("Unregistered diagnostic category \"", $name, "\", please add it to \"crates/biome_diagnostics_categories/src/categories.rs\""))
-            };
-            ( $( $parts:tt )* ) => {
-                compile_error!(concat!("Invalid diagnostic category `", stringify!($( $parts )*), "`, expected a single string literal"))
-            };
-        }
+		concat_macro_arms.push(quote! {
+			( #( #parts ),* ) => { &$crate::registry::#meta_ident };
+		});
+	}
 
-        /// The `category_concat!` macro is a variant of `category!` using a
-        /// slightly different syntax, for use in the `declare_group` and
-        /// `declare_rule` macros in the analyzer
-        #[macro_export]
-        macro_rules! category_concat {
-            #( #concat_macro_arms )*
+	let tokens = quote! {
+		impl FromStr for &'static Category {
+			type Err = ();
 
-            ( @compile_error $( $parts:tt )* ) => {
-                compile_error!(concat!("Unregistered diagnostic category \"", $( $parts, )* "\", please add it to \"crates/biome_diagnostics_categories/src/categories.rs\""))
-            };
-            ( $( $parts:tt ),* ) => {
-                $crate::category_concat!( @compile_error $( $parts )"/"* )
-            };
-            ( $( $parts:tt )* ) => {
-                compile_error!(concat!("Invalid diagnostic category `", stringify!($( $parts )*), "`, expected a comma-separated list of string literals"))
-            };
-        }
+			fn from_str(name: &str) -> Result<Self, ()> {
+				match name {
+					#( #parse_arms )*
+					_ => Err(()),
+				}
+			}
+		}
 
-        pub mod registry {
-            #( #metadata )*
-        }
-    };
+		#[cfg(feature = "schemars")]
+		impl schemars::JsonSchema for &'static Category {
+			fn schema_name() -> String {
+				String::from("Category")
+			}
 
-    let out_dir = env::var("OUT_DIR").unwrap();
-    fs::write(
-        PathBuf::from(out_dir).join("categories.rs"),
-        tokens.to_string(),
-    )?;
+			fn json_schema(_gen: &mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
+				schemars::schema::Schema::Object(schemars::schema::SchemaObject {
+					instance_type: Some(schemars::schema::InstanceType::String.into()),
+					enum_values: Some(vec![#( #enum_variants.into() ),*]),
+					..Default::default()
+				})
+			}
+		}
 
-    Ok(())
+		/// The `category!` macro can be used to statically lookup a category
+		/// by name from the registry
+		///
+		/// # Example
+		///
+		/// ```
+		/// # use biome_diagnostics_categories::{Category, category};
+		/// let category: &'static Category = category!("internalError/io");
+		/// assert_eq!(category.name(), "internalError/io");
+		/// assert_eq!(category.link(), None);
+		/// ```
+		#[macro_export]
+		macro_rules! category {
+			#( #macro_arms )*
+
+			( $name:literal ) => {
+				compile_error!(concat!("Unregistered diagnostic category \"", $name, "\", please add it to \"crates/biome_diagnostics_categories/src/categories.rs\""))
+			};
+			( $( $parts:tt )* ) => {
+				compile_error!(concat!("Invalid diagnostic category `", stringify!($( $parts )*), "`, expected a single string literal"))
+			};
+		}
+
+		/// The `category_concat!` macro is a variant of `category!` using a
+		/// slightly different syntax, for use in the `declare_group` and
+		/// `declare_rule` macros in the analyzer
+		#[macro_export]
+		macro_rules! category_concat {
+			#( #concat_macro_arms )*
+
+			( @compile_error $( $parts:tt )* ) => {
+				compile_error!(concat!("Unregistered diagnostic category \"", $( $parts, )* "\", please add it to \"crates/biome_diagnostics_categories/src/categories.rs\""))
+			};
+			( $( $parts:tt ),* ) => {
+				$crate::category_concat!( @compile_error $( $parts )"/"* )
+			};
+			( $( $parts:tt )* ) => {
+				compile_error!(concat!("Invalid diagnostic category `", stringify!($( $parts )*), "`, expected a comma-separated list of string literals"))
+			};
+		}
+
+		pub mod registry {
+			#( #metadata )*
+		}
+	};
+
+	let out_dir = env::var("OUT_DIR").unwrap();
+
+	fs::write(PathBuf::from(out_dir).join("categories.rs"), tokens.to_string())?;
+
+	Ok(())
 }

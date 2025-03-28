@@ -1,1 +1,0 @@
-const aSepcial_CASE = 0;

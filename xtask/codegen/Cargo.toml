@@ -22,23 +22,23 @@ biome_css_analyze     = { workspace = true, optional = true }
 biome_css_syntax      = { workspace = true, optional = true }
 biome_diagnostics     = { workspace = true, optional = true }
 biome_graphql_analyze = { workspace = true, optional = true }
-biome_graphql_parser  = { workspace = true, optional = true }
-biome_graphql_syntax  = { workspace = true, optional = true }
-biome_js_analyze      = { workspace = true, optional = true }
-biome_js_factory      = { workspace = true, optional = true }
-biome_js_formatter    = { workspace = true, optional = true }
-biome_js_parser       = { workspace = true, optional = true }
-biome_js_syntax       = { workspace = true, optional = true }
-biome_json_analyze    = { workspace = true, optional = true }
-biome_json_formatter  = { workspace = true, optional = true }
-biome_json_parser     = { workspace = true, optional = true }
-biome_json_syntax     = { workspace = true, optional = true }
-biome_rowan           = { workspace = true, optional = true }
-biome_service         = { workspace = true, features = ["schema"], optional = true }
-biome_string_case     = { workspace = true }
-biome_ungrammar       = { workspace = true }
-schemars              = { workspace = true, optional = true }
-serde_json            = { workspace = true, optional = true }
+biome_graphql_parser = { workspace = true, optional = true }
+biome_graphql_syntax = { workspace = true, optional = true }
+biome_js_analyze = { workspace = true, optional = true }
+biome_js_factory = { workspace = true, optional = true }
+biome_js_formatter = { workspace = true, optional = true }
+biome_js_parser = { workspace = true, optional = true }
+biome_js_syntax = { workspace = true, optional = true }
+biome_json_analyze = { workspace = true, optional = true }
+biome_json_formatter = { workspace = true, optional = true }
+biome_json_parser = { workspace = true, optional = true }
+biome_json_syntax = { workspace = true, optional = true }
+biome_rowan = { workspace = true, optional = true }
+biome_service = { workspace = true, features = ["schema"], optional = true }
+biome_string_case = { workspace = true }
+biome_ungrammar = { workspace = true }
+schemars = { workspace = true, optional = true }
+serde_json = { workspace = true, optional = true }
 
 [features]
 configuration = [

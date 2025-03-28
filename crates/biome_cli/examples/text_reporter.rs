@@ -6,7 +6,8 @@ use biome_service::projects::ProjectKey;
 /// This will be the visitor, which where we **write** the data
 struct BufferVisitor(String);
 
-/// This is the reporter, which will be a type that will hold the information needed to the reporter
+/// This is the reporter, which will be a type that will hold the information
+/// needed to the reporter
 struct TextReport {
     project_key: ProjectKey,
     summary: TraversalSummary,
@@ -27,23 +28,15 @@ impl Reporter for TextReport {
 }
 
 impl ReporterVisitor for BufferVisitor {
-    fn report_summary(
-        &mut self,
-        _execution: &Execution,
-        summary: TraversalSummary,
-    ) -> std::io::Result<()> {
-        self.0
-            .push_str(&format!("Total is {}", summary.changed + summary.unchanged));
-        Ok(())
-    }
+	fn report_summary(&mut self, _execution:&Execution, summary:TraversalSummary) -> std::io::Result<()> {
+		self.0.push_str(&format!("Total is {}", summary.changed + summary.unchanged));
 
-    fn report_diagnostics(
-        &mut self,
-        _execution: &Execution,
-        _payload: DiagnosticsPayload,
-    ) -> std::io::Result<()> {
-        todo!()
-    }
+		Ok(())
+	}
+
+	fn report_diagnostics(&mut self, _execution:&Execution, _payload:DiagnosticsPayload) -> std::io::Result<()> {
+		todo!()
+	}
 }
 
 pub fn main() {
@@ -63,5 +56,11 @@ pub fn main() {
     };
     reporter.write(&mut visitor).unwrap();
 
-    assert_eq!(visitor.0.as_str(), "Total is 64")
+	let mut visitor = BufferVisitor(String::new());
+
+	let reporter = TextReport { summary };
+
+	reporter.write(&mut visitor).unwrap();
+
+	assert_eq!(visitor.0.as_str(), "Total is 64")
 }

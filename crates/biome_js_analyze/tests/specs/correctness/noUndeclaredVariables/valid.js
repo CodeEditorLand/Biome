@@ -1,1 +1,0 @@
-const x = global1;
