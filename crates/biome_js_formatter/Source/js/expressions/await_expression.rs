@@ -1,10 +1,6 @@
 use biome_formatter::write;
 use biome_js_syntax::{
-	AnyJsComputedMember,
-	JsAwaitExpression,
-	JsAwaitExpressionFields,
-	JsSyntaxKind,
-	parentheses::NeedsParentheses,
+	AnyJsComputedMember, JsAwaitExpression, JsAwaitExpressionFields, JsSyntaxKind, parentheses::NeedsParentheses,
 };
 
 use crate::prelude::*;
@@ -13,11 +9,10 @@ use crate::prelude::*;
 pub(crate) struct FormatJsAwaitExpression;
 
 impl FormatNodeRule<JsAwaitExpression> for FormatJsAwaitExpression {
-	fn fmt_fields(&self, node:&JsAwaitExpression, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsAwaitExpression, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsAwaitExpressionFields { await_token, argument } = node.as_fields();
 
-		let format_inner =
-			format_with(|f| write![f, [await_token.format(), space(), argument.format()]]);
+		let format_inner = format_with(|f| write![f, [await_token.format(), space(), argument.format()]]);
 
 		let parent = node.syntax().parent();
 
@@ -64,7 +59,9 @@ impl FormatNodeRule<JsAwaitExpression> for FormatJsAwaitExpression {
 		write!(f, [format_inner])
 	}
 
-	fn needs_parentheses(&self, item:&JsAwaitExpression) -> bool { item.needs_parentheses() }
+	fn needs_parentheses(&self, item: &JsAwaitExpression) -> bool {
+		item.needs_parentheses()
+	}
 }
 
 #[cfg(test)]

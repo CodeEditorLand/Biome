@@ -7,9 +7,8 @@ use crate::{prelude::*, utils::FormatStatementSemicolon};
 pub struct FormatTsExportAsNamespaceClause;
 
 impl FormatNodeRule<TsExportAsNamespaceClause> for FormatTsExportAsNamespaceClause {
-	fn fmt_fields(&self, node:&TsExportAsNamespaceClause, f:&mut JsFormatter) -> FormatResult<()> {
-		let TsExportAsNamespaceClauseFields { as_token, namespace_token, name, semicolon_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &TsExportAsNamespaceClause, f: &mut JsFormatter) -> FormatResult<()> {
+		let TsExportAsNamespaceClauseFields { as_token, namespace_token, name, semicolon_token } = node.as_fields();
 
 		write!(
 			f,

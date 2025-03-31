@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssStartingStyleBlock;
 impl FormatRule<AnyCssStartingStyleBlock> for FormatAnyCssStartingStyleBlock {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssStartingStyleBlock, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssStartingStyleBlock, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssStartingStyleBlock::CssBogusBlock(node) => node.format().fmt(f),
 			AnyCssStartingStyleBlock::CssDeclarationBlock(node) => node.format().fmt(f),

@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsBooleanLiteralType;
 
 impl FormatNodeRule<TsBooleanLiteralType> for FormatTsBooleanLiteralType {
-	fn fmt_fields(&self, node:&TsBooleanLiteralType, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsBooleanLiteralType, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsBooleanLiteralTypeFields { literal } = node.as_fields();
 
 		write![f, [literal.format()]]

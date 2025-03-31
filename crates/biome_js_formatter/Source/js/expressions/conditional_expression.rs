@@ -8,13 +8,13 @@ use crate::{
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatJsConditionalExpression {
-	jsx_chain:ConditionalJsxChain,
+	jsx_chain: ConditionalJsxChain,
 }
 
 impl FormatRuleWithOptions<JsConditionalExpression> for FormatJsConditionalExpression {
 	type Options = ConditionalJsxChain;
 
-	fn with_options(mut self, options:Self::Options) -> Self {
+	fn with_options(mut self, options: Self::Options) -> Self {
 		self.jsx_chain = options;
 
 		self
@@ -22,18 +22,16 @@ impl FormatRuleWithOptions<JsConditionalExpression> for FormatJsConditionalExpre
 }
 
 impl FormatNodeRule<JsConditionalExpression> for FormatJsConditionalExpression {
-	fn fmt_fields(
-		&self,
-		node:&JsConditionalExpression,
-		formatter:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsConditionalExpression, formatter: &mut JsFormatter) -> FormatResult<()> {
 		AnyJsConditional::from(node.clone())
 			.format()
 			.with_options(self.jsx_chain)
 			.fmt(formatter)
 	}
 
-	fn needs_parentheses(&self, item:&JsConditionalExpression) -> bool { item.needs_parentheses() }
+	fn needs_parentheses(&self, item: &JsConditionalExpression) -> bool {
+		item.needs_parentheses()
+	}
 }
 
 #[cfg(test)]
@@ -91,11 +89,7 @@ mod tests {
 
 		assert_needs_parentheses!("await (a ? b : c)", JsConditionalExpression);
 
-		assert_needs_parentheses!(
-			"<a {...(a ? b : c)} />",
-			JsConditionalExpression,
-			JsFileSource::tsx()
-		);
+		assert_needs_parentheses!("<a {...(a ? b : c)} />", JsConditionalExpression, JsFileSource::tsx());
 
 		assert_needs_parentheses!("(a ? b : c) as number;", JsConditionalExpression);
 
@@ -111,10 +105,7 @@ mod tests {
 
 		assert_needs_parentheses!("({ a: 'test' } ? B : C)!", JsConditionalExpression);
 
-		assert_not_needs_parentheses!(
-			"console.log({ a: 'test' } ? B : C )",
-			JsConditionalExpression
-		);
+		assert_not_needs_parentheses!("console.log({ a: 'test' } ? B : C )", JsConditionalExpression);
 
 		assert_not_needs_parentheses!("a ? b : c", JsConditionalExpression);
 	}

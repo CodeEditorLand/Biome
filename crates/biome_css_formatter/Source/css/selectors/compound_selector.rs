@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssCompoundSelector;
 impl FormatNodeRule<CssCompoundSelector> for FormatCssCompoundSelector {
-	fn fmt_fields(&self, node:&CssCompoundSelector, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssCompoundSelector, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssCompoundSelectorFields { nesting_selectors, simple_selector, sub_selectors } = node.as_fields();
 
 		write!(

@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritList;
 impl FormatNodeRule<GritList> for FormatGritList {
-	fn fmt_fields(&self, node:&GritList, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GritList, f: &mut GritFormatter) -> FormatResult<()> {
 		let GritListFields { l_brack_token, name, patterns, r_brack_token } = node.as_fields();
 
 		let should_expand = f.comments().has_dangling_comments(node.syntax());

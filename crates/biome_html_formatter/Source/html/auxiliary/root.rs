@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatHtmlRoot;
 impl FormatNodeRule<HtmlRoot> for FormatHtmlRoot {
-	fn fmt_fields(&self, node:&HtmlRoot, f:&mut HtmlFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &HtmlRoot, f: &mut HtmlFormatter) -> FormatResult<()> {
 		if let Some(bom) = node.bom_token() {
 			bom.format().fmt(f)?;
 		}

@@ -24,6 +24,8 @@ impl<T> std::ops::DerefMut for CowMut<'_, T> {
 	}
 }
 
-impl<T:Default> Default for CowMut<'_, T> {
-	fn default() -> Self { CowMut::Owned(T::default()) }
+impl<T: Default> Default for CowMut<'_, T> {
+	fn default() -> Self {
+		CowMut::Owned(T::default())
+	}
 }

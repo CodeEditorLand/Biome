@@ -7,14 +7,9 @@ use crate::{prelude::*, utils::FormatStatementSemicolon};
 pub(crate) struct FormatJsExportNamedClause;
 
 impl FormatNodeRule<JsExportNamedClause> for FormatJsExportNamedClause {
-	fn fmt_fields(&self, node:&JsExportNamedClause, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsExportNamedClauseFields {
-			type_token,
-			l_curly_token,
-			specifiers,
-			r_curly_token,
-			semicolon_token,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &JsExportNamedClause, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsExportNamedClauseFields { type_token, l_curly_token, specifiers, r_curly_token, semicolon_token } =
+			node.as_fields();
 
 		if let Some(type_token) = &type_token {
 			write!(f, [type_token.format(), space()])?;
@@ -42,11 +37,7 @@ impl FormatNodeRule<JsExportNamedClause> for FormatJsExportNamedClause {
 		)
 	}
 
-	fn fmt_dangling_comments(
-		&self,
-		_:&JsExportNamedClause,
-		_:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &JsExportNamedClause, _: &mut JsFormatter) -> FormatResult<()> {
 		// Handled as part of `fmt_fields`
 		Ok(())
 	}

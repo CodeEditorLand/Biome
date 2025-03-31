@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssFontFaceAtRule;
 impl FormatNodeRule<CssFontFaceAtRule> for FormatCssFontFaceAtRule {
-	fn fmt_fields(&self, node:&CssFontFaceAtRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssFontFaceAtRule, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssFontFaceAtRuleFields { font_face_token, block } = node.as_fields();
 
 		write!(f, [font_face_token.format(), space(), block.format()])

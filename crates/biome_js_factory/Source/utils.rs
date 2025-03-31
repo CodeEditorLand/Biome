@@ -11,11 +11,7 @@
 /// | `${` | `${abc`   | `\${abc`   |
 /// | `${` | `\${abc`  | `\${abc`   |
 /// | `${` | `\\${abc` | `\\\${abc` |
-pub fn escape<'a>(
-	unescaped_string:&'a str,
-	needs_escaping:&[&str],
-	escaping_char:u8,
-) -> std::borrow::Cow<'a, str> {
+pub fn escape<'a>(unescaped_string: &'a str, needs_escaping: &[&str], escaping_char: u8) -> std::borrow::Cow<'a, str> {
 	debug_assert!(!needs_escaping.is_empty());
 
 	debug_assert!(escaping_char.is_ascii(), "escaping_char must be a valid ASCII character.");

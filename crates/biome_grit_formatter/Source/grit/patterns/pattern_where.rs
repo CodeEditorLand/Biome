@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritPatternWhere;
 impl FormatNodeRule<GritPatternWhere> for FormatGritPatternWhere {
-	fn fmt_fields(&self, node:&GritPatternWhere, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GritPatternWhere, f: &mut GritFormatter) -> FormatResult<()> {
 		let GritPatternWhereFields { pattern, side_condition, where_token } = node.as_fields();
 
 		write!(

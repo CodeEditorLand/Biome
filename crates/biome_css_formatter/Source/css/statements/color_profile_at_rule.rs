@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssColorProfileAtRule;
 impl FormatNodeRule<CssColorProfileAtRule> for FormatCssColorProfileAtRule {
-	fn fmt_fields(&self, node:&CssColorProfileAtRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssColorProfileAtRule, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssColorProfileAtRuleFields { color_profile_token, name, block } = node.as_fields();
 
 		write!(

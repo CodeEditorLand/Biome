@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssValueAtRuleDeclarationClause;
 impl FormatNodeRule<CssValueAtRuleDeclarationClause> for FormatCssValueAtRuleDeclarationClause {
-	fn fmt_fields(&self, node:&CssValueAtRuleDeclarationClause, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssValueAtRuleDeclarationClause, f: &mut CssFormatter) -> FormatResult<()> {
 		format_verbatim_node(node.syntax()).fmt(f)
 	}
 }

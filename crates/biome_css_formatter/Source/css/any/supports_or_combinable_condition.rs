@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssSupportsOrCombinableCondition;
 impl FormatRule<AnyCssSupportsOrCombinableCondition> for FormatAnyCssSupportsOrCombinableCondition {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssSupportsOrCombinableCondition, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssSupportsOrCombinableCondition, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssSupportsOrCombinableCondition::AnyCssSupportsInParens(node) => node.format().fmt(f),
 

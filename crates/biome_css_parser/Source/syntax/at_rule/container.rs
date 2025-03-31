@@ -8,20 +8,18 @@ use crate::{
 	lexer::CssLexContext,
 	parser::CssParser,
 	syntax::{
-		at_rule::feature::parse_any_query_feature,
-		block::parse_conditional_block,
-		is_at_declaration,
-		parse_custom_identifier,
-		parse_declaration,
-		parse_error::expected_non_css_wide_keyword_identifier,
+		at_rule::feature::parse_any_query_feature, block::parse_conditional_block, is_at_declaration,
+		parse_custom_identifier, parse_declaration, parse_error::expected_non_css_wide_keyword_identifier,
 	},
 };
 
 #[inline]
-pub(crate) fn is_at_container_at_rule(p:&mut CssParser) -> bool { p.at(T![container]) }
+pub(crate) fn is_at_container_at_rule(p: &mut CssParser) -> bool {
+	p.at(T![container])
+}
 
 #[inline]
-pub(crate) fn parse_container_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_container_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_container_at_rule(p) {
 		return Absent;
 	}
@@ -46,7 +44,7 @@ pub(crate) fn parse_container_at_rule(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn parse_any_container_query(p:&mut CssParser) -> ParsedSyntax {
+fn parse_any_container_query(p: &mut CssParser) -> ParsedSyntax {
 	if is_at_container_not_query(p) {
 		parse_container_not_query(p)
 	} else {
@@ -77,7 +75,7 @@ fn parse_any_container_query(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn parse_container_and_query(p:&mut CssParser) -> ParsedSyntax {
+fn parse_container_and_query(p: &mut CssParser) -> ParsedSyntax {
 	let query_in_parens = parse_any_container_query_in_parens(p);
 
 	if p.at(T![and]) {
@@ -93,7 +91,7 @@ fn parse_container_and_query(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn parse_container_or_query(p:&mut CssParser) -> ParsedSyntax {
+fn parse_container_or_query(p: &mut CssParser) -> ParsedSyntax {
 	let query_in_parens = parse_any_container_query_in_parens(p);
 
 	if p.at(T![or]) {
@@ -109,9 +107,11 @@ fn parse_container_or_query(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn is_at_container_not_query(p:&mut CssParser) -> bool { p.at(T![not]) }
+fn is_at_container_not_query(p: &mut CssParser) -> bool {
+	p.at(T![not])
+}
 #[inline]
-fn parse_container_not_query(p:&mut CssParser) -> ParsedSyntax {
+fn parse_container_not_query(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_container_not_query(p) {
 		return Absent;
 	}
@@ -125,7 +125,7 @@ fn parse_container_not_query(p:&mut CssParser) -> ParsedSyntax {
 	Present(m.complete(p, CSS_CONTAINER_NOT_QUERY))
 }
 #[inline]
-fn parse_any_container_query_in_parens(p:&mut CssParser) -> ParsedSyntax {
+fn parse_any_container_query_in_parens(p: &mut CssParser) -> ParsedSyntax {
 	if is_at_container_query_in_parens(p) {
 		parse_container_query_in_parens(p)
 	} else if is_at_container_style_query_in_parens(p) {
@@ -138,12 +138,12 @@ fn parse_any_container_query_in_parens(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn is_at_container_query_in_parens(p:&mut CssParser) -> bool {
+fn is_at_container_query_in_parens(p: &mut CssParser) -> bool {
 	p.at(T!['(']) && (p.nth_at(1, T![not]) || p.nth_at(1, T!['(']))
 }
 
 #[inline]
-fn parse_container_query_in_parens(p:&mut CssParser) -> ParsedSyntax {
+fn parse_container_query_in_parens(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_container_query_in_parens(p) {
 		return Absent;
 	}
@@ -159,10 +159,12 @@ fn parse_container_query_in_parens(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn is_at_container_size_feature_in_parens(p:&mut CssParser) -> bool { p.at(T!['(']) }
+fn is_at_container_size_feature_in_parens(p: &mut CssParser) -> bool {
+	p.at(T!['('])
+}
 
 #[inline]
-fn parse_container_size_feature_in_parens(p:&mut CssParser) -> ParsedSyntax {
+fn parse_container_size_feature_in_parens(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_container_size_feature_in_parens(p) {
 		return Absent;
 	}
@@ -178,10 +180,12 @@ fn parse_container_size_feature_in_parens(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn is_at_container_style_query_in_parens(p:&mut CssParser) -> bool { p.at(T![style]) }
+fn is_at_container_style_query_in_parens(p: &mut CssParser) -> bool {
+	p.at(T![style])
+}
 
 #[inline]
-fn parse_container_style_query_in_parens(p:&mut CssParser) -> ParsedSyntax {
+fn parse_container_style_query_in_parens(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_container_style_query_in_parens(p) {
 		return Absent;
 	}
@@ -199,7 +203,7 @@ fn parse_container_style_query_in_parens(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn parse_any_container_style_query(p:&mut CssParser) -> ParsedSyntax {
+fn parse_any_container_style_query(p: &mut CssParser) -> ParsedSyntax {
 	if is_at_container_style_not_query(p) {
 		parse_container_style_not_query(p)
 	} else if is_at_declaration(p) {
@@ -210,7 +214,7 @@ fn parse_any_container_style_query(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn parse_any_container_style_combinable_query(p:&mut CssParser) -> ParsedSyntax {
+fn parse_any_container_style_combinable_query(p: &mut CssParser) -> ParsedSyntax {
 	let style_in_parens = parse_container_style_in_parens(p);
 
 	match p.cur() {
@@ -237,10 +241,12 @@ fn parse_any_container_style_combinable_query(p:&mut CssParser) -> ParsedSyntax 
 }
 
 #[inline]
-fn is_at_container_style_not_query(p:&mut CssParser) -> bool { p.at(T![not]) && p.nth_at(1, T!['(']) }
+fn is_at_container_style_not_query(p: &mut CssParser) -> bool {
+	p.at(T![not]) && p.nth_at(1, T!['('])
+}
 
 #[inline]
-fn parse_container_style_not_query(p:&mut CssParser) -> ParsedSyntax {
+fn parse_container_style_not_query(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_container_style_not_query(p) {
 		return Absent;
 	}
@@ -255,7 +261,7 @@ fn parse_container_style_not_query(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn parse_container_style_in_parens(p:&mut CssParser) -> ParsedSyntax {
+fn parse_container_style_in_parens(p: &mut CssParser) -> ParsedSyntax {
 	if !p.at(T!['(']) {
 		return Absent;
 	}

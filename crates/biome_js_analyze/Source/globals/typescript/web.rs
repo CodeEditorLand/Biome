@@ -1,7 +1,7 @@
 /// Sorted array of TypeScript DOM builtin
 ///
 /// Source: <https://github.com/typescript-eslint/typescript-eslint/blob/4d6d0d5950f587780dec998816d458ae4b27a513/packages/scope-manager/src/lib/dom.ts>
-pub const DOM:&[&str] = &[
+pub const DOM: &[&str] = &[
 	"ANGLE_instanced_arrays",
 	"ARIAMixin",
 	"AbortController",
@@ -1439,7 +1439,7 @@ pub const DOM:&[&str] = &[
 /// Sorted array of TypeScript Web Worker builtin
 ///
 /// Source: <https://github.com/typescript-eslint/typescript-eslint/blob/4d6d0d5950f587780dec998816d458ae4b27a513/packages/scope-manager/src/lib/webworker.ts>
-pub const WEB_WORKER:&[&str] = &[
+pub const WEB_WORKER: &[&str] = &[
 	"ANGLE_instanced_arrays",
 	"AbortController",
 	"AbortSignal",
@@ -2028,7 +2028,7 @@ pub const WEB_WORKER:&[&str] = &[
 ///
 /// assert!(is_global(&"HTMLAnchorElement"));
 /// ```
-pub fn is_global(name:&str) -> bool {
+pub fn is_global(name: &str) -> bool {
 	DOM.binary_search(&name).is_ok() || WEB_WORKER.binary_search(&name).is_ok()
 }
 

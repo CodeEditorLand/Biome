@@ -7,11 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsShorthandPropertyObjectMember;
 
 impl FormatNodeRule<JsShorthandPropertyObjectMember> for FormatJsShorthandPropertyObjectMember {
-	fn fmt_fields(
-		&self,
-		node:&JsShorthandPropertyObjectMember,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsShorthandPropertyObjectMember, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsShorthandPropertyObjectMemberFields { name } = node.as_fields();
 
 		write![f, [name.format()]]

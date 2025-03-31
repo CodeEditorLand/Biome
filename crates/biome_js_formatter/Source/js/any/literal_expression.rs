@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsLiteralExpression;
 impl FormatRule<AnyJsLiteralExpression> for FormatAnyJsLiteralExpression {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsLiteralExpression, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsLiteralExpression, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsLiteralExpression::JsBigintLiteralExpression(node) => node.format().fmt(f),
 			AnyJsLiteralExpression::JsBooleanLiteralExpression(node) => node.format().fmt(f),

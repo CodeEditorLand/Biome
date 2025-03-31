@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatCssRoot;
 
 impl FormatNodeRule<CssRoot> for FormatCssRoot {
-	fn fmt_fields(&self, node:&CssRoot, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssRoot, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssRootFields { bom_token, rules, eof_token } = node.as_fields();
 
 		write!(

@@ -7,15 +7,15 @@ use crate::{jsx::tag::element::AnyJsxTagWithChildren, prelude::*, utils::jsx::is
 pub struct FormatJsxFragment;
 
 impl FormatNodeRule<JsxFragment> for FormatJsxFragment {
-	fn fmt_fields(&self, node:&JsxFragment, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsxFragment, f: &mut JsFormatter) -> FormatResult<()> {
 		write!(f, [AnyJsxTagWithChildren::from(node.clone())])
 	}
 
-	fn is_suppressed(&self, node:&JsxFragment, f:&JsFormatter) -> bool {
+	fn is_suppressed(&self, node: &JsxFragment, f: &JsFormatter) -> bool {
 		is_jsx_suppressed(&node.clone().into(), f.comments())
 	}
 
-	fn fmt_leading_comments(&self, node:&JsxFragment, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_leading_comments(&self, node: &JsxFragment, f: &mut JsFormatter) -> FormatResult<()> {
 		debug_assert!(
 			!f.comments().has_leading_comments(node.syntax()),
 			"JsxFragment can not have comments."
@@ -24,7 +24,7 @@ impl FormatNodeRule<JsxFragment> for FormatJsxFragment {
 		Ok(())
 	}
 
-	fn fmt_dangling_comments(&self, node:&JsxFragment, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, node: &JsxFragment, f: &mut JsFormatter) -> FormatResult<()> {
 		debug_assert!(
 			!f.comments().has_dangling_comments(node.syntax()),
 			"JsxFragment can not have comments."
@@ -33,7 +33,7 @@ impl FormatNodeRule<JsxFragment> for FormatJsxFragment {
 		Ok(())
 	}
 
-	fn fmt_trailing_comments(&self, node:&JsxFragment, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_trailing_comments(&self, node: &JsxFragment, f: &mut JsFormatter) -> FormatResult<()> {
 		debug_assert!(
 			!f.comments().has_trailing_comments(node.syntax()),
 			"JsxFragment can not have comments."

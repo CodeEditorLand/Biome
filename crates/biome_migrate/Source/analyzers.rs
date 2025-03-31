@@ -32,37 +32,37 @@ pub(crate) struct MigrationGroup;
 pub(crate) struct MigrationCategory;
 
 impl RuleGroup for MigrationGroup {
-    type Language = JsonLanguage;
-    type Category = MigrationCategory;
-    const NAME: &'static str = "migrations";
+	type Language = JsonLanguage;
+	type Category = MigrationCategory;
+	const NAME: &'static str = "migrations";
 
-    fn record_rules<V: RegistryVisitor<Self::Language> + ?Sized>(registry: &mut V) {
-        // Order here is important, rules should be added from the most old, to the most recent
-        // v1.5.0
-        registry.record_rule::<Schema>();
-        // v1.8.0
-        registry.record_rule::<NurseryRules>();
-        // v2.0.0
-        registry.record_rule::<RulesAll>();
-        registry.record_rule::<StyleRules>();
-        registry.record_rule::<NoVar>();
+	fn record_rules<V: RegistryVisitor<Self::Language> + ?Sized>(registry: &mut V) {
+		// Order here is important, rules should be added from the most old, to the most recent
+		// v1.5.0
+		registry.record_rule::<Schema>();
+		// v1.8.0
+		registry.record_rule::<NurseryRules>();
+		// v2.0.0
+		registry.record_rule::<RulesAll>();
+		registry.record_rule::<StyleRules>();
+		registry.record_rule::<NoVar>();
 
-        registry.record_rule::<DeletedRules>();
-        registry.record_rule::<UseWhile>();
-        registry.record_rule::<OrganizeImports>();
-        registry.record_rule::<Includes>();
-        registry.record_rule::<TrailingComma>();
-        registry.record_rule::<UseNamingConventionEnumMemberCase>();
-        registry.record_rule::<UseMultipleSpacesInRegex>();
-        registry.record_rule::<NoUnncesseraryContinue>();
-    }
+		registry.record_rule::<DeletedRules>();
+		registry.record_rule::<UseWhile>();
+		registry.record_rule::<OrganizeImports>();
+		registry.record_rule::<Includes>();
+		registry.record_rule::<TrailingComma>();
+		registry.record_rule::<UseNamingConventionEnumMemberCase>();
+		registry.record_rule::<UseMultipleSpacesInRegex>();
+		registry.record_rule::<NoUnncesseraryContinue>();
+	}
 }
 
 impl GroupCategory for MigrationCategory {
-    type Language = JsonLanguage;
-    const CATEGORY: RuleCategory = RuleCategory::Action;
+	type Language = JsonLanguage;
+	const CATEGORY: RuleCategory = RuleCategory::Action;
 
-    fn record_groups<V: RegistryVisitor<Self::Language> + ?Sized>(registry: &mut V) {
-        registry.record_group::<MigrationGroup>();
-    }
+	fn record_groups<V: RegistryVisitor<Self::Language> + ?Sized>(registry: &mut V) {
+		registry.record_group::<MigrationGroup>();
+	}
 }

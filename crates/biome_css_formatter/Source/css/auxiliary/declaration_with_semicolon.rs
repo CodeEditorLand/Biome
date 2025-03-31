@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssDeclarationWithSemicolon;
 impl FormatNodeRule<CssDeclarationWithSemicolon> for FormatCssDeclarationWithSemicolon {
-	fn fmt_fields(&self, node:&CssDeclarationWithSemicolon, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssDeclarationWithSemicolon, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssDeclarationWithSemicolonFields { declaration, semicolon_token } = node.as_fields();
 
 		write!(f, [declaration.format()])?;

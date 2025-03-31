@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssUrlFunction;
 impl FormatNodeRule<CssUrlFunction> for FormatCssUrlFunction {
-	fn fmt_fields(&self, node:&CssUrlFunction, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssUrlFunction, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssUrlFunctionFields { name, l_paren_token, value, modifiers, r_paren_token } = node.as_fields();
 
 		write!(

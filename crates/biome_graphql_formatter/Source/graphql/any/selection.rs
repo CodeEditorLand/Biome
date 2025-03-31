@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyGraphqlSelection;
 impl FormatRule<AnyGraphqlSelection> for FormatAnyGraphqlSelection {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(&self, node:&AnyGraphqlSelection, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyGraphqlSelection, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		match node {
 			AnyGraphqlSelection::GraphqlBogusSelection(node) => node.format().fmt(f),
 			AnyGraphqlSelection::GraphqlField(node) => node.format().fmt(f),

@@ -1,42 +1,13 @@
-use biome_analyze::{
-	Ast,
-	Rule,
-	RuleDiagnostic,
-	RuleSource,
-	context::RuleContext,
-	declare_lint_rule,
-};
+use biome_analyze::{Ast, Rule, RuleDiagnostic, RuleSource, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_js_semantic::HasClosureAstNode;
 use biome_js_syntax::{
-	AnyJsBinding,
-	AnyJsExpression,
-	AnyJsFunction,
-	AnyJsFunctionBody,
-	AnyJsStatement,
-	AnyTsType,
-	JsCallExpression,
-	JsFileSource,
-	JsFormalParameter,
-	JsGetterClassMember,
-	JsGetterObjectMember,
-	JsInitializerClause,
-	JsLanguage,
-	JsMethodClassMember,
-	JsMethodObjectMember,
-	JsObjectExpression,
-	JsParenthesizedExpression,
-	JsPropertyClassMember,
-	JsPropertyObjectMember,
-	JsStatementList,
-	JsSyntaxKind,
-	JsVariableDeclarator,
-	TsCallSignatureTypeMember,
-	TsDeclareFunctionDeclaration,
-	TsDeclareFunctionExportDefaultDeclaration,
-	TsGetterSignatureClassMember,
-	TsMethodSignatureClassMember,
-	TsMethodSignatureTypeMember,
+	AnyJsBinding, AnyJsExpression, AnyJsFunction, AnyJsFunctionBody, AnyJsStatement, AnyTsType, JsCallExpression,
+	JsFileSource, JsFormalParameter, JsGetterClassMember, JsGetterObjectMember, JsInitializerClause, JsLanguage,
+	JsMethodClassMember, JsMethodObjectMember, JsObjectExpression, JsParenthesizedExpression, JsPropertyClassMember,
+	JsPropertyObjectMember, JsStatementList, JsSyntaxKind, JsVariableDeclarator, TsCallSignatureTypeMember,
+	TsDeclareFunctionDeclaration, TsDeclareFunctionExportDefaultDeclaration, TsGetterSignatureClassMember,
+	TsMethodSignatureClassMember, TsMethodSignatureTypeMember,
 };
 use biome_rowan::{AstNode, SyntaxNode, SyntaxNodeOptionExt, TextRange, declare_node_union};
 
@@ -306,7 +277,7 @@ impl Rule for UseExplicitType {
 	type Signals = Option<Self::State>;
 	type State = TextRange;
 
-	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let source_type = ctx.source_type::<JsFileSource>().language();
 
 		if !source_type.is_typescript() || source_type.is_definition_file() {
@@ -344,10 +315,7 @@ impl Rule for UseExplicitType {
 				let func_range = func.syntax().text_range();
 
 				if let Ok(Some(AnyJsBinding::JsIdentifierBinding(id))) = func.id() {
-					return Some(TextRange::new(
-						func_range.start(),
-						id.syntax().text_range().end(),
-					));
+					return Some(TextRange::new(func_range.start(), id.syntax().text_range().end()));
 				}
 
 				Some(func_range)
@@ -435,22 +403,22 @@ impl Rule for UseExplicitType {
 		}
 	}
 
-	fn diagnostic(_:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(_: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
 		Some(
-            RuleDiagnostic::new(
-                rule_category!(),
-                state,
-                markup! {
-                    "Missing return type on function."
-                },
-            )
-            .note(markup! {
-                "Declaring the return type makes the code self-documenting and can speed up TypeScript type checking."
-            })
-            .note(markup! {
-                "Add a return type annotation."
-            }),
-        )
+			RuleDiagnostic::new(
+				rule_category!(),
+				state,
+				markup! {
+					"Missing return type on function."
+				},
+			)
+			.note(markup! {
+				"Declaring the return type makes the code self-documenting and can speed up TypeScript type checking."
+			})
+			.note(markup! {
+				"Add a return type annotation."
+			}),
+		)
 	}
 }
 
@@ -462,7 +430,7 @@ impl Rule for UseExplicitType {
 /// const func = (value: number) => ({ foo: 'bar', value }) as const;
 /// const func = () => x as const;
 /// ```
-fn is_direct_const_assertion_in_arrow_functions(func:&AnyJsFunction) -> bool {
+fn is_direct_const_assertion_in_arrow_functions(func: &AnyJsFunction) -> bool {
 	let AnyJsFunction::JsArrowFunctionExpression(arrow_func) = func else {
 		return false;
 	};
@@ -494,7 +462,7 @@ fn is_direct_const_assertion_in_arrow_functions(func:&AnyJsFunction) -> bool {
 ///
 /// JS_ARRAY_ELEMENT_LIST:
 /// - `[function () {}, () => {}];`
-fn is_function_used_in_argument_or_array(func:&AnyJsFunction) -> bool {
+fn is_function_used_in_argument_or_array(func: &AnyJsFunction) -> bool {
 	matches!(
 		func.syntax().parent().kind(),
 		Some(JsSyntaxKind::JS_CALL_ARGUMENT_LIST | JsSyntaxKind::JS_ARRAY_ELEMENT_LIST)
@@ -509,7 +477,7 @@ fn is_function_used_in_argument_or_array(func:&AnyJsFunction) -> bool {
 /// (function () {});
 /// (() => {})();
 /// ```
-fn is_iife(func:&AnyJsFunction) -> bool {
+fn is_iife(func: &AnyJsFunction) -> bool {
 	func.parent::<JsParenthesizedExpression>()
 		.and_then(|expr| expr.parent::<JsCallExpression>())
 		.is_some()
@@ -537,13 +505,12 @@ fn is_iife(func:&AnyJsFunction) -> bool {
 /// function inside other statements, such as `if` statements or `switch`
 /// statements. It only checks whether the first statement is a return of a
 /// function in a straightforward function body.
-fn is_higher_order_function(func:&AnyJsFunction) -> bool {
+fn is_higher_order_function(func: &AnyJsFunction) -> bool {
 	match func.body().ok() {
 		Some(AnyJsFunctionBody::AnyJsExpression(expr)) => {
 			matches!(
 				expr,
-				AnyJsExpression::JsArrowFunctionExpression(_)
-					| AnyJsExpression::JsFunctionExpression(_)
+				AnyJsExpression::JsArrowFunctionExpression(_) | AnyJsExpression::JsFunctionExpression(_)
 			)
 		},
 
@@ -569,7 +536,7 @@ fn is_higher_order_function(func:&AnyJsFunction) -> bool {
 /// * `true` if the list contains a return statement with a function expression
 ///   as its argument.
 /// * `false` if no such return statement is found or if the list is empty.
-fn is_first_statement_function_return(statements:JsStatementList) -> bool {
+fn is_first_statement_function_return(statements: JsStatementList) -> bool {
 	statements
 		.into_iter()
 		.next()
@@ -583,14 +550,13 @@ fn is_first_statement_function_return(statements:JsStatementList) -> bool {
 		.is_some_and(|args| {
 			matches!(
 				args,
-				AnyJsExpression::JsFunctionExpression(_)
-					| AnyJsExpression::JsArrowFunctionExpression(_)
+				AnyJsExpression::JsFunctionExpression(_) | AnyJsExpression::JsArrowFunctionExpression(_)
 			)
 		})
 }
 
 /// Checks if a given function expression has a type annotation.
-fn is_typed_function_expressions(func:&AnyJsFunction) -> bool {
+fn is_typed_function_expressions(func: &AnyJsFunction) -> bool {
 	let syntax = func.syntax();
 
 	is_type_assertion(syntax)
@@ -608,7 +574,7 @@ fn is_typed_function_expressions(func:&AnyJsFunction) -> bool {
 /// type FuncType = () => string;
 /// const arrowFn: FuncType = () => 'test';
 /// ```
-fn is_variable_declarator_with_type_annotation(syntax:&SyntaxNode<JsLanguage>) -> bool {
+fn is_variable_declarator_with_type_annotation(syntax: &SyntaxNode<JsLanguage>) -> bool {
 	syntax
 		.parent()
 		.and_then(JsInitializerClause::cast)
@@ -624,7 +590,7 @@ fn is_variable_declarator_with_type_annotation(syntax:&SyntaxNode<JsLanguage>) -
 /// type CallBack = () => void;
 /// const f = (gotcha: CallBack = () => { }): void => { };
 /// ```
-fn is_default_function_parameter_with_type_annotation(syntax:&SyntaxNode<JsLanguage>) -> bool {
+fn is_default_function_parameter_with_type_annotation(syntax: &SyntaxNode<JsLanguage>) -> bool {
 	syntax
 		.parent()
 		.and_then(JsInitializerClause::cast)
@@ -642,7 +608,7 @@ fn is_default_function_parameter_with_type_annotation(syntax:&SyntaxNode<JsLangu
 ///     private method: MethodType = () => { };
 /// }
 /// ```
-fn is_class_property_with_type_annotation(syntax:&SyntaxNode<JsLanguage>) -> bool {
+fn is_class_property_with_type_annotation(syntax: &SyntaxNode<JsLanguage>) -> bool {
 	syntax
 		.parent()
 		.and_then(JsInitializerClause::cast)
@@ -660,7 +626,7 @@ fn is_class_property_with_type_annotation(syntax:&SyntaxNode<JsLanguage>) -> boo
 /// const x = <Foo>{ prop: () => {} }
 /// const x: Foo = { bar: { prop: () => {} } }
 /// ```
-fn is_property_of_object_with_type(syntax:&SyntaxNode<JsLanguage>) -> bool {
+fn is_property_of_object_with_type(syntax: &SyntaxNode<JsLanguage>) -> bool {
 	syntax
 		.parent()
 		.and_then(JsPropertyObjectMember::cast)
@@ -683,8 +649,8 @@ fn is_property_of_object_with_type(syntax:&SyntaxNode<JsLanguage>) -> bool {
 /// const asTyped = (() => '') as () => string;
 /// const castTyped = <() => string>(() => '');
 /// ```
-fn is_type_assertion(syntax:&SyntaxNode<JsLanguage>) -> bool {
-	fn is_assertion_kind(kind:JsSyntaxKind) -> bool {
+fn is_type_assertion(syntax: &SyntaxNode<JsLanguage>) -> bool {
+	fn is_assertion_kind(kind: JsSyntaxKind) -> bool {
 		matches!(
 			kind,
 			JsSyntaxKind::TS_AS_EXPRESSION | JsSyntaxKind::TS_TYPE_ASSERTION_EXPRESSION

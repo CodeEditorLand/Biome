@@ -9,17 +9,17 @@ use crate::{
 	lexer::CssLexContext,
 	parser::CssParser,
 	syntax::{
-		block::parse_declaration_block,
-		parse_custom_identifier,
-		parse_error::expected_non_css_wide_keyword_identifier,
+		block::parse_declaration_block, parse_custom_identifier, parse_error::expected_non_css_wide_keyword_identifier,
 	},
 };
 
 #[inline]
-pub(crate) fn is_at_counter_style_at_rule(p:&mut CssParser) -> bool { p.at(T![counter_style]) }
+pub(crate) fn is_at_counter_style_at_rule(p: &mut CssParser) -> bool {
+	p.at(T![counter_style])
+}
 
 #[inline]
-pub(crate) fn parse_counter_style_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_counter_style_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_counter_style_at_rule(p) {
 		return Absent;
 	}
@@ -46,4 +46,4 @@ pub(crate) fn parse_counter_style_at_rule(p:&mut CssParser) -> ParsedSyntax {
 	Present(m.complete(p, kind))
 }
 
-const COUNTER_STYLE_RECOVERY_SET:TokenSet<CssSyntaxKind> = token_set![T!['{']];
+const COUNTER_STYLE_RECOVERY_SET: TokenSet<CssSyntaxKind> = token_set![T!['{']];

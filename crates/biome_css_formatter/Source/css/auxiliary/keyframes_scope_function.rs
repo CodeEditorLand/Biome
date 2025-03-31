@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssKeyframesScopeFunction;
 impl FormatNodeRule<CssKeyframesScopeFunction> for FormatCssKeyframesScopeFunction {
-	fn fmt_fields(&self, node:&CssKeyframesScopeFunction, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssKeyframesScopeFunction, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssKeyframesScopeFunctionFields { scope, l_paren_token, name, r_paren_token } = node.as_fields();
 
 		write!(

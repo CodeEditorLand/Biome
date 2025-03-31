@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssMediaAndCombinableCondition;
 impl FormatRule<AnyCssMediaAndCombinableCondition> for FormatAnyCssMediaAndCombinableCondition {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssMediaAndCombinableCondition, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssMediaAndCombinableCondition, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssMediaAndCombinableCondition::AnyCssMediaInParens(node) => node.format().fmt(f),
 			AnyCssMediaAndCombinableCondition::CssMediaAndCondition(node) => node.format().fmt(f),

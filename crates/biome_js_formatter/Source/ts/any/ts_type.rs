@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyTsType;
 impl FormatRule<AnyTsType> for FormatAnyTsType {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyTsType, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyTsType, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyTsType::JsMetavariable(node) => node.format().fmt(f),
 			AnyTsType::TsAnyType(node) => node.format().fmt(f),

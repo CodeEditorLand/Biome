@@ -9,11 +9,9 @@ pub(crate) struct FormatAnyJsExportNamedSpecifier;
 impl FormatRule<AnyJsExportNamedSpecifier> for FormatAnyJsExportNamedSpecifier {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsExportNamedSpecifier, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsExportNamedSpecifier, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
-			AnyJsExportNamedSpecifier::JsExportNamedShorthandSpecifier(node) => {
-				node.format().fmt(f)
-			},
+			AnyJsExportNamedSpecifier::JsExportNamedShorthandSpecifier(node) => node.format().fmt(f),
 
 			AnyJsExportNamedSpecifier::JsExportNamedSpecifier(node) => node.format().fmt(f),
 		}

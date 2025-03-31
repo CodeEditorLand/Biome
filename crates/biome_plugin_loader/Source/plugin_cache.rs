@@ -13,17 +13,17 @@ use crate::BiomePlugin;
 pub struct PluginCache(HashMap<Utf8PathBuf, BiomePlugin, FxBuildHasher>);
 
 impl PluginCache {
-    /// Inserts a new plugin into the cache.
-    pub fn insert_plugin(&self, path: Utf8PathBuf, plugin: BiomePlugin) {
-        self.0.pin().insert(path, plugin);
-    }
+	/// Inserts a new plugin into the cache.
+	pub fn insert_plugin(&self, path: Utf8PathBuf, plugin: BiomePlugin) {
+		self.0.pin().insert(path, plugin);
+	}
 
-    /// Returns the loaded analyzer plugins.
-    pub fn get_analyzer_plugins(&self) -> AnalyzerPluginVec {
-        let mut plugins = AnalyzerPluginVec::new();
-        for plugin in self.0.pin().values() {
-            plugins.extend_from_slice(&plugin.analyzer_plugins);
-        }
-        plugins
-    }
+	/// Returns the loaded analyzer plugins.
+	pub fn get_analyzer_plugins(&self) -> AnalyzerPluginVec {
+		let mut plugins = AnalyzerPluginVec::new();
+		for plugin in self.0.pin().values() {
+			plugins.extend_from_slice(&plugin.analyzer_plugins);
+		}
+		plugins
+	}
 }

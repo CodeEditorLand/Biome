@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssSupportsFeatureSelector;
 impl FormatNodeRule<CssSupportsFeatureSelector> for FormatCssSupportsFeatureSelector {
-	fn fmt_fields(&self, node:&CssSupportsFeatureSelector, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssSupportsFeatureSelector, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssSupportsFeatureSelectorFields { selector_token, l_paren_token, selector, r_paren_token } =
 			node.as_fields();
 

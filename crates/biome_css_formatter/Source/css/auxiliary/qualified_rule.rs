@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssQualifiedRule;
 impl FormatNodeRule<CssQualifiedRule> for FormatCssQualifiedRule {
-	fn fmt_fields(&self, node:&CssQualifiedRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssQualifiedRule, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssQualifiedRuleFields { prelude, block } = node.as_fields();
 
 		write!(

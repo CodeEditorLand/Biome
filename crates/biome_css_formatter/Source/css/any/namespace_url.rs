@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssNamespaceUrl;
 impl FormatRule<AnyCssNamespaceUrl> for FormatAnyCssNamespaceUrl {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssNamespaceUrl, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssNamespaceUrl, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssNamespaceUrl::CssString(node) => node.format().fmt(f),
 			AnyCssNamespaceUrl::CssUrlFunction(node) => node.format().fmt(f),

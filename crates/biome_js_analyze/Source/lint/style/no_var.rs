@@ -1,20 +1,7 @@
-use biome_analyze::{
-	FixKind,
-	Rule,
-	RuleDiagnostic,
-	RuleSource,
-	context::RuleContext,
-	declare_lint_rule,
-};
+use biome_analyze::{FixKind, Rule, RuleDiagnostic, RuleSource, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_js_factory::make;
-use biome_js_syntax::{
-	AnyJsVariableDeclaration,
-	JsModule,
-	JsScript,
-	JsSyntaxKind,
-	TsGlobalDeclaration,
-};
+use biome_js_syntax::{AnyJsVariableDeclaration, JsModule, JsScript, JsSyntaxKind, TsGlobalDeclaration};
 use biome_rowan::{AstNode, BatchMutationExt};
 
 use super::use_const::ConstBindings;
@@ -60,12 +47,11 @@ impl Rule for NoVar {
 	type Signals = Option<Self::State>;
 	type State = ();
 
-	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let declaration = ctx.query();
 
 		if declaration.is_var() {
-			let ts_global_declaratio =
-				&declaration.syntax().ancestors().find_map(TsGlobalDeclaration::cast);
+			let ts_global_declaratio = &declaration.syntax().ancestors().find_map(TsGlobalDeclaration::cast);
 
 			if ts_global_declaratio.is_some() {
 				return None;
@@ -77,7 +63,7 @@ impl Rule for NoVar {
 		None
 	}
 
-	fn diagnostic(ctx:&RuleContext<Self>, _state:&Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx: &RuleContext<Self>, _state: &Self::State) -> Option<RuleDiagnostic> {
 		let declaration = ctx.query();
 
 		let var_scope = declaration
@@ -112,7 +98,7 @@ impl Rule for NoVar {
         ))
 	}
 
-	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
+	fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
 		let declaration = ctx.query();
 
 		let model = ctx.model();
@@ -134,8 +120,7 @@ impl Rule for NoVar {
 		Some(JsRuleAction::new(
 			ctx.metadata().action_category(ctx.category(), ctx.group()),
 			ctx.metadata().applicability(),
-			markup! { "Use '"<Emphasis>{replacing_token_kind.to_string()?}</Emphasis>"' instead." }
-				.to_owned(),
+			markup! { "Use '"<Emphasis>{replacing_token_kind.to_string()?}</Emphasis>"' instead." }.to_owned(),
 			mutation,
 		))
 	}

@@ -47,7 +47,7 @@ pub enum RecoveryError {
 impl Error for RecoveryError {}
 
 impl Display for RecoveryError {
-	fn fmt(&self, f:&mut Formatter<'_>) -> std::fmt::Result {
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
 		match self {
 			RecoveryError::Eof => write!(f, "EOF"),
 			RecoveryError::AlreadyRecovered => write!(f, "already recovered"),
@@ -62,17 +62,17 @@ pub type RecoveryResult = Result<CompletedMarker, RecoveryError>;
 /// configuration) from where the caller knows how to proceed parsing. The
 /// recovery wraps all the skipped tokens inside a `Bogus` node. A safe recovery
 /// point for an array element could by finding the next `,` or `]`.
-pub struct ParseRecoveryTokenSet<K:SyntaxKind> {
-	node_kind:K,
-	recovery_set:TokenSet<K>,
-	line_break:bool,
+pub struct ParseRecoveryTokenSet<K: SyntaxKind> {
+	node_kind: K,
+	recovery_set: TokenSet<K>,
+	line_break: bool,
 }
 
-impl<K:SyntaxKind> ParseRecoveryTokenSet<K> {
+impl<K: SyntaxKind> ParseRecoveryTokenSet<K> {
 	/// Creates a new parse recovery that eats all tokens until it finds any
 	/// token in the passed recovery set.
-	pub fn new(node_kind:K, recovery_set:TokenSet<K>) -> Self {
-		Self { node_kind, recovery_set, line_break:false }
+	pub fn new(node_kind: K, recovery_set: TokenSet<K>) -> Self {
+		Self { node_kind, recovery_set, line_break: false }
 	}
 
 	/// Enable recovery on line breaks
@@ -91,9 +91,10 @@ impl<K:SyntaxKind> ParseRecoveryTokenSet<K> {
 	/// line break (depending on configuration). Returns `Ok(bogus_node)` if
 	/// recovery was successful, and `Err(RecoveryError::Eof)` if the parser is
 	/// at the end of the file (before starting recovery).
-	pub fn recover<P>(&self, p:&mut P) -> RecoveryResult
+	pub fn recover<P>(&self, p: &mut P) -> RecoveryResult
 	where
-		P: Parser<Kind = K>, {
+		P: Parser<Kind = K>,
+	{
 		if p.at(P::Kind::EOF) {
 			return Err(RecoveryError::Eof);
 		}
@@ -116,9 +117,10 @@ impl<K:SyntaxKind> ParseRecoveryTokenSet<K> {
 	}
 
 	#[inline]
-	fn is_at_recovered<P>(&self, p:&P) -> bool
+	fn is_at_recovered<P>(&self, p: &P) -> bool
 	where
-		P: Parser<Kind = K>, {
+		P: Parser<Kind = K>,
+	{
 		p.at_ts(self.recovery_set) || (self.line_break && p.has_preceding_line_break())
 	}
 }
@@ -132,17 +134,17 @@ pub trait ParseRecovery {
 	type Parser<'source>: Parser<Kind = Self::Kind>;
 
 	/// The kind of the recovered node
-	const RECOVERED_KIND:Self::Kind;
+	const RECOVERED_KIND: Self::Kind;
 
 	/// Checks if the parser is in a recovered state.
-	fn is_at_recovered(&self, p:&mut Self::Parser<'_>) -> bool;
+	fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool;
 
 	/// Tries to recover by parsing all tokens into an `Bogus*` node until the
 	/// parser finds any token specified in the recovery set, the EOF, or a
 	/// line break (depending on configuration). Returns `Ok(bogus_node)` if
 	/// recovery was successful, and `Err(RecoveryError::Eof)` if the parser is
 	/// at the end of the file (before starting recovery).
-	fn recover(&self, p:&mut Self::Parser<'_>) -> RecoveryResult {
+	fn recover(&self, p: &mut Self::Parser<'_>) -> RecoveryResult {
 		if p.at(Self::Kind::EOF) {
 			return Err(RecoveryError::Eof);
 		}

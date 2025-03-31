@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssRelativeSelector;
 impl FormatNodeRule<CssRelativeSelector> for FormatCssRelativeSelector {
-	fn fmt_fields(&self, node:&CssRelativeSelector, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssRelativeSelector, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssRelativeSelectorFields { combinator, selector } = node.as_fields();
 
 		if combinator.is_some() {

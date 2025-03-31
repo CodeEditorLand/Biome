@@ -57,7 +57,8 @@ pub trait MemoizeFormat<Context> {
 	/// ```
 	fn memoized(self) -> Memoized<Self, Context>
 	where
-		Self: Sized + Format<Context>, {
+		Self: Sized + Format<Context>,
+	{
 		Memoized::new(self)
 	}
 }
@@ -68,16 +69,18 @@ impl<T, Context> MemoizeFormat<Context> for T where T: Format<Context> {}
 /// expensive object.
 #[derive(Debug)]
 pub struct Memoized<F, Context> {
-	inner:F,
-	memory:OnceCell<FormatResult<Option<FormatElement>>>,
-	options:PhantomData<Context>,
+	inner: F,
+	memory: OnceCell<FormatResult<Option<FormatElement>>>,
+	options: PhantomData<Context>,
 }
 
 impl<F, Context> Memoized<F, Context>
 where
 	F: Format<Context>,
 {
-	fn new(inner:F) -> Self { Self { inner, memory:OnceCell::new(), options:PhantomData } }
+	fn new(inner: F) -> Self {
+		Self { inner, memory: OnceCell::new(), options: PhantomData }
+	}
 
 	/// Gives access to the memoized content.
 	///
@@ -137,7 +140,7 @@ where
 	/// # Ok(())
 	/// # }
 	/// ```
-	pub fn inspect(&mut self, f:&mut Formatter<Context>) -> FormatResult<&[FormatElement]> {
+	pub fn inspect(&mut self, f: &mut Formatter<Context>) -> FormatResult<&[FormatElement]> {
 		let result = self.memory.get_or_init(|| f.intern(&self.inner));
 
 		match result.as_ref() {
@@ -153,7 +156,7 @@ impl<F, Context> Format<Context> for Memoized<F, Context>
 where
 	F: Format<Context>,
 {
-	fn fmt(&self, f:&mut Formatter<Context>) -> FormatResult<()> {
+	fn fmt(&self, f: &mut Formatter<Context>) -> FormatResult<()> {
 		let result = self.memory.get_or_init(|| f.intern(&self.inner));
 
 		match result {

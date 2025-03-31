@@ -7,7 +7,7 @@ use crate::{prelude::*, utils::AnyJsAssignmentLike};
 pub(crate) struct FormatJsVariableDeclarator;
 
 impl FormatNodeRule<JsVariableDeclarator> for FormatJsVariableDeclarator {
-	fn fmt_fields(&self, node:&JsVariableDeclarator, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsVariableDeclarator, f: &mut JsFormatter) -> FormatResult<()> {
 		write![f, [AnyJsAssignmentLike::from(node.clone())]]
 	}
 }

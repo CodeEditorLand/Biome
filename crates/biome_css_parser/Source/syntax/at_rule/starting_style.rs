@@ -14,7 +14,9 @@ use crate::{
 /// This function verifies if the current token matches the `@starting-style`
 /// rule, which is a custom at-rule used for specific parsing scenarios.
 #[inline]
-pub(crate) fn is_at_starting_style_at_rule(p:&mut CssParser) -> bool { p.at(T![starting_style]) }
+pub(crate) fn is_at_starting_style_at_rule(p: &mut CssParser) -> bool {
+	p.at(T![starting_style])
+}
 
 /// Parses a `@starting-style` at-rule in a CSS stylesheet.
 ///
@@ -43,7 +45,7 @@ pub(crate) fn is_at_starting_style_at_rule(p:&mut CssParser) -> bool { p.at(T![s
 /// }
 /// ```
 #[inline]
-pub(crate) fn parse_starting_style_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_starting_style_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_starting_style_at_rule(p) {
 		return Absent;
 	}

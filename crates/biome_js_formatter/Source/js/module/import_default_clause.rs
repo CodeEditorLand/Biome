@@ -7,14 +7,9 @@ use crate::prelude::*;
 pub(crate) struct FormatJsImportDefaultClause;
 
 impl FormatNodeRule<JsImportDefaultClause> for FormatJsImportDefaultClause {
-	fn fmt_fields(&self, node:&JsImportDefaultClause, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsImportDefaultClauseFields {
-			type_token,
-			default_specifier,
-			from_token,
-			source,
-			assertion,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &JsImportDefaultClause, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsImportDefaultClauseFields { type_token, default_specifier, from_token, source, assertion } =
+			node.as_fields();
 
 		if let Some(type_token) = type_token {
 			write!(f, [type_token.format(), space()])?;

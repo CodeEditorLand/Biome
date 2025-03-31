@@ -3,7 +3,7 @@ mod error;
 use crate::lexer::CssLexContext;
 use crate::parser::CssParser;
 use crate::syntax::at_rule::container::error::{
-    expected_any_container_style_in_parens, expected_any_container_style_query,
+	expected_any_container_style_in_parens, expected_any_container_style_query,
 };
 use crate::syntax::at_rule::feature::{expected_any_query_feature, parse_any_query_feature};
 use crate::syntax::block::parse_conditional_block;
@@ -20,7 +20,7 @@ use error::{expected_any_container_query, expected_any_container_query_in_parens
 /// Checks if the current token in the parser is an `@container` at-rule.
 #[inline]
 pub(crate) fn is_at_container_at_rule(p: &mut CssParser) -> bool {
-    p.at(T![container])
+	p.at(T![container])
 }
 
 /// Parses an `@container` at-rule in a CSS stylesheet.
@@ -63,73 +63,63 @@ pub(crate) fn is_at_container_at_rule(p: &mut CssParser) -> bool {
 /// ```
 #[inline]
 pub(crate) fn parse_container_at_rule(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_container_at_rule(p) {
-        return Absent;
-    }
+	if !is_at_container_at_rule(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T![container]);
+	p.bump(T![container]);
 
-    if parse_custom_identifier(p, CssLexContext::Regular)
-        .ok()
-        .is_none()
-    {
-        // Because the name is optional, we have to indirectly check if it's
-        // a CSS-wide keyword that can't be used. If it was required, we could
-        // use `.or_recover` or `.or_add_diagnostic` here instead.
-        if p.cur().is_css_wide_keyword() {
-            p.err_and_bump(
-                expected_non_css_wide_keyword_identifier(p, p.cur_range()),
-                CSS_BOGUS,
-            )
-        }
-    };
+	if parse_custom_identifier(p, CssLexContext::Regular).ok().is_none() {
+		// Because the name is optional, we have to indirectly check if it's
+		// a CSS-wide keyword that can't be used. If it was required, we could
+		// use `.or_recover` or `.or_add_diagnostic` here instead.
+		if p.cur().is_css_wide_keyword() {
+			p.err_and_bump(expected_non_css_wide_keyword_identifier(p, p.cur_range()), CSS_BOGUS)
+		}
+	};
 
-    parse_any_container_query(p)
-        .or_recover(
-            p,
-            &AnyContainerQueryParseRecovery,
-            expected_any_container_query,
-        )
-        .ok();
-    parse_conditional_block(p);
+	parse_any_container_query(p)
+		.or_recover(p, &AnyContainerQueryParseRecovery, expected_any_container_query)
+		.ok();
+	parse_conditional_block(p);
 
-    Present(m.complete(p, CSS_CONTAINER_AT_RULE))
+	Present(m.complete(p, CSS_CONTAINER_AT_RULE))
 }
 
 struct AnyContainerQueryParseRecovery;
 
 impl ParseRecovery for AnyContainerQueryParseRecovery {
-    type Kind = CssSyntaxKind;
-    type Parser<'source> = CssParser<'source>;
-    const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
+	type Kind = CssSyntaxKind;
+	type Parser<'source> = CssParser<'source>;
+	const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
-    fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
-        // We need to recover the invalid container query:
-        // 1. The next block starts.
-        //    @container name invalid-query { <--------------------+
-        //                    ^^^^^^^^^^^^^ we skip it until the block starts
-        //   }
-        // 2. The line break is missing before the next block.
-        //    @container name invalid-query
-        //                    ^^^^^^^^^^^^^ we skip it but the block start token is missing
-        //   }
-        p.at(T!['{']) || p.has_preceding_line_break()
-    }
+	fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
+		// We need to recover the invalid container query:
+		// 1. The next block starts.
+		//    @container name invalid-query { <--------------------+
+		//                    ^^^^^^^^^^^^^ we skip it until the block starts
+		//   }
+		// 2. The line break is missing before the next block.
+		//    @container name invalid-query
+		//                    ^^^^^^^^^^^^^ we skip it but the block start token is missing
+		//   }
+		p.at(T!['{']) || p.has_preceding_line_break()
+	}
 }
 
 #[inline]
 fn parse_any_container_query(p: &mut CssParser) -> ParsedSyntax {
-    if is_at_container_not_query(p) {
-        parse_container_not_query(p)
-    } else {
-        parse_any_container_query_in_parens(p).map(|lhs| match p.cur() {
-            T![and] => parse_container_and_query(p, lhs),
-            T![or] => parse_container_or_query(p, lhs),
-            _ => lhs,
-        })
-    }
+	if is_at_container_not_query(p) {
+		parse_container_not_query(p)
+	} else {
+		parse_any_container_query_in_parens(p).map(|lhs| match p.cur() {
+			T![and] => parse_container_and_query(p, lhs),
+			T![or] => parse_container_or_query(p, lhs),
+			_ => lhs,
+		})
+	}
 }
 
 /// Parses an `and` condition for a container query, chaining multiple conditions.
@@ -142,32 +132,32 @@ fn parse_any_container_query(p: &mut CssParser) -> ParsedSyntax {
 /// ```
 #[inline]
 fn parse_container_and_query(p: &mut CssParser, lhs: CompletedMarker) -> CompletedMarker {
-    if !p.at(T![and]) {
-        return lhs;
-    }
+	if !p.at(T![and]) {
+		return lhs;
+	}
 
-    let m = lhs.precede(p);
-    p.bump(T![and]);
+	let m = lhs.precede(p);
+	p.bump(T![and]);
 
-    let recovery_result = parse_any_container_query_in_parens(p)
-        .or_recover(
-            p,
-            &AnyContainerQueryInParensChainParseRecovery::new(T![and]),
-            expected_any_container_query_in_parens,
-        )
-        .map(|rhs| parse_container_and_query(p, rhs));
+	let recovery_result = parse_any_container_query_in_parens(p)
+		.or_recover(
+			p,
+			&AnyContainerQueryInParensChainParseRecovery::new(T![and]),
+			expected_any_container_query_in_parens,
+		)
+		.map(|rhs| parse_container_and_query(p, rhs));
 
-    if recovery_result.is_err() && p.at(T![and]) {
-        // If we're here, it seems that we have
-        // @container (width > 300px) and <missing exp> and <missing exp> and ...
-        // parse_any_container_query_in_parens failed to parse,
-        // but the parser is already at a recovered position.
-        let m = p.start();
-        let rhs = m.complete(p, CSS_BOGUS);
-        parse_container_and_query(p, rhs);
-    }
+	if recovery_result.is_err() && p.at(T![and]) {
+		// If we're here, it seems that we have
+		// @container (width > 300px) and <missing exp> and <missing exp> and ...
+		// parse_any_container_query_in_parens failed to parse,
+		// but the parser is already at a recovered position.
+		let m = p.start();
+		let rhs = m.complete(p, CSS_BOGUS);
+		parse_container_and_query(p, rhs);
+	}
 
-    m.complete(p, CSS_CONTAINER_AND_QUERY)
+	m.complete(p, CSS_CONTAINER_AND_QUERY)
 }
 
 /// Parses an `or` condition for a container query, allowing alternative conditions.
@@ -178,66 +168,66 @@ fn parse_container_and_query(p: &mut CssParser, lhs: CompletedMarker) -> Complet
 /// ```
 #[inline]
 fn parse_container_or_query(p: &mut CssParser, lhs: CompletedMarker) -> CompletedMarker {
-    if !p.at(T![or]) {
-        return lhs;
-    }
+	if !p.at(T![or]) {
+		return lhs;
+	}
 
-    let m = lhs.precede(p);
-    p.bump(T![or]);
+	let m = lhs.precede(p);
+	p.bump(T![or]);
 
-    let recovery_result = parse_any_container_query_in_parens(p)
-        .or_recover(
-            p,
-            &AnyContainerQueryInParensChainParseRecovery::new(T![or]),
-            expected_any_container_query_in_parens,
-        )
-        .map(|rhs| parse_container_or_query(p, rhs));
+	let recovery_result = parse_any_container_query_in_parens(p)
+		.or_recover(
+			p,
+			&AnyContainerQueryInParensChainParseRecovery::new(T![or]),
+			expected_any_container_query_in_parens,
+		)
+		.map(|rhs| parse_container_or_query(p, rhs));
 
-    if recovery_result.is_err() && p.at(T![or]) {
-        // If we're here, it seems that we have
-        // @container (width > 300px) or or or
-        // and parse_any_container_query_in_parens failed to parse,
-        // but the parser is already at a recovered position.
-        let m = p.start();
-        let rhs = m.complete(p, CSS_BOGUS);
-        parse_container_or_query(p, rhs);
-    }
+	if recovery_result.is_err() && p.at(T![or]) {
+		// If we're here, it seems that we have
+		// @container (width > 300px) or or or
+		// and parse_any_container_query_in_parens failed to parse,
+		// but the parser is already at a recovered position.
+		let m = p.start();
+		let rhs = m.complete(p, CSS_BOGUS);
+		parse_container_or_query(p, rhs);
+	}
 
-    m.complete(p, CSS_CONTAINER_OR_QUERY)
+	m.complete(p, CSS_CONTAINER_OR_QUERY)
 }
 
 struct AnyContainerQueryInParensChainParseRecovery {
-    chain_kind: CssSyntaxKind,
+	chain_kind: CssSyntaxKind,
 }
 
 impl AnyContainerQueryInParensChainParseRecovery {
-    fn new(chain_kind: CssSyntaxKind) -> Self {
-        Self { chain_kind }
-    }
+	fn new(chain_kind: CssSyntaxKind) -> Self {
+		Self { chain_kind }
+	}
 }
 
 impl ParseRecovery for AnyContainerQueryInParensChainParseRecovery {
-    type Kind = CssSyntaxKind;
-    type Parser<'source> = CssParser<'source>;
-    const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
+	type Kind = CssSyntaxKind;
+	type Parser<'source> = CssParser<'source>;
+	const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
-    fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
-        // We need to recover the invalid container query:
-        // 1. The next block starts.
-        //    @container name (width > 300) and invalid { <--------------------+
-        //                                      ^^^^^^^ we skip it until the block starts
-        //   }
-        // 2. The line break is missing before the next block.
-        //    @container name (width > 300) and invalid
-        //                                      ^^^^^^^  we skip it but the block start token is missing
-        //   }
-        p.at(T!['{']) || p.at(self.chain_kind) || p.has_preceding_line_break()
-    }
+	fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
+		// We need to recover the invalid container query:
+		// 1. The next block starts.
+		//    @container name (width > 300) and invalid { <--------------------+
+		//                                      ^^^^^^^ we skip it until the block starts
+		//   }
+		// 2. The line break is missing before the next block.
+		//    @container name (width > 300) and invalid
+		//                                      ^^^^^^^  we skip it but the block start token is missing
+		//   }
+		p.at(T!['{']) || p.at(self.chain_kind) || p.has_preceding_line_break()
+	}
 }
 
 #[inline]
 fn is_at_container_not_query(p: &mut CssParser) -> bool {
-    p.at(T![not])
+	p.at(T![not])
 }
 
 /// Parses a negated container query using the `not(...)` syntax.
@@ -248,61 +238,61 @@ fn is_at_container_not_query(p: &mut CssParser) -> bool {
 /// ```
 #[inline]
 fn parse_container_not_query(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_container_not_query(p) {
-        return Absent;
-    }
+	if !is_at_container_not_query(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T![not]);
-    parse_any_container_query_in_parens(p)
-        .or_recover(
-            p,
-            &AnyContainerQueryInParensNotQueryParseRecovery,
-            expected_any_container_query_in_parens,
-        )
-        .ok();
+	p.bump(T![not]);
+	parse_any_container_query_in_parens(p)
+		.or_recover(
+			p,
+			&AnyContainerQueryInParensNotQueryParseRecovery,
+			expected_any_container_query_in_parens,
+		)
+		.ok();
 
-    Present(m.complete(p, CSS_CONTAINER_NOT_QUERY))
+	Present(m.complete(p, CSS_CONTAINER_NOT_QUERY))
 }
 
 struct AnyContainerQueryInParensNotQueryParseRecovery;
 
 impl ParseRecovery for AnyContainerQueryInParensNotQueryParseRecovery {
-    type Kind = CssSyntaxKind;
-    type Parser<'source> = CssParser<'source>;
-    const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
+	type Kind = CssSyntaxKind;
+	type Parser<'source> = CssParser<'source>;
+	const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
-    fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
-        // We need to recover the invalid container query:
-        // 1. The next block starts.
-        //    @container name not invalid { <--------------------+
-        //                        ^^^^^^^ we skip it until the block starts
-        //   }
-        // 2. The line break is missing before the next block.
-        //    @container name not invalid
-        //                         ^^^^^^^  we skip it but the block start token is missing
-        //   }
-        p.at(T!['{']) || p.has_preceding_line_break()
-    }
+	fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
+		// We need to recover the invalid container query:
+		// 1. The next block starts.
+		//    @container name not invalid { <--------------------+
+		//                        ^^^^^^^ we skip it until the block starts
+		//   }
+		// 2. The line break is missing before the next block.
+		//    @container name not invalid
+		//                         ^^^^^^^  we skip it but the block start token is missing
+		//   }
+		p.at(T!['{']) || p.has_preceding_line_break()
+	}
 }
 
 #[inline]
 fn parse_any_container_query_in_parens(p: &mut CssParser) -> ParsedSyntax {
-    if is_at_container_style_query_in_parens(p) {
-        parse_container_style_query_in_parens(p)
-    } else if is_at_container_query_in_parens(p) {
-        parse_container_query_in_parens(p)
-    } else if is_at_container_size_feature_in_parens(p) {
-        parse_container_size_feature_in_parens(p)
-    } else {
-        Absent
-    }
+	if is_at_container_style_query_in_parens(p) {
+		parse_container_style_query_in_parens(p)
+	} else if is_at_container_query_in_parens(p) {
+		parse_container_query_in_parens(p)
+	} else if is_at_container_size_feature_in_parens(p) {
+		parse_container_size_feature_in_parens(p)
+	} else {
+		Absent
+	}
 }
 
 #[inline]
 fn is_at_container_query_in_parens(p: &mut CssParser) -> bool {
-    p.at(T!['(']) && (p.nth_at(1, T![not]) || p.nth_at(1, T!['(']))
+	p.at(T!['(']) && (p.nth_at(1, T![not]) || p.nth_at(1, T!['(']))
 }
 
 /// Parses a parenthesized container query.
@@ -314,28 +304,24 @@ fn is_at_container_query_in_parens(p: &mut CssParser) -> bool {
 /// ```
 #[inline]
 fn parse_container_query_in_parens(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_container_query_in_parens(p) {
-        return Absent;
-    }
+	if !is_at_container_query_in_parens(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T!['(']);
-    parse_any_container_query(p)
-        .or_recover(
-            p,
-            &AnyContainerQueryParseRecovery,
-            expected_any_container_query,
-        )
-        .ok();
-    p.expect(T![')']);
+	p.bump(T!['(']);
+	parse_any_container_query(p)
+		.or_recover(p, &AnyContainerQueryParseRecovery, expected_any_container_query)
+		.ok();
+	p.expect(T![')']);
 
-    Present(m.complete(p, CSS_CONTAINER_QUERY_IN_PARENS))
+	Present(m.complete(p, CSS_CONTAINER_QUERY_IN_PARENS))
 }
 
 #[inline]
 fn is_at_container_size_feature_in_parens(p: &mut CssParser) -> bool {
-    p.at(T!['('])
+	p.at(T!['('])
 }
 
 /// Parses a parenthesized [container size feature] query.
@@ -346,28 +332,24 @@ fn is_at_container_size_feature_in_parens(p: &mut CssParser) -> bool {
 /// ```
 #[inline]
 fn parse_container_size_feature_in_parens(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_container_size_feature_in_parens(p) {
-        return Absent;
-    }
+	if !is_at_container_size_feature_in_parens(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T!['(']);
-    parse_any_query_feature(p)
-        .or_recover(
-            p,
-            &AnyQueryInParensParseRecovery,
-            expected_any_query_feature,
-        )
-        .ok();
-    p.expect(T![')']);
+	p.bump(T!['(']);
+	parse_any_query_feature(p)
+		.or_recover(p, &AnyQueryInParensParseRecovery, expected_any_query_feature)
+		.ok();
+	p.expect(T![')']);
 
-    Present(m.complete(p, CSS_CONTAINER_SIZE_FEATURE_IN_PARENS))
+	Present(m.complete(p, CSS_CONTAINER_SIZE_FEATURE_IN_PARENS))
 }
 
 #[inline]
 fn is_at_container_style_query_in_parens(p: &mut CssParser) -> bool {
-    p.at(T![style])
+	p.at(T![style])
 }
 
 /// Parses a parenthesized _container style query_ following the `style` keyword.
@@ -379,39 +361,35 @@ fn is_at_container_style_query_in_parens(p: &mut CssParser) -> bool {
 /// ```
 #[inline]
 fn parse_container_style_query_in_parens(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_container_style_query_in_parens(p) {
-        return Absent;
-    }
+	if !is_at_container_style_query_in_parens(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T![style]);
-    p.expect(T!['(']);
-    parse_any_container_style_query(p)
-        .or_recover(
-            p,
-            &AnyQueryInParensParseRecovery,
-            expected_any_container_style_query,
-        )
-        .ok();
-    p.expect(T![')']);
+	p.bump(T![style]);
+	p.expect(T!['(']);
+	parse_any_container_style_query(p)
+		.or_recover(p, &AnyQueryInParensParseRecovery, expected_any_container_style_query)
+		.ok();
+	p.expect(T![')']);
 
-    Present(m.complete(p, CSS_CONTAINER_STYLE_QUERY_IN_PARENS))
+	Present(m.complete(p, CSS_CONTAINER_STYLE_QUERY_IN_PARENS))
 }
 
 #[inline]
 fn parse_any_container_style_query(p: &mut CssParser) -> ParsedSyntax {
-    if is_at_declaration(p) {
-        parse_declaration(p)
-    } else if is_at_container_style_not_query(p) {
-        parse_container_style_not_query(p)
-    } else {
-        parse_container_style_in_parens(p).map(|lhs| match p.cur() {
-            T![and] => parse_container_style_combinable_and_query(p, lhs),
-            T![or] => parse_container_style_combinable_or_query(p, lhs),
-            _ => lhs,
-        })
-    }
+	if is_at_declaration(p) {
+		parse_declaration(p)
+	} else if is_at_container_style_not_query(p) {
+		parse_container_style_not_query(p)
+	} else {
+		parse_container_style_in_parens(p).map(|lhs| match p.cur() {
+			T![and] => parse_container_style_combinable_and_query(p, lhs),
+			T![or] => parse_container_style_combinable_or_query(p, lhs),
+			_ => lhs,
+		})
+	}
 }
 
 /// Parses a logical _and_ sequence in a container style query chain.
@@ -422,36 +400,33 @@ fn parse_any_container_style_query(p: &mut CssParser) -> ParsedSyntax {
 /// @container style((color: red) and (background: blue)) { }
 /// ```
 #[inline]
-fn parse_container_style_combinable_and_query(
-    p: &mut CssParser,
-    lhs: CompletedMarker,
-) -> CompletedMarker {
-    if !p.at(T![and]) {
-        return lhs;
-    }
+fn parse_container_style_combinable_and_query(p: &mut CssParser, lhs: CompletedMarker) -> CompletedMarker {
+	if !p.at(T![and]) {
+		return lhs;
+	}
 
-    let m = lhs.precede(p);
-    p.bump(T![and]);
+	let m = lhs.precede(p);
+	p.bump(T![and]);
 
-    let recovery_result = parse_container_style_in_parens(p)
-        .or_recover(
-            p,
-            &AnyContainerStyleQueryInParensChainParseRecovery::new(T![and]),
-            expected_any_container_style_in_parens,
-        )
-        .map(|rhs| parse_container_style_combinable_and_query(p, rhs));
+	let recovery_result = parse_container_style_in_parens(p)
+		.or_recover(
+			p,
+			&AnyContainerStyleQueryInParensChainParseRecovery::new(T![and]),
+			expected_any_container_style_in_parens,
+		)
+		.map(|rhs| parse_container_style_combinable_and_query(p, rhs));
 
-    if recovery_result.is_err() && p.at(T![and]) {
-        // If we're here, it seems that we have
-        // @container style((--b: color) and <missing exp> and <missing exp> and ...
-        // parse_container_style_in_parens failed to parse,
-        // but the parser is already at a recovered position.
-        let m = p.start();
-        let rhs = m.complete(p, CSS_BOGUS);
-        parse_container_style_combinable_and_query(p, rhs);
-    }
+	if recovery_result.is_err() && p.at(T![and]) {
+		// If we're here, it seems that we have
+		// @container style((--b: color) and <missing exp> and <missing exp> and ...
+		// parse_container_style_in_parens failed to parse,
+		// but the parser is already at a recovered position.
+		let m = p.start();
+		let rhs = m.complete(p, CSS_BOGUS);
+		parse_container_style_combinable_and_query(p, rhs);
+	}
 
-    m.complete(p, CSS_CONTAINER_STYLE_AND_QUERY)
+	m.complete(p, CSS_CONTAINER_STYLE_AND_QUERY)
 }
 
 /// Parses a logical _or_ sequence in a container style query chain.
@@ -462,129 +437,114 @@ fn parse_container_style_combinable_and_query(
 /// @container style((color: red) or (background: blue)) { }
 /// ```
 #[inline]
-fn parse_container_style_combinable_or_query(
-    p: &mut CssParser,
-    lhs: CompletedMarker,
-) -> CompletedMarker {
-    if !p.at(T![or]) {
-        return lhs;
-    }
+fn parse_container_style_combinable_or_query(p: &mut CssParser, lhs: CompletedMarker) -> CompletedMarker {
+	if !p.at(T![or]) {
+		return lhs;
+	}
 
-    let m = lhs.precede(p);
-    p.bump(T![or]);
+	let m = lhs.precede(p);
+	p.bump(T![or]);
 
-    let recovery_result = parse_container_style_in_parens(p)
-        .or_recover(
-            p,
-            &AnyContainerStyleQueryInParensChainParseRecovery::new(T![or]),
-            expected_any_container_style_in_parens,
-        )
-        .map(|rhs| parse_container_style_combinable_or_query(p, rhs));
+	let recovery_result = parse_container_style_in_parens(p)
+		.or_recover(
+			p,
+			&AnyContainerStyleQueryInParensChainParseRecovery::new(T![or]),
+			expected_any_container_style_in_parens,
+		)
+		.map(|rhs| parse_container_style_combinable_or_query(p, rhs));
 
-    if recovery_result.is_err() && p.at(T![or]) {
-        // If we're here, it seems that we have
-        // @container style((--b: color) or <missing exp> or <missing exp> and ...
-        // parse_container_style_in_parens failed to parse,
-        // but the parser is already at a recovered position.
-        let m = p.start();
-        let rhs = m.complete(p, CSS_BOGUS);
-        parse_container_style_combinable_or_query(p, rhs);
-    }
+	if recovery_result.is_err() && p.at(T![or]) {
+		// If we're here, it seems that we have
+		// @container style((--b: color) or <missing exp> or <missing exp> and ...
+		// parse_container_style_in_parens failed to parse,
+		// but the parser is already at a recovered position.
+		let m = p.start();
+		let rhs = m.complete(p, CSS_BOGUS);
+		parse_container_style_combinable_or_query(p, rhs);
+	}
 
-    m.complete(p, CSS_CONTAINER_STYLE_OR_QUERY)
+	m.complete(p, CSS_CONTAINER_STYLE_OR_QUERY)
 }
 
 struct AnyContainerStyleQueryInParensChainParseRecovery {
-    chain_kind: CssSyntaxKind,
+	chain_kind: CssSyntaxKind,
 }
 
 impl AnyContainerStyleQueryInParensChainParseRecovery {
-    fn new(chain_kind: CssSyntaxKind) -> Self {
-        Self { chain_kind }
-    }
+	fn new(chain_kind: CssSyntaxKind) -> Self {
+		Self { chain_kind }
+	}
 }
 
 impl ParseRecovery for AnyContainerStyleQueryInParensChainParseRecovery {
-    type Kind = CssSyntaxKind;
-    type Parser<'source> = CssParser<'source>;
-    const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
+	type Kind = CssSyntaxKind;
+	type Parser<'source> = CssParser<'source>;
+	const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
-    fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
-        // We need to recover from an invalid style query in parentheses:
-        // 1. A sub-expression boundary (another "(" or ")").
-        // 2. The start of a new block ("{").
-        // 3. Another chain token (like `and` or `or`), which we stored as `chain_kind`.
-        // 4. A preceding line break that indicates a likely end to the query.
-        p.at(T!['('])
-            || p.at(T![')'])
-            || p.at(T!['{'])
-            || p.at(self.chain_kind)
-            || p.has_preceding_line_break()
-    }
+	fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
+		// We need to recover from an invalid style query in parentheses:
+		// 1. A sub-expression boundary (another "(" or ")").
+		// 2. The start of a new block ("{").
+		// 3. Another chain token (like `and` or `or`), which we stored as `chain_kind`.
+		// 4. A preceding line break that indicates a likely end to the query.
+		p.at(T!['(']) || p.at(T![')']) || p.at(T!['{']) || p.at(self.chain_kind) || p.has_preceding_line_break()
+	}
 }
 
 #[inline]
 fn is_at_container_style_not_query(p: &mut CssParser) -> bool {
-    p.at(T![not])
+	p.at(T![not])
 }
 
 #[inline]
 fn parse_container_style_not_query(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_container_style_not_query(p) {
-        return Absent;
-    }
+	if !is_at_container_style_not_query(p) {
+		return Absent;
+	}
 
-    let m = p.start();
+	let m = p.start();
 
-    p.bump(T![not]);
+	p.bump(T![not]);
 
-    parse_container_style_in_parens(p)
-        .or_recover(
-            p,
-            &AnyQueryInParensParseRecovery,
-            expected_any_container_style_in_parens,
-        )
-        .ok();
+	parse_container_style_in_parens(p)
+		.or_recover(p, &AnyQueryInParensParseRecovery, expected_any_container_style_in_parens)
+		.ok();
 
-    Present(m.complete(p, CSS_CONTAINER_STYLE_NOT_QUERY))
+	Present(m.complete(p, CSS_CONTAINER_STYLE_NOT_QUERY))
 }
 
 #[inline]
 fn is_at_container_style_in_parens(p: &mut CssParser) -> bool {
-    p.at(T!['('])
+	p.at(T!['('])
 }
 
 #[inline]
 fn parse_container_style_in_parens(p: &mut CssParser) -> ParsedSyntax {
-    if !is_at_container_style_in_parens(p) {
-        return Absent;
-    }
+	if !is_at_container_style_in_parens(p) {
+		return Absent;
+	}
 
-    let m = p.start();
-    p.bump(T!['(']);
-    parse_any_container_style_query(p)
-        .or_recover(
-            p,
-            &AnyQueryInParensParseRecovery,
-            expected_any_container_style_query,
-        )
-        .ok();
-    p.expect(T![')']);
-    Present(m.complete(p, CSS_CONTAINER_STYLE_IN_PARENS))
+	let m = p.start();
+	p.bump(T!['(']);
+	parse_any_container_style_query(p)
+		.or_recover(p, &AnyQueryInParensParseRecovery, expected_any_container_style_query)
+		.ok();
+	p.expect(T![')']);
+	Present(m.complete(p, CSS_CONTAINER_STYLE_IN_PARENS))
 }
 
 struct AnyQueryInParensParseRecovery;
 
 impl ParseRecovery for AnyQueryInParensParseRecovery {
-    type Kind = CssSyntaxKind;
-    type Parser<'source> = CssParser<'source>;
-    const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
+	type Kind = CssSyntaxKind;
+	type Parser<'source> = CssParser<'source>;
+	const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
-    fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
-        // Skips malformed or incomplete queries in parentheses until:
-        // 1) '{' (start of a declaration block),
-        // 2) ')' (closing this query context), or
-        // 3) a line break (new statement boundary).
-        p.at(T!['{']) || p.at(T![')']) || p.has_preceding_line_break()
-    }
+	fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
+		// Skips malformed or incomplete queries in parentheses until:
+		// 1) '{' (start of a declaration block),
+		// 2) ')' (closing this query context), or
+		// 3) a line break (new statement boundary).
+		p.at(T!['{']) || p.at(T![')']) || p.has_preceding_line_break()
+	}
 }

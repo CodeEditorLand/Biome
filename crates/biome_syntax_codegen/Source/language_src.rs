@@ -4,41 +4,31 @@ use quote::{format_ident, quote};
 
 pub trait LanguageSrc {
 	fn syntax_kind(&self) -> TokenStream {
-		let ident =
-			format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxKind");
+		let ident = format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxKind");
 		quote! { #ident }
 	}
 	fn syntax_factory(&self) -> TokenStream {
-		let ident =
-			format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxFactory");
+		let ident = format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxFactory");
 		quote! { #ident }
 	}
 	fn syntax_node(&self) -> TokenStream {
-		let ident =
-			format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxNode");
+		let ident = format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxNode");
 		quote! { #ident }
 	}
 	fn syntax_element(&self) -> TokenStream {
-		let ident =
-			format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxElement");
+		let ident = format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxElement");
 		quote! { #ident }
 	}
 	fn syntax_token(&self) -> TokenStream {
-		let ident =
-			format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxToken");
+		let ident = format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxToken");
 		quote! { #ident }
 	}
 	fn syntax_element_children(&self) -> TokenStream {
-		let ident = format_ident!(
-			"{}{}",
-			Case::Pascal.convert(self.language_prefix()),
-			"SyntaxElementChildren"
-		);
+		let ident = format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxElementChildren");
 		quote! { #ident }
 	}
 	fn syntax_list(&self) -> TokenStream {
-		let ident =
-			format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxList");
+		let ident = format_ident!("{}{}", Case::Pascal.convert(self.language_prefix()), "SyntaxList");
 		quote! { #ident }
 	}
 
@@ -101,5 +91,5 @@ pub trait LanguageSrc {
 	///     }
 	/// }
 	/// ```
-	fn to_method_name<'a>(&self, token_name:&'a str) -> &'a str;
+	fn to_method_name<'a>(&self, token_name: &'a str) -> &'a str;
 }

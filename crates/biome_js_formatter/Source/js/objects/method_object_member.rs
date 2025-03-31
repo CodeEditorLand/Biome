@@ -6,7 +6,7 @@ use crate::{js::classes::method_class_member::FormatAnyJsMethodMember, prelude::
 pub(crate) struct FormatJsMethodObjectMember;
 
 impl FormatNodeRule<JsMethodObjectMember> for FormatJsMethodObjectMember {
-	fn fmt_fields(&self, node:&JsMethodObjectMember, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsMethodObjectMember, f: &mut JsFormatter) -> FormatResult<()> {
 		FormatAnyJsMethodMember::from(node.clone()).fmt(f)
 	}
 }

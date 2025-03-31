@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyGritLiteral;
 impl FormatRule<AnyGritLiteral> for FormatAnyGritLiteral {
 	type Context = GritFormatContext;
 
-	fn fmt(&self, node:&AnyGritLiteral, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyGritLiteral, f: &mut GritFormatter) -> FormatResult<()> {
 		match node {
 			AnyGritLiteral::GritBogusLiteral(node) => node.format().fmt(f),
 			AnyGritLiteral::GritBooleanLiteral(node) => node.format().fmt(f),

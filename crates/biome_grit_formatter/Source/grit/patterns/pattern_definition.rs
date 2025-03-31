@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritPatternDefinition;
 impl FormatNodeRule<GritPatternDefinition> for FormatGritPatternDefinition {
-	fn fmt_fields(&self, node:&GritPatternDefinition, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GritPatternDefinition, f: &mut GritFormatter) -> FormatResult<()> {
 		let GritPatternDefinitionFields {
 			visibility_token,
 			pattern_token,

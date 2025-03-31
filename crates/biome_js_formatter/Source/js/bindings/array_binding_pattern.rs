@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub(crate) struct FormatJsArrayBindingPattern;
 
 impl FormatNodeRule<JsArrayBindingPattern> for FormatJsArrayBindingPattern {
-	fn fmt_fields(&self, node:&JsArrayBindingPattern, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsArrayBindingPatternFields { l_brack_token, elements, r_brack_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsArrayBindingPattern, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsArrayBindingPatternFields { l_brack_token, elements, r_brack_token } = node.as_fields();
 
 		write!(f, [l_brack_token.format(),])?;
 
@@ -22,11 +21,7 @@ impl FormatNodeRule<JsArrayBindingPattern> for FormatJsArrayBindingPattern {
 		write!(f, [r_brack_token.format()])
 	}
 
-	fn fmt_dangling_comments(
-		&self,
-		_:&JsArrayBindingPattern,
-		_:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &JsArrayBindingPattern, _: &mut JsFormatter) -> FormatResult<()> {
 		// Handled inside of `fmt_fields`
 		Ok(())
 	}

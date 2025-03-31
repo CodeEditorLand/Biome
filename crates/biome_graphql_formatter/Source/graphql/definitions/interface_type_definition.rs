@@ -6,19 +6,9 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlInterfaceTypeDefinition;
 impl FormatNodeRule<GraphqlInterfaceTypeDefinition> for FormatGraphqlInterfaceTypeDefinition {
-	fn fmt_fields(
-		&self,
-		node:&GraphqlInterfaceTypeDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
-		let GraphqlInterfaceTypeDefinitionFields {
-			description,
-			interface_token,
-			name,
-			implements,
-			directives,
-			fields,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &GraphqlInterfaceTypeDefinition, f: &mut GraphqlFormatter) -> FormatResult<()> {
+		let GraphqlInterfaceTypeDefinitionFields { description, interface_token, name, implements, directives, fields } =
+			node.as_fields();
 
 		if let Some(description) = description {
 			write!(f, [description.format(), hard_line_break(),])?;

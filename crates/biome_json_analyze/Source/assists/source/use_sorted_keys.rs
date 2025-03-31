@@ -1,13 +1,7 @@
 use std::{borrow::Cow, cmp::Ordering, collections::BTreeSet};
 
 use biome_analyze::{
-	ActionCategory,
-	Ast,
-	Rule,
-	RuleAction,
-	SourceActionKind,
-	context::RuleContext,
-	declare_source_rule,
+	ActionCategory, Ast, Rule, RuleAction, SourceActionKind, context::RuleContext, declare_source_rule,
 };
 use biome_console::markup;
 use biome_diagnostics::Applicability;
@@ -40,18 +34,20 @@ declare_source_rule! {
 
 #[derive(Eq, PartialEq)]
 pub struct MemberKey {
-	node:JsonMember,
+	node: JsonMember,
 }
 
 impl Ord for MemberKey {
-	fn cmp(&self, other:&Self) -> Ordering {
+	fn cmp(&self, other: &Self) -> Ordering {
 		// Sort keys using natural ordering
 		natord::compare(&self.node.name().unwrap().text(), &other.node.name().unwrap().text())
 	}
 }
 
 impl PartialOrd for MemberKey {
-	fn partial_cmp(&self, other:&Self) -> Option<Ordering> { Some(self.cmp(other)) }
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		Some(self.cmp(other))
+	}
 }
 
 pub struct Members(pub BTreeSet<MemberKey>);
@@ -98,7 +94,7 @@ impl Rule for UseSortedKeys {
 	type Signals = Option<Self::State>;
 	type State = Members;
 
-	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 
 		if node.is_empty() {
@@ -119,7 +115,7 @@ impl Rule for UseSortedKeys {
 		if !state.is_sorted() { Some(state) } else { None }
 	}
 
-	fn action(ctx:&RuleContext<Self>, state:&Self::State) -> Option<JsonRuleAction> {
+	fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsonRuleAction> {
 		let list = state.to_sorted_node();
 
 		let mut mutation = ctx.root().begin();

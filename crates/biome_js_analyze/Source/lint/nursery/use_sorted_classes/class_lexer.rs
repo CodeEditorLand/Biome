@@ -13,7 +13,7 @@
 /// Splits a string into segments based on a list of indexes. The characters at
 /// the indexes are not included in the segments, as they are considered
 /// delimiters.
-fn split_at_indexes<'a>(s:&'a str, indexes:&[usize]) -> Vec<&'a str> {
+fn split_at_indexes<'a>(s: &'a str, indexes: &[usize]) -> Vec<&'a str> {
 	let mut segments = Vec::new();
 
 	let mut start_offset = 0;
@@ -71,7 +71,7 @@ enum Quote {
 }
 
 impl Quote {
-	fn from_char(c:char) -> Option<Quote> {
+	fn from_char(c: char) -> Option<Quote> {
 		match c {
 			'\'' => Some(Quote::Single),
 			'"' => Some(Quote::Double),
@@ -92,30 +92,30 @@ enum CharKind {
 /// utility).
 #[derive(Debug, Eq, PartialEq)]
 pub struct ClassSegmentStructure {
-	pub arbitrary:bool,
-	pub text:String,
+	pub arbitrary: bool,
+	pub text: String,
 }
 
 /// Information about the structure of a CSS class.
 #[derive(Debug, Eq, PartialEq)]
 pub struct ClassStructure {
-	pub variants:Vec<ClassSegmentStructure>,
-	pub utility:ClassSegmentStructure,
+	pub variants: Vec<ClassSegmentStructure>,
+	pub utility: ClassSegmentStructure,
 }
 
 /// Processes a CSS class into a class structure, containing a list of variants
 /// and the utility itself.
-pub fn tokenize_class(class_name:&str) -> Option<ClassStructure> {
+pub fn tokenize_class(class_name: &str) -> Option<ClassStructure> {
 	// TODO: add custom separator argument (currently hardcoded to `:`).
 	let mut arbitrary_block_depth = 0;
 
 	let mut at_arbitrary_block_start = false;
 
-	let mut quoted_arbitrary_block_type:Option<Quote> = None;
+	let mut quoted_arbitrary_block_type: Option<Quote> = None;
 
 	let mut last_char = CharKind::Other;
 
-	let mut delimiter_indexes:Vec<usize> = Vec::new();
+	let mut delimiter_indexes: Vec<usize> = Vec::new();
 
 	for (index, byte) in class_name.bytes().enumerate() {
 		let mut next_last_char = CharKind::Other;
@@ -199,9 +199,9 @@ pub fn tokenize_class(class_name:&str) -> Option<ClassStructure> {
 		last_char = next_last_char;
 	}
 
-	let mut variants:Vec<ClassSegmentStructure> = split_at_indexes(class_name, &delimiter_indexes)
+	let mut variants: Vec<ClassSegmentStructure> = split_at_indexes(class_name, &delimiter_indexes)
 		.iter()
-		.map(|&s| ClassSegmentStructure { arbitrary:s.starts_with('['), text:s.to_string() })
+		.map(|&s| ClassSegmentStructure { arbitrary: s.starts_with('['), text: s.to_string() })
 		.collect();
 
 	let utility = variants.pop()?;
@@ -218,139 +218,115 @@ mod tests_tokenize_class {
 		assert_eq!(
 			tokenize_class("px-2"),
 			Some(ClassStructure {
-				variants:Vec::new(),
-				utility:ClassSegmentStructure { arbitrary:false, text:"px-2".to_string() },
+				variants: Vec::new(),
+				utility: ClassSegmentStructure { arbitrary: false, text: "px-2".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("hover:px-2"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure { arbitrary:false, text:"hover".to_string() }],
-				utility:ClassSegmentStructure { arbitrary:false, text:"px-2".to_string() },
+				variants: vec![ClassSegmentStructure { arbitrary: false, text: "hover".to_string() }],
+				utility: ClassSegmentStructure { arbitrary: false, text: "px-2".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("sm:hover:px-2"),
 			Some(ClassStructure {
-				variants:vec![
-					ClassSegmentStructure { arbitrary:false, text:"sm".to_string() },
-					ClassSegmentStructure { arbitrary:false, text:"hover".to_string() },
+				variants: vec![
+					ClassSegmentStructure { arbitrary: false, text: "sm".to_string() },
+					ClassSegmentStructure { arbitrary: false, text: "hover".to_string() },
 				],
-				utility:ClassSegmentStructure { arbitrary:false, text:"px-2".to_string() },
+				utility: ClassSegmentStructure { arbitrary: false, text: "px-2".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("hover:[mask:circle]"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure { arbitrary:false, text:"hover".to_string() }],
-				utility:ClassSegmentStructure { arbitrary:true, text:"[mask:circle]".to_string() },
+				variants: vec![ClassSegmentStructure { arbitrary: false, text: "hover".to_string() }],
+				utility: ClassSegmentStructure { arbitrary: true, text: "[mask:circle]".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("[&:nth-child(3)]:px-2"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure {
-					arbitrary:true,
-					text:"[&:nth-child(3)]".to_string(),
-				}],
-				utility:ClassSegmentStructure { arbitrary:false, text:"px-2".to_string() },
+				variants: vec![ClassSegmentStructure { arbitrary: true, text: "[&:nth-child(3)]".to_string() }],
+				utility: ClassSegmentStructure { arbitrary: false, text: "px-2".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("hover:[mask:circle]"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure { arbitrary:false, text:"hover".to_string() },],
-				utility:ClassSegmentStructure { arbitrary:true, text:"[mask:circle]".to_string() },
+				variants: vec![ClassSegmentStructure { arbitrary: false, text: "hover".to_string() },],
+				utility: ClassSegmentStructure { arbitrary: true, text: "[mask:circle]".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("has-[:checked]:bg-red-500"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure {
-					arbitrary:false,
-					text:"has-[:checked]".to_string(),
-				},],
-				utility:ClassSegmentStructure { arbitrary:false, text:"bg-red-500".to_string() },
+				variants: vec![ClassSegmentStructure { arbitrary: false, text: "has-[:checked]".to_string() },],
+				utility: ClassSegmentStructure { arbitrary: false, text: "bg-red-500".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("[&:nth-child(3)]:[mask:circle]"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure {
-					arbitrary:true,
-					text:"[&:nth-child(3)]".to_string(),
-				},],
-				utility:ClassSegmentStructure { arbitrary:true, text:"[mask:circle]".to_string() },
+				variants: vec![ClassSegmentStructure { arbitrary: true, text: "[&:nth-child(3)]".to_string() },],
+				utility: ClassSegmentStructure { arbitrary: true, text: "[mask:circle]".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("font-[Roboto]:[mask:circle]"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure {
-					arbitrary:false,
-					text:"font-[Roboto]".to_string(),
-				},],
-				utility:ClassSegmentStructure { arbitrary:true, text:"[mask:circle]".to_string() },
+				variants: vec![ClassSegmentStructure { arbitrary: false, text: "font-[Roboto]".to_string() },],
+				utility: ClassSegmentStructure { arbitrary: true, text: "[mask:circle]".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("font-['Roboto']:[mask:circle]"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure {
-					arbitrary:false,
-					text:"font-['Roboto']".to_string(),
-				},],
-				utility:ClassSegmentStructure { arbitrary:true, text:"[mask:circle]".to_string() },
+				variants: vec![ClassSegmentStructure { arbitrary: false, text: "font-['Roboto']".to_string() },],
+				utility: ClassSegmentStructure { arbitrary: true, text: "[mask:circle]".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("quotes-['Ro'b\"`oto']:block"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure {
-					arbitrary:false,
-					text:"quotes-['Ro'b\"`oto']".to_string(),
-				},],
-				utility:ClassSegmentStructure { arbitrary:false, text:"block".to_string() },
+				variants: vec![ClassSegmentStructure { arbitrary: false, text: "quotes-['Ro'b\"`oto']".to_string() },],
+				utility: ClassSegmentStructure { arbitrary: false, text: "block".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("quotes-[']']:block"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure {
-					arbitrary:false,
-					text:"quotes-[']']".to_string(),
-				},],
-				utility:ClassSegmentStructure { arbitrary:false, text:"block".to_string() },
+				variants: vec![ClassSegmentStructure { arbitrary: false, text: "quotes-[']']".to_string() },],
+				utility: ClassSegmentStructure { arbitrary: false, text: "block".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("quotes-[\"]\"]"),
 			Some(ClassStructure {
-				variants:Vec::new(),
-				utility:ClassSegmentStructure {
-					arbitrary:false,
-					text:"quotes-[\"]\"]".to_string(),
-				},
+				variants: Vec::new(),
+				utility: ClassSegmentStructure { arbitrary: false, text: "quotes-[\"]\"]".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("quotes-[`]`]"),
 			Some(ClassStructure {
-				variants:Vec::new(),
-				utility:ClassSegmentStructure { arbitrary:false, text:"quotes-[`]`]".to_string() },
+				variants: Vec::new(),
+				utility: ClassSegmentStructure { arbitrary: false, text: "quotes-[`]`]".to_string() },
 			})
 		);
 
@@ -359,32 +335,29 @@ mod tests_tokenize_class {
 		assert_eq!(
 			tokenize_class("escaped-quotes-[']\\']:block"),
 			Some(ClassStructure {
-				variants:Vec::new(),
-				utility:ClassSegmentStructure {
-					arbitrary:false,
-					text:"escaped-quotes-[']\\']:block".to_string(),
-				},
+				variants: Vec::new(),
+				utility: ClassSegmentStructure { arbitrary: false, text: "escaped-quotes-[']\\']:block".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("double-escaped-quotes-[']\\\\']:block"),
 			Some(ClassStructure {
-				variants:vec![ClassSegmentStructure {
-					arbitrary:false,
-					text:"double-escaped-quotes-[']\\\\']".to_string(),
+				variants: vec![ClassSegmentStructure {
+					arbitrary: false,
+					text: "double-escaped-quotes-[']\\\\']".to_string(),
 				},],
-				utility:ClassSegmentStructure { arbitrary:false, text:"block".to_string() },
+				utility: ClassSegmentStructure { arbitrary: false, text: "block".to_string() },
 			})
 		);
 
 		assert_eq!(
 			tokenize_class("triple-escaped-quotes-[']\\\\\\']:block"),
 			Some(ClassStructure {
-				variants:Vec::new(),
-				utility:ClassSegmentStructure {
-					arbitrary:false,
-					text:"triple-escaped-quotes-[']\\\\\\']:block".to_string(),
+				variants: Vec::new(),
+				utility: ClassSegmentStructure {
+					arbitrary: false,
+					text: "triple-escaped-quotes-[']\\\\\\']:block".to_string(),
 				},
 			})
 		);

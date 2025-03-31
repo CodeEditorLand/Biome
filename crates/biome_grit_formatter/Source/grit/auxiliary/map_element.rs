@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritMapElement;
 impl FormatNodeRule<GritMapElement> for FormatGritMapElement {
-	fn fmt_fields(&self, node:&GritMapElement, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GritMapElement, f: &mut GritFormatter) -> FormatResult<()> {
 		let GritMapElementFields { key, colon_token, value } = node.as_fields();
 
 		write!(

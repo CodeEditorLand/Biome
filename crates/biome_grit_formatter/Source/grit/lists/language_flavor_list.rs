@@ -7,7 +7,7 @@ pub(crate) struct FormatGritLanguageFlavorList;
 impl FormatRule<GritLanguageFlavorList> for FormatGritLanguageFlavorList {
 	type Context = GritFormatContext;
 
-	fn fmt(&self, node:&GritLanguageFlavorList, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &GritLanguageFlavorList, f: &mut GritFormatter) -> FormatResult<()> {
 		f.join_with(&space())
 			.entries(
 				node.format_separated(",")

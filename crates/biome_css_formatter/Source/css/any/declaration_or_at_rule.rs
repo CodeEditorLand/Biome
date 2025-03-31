@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssDeclarationOrAtRule;
 impl FormatRule<AnyCssDeclarationOrAtRule> for FormatAnyCssDeclarationOrAtRule {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssDeclarationOrAtRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssDeclarationOrAtRule, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssDeclarationOrAtRule::CssAtRule(node) => node.format().fmt(f),
 			AnyCssDeclarationOrAtRule::CssDeclarationWithSemicolon(node) => node.format().fmt(f),

@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssPseudoClassNth;
 impl FormatRule<AnyCssPseudoClassNth> for FormatAnyCssPseudoClassNth {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssPseudoClassNth, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssPseudoClassNth, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssPseudoClassNth::CssPseudoClassNth(node) => node.format().fmt(f),
 			AnyCssPseudoClassNth::CssPseudoClassNthIdentifier(node) => node.format().fmt(f),

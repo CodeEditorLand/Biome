@@ -1,12 +1,4 @@
-use biome_analyze::{
-	ActionCategory,
-	Ast,
-	FixKind,
-	Rule,
-	SourceActionKind,
-	context::RuleContext,
-	declare_source_rule,
-};
+use biome_analyze::{ActionCategory, Ast, FixKind, Rule, SourceActionKind, context::RuleContext, declare_source_rule};
 use biome_console::markup;
 use biome_deserialize::Deserializable;
 use biome_deserialize_macros::Deserializable;
@@ -57,13 +49,13 @@ impl Rule for OrganizeImports {
 	type Signals = Option<Self::State>;
 	type State = State;
 
-	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let root = ctx.query();
 
 		legacy::run(root).map(State::Legacy)
 	}
 
-	fn action(ctx:&RuleContext<Self>, state:&Self::State) -> Option<JsRuleAction> {
+	fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
 		let mut mutation = ctx.root().begin();
 
 		match state {
@@ -89,14 +81,12 @@ pub enum State {
 	Modern,
 }
 
-#[derive(
-	Clone, Debug, Default, Eq, PartialEq, serde::Deserialize, Deserializable, serde::Serialize,
-)]
+#[derive(Clone, Debug, Default, Eq, PartialEq, serde::Deserialize, Deserializable, serde::Serialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 #[serde(rename_all = "camelCase", deny_unknown_fields, default)]
 pub struct Options {
-	legacy:bool,
-	import_groups:Box<[ImportGroup]>,
+	legacy: bool,
+	import_groups: Box<[ImportGroup]>,
 }
 
 #[derive(Clone, Debug, Eq, PartialEq, serde::Deserialize, serde::Serialize)]
@@ -108,9 +98,9 @@ pub enum ImportGroup {
 }
 impl Deserializable for ImportGroup {
 	fn deserialize(
-		value:&impl biome_deserialize::DeserializableValue,
-		name:&str,
-		diagnostics:&mut Vec<biome_deserialize::DeserializationDiagnostic>,
+		value: &impl biome_deserialize::DeserializableValue,
+		name: &str,
+		diagnostics: &mut Vec<biome_deserialize::DeserializationDiagnostic>,
 	) -> Option<Self> {
 		Some(
 			if let Some(predefined) = Deserializable::deserialize(value, name, diagnostics) {

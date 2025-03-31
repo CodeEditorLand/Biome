@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsModuleSource;
 impl FormatRule<AnyJsModuleSource> for FormatAnyJsModuleSource {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsModuleSource, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsModuleSource, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsModuleSource::JsMetavariable(node) => node.format().fmt(f),
 			AnyJsModuleSource::JsModuleSource(node) => node.format().fmt(f),

@@ -59,10 +59,7 @@ impl StaticValue {
 			StaticValue::String(token) => {
 				let text = token.text_trimmed();
 
-				if matches!(
-					token.kind(),
-					JsSyntaxKind::JS_STRING_LITERAL | JsSyntaxKind::JSX_STRING_LITERAL
-				) {
+				if matches!(token.kind(), JsSyntaxKind::JS_STRING_LITERAL | JsSyntaxKind::JSX_STRING_LITERAL) {
 					// SAFETY: string literal token have a delimiters at the start and the end of
 					// the string
 					return &text[1..text.len() - 1];
@@ -114,7 +111,7 @@ impl StaticValue {
 	/// 	.with_leading_trivia(vec![(TriviaPieceKind::Whitespace, " ")]);
 	/// assert!(StaticValue::String(str_literal).is_not_string_constant("bar"));
 	/// ```
-	pub fn is_not_string_constant(&self, text:&str) -> bool {
+	pub fn is_not_string_constant(&self, text: &str) -> bool {
 		match self {
 			StaticValue::String(_) | StaticValue::EmptyString(_) => self.text() != text,
 			_ => false,
@@ -160,5 +157,7 @@ impl StaticValue {
 }
 
 impl AsRef<str> for StaticValue {
-	fn as_ref(&self) -> &str { self.text() }
+	fn as_ref(&self) -> &str {
+		self.text()
+	}
 }

@@ -1,7 +1,7 @@
 /// Sorted array of Node builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L1801-L1869>
-pub const BUILTIN:&[&str] = &[
+pub const BUILTIN: &[&str] = &[
 	"AbortController",
 	"AbortSignal",
 	"Blob",
@@ -74,7 +74,7 @@ pub const BUILTIN:&[&str] = &[
 /// Sorted array of Node
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L1727-L1800>
-pub const NODE:&[&str] = &[
+pub const NODE: &[&str] = &[
 	"AbortController",
 	"AbortSignal",
 	"Blob",
@@ -152,7 +152,7 @@ pub const NODE:&[&str] = &[
 /// Sorted array of CommonJs builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L1870-L1875>
-pub const COMMON_JS:&[&str] = &["exports", "global", "module", "require"];
+pub const COMMON_JS: &[&str] = &["exports", "global", "module", "require"];
 
 /// Returns `true` if `name` is a node global
 ///
@@ -161,7 +161,9 @@ pub const COMMON_JS:&[&str] = &["exports", "global", "module", "require"];
 ///
 /// assert!(is_global(&"__dirname"));
 /// ```
-pub fn is_global(name:&str) -> bool { NODE.binary_search(&name).is_ok() }
+pub fn is_global(name: &str) -> bool {
+	NODE.binary_search(&name).is_ok()
+}
 
 #[test]
 fn test_order() {

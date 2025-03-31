@@ -3,8 +3,7 @@
 #![allow(unused_imports)]
 
 pub(crate) use crate::{
-    AsFormat, FormatNodeRule, FormattedIterExt as _, FormattedIterExt, GritFormatContext,
-    GritFormatter, IntoFormat,
+	AsFormat, FormatNodeRule, FormattedIterExt as _, FormattedIterExt, GritFormatContext, GritFormatter, IntoFormat,
 };
 pub(crate) use biome_formatter::prelude::*;
 pub(crate) use biome_rowan::{AstNode as _, AstSeparatedList};
@@ -12,11 +11,5 @@ pub(crate) use biome_rowan::{AstNode as _, AstSeparatedList};
 pub(crate) use crate::separated::FormatAstSeparatedListExtension;
 #[allow(unused_imports)]
 pub(crate) use crate::{
-	AsFormat,
-	FormatNodeRule,
-	FormattedIterExt as _,
-	FormattedIterExt,
-	GritFormatContext,
-	GritFormatter,
-	IntoFormat,
+	AsFormat, FormatNodeRule, FormattedIterExt as _, FormattedIterExt, GritFormatContext, GritFormatter, IntoFormat,
 };

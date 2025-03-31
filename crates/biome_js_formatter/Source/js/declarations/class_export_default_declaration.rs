@@ -6,19 +6,11 @@ use crate::{prelude::*, utils::format_class::FormatClass};
 pub(crate) struct FormatJsClassExportDefaultDeclaration;
 
 impl FormatNodeRule<JsClassExportDefaultDeclaration> for FormatJsClassExportDefaultDeclaration {
-	fn fmt_fields(
-		&self,
-		node:&JsClassExportDefaultDeclaration,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsClassExportDefaultDeclaration, f: &mut JsFormatter) -> FormatResult<()> {
 		FormatClass::from(&node.clone().into()).fmt(f)
 	}
 
-	fn fmt_dangling_comments(
-		&self,
-		_:&JsClassExportDefaultDeclaration,
-		_:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &JsClassExportDefaultDeclaration, _: &mut JsFormatter) -> FormatResult<()> {
 		// Formatted as part of `FormatClass`
 		Ok(())
 	}

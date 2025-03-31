@@ -7,10 +7,12 @@ use biome_parser::{
 use crate::{parser::CssParser, syntax::block::parse_declaration_block};
 
 #[inline]
-pub(crate) fn is_at_font_face_at_rule(p:&mut CssParser) -> bool { p.at(T![font_face]) }
+pub(crate) fn is_at_font_face_at_rule(p: &mut CssParser) -> bool {
+	p.at(T![font_face])
+}
 
 #[inline]
-pub(crate) fn parse_font_face_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_font_face_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_font_face_at_rule(p) {
 		return Absent;
 	}

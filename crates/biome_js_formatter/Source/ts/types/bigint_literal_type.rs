@@ -10,7 +10,7 @@ use crate::prelude::*;
 pub struct FormatTsBigintLiteralType;
 
 impl FormatNodeRule<TsBigintLiteralType> for FormatTsBigintLiteralType {
-	fn fmt_fields(&self, node:&TsBigintLiteralType, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsBigintLiteralType, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsBigintLiteralTypeFields { minus_token, literal_token } = node.as_fields();
 
 		write![f, [minus_token.format()]]?;

@@ -1,12 +1,6 @@
 use biome_formatter::{format_args, write};
 use biome_js_syntax::{
-	AnyJsComputedMember,
-	AnyJsExpression,
-	AnyTsType,
-	JsLanguage,
-	JsSyntaxKind,
-	JsSyntaxNode,
-	TsAsExpression,
+	AnyJsComputedMember, AnyJsExpression, AnyTsType, JsLanguage, JsSyntaxKind, JsSyntaxNode, TsAsExpression,
 	parentheses::NeedsParentheses,
 };
 use biome_rowan::{SyntaxResult, SyntaxToken};
@@ -17,25 +11,21 @@ use crate::prelude::*;
 pub struct FormatTsAsExpression;
 
 impl FormatNodeRule<TsAsExpression> for FormatTsAsExpression {
-	fn fmt_fields(&self, node:&TsAsExpression, f:&mut JsFormatter) -> FormatResult<()> {
-		format_as_or_satisfies_expression(
-			f,
-			node.syntax(),
-			node.expression(),
-			node.as_token()?,
-			node.ty()?,
-		)
+	fn fmt_fields(&self, node: &TsAsExpression, f: &mut JsFormatter) -> FormatResult<()> {
+		format_as_or_satisfies_expression(f, node.syntax(), node.expression(), node.as_token()?, node.ty()?)
 	}
 
-	fn needs_parentheses(&self, item:&TsAsExpression) -> bool { item.needs_parentheses() }
+	fn needs_parentheses(&self, item: &TsAsExpression) -> bool {
+		item.needs_parentheses()
+	}
 }
 
 pub(crate) fn format_as_or_satisfies_expression(
-	f:&mut Formatter<JsFormatContext>,
-	node:&JsSyntaxNode,
-	expression:SyntaxResult<AnyJsExpression>,
-	operation_token:SyntaxToken<JsLanguage>,
-	ty:AnyTsType,
+	f: &mut Formatter<JsFormatContext>,
+	node: &JsSyntaxNode,
+	expression: SyntaxResult<AnyJsExpression>,
+	operation_token: SyntaxToken<JsLanguage>,
+	ty: AnyTsType,
 ) -> FormatResult<()> {
 	let format_inner = format_with(|f| {
 		write!(f, [expression.format(), space(), operation_token.format()])?;
@@ -102,11 +92,7 @@ mod tests {
 
 		assert_needs_parentheses!("<test {...(x as any)} />", TsAsExpression, JsFileSource::tsx());
 
-		assert_needs_parentheses!(
-			"<test>{...(x as any)}</test>",
-			TsAsExpression,
-			JsFileSource::tsx()
-		);
+		assert_needs_parentheses!("<test>{...(x as any)}</test>", TsAsExpression, JsFileSource::tsx());
 
 		assert_needs_parentheses!("await (x as any)", TsAsExpression);
 
@@ -139,10 +125,7 @@ mod tests {
 		// default-exported function expressions require parentheses, otherwise
 		// the end of the function ends the export declaration, and the `as`
 		// gets treated as a new statement.
-		assert_needs_parentheses!(
-			"export default (function foo(){} as typeof console.log)",
-			TsAsExpression
-		);
+		assert_needs_parentheses!("export default (function foo(){} as typeof console.log)", TsAsExpression);
 
 		assert_not_needs_parentheses!("export default foo as bar", TsAsExpression);
 	}

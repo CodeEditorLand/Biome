@@ -7,7 +7,7 @@ use crate::{prelude::*, utils::FormatStatementSemicolon};
 pub(crate) struct FormatJsBreakStatement;
 
 impl FormatNodeRule<JsBreakStatement> for FormatJsBreakStatement {
-	fn fmt_fields(&self, node:&JsBreakStatement, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsBreakStatement, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsBreakStatementFields { break_token, label, semicolon_token } = node.as_fields();
 
 		write!(f, [break_token.format()])?;

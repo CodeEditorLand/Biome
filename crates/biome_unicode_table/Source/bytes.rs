@@ -115,7 +115,7 @@ pub enum Dispatch {
 // This is taken from the ratel project lexer and modified
 // FIXME: Should we ignore the first ascii control chars which are nearly never
 // seen instead of returning Err?
-pub(crate) static DISPATCHER:[Dispatch; 256] = [
+pub(crate) static DISPATCHER: [Dispatch; 256] = [
 	// 0    1    2    3    4    5    6    7    8    9    A    B    C    D    E    F   //
 	ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, WHS, WHS, WHS, WHS, WHS, ERR, ERR, // 0
 	ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, ERR, // 1

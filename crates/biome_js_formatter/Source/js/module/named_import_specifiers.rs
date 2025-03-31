@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub(crate) struct FormatJsNamedImportSpecifiers;
 
 impl FormatNodeRule<JsNamedImportSpecifiers> for FormatJsNamedImportSpecifiers {
-	fn fmt_fields(&self, node:&JsNamedImportSpecifiers, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsNamedImportSpecifiersFields { l_curly_token, specifiers, r_curly_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsNamedImportSpecifiers, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsNamedImportSpecifiersFields { l_curly_token, specifiers, r_curly_token } = node.as_fields();
 
 		write!(f, [l_curly_token.format()])?;
 
@@ -30,11 +29,7 @@ impl FormatNodeRule<JsNamedImportSpecifiers> for FormatJsNamedImportSpecifiers {
 		write!(f, [r_curly_token.format()])
 	}
 
-	fn fmt_dangling_comments(
-		&self,
-		_:&JsNamedImportSpecifiers,
-		_:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &JsNamedImportSpecifiers, _: &mut JsFormatter) -> FormatResult<()> {
 		// Handled inside of `fmt_fields`
 		Ok(())
 	}

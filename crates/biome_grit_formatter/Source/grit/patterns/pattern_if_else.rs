@@ -5,15 +5,9 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritPatternIfElse;
 impl FormatNodeRule<GritPatternIfElse> for FormatGritPatternIfElse {
-	fn fmt_fields(&self, node:&GritPatternIfElse, f:&mut GritFormatter) -> FormatResult<()> {
-		let GritPatternIfElseFields {
-			r_paren_token,
-			l_paren_token,
-			else_clause,
-			if_predicate,
-			if_token,
-			then_pattern,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &GritPatternIfElse, f: &mut GritFormatter) -> FormatResult<()> {
+		let GritPatternIfElseFields { r_paren_token, l_paren_token, else_clause, if_predicate, if_token, then_pattern } =
+			node.as_fields();
 
 		write!(
 			f,

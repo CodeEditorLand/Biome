@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsImportAssertionEntry;
 impl FormatRule<AnyJsImportAssertionEntry> for FormatAnyJsImportAssertionEntry {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsImportAssertionEntry, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsImportAssertionEntry, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsImportAssertionEntry::JsBogusImportAssertionEntry(node) => node.format().fmt(f),
 			AnyJsImportAssertionEntry::JsImportAssertionEntry(node) => node.format().fmt(f),

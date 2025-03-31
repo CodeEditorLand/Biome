@@ -10,7 +10,7 @@ use crate::{
 pub(crate) struct FormatJsDoWhileStatement;
 
 impl FormatNodeRule<JsDoWhileStatement> for FormatJsDoWhileStatement {
-	fn fmt_fields(&self, node:&JsDoWhileStatement, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsDoWhileStatement, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsDoWhileStatementFields {
 			do_token,
 			body,

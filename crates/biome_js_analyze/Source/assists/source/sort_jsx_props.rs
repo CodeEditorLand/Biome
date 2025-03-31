@@ -1,14 +1,7 @@
 use std::{borrow::Cow, cmp::Ordering, iter::zip};
 
 use biome_analyze::{
-	ActionCategory,
-	Ast,
-	Rule,
-	RuleAction,
-	RuleSource,
-	RuleSourceKind,
-	SourceActionKind,
-	context::RuleContext,
+	ActionCategory, Ast, Rule, RuleAction, RuleSource, RuleSourceKind, SourceActionKind, context::RuleContext,
 	declare_source_rule,
 };
 use biome_console::markup;
@@ -56,7 +49,7 @@ impl Rule for UseSortedAttributes {
 	type Signals = Box<[Self::State]>;
 	type State = PropGroup;
 
-	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let props = ctx.query().clone();
 
 		let mut current_prop_group = PropGroup::default();
@@ -66,7 +59,7 @@ impl Rule for UseSortedAttributes {
 		for prop in props.clone() {
 			match prop {
 				AnyJsxAttribute::JsxAttribute(attr) => {
-					current_prop_group.props.push(PropElement { prop:attr });
+					current_prop_group.props.push(PropElement { prop: attr });
 				},
 				// spread prop reset sort order
 				AnyJsxAttribute::JsxSpreadAttribute(_) => {
@@ -82,7 +75,7 @@ impl Rule for UseSortedAttributes {
 		prop_groups.into_boxed_slice()
 	}
 
-	fn action(ctx:&RuleContext<Self>, state:&Self::State) -> Option<JsRuleAction> {
+	fn action(ctx: &RuleContext<Self>, state: &Self::State) -> Option<JsRuleAction> {
 		if state.is_sorted() {
 			return None;
 		}
@@ -106,11 +99,11 @@ impl Rule for UseSortedAttributes {
 
 #[derive(PartialEq, Eq, Clone)]
 pub struct PropElement {
-	prop:JsxAttribute,
+	prop: JsxAttribute,
 }
 
 impl Ord for PropElement {
-	fn cmp(&self, other:&Self) -> Ordering {
+	fn cmp(&self, other: &Self) -> Ordering {
 		let (Ok(self_name), Ok(other_name)) = (self.prop.name(), other.prop.name()) else {
 			return Ordering::Equal;
 		};
@@ -122,12 +115,14 @@ impl Ord for PropElement {
 }
 
 impl PartialOrd for PropElement {
-	fn partial_cmp(&self, other:&Self) -> Option<Ordering> { Some(self.cmp(other)) }
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		Some(self.cmp(other))
+	}
 }
 
 #[derive(Clone, Default)]
 pub struct PropGroup {
-	props:Vec<PropElement>,
+	props: Vec<PropElement>,
 }
 
 impl PropGroup {

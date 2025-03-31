@@ -8,7 +8,7 @@ pub struct FormatTsEnumMemberList;
 impl FormatRule<TsEnumMemberList> for FormatTsEnumMemberList {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&TsEnumMemberList, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &TsEnumMemberList, f: &mut JsFormatter) -> FormatResult<()> {
 		let trailing_separator = FormatTrailingCommas::ES5.trailing_separator(f.options());
 
 		let mut joiner = f.join_nodes_with_soft_line();

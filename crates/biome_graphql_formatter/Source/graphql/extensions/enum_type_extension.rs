@@ -6,18 +6,9 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlEnumTypeExtension;
 impl FormatNodeRule<GraphqlEnumTypeExtension> for FormatGraphqlEnumTypeExtension {
-	fn fmt_fields(
-		&self,
-		node:&GraphqlEnumTypeExtension,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
-		let GraphqlEnumTypeExtensionFields {
-			extend_token,
-			enum_token,
-			name,
-			directives,
-			enum_values,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &GraphqlEnumTypeExtension, f: &mut GraphqlFormatter) -> FormatResult<()> {
+		let GraphqlEnumTypeExtensionFields { extend_token, enum_token, name, directives, enum_values } =
+			node.as_fields();
 
 		write![
 			f,

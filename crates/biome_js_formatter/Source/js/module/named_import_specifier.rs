@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub(crate) struct FormatJsNamedImportSpecifier;
 
 impl FormatNodeRule<JsNamedImportSpecifier> for FormatJsNamedImportSpecifier {
-	fn fmt_fields(&self, node:&JsNamedImportSpecifier, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsNamedImportSpecifierFields { type_token, name, as_token, local_name } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsNamedImportSpecifier, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsNamedImportSpecifierFields { type_token, name, as_token, local_name } = node.as_fields();
 
 		if let Some(type_token) = type_token {
 			write!(f, [type_token.format(), space()])?;

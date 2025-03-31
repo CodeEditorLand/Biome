@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssUnknownValueAtRule;
 impl FormatNodeRule<CssUnknownValueAtRule> for FormatCssUnknownValueAtRule {
-	fn fmt_fields(&self, node:&CssUnknownValueAtRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssUnknownValueAtRule, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssUnknownValueAtRuleFields { name, components, semicolon_token } = node.as_fields();
 
 		write!(f, [name.format()])?;

@@ -18,7 +18,7 @@ use biome_service::Rules;
 use libfuzzer_sys::Corpus;
 use similar::TextDiff;
 
-pub fn fuzz_js_parser_with_source_type(data:&[u8], source:JsFileSource) -> Corpus {
+pub fn fuzz_js_parser_with_source_type(data: &[u8], source: JsFileSource) -> Corpus {
 	let Ok(code1) = std::str::from_utf8(data) else {
 		return Corpus::Reject;
 	};
@@ -36,26 +36,30 @@ pub fn fuzz_js_parser_with_source_type(data:&[u8], source:JsFileSource) -> Corpu
 	Corpus::Keep
 }
 
-static mut ANALYSIS_RULES:Option<Rules> = None;
-static mut ANALYSIS_RULE_FILTERS:Option<Vec<RuleFilter>> = None;
-static mut ANALYSIS_OPTIONS:Option<AnalyzerOptions> = None;
+static mut ANALYSIS_RULES: Option<Rules> = None;
+static mut ANALYSIS_RULE_FILTERS: Option<Vec<RuleFilter>> = None;
+static mut ANALYSIS_OPTIONS: Option<AnalyzerOptions> = None;
 
 struct DiagnosticDescriptionExtractor<'a, D> {
-	diagnostic:&'a D,
+	diagnostic: &'a D,
 }
 
 impl<'a, D> DiagnosticDescriptionExtractor<'a, D> {
-	pub fn new(diagnostic:&'a D) -> Self { Self { diagnostic } }
+	pub fn new(diagnostic: &'a D) -> Self {
+		Self { diagnostic }
+	}
 }
 
 impl<'a, D> Display for DiagnosticDescriptionExtractor<'a, D>
 where
 	D: Diagnostic,
 {
-	fn fmt(&self, f:&mut Formatter<'_>) -> std::fmt::Result { self.diagnostic.description(f) }
+	fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
+		self.diagnostic.description(f)
+	}
 }
 
-pub fn fuzz_js_formatter_with_source_type(data:&[u8], source:JsFileSource) -> Corpus {
+pub fn fuzz_js_formatter_with_source_type(data: &[u8], source: JsFileSource) -> Corpus {
 	let Ok(code1) = std::str::from_utf8(data) else {
 		return Corpus::Reject;
 	};
@@ -64,9 +68,7 @@ pub fn fuzz_js_formatter_with_source_type(data:&[u8], source:JsFileSource) -> Co
 	let rule_filters = if let Some(rules) = unsafe { ANALYSIS_RULE_FILTERS.as_ref() } {
 		rules
 	} else {
-		let rules = unsafe {
-			ANALYSIS_RULES.get_or_insert_with(|| Rules { all:Some(true), ..Default::default() })
-		};
+		let rules = unsafe { ANALYSIS_RULES.get_or_insert_with(|| Rules { all: Some(true), ..Default::default() }) };
 
 		let rules = rules.as_enabled_rules().into_iter().collect::<Vec<_>>();
 
@@ -95,8 +97,7 @@ pub fn fuzz_js_formatter_with_source_type(data:&[u8], source:JsFileSource) -> Co
 			source,
 			|e| -> ControlFlow<()> {
 				if let Some(diagnostic) = e.diagnostic() {
-					linter_errors
-						.push(DiagnosticDescriptionExtractor::new(&diagnostic).to_string());
+					linter_errors.push(DiagnosticDescriptionExtractor::new(&diagnostic).to_string());
 				}
 
 				ControlFlow::Continue(())
@@ -128,8 +129,7 @@ pub fn fuzz_js_formatter_with_source_type(data:&[u8], source:JsFileSource) -> Co
 					source,
 					|e| {
 						if let Some(diagnostic) = e.diagnostic() {
-							let new_error =
-								DiagnosticDescriptionExtractor::new(&diagnostic).to_string();
+							let new_error = DiagnosticDescriptionExtractor::new(&diagnostic).to_string();
 
 							if let Some(idx) = linter_errors.iter().position(|e| *e == new_error) {
 								linter_errors.remove(idx);
@@ -155,8 +155,7 @@ pub fn fuzz_js_formatter_with_source_type(data:&[u8], source:JsFileSource) -> Co
 
 				let syntax2 = parse2.syntax();
 
-				let formatted2 = format_node(&syntax2, language)
-					.expect("formatted code could not be reformatted");
+				let formatted2 = format_node(&syntax2, language).expect("formatted code could not be reformatted");
 
 				let printed2 = formatted2.print().expect("reformatted code could not be printed");
 
@@ -177,7 +176,7 @@ pub fn fuzz_js_formatter_with_source_type(data:&[u8], source:JsFileSource) -> Co
 	Corpus::Keep
 }
 
-pub fn fuzz_json_parser(data:&[u8]) -> Corpus {
+pub fn fuzz_json_parser(data: &[u8]) -> Corpus {
 	let Ok(code1) = std::str::from_utf8(data) else {
 		return Corpus::Reject;
 	};
@@ -195,7 +194,7 @@ pub fn fuzz_json_parser(data:&[u8]) -> Corpus {
 	Corpus::Keep
 }
 
-pub fn fuzz_json_formatter(data:&[u8]) -> Corpus {
+pub fn fuzz_json_formatter(data: &[u8]) -> Corpus {
 	let Ok(code1) = std::str::from_utf8(data) else {
 		return Corpus::Reject;
 	};
@@ -223,8 +222,7 @@ pub fn fuzz_json_formatter(data:&[u8]) -> Corpus {
 
 				let syntax2 = parse2.syntax();
 
-				let formatted2 = format_node(&syntax2, language)
-					.expect("formatted code could not be reformatted");
+				let formatted2 = format_node(&syntax2, language).expect("formatted code could not be reformatted");
 
 				let printed2 = formatted2.print().expect("reformatted code could not be printed");
 

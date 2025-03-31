@@ -17,7 +17,9 @@ pub(crate) use self::{
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct RawSyntaxKind(pub u16);
 
-pub(crate) fn has_live() -> bool { node::has_live() || token::has_live() || trivia::has_live() }
+pub(crate) fn has_live() -> bool {
+	node::has_live() || token::has_live() || trivia::has_live()
+}
 
 #[cfg(test)]
 mod tests {
@@ -26,7 +28,7 @@ mod tests {
 
 	#[test]
 	fn assert_send_sync() {
-		fn f<T:Send + Sync>() {}
+		fn f<T: Send + Sync>() {}
 
 		f::<GreenNode>();
 

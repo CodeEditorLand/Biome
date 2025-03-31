@@ -7,11 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsArrayBindingPatternElement;
 
 impl FormatNodeRule<JsArrayBindingPatternElement> for FormatJsArrayBindingPatternElement {
-	fn fmt_fields(
-		&self,
-		node:&JsArrayBindingPatternElement,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsArrayBindingPatternElement, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsArrayBindingPatternElementFields { pattern, init } = node.as_fields();
 
 		write!(f, [pattern.format()])?;

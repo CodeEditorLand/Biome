@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsNumberType;
 
 impl FormatNodeRule<TsNumberType> for FormatTsNumberType {
-	fn fmt_fields(&self, node:&TsNumberType, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsNumberType, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsNumberTypeFields { number_token } = node.as_fields();
 
 		write![f, [number_token.format()]]

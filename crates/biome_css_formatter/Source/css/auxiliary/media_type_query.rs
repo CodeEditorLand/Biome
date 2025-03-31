@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssMediaTypeQuery;
 impl FormatNodeRule<CssMediaTypeQuery> for FormatCssMediaTypeQuery {
-	fn fmt_fields(&self, node:&CssMediaTypeQuery, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssMediaTypeQuery, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssMediaTypeQueryFields { modifier, ty } = node.as_fields();
 
 		if modifier.is_some() {

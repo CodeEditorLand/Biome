@@ -1,15 +1,9 @@
 use biome_js_syntax::{
-	AnyJsConstructorParameter,
-	AnyJsParameter,
-	JsParameterList,
+	AnyJsConstructorParameter, AnyJsParameter, JsParameterList,
 	parameter_ext::{AnyJsParameterList, AnyParameter},
 };
 
-use crate::{
-	context::trailing_commas::FormatTrailingCommas,
-	js::bindings::parameters::ParameterLayout,
-	prelude::*,
-};
+use crate::{context::trailing_commas::FormatTrailingCommas, js::bindings::parameters::ParameterLayout, prelude::*};
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatJsParameterList;
@@ -17,29 +11,25 @@ pub(crate) struct FormatJsParameterList;
 impl FormatRule<JsParameterList> for FormatJsParameterList {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&JsParameterList, f:&mut JsFormatter) -> FormatResult<()> {
-		FormatJsAnyParameterList::with_layout(
-			&AnyJsParameterList::from(node.clone()),
-			ParameterLayout::Default,
-		)
-		.fmt(f)
+	fn fmt(&self, node: &JsParameterList, f: &mut JsFormatter) -> FormatResult<()> {
+		FormatJsAnyParameterList::with_layout(&AnyJsParameterList::from(node.clone()), ParameterLayout::Default).fmt(f)
 	}
 }
 
 #[derive(Debug, Copy, Clone)]
 pub(crate) struct FormatJsAnyParameterList<'a> {
-	list:&'a AnyJsParameterList,
-	layout:Option<ParameterLayout>,
+	list: &'a AnyJsParameterList,
+	layout: Option<ParameterLayout>,
 }
 
 impl<'a> FormatJsAnyParameterList<'a> {
-	pub fn with_layout(list:&'a AnyJsParameterList, layout:ParameterLayout) -> Self {
-		Self { list, layout:Some(layout) }
+	pub fn with_layout(list: &'a AnyJsParameterList, layout: ParameterLayout) -> Self {
+		Self { list, layout: Some(layout) }
 	}
 }
 
 impl Format<JsFormatContext> for FormatJsAnyParameterList<'_> {
-	fn fmt(&self, f:&mut Formatter<JsFormatContext>) -> FormatResult<()> {
+	fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
 		match self.layout {
 			None | Some(ParameterLayout::Default | ParameterLayout::NoParameters) => {
 				let has_trailing_rest = match self.list.last() {
@@ -47,9 +37,9 @@ impl Format<JsFormatContext> for FormatJsAnyParameterList<'_> {
 						matches!(
 							elem?,
 							AnyParameter::AnyJsParameter(AnyJsParameter::JsRestParameter(_))
-								| AnyParameter::AnyJsConstructorParameter(
-									AnyJsConstructorParameter::JsRestParameter(_)
-								)
+								| AnyParameter::AnyJsConstructorParameter(AnyJsConstructorParameter::JsRestParameter(
+									_
+								))
 						)
 					},
 					None => false,
@@ -89,16 +79,10 @@ impl Format<JsFormatContext> for FormatJsAnyParameterList<'_> {
 
 				match self.list {
 					AnyJsParameterList::JsParameterList(list) => {
-						join.entries(
-							list.format_separated(",")
-								.with_trailing_separator(TrailingSeparator::Omit),
-						)
+						join.entries(list.format_separated(",").with_trailing_separator(TrailingSeparator::Omit))
 					},
 					AnyJsParameterList::JsConstructorParameterList(list) => {
-						join.entries(
-							list.format_separated(",")
-								.with_trailing_separator(TrailingSeparator::Omit),
-						)
+						join.entries(list.format_separated(",").with_trailing_separator(TrailingSeparator::Omit))
 					},
 				};
 
@@ -109,12 +93,13 @@ impl Format<JsFormatContext> for FormatJsAnyParameterList<'_> {
 }
 
 fn join_parameter_list<S>(
-	joiner:&mut JoinNodesBuilder<'_, '_, S, JsFormatContext>,
-	list:&AnyJsParameterList,
-	trailing_separator:TrailingSeparator,
+	joiner: &mut JoinNodesBuilder<'_, '_, S, JsFormatContext>,
+	list: &AnyJsParameterList,
+	trailing_separator: TrailingSeparator,
 ) -> FormatResult<()>
 where
-	S: Format<JsFormatContext>, {
+	S: Format<JsFormatContext>,
+{
 	match list {
 		AnyJsParameterList::JsParameterList(list) => {
 			let entries = list

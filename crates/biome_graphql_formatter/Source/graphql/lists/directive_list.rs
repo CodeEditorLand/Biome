@@ -9,7 +9,7 @@ pub(crate) struct FormatGraphqlDirectiveList;
 impl FormatRule<GraphqlDirectiveList> for FormatGraphqlDirectiveList {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(&self, node:&GraphqlDirectiveList, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &GraphqlDirectiveList, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		if node.len() == 0 {
 			return Ok(());
 		}
@@ -22,10 +22,7 @@ impl FormatRule<GraphqlDirectiveList> for FormatGraphqlDirectiveList {
 
 		if matches!(
 			node.syntax().parent().kind(),
-			Some(
-				GraphqlSyntaxKind::GRAPHQL_FRAGMENT_DEFINITION
-					| GraphqlSyntaxKind::GRAPHQL_OPERATION_DEFINITION
-			)
+			Some(GraphqlSyntaxKind::GRAPHQL_FRAGMENT_DEFINITION | GraphqlSyntaxKind::GRAPHQL_OPERATION_DEFINITION)
 		) {
 			write!(f, [group(&format_args!(&soft_line_break_or_space(), &list))])
 		} else {

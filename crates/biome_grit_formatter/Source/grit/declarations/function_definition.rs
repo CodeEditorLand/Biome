@@ -5,15 +5,9 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritFunctionDefinition;
 impl FormatNodeRule<GritFunctionDefinition> for FormatGritFunctionDefinition {
-	fn fmt_fields(&self, node:&GritFunctionDefinition, f:&mut GritFormatter) -> FormatResult<()> {
-		let GritFunctionDefinitionFields {
-			function_token,
-			name,
-			l_paren_token,
-			args,
-			r_paren_token,
-			body,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &GritFunctionDefinition, f: &mut GritFormatter) -> FormatResult<()> {
+		let GritFunctionDefinitionFields { function_token, name, l_paren_token, args, r_paren_token, body } =
+			node.as_fields();
 
 		write!(
 			f,

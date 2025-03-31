@@ -5,13 +5,8 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlOperationDefinition;
 impl FormatNodeRule<GraphqlOperationDefinition> for FormatGraphqlOperationDefinition {
-	fn fmt_fields(
-		&self,
-		node:&GraphqlOperationDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
-		let GraphqlOperationDefinitionFields { ty, name, variables, directives, selection_set } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &GraphqlOperationDefinition, f: &mut GraphqlFormatter) -> FormatResult<()> {
+		let GraphqlOperationDefinitionFields { ty, name, variables, directives, selection_set } = node.as_fields();
 
 		write!(f, [ty.format()])?;
 

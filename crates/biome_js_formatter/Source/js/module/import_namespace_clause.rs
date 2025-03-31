@@ -7,14 +7,9 @@ use crate::prelude::*;
 pub(crate) struct FormatJsImportNamespaceClause;
 
 impl FormatNodeRule<JsImportNamespaceClause> for FormatJsImportNamespaceClause {
-	fn fmt_fields(&self, node:&JsImportNamespaceClause, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsImportNamespaceClauseFields {
-			type_token,
-			namespace_specifier,
-			from_token,
-			source,
-			assertion,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &JsImportNamespaceClause, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsImportNamespaceClauseFields { type_token, namespace_specifier, from_token, source, assertion } =
+			node.as_fields();
 
 		if let Some(type_token) = type_token {
 			write!(f, [type_token.format(), space()])?;

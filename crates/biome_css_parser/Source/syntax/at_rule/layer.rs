@@ -12,10 +12,12 @@ use crate::{
 };
 
 #[inline]
-pub(crate) fn is_at_layer_at_rule(p:&mut CssParser) -> bool { p.at(T![layer]) }
+pub(crate) fn is_at_layer_at_rule(p: &mut CssParser) -> bool {
+	p.at(T![layer])
+}
 
 #[inline]
-pub(crate) fn parse_layer_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_layer_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_layer_at_rule(p) {
 		return Absent;
 	}
@@ -30,7 +32,7 @@ pub(crate) fn parse_layer_at_rule(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-pub(crate) fn parse_any_layer(p:&mut CssParser) -> CompletedMarker {
+pub(crate) fn parse_any_layer(p: &mut CssParser) -> CompletedMarker {
 	let m = p.start();
 
 	LayerReferenceList.parse_list(p);
@@ -48,8 +50,9 @@ pub(crate) fn parse_any_layer(p:&mut CssParser) -> CompletedMarker {
 	m.complete(p, kind)
 }
 
-const LAYER_REFERENCE_LIST_END_SET:TokenSet<CssSyntaxKind> = token_set!(T!['{'], T![;]);
-const LAYER_REFERENCE_LIST_RECOVERY_SET:TokenSet<CssSyntaxKind> = LAYER_REFERENCE_LIST_END_SET.union(token_set!(T![,]));
+const LAYER_REFERENCE_LIST_END_SET: TokenSet<CssSyntaxKind> = token_set!(T!['{'], T![;]);
+const LAYER_REFERENCE_LIST_RECOVERY_SET: TokenSet<CssSyntaxKind> =
+	LAYER_REFERENCE_LIST_END_SET.union(token_set!(T![,]));
 
 struct LayerReferenceList;
 
@@ -57,13 +60,17 @@ impl ParseSeparatedList for LayerReferenceList {
 	type Kind = CssSyntaxKind;
 	type Parser<'source> = CssParser<'source>;
 
-	const LIST_KIND:Self::Kind = CSS_LAYER_REFERENCE_LIST;
+	const LIST_KIND: Self::Kind = CSS_LAYER_REFERENCE_LIST;
 
-	fn parse_element(&mut self, p:&mut Self::Parser<'_>) -> ParsedSyntax { LayerNameList.parse_list(p).into() }
+	fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
+		LayerNameList.parse_list(p).into()
+	}
 
-	fn is_at_list_end(&self, p:&mut Self::Parser<'_>) -> bool { p.at_ts(LAYER_REFERENCE_LIST_END_SET) }
+	fn is_at_list_end(&self, p: &mut Self::Parser<'_>) -> bool {
+		p.at_ts(LAYER_REFERENCE_LIST_END_SET)
+	}
 
-	fn recover(&mut self, p:&mut Self::Parser<'_>, parsed_element:ParsedSyntax) -> RecoveryResult {
+	fn recover(&mut self, p: &mut Self::Parser<'_>, parsed_element: ParsedSyntax) -> RecoveryResult {
 		parsed_element.or_recover_with_token_set(
 			p,
 			&ParseRecoveryTokenSet::new(CSS_BOGUS, LAYER_REFERENCE_LIST_RECOVERY_SET).enable_recovery_on_line_break(),
@@ -71,11 +78,13 @@ impl ParseSeparatedList for LayerReferenceList {
 		)
 	}
 
-	fn separating_element_kind(&mut self) -> Self::Kind { T![,] }
+	fn separating_element_kind(&mut self) -> Self::Kind {
+		T![,]
+	}
 }
 
-const LAYER_NAME_LIST_END_SET:TokenSet<CssSyntaxKind> = token_set!(T![')'], T![,], T!['{'], T![;]);
-const LAYER_NAME_LIST_RECOVERY_SET:TokenSet<CssSyntaxKind> = LAYER_NAME_LIST_END_SET.union(token_set!(T![.]));
+const LAYER_NAME_LIST_END_SET: TokenSet<CssSyntaxKind> = token_set!(T![')'], T![,], T!['{'], T![;]);
+const LAYER_NAME_LIST_RECOVERY_SET: TokenSet<CssSyntaxKind> = LAYER_NAME_LIST_END_SET.union(token_set!(T![.]));
 
 pub(crate) struct LayerNameList;
 
@@ -83,9 +92,9 @@ impl ParseSeparatedList for LayerNameList {
 	type Kind = CssSyntaxKind;
 	type Parser<'source> = CssParser<'source>;
 
-	const LIST_KIND:Self::Kind = CSS_LAYER_NAME_LIST;
+	const LIST_KIND: Self::Kind = CSS_LAYER_NAME_LIST;
 
-	fn parse_element(&mut self, p:&mut Self::Parser<'_>) -> ParsedSyntax {
+	fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
 		// The Spec for `<layer-name>` technically adds that "The CSS-wide
 		// keywords are reserved for future use, and cause the rule to be
 		// invalid at parse time"...but it's unclear if that means it's a
@@ -99,9 +108,11 @@ impl ParseSeparatedList for LayerNameList {
 		parse_regular_identifier(p)
 	}
 
-	fn is_at_list_end(&self, p:&mut Self::Parser<'_>) -> bool { p.at_ts(LAYER_NAME_LIST_END_SET) }
+	fn is_at_list_end(&self, p: &mut Self::Parser<'_>) -> bool {
+		p.at_ts(LAYER_NAME_LIST_END_SET)
+	}
 
-	fn recover(&mut self, p:&mut Self::Parser<'_>, parsed_element:ParsedSyntax) -> RecoveryResult {
+	fn recover(&mut self, p: &mut Self::Parser<'_>, parsed_element: ParsedSyntax) -> RecoveryResult {
 		parsed_element.or_recover_with_token_set(
 			p,
 			&ParseRecoveryTokenSet::new(CSS_BOGUS, LAYER_NAME_LIST_RECOVERY_SET),
@@ -109,5 +120,7 @@ impl ParseSeparatedList for LayerNameList {
 		)
 	}
 
-	fn separating_element_kind(&mut self) -> Self::Kind { T![.] }
+	fn separating_element_kind(&mut self) -> Self::Kind {
+		T![.]
+	}
 }

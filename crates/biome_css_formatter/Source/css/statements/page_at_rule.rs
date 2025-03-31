@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssPageAtRule;
 impl FormatNodeRule<CssPageAtRule> for FormatCssPageAtRule {
-	fn fmt_fields(&self, node:&CssPageAtRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssPageAtRule, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssPageAtRuleFields { page_token, selectors, block } = node.as_fields();
 
 		write!(

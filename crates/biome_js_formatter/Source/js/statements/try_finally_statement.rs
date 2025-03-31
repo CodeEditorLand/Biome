@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub(crate) struct FormatJsTryFinallyStatement;
 
 impl FormatNodeRule<JsTryFinallyStatement> for FormatJsTryFinallyStatement {
-	fn fmt_fields(&self, node:&JsTryFinallyStatement, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsTryFinallyStatementFields { try_token, body, catch_clause, finally_clause } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsTryFinallyStatement, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsTryFinallyStatementFields { try_token, body, catch_clause, finally_clause } = node.as_fields();
 
 		write![f, [try_token.format(), space(), body.format()]]?;
 

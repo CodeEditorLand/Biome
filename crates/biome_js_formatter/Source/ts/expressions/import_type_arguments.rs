@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatTsImportTypeArguments;
 impl FormatNodeRule<TsImportTypeArguments> for FormatTsImportTypeArguments {
-	fn fmt_fields(&self, node:&TsImportTypeArguments, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsImportTypeArguments, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsImportTypeArgumentsFields {
 			l_paren_token,
 			argument,

@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssUrlValue;
 impl FormatRule<AnyCssUrlValue> for FormatAnyCssUrlValue {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssUrlValue, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssUrlValue, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssUrlValue::CssString(node) => node.format().fmt(f),
 			AnyCssUrlValue::CssUrlValueRaw(node) => node.format().fmt(f),

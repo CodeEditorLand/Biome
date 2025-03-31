@@ -1,24 +1,14 @@
 use biome_formatter::write;
-use biome_js_syntax::{
-	JsObjectAssignmentPatternShorthandProperty,
-	JsObjectAssignmentPatternShorthandPropertyFields,
-};
+use biome_js_syntax::{JsObjectAssignmentPatternShorthandProperty, JsObjectAssignmentPatternShorthandPropertyFields};
 
 use crate::prelude::*;
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatJsObjectAssignmentPatternShorthandProperty;
 
-impl FormatNodeRule<JsObjectAssignmentPatternShorthandProperty>
-	for FormatJsObjectAssignmentPatternShorthandProperty
-{
-	fn fmt_fields(
-		&self,
-		node:&JsObjectAssignmentPatternShorthandProperty,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
-		let JsObjectAssignmentPatternShorthandPropertyFields { identifier, init } =
-			node.as_fields();
+impl FormatNodeRule<JsObjectAssignmentPatternShorthandProperty> for FormatJsObjectAssignmentPatternShorthandProperty {
+	fn fmt_fields(&self, node: &JsObjectAssignmentPatternShorthandProperty, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsObjectAssignmentPatternShorthandPropertyFields { identifier, init } = node.as_fields();
 
 		write!(f, [identifier.format()?,])?;
 

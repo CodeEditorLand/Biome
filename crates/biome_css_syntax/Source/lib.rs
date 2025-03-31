@@ -13,7 +13,7 @@ pub use self::generated::*;
 use crate::CssSyntaxKind::*;
 
 impl From<u16> for CssSyntaxKind {
-	fn from(d:u16) -> CssSyntaxKind {
+	fn from(d: u16) -> CssSyntaxKind {
 		assert!(d <= (CssSyntaxKind::__LAST as u16));
 
 		unsafe { std::mem::transmute::<u16, CssSyntaxKind>(d) }
@@ -21,13 +21,17 @@ impl From<u16> for CssSyntaxKind {
 }
 
 impl From<CssSyntaxKind> for u16 {
-	fn from(k:CssSyntaxKind) -> u16 { k as u16 }
+	fn from(k: CssSyntaxKind) -> u16 {
+		k as u16
+	}
 }
 
 impl CssSyntaxKind {
 	/// Returns `true` for any contextual or non-contextual keyword
 	#[inline]
-	pub const fn is_keyword(self) -> bool { true }
+	pub const fn is_keyword(self) -> bool {
+		true
+	}
 
 	/// Returns `true` for contextual keywords
 	#[inline]
@@ -52,7 +56,9 @@ impl CssSyntaxKind {
 	/// Returns true for all non-contextual keywords (includes future reserved
 	/// keywords)
 	#[inline]
-	pub const fn is_non_contextual_keyword(self) -> bool { self.is_keyword() && !self.is_contextual_keyword() }
+	pub const fn is_non_contextual_keyword(self) -> bool {
+		self.is_keyword() && !self.is_contextual_keyword()
+	}
 
 	/// Returns true for all _known_ dimension units.
 	///
@@ -66,8 +72,8 @@ impl CssSyntaxKind {
 }
 
 impl biome_rowan::SyntaxKind for CssSyntaxKind {
-	const EOF:Self = EOF;
-	const TOMBSTONE:Self = CssSyntaxKind::TOMBSTONE;
+	const EOF: Self = EOF;
+	const TOMBSTONE: Self = CssSyntaxKind::TOMBSTONE;
 
 	fn is_bogus(&self) -> bool {
 		matches!(
@@ -125,15 +131,23 @@ impl biome_rowan::SyntaxKind for CssSyntaxKind {
 	}
 
 	#[inline]
-	fn to_raw(&self) -> RawSyntaxKind { RawSyntaxKind(*self as u16) }
+	fn to_raw(&self) -> RawSyntaxKind {
+		RawSyntaxKind(*self as u16)
+	}
 
 	#[inline]
-	fn from_raw(raw:RawSyntaxKind) -> Self { Self::from(raw.0) }
+	fn from_raw(raw: RawSyntaxKind) -> Self {
+		Self::from(raw.0)
+	}
 
-	fn is_root(&self) -> bool { matches!(self, CSS_ROOT) }
+	fn is_root(&self) -> bool {
+		matches!(self, CSS_ROOT)
+	}
 
 	#[inline]
-	fn is_list(&self) -> bool { CssSyntaxKind::is_list(*self) }
+	fn is_list(&self) -> bool {
+		CssSyntaxKind::is_list(*self)
+	}
 
 	fn is_trivia(self) -> bool {
 		matches!(
@@ -145,13 +159,15 @@ impl biome_rowan::SyntaxKind for CssSyntaxKind {
 		)
 	}
 
-	fn to_string(&self) -> Option<&'static str> { CssSyntaxKind::to_string(self) }
+	fn to_string(&self) -> Option<&'static str> {
+		CssSyntaxKind::to_string(self)
+	}
 }
 
 impl TryFrom<CssSyntaxKind> for TriviaPieceKind {
 	type Error = ();
 
-	fn try_from(value:CssSyntaxKind) -> Result<Self, Self::Error> {
+	fn try_from(value: CssSyntaxKind) -> Result<Self, Self::Error> {
 		if value.is_trivia() {
 			match value {
 				CssSyntaxKind::NEWLINE => Ok(TriviaPieceKind::Newline),

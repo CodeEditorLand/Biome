@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssContainerStyleOrCombinableQuery;
 impl FormatRule<AnyCssContainerStyleOrCombinableQuery> for FormatAnyCssContainerStyleOrCombinableQuery {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssContainerStyleOrCombinableQuery, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssContainerStyleOrCombinableQuery, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssContainerStyleOrCombinableQuery::CssContainerStyleInParens(node) => node.format().fmt(f),
 

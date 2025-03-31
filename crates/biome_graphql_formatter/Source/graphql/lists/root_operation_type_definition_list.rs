@@ -3,16 +3,10 @@ use biome_graphql_syntax::GraphqlRootOperationTypeDefinitionList;
 use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlRootOperationTypeDefinitionList;
-impl FormatRule<GraphqlRootOperationTypeDefinitionList>
-	for FormatGraphqlRootOperationTypeDefinitionList
-{
+impl FormatRule<GraphqlRootOperationTypeDefinitionList> for FormatGraphqlRootOperationTypeDefinitionList {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(
-		&self,
-		node:&GraphqlRootOperationTypeDefinitionList,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node: &GraphqlRootOperationTypeDefinitionList, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		let mut join = f.join_nodes_with_hardline();
 
 		for operation_type in node {

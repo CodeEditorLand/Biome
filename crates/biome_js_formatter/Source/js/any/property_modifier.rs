@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsPropertyModifier;
 impl FormatRule<AnyJsPropertyModifier> for FormatAnyJsPropertyModifier {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsPropertyModifier, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsPropertyModifier, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsPropertyModifier::JsAccessorModifier(node) => node.format().fmt(f),
 			AnyJsPropertyModifier::JsDecorator(node) => node.format().fmt(f),

@@ -8,7 +8,7 @@ pub struct FormatTsTemplateElementList;
 impl FormatRule<TsTemplateElementList> for FormatTsTemplateElementList {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&TsTemplateElementList, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &TsTemplateElementList, f: &mut JsFormatter) -> FormatResult<()> {
 		AnyTemplateElementList::TsTemplateElementList(node.clone()).fmt(f)
 	}
 }

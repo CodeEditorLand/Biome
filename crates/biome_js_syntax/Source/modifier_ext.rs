@@ -1,20 +1,10 @@
 use enumflags2::BitFlags;
 
 use crate::{
-	AnyJsMethodModifier,
-	AnyJsPropertyModifier,
-	AnyTsIndexSignatureModifier,
-	AnyTsMethodSignatureModifier,
-	AnyTsPropertyParameterModifier,
-	AnyTsPropertySignatureModifier,
-	AnyTsTypeParameterModifier,
-	JsMethodModifierList,
-	JsPropertyModifierList,
-	JsSyntaxKind,
-	TsAccessibilityModifier,
-	TsIndexSignatureModifierList,
-	TsMethodSignatureModifierList,
-	TsPropertySignatureModifierList,
+	AnyJsMethodModifier, AnyJsPropertyModifier, AnyTsIndexSignatureModifier, AnyTsMethodSignatureModifier,
+	AnyTsPropertyParameterModifier, AnyTsPropertySignatureModifier, AnyTsTypeParameterModifier, JsMethodModifierList,
+	JsPropertyModifierList, JsSyntaxKind, TsAccessibilityModifier, TsIndexSignatureModifierList,
+	TsMethodSignatureModifierList, TsPropertySignatureModifierList,
 };
 
 /// Helpful data structure to make the order of modifiers predictable inside the
@@ -38,26 +28,20 @@ pub enum Modifier {
 }
 
 impl Modifier {
-	pub const ACCESSIBILITY:BitFlags<Self> = BitFlags::<Self>::from_bits_truncate_c(
-		Self::BogusAccessibility as u16
-			| Self::Private as u16
-			| Self::Protected as u16
-			| Self::Public as u16,
+	pub const ACCESSIBILITY: BitFlags<Self> = BitFlags::<Self>::from_bits_truncate_c(
+		Self::BogusAccessibility as u16 | Self::Private as u16 | Self::Protected as u16 | Self::Public as u16,
 		BitFlags::CONST_TOKEN,
 	);
-	pub const CLASS_MEMBER_ONLY:BitFlags<Self> =
-		Self::ACCESSIBILITY.union_c(BitFlags::<Self>::from_bits_truncate_c(
-			Self::Static as u16 | Self::Override as u16 | Self::Accessor as u16,
-			BitFlags::CONST_TOKEN,
-		));
-	pub const CLASS_TYPE_PROPERTY:BitFlags<Self> = BitFlags::<Self>::from_bits_truncate_c(
-		Self::Readonly as u16 | Self::Accessor as u16,
+	pub const CLASS_MEMBER_ONLY: BitFlags<Self> = Self::ACCESSIBILITY.union_c(BitFlags::<Self>::from_bits_truncate_c(
+		Self::Static as u16 | Self::Override as u16 | Self::Accessor as u16,
 		BitFlags::CONST_TOKEN,
-	);
+	));
+	pub const CLASS_TYPE_PROPERTY: BitFlags<Self> =
+		BitFlags::<Self>::from_bits_truncate_c(Self::Readonly as u16 | Self::Accessor as u16, BitFlags::CONST_TOKEN);
 }
 
 impl std::fmt::Display for Modifier {
-	fn fmt(&self, f:&mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+	fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
 		write!(
 			f,
 			"{}",
@@ -79,7 +63,7 @@ impl std::fmt::Display for Modifier {
 }
 
 impl From<&AnyTsIndexSignatureModifier> for Modifier {
-	fn from(modifier:&AnyTsIndexSignatureModifier) -> Self {
+	fn from(modifier: &AnyTsIndexSignatureModifier) -> Self {
 		match modifier {
 			AnyTsIndexSignatureModifier::JsStaticModifier(_) => Modifier::Static,
 			AnyTsIndexSignatureModifier::TsReadonlyModifier(_) => Modifier::Readonly,
@@ -88,7 +72,7 @@ impl From<&AnyTsIndexSignatureModifier> for Modifier {
 }
 
 impl From<&AnyJsMethodModifier> for Modifier {
-	fn from(modifier:&AnyJsMethodModifier) -> Self {
+	fn from(modifier: &AnyJsMethodModifier) -> Self {
 		match modifier {
 			AnyJsMethodModifier::JsDecorator(_) => Modifier::Decorator,
 			AnyJsMethodModifier::JsStaticModifier(_) => Modifier::Static,
@@ -99,14 +83,12 @@ impl From<&AnyJsMethodModifier> for Modifier {
 }
 
 impl From<&AnyTsMethodSignatureModifier> for Modifier {
-	fn from(modifier:&AnyTsMethodSignatureModifier) -> Self {
+	fn from(modifier: &AnyTsMethodSignatureModifier) -> Self {
 		match modifier {
 			AnyTsMethodSignatureModifier::JsDecorator(_) => Modifier::Decorator,
 			AnyTsMethodSignatureModifier::JsStaticModifier(_) => Modifier::Static,
 			AnyTsMethodSignatureModifier::TsAbstractModifier(_) => Modifier::Abstract,
-			AnyTsMethodSignatureModifier::TsAccessibilityModifier(accessibility) => {
-				accessibility.into()
-			},
+			AnyTsMethodSignatureModifier::TsAccessibilityModifier(accessibility) => accessibility.into(),
 
 			AnyTsMethodSignatureModifier::TsOverrideModifier(_) => Modifier::Override,
 		}
@@ -114,7 +96,7 @@ impl From<&AnyTsMethodSignatureModifier> for Modifier {
 }
 
 impl From<&AnyJsPropertyModifier> for Modifier {
-	fn from(modifier:&AnyJsPropertyModifier) -> Self {
+	fn from(modifier: &AnyJsPropertyModifier) -> Self {
 		match modifier {
 			AnyJsPropertyModifier::JsDecorator(_) => Modifier::Decorator,
 			AnyJsPropertyModifier::JsStaticModifier(_) => Modifier::Static,
@@ -127,11 +109,9 @@ impl From<&AnyJsPropertyModifier> for Modifier {
 }
 
 impl From<&AnyTsPropertyParameterModifier> for Modifier {
-	fn from(modifier:&AnyTsPropertyParameterModifier) -> Self {
+	fn from(modifier: &AnyTsPropertyParameterModifier) -> Self {
 		match modifier {
-			AnyTsPropertyParameterModifier::TsAccessibilityModifier(accessibility) => {
-				accessibility.into()
-			},
+			AnyTsPropertyParameterModifier::TsAccessibilityModifier(accessibility) => accessibility.into(),
 
 			AnyTsPropertyParameterModifier::TsOverrideModifier(_) => Modifier::Override,
 			AnyTsPropertyParameterModifier::TsReadonlyModifier(_) => Modifier::Readonly,
@@ -140,12 +120,10 @@ impl From<&AnyTsPropertyParameterModifier> for Modifier {
 }
 
 impl From<&AnyTsPropertySignatureModifier> for Modifier {
-	fn from(modifier:&AnyTsPropertySignatureModifier) -> Self {
+	fn from(modifier: &AnyTsPropertySignatureModifier) -> Self {
 		match modifier {
 			AnyTsPropertySignatureModifier::JsDecorator(_) => Modifier::Decorator,
-			AnyTsPropertySignatureModifier::TsAccessibilityModifier(accessibility) => {
-				accessibility.into()
-			},
+			AnyTsPropertySignatureModifier::TsAccessibilityModifier(accessibility) => accessibility.into(),
 
 			AnyTsPropertySignatureModifier::TsDeclareModifier(_) => Modifier::Declare,
 			AnyTsPropertySignatureModifier::JsStaticModifier(_) => Modifier::Static,
@@ -158,7 +136,7 @@ impl From<&AnyTsPropertySignatureModifier> for Modifier {
 }
 
 impl From<&TsAccessibilityModifier> for Modifier {
-	fn from(value:&TsAccessibilityModifier) -> Self {
+	fn from(value: &TsAccessibilityModifier) -> Self {
 		if let Ok(modifier_token) = value.modifier_token() {
 			match modifier_token.kind() {
 				JsSyntaxKind::PRIVATE_KW => Self::Private,
@@ -173,7 +151,7 @@ impl From<&TsAccessibilityModifier> for Modifier {
 }
 
 impl From<&JsMethodModifierList> for enumflags2::BitFlags<Modifier> {
-	fn from(value:&JsMethodModifierList) -> Self {
+	fn from(value: &JsMethodModifierList) -> Self {
 		value
 			.into_iter()
 			.map(|m| Modifier::from(&m))
@@ -181,7 +159,7 @@ impl From<&JsMethodModifierList> for enumflags2::BitFlags<Modifier> {
 	}
 }
 impl From<&JsPropertyModifierList> for enumflags2::BitFlags<Modifier> {
-	fn from(value:&JsPropertyModifierList) -> Self {
+	fn from(value: &JsPropertyModifierList) -> Self {
 		value
 			.into_iter()
 			.map(|m| Modifier::from(&m))
@@ -189,7 +167,7 @@ impl From<&JsPropertyModifierList> for enumflags2::BitFlags<Modifier> {
 	}
 }
 impl From<&TsIndexSignatureModifierList> for enumflags2::BitFlags<Modifier> {
-	fn from(value:&TsIndexSignatureModifierList) -> Self {
+	fn from(value: &TsIndexSignatureModifierList) -> Self {
 		value
 			.into_iter()
 			.map(|m| Modifier::from(&m))
@@ -197,7 +175,7 @@ impl From<&TsIndexSignatureModifierList> for enumflags2::BitFlags<Modifier> {
 	}
 }
 impl From<&TsPropertySignatureModifierList> for enumflags2::BitFlags<Modifier> {
-	fn from(value:&TsPropertySignatureModifierList) -> Self {
+	fn from(value: &TsPropertySignatureModifierList) -> Self {
 		value
 			.into_iter()
 			.map(|m| Modifier::from(&m))
@@ -205,7 +183,7 @@ impl From<&TsPropertySignatureModifierList> for enumflags2::BitFlags<Modifier> {
 	}
 }
 impl From<&TsMethodSignatureModifierList> for enumflags2::BitFlags<Modifier> {
-	fn from(value:&TsMethodSignatureModifierList) -> Self {
+	fn from(value: &TsMethodSignatureModifierList) -> Self {
 		value
 			.into_iter()
 			.map(|m| Modifier::from(&m))
@@ -223,7 +201,7 @@ pub enum TypeParameterModifiers {
 }
 
 impl From<&AnyTsTypeParameterModifier> for TypeParameterModifiers {
-	fn from(modifier:&AnyTsTypeParameterModifier) -> Self {
+	fn from(modifier: &AnyTsTypeParameterModifier) -> Self {
 		match modifier {
 			AnyTsTypeParameterModifier::TsConstModifier(_) => Self::Const,
 			AnyTsTypeParameterModifier::TsInModifier(_) => Self::In,

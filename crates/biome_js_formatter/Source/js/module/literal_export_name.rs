@@ -1,8 +1,4 @@
-use biome_js_syntax::{
-	JsLiteralExportName,
-	JsLiteralExportNameFields,
-	JsSyntaxKind::JS_STRING_LITERAL,
-};
+use biome_js_syntax::{JsLiteralExportName, JsLiteralExportNameFields, JsSyntaxKind::JS_STRING_LITERAL};
 
 use crate::{
 	prelude::*,
@@ -13,7 +9,7 @@ use crate::{
 pub(crate) struct FormatJsLiteralExportName;
 
 impl FormatNodeRule<JsLiteralExportName> for FormatJsLiteralExportName {
-	fn fmt_fields(&self, node:&JsLiteralExportName, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsLiteralExportName, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsLiteralExportNameFields { value } = node.as_fields();
 
 		let value = value?;

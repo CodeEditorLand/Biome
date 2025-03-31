@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsTypeConstraintClause;
 
 impl FormatNodeRule<TsTypeConstraintClause> for FormatTsTypeConstraintClause {
-	fn fmt_fields(&self, node:&TsTypeConstraintClause, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsTypeConstraintClause, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsTypeConstraintClauseFields { extends_token, ty } = node.as_fields();
 
 		let extends = extends_token.format();

@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub struct FormatTsExternalModuleReference;
 
 impl FormatNodeRule<TsExternalModuleReference> for FormatTsExternalModuleReference {
-	fn fmt_fields(&self, node:&TsExternalModuleReference, f:&mut JsFormatter) -> FormatResult<()> {
-		let TsExternalModuleReferenceFields { require_token, l_paren_token, source, r_paren_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &TsExternalModuleReference, f: &mut JsFormatter) -> FormatResult<()> {
+		let TsExternalModuleReferenceFields { require_token, l_paren_token, source, r_paren_token } = node.as_fields();
 
 		write![
 			f,

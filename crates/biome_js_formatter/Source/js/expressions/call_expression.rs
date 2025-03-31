@@ -1,10 +1,5 @@
 use biome_formatter::write;
-use biome_js_syntax::{
-	AnyJsExpression,
-	JsCallExpression,
-	JsCallExpressionFields,
-	parentheses::NeedsParentheses,
-};
+use biome_js_syntax::{AnyJsExpression, JsCallExpression, JsCallExpressionFields, parentheses::NeedsParentheses};
 
 use crate::{prelude::*, utils::member_chain::MemberChain};
 
@@ -12,23 +7,17 @@ use crate::{prelude::*, utils::member_chain::MemberChain};
 pub(crate) struct FormatJsCallExpression;
 
 impl FormatNodeRule<JsCallExpression> for FormatJsCallExpression {
-	fn fmt_fields(&self, node:&JsCallExpression, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsCallExpressionFields { callee, optional_chain_token, type_arguments, arguments } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsCallExpression, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsCallExpressionFields { callee, optional_chain_token, type_arguments, arguments } = node.as_fields();
 
 		let callee = callee?;
 
 		if matches!(
 			callee,
-			AnyJsExpression::JsStaticMemberExpression(_)
-				| AnyJsExpression::JsComputedMemberExpression(_)
+			AnyJsExpression::JsStaticMemberExpression(_) | AnyJsExpression::JsComputedMemberExpression(_)
 		) && !callee.needs_parentheses()
 		{
-			let member_chain = MemberChain::from_call_expression(
-				node.clone(),
-				f.comments(),
-				f.options().tab_width(),
-			)?;
+			let member_chain = MemberChain::from_call_expression(node.clone(), f.comments(), f.options().tab_width())?;
 
 			member_chain.fmt(f)
 		} else {
@@ -52,7 +41,9 @@ impl FormatNodeRule<JsCallExpression> for FormatJsCallExpression {
 		}
 	}
 
-	fn needs_parentheses(&self, item:&JsCallExpression) -> bool { item.needs_parentheses() }
+	fn needs_parentheses(&self, item: &JsCallExpression) -> bool {
+		item.needs_parentheses()
+	}
 }
 
 #[cfg(test)]

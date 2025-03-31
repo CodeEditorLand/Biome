@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsCatchClause;
 
 impl FormatNodeRule<JsCatchClause> for FormatJsCatchClause {
-	fn fmt_fields(&self, node:&JsCatchClause, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsCatchClause, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsCatchClauseFields { catch_token, declaration, body } = node.as_fields();
 
 		write!(f, [catch_token.format(), space()])?;

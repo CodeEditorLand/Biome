@@ -9,15 +9,11 @@ pub(crate) struct FormatAnyJsArrayBindingPatternElement;
 impl FormatRule<AnyJsArrayBindingPatternElement> for FormatAnyJsArrayBindingPatternElement {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsArrayBindingPatternElement, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsArrayBindingPatternElement, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
-			AnyJsArrayBindingPatternElement::JsArrayBindingPatternElement(node) => {
-				node.format().fmt(f)
-			},
+			AnyJsArrayBindingPatternElement::JsArrayBindingPatternElement(node) => node.format().fmt(f),
 
-			AnyJsArrayBindingPatternElement::JsArrayBindingPatternRestElement(node) => {
-				node.format().fmt(f)
-			},
+			AnyJsArrayBindingPatternElement::JsArrayBindingPatternRestElement(node) => node.format().fmt(f),
 
 			AnyJsArrayBindingPatternElement::JsArrayHole(node) => node.format().fmt(f),
 		}

@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsImportTypeQualifier;
 
 impl FormatNodeRule<TsImportTypeQualifier> for FormatTsImportTypeQualifier {
-	fn fmt_fields(&self, node:&TsImportTypeQualifier, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsImportTypeQualifier, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsImportTypeQualifierFields { dot_token, right } = node.as_fields();
 
 		write![f, [dot_token.format(), right.format()]]

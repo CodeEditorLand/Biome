@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssContainerAtRule;
 impl FormatNodeRule<CssContainerAtRule> for FormatCssContainerAtRule {
-	fn fmt_fields(&self, node:&CssContainerAtRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssContainerAtRule, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssContainerAtRuleFields { container_token, name, query, block } = node.as_fields();
 
 		write!(f, [container_token.format(), space()])?;

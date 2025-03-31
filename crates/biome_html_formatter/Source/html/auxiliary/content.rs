@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatHtmlContent;
 impl FormatNodeRule<HtmlContent> for FormatHtmlContent {
-	fn fmt_fields(&self, node:&HtmlContent, f:&mut HtmlFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &HtmlContent, f: &mut HtmlFormatter) -> FormatResult<()> {
 		format_verbatim_node(node.syntax()).fmt(f)
 	}
 }

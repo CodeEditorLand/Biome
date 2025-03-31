@@ -18,8 +18,7 @@ use biome_service::projects::ProjectKey;
 use biome_service::workspace::ScanProjectFolderParams;
 use biome_service::workspace::ServiceDataNotification;
 use biome_service::workspace::{
-    FeaturesBuilder, GetFileContentParams, OpenProjectParams, PullDiagnosticsParams,
-    SupportsFeatureParams,
+	FeaturesBuilder, GetFileContentParams, OpenProjectParams, PullDiagnosticsParams, SupportsFeatureParams,
 };
 use biome_service::workspace::{RageEntry, RageParams, RageResult, UpdateSettingsParams};
 use camino::Utf8Path;
@@ -46,11 +45,11 @@ use tower_lsp::lsp_types::{Unregistration, WorkspaceFolder};
 use tracing::{error, info, warn};
 
 pub(crate) struct ClientInformation {
-    /// The name of the client
-    pub(crate) name: String,
+	/// The name of the client
+	pub(crate) name: String,
 
-    /// The version of the client
-    pub(crate) version: Option<String>,
+	/// The version of the client
+	pub(crate) version: Option<String>,
 }
 
 /// Key, uniquely identifying a LSP session.
@@ -59,99 +58,99 @@ pub(crate) struct SessionKey(pub u64);
 
 /// Represents the state of an LSP server session.
 pub(crate) struct Session {
-    /// The unique key identifying this session.
-    pub(crate) key: SessionKey,
+	/// The unique key identifying this session.
+	pub(crate) key: SessionKey,
 
-    /// The LSP client for this session.
-    pub(crate) client: tower_lsp::Client,
+	/// The LSP client for this session.
+	pub(crate) client: tower_lsp::Client,
 
-    /// The parameters provided by the client in the "initialize" request
-    initialize_params: OnceCell<InitializeParams>,
+	/// The parameters provided by the client in the "initialize" request
+	initialize_params: OnceCell<InitializeParams>,
 
-    /// The settings of the Biome extension (under the `biome` namespace)
-    pub(crate) extension_settings: RwLock<ExtensionSettings>,
+	/// The settings of the Biome extension (under the `biome` namespace)
+	pub(crate) extension_settings: RwLock<ExtensionSettings>,
 
-    pub(crate) workspace: Arc<dyn Workspace>,
+	pub(crate) workspace: Arc<dyn Workspace>,
 
-    configuration_status: AtomicU8,
+	configuration_status: AtomicU8,
 
-    /// A flag to notify a message to the user when the configuration is broken, and the LSP attempts
-    /// to update the diagnostics
-    notified_broken_configuration: AtomicBool,
+	/// A flag to notify a message to the user when the configuration is broken, and the LSP attempts
+	/// to update the diagnostics
+	notified_broken_configuration: AtomicBool,
 
-    /// Projects opened in this session, mapped from the project's root path to
-    /// the associated project key.
-    projects: HashMap<BiomePath, ProjectKey>,
+	/// Projects opened in this session, mapped from the project's root path to
+	/// the associated project key.
+	projects: HashMap<BiomePath, ProjectKey>,
 
-    /// Documents opened in this session.
-    documents: HashMap<lsp_types::Url, Document, FxBuildHasher>,
+	/// Documents opened in this session.
+	documents: HashMap<lsp_types::Url, Document, FxBuildHasher>,
 
-    pub(crate) cancellation: Arc<Notify>,
+	pub(crate) cancellation: Arc<Notify>,
 
-    /// Receiver for service data notifications.
-    ///
-    /// If we receive a notification here, diagnostics for open documents are
-    /// all refreshed.
-    service_data_rx: watch::Receiver<ServiceDataNotification>,
+	/// Receiver for service data notifications.
+	///
+	/// If we receive a notification here, diagnostics for open documents are
+	/// all refreshed.
+	service_data_rx: watch::Receiver<ServiceDataNotification>,
 }
 
 /// The parameters provided by the client in the "initialize" request
 struct InitializeParams {
-    /// The capabilities provided by the client as part of [`lsp_types::InitializeParams`]
-    client_capabilities: lsp_types::ClientCapabilities,
-    client_information: Option<ClientInformation>,
-    root_uri: Option<Url>,
-    workspace_folders: Option<Vec<WorkspaceFolder>>,
+	/// The capabilities provided by the client as part of [`lsp_types::InitializeParams`]
+	client_capabilities: lsp_types::ClientCapabilities,
+	client_information: Option<ClientInformation>,
+	root_uri: Option<Url>,
+	workspace_folders: Option<Vec<WorkspaceFolder>>,
 }
 
 #[repr(u8)]
 pub(crate) enum ConfigurationStatus {
-    /// The configuration file was properly loaded
-    Loaded = 0,
-    /// The configuration file does not exist
-    Missing = 1,
-    /// The configuration file exists but could not be loaded
-    Error = 2,
-    /// The `.editorconfig` file has some errors that biome can't solve
-    EditorConfigError = 3,
-    /// Currently loading the configuration
-    Loading = 4,
-    /// The configuration file is correct, but the plugins cannot be loaded
-    PluginError = 5,
+	/// The configuration file was properly loaded
+	Loaded = 0,
+	/// The configuration file does not exist
+	Missing = 1,
+	/// The configuration file exists but could not be loaded
+	Error = 2,
+	/// The `.editorconfig` file has some errors that biome can't solve
+	EditorConfigError = 3,
+	/// Currently loading the configuration
+	Loading = 4,
+	/// The configuration file is correct, but the plugins cannot be loaded
+	PluginError = 5,
 }
 
 impl ConfigurationStatus {
-    pub(crate) const fn is_error(&self) -> bool {
-        matches!(self, ConfigurationStatus::Error)
-    }
+	pub(crate) const fn is_error(&self) -> bool {
+		matches!(self, ConfigurationStatus::Error)
+	}
 
-    pub(crate) const fn is_editorconfig_error(&self) -> bool {
-        matches!(self, ConfigurationStatus::EditorConfigError)
-    }
+	pub(crate) const fn is_editorconfig_error(&self) -> bool {
+		matches!(self, ConfigurationStatus::EditorConfigError)
+	}
 
-    pub(crate) const fn is_plugin_error(&self) -> bool {
-        matches!(self, ConfigurationStatus::PluginError)
-    }
+	pub(crate) const fn is_plugin_error(&self) -> bool {
+		matches!(self, ConfigurationStatus::PluginError)
+	}
 
-    pub(crate) const fn is_loaded(&self) -> bool {
-        matches!(self, ConfigurationStatus::Loaded)
-    }
+	pub(crate) const fn is_loaded(&self) -> bool {
+		matches!(self, ConfigurationStatus::Loaded)
+	}
 }
 
 impl TryFrom<u8> for ConfigurationStatus {
-    type Error = ();
+	type Error = ();
 
-    fn try_from(value: u8) -> Result<Self, ()> {
-        match value {
-            0 => Ok(Self::Loaded),
-            1 => Ok(Self::Missing),
-            2 => Ok(Self::Error),
-            3 => Ok(Self::EditorConfigError),
-            4 => Ok(Self::Loading),
-            5 => Ok(Self::PluginError),
-            _ => Err(()),
-        }
-    }
+	fn try_from(value: u8) -> Result<Self, ()> {
+		match value {
+			0 => Ok(Self::Loaded),
+			1 => Ok(Self::Missing),
+			2 => Ok(Self::Error),
+			3 => Ok(Self::EditorConfigError),
+			4 => Ok(Self::Loading),
+			5 => Ok(Self::PluginError),
+			_ => Err(()),
+		}
+	}
 }
 
 pub(crate) type SessionHandle = Arc<Session>;
@@ -160,665 +159,580 @@ pub(crate) type SessionHandle = Arc<Session>;
 /// instance and whether they are enabled or not
 #[derive(Default)]
 pub(crate) struct CapabilitySet {
-    registry: FxHashMap<&'static str, (&'static str, CapabilityStatus)>,
+	registry: FxHashMap<&'static str, (&'static str, CapabilityStatus)>,
 }
 
 /// Represents whether a capability is enabled or not, optionally holding the
 /// configuration associated with the capability
 pub(crate) enum CapabilityStatus {
-    Enable(Option<Value>),
-    Disable,
+	Enable(Option<Value>),
+	Disable,
 }
 
 impl CapabilitySet {
-    /// Insert a capability in the set
-    pub(crate) fn add_capability(
-        &mut self,
-        id: &'static str,
-        method: &'static str,
-        status: CapabilityStatus,
-    ) {
-        self.registry.insert(id, (method, status));
-    }
+	/// Insert a capability in the set
+	pub(crate) fn add_capability(&mut self, id: &'static str, method: &'static str, status: CapabilityStatus) {
+		self.registry.insert(id, (method, status));
+	}
 }
 
 impl Session {
-    pub(crate) fn new(
-        key: SessionKey,
-        client: tower_lsp::Client,
-        workspace: Arc<dyn Workspace>,
-        cancellation: Arc<Notify>,
-        service_data_rx: watch::Receiver<ServiceDataNotification>,
-    ) -> Self {
-        let config = RwLock::new(ExtensionSettings::new());
-        Self {
-            key,
-            client,
-            initialize_params: OnceCell::default(),
-            workspace,
-            configuration_status: AtomicU8::new(ConfigurationStatus::Missing as u8),
-            projects: Default::default(),
-            documents: Default::default(),
-            extension_settings: config,
-            cancellation,
-            notified_broken_configuration: AtomicBool::new(false),
-            service_data_rx,
-        }
-    }
+	pub(crate) fn new(
+		key: SessionKey,
+		client: tower_lsp::Client,
+		workspace: Arc<dyn Workspace>,
+		cancellation: Arc<Notify>,
+		service_data_rx: watch::Receiver<ServiceDataNotification>,
+	) -> Self {
+		let config = RwLock::new(ExtensionSettings::new());
+		Self {
+			key,
+			client,
+			initialize_params: OnceCell::default(),
+			workspace,
+			configuration_status: AtomicU8::new(ConfigurationStatus::Missing as u8),
+			projects: Default::default(),
+			documents: Default::default(),
+			extension_settings: config,
+			cancellation,
+			notified_broken_configuration: AtomicBool::new(false),
+			service_data_rx,
+		}
+	}
 
-    /// Initialize this session instance with the incoming initialization parameters from the client
-    pub(crate) fn initialize(
-        self: &Arc<Self>,
-        client_capabilities: lsp_types::ClientCapabilities,
-        client_information: Option<ClientInformation>,
-        root_uri: Option<Url>,
-        workspace_folders: Option<Vec<WorkspaceFolder>>,
-    ) {
-        let result = self.initialize_params.set(InitializeParams {
-            client_capabilities,
-            client_information,
-            root_uri,
-            workspace_folders,
-        });
+	/// Initialize this session instance with the incoming initialization parameters from the client
+	pub(crate) fn initialize(
+		self: &Arc<Self>,
+		client_capabilities: lsp_types::ClientCapabilities,
+		client_information: Option<ClientInformation>,
+		root_uri: Option<Url>,
+		workspace_folders: Option<Vec<WorkspaceFolder>>,
+	) {
+		let result = self.initialize_params.set(InitializeParams {
+			client_capabilities,
+			client_information,
+			root_uri,
+			workspace_folders,
+		});
 
-        if let Err(err) = result {
-            error!("Failed to initialize session: {err}");
-        }
+		if let Err(err) = result {
+			error!("Failed to initialize session: {err}");
+		}
 
-        let session = self.clone();
-        tokio::task::spawn(async move {
-            let mut service_data_rx = session.service_data_rx.clone();
-            while let Ok(()) = service_data_rx.changed().await {
-                match *session.service_data_rx.borrow() {
-                    ServiceDataNotification::Updated => {
-                        let session = session.clone();
-                        tokio::task::spawn(async move {
-                            session.update_all_diagnostics().await;
-                        });
-                    }
-                    ServiceDataNotification::Stop => {
-                        break;
-                    }
-                }
-            }
-        });
-    }
+		let session = self.clone();
+		tokio::task::spawn(async move {
+			let mut service_data_rx = session.service_data_rx.clone();
+			while let Ok(()) = service_data_rx.changed().await {
+				match *session.service_data_rx.borrow() {
+					ServiceDataNotification::Updated => {
+						let session = session.clone();
+						tokio::task::spawn(async move {
+							session.update_all_diagnostics().await;
+						});
+					},
+					ServiceDataNotification::Stop => {
+						break;
+					},
+				}
+			}
+		});
+	}
 
-    /// Register a set of capabilities with the client
-    pub(crate) async fn register_capabilities(&self, capabilities: CapabilitySet) {
-        let mut registrations = Vec::new();
-        let mut unregistrations = Vec::new();
+	/// Register a set of capabilities with the client
+	pub(crate) async fn register_capabilities(&self, capabilities: CapabilitySet) {
+		let mut registrations = Vec::new();
+		let mut unregistrations = Vec::new();
 
-        let mut register_methods = String::new();
-        let mut unregister_methods = String::new();
+		let mut register_methods = String::new();
+		let mut unregister_methods = String::new();
 
-        for (id, (method, status)) in capabilities.registry {
-            unregistrations.push(Unregistration {
-                id: id.to_string(),
-                method: method.to_string(),
-            });
+		for (id, (method, status)) in capabilities.registry {
+			unregistrations.push(Unregistration { id: id.to_string(), method: method.to_string() });
 
-            if !unregister_methods.is_empty() {
-                unregister_methods.push_str(", ");
-            }
+			if !unregister_methods.is_empty() {
+				unregister_methods.push_str(", ");
+			}
 
-            unregister_methods.push_str(method);
+			unregister_methods.push_str(method);
 
-            if let CapabilityStatus::Enable(register_options) = status {
-                registrations.push(Registration {
-                    id: id.to_string(),
-                    method: method.to_string(),
-                    register_options,
-                });
+			if let CapabilityStatus::Enable(register_options) = status {
+				registrations.push(Registration { id: id.to_string(), method: method.to_string(), register_options });
 
-                if !register_methods.is_empty() {
-                    register_methods.push_str(", ");
-                }
+				if !register_methods.is_empty() {
+					register_methods.push_str(", ");
+				}
 
-                register_methods.push_str(method);
-            }
-        }
+				register_methods.push_str(method);
+			}
+		}
 
-        if let Err(e) = self.client.unregister_capability(unregistrations).await {
-            error!(
-                "Error unregistering {unregister_methods:?} capabilities: {}",
-                e
-            );
-        } else {
-            info!("Unregister capabilities {unregister_methods:?}");
-        }
+		if let Err(e) = self.client.unregister_capability(unregistrations).await {
+			error!("Error unregistering {unregister_methods:?} capabilities: {}", e);
+		} else {
+			info!("Unregister capabilities {unregister_methods:?}");
+		}
 
-        if let Err(e) = self.client.register_capability(registrations).await {
-            error!("Error registering {register_methods:?} capabilities: {}", e);
-        } else {
-            info!("Register capabilities {register_methods:?}");
-        }
-    }
+		if let Err(e) = self.client.register_capability(registrations).await {
+			error!("Error registering {register_methods:?} capabilities: {}", e);
+		} else {
+			info!("Register capabilities {register_methods:?}");
+		}
+	}
 
-    /// Returns the key for the project that should be used for a given path.
-    pub(crate) fn project_for_path(&self, path: &Utf8Path) -> Option<ProjectKey> {
-        self.projects
-            .pin()
-            .iter()
-            .find(|(project_path, _project_key)| path.starts_with(project_path.as_path()))
-            .map(|(_project_path, project_key)| *project_key)
-    }
+	/// Returns the key for the project that should be used for a given path.
+	pub(crate) fn project_for_path(&self, path: &Utf8Path) -> Option<ProjectKey> {
+		self.projects
+			.pin()
+			.iter()
+			.find(|(project_path, _project_key)| path.starts_with(project_path.as_path()))
+			.map(|(_project_path, project_key)| *project_key)
+	}
 
-    /// Registers an open project with its root path and scans the folder.
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub(crate) fn insert_and_scan_project(
-        self: &Arc<Self>,
-        project_key: ProjectKey,
-        path: BiomePath,
-    ) {
-        self.projects.pin().insert(path.clone(), project_key);
+	/// Registers an open project with its root path and scans the folder.
+	#[tracing::instrument(level = "debug", skip(self))]
+	pub(crate) fn insert_and_scan_project(self: &Arc<Self>, project_key: ProjectKey, path: BiomePath) {
+		self.projects.pin().insert(path.clone(), project_key);
 
-        // Spawn the scan in the background, to avoid timing out the LSP request.
-        let session = self.clone();
-        tokio::spawn(async move { session.scan_project_folder(project_key, path).await });
-    }
+		// Spawn the scan in the background, to avoid timing out the LSP request.
+		let session = self.clone();
+		tokio::spawn(async move { session.scan_project_folder(project_key, path).await });
+	}
 
-    /// Get a [`Document`] matching the provided [`lsp_types::Url`]
-    ///
-    /// If document does not exist, result is [WorkspaceError::NotFound]
-    pub(crate) fn document(&self, url: &lsp_types::Url) -> Result<Document, Error> {
-        self.documents
-            .pin()
-            .get(url)
-            .cloned()
-            .ok_or_else(|| WorkspaceError::not_found().with_file_path(url.to_string()))
-    }
+	/// Get a [`Document`] matching the provided [`lsp_types::Url`]
+	///
+	/// If document does not exist, result is [WorkspaceError::NotFound]
+	pub(crate) fn document(&self, url: &lsp_types::Url) -> Result<Document, Error> {
+		self.documents
+			.pin()
+			.get(url)
+			.cloned()
+			.ok_or_else(|| WorkspaceError::not_found().with_file_path(url.to_string()))
+	}
 
-    /// Set the [`Document`] for the provided [`lsp_types::Url`]
-    ///
-    /// Used by [`handlers::text_document] to synchronize documents with the client.
-    pub(crate) fn insert_document(&self, url: lsp_types::Url, document: Document) {
-        self.documents.pin().insert(url, document);
-    }
+	/// Set the [`Document`] for the provided [`lsp_types::Url`]
+	///
+	/// Used by [`handlers::text_document] to synchronize documents with the client.
+	pub(crate) fn insert_document(&self, url: lsp_types::Url, document: Document) {
+		self.documents.pin().insert(url, document);
+	}
 
-    /// Remove the [`Document`] matching the provided [`lsp_types::Url`]
-    pub(crate) fn remove_document(&self, url: &lsp_types::Url) -> Option<ProjectKey> {
-        self.documents.pin().remove(url).map(|doc| doc.project_key)
-    }
+	/// Remove the [`Document`] matching the provided [`lsp_types::Url`]
+	pub(crate) fn remove_document(&self, url: &lsp_types::Url) -> Option<ProjectKey> {
+		self.documents.pin().remove(url).map(|doc| doc.project_key)
+	}
 
-    pub(crate) fn file_path(&self, url: &lsp_types::Url) -> Result<BiomePath> {
-        let path_to_file = match url.to_file_path() {
-            Err(_) => {
-                // If we can't create a path, it's probably because the file doesn't exist.
-                // It can be a newly created file that it's not on disk
-                Utf8PathBuf::from(url.path())
-            }
-            Ok(path) => Utf8PathBuf::from_path_buf(path).expect("To to have a UTF-8 path"),
-        };
+	pub(crate) fn file_path(&self, url: &lsp_types::Url) -> Result<BiomePath> {
+		let path_to_file = match url.to_file_path() {
+			Err(_) => {
+				// If we can't create a path, it's probably because the file doesn't exist.
+				// It can be a newly created file that it's not on disk
+				Utf8PathBuf::from(url.path())
+			},
+			Ok(path) => Utf8PathBuf::from_path_buf(path).expect("To to have a UTF-8 path"),
+		};
 
-        Ok(BiomePath::new(path_to_file))
-    }
+		Ok(BiomePath::new(path_to_file))
+	}
 
-    /// Computes diagnostics for the file matching the provided url and publishes
-    /// them to the client. Called from [`handlers::text_document`] when a file's
-    /// contents changes.
-    #[tracing::instrument(level = "debug", skip_all, fields(url = display(&url), diagnostic_count), err)]
-    pub(crate) async fn update_diagnostics(&self, url: lsp_types::Url) -> Result<(), LspError> {
-        let doc = self.document(&url)?;
-        self.update_diagnostics_for_document(url, doc).await
-    }
+	/// Computes diagnostics for the file matching the provided url and publishes
+	/// them to the client. Called from [`handlers::text_document`] when a file's
+	/// contents changes.
+	#[tracing::instrument(level = "debug", skip_all, fields(url = display(&url), diagnostic_count), err)]
+	pub(crate) async fn update_diagnostics(&self, url: lsp_types::Url) -> Result<(), LspError> {
+		let doc = self.document(&url)?;
+		self.update_diagnostics_for_document(url, doc).await
+	}
 
-    /// Computes diagnostics for the file matching the provided url and publishes
-    /// them to the client. Called from [`handlers::text_document`] when a file's
-    /// contents changes.
-    #[tracing::instrument(level = "debug", skip_all, fields(url = display(&url), diagnostic_count), err)]
-    async fn update_diagnostics_for_document(
-        &self,
-        url: lsp_types::Url,
-        doc: Document,
-    ) -> Result<(), LspError> {
-        let biome_path = self.file_path(&url)?;
+	/// Computes diagnostics for the file matching the provided url and publishes
+	/// them to the client. Called from [`handlers::text_document`] when a file's
+	/// contents changes.
+	#[tracing::instrument(level = "debug", skip_all, fields(url = display(&url), diagnostic_count), err)]
+	async fn update_diagnostics_for_document(&self, url: lsp_types::Url, doc: Document) -> Result<(), LspError> {
+		let biome_path = self.file_path(&url)?;
 
-        if !self.notified_broken_configuration() {
-            if self.configuration_status().is_editorconfig_error() {
-                self.set_notified_broken_configuration();
-                self.client
+		if !self.notified_broken_configuration() {
+			if self.configuration_status().is_editorconfig_error() {
+				self.set_notified_broken_configuration();
+				self.client
                     .show_message(MessageType::WARNING, "The .editorconfig file has errors. Biome will report only parsing errors until the file is fixed or its usage is disabled.")
                     .await
-            } else if self.configuration_status().is_error() {
-                self.set_notified_broken_configuration();
-                self.client
-                    .show_message(MessageType::WARNING, "The configuration file has errors. Biome will report only parsing errors until the configuration is fixed.")
-                    .await;
-            } else if self.configuration_status().is_plugin_error() {
-                self.set_notified_broken_configuration();
-                self.client.show_message(MessageType::WARNING, "The plugin loading has failed. Biome will report only parsing errors until the file is fixed or its usage is disabled.").await
-            }
-        }
+			} else if self.configuration_status().is_error() {
+				self.set_notified_broken_configuration();
+				self.client
+					.show_message(
+						MessageType::WARNING,
+						"The configuration file has errors. Biome will report only parsing errors until the configuration is fixed.",
+					)
+					.await;
+			} else if self.configuration_status().is_plugin_error() {
+				self.set_notified_broken_configuration();
+				self.client.show_message(MessageType::WARNING, "The plugin loading has failed. Biome will report only parsing errors until the file is fixed or its usage is disabled.").await
+			}
+		}
 
-        let file_features = self.workspace.file_features(SupportsFeatureParams {
-            project_key: doc.project_key,
-            features: FeaturesBuilder::new().with_linter().with_assist().build(),
-            path: biome_path.clone(),
-        })?;
+		let file_features = self.workspace.file_features(SupportsFeatureParams {
+			project_key: doc.project_key,
+			features: FeaturesBuilder::new().with_linter().with_assist().build(),
+			path: biome_path.clone(),
+		})?;
 
-        if !file_features.supports_lint() && !file_features.supports_assist() {
-            self.client
-                .publish_diagnostics(url, vec![], Some(doc.version))
-                .await;
-            return Ok(());
-        }
+		if !file_features.supports_lint() && !file_features.supports_assist() {
+			self.client.publish_diagnostics(url, vec![], Some(doc.version)).await;
+			return Ok(());
+		}
 
-        let diagnostics: Vec<Diagnostic> = {
-            let mut categories = RuleCategoriesBuilder::default().with_syntax();
-            if self.configuration_status().is_loaded() {
-                if file_features.supports_lint() {
-                    categories = categories.with_lint();
-                }
-                if file_features.supports_assist() {
-                    categories = categories.with_assist();
-                }
-            }
-            let result = self.workspace.pull_diagnostics(PullDiagnosticsParams {
-                project_key: doc.project_key,
-                path: biome_path.clone(),
-                categories: categories.build(),
-                max_diagnostics: u64::MAX,
-                only: Vec::new(),
-                skip: Vec::new(),
-                enabled_rules: Vec::new(),
-            })?;
+		let diagnostics: Vec<Diagnostic> = {
+			let mut categories = RuleCategoriesBuilder::default().with_syntax();
+			if self.configuration_status().is_loaded() {
+				if file_features.supports_lint() {
+					categories = categories.with_lint();
+				}
+				if file_features.supports_assist() {
+					categories = categories.with_assist();
+				}
+			}
+			let result = self.workspace.pull_diagnostics(PullDiagnosticsParams {
+				project_key: doc.project_key,
+				path: biome_path.clone(),
+				categories: categories.build(),
+				max_diagnostics: u64::MAX,
+				only: Vec::new(),
+				skip: Vec::new(),
+				enabled_rules: Vec::new(),
+			})?;
 
-            let content = self.workspace.get_file_content(GetFileContentParams {
-                project_key: doc.project_key,
-                path: biome_path.clone(),
-            })?;
-            let offset = match biome_path.extension() {
-                Some("vue") => VueFileHandler::start(content.as_str()),
-                Some("astro") => AstroFileHandler::start(content.as_str()),
-                Some("svelte") => SvelteFileHandler::start(content.as_str()),
-                _ => None,
-            };
+			let content = self
+				.workspace
+				.get_file_content(GetFileContentParams { project_key: doc.project_key, path: biome_path.clone() })?;
+			let offset = match biome_path.extension() {
+				Some("vue") => VueFileHandler::start(content.as_str()),
+				Some("astro") => AstroFileHandler::start(content.as_str()),
+				Some("svelte") => SvelteFileHandler::start(content.as_str()),
+				_ => None,
+			};
 
-            result
-                .diagnostics
-                .into_iter()
-                .filter_map(|d| {
-                    match utils::diagnostic_to_lsp(
-                        d,
-                        &url,
-                        &doc.line_index,
-                        self.position_encoding(),
-                        offset,
-                    ) {
-                        Ok(diag) => Some(diag),
-                        Err(err) => {
-                            error!("failed to convert diagnostic to LSP: {err:?}");
-                            None
-                        }
-                    }
-                })
-                .collect()
-        };
+			result
+				.diagnostics
+				.into_iter()
+				.filter_map(|d| {
+					match utils::diagnostic_to_lsp(d, &url, &doc.line_index, self.position_encoding(), offset) {
+						Ok(diag) => Some(diag),
+						Err(err) => {
+							error!("failed to convert diagnostic to LSP: {err:?}");
+							None
+						},
+					}
+				})
+				.collect()
+		};
 
-        tracing::Span::current().record("diagnostic_count", diagnostics.len());
+		tracing::Span::current().record("diagnostic_count", diagnostics.len());
 
-        self.client
-            .publish_diagnostics(url, diagnostics, Some(doc.version))
-            .await;
+		self.client.publish_diagnostics(url, diagnostics, Some(doc.version)).await;
 
-        Ok(())
-    }
+		Ok(())
+	}
 
-    /// Updates diagnostics for every [`Document`] in this [`Session`]
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub(crate) async fn update_all_diagnostics(&self) {
-        let mut futures: FuturesUnordered<_> = self
-            .documents
-            .pin()
-            .iter()
-            .map(|(url, doc)| self.update_diagnostics_for_document(url.clone(), doc.clone()))
-            .collect();
+	/// Updates diagnostics for every [`Document`] in this [`Session`]
+	#[tracing::instrument(level = "debug", skip(self))]
+	pub(crate) async fn update_all_diagnostics(&self) {
+		let mut futures: FuturesUnordered<_> = self
+			.documents
+			.pin()
+			.iter()
+			.map(|(url, doc)| self.update_diagnostics_for_document(url.clone(), doc.clone()))
+			.collect();
 
-        while let Some(result) = futures.next().await {
-            if let Err(e) = result {
-                error!("Error while updating diagnostics: {}", e);
-            }
-        }
-    }
+		while let Some(result) = futures.next().await {
+			if let Err(e) = result {
+				error!("Error while updating diagnostics: {}", e);
+			}
+		}
+	}
 
-    /// True if the client supports dynamic registration of "workspace/didChangeConfiguration" requests
-    pub(crate) fn can_register_did_change_configuration(&self) -> bool {
-        self.initialize_params
-            .get()
-            .and_then(|c| c.client_capabilities.workspace.as_ref())
-            .and_then(|c| c.did_change_configuration)
-            .and_then(|c| c.dynamic_registration)
-            == Some(true)
-    }
+	/// True if the client supports dynamic registration of "workspace/didChangeConfiguration" requests
+	pub(crate) fn can_register_did_change_configuration(&self) -> bool {
+		self.initialize_params
+			.get()
+			.and_then(|c| c.client_capabilities.workspace.as_ref())
+			.and_then(|c| c.did_change_configuration)
+			.and_then(|c| c.dynamic_registration)
+			== Some(true)
+	}
 
-    /// Get the current workspace folders
-    pub(crate) fn get_workspace_folders(&self) -> Option<&Vec<WorkspaceFolder>> {
-        self.initialize_params
-            .get()
-            .and_then(|c| c.workspace_folders.as_ref())
-    }
+	/// Get the current workspace folders
+	pub(crate) fn get_workspace_folders(&self) -> Option<&Vec<WorkspaceFolder>> {
+		self.initialize_params.get().and_then(|c| c.workspace_folders.as_ref())
+	}
 
-    /// Returns the base path of the workspace on the filesystem if it has one
-    pub(crate) fn base_path(&self) -> Option<Utf8PathBuf> {
-        let initialize_params = self.initialize_params.get()?;
+	/// Returns the base path of the workspace on the filesystem if it has one
+	pub(crate) fn base_path(&self) -> Option<Utf8PathBuf> {
+		let initialize_params = self.initialize_params.get()?;
 
-        let root_uri = initialize_params.root_uri.as_ref()?;
-        match root_uri.to_file_path() {
-            Ok(base_path) => {
-                Some(Utf8PathBuf::from_path_buf(base_path).expect("To have a UTF-8 path"))
-            }
-            Err(()) => {
-                error!(
-                    "The Workspace root URI {root_uri:?} could not be parsed as a filesystem path"
-                );
-                None
-            }
-        }
-    }
+		let root_uri = initialize_params.root_uri.as_ref()?;
+		match root_uri.to_file_path() {
+			Ok(base_path) => Some(Utf8PathBuf::from_path_buf(base_path).expect("To have a UTF-8 path")),
+			Err(()) => {
+				error!("The Workspace root URI {root_uri:?} could not be parsed as a filesystem path");
+				None
+			},
+		}
+	}
 
-    /// Returns a reference to the client information for this session
-    pub(crate) fn client_information(&self) -> Option<&ClientInformation> {
-        self.initialize_params.get()?.client_information.as_ref()
-    }
+	/// Returns a reference to the client information for this session
+	pub(crate) fn client_information(&self) -> Option<&ClientInformation> {
+		self.initialize_params.get()?.client_information.as_ref()
+	}
 
-    /// This function attempts to read the `biome.json` configuration file from
-    /// the root URI and update the workspace settings accordingly
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub(crate) async fn load_workspace_settings(self: &Arc<Self>) {
-        if let Some(config_path) = self
-            .extension_settings
-            .read()
-            .ok()
-            .and_then(|s| s.configuration_path())
-        {
-            info!("Detected configuration path in the workspace settings.");
-            self.set_configuration_status(ConfigurationStatus::Loading);
+	/// This function attempts to read the `biome.json` configuration file from
+	/// the root URI and update the workspace settings accordingly
+	#[tracing::instrument(level = "debug", skip(self))]
+	pub(crate) async fn load_workspace_settings(self: &Arc<Self>) {
+		if let Some(config_path) = self.extension_settings.read().ok().and_then(|s| s.configuration_path()) {
+			info!("Detected configuration path in the workspace settings.");
+			self.set_configuration_status(ConfigurationStatus::Loading);
 
-            let status = self
-                .load_biome_configuration_file(ConfigurationPathHint::FromWorkspace(config_path))
-                .await;
+			let status = self
+				.load_biome_configuration_file(ConfigurationPathHint::FromWorkspace(config_path))
+				.await;
 
-            self.set_configuration_status(status);
-        } else if let Some(folders) = self.get_workspace_folders() {
-            info!("Detected workspace folder.");
-            self.set_configuration_status(ConfigurationStatus::Loading);
-            for folder in folders {
-                info!("Attempt to load the configuration file in {:?}", folder.uri);
-                let base_path = folder
-                    .uri
-                    .to_file_path()
-                    .map(|p| Utf8PathBuf::from_path_buf(p).expect("To have a valid UTF-8 path"));
-                match base_path {
-                    Ok(base_path) => {
-                        let status = self
-                            .load_biome_configuration_file(ConfigurationPathHint::FromWorkspace(
-                                base_path,
-                            ))
-                            .await;
-                        self.set_configuration_status(status);
-                    }
-                    Err(_) => {
-                        error!(
-                            "The Workspace root URI {:?} could not be parsed as a filesystem path",
-                            folder.uri
-                        );
-                    }
-                }
-            }
-        } else {
-            let base_path = match self.base_path() {
-                None => ConfigurationPathHint::default(),
-                Some(path) => ConfigurationPathHint::FromLsp(path),
-            };
-            let status = self.load_biome_configuration_file(base_path).await;
-            self.set_configuration_status(status);
-        }
-    }
+			self.set_configuration_status(status);
+		} else if let Some(folders) = self.get_workspace_folders() {
+			info!("Detected workspace folder.");
+			self.set_configuration_status(ConfigurationStatus::Loading);
+			for folder in folders {
+				info!("Attempt to load the configuration file in {:?}", folder.uri);
+				let base_path = folder
+					.uri
+					.to_file_path()
+					.map(|p| Utf8PathBuf::from_path_buf(p).expect("To have a valid UTF-8 path"));
+				match base_path {
+					Ok(base_path) => {
+						let status = self
+							.load_biome_configuration_file(ConfigurationPathHint::FromWorkspace(base_path))
+							.await;
+						self.set_configuration_status(status);
+					},
+					Err(_) => {
+						error!(
+							"The Workspace root URI {:?} could not be parsed as a filesystem path",
+							folder.uri
+						);
+					},
+				}
+			}
+		} else {
+			let base_path = match self.base_path() {
+				None => ConfigurationPathHint::default(),
+				Some(path) => ConfigurationPathHint::FromLsp(path),
+			};
+			let status = self.load_biome_configuration_file(base_path).await;
+			self.set_configuration_status(status);
+		}
+	}
 
-    pub(crate) async fn scan_project_folder(
-        self: &Arc<Self>,
-        project_key: ProjectKey,
-        project_path: BiomePath,
-    ) {
-        let session = self.clone();
-        let scan_project = move || {
-            let result = session
-                .workspace
-                .scan_project_folder(ScanProjectFolderParams {
-                    project_key,
-                    path: Some(project_path),
-                    watch: true,
-                    force: false,
-                });
+	pub(crate) async fn scan_project_folder(self: &Arc<Self>, project_key: ProjectKey, project_path: BiomePath) {
+		let session = self.clone();
+		let scan_project = move || {
+			let result = session.workspace.scan_project_folder(ScanProjectFolderParams {
+				project_key,
+				path: Some(project_path),
+				watch: true,
+				force: false,
+			});
 
-            match result {
-                Ok(result) => {
-                    spawn(async move {
-                        for diagnostic in result.diagnostics {
-                            let message = PrintDescription(&diagnostic).to_string();
-                            session
-                                .client
-                                .log_message(MessageType::ERROR, message)
-                                .await;
-                        }
-                    });
-                }
-                Err(err) => {
-                    let message = PrintDescription(&err).to_string();
-                    spawn(async move {
-                        session
-                            .client
-                            .log_message(MessageType::ERROR, message)
-                            .await;
-                    });
-                }
-            }
-        };
+			match result {
+				Ok(result) => {
+					spawn(async move {
+						for diagnostic in result.diagnostics {
+							let message = PrintDescription(&diagnostic).to_string();
+							session.client.log_message(MessageType::ERROR, message).await;
+						}
+					});
+				},
+				Err(err) => {
+					let message = PrintDescription(&err).to_string();
+					spawn(async move {
+						session.client.log_message(MessageType::ERROR, message).await;
+					});
+				},
+			}
+		};
 
-        let _ = spawn_blocking(scan_project).await;
-    }
+		let _ = spawn_blocking(scan_project).await;
+	}
 
-    #[tracing::instrument(level = "debug", skip(self))]
-    async fn load_biome_configuration_file(
-        self: &Arc<Self>,
-        base_path: ConfigurationPathHint,
-    ) -> ConfigurationStatus {
-        let loaded_configuration = match load_configuration(self.workspace.fs(), base_path.clone())
-        {
-            Ok(loaded_configuration) => loaded_configuration,
-            Err(err) => {
-                error!("Couldn't load the configuration file, reason:\n {err}");
-                self.client.log_message(MessageType::ERROR, &err).await;
-                return ConfigurationStatus::Error;
-            }
-        };
+	#[tracing::instrument(level = "debug", skip(self))]
+	async fn load_biome_configuration_file(self: &Arc<Self>, base_path: ConfigurationPathHint) -> ConfigurationStatus {
+		let loaded_configuration = match load_configuration(self.workspace.fs(), base_path.clone()) {
+			Ok(loaded_configuration) => loaded_configuration,
+			Err(err) => {
+				error!("Couldn't load the configuration file, reason:\n {err}");
+				self.client.log_message(MessageType::ERROR, &err).await;
+				return ConfigurationStatus::Error;
+			},
+		};
 
-        if loaded_configuration.has_errors() {
-            error!("Couldn't load the configuration file, reasons:");
-            for diagnostic in loaded_configuration.as_diagnostics_iter() {
-                let message = PrintDescription(diagnostic).to_string();
-                self.client.log_message(MessageType::ERROR, message).await;
-            }
-            return ConfigurationStatus::Error;
-        }
+		if loaded_configuration.has_errors() {
+			error!("Couldn't load the configuration file, reasons:");
+			for diagnostic in loaded_configuration.as_diagnostics_iter() {
+				let message = PrintDescription(diagnostic).to_string();
+				self.client.log_message(MessageType::ERROR, message).await;
+			}
+			return ConfigurationStatus::Error;
+		}
 
-        info!("Configuration loaded successfully from disk.");
-        info!("Update workspace settings.");
+		info!("Configuration loaded successfully from disk.");
+		info!("Update workspace settings.");
 
-        let LoadedConfiguration {
-            configuration: fs_configuration,
-            directory_path: configuration_path,
-            ..
-        } = loaded_configuration;
+		let LoadedConfiguration { configuration: fs_configuration, directory_path: configuration_path, .. } =
+			loaded_configuration;
 
-        let fs = self.workspace.fs();
-        let should_use_editorconfig = fs_configuration.use_editorconfig();
-        let mut configuration = if should_use_editorconfig {
-            let (editorconfig, editorconfig_diagnostics) = {
-                let search_path = configuration_path
-                    .clone()
-                    .unwrap_or_else(|| fs.working_directory().unwrap_or_default());
-                match load_editorconfig(fs, search_path, None) {
-                    Ok(result) => result,
-                    Err(error) => {
-                        error!("Failed load the `.editorconfig` file. Reason: {error}");
-                        self.client.log_message(MessageType::ERROR, &error).await;
-                        return ConfigurationStatus::EditorConfigError;
-                    }
-                }
-            };
-            for diagnostic in editorconfig_diagnostics {
-                let message = PrintDescription(&diagnostic).to_string();
-                self.client.log_message(MessageType::ERROR, message).await;
-            }
-            editorconfig.unwrap_or_default()
-        } else {
-            Default::default()
-        };
+		let fs = self.workspace.fs();
+		let should_use_editorconfig = fs_configuration.use_editorconfig();
+		let mut configuration = if should_use_editorconfig {
+			let (editorconfig, editorconfig_diagnostics) = {
+				let search_path = configuration_path
+					.clone()
+					.unwrap_or_else(|| fs.working_directory().unwrap_or_default());
+				match load_editorconfig(fs, search_path, None) {
+					Ok(result) => result,
+					Err(error) => {
+						error!("Failed load the `.editorconfig` file. Reason: {error}");
+						self.client.log_message(MessageType::ERROR, &error).await;
+						return ConfigurationStatus::EditorConfigError;
+					},
+				}
+			};
+			for diagnostic in editorconfig_diagnostics {
+				let message = PrintDescription(&diagnostic).to_string();
+				self.client.log_message(MessageType::ERROR, message).await;
+			}
+			editorconfig.unwrap_or_default()
+		} else {
+			Default::default()
+		};
 
-        configuration.merge_with(fs_configuration);
+		configuration.merge_with(fs_configuration);
 
-        let path = match (&configuration_path, &base_path) {
-            (Some(configuration_path), _) => configuration_path.as_path(),
-            (
-                None,
-                ConfigurationPathHint::FromLsp(path) | ConfigurationPathHint::FromWorkspace(path),
-            ) => path,
-            (None, _) => &fs.working_directory().unwrap_or_default(),
-        };
-        let register_result = self.workspace.open_project(OpenProjectParams {
-            path: path.into(),
-            open_uninitialized: true,
-        });
-        let project_key = match register_result {
-            Ok(result) => result,
-            Err(error) => {
-                error!("Failed to register the project folder: {error}");
-                self.client.log_message(MessageType::ERROR, &error).await;
-                return ConfigurationStatus::Error;
-            }
-        };
+		let path = match (&configuration_path, &base_path) {
+			(Some(configuration_path), _) => configuration_path.as_path(),
+			(None, ConfigurationPathHint::FromLsp(path) | ConfigurationPathHint::FromWorkspace(path)) => path,
+			(None, _) => &fs.working_directory().unwrap_or_default(),
+		};
+		let register_result = self
+			.workspace
+			.open_project(OpenProjectParams { path: path.into(), open_uninitialized: true });
+		let project_key = match register_result {
+			Ok(result) => result,
+			Err(error) => {
+				error!("Failed to register the project folder: {error}");
+				self.client.log_message(MessageType::ERROR, &error).await;
+				return ConfigurationStatus::Error;
+			},
+		};
 
-        let result = self.workspace.update_settings(UpdateSettingsParams {
-            project_key,
-            workspace_directory: configuration_path
-                .as_ref()
-                .map(Utf8PathBuf::as_path)
-                .map(BiomePath::from),
-            configuration,
-        });
+		let result = self.workspace.update_settings(UpdateSettingsParams {
+			project_key,
+			workspace_directory: configuration_path.as_ref().map(Utf8PathBuf::as_path).map(BiomePath::from),
+			configuration,
+		});
 
-        self.insert_and_scan_project(project_key, path.into());
+		self.insert_and_scan_project(project_key, path.into());
 
-        if let Err(WorkspaceError::PluginErrors(error)) = result {
-            error!("Failed to load plugins: {error:?}");
-            self.client
-                .log_message(MessageType::ERROR, format!("{error:?}"))
-                .await;
-            ConfigurationStatus::PluginError
-        } else if let Err(error) = result {
-            error!("Failed to set workspace settings: {error}");
-            self.client.log_message(MessageType::ERROR, &error).await;
-            ConfigurationStatus::Error
-        } else {
-            ConfigurationStatus::Loaded
-        }
-    }
+		if let Err(WorkspaceError::PluginErrors(error)) = result {
+			error!("Failed to load plugins: {error:?}");
+			self.client.log_message(MessageType::ERROR, format!("{error:?}")).await;
+			ConfigurationStatus::PluginError
+		} else if let Err(error) = result {
+			error!("Failed to set workspace settings: {error}");
+			self.client.log_message(MessageType::ERROR, &error).await;
+			ConfigurationStatus::Error
+		} else {
+			ConfigurationStatus::Loaded
+		}
+	}
 
-    /// Requests "workspace/configuration" from client and updates Session config.
-    /// It must be done before loading workspace settings in [`Self::load_workspace_settings`].
-    #[tracing::instrument(level = "debug", skip(self))]
-    pub(crate) async fn load_extension_settings(&self) {
-        let item = lsp_types::ConfigurationItem {
-            scope_uri: None,
-            section: Some(String::from(CONFIGURATION_SECTION)),
-        };
+	/// Requests "workspace/configuration" from client and updates Session config.
+	/// It must be done before loading workspace settings in [`Self::load_workspace_settings`].
+	#[tracing::instrument(level = "debug", skip(self))]
+	pub(crate) async fn load_extension_settings(&self) {
+		let item = lsp_types::ConfigurationItem { scope_uri: None, section: Some(String::from(CONFIGURATION_SECTION)) };
 
-        let client_configurations = match self.client.configuration(vec![item]).await {
-            Ok(client_configurations) => client_configurations,
-            Err(err) => {
-                error!("Couldn't read configuration from the client: {err}");
-                return;
-            }
-        };
+		let client_configurations = match self.client.configuration(vec![item]).await {
+			Ok(client_configurations) => client_configurations,
+			Err(err) => {
+				error!("Couldn't read configuration from the client: {err}");
+				return;
+			},
+		};
 
-        let client_configuration = client_configurations.into_iter().next();
+		let client_configuration = client_configurations.into_iter().next();
 
-        if let Some(client_configuration) = client_configuration {
-            info!("Loaded client configuration: {client_configuration:#?}");
+		if let Some(client_configuration) = client_configuration {
+			info!("Loaded client configuration: {client_configuration:#?}");
 
-            let mut config = self.extension_settings.write().unwrap();
-            if let Err(err) = config.set_workspace_settings(client_configuration) {
-                error!("Couldn't set client configuration: {}", err);
-            }
-        } else {
-            info!("Client did not return any configuration");
-        }
-    }
+			let mut config = self.extension_settings.write().unwrap();
+			if let Err(err) = config.set_workspace_settings(client_configuration) {
+				error!("Couldn't set client configuration: {}", err);
+			}
+		} else {
+			info!("Client did not return any configuration");
+		}
+	}
 
-    /// Broadcast a shutdown signal to all active connections
-    pub(crate) fn broadcast_shutdown(&self) {
-        self.cancellation.notify_one();
-    }
+	/// Broadcast a shutdown signal to all active connections
+	pub(crate) fn broadcast_shutdown(&self) {
+		self.cancellation.notify_one();
+	}
 
-    pub(crate) fn failsafe_rage(&self, params: RageParams) -> RageResult {
-        self.workspace.rage(params).unwrap_or_else(|err| {
-            let entries = vec![
-                RageEntry::section("Workspace"),
-                RageEntry::markup(markup! {
-                    <Error>"\u{2716} Rage command failed:"</Error> {&format!("{err}")}
-                }),
-            ];
+	pub(crate) fn failsafe_rage(&self, params: RageParams) -> RageResult {
+		self.workspace.rage(params).unwrap_or_else(|err| {
+			let entries = vec![
+				RageEntry::section("Workspace"),
+				RageEntry::markup(markup! {
+					<Error>"\u{2716} Rage command failed:"</Error> {&format!("{err}")}
+				}),
+			];
 
-            RageResult { entries }
-        })
-    }
+			RageResult { entries }
+		})
+	}
 
-    /// Retrieves information regarding the configuration status
-    pub(crate) fn configuration_status(&self) -> ConfigurationStatus {
-        self.configuration_status
-            .load(Ordering::Relaxed)
-            .try_into()
-            .unwrap()
-    }
+	/// Retrieves information regarding the configuration status
+	pub(crate) fn configuration_status(&self) -> ConfigurationStatus {
+		self.configuration_status.load(Ordering::Relaxed).try_into().unwrap()
+	}
 
-    /// Updates the status of the configuration
-    fn set_configuration_status(&self, status: ConfigurationStatus) {
-        self.notified_broken_configuration
-            .store(false, Ordering::Relaxed);
-        self.configuration_status
-            .store(status as u8, Ordering::Relaxed);
-    }
+	/// Updates the status of the configuration
+	fn set_configuration_status(&self, status: ConfigurationStatus) {
+		self.notified_broken_configuration.store(false, Ordering::Relaxed);
+		self.configuration_status.store(status as u8, Ordering::Relaxed);
+	}
 
-    fn notified_broken_configuration(&self) -> bool {
-        self.notified_broken_configuration.load(Ordering::Relaxed)
-    }
-    fn set_notified_broken_configuration(&self) {
-        self.notified_broken_configuration
-            .store(true, Ordering::Relaxed);
-    }
+	fn notified_broken_configuration(&self) -> bool {
+		self.notified_broken_configuration.load(Ordering::Relaxed)
+	}
+	fn set_notified_broken_configuration(&self) {
+		self.notified_broken_configuration.store(true, Ordering::Relaxed);
+	}
 
-    pub(crate) fn is_linting_and_formatting_disabled(&self) -> bool {
-        match self.configuration_status() {
-            ConfigurationStatus::Loaded => false,
-            ConfigurationStatus::Missing => self
-                .extension_settings
-                .read()
-                .unwrap()
-                .requires_configuration(),
-            ConfigurationStatus::Error
-            | ConfigurationStatus::EditorConfigError
-            | ConfigurationStatus::PluginError => false,
-            ConfigurationStatus::Loading => true,
-        }
-    }
+	pub(crate) fn is_linting_and_formatting_disabled(&self) -> bool {
+		match self.configuration_status() {
+			ConfigurationStatus::Loaded => false,
+			ConfigurationStatus::Missing => self.extension_settings.read().unwrap().requires_configuration(),
+			ConfigurationStatus::Error | ConfigurationStatus::EditorConfigError | ConfigurationStatus::PluginError => {
+				false
+			},
+			ConfigurationStatus::Loading => true,
+		}
+	}
 
-    pub fn position_encoding(&self) -> PositionEncoding {
-        self.initialize_params
-            .get()
-            .map_or(PositionEncoding::Wide(WideEncoding::Utf16), |params| {
-                negotiated_encoding(&params.client_capabilities)
-            })
-    }
+	pub fn position_encoding(&self) -> PositionEncoding {
+		self.initialize_params
+			.get()
+			.map_or(PositionEncoding::Wide(WideEncoding::Utf16), |params| {
+				negotiated_encoding(&params.client_capabilities)
+			})
+	}
 }

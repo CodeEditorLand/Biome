@@ -6,7 +6,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsonNullValue;
 
 impl FormatNodeRule<JsonNullValue> for FormatJsonNullValue {
-	fn fmt_fields(&self, node:&JsonNullValue, f:&mut JsonFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsonNullValue, f: &mut JsonFormatter) -> FormatResult<()> {
 		node.value_token()?.format().fmt(f)
 	}
 }

@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsonMember;
 
 impl FormatNodeRule<JsonMember> for FormatJsonMember {
-	fn fmt_fields(&self, node:&JsonMember, f:&mut JsonFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsonMember, f: &mut JsonFormatter) -> FormatResult<()> {
 		let JsonMemberFields { name, colon_token, value } = node.as_fields();
 
 		write!(

@@ -7,11 +7,7 @@ use crate::{prelude::*, utils::FormatTypeMemberSeparator};
 pub struct FormatTsConstructSignatureTypeMember;
 
 impl FormatNodeRule<TsConstructSignatureTypeMember> for FormatTsConstructSignatureTypeMember {
-	fn fmt_fields(
-		&self,
-		node:&TsConstructSignatureTypeMember,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsConstructSignatureTypeMember, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsConstructSignatureTypeMemberFields {
 			new_token,
 			type_parameters,

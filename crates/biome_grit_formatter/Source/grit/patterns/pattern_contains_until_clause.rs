@@ -5,11 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritPatternContainsUntilClause;
 impl FormatNodeRule<GritPatternContainsUntilClause> for FormatGritPatternContainsUntilClause {
-	fn fmt_fields(
-		&self,
-		node:&GritPatternContainsUntilClause,
-		f:&mut GritFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GritPatternContainsUntilClause, f: &mut GritFormatter) -> FormatResult<()> {
 		let GritPatternContainsUntilClauseFields { until, until_token } = node.as_fields();
 
 		write!(f, [until_token.format(), space(), until.format()])

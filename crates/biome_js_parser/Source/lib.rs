@@ -86,9 +86,9 @@ mod token_source;
 pub(crate) use crate::ParsedSyntax::{Absent, Present};
 use crate::prelude::*;
 pub use crate::{
-    lexer::{JsLexContext, JsReLexContext},
-    options::JsParserOptions,
-    parse::*,
+	lexer::{JsLexContext, JsReLexContext},
+	options::JsParserOptions,
+	parse::*,
 };
 use biome_js_factory::JsSyntaxFactory;
 use biome_js_syntax::{JsSyntaxKind, LanguageVariant};
@@ -105,17 +105,17 @@ pub use crate::{
 };
 
 pub enum JsSyntaxFeature {
-    #[doc(alias = "LooseMode")]
-    SloppyMode,
-    StrictMode,
-    TypeScript,
-    Jsx,
+	#[doc(alias = "LooseMode")]
+	SloppyMode,
+	StrictMode,
+	TypeScript,
+	Jsx,
 }
 
 impl SyntaxFeature for JsSyntaxFeature {
 	type Parser<'source> = JsParser<'source>;
 
-	fn is_supported(&self, p:&JsParser) -> bool {
+	fn is_supported(&self, p: &JsParser) -> bool {
 		match self {
 			JsSyntaxFeature::SloppyMode => p.state().strict().is_none(),
 			JsSyntaxFeature::StrictMode => p.state().strict().is_some(),
@@ -125,5 +125,4 @@ impl SyntaxFeature for JsSyntaxFeature {
 	}
 }
 
-pub(crate) type JsLosslessTreeSink<'source> =
-	LosslessTreeSink<'source, JsLanguage, JsSyntaxFactory>;
+pub(crate) type JsLosslessTreeSink<'source> = LosslessTreeSink<'source, JsLanguage, JsSyntaxFactory>;

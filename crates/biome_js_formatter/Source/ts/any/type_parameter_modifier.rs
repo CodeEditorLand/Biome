@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyTsTypeParameterModifier;
 impl FormatRule<AnyTsTypeParameterModifier> for FormatAnyTsTypeParameterModifier {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyTsTypeParameterModifier, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyTsTypeParameterModifier, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyTsTypeParameterModifier::TsConstModifier(node) => node.format().fmt(f),
 			AnyTsTypeParameterModifier::TsInModifier(node) => node.format().fmt(f),

@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlSelectionSet;
 impl FormatNodeRule<GraphqlSelectionSet> for FormatGraphqlSelectionSet {
-	fn fmt_fields(&self, node:&GraphqlSelectionSet, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GraphqlSelectionSet, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		let GraphqlSelectionSetFields { l_curly_token, selections, r_curly_token } = node.as_fields();
 
 		write!(

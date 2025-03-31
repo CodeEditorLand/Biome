@@ -6,13 +6,8 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlInputFieldsDefinition;
 impl FormatNodeRule<GraphqlInputFieldsDefinition> for FormatGraphqlInputFieldsDefinition {
-	fn fmt_fields(
-		&self,
-		node:&GraphqlInputFieldsDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
-		let GraphqlInputFieldsDefinitionFields { l_curly_token, fields, r_curly_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &GraphqlInputFieldsDefinition, f: &mut GraphqlFormatter) -> FormatResult<()> {
+		let GraphqlInputFieldsDefinitionFields { l_curly_token, fields, r_curly_token } = node.as_fields();
 
 		write![
 			f,

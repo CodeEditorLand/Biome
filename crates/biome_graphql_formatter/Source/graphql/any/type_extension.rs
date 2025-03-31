@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyGraphqlTypeExtension;
 impl FormatRule<AnyGraphqlTypeExtension> for FormatAnyGraphqlTypeExtension {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(&self, node:&AnyGraphqlTypeExtension, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyGraphqlTypeExtension, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		match node {
 			AnyGraphqlTypeExtension::GraphqlEnumTypeExtension(node) => node.format().fmt(f),
 			AnyGraphqlTypeExtension::GraphqlInputObjectTypeExtension(node) => node.format().fmt(f),

@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssAttributeSelector;
 impl FormatNodeRule<CssAttributeSelector> for FormatCssAttributeSelector {
-	fn fmt_fields(&self, node:&CssAttributeSelector, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssAttributeSelector, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssAttributeSelectorFields { l_brack_token, name, matcher, r_brack_token } = node.as_fields();
 
 		write!(

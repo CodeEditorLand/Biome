@@ -2,7 +2,7 @@ use std::{env, fs, path::PathBuf};
 
 use biome_string_case::Case;
 
-const KNOWN_GROUPS:[&str; 7] = [
+const KNOWN_GROUPS: [&str; 7] = [
 	"a11y",
 	"suspicious",
 	"correctness",
@@ -12,13 +12,13 @@ const KNOWN_GROUPS:[&str; 7] = [
 	"complexity",
 ];
 
-const KNOWN_PATHS:&[&str] = &[
+const KNOWN_PATHS: &[&str] = &[
 	"crates/biome_js_analyze",
 	"crates/biome_css_analyze",
 	"crates/biome_json_analyze",
 	"crates/biome_graphql_analyze",
 ];
-pub fn promote_rule(rule_name:&str, new_group:&str) {
+pub fn promote_rule(rule_name: &str, new_group: &str) {
 	let current_dir = env::current_dir().ok().unwrap();
 
 	if !KNOWN_GROUPS.contains(&new_group) {
@@ -63,10 +63,8 @@ pub fn promote_rule(rule_name:&str, new_group:&str) {
 
 		let categories = std::fs::read_to_string(categories_path).unwrap();
 
-		let mut categories = categories.replace(
-			&format!("lint/nursery/{rule_name}"),
-			&format!("lint/{new_group}/{rule_name}"),
-		);
+		let mut categories =
+			categories.replace(&format!("lint/nursery/{rule_name}"), &format!("lint/{new_group}/{rule_name}"));
 
 		// We sort rules to reduce conflicts between contributions made in parallel.
 		let lint_start = "define_categories! {\n";
@@ -83,7 +81,7 @@ pub fn promote_rule(rule_name:&str, new_group:&str) {
 
 		let lint_rule_text = &categories[lint_start_index..lint_end_index];
 
-		let mut lint_rules:Vec<_> = lint_rule_text.lines().collect();
+		let mut lint_rules: Vec<_> = lint_rule_text.lines().collect();
 
 		lint_rules.sort_unstable();
 

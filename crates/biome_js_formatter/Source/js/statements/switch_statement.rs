@@ -8,7 +8,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsSwitchStatement;
 
 impl FormatNodeRule<JsSwitchStatement> for FormatJsSwitchStatement {
-	fn fmt_fields(&self, node:&JsSwitchStatement, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsSwitchStatement, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsSwitchStatementFields {
 			switch_token,
 			l_paren_token,

@@ -12,29 +12,26 @@ use grit_util::VariableBinding;
 pub struct VariableLocations(Vec<Vec<VariableSource>>);
 
 impl VariableLocations {
-    pub(crate) fn new(locations: Vec<Vec<VariableSource>>) -> Self {
-        Self(locations)
-    }
+	pub(crate) fn new(locations: Vec<Vec<VariableSource>>) -> Self {
+		Self(locations)
+	}
 
-    #[expect(dead_code)]
-    pub(crate) fn compiled_vars(&self) -> Vec<VariableBinding> {
-        let mut variables = Vec::new();
-        for (i, scope) in self.0.iter().enumerate() {
-            for (j, var) in scope.iter().enumerate() {
-                if let VariableSource::Compiled {
-                    name, locations, ..
-                } = var
-                {
-                    variables.push(VariableBinding {
-                        name: name.to_owned(),
-                        scoped_name: format!("{i}_{j}_{name}"),
-                        ranges: locations.iter().copied().collect(),
-                    });
-                }
-            }
-        }
-        variables
-    }
+	#[expect(dead_code)]
+	pub(crate) fn compiled_vars(&self) -> Vec<VariableBinding> {
+		let mut variables = Vec::new();
+		for (i, scope) in self.0.iter().enumerate() {
+			for (j, var) in scope.iter().enumerate() {
+				if let VariableSource::Compiled { name, locations, .. } = var {
+					variables.push(VariableBinding {
+						name: name.to_owned(),
+						scoped_name: format!("{i}_{j}_{name}"),
+						ranges: locations.iter().copied().collect(),
+					});
+				}
+			}
+		}
+		variables
+	}
 }
 
 /// Registry containing all variables.
@@ -46,28 +43,28 @@ impl VariableLocations {
 pub(crate) struct VarRegistry<'a>(VarRegistryVector<'a>);
 
 impl VarRegistry<'_> {
-    pub(crate) fn from_locations(locations: &VariableLocations) -> Self {
-        let vector = locations
-            .0
-            .iter()
-            .map(|scope| {
-                vec![
-                    scope
-                        .iter()
-                        .map(|s| Box::new(VariableContent::new(s.name().to_owned())))
-                        .collect(),
-                ]
-            })
-            .collect();
+	pub(crate) fn from_locations(locations: &VariableLocations) -> Self {
+		let vector = locations
+			.0
+			.iter()
+			.map(|scope| {
+				vec![
+					scope
+						.iter()
+						.map(|s| Box::new(VariableContent::new(s.name().to_owned())))
+						.collect(),
+				]
+			})
+			.collect();
 
-        Self(vector)
-    }
+		Self(vector)
+	}
 }
 
 pub(crate) type VarRegistryVector<'a> = Vec<Vec<Vec<Box<VariableContent<'a, GritQueryContext>>>>>;
 
 impl<'a> From<VarRegistry<'a>> for VarRegistryVector<'a> {
-    fn from(value: VarRegistry<'a>) -> Self {
-        value.0
-    }
+	fn from(value: VarRegistry<'a>) -> Self {
+		value.0
+	}
 }

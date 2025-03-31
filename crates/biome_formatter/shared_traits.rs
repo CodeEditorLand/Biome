@@ -23,7 +23,9 @@ where
 	where
 		Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> { AsFormat::format(&**self) }
+	fn format(&self) -> Self::Format<'_> {
+		AsFormat::format(&**self)
+	}
 }
 
 /// Implement [AsFormat] for [SyntaxResult] where `T` implements [AsFormat].
@@ -60,7 +62,9 @@ where
 	where
 		Self: 'a;
 
-	fn format(&self) -> Self::Format<'_> { self.as_ref().map(|value| value.format()) }
+	fn format(&self) -> Self::Format<'_> {
+		self.as_ref().map(|value| value.format())
+	}
 }
 
 /// Used to convert this object into an object that can be formatted.
@@ -78,7 +82,9 @@ where
 {
 	type Format = biome_rowan::SyntaxResult<T::Format>;
 
-	fn into_format(self) -> Self::Format { self.map(IntoFormat::into_format) }
+	fn into_format(self) -> Self::Format {
+		self.map(IntoFormat::into_format)
+	}
 }
 
 /// Implement [IntoFormat] for [Option] when `T` implements [IntoFormat]
@@ -91,7 +97,9 @@ where
 {
 	type Format = Option<T::Format>;
 
-	fn into_format(self) -> Self::Format { self.map(IntoFormat::into_format) }
+	fn into_format(self) -> Self::Format {
+		self.map(IntoFormat::into_format)
+	}
 }
 
 /// Formatting specific [Iterator] extensions
@@ -100,8 +108,9 @@ pub(crate) trait FormattedIterExt {
 	fn formatted<Context>(self) -> FormattedIter<Self, Self::Item, Context>
 	where
 		Self: Iterator + Sized,
-		Self::Item: IntoFormat<Context>, {
-		FormattedIter { inner:self, options:std::marker::PhantomData }
+		Self::Item: IntoFormat<Context>,
+	{
+		FormattedIter { inner: self, options: std::marker::PhantomData }
 	}
 }
 
@@ -109,9 +118,10 @@ impl<I> FormattedIterExt for I where I: std::iter::Iterator {}
 
 pub(crate) struct FormattedIter<Iter, Item, Context>
 where
-	Iter: Iterator<Item = Item>, {
-	inner:Iter,
-	options:std::marker::PhantomData<Context>,
+	Iter: Iterator<Item = Item>,
+{
+	inner: Iter,
+	options: std::marker::PhantomData<Context>,
 }
 
 impl<Iter, Item, Context> std::iter::Iterator for FormattedIter<Iter, Item, Context>
@@ -121,7 +131,9 @@ where
 {
 	type Item = Item::Format;
 
-	fn next(&mut self) -> Option<Self::Item> { Some(self.inner.next()?.into_format()) }
+	fn next(&mut self) -> Option<Self::Item> {
+		Some(self.inner.next()?.into_format())
+	}
 }
 
 impl<Iter, Item, Context> std::iter::FusedIterator for FormattedIter<Iter, Item, Context>

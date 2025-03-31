@@ -5,13 +5,8 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritPredicateGreaterEqual;
 impl FormatNodeRule<GritPredicateGreaterEqual> for FormatGritPredicateGreaterEqual {
-	fn fmt_fields(
-		&self,
-		node:&GritPredicateGreaterEqual,
-		f:&mut GritFormatter,
-	) -> FormatResult<()> {
-		let GritPredicateGreaterEqualFields { right, left, greater_than_equal_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &GritPredicateGreaterEqual, f: &mut GritFormatter) -> FormatResult<()> {
+		let GritPredicateGreaterEqualFields { right, left, greater_than_equal_token } = node.as_fields();
 
 		write!(
 			f,

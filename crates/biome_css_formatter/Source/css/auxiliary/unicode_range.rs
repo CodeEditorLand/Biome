@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssUnicodeRange;
 impl FormatNodeRule<CssUnicodeRange> for FormatCssUnicodeRange {
-	fn fmt_fields(&self, node:&CssUnicodeRange, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssUnicodeRange, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssUnicodeRangeFields { prefix_token, value } = node.as_fields();
 
 		write!(f, [prefix_token.format(), value.format()])

@@ -1,28 +1,15 @@
 use biome_formatter::write;
-use biome_js_syntax::{
-	JsStaticInitializationBlockClassMember,
-	JsStaticInitializationBlockClassMemberFields,
-};
+use biome_js_syntax::{JsStaticInitializationBlockClassMember, JsStaticInitializationBlockClassMemberFields};
 
 use crate::prelude::*;
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatJsStaticInitializationBlockClassMember;
 
-impl FormatNodeRule<JsStaticInitializationBlockClassMember>
-	for FormatJsStaticInitializationBlockClassMember
-{
-	fn fmt_fields(
-		&self,
-		node:&JsStaticInitializationBlockClassMember,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
-		let JsStaticInitializationBlockClassMemberFields {
-			static_token,
-			l_curly_token,
-			statements,
-			r_curly_token,
-		} = node.as_fields();
+impl FormatNodeRule<JsStaticInitializationBlockClassMember> for FormatJsStaticInitializationBlockClassMember {
+	fn fmt_fields(&self, node: &JsStaticInitializationBlockClassMember, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsStaticInitializationBlockClassMemberFields { static_token, l_curly_token, statements, r_curly_token } =
+			node.as_fields();
 
 		write!(f, [static_token.format(), space(), l_curly_token.format()])?;
 
@@ -37,8 +24,8 @@ impl FormatNodeRule<JsStaticInitializationBlockClassMember>
 
 	fn fmt_dangling_comments(
 		&self,
-		_:&JsStaticInitializationBlockClassMember,
-		_:&mut JsFormatter,
+		_: &JsStaticInitializationBlockClassMember,
+		_: &mut JsFormatter,
 	) -> FormatResult<()> {
 		// Formatted inside of `fmt_fields`
 		Ok(())

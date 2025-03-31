@@ -2,19 +2,9 @@ use std::any::TypeId;
 
 use biome_analyze::{Visitor, VisitorContext, merge_node_visitors};
 use biome_js_syntax::{
-	AnyJsFunction,
-	JsConstructorClassMember,
-	JsGetterClassMember,
-	JsGetterObjectMember,
-	JsLanguage,
-	JsMethodClassMember,
-	JsMethodObjectMember,
-	JsModule,
-	JsScript,
-	JsSetterClassMember,
-	JsSetterObjectMember,
-	JsStaticInitializationBlockClassMember,
-	TsModuleDeclaration,
+	AnyJsFunction, JsConstructorClassMember, JsGetterClassMember, JsGetterObjectMember, JsLanguage,
+	JsMethodClassMember, JsMethodObjectMember, JsModule, JsScript, JsSetterClassMember, JsSetterObjectMember,
+	JsStaticInitializationBlockClassMember, TsModuleDeclaration,
 };
 use biome_rowan::{AstNode, SyntaxError, SyntaxResult, declare_node_union};
 
@@ -24,7 +14,9 @@ use crate::ControlFlowGraph;
 use super::{FunctionBuilder, nodes::*};
 
 /// Return a new instance of the [ControlFlowVisitor]
-pub(crate) fn make_visitor() -> impl Visitor<Language = JsLanguage> { ControlFlowVisitor::new() }
+pub(crate) fn make_visitor() -> impl Visitor<Language = JsLanguage> {
+	ControlFlowVisitor::new()
+}
 
 /// Wrapper macro for [merge_node_visitors], implements additional control
 /// flow-related utilities on top of the generated visitor
@@ -119,28 +111,28 @@ macro_rules! declare_visitor {
 }
 
 declare_visitor! {
-    ControlFlowVisitor {
-        statement: StatementVisitor,
-        block: BlockVisitor,
-        try_stmt: TryVisitor,
-        catch: CatchVisitor,
-        finally: FinallyVisitor,
-        if_stmt: IfVisitor,
-        else_stmt: ElseVisitor,
-        switch: SwitchVisitor,
-        case: CaseVisitor,
-        for_stmt: ForVisitor,
-        for_in: ForInVisitor,
-        for_of: ForOfVisitor,
-        while_stmt: WhileVisitor,
-        do_while: DoWhileVisitor,
-        break_stmt: BreakVisitor,
-        continue_stmt: ContinueVisitor,
-        return_stmt: ReturnVisitor,
-        throw: ThrowVisitor,
-        variable: VariableVisitor,
-        bogus: BogusVisitor,
-    }
+	ControlFlowVisitor {
+		statement: StatementVisitor,
+		block: BlockVisitor,
+		try_stmt: TryVisitor,
+		catch: CatchVisitor,
+		finally: FinallyVisitor,
+		if_stmt: IfVisitor,
+		else_stmt: ElseVisitor,
+		switch: SwitchVisitor,
+		case: CaseVisitor,
+		for_stmt: ForVisitor,
+		for_in: ForInVisitor,
+		for_of: ForOfVisitor,
+		while_stmt: WhileVisitor,
+		do_while: DoWhileVisitor,
+		break_stmt: BreakVisitor,
+		continue_stmt: ContinueVisitor,
+		return_stmt: ReturnVisitor,
+		throw: ThrowVisitor,
+		variable: VariableVisitor,
+		bogus: BogusVisitor,
+	}
 }
 
 /// Utility implemented for [StatementStack] in the [declare_visitor] macro,
@@ -148,7 +140,7 @@ declare_visitor! {
 pub(super) trait MergedVisitor<'a, N> {
 	fn read_top(self) -> SyntaxResult<&'a mut N>;
 
-	fn try_downcast(&'a self, type_id:TypeId, index:usize) -> Option<&'a N>;
+	fn try_downcast(&'a self, type_id: TypeId, index: usize) -> Option<&'a N>;
 }
 
 // Wrapper methods on top of the `MergedVisitor` trait to support for the
@@ -156,19 +148,21 @@ pub(super) trait MergedVisitor<'a, N> {
 impl<'a> StatementStack<'a> {
 	pub(super) fn read_top<N>(self) -> SyntaxResult<&'a mut N>
 	where
-		Self: MergedVisitor<'a, N>, {
+		Self: MergedVisitor<'a, N>,
+	{
 		MergedVisitor::read_top(self)
 	}
 
-	pub(super) fn try_downcast<N>(&'a self, type_id:TypeId, index:usize) -> Option<&'a N>
+	pub(super) fn try_downcast<N>(&'a self, type_id: TypeId, index: usize) -> Option<&'a N>
 	where
-		Self: MergedVisitor<'a, N>, {
+		Self: MergedVisitor<'a, N>,
+	{
 		MergedVisitor::try_downcast(self, type_id, index)
 	}
 }
 
 pub(super) struct FunctionVisitor {
-	builder:Option<FunctionBuilder>,
+	builder: Option<FunctionBuilder>,
 }
 
 declare_node_union! {
@@ -189,17 +183,13 @@ declare_node_union! {
 impl biome_analyze::NodeVisitor<ControlFlowVisitor> for FunctionVisitor {
 	type Node = AnyJsControlFlowRoot;
 
-	fn enter(
-		node:Self::Node,
-		_:&mut VisitorContext<JsLanguage>,
-		_:&mut ControlFlowVisitor,
-	) -> Self {
-		Self { builder:Some(FunctionBuilder::new(node.into_syntax())) }
+	fn enter(node: Self::Node, _: &mut VisitorContext<JsLanguage>, _: &mut ControlFlowVisitor) -> Self {
+		Self { builder: Some(FunctionBuilder::new(node.into_syntax())) }
 	}
 
-	fn exit(self, _:Self::Node, ctx:&mut VisitorContext<JsLanguage>, _:&mut ControlFlowVisitor) {
+	fn exit(self, _: Self::Node, ctx: &mut VisitorContext<JsLanguage>, _: &mut ControlFlowVisitor) {
 		if let Some(builder) = self.builder {
-			ctx.match_query(ControlFlowGraph { graph:builder.finish() });
+			ctx.match_query(ControlFlowGraph { graph: builder.finish() });
 		}
 	}
 }
@@ -209,10 +199,9 @@ impl biome_analyze::NodeVisitor<ControlFlowVisitor> for FunctionVisitor {
 pub(super) trait NodeVisitor: Sized {
 	type Node: AstNode<Language = JsLanguage>;
 
-	fn enter(node:Self::Node, builder:&mut FunctionBuilder, _:StatementStack)
-	-> SyntaxResult<Self>;
+	fn enter(node: Self::Node, builder: &mut FunctionBuilder, _: StatementStack) -> SyntaxResult<Self>;
 
-	fn exit(self, _:Self::Node, _:&mut FunctionBuilder, _:StatementStack) -> SyntaxResult<()> {
+	fn exit(self, _: Self::Node, _: &mut FunctionBuilder, _: StatementStack) -> SyntaxResult<()> {
 		Ok(())
 	}
 }
@@ -227,11 +216,7 @@ where
 {
 	type Node = V::Node;
 
-	fn enter(
-		node:Self::Node,
-		_:&mut VisitorContext<JsLanguage>,
-		stack:&mut ControlFlowVisitor,
-	) -> Self {
+	fn enter(node: Self::Node, _: &mut VisitorContext<JsLanguage>, stack: &mut ControlFlowVisitor) -> Self {
 		let (visitor, stack) = match StatementStack::new(stack) {
 			Some((builder, stack)) => (builder, stack),
 			None => return Self(Err(SyntaxError::MissingRequiredChild)),
@@ -252,12 +237,7 @@ where
 		Self(result)
 	}
 
-	fn exit(
-		self,
-		node:Self::Node,
-		_:&mut VisitorContext<JsLanguage>,
-		stack:&mut ControlFlowVisitor,
-	) {
+	fn exit(self, node: Self::Node, _: &mut VisitorContext<JsLanguage>, stack: &mut ControlFlowVisitor) {
 		let state = match self {
 			Self(Ok(state)) => state,
 			_ => return,

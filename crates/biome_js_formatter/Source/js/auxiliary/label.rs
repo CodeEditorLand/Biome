@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatJsLabel;
 impl FormatNodeRule<JsLabel> for FormatJsLabel {
-	fn fmt_fields(&self, node:&JsLabel, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsLabel, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsLabelFields { value_token } = node.as_fields();
 
 		write![f, [value_token.format()]]

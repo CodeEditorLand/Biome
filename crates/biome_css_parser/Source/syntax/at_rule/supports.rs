@@ -8,19 +8,19 @@ use crate::{
 	parser::CssParser,
 	syntax::{
 		block::parse_conditional_block,
-		is_nth_at_identifier,
-		parse_any_value,
-		parse_declaration,
+		is_nth_at_identifier, parse_any_value, parse_declaration,
 		selector::parse_selector,
 		value::function::{is_at_function, parse_function},
 	},
 };
 
 #[inline]
-pub(crate) fn is_at_supports_at_rule(p:&mut CssParser) -> bool { p.at(T![supports]) }
+pub(crate) fn is_at_supports_at_rule(p: &mut CssParser) -> bool {
+	p.at(T![supports])
+}
 
 #[inline]
-pub(crate) fn parse_supports_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_supports_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_supports_at_rule(p) {
 		return Absent;
 	}
@@ -36,7 +36,7 @@ pub(crate) fn parse_supports_at_rule(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-pub(crate) fn parse_any_supports_condition(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_any_supports_condition(p: &mut CssParser) -> ParsedSyntax {
 	if is_at_supports_not_condition(p) {
 		parse_supports_not_condition(p)
 	} else {
@@ -67,7 +67,7 @@ pub(crate) fn parse_any_supports_condition(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn parse_supports_and_condition(p:&mut CssParser) -> ParsedSyntax {
+fn parse_supports_and_condition(p: &mut CssParser) -> ParsedSyntax {
 	let condition_in_parens = parse_any_supports_condition_in_parens(p);
 
 	if p.at(T![and]) {
@@ -83,7 +83,7 @@ fn parse_supports_and_condition(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn parse_supports_or_condition(p:&mut CssParser) -> ParsedSyntax {
+fn parse_supports_or_condition(p: &mut CssParser) -> ParsedSyntax {
 	let condition_in_parens = parse_any_supports_condition_in_parens(p);
 
 	if p.at(T![or]) {
@@ -99,9 +99,11 @@ fn parse_supports_or_condition(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-pub(crate) fn is_at_supports_not_condition(p:&mut CssParser) -> bool { p.at(T![not]) }
+pub(crate) fn is_at_supports_not_condition(p: &mut CssParser) -> bool {
+	p.at(T![not])
+}
 #[inline]
-fn parse_supports_not_condition(p:&mut CssParser) -> ParsedSyntax {
+fn parse_supports_not_condition(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_supports_not_condition(p) {
 		return Absent;
 	}
@@ -115,7 +117,7 @@ fn parse_supports_not_condition(p:&mut CssParser) -> ParsedSyntax {
 	Present(m.complete(p, CSS_SUPPORTS_NOT_CONDITION))
 }
 #[inline]
-fn parse_any_supports_condition_in_parens(p:&mut CssParser) -> ParsedSyntax {
+fn parse_any_supports_condition_in_parens(p: &mut CssParser) -> ParsedSyntax {
 	if is_at_supports_feature_selector(p) {
 		parse_supports_feature_selector(p)
 	} else if is_at_supports_feature_declaration(p) {
@@ -130,10 +132,12 @@ fn parse_any_supports_condition_in_parens(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn is_at_supports_condition_in_parens(p:&mut CssParser) -> bool { p.at(T!['(']) }
+fn is_at_supports_condition_in_parens(p: &mut CssParser) -> bool {
+	p.at(T!['('])
+}
 
 #[inline]
-fn parse_supports_condition_in_parens(p:&mut CssParser) -> ParsedSyntax {
+fn parse_supports_condition_in_parens(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_supports_condition_in_parens(p) {
 		return Absent;
 	}
@@ -149,10 +153,12 @@ fn parse_supports_condition_in_parens(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn is_at_supports_feature_selector(p:&mut CssParser) -> bool { p.at(T![selector]) && p.nth_at(1, T!['(']) }
+fn is_at_supports_feature_selector(p: &mut CssParser) -> bool {
+	p.at(T![selector]) && p.nth_at(1, T!['('])
+}
 
 #[inline]
-fn parse_supports_feature_selector(p:&mut CssParser) -> ParsedSyntax {
+fn parse_supports_feature_selector(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_supports_feature_selector(p) {
 		return Absent;
 	}
@@ -170,12 +176,12 @@ fn parse_supports_feature_selector(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-fn is_at_supports_feature_declaration(p:&mut CssParser) -> bool {
+fn is_at_supports_feature_declaration(p: &mut CssParser) -> bool {
 	p.at(T!['(']) && is_nth_at_identifier(p, 1) && p.nth_at(2, T![:])
 }
 
 #[inline]
-fn parse_supports_feature_declaration(p:&mut CssParser) -> ParsedSyntax {
+fn parse_supports_feature_declaration(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_supports_feature_declaration(p) {
 		return Absent;
 	}

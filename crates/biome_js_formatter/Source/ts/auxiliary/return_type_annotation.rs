@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsReturnTypeAnnotation;
 
 impl FormatNodeRule<TsReturnTypeAnnotation> for FormatTsReturnTypeAnnotation {
-	fn fmt_fields(&self, node:&TsReturnTypeAnnotation, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsReturnTypeAnnotation, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsReturnTypeAnnotationFields { colon_token, ty } = node.as_fields();
 
 		write![f, [colon_token.format(), space(), ty.format()]]

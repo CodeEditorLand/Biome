@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssSupportsAndCondition;
 impl FormatNodeRule<CssSupportsAndCondition> for FormatCssSupportsAndCondition {
-	fn fmt_fields(&self, node:&CssSupportsAndCondition, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssSupportsAndCondition, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssSupportsAndConditionFields { left, and_token, right } = node.as_fields();
 
 		write!(

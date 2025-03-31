@@ -10,7 +10,7 @@ use crate::{
 pub(crate) struct FormatJsDirective;
 
 impl FormatNodeRule<JsDirective> for FormatJsDirective {
-	fn fmt_fields(&self, node:&JsDirective, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsDirective, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsDirectiveFields { value_token, semicolon_token } = node.as_fields();
 
 		write!(

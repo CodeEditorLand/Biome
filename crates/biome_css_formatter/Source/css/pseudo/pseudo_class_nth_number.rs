@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssPseudoClassNthNumber;
 impl FormatNodeRule<CssPseudoClassNthNumber> for FormatCssPseudoClassNthNumber {
-	fn fmt_fields(&self, node:&CssPseudoClassNthNumber, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssPseudoClassNthNumber, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssPseudoClassNthNumberFields { sign, value } = node.as_fields();
 
 		write!(f, [sign.format(), value.format()])

@@ -22,24 +22,24 @@ pub trait TestFormatLanguage {
 		+ 'static
 		+ Clone;
 
-	fn parse(&self, text:&str) -> AnyParse;
+	fn parse(&self, text: &str) -> AnyParse;
 
 	fn format_node(
 		&self,
-		language:Self::FormatLanguage,
-		node:&SyntaxNode<Self::ServiceLanguage>,
+		language: Self::FormatLanguage,
+		node: &SyntaxNode<Self::ServiceLanguage>,
 	) -> FormatResult<Formatted<Self::Context>> {
 		biome_formatter::format_node(node, language)
 	}
 
 	fn format_range(
 		&self,
-		language:Self::FormatLanguage,
-		node:&SyntaxNode<Self::ServiceLanguage>,
-		range:TextRange,
+		language: Self::FormatLanguage,
+		node: &SyntaxNode<Self::ServiceLanguage>,
+		range: TextRange,
 	) -> FormatResult<Printed> {
 		biome_formatter::format_range(node, range, language)
 	}
 
-	fn to_format_language(&self, settings:&Settings, file_source:&DocumentFileSource) -> Self::FormatLanguage;
+	fn to_format_language(&self, settings: &Settings, file_source: &DocumentFileSource) -> Self::FormatLanguage;
 }

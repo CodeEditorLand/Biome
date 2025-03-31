@@ -14,7 +14,7 @@ pub fn keywords() -> Vec<String> {
 }
 
 pub fn contains_slice_setup() -> Vec<String> {
-    keywords()
+	keywords()
 }
 
 pub fn contains_binary_search_setup() -> Vec<String> {
@@ -84,5 +84,5 @@ pub fn contains_fst_setup() -> fst::Set<Vec<u8>> {
 }
 
 pub fn contains_memchr_setup() -> Vec<String> {
-    contains_binary_search_setup()
+	contains_binary_search_setup()
 }

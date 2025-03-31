@@ -7,7 +7,7 @@ use crate::{prelude::*, utils::FormatStatementSemicolon};
 pub(crate) struct FormatJsExportFromClause;
 
 impl FormatNodeRule<JsExportFromClause> for FormatJsExportFromClause {
-	fn fmt_fields(&self, node:&JsExportFromClause, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsExportFromClause, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsExportFromClauseFields {
 			type_token,
 			star_token,

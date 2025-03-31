@@ -10,7 +10,7 @@ use crate::{
 pub struct FormatTsStringLiteralType;
 
 impl FormatNodeRule<TsStringLiteralType> for FormatTsStringLiteralType {
-	fn fmt_fields(&self, node:&TsStringLiteralType, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsStringLiteralType, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsStringLiteralTypeFields { literal_token } = node.as_fields();
 
 		write!(

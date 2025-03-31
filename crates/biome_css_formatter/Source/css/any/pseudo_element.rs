@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssPseudoElement;
 impl FormatRule<AnyCssPseudoElement> for FormatAnyCssPseudoElement {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssPseudoElement, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssPseudoElement, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssPseudoElement::CssBogusPseudoElement(node) => node.format().fmt(f),
 			AnyCssPseudoElement::CssPseudoElementFunctionIdentifier(node) => node.format().fmt(f),

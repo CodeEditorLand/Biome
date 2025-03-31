@@ -6,19 +6,9 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlObjectTypeExtension;
 impl FormatNodeRule<GraphqlObjectTypeExtension> for FormatGraphqlObjectTypeExtension {
-	fn fmt_fields(
-		&self,
-		node:&GraphqlObjectTypeExtension,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
-		let GraphqlObjectTypeExtensionFields {
-			extend_token,
-			type_token,
-			name,
-			implements,
-			directives,
-			fields,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &GraphqlObjectTypeExtension, f: &mut GraphqlFormatter) -> FormatResult<()> {
+		let GraphqlObjectTypeExtensionFields { extend_token, type_token, name, implements, directives, fields } =
+			node.as_fields();
 
 		write![
 			f,

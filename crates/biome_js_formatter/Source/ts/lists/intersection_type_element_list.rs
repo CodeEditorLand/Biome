@@ -11,7 +11,7 @@ impl FormatRule<TsIntersectionTypeElementList> for FormatTsIntersectionTypeEleme
 	type Context = JsFormatContext;
 
 	// [Prettier applies]: https://github.com/prettier/prettier/blob/cd3e530c2e51fb8296c0fb7738a9afdd3a3a4410/src/language-js/print/type-annotation.js#L93-L120
-	fn fmt(&self, node:&TsIntersectionTypeElementList, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &TsIntersectionTypeElementList, f: &mut JsFormatter) -> FormatResult<()> {
 		let last_index = node.len().saturating_sub(1);
 
 		let mut is_prev_object_type_like = false;

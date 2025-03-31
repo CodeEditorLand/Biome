@@ -7,7 +7,7 @@ use crate::{prelude::*, utils::FormatStatementSemicolon};
 pub(crate) struct FormatJsDebuggerStatement;
 
 impl FormatNodeRule<JsDebuggerStatement> for FormatJsDebuggerStatement {
-	fn fmt_fields(&self, node:&JsDebuggerStatement, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsDebuggerStatement, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsDebuggerStatementFields { debugger_token, semicolon_token } = node.as_fields();
 
 		write!(f, [debugger_token.format(),])?;
@@ -19,11 +19,7 @@ impl FormatNodeRule<JsDebuggerStatement> for FormatJsDebuggerStatement {
 		FormatStatementSemicolon::new(semicolon_token.as_ref()).fmt(f)
 	}
 
-	fn fmt_dangling_comments(
-		&self,
-		_:&JsDebuggerStatement,
-		_:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &JsDebuggerStatement, _: &mut JsFormatter) -> FormatResult<()> {
 		// Handled in `fmt_fields`
 		Ok(())
 	}

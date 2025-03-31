@@ -1,7 +1,7 @@
 /// Sorted array of browser builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L368-L1442>
-pub const BROWSER:&[&str] = &[
+pub const BROWSER: &[&str] = &[
 	"AbortController",
 	"AbortSignal",
 	"AbsoluteOrientationSensor",
@@ -1080,7 +1080,7 @@ pub const BROWSER:&[&str] = &[
 /// Sorted array of browser service worker builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L2212-L2334>
-pub const SERVICE_WORKER:&[&str] = &[
+pub const SERVICE_WORKER: &[&str] = &[
 	"Blob",
 	"BroadcastChannel",
 	"ByteLengthQueuingStrategy",
@@ -1207,7 +1207,7 @@ pub const SERVICE_WORKER:&[&str] = &[
 /// Sorted array of browser web worker builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L1443-L1726>
-pub const WEB_WORKER:&[&str] = &[
+pub const WEB_WORKER: &[&str] = &[
 	"AbortController",
 	"AbortSignal",
 	"AudioData",
@@ -1499,7 +1499,7 @@ pub const WEB_WORKER:&[&str] = &[
 ///
 /// assert!(is_global(&"AbortController"));
 /// ```
-pub fn is_global(name:&str) -> bool {
+pub fn is_global(name: &str) -> bool {
 	BROWSER.binary_search(&name).is_ok()
 		|| WEB_WORKER.binary_search(&name).is_ok()
 		|| SERVICE_WORKER.binary_search(&name).is_ok()

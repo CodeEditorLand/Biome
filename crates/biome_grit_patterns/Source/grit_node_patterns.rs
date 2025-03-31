@@ -2,21 +2,13 @@ use grit_pattern_matcher::{
 	binding::Binding,
 	context::{ExecContext, StaticDefinitions},
 	pattern::{
-		AstLeafNodePattern,
-		AstNodePattern,
-		Matcher,
-		Pattern,
-		PatternName,
-		PatternOrPredicate,
-		ResolvedPattern,
-		State,
+		AstLeafNodePattern, AstNodePattern, Matcher, Pattern, PatternName, PatternOrPredicate, ResolvedPattern, State,
 	},
 };
 use grit_util::{AnalysisLogs, Language, error::GritResult};
 
 use crate::{
-	CompileError,
-	GritTargetLanguage,
+	CompileError, GritTargetLanguage,
 	grit_context::{GritExecContext, GritQueryContext},
 	grit_resolved_pattern::GritResolvedPattern,
 	grit_target_language::LeafEquivalenceClass,
@@ -25,30 +17,32 @@ use crate::{
 
 #[derive(Clone, Debug)]
 pub struct GritNodePattern {
-	pub kind:GritTargetSyntaxKind,
-	pub args:Vec<GritNodePatternArg>,
+	pub kind: GritTargetSyntaxKind,
+	pub args: Vec<GritNodePatternArg>,
 }
 
 impl AstNodePattern<GritQueryContext> for GritNodePattern {
-	const INCLUDES_TRIVIA:bool = true;
+	const INCLUDES_TRIVIA: bool = true;
 
 	fn children(
 		&self,
-		_definitions:&StaticDefinitions<GritQueryContext>,
+		_definitions: &StaticDefinitions<GritQueryContext>,
 	) -> Vec<PatternOrPredicate<GritQueryContext>> {
 		self.args.iter().map(|arg| PatternOrPredicate::Pattern(&arg.pattern)).collect()
 	}
 
-	fn matches_kind_of(&self, node:&GritTargetNode) -> bool { self.kind == node.kind() }
+	fn matches_kind_of(&self, node: &GritTargetNode) -> bool {
+		self.kind == node.kind()
+	}
 }
 
 impl Matcher<GritQueryContext> for GritNodePattern {
 	fn execute<'a>(
 		&'a self,
-		binding:&GritResolvedPattern<'a>,
-		init_state:&mut State<'a, GritQueryContext>,
-		context:&'a GritExecContext,
-		logs:&mut AnalysisLogs,
+		binding: &GritResolvedPattern<'a>,
+		init_state: &mut State<'a, GritQueryContext>,
+		context: &'a GritExecContext,
+		logs: &mut AnalysisLogs,
 	) -> GritResult<bool> {
 		let Some(binding) = binding.get_last_binding() else {
 			return Ok(false);
@@ -59,12 +53,7 @@ impl Matcher<GritQueryContext> for GritNodePattern {
 		};
 
 		if binding.is_list() {
-			return self.execute(
-				&ResolvedPattern::from_node_binding(node),
-				init_state,
-				context,
-				logs,
-			);
+			return self.execute(&ResolvedPattern::from_node_binding(node), init_state, context, logs);
 		}
 
 		if node.kind() != self.kind {
@@ -116,33 +105,35 @@ impl Matcher<GritQueryContext> for GritNodePattern {
 }
 
 impl PatternName for GritNodePattern {
-	fn name(&self) -> &'static str { "GritNode" }
+	fn name(&self) -> &'static str {
+		"GritNode"
+	}
 }
 
 #[derive(Clone, Debug)]
 pub struct GritNodePatternArg {
-	pub slot_index:u32,
-	pub pattern:Pattern<GritQueryContext>,
+	pub slot_index: u32,
+	pub pattern: Pattern<GritQueryContext>,
 }
 
 impl GritNodePatternArg {
-	pub fn new(slot_index:u32, pattern:Pattern<GritQueryContext>) -> Self {
+	pub fn new(slot_index: u32, pattern: Pattern<GritQueryContext>) -> Self {
 		Self { slot_index, pattern }
 	}
 }
 
 #[derive(Clone, Debug)]
 pub struct GritLeafNodePattern {
-	kind:GritTargetSyntaxKind,
-	equivalence_class:Option<LeafEquivalenceClass>,
-	text:String,
+	kind: GritTargetSyntaxKind,
+	equivalence_class: Option<LeafEquivalenceClass>,
+	text: String,
 }
 
 impl GritLeafNodePattern {
 	pub fn new(
-		kind:GritTargetSyntaxKind,
-		text:impl Into<String>,
-		lang:&GritTargetLanguage,
+		kind: GritTargetSyntaxKind,
+		text: impl Into<String>,
+		lang: &GritTargetLanguage,
 	) -> Result<Self, CompileError> {
 		let text = text.into();
 
@@ -153,16 +144,18 @@ impl GritLeafNodePattern {
 }
 
 impl AstLeafNodePattern<GritQueryContext> for GritLeafNodePattern {
-	fn text(&self) -> Option<&str> { Some(&self.text) }
+	fn text(&self) -> Option<&str> {
+		Some(&self.text)
+	}
 }
 
 impl Matcher<GritQueryContext> for GritLeafNodePattern {
 	fn execute<'a>(
 		&'a self,
-		binding:&GritResolvedPattern,
-		_state:&mut State<'a, GritQueryContext>,
-		_context:&'a GritExecContext,
-		_logs:&mut AnalysisLogs,
+		binding: &GritResolvedPattern,
+		_state: &mut State<'a, GritQueryContext>,
+		_context: &'a GritExecContext,
+		_logs: &mut AnalysisLogs,
 	) -> GritResult<bool> {
 		let Some(node) = binding.get_last_binding().and_then(Binding::singleton) else {
 			return Ok(false);
@@ -176,5 +169,7 @@ impl Matcher<GritQueryContext> for GritLeafNodePattern {
 }
 
 impl PatternName for GritLeafNodePattern {
-	fn name(&self) -> &'static str { "GritLeafNode" }
+	fn name(&self) -> &'static str {
+		"GritLeafNode"
+	}
 }

@@ -1,9 +1,5 @@
 use biome_formatter::write;
-use biome_js_syntax::{
-	JsIdentifierAssignment,
-	JsIdentifierAssignmentFields,
-	parentheses::NeedsParentheses,
-};
+use biome_js_syntax::{JsIdentifierAssignment, JsIdentifierAssignmentFields, parentheses::NeedsParentheses};
 
 use crate::prelude::*;
 
@@ -11,13 +7,15 @@ use crate::prelude::*;
 pub(crate) struct FormatJsIdentifierAssignment;
 
 impl FormatNodeRule<JsIdentifierAssignment> for FormatJsIdentifierAssignment {
-	fn fmt_fields(&self, node:&JsIdentifierAssignment, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsIdentifierAssignment, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsIdentifierAssignmentFields { name_token } = node.as_fields();
 
 		write![f, [name_token.format()]]
 	}
 
-	fn needs_parentheses(&self, item:&JsIdentifierAssignment) -> bool { item.needs_parentheses() }
+	fn needs_parentheses(&self, item: &JsIdentifierAssignment) -> bool {
+		item.needs_parentheses()
+	}
 }
 
 #[cfg(test)]

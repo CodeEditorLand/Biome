@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlStringValue;
 impl FormatNodeRule<GraphqlStringValue> for FormatGraphqlStringValue {
-	fn fmt_fields(&self, node:&GraphqlStringValue, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GraphqlStringValue, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		let GraphqlStringValueFields { graphql_string_literal_token } = node.as_fields();
 
 		if node.is_block() {
@@ -78,4 +78,6 @@ impl FormatNodeRule<GraphqlStringValue> for FormatGraphqlStringValue {
 	}
 }
 
-fn is_blank(line:&str) -> bool { line.bytes().all(|byte| byte.is_ascii_whitespace()) }
+fn is_blank(line: &str) -> bool {
+	line.bytes().all(|byte| byte.is_ascii_whitespace())
+}

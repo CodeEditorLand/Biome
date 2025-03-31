@@ -1,13 +1,5 @@
 use crate::{
-	Arguments,
-	Buffer,
-	Comments,
-	CstFormatContext,
-	FormatContext,
-	FormatState,
-	FormatStateSnapshot,
-	GroupId,
-	VecBuffer,
+	Arguments, Buffer, Comments, CstFormatContext, FormatContext, FormatState, FormatStateSnapshot, GroupId, VecBuffer,
 	buffer::BufferSnapshot,
 	builders::{FillBuilder, JoinBuilder, JoinNodesBuilder, Line},
 	prelude::*,
@@ -18,31 +10,40 @@ use crate::{
 /// implementation of every node in the CST so that they can use it to format
 /// their children.
 pub struct Formatter<'buf, Context> {
-	pub(super) buffer:&'buf mut dyn Buffer<Context = Context>,
+	pub(super) buffer: &'buf mut dyn Buffer<Context = Context>,
 }
 
 impl<'buf, Context> Formatter<'buf, Context> {
 	/// Creates a new context that uses the given formatter context
-	pub fn new(buffer:&'buf mut (dyn Buffer<Context = Context> + 'buf)) -> Self { Self { buffer } }
+	pub fn new(buffer: &'buf mut (dyn Buffer<Context = Context> + 'buf)) -> Self {
+		Self { buffer }
+	}
 
 	/// Returns the format options
 	pub fn options(&self) -> &Context::Options
 	where
-		Context: FormatContext, {
+		Context: FormatContext,
+	{
 		self.context().options()
 	}
 
 	/// Returns the Context specifying how to format the current CST
-	pub fn context(&self) -> &Context { self.state().context() }
+	pub fn context(&self) -> &Context {
+		self.state().context()
+	}
 
 	/// Returns a mutable reference to the context.
-	pub fn context_mut(&mut self) -> &mut Context { self.state_mut().context_mut() }
+	pub fn context_mut(&mut self) -> &mut Context {
+		self.state_mut().context_mut()
+	}
 
 	/// Creates a new group id that is unique to this document. The passed debug
 	/// name is used in the [std::fmt::Debug] of the document if this is a
 	/// debug build. The name is unused for production builds and has no
 	/// meaning on the equality of two group ids.
-	pub fn group_id(&self, debug_name:&'static str) -> GroupId { self.state().group_id(debug_name) }
+	pub fn group_id(&self, debug_name: &'static str) -> GroupId {
+		self.state().group_id(debug_name)
+	}
 
 	/// Joins multiple [Format] together without any separator
 	///
@@ -69,7 +70,9 @@ impl<'buf, Context> Formatter<'buf, Context> {
 	/// # Ok(())
 	/// # }
 	/// ```
-	pub fn join<'a>(&'a mut self) -> JoinBuilder<'a, 'buf, (), Context> { JoinBuilder::new(self) }
+	pub fn join<'a>(&'a mut self) -> JoinBuilder<'a, 'buf, (), Context> {
+		JoinBuilder::new(self)
+	}
 
 	/// Joins the objects by placing the specified separator between every two
 	/// items.
@@ -98,9 +101,10 @@ impl<'buf, Context> Formatter<'buf, Context> {
 	/// # Ok(())
 	/// # }
 	/// ```
-	pub fn join_with<'a, Joiner>(&'a mut self, joiner:Joiner) -> JoinBuilder<'a, 'buf, Joiner, Context>
+	pub fn join_with<'a, Joiner>(&'a mut self, joiner: Joiner) -> JoinBuilder<'a, 'buf, Joiner, Context>
 	where
-		Joiner: Format<Context>, {
+		Joiner: Format<Context>,
+	{
 		JoinBuilder::with_separator(self, joiner)
 	}
 
@@ -208,11 +212,13 @@ impl<'buf, Context> Formatter<'buf, Context> {
 	/// # Ok(())
 	/// # }
 	/// ```
-	pub fn fill<'a>(&'a mut self) -> FillBuilder<'a, 'buf, Context> { FillBuilder::new(self) }
+	pub fn fill<'a>(&'a mut self) -> FillBuilder<'a, 'buf, Context> {
+		FillBuilder::new(self)
+	}
 
 	/// Formats `content` into an interned element without writing it to the
 	/// formatter's buffer.
-	pub fn intern(&mut self, content:&dyn Format<Context>) -> FormatResult<Option<FormatElement>> {
+	pub fn intern(&mut self, content: &dyn Format<Context>) -> FormatResult<Option<FormatElement>> {
 		let mut buffer = VecBuffer::new(self.state_mut());
 
 		crate::write!(&mut buffer, [content])?;
@@ -222,7 +228,7 @@ impl<'buf, Context> Formatter<'buf, Context> {
 		Ok(self.intern_vec(elements))
 	}
 
-	pub fn intern_vec(&mut self, mut elements:Vec<FormatElement>) -> Option<FormatElement> {
+	pub fn intern_vec(&mut self, mut elements: Vec<FormatElement>) -> Option<FormatElement> {
 		match elements.len() {
 			0 => None,
 			// Doesn't get cheaper than calling clone, use the element directly
@@ -240,12 +246,12 @@ where
 	/// Take a snapshot of the state of the formatter
 	#[inline]
 	pub fn state_snapshot(&self) -> FormatterSnapshot {
-		FormatterSnapshot { buffer:self.buffer.snapshot(), state:self.state().snapshot() }
+		FormatterSnapshot { buffer: self.buffer.snapshot(), state: self.state().snapshot() }
 	}
 
 	#[inline]
 	/// Restore the state of the formatter to a previous snapshot
-	pub fn restore_state_snapshot(&mut self, snapshot:FormatterSnapshot) {
+	pub fn restore_state_snapshot(&mut self, snapshot: FormatterSnapshot) {
 		self.state_mut().restore_snapshot(snapshot.state);
 
 		self.buffer.restore_snapshot(snapshot.buffer);
@@ -257,19 +263,25 @@ where
 	Context: CstFormatContext,
 {
 	/// Returns the comments from the context.
-	pub fn comments(&self) -> &Comments<Context::Language> { self.context().comments() }
+	pub fn comments(&self) -> &Comments<Context::Language> {
+		self.context().comments()
+	}
 }
 
 impl<Context> Buffer for Formatter<'_, Context> {
 	type Context = Context;
 
 	#[inline(always)]
-	fn write_element(&mut self, element:FormatElement) -> FormatResult<()> { self.buffer.write_element(element) }
+	fn write_element(&mut self, element: FormatElement) -> FormatResult<()> {
+		self.buffer.write_element(element)
+	}
 
-	fn elements(&self) -> &[FormatElement] { self.buffer.elements() }
+	fn elements(&self) -> &[FormatElement] {
+		self.buffer.elements()
+	}
 
 	#[inline(always)]
-	fn write_fmt(&mut self, arguments:Arguments<Self::Context>) -> FormatResult<()> {
+	fn write_fmt(&mut self, arguments: Arguments<Self::Context>) -> FormatResult<()> {
 		for argument in arguments.items() {
 			argument.format(self)?;
 		}
@@ -277,13 +289,21 @@ impl<Context> Buffer for Formatter<'_, Context> {
 		Ok(())
 	}
 
-	fn state(&self) -> &FormatState<Self::Context> { self.buffer.state() }
+	fn state(&self) -> &FormatState<Self::Context> {
+		self.buffer.state()
+	}
 
-	fn state_mut(&mut self) -> &mut FormatState<Self::Context> { self.buffer.state_mut() }
+	fn state_mut(&mut self) -> &mut FormatState<Self::Context> {
+		self.buffer.state_mut()
+	}
 
-	fn snapshot(&self) -> BufferSnapshot { self.buffer.snapshot() }
+	fn snapshot(&self) -> BufferSnapshot {
+		self.buffer.snapshot()
+	}
 
-	fn restore_snapshot(&mut self, snapshot:BufferSnapshot) { self.buffer.restore_snapshot(snapshot) }
+	fn restore_snapshot(&mut self, snapshot: BufferSnapshot) {
+		self.buffer.restore_snapshot(snapshot)
+	}
 }
 
 /// Snapshot of the formatter state  used to handle backtracking if
@@ -293,6 +313,6 @@ impl<Context> Buffer for Formatter<'_, Context> {
 /// In practice this only saves the set of printed tokens in debug
 /// mode and compiled to nothing in release mode
 pub struct FormatterSnapshot {
-	buffer:BufferSnapshot,
-	state:FormatStateSnapshot,
+	buffer: BufferSnapshot,
+	state: FormatStateSnapshot,
 }

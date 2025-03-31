@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsAccessorModifier;
 
 impl FormatNodeRule<JsAccessorModifier> for FormatJsAccessorModifier {
-	fn fmt_fields(&self, node:&JsAccessorModifier, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsAccessorModifier, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsAccessorModifierFields { modifier_token } = node.as_fields();
 
 		write![f, [modifier_token.format()]]

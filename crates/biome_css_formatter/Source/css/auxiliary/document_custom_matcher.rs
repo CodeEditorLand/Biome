@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssDocumentCustomMatcher;
 impl FormatNodeRule<CssDocumentCustomMatcher> for FormatCssDocumentCustomMatcher {
-	fn fmt_fields(&self, node:&CssDocumentCustomMatcher, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssDocumentCustomMatcher, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssDocumentCustomMatcherFields { name, l_paren_token, value, r_paren_token } = node.as_fields();
 
 		write!(

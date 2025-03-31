@@ -5,9 +5,8 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritFiles;
 impl FormatNodeRule<GritFiles> for FormatGritFiles {
-	fn fmt_fields(&self, node:&GritFiles, f:&mut GritFormatter) -> FormatResult<()> {
-		let GritFilesFields { multifile_token, l_curly_token, files, r_curly_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &GritFiles, f: &mut GritFormatter) -> FormatResult<()> {
+		let GritFilesFields { multifile_token, l_curly_token, files, r_curly_token } = node.as_fields();
 
 		write!(
 			f,

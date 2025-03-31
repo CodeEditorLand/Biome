@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssFunction;
 impl FormatNodeRule<CssFunction> for FormatCssFunction {
-	fn fmt_fields(&self, node:&CssFunction, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssFunction, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssFunctionFields { name, l_paren_token, items, r_paren_token } = node.as_fields();
 
 		write!(

@@ -7,16 +7,9 @@ use crate::{prelude::*, utils::FormatStatementBody};
 pub(crate) struct FormatJsForInStatement;
 
 impl FormatNodeRule<JsForInStatement> for FormatJsForInStatement {
-	fn fmt_fields(&self, node:&JsForInStatement, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsForInStatementFields {
-			for_token,
-			l_paren_token,
-			initializer,
-			in_token,
-			expression,
-			r_paren_token,
-			body,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &JsForInStatement, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsForInStatementFields { for_token, l_paren_token, initializer, in_token, expression, r_paren_token, body } =
+			node.as_fields();
 
 		let for_token = for_token.format();
 

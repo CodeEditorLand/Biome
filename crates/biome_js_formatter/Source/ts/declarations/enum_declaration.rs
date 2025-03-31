@@ -7,15 +7,9 @@ use crate::prelude::*;
 pub struct FormatTsEnumDeclaration;
 
 impl FormatNodeRule<TsEnumDeclaration> for FormatTsEnumDeclaration {
-	fn fmt_fields(&self, node:&TsEnumDeclaration, f:&mut JsFormatter) -> FormatResult<()> {
-		let TsEnumDeclarationFields {
-			const_token,
-			enum_token,
-			id,
-			members,
-			l_curly_token,
-			r_curly_token,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &TsEnumDeclaration, f: &mut JsFormatter) -> FormatResult<()> {
+		let TsEnumDeclarationFields { const_token, enum_token, id, members, l_curly_token, r_curly_token } =
+			node.as_fields();
 
 		if let Some(const_token) = const_token {
 			write!(f, [const_token.format(), space()])?;
@@ -35,7 +29,7 @@ impl FormatNodeRule<TsEnumDeclaration> for FormatTsEnumDeclaration {
 		write!(f, [r_curly_token.format()])
 	}
 
-	fn fmt_dangling_comments(&self, _:&TsEnumDeclaration, _:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &TsEnumDeclaration, _: &mut JsFormatter) -> FormatResult<()> {
 		Ok(())
 	}
 }

@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssPseudoClassFunctionSelector;
 impl FormatNodeRule<CssPseudoClassFunctionSelector> for FormatCssPseudoClassFunctionSelector {
-	fn fmt_fields(&self, node:&CssPseudoClassFunctionSelector, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssPseudoClassFunctionSelector, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssPseudoClassFunctionSelectorFields { name, l_paren_token, selector, r_paren_token } = node.as_fields();
 
 		write!(

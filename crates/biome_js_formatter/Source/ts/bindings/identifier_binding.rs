@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsIdentifierBinding;
 
 impl FormatNodeRule<TsIdentifierBinding> for FormatTsIdentifierBinding {
-	fn fmt_fields(&self, node:&TsIdentifierBinding, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsIdentifierBinding, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsIdentifierBindingFields { name_token } = node.as_fields();
 
 		write![f, [name_token.format()]]

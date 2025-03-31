@@ -9,24 +9,16 @@ pub(crate) struct FormatAnyJsObjectAssignmentPatternMember;
 impl FormatRule<AnyJsObjectAssignmentPatternMember> for FormatAnyJsObjectAssignmentPatternMember {
 	type Context = JsFormatContext;
 
-	fn fmt(
-		&self,
-		node:&AnyJsObjectAssignmentPatternMember,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsObjectAssignmentPatternMember, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsObjectAssignmentPatternMember::JsBogusAssignment(node) => node.format().fmt(f),
-			AnyJsObjectAssignmentPatternMember::JsObjectAssignmentPatternProperty(node) => {
+			AnyJsObjectAssignmentPatternMember::JsObjectAssignmentPatternProperty(node) => node.format().fmt(f),
+
+			AnyJsObjectAssignmentPatternMember::JsObjectAssignmentPatternRest(node) => node.format().fmt(f),
+
+			AnyJsObjectAssignmentPatternMember::JsObjectAssignmentPatternShorthandProperty(node) => {
 				node.format().fmt(f)
 			},
-
-			AnyJsObjectAssignmentPatternMember::JsObjectAssignmentPatternRest(node) => {
-				node.format().fmt(f)
-			},
-
-			AnyJsObjectAssignmentPatternMember::JsObjectAssignmentPatternShorthandProperty(
-				node,
-			) => node.format().fmt(f),
 		}
 	}
 }

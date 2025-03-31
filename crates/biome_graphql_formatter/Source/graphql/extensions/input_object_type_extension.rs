@@ -1,26 +1,14 @@
 use biome_formatter::write;
-use biome_graphql_syntax::{
-	GraphqlInputObjectTypeExtension,
-	GraphqlInputObjectTypeExtensionFields,
-};
+use biome_graphql_syntax::{GraphqlInputObjectTypeExtension, GraphqlInputObjectTypeExtensionFields};
 
 use crate::prelude::*;
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlInputObjectTypeExtension;
 impl FormatNodeRule<GraphqlInputObjectTypeExtension> for FormatGraphqlInputObjectTypeExtension {
-	fn fmt_fields(
-		&self,
-		node:&GraphqlInputObjectTypeExtension,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
-		let GraphqlInputObjectTypeExtensionFields {
-			extend_token,
-			input_token,
-			name,
-			directives,
-			input_fields,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &GraphqlInputObjectTypeExtension, f: &mut GraphqlFormatter) -> FormatResult<()> {
+		let GraphqlInputObjectTypeExtensionFields { extend_token, input_token, name, directives, input_fields } =
+			node.as_fields();
 
 		write![
 			f,

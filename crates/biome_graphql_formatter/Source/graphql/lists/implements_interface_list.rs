@@ -7,11 +7,7 @@ pub(crate) struct FormatGraphqlImplementsInterfaceList;
 impl FormatRule<GraphqlImplementsInterfaceList> for FormatGraphqlImplementsInterfaceList {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(
-		&self,
-		node:&GraphqlImplementsInterfaceList,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node: &GraphqlImplementsInterfaceList, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		write_interface_like_list(node, f)
 	}
 }

@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssCharsetAtRule;
 impl FormatNodeRule<CssCharsetAtRule> for FormatCssCharsetAtRule {
-	fn fmt_fields(&self, node:&CssCharsetAtRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssCharsetAtRule, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssCharsetAtRuleFields { charset_token, encoding, semicolon_token } = node.as_fields();
 
 		write!(

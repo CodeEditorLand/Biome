@@ -26,7 +26,7 @@ impl LanguageKind {
 impl FromStr for LanguageKind {
 	type Err = &'static str;
 
-	fn from_str(s:&str) -> std::result::Result<Self, Self::Err> {
+	fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
 		match s {
 			"js" => Ok(Self::Js),
 			"json" => Ok(Self::Json),
@@ -50,7 +50,7 @@ pub enum Category {
 impl FromStr for Category {
 	type Err = &'static str;
 
-	fn from_str(s:&str) -> std::result::Result<Self, Self::Err> {
+	fn from_str(s: &str) -> std::result::Result<Self, Self::Err> {
 		match s {
 			"lint" => Ok(Self::Lint),
 			"assist" => Ok(Self::Assist),
@@ -60,10 +60,10 @@ impl FromStr for Category {
 }
 
 fn generate_rule_template(
-	kind:&LanguageKind,
-	category:&Category,
-	rule_name_upper_camel:&str,
-	rule_name_lower_camel:&str,
+	kind: &LanguageKind,
+	category: &Category,
+	rule_name_upper_camel: &str,
+	rule_name_lower_camel: &str,
 ) -> String {
 	let macro_name = match category {
 		Category::Lint => "declare_lint_rule",
@@ -401,44 +401,44 @@ impl Rule for {rule_name_upper_camel} {{
 	}
 }
 
-pub fn generate_new_analyzer_rule(kind:LanguageKind, category:Category, rule_name:&str) {
+pub fn generate_new_analyzer_rule(kind: LanguageKind, category: Category, rule_name: &str) {
 	let rule_name_camel = Case::Camel.convert(rule_name);
 
 	let rule_kind = kind.as_str();
 
-    if !categories.contains(&rule_name_camel) {
-        let kebab_case_rule = Case::Kebab.convert(&rule_name_camel);
-        // We sort rules to reduce conflicts between contributions made in parallel.
-        let rule_line = match category {
-            Category::Lint => format!(
-                r#"    "lint/nursery/{rule_name_camel}": "https://biomejs.dev/linter/rules/{kebab_case_rule}","#
-            ),
-            Category::Assist => format!(
-                r#"    "assists/nursery/{rule_name_camel}": "https://biomejs.dev/assists/{kebab_case_rule}","#
-            ),
-            Category::Syntax => format!(r#"    "syntax/nursery/{rule_name_camel}","#),
-        };
-        let lint_start = match category {
-            Category::Lint => "define_categories! {\n",
-            Category::Assist => "    // start assist actions\n",
-            Category::Syntax => "    // start syntax rules\n",
-        };
-        let lint_end = match category {
-            Category::Lint => "\n    // end lint rules\n",
-            Category::Assist => "\n    // end assist actions\n",
-            Category::Syntax => "\n  ;  // end syntax rules\n",
-        };
-        debug_assert!(categories.contains(lint_start), "{}", lint_start);
-        debug_assert!(categories.contains(lint_end), "{}", lint_end);
-        let lint_start_index = categories.find(lint_start).unwrap() + lint_start.len();
-        let lint_end_index = categories.find(lint_end).unwrap();
-        let lint_rule_text = &categories[lint_start_index..lint_end_index];
-        let mut lint_rules: Vec<_> = lint_rule_text.lines().chain(Some(&rule_line[..])).collect();
-        lint_rules.sort_unstable();
-        let new_lint_rule_text = lint_rules.join("\n");
-        categories.replace_range(lint_start_index..lint_end_index, &new_lint_rule_text);
-        std::fs::write(categories_path, categories).unwrap();
-    }
+	if !categories.contains(&rule_name_camel) {
+		let kebab_case_rule = Case::Kebab.convert(&rule_name_camel);
+		// We sort rules to reduce conflicts between contributions made in parallel.
+		let rule_line = match category {
+			Category::Lint => format!(
+				r#"    "lint/nursery/{rule_name_camel}": "https://biomejs.dev/linter/rules/{kebab_case_rule}","#
+			),
+			Category::Assist => {
+				format!(r#"    "assists/nursery/{rule_name_camel}": "https://biomejs.dev/assists/{kebab_case_rule}","#)
+			},
+			Category::Syntax => format!(r#"    "syntax/nursery/{rule_name_camel}","#),
+		};
+		let lint_start = match category {
+			Category::Lint => "define_categories! {\n",
+			Category::Assist => "    // start assist actions\n",
+			Category::Syntax => "    // start syntax rules\n",
+		};
+		let lint_end = match category {
+			Category::Lint => "\n    // end lint rules\n",
+			Category::Assist => "\n    // end assist actions\n",
+			Category::Syntax => "\n  ;  // end syntax rules\n",
+		};
+		debug_assert!(categories.contains(lint_start), "{}", lint_start);
+		debug_assert!(categories.contains(lint_end), "{}", lint_end);
+		let lint_start_index = categories.find(lint_start).unwrap() + lint_start.len();
+		let lint_end_index = categories.find(lint_end).unwrap();
+		let lint_rule_text = &categories[lint_start_index..lint_end_index];
+		let mut lint_rules: Vec<_> = lint_rule_text.lines().chain(Some(&rule_line[..])).collect();
+		lint_rules.sort_unstable();
+		let new_lint_rule_text = lint_rules.join("\n");
+		categories.replace_range(lint_start_index..lint_end_index, &new_lint_rule_text);
+		std::fs::write(categories_path, categories).unwrap();
+	}
 
 	let test_folder = crate_folder.join("tests/specs/nursery");
 
@@ -477,9 +477,7 @@ pub fn generate_new_analyzer_rule(kind:LanguageKind, category:Category, rule_nam
 				)
 			},
 			Category::Assist => {
-				format!(
-					r#"    "assists/nursery/{rule_name_camel}": "https://biomejs.dev/assists/{kebab_case_rule}","#
-				)
+				format!(r#"    "assists/nursery/{rule_name_camel}": "https://biomejs.dev/assists/{kebab_case_rule}","#)
 			},
 			Category::Syntax => format!(r#"    "syntax/nursery/{rule_name_camel}","#),
 		};
@@ -506,7 +504,7 @@ pub fn generate_new_analyzer_rule(kind:LanguageKind, category:Category, rule_nam
 
 		let lint_rule_text = &categories[lint_start_index..lint_end_index];
 
-		let mut lint_rules:Vec<_> = lint_rule_text.lines().chain(Some(&rule_line[..])).collect();
+		let mut lint_rules: Vec<_> = lint_rule_text.lines().chain(Some(&rule_line[..])).collect();
 
 		lint_rules.sort_unstable();
 

@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub struct FormatJsxClosingElement;
 
 impl FormatNodeRule<JsxClosingElement> for FormatJsxClosingElement {
-	fn fmt_fields(&self, node:&JsxClosingElement, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsxClosingElementFields { l_angle_token, slash_token, name, r_angle_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsxClosingElement, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsxClosingElementFields { l_angle_token, slash_token, name, r_angle_token } = node.as_fields();
 
 		let name = name?;
 
@@ -20,8 +19,7 @@ impl FormatNodeRule<JsxClosingElement> for FormatJsxClosingElement {
 		for leading_comment in f.comments().leading_comments(name.syntax()) {
 			name_has_leading_comment = true;
 
-			name_has_own_line_leading_comment =
-				name_has_own_line_leading_comment || leading_comment.kind().is_line()
+			name_has_own_line_leading_comment = name_has_own_line_leading_comment || leading_comment.kind().is_line()
 		}
 
 		let format_name = format_with(|f| {

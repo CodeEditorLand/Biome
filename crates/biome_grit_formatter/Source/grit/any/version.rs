@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyGritVersion;
 impl FormatRule<AnyGritVersion> for FormatAnyGritVersion {
 	type Context = GritFormatContext;
 
-	fn fmt(&self, node:&AnyGritVersion, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyGritVersion, f: &mut GritFormatter) -> FormatResult<()> {
 		match node {
 			AnyGritVersion::GritBogusVersion(node) => node.format().fmt(f),
 			AnyGritVersion::GritVersion(node) => node.format().fmt(f),

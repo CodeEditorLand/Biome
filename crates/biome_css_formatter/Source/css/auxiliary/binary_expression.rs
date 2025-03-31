@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssBinaryExpression;
 impl FormatNodeRule<CssBinaryExpression> for FormatCssBinaryExpression {
-	fn fmt_fields(&self, node:&CssBinaryExpression, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssBinaryExpression, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssBinaryExpressionFields { left, operator_token, right } = node.as_fields();
 
 		write!(

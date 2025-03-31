@@ -23,9 +23,9 @@ pub enum Applicability {
 #[derive(Debug, Clone, PartialEq, Eq, Hash, Serialize, Deserialize)]
 #[cfg_attr(feature = "schema", derive(schemars::JsonSchema))]
 pub struct CodeSuggestion {
-	pub span:TextRange,
-	pub applicability:Applicability,
-	pub msg:MarkupBuf,
-	pub suggestion:TextEdit,
-	pub labels:Vec<TextRange>,
+	pub span: TextRange,
+	pub applicability: Applicability,
+	pub msg: MarkupBuf,
+	pub suggestion: TextEdit,
+	pub labels: Vec<TextRange>,
 }

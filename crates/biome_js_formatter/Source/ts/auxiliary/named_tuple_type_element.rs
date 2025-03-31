@@ -7,14 +7,9 @@ use crate::prelude::*;
 pub struct FormatTsNamedTupleTypeElement;
 
 impl FormatNodeRule<TsNamedTupleTypeElement> for FormatTsNamedTupleTypeElement {
-	fn fmt_fields(&self, node:&TsNamedTupleTypeElement, f:&mut JsFormatter) -> FormatResult<()> {
-		let TsNamedTupleTypeElementFields {
-			ty,
-			question_mark_token,
-			colon_token,
-			name,
-			dotdotdot_token,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &TsNamedTupleTypeElement, f: &mut JsFormatter) -> FormatResult<()> {
+		let TsNamedTupleTypeElementFields { ty, question_mark_token, colon_token, name, dotdotdot_token } =
+			node.as_fields();
 
 		write![
 			f,

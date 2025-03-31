@@ -23,7 +23,9 @@ use crate::{
 /// This function verifies whether the current token matches the `@document`
 /// rule, which is used for applying styles to specific parts of a document.
 #[inline]
-pub(crate) fn is_at_document_at_rule(p:&mut CssParser) -> bool { p.at(T![document]) }
+pub(crate) fn is_at_document_at_rule(p: &mut CssParser) -> bool {
+	p.at(T![document])
+}
 
 /// Parses a `@document` at-rule in a CSS stylesheet.
 ///
@@ -45,7 +47,7 @@ pub(crate) fn is_at_document_at_rule(p:&mut CssParser) -> bool { p.at(T![documen
 /// This function is integral in parsing and interpreting `@document` rules as
 /// per the CSS Conditional Rules Module Level 4.
 #[inline]
-pub(crate) fn parse_document_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_document_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_document_at_rule(p) {
 		return Absent;
 	}
@@ -67,7 +69,7 @@ impl ParseRecovery for DocumentMatcherListParseRecovery {
 	type Kind = CssSyntaxKind;
 	type Parser<'source> = CssParser<'source>;
 
-	const RECOVERED_KIND:Self::Kind = CSS_BOGUS_DOCUMENT_MATCHER;
+	const RECOVERED_KIND: Self::Kind = CSS_BOGUS_DOCUMENT_MATCHER;
 
 	/// Determines if the parser has reached a point where it can recover from
 	/// an error while parsing a document matcher list.
@@ -88,7 +90,7 @@ impl ParseRecovery for DocumentMatcherListParseRecovery {
 	///     /* CSS rules here */
 	/// }
 	/// ```
-	fn is_at_recovered(&self, p:&mut Self::Parser<'_>) -> bool {
+	fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
 		p.at(T!['{']) || p.at(T![,]) || is_at_document_matcher(p)
 	}
 }
@@ -99,17 +101,23 @@ impl ParseSeparatedList for DocumentMatcherList {
 	type Kind = CssSyntaxKind;
 	type Parser<'source> = CssParser<'source>;
 
-	const LIST_KIND:Self::Kind = CSS_DOCUMENT_MATCHER_LIST;
+	const LIST_KIND: Self::Kind = CSS_DOCUMENT_MATCHER_LIST;
 
-	fn parse_element(&mut self, p:&mut Self::Parser<'_>) -> ParsedSyntax { parse_document_matcher(p) }
+	fn parse_element(&mut self, p: &mut Self::Parser<'_>) -> ParsedSyntax {
+		parse_document_matcher(p)
+	}
 
-	fn is_at_list_end(&self, p:&mut Self::Parser<'_>) -> bool { p.at(T!['{']) }
+	fn is_at_list_end(&self, p: &mut Self::Parser<'_>) -> bool {
+		p.at(T!['{'])
+	}
 
-	fn recover(&mut self, p:&mut Self::Parser<'_>, parsed_element:ParsedSyntax) -> RecoveryResult {
+	fn recover(&mut self, p: &mut Self::Parser<'_>, parsed_element: ParsedSyntax) -> RecoveryResult {
 		parsed_element.or_recover(p, &DocumentMatcherListParseRecovery, expected_any_document_matcher)
 	}
 
-	fn separating_element_kind(&mut self) -> Self::Kind { T![,] }
+	fn separating_element_kind(&mut self) -> Self::Kind {
+		T![,]
+	}
 }
 
 /// Checks if the current token in the parser is a matcher for the `@document`
@@ -120,7 +128,7 @@ impl ParseSeparatedList for DocumentMatcherList {
 /// identify the type of condition under which the `@document` rule's styles
 /// should be applied.
 #[inline]
-pub(crate) fn is_at_document_matcher(p:&mut CssParser) -> bool {
+pub(crate) fn is_at_document_matcher(p: &mut CssParser) -> bool {
 	is_at_document_custom_matcher(p) || is_at_url_function(p)
 }
 
@@ -138,7 +146,7 @@ pub(crate) fn is_at_document_matcher(p:&mut CssParser) -> bool {
 /// `@document` rules, allowing for the specification of conditions under which
 /// CSS rules should be applied.
 #[inline]
-pub(crate) fn parse_document_matcher(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_document_matcher(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_document_matcher(p) {
 		return Absent;
 	}
@@ -150,21 +158,23 @@ pub(crate) fn parse_document_matcher(p:&mut CssParser) -> ParsedSyntax {
 	}
 }
 
-const DOCUMENT_CUSTOM_MATCHER_SET:TokenSet<CssSyntaxKind> =
+const DOCUMENT_CUSTOM_MATCHER_SET: TokenSet<CssSyntaxKind> =
 	token_set!(T![url_prefix], T![domain], T![media_document], T![regexp]);
 
 /// Checks if the current token in the parser is a custom matcher for the
 /// `@document` at-rule.
-pub(crate) fn is_at_document_custom_matcher(p:&mut CssParser) -> bool {
+pub(crate) fn is_at_document_custom_matcher(p: &mut CssParser) -> bool {
 	p.at_ts(DOCUMENT_CUSTOM_MATCHER_SET) && p.nth_at(1, T!['('])
 }
 
 // According to MDN, `url-prefix()`, `domain()` and `media-document()` functions
 // can be optionally enclosed by single or double quotes.
 // @see https://developer.mozilla.org/en-US/docs/Web/CSS/@document
-const URL_PREFIX_SET:TokenSet<CssSyntaxKind> = token_set!(T![url_prefix], T![domain], T![media_document]);
+const URL_PREFIX_SET: TokenSet<CssSyntaxKind> = token_set!(T![url_prefix], T![domain], T![media_document]);
 
-pub(crate) fn is_at_url_prefix(p:&mut CssParser) -> bool { p.at_ts(URL_PREFIX_SET) && p.nth_at(1, T!['(']) }
+pub(crate) fn is_at_url_prefix(p: &mut CssParser) -> bool {
+	p.at_ts(URL_PREFIX_SET) && p.nth_at(1, T!['('])
+}
 
 /// Parses a custom matcher for the `@document` at-rule in a CSS stylesheet.
 /// # Example
@@ -179,7 +189,7 @@ pub(crate) fn is_at_url_prefix(p:&mut CssParser) -> bool { p.at_ts(URL_PREFIX_SE
 /// This function is crucial for parsing custom matchers in `@document` rules,
 /// allowing for more specific rule application.
 #[inline]
-pub(crate) fn parse_document_custom_matcher(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_document_custom_matcher(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_document_custom_matcher(p) {
 		return Absent;
 	}

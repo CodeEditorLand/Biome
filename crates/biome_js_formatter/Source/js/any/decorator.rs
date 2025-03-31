@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsDecorator;
 impl FormatRule<AnyJsDecorator> for FormatAnyJsDecorator {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsDecorator, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsDecorator, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsDecorator::JsBogusExpression(node) => node.format().fmt(f),
 			AnyJsDecorator::JsCallExpression(node) => node.format().fmt(f),

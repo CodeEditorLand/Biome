@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsLabeledStatement;
 
 impl FormatNodeRule<JsLabeledStatement> for FormatJsLabeledStatement {
-	fn fmt_fields(&self, node:&JsLabeledStatement, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsLabeledStatement, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsLabeledStatementFields { label, colon_token, body } = node.as_fields();
 
 		write!(f, [label.format(), colon_token.format()])?;

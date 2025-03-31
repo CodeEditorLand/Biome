@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsTypeofType;
 
 impl FormatNodeRule<TsTypeofType> for FormatTsTypeofType {
-	fn fmt_fields(&self, node:&TsTypeofType, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsTypeofType, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsTypeofTypeFields { type_arguments, typeof_token, expression_name } = node.as_fields();
 
 		write![
@@ -21,7 +21,9 @@ impl FormatNodeRule<TsTypeofType> for FormatTsTypeofType {
 		]
 	}
 
-	fn needs_parentheses(&self, item:&TsTypeofType) -> bool { item.needs_parentheses() }
+	fn needs_parentheses(&self, item: &TsTypeofType) -> bool {
+		item.needs_parentheses()
+	}
 }
 
 #[cfg(test)]

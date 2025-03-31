@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyTsTypePredicateParameterName;
 impl FormatRule<AnyTsTypePredicateParameterName> for FormatAnyTsTypePredicateParameterName {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyTsTypePredicateParameterName, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyTsTypePredicateParameterName, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyTsTypePredicateParameterName::JsReferenceIdentifier(node) => node.format().fmt(f),
 			AnyTsTypePredicateParameterName::TsThisType(node) => node.format().fmt(f),

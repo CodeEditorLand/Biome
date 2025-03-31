@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsName;
 
 impl FormatNodeRule<JsName> for FormatJsName {
-	fn fmt_fields(&self, node:&JsName, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsName, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsNameFields { value_token } = node.as_fields();
 
 		write![f, [value_token.format()]]

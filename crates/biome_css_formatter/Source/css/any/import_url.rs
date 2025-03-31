@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssImportUrl;
 impl FormatRule<AnyCssImportUrl> for FormatAnyCssImportUrl {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssImportUrl, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssImportUrl, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssImportUrl::CssString(node) => node.format().fmt(f),
 			AnyCssImportUrl::CssUrlFunction(node) => node.format().fmt(f),

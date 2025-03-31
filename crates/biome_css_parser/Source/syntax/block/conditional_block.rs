@@ -19,7 +19,7 @@ use crate::{
 /// For more detailed information refer to the
 /// [CSS Nesting Module](https://drafts.csswg.org/css-nesting-1/#conditionals)
 #[inline]
-pub(crate) fn parse_conditional_block(p:&mut CssParser) -> CompletedMarker {
+pub(crate) fn parse_conditional_block(p: &mut CssParser) -> CompletedMarker {
 	if p.state_mut().is_nesting_block {
 		parse_declaration_or_rule_list_block(p)
 	} else {

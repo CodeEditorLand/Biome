@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub struct FormatJsxClosingFragment;
 
 impl FormatNodeRule<JsxClosingFragment> for FormatJsxClosingFragment {
-	fn fmt_fields(&self, node:&JsxClosingFragment, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsxClosingFragmentFields { r_angle_token, slash_token, l_angle_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsxClosingFragment, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsxClosingFragmentFields { r_angle_token, slash_token, l_angle_token } = node.as_fields();
 
 		let mut has_own_line_comment = false;
 
@@ -43,7 +42,7 @@ impl FormatNodeRule<JsxClosingFragment> for FormatJsxClosingFragment {
 		]
 	}
 
-	fn fmt_dangling_comments(&self, _:&JsxClosingFragment, _:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &JsxClosingFragment, _: &mut JsFormatter) -> FormatResult<()> {
 		// Formatted as part of `fmt_fields`
 		Ok(())
 	}

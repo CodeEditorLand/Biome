@@ -9,10 +9,7 @@ use crate::{
 	parser::CssParser,
 	syntax::{
 		at_rule::{layer::LayerNameList, media::MediaQueryList, supports::parse_any_supports_condition},
-		is_at_declaration,
-		is_at_string,
-		parse_declaration,
-		parse_string,
+		is_at_declaration, is_at_string, parse_declaration, parse_string,
 		value::url::{is_at_url_function, parse_url_function},
 	},
 };
@@ -22,7 +19,9 @@ use crate::{
 /// This function checks the current token in the `CssParser` to see if it
 /// matches the `import` rule token.
 #[inline]
-pub(crate) fn is_at_import_at_rule(p:&mut CssParser) -> bool { p.at(T![import]) }
+pub(crate) fn is_at_import_at_rule(p: &mut CssParser) -> bool {
+	p.at(T![import])
+}
 
 /// Parses a `@import` rule in a CSS stylesheet.
 /// This rule is used to import style rules from other style sheets.
@@ -30,7 +29,7 @@ pub(crate) fn is_at_import_at_rule(p:&mut CssParser) -> bool { p.at(T![import]) 
 /// See [CSS Cascading and Inheritance Level 4](https://drafts.csswg.org/css-cascade/#at-import)
 /// for more details on the `@import` rule.
 #[inline]
-pub(crate) fn parse_import_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_import_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_import_at_rule(p) {
 		return Absent;
 	}
@@ -73,7 +72,9 @@ pub(crate) fn parse_import_at_rule(p:&mut CssParser) -> ParsedSyntax {
 /// string token, both of which can specify the location of the resource to
 /// import.
 #[inline]
-pub(crate) fn is_at_import_url(p:&mut CssParser) -> bool { is_at_url_function(p) || is_at_string(p) }
+pub(crate) fn is_at_import_url(p: &mut CssParser) -> bool {
+	is_at_url_function(p) || is_at_string(p)
+}
 
 /// Parses the URL component of an `@import` rule in CSS.
 ///
@@ -81,7 +82,7 @@ pub(crate) fn is_at_import_url(p:&mut CssParser) -> bool { is_at_url_function(p)
 /// for an `@import` rule. If it is, the function then parses the URL, either as
 /// a URL function or as a string.
 #[inline]
-pub(crate) fn parse_import_url(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_import_url(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_import_url(p) {
 		return Absent;
 	}
@@ -97,11 +98,13 @@ pub(crate) fn parse_import_url(p:&mut CssParser) -> ParsedSyntax {
 /// a CSS `@import` rule. This function is typically used in parsing logic to
 /// identify anonymous layer declarations within `@import` rules.
 #[inline]
-pub(crate) fn is_at_import_anonymous_layer(p:&mut CssParser) -> bool { p.at(T![layer]) }
+pub(crate) fn is_at_import_anonymous_layer(p: &mut CssParser) -> bool {
+	p.at(T![layer])
+}
 
 /// Parses an anonymous layer within an `@import` rule in a CSS stylesheet.
 #[inline]
-pub(crate) fn parse_import_anonymous_layer(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_import_anonymous_layer(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_import_anonymous_layer(p) {
 		return Absent;
 	}
@@ -120,7 +123,9 @@ pub(crate) fn parse_import_anonymous_layer(p:&mut CssParser) -> ParsedSyntax {
 /// followed by a `'('` token. It's used to identify named layer declarations in
 /// CSS `@import` rules.
 #[inline]
-pub(crate) fn is_at_import_named_layer(p:&mut CssParser) -> bool { p.at(T![layer]) && p.nth_at(1, T!['(']) }
+pub(crate) fn is_at_import_named_layer(p: &mut CssParser) -> bool {
+	p.at(T![layer]) && p.nth_at(1, T!['('])
+}
 
 /// Parses a named layer within an `@import` rule in a CSS stylesheet.
 ///
@@ -128,7 +133,7 @@ pub(crate) fn is_at_import_named_layer(p:&mut CssParser) -> bool { p.at(T![layer
 /// processing the `layer` and `'('` tokens, parsing the layer name list,
 /// and expecting a closing `')'` token to complete the parse.
 #[inline]
-pub(crate) fn parse_import_named_layer(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_import_named_layer(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_import_named_layer(p) {
 		return Absent;
 	}
@@ -152,11 +157,13 @@ pub(crate) fn parse_import_named_layer(p:&mut CssParser) -> ParsedSyntax {
 /// This function verifies if the current token is `supports`, used to identify
 /// `supports` conditions in CSS `@import` rules.
 #[inline]
-pub(crate) fn is_at_import_supports(p:&mut CssParser) -> bool { p.at(T![supports]) }
+pub(crate) fn is_at_import_supports(p: &mut CssParser) -> bool {
+	p.at(T![supports])
+}
 
 /// Parses a `supports` condition within an `@import` rule in a CSS stylesheet.
 #[inline]
-pub(crate) fn parse_import_supports(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_import_supports(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_import_supports(p) {
 		return Absent;
 	}

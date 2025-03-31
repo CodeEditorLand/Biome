@@ -10,7 +10,7 @@ use crate::{
 pub struct FormatJsxString;
 
 impl FormatNodeRule<JsxString> for FormatJsxString {
-	fn fmt_fields(&self, node:&JsxString, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsxString, f: &mut JsFormatter) -> FormatResult<()> {
 		write![
 			f,
 			[FormatLiteralStringToken::new(

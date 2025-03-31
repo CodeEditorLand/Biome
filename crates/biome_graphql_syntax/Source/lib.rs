@@ -16,7 +16,7 @@ pub use generated::*;
 pub use syntax_node::*;
 
 impl From<u16> for GraphqlSyntaxKind {
-	fn from(d:u16) -> GraphqlSyntaxKind {
+	fn from(d: u16) -> GraphqlSyntaxKind {
 		assert!(d <= (GraphqlSyntaxKind::__LAST as u16));
 
 		unsafe { std::mem::transmute::<u16, GraphqlSyntaxKind>(d) }
@@ -24,7 +24,9 @@ impl From<u16> for GraphqlSyntaxKind {
 }
 
 impl From<GraphqlSyntaxKind> for u16 {
-	fn from(k:GraphqlSyntaxKind) -> u16 { k as u16 }
+	fn from(k: GraphqlSyntaxKind) -> u16 {
+		k as u16
+	}
 }
 
 impl GraphqlSyntaxKind {
@@ -37,8 +39,8 @@ impl GraphqlSyntaxKind {
 }
 
 impl biome_rowan::SyntaxKind for GraphqlSyntaxKind {
-	const EOF:Self = EOF;
-	const TOMBSTONE:Self = TOMBSTONE;
+	const EOF: Self = EOF;
+	const TOMBSTONE: Self = TOMBSTONE;
 
 	fn is_bogus(&self) -> bool {
 		matches!(
@@ -62,14 +64,22 @@ impl biome_rowan::SyntaxKind for GraphqlSyntaxKind {
 	}
 
 	#[inline]
-	fn to_raw(&self) -> RawSyntaxKind { RawSyntaxKind(*self as u16) }
+	fn to_raw(&self) -> RawSyntaxKind {
+		RawSyntaxKind(*self as u16)
+	}
 
 	#[inline]
-	fn from_raw(raw:RawSyntaxKind) -> Self { Self::from(raw.0) }
+	fn from_raw(raw: RawSyntaxKind) -> Self {
+		Self::from(raw.0)
+	}
 
-	fn is_root(&self) -> bool { GraphqlRoot::can_cast(*self) }
+	fn is_root(&self) -> bool {
+		GraphqlRoot::can_cast(*self)
+	}
 
-	fn is_list(&self) -> bool { GraphqlSyntaxKind::is_list(*self) }
+	fn is_list(&self) -> bool {
+		GraphqlSyntaxKind::is_list(*self)
+	}
 
 	fn is_trivia(self) -> bool {
 		matches!(
@@ -81,13 +91,15 @@ impl biome_rowan::SyntaxKind for GraphqlSyntaxKind {
 		)
 	}
 
-	fn to_string(&self) -> Option<&'static str> { GraphqlSyntaxKind::to_string(self) }
+	fn to_string(&self) -> Option<&'static str> {
+		GraphqlSyntaxKind::to_string(self)
+	}
 }
 
 impl TryFrom<GraphqlSyntaxKind> for TriviaPieceKind {
 	type Error = ();
 
-	fn try_from(value:GraphqlSyntaxKind) -> Result<Self, Self::Error> {
+	fn try_from(value: GraphqlSyntaxKind) -> Result<Self, Self::Error> {
 		if value.is_trivia() {
 			match value {
 				GraphqlSyntaxKind::NEWLINE => Ok(TriviaPieceKind::Newline),

@@ -3,8 +3,7 @@
 
 use std::{
 	collections::HashMap,
-	fs,
-	mem,
+	fs, mem,
 	path::{Path, PathBuf},
 	time::SystemTime,
 };
@@ -13,10 +12,7 @@ use xtask::{Result, project_root};
 
 use crate::{Mode, update};
 
-fn extract_comment_blocks(
-	text:&str,
-	allow_blocks_with_empty_lines:bool,
-) -> Vec<(usize, Vec<String>)> {
+fn extract_comment_blocks(text: &str, allow_blocks_with_empty_lines: bool) -> Vec<(usize, Vec<String>)> {
 	let mut res = Vec::new();
 
 	let prefix = "// ";
@@ -52,10 +48,10 @@ fn extract_comment_blocks(
 	res
 }
 
-pub fn generate_parser_tests(mode:Mode) -> Result<()> {
+pub fn generate_parser_tests(mode: Mode) -> Result<()> {
 	let tests = tests_from_dir(&project_root().join(Path::new("crates/biome_js_parser/src")))?;
 
-	fn install_tests(tests:&HashMap<String, Test>, into:&str, mode:Mode) -> Result<bool> {
+	fn install_tests(tests: &HashMap<String, Test>, into: &str, mode: Mode) -> Result<bool> {
 		let tests_dir = project_root().join(into);
 
 		if !tests_dir.is_dir() {
@@ -95,11 +91,9 @@ pub fn generate_parser_tests(mode:Mode) -> Result<()> {
 
 	let mut some_file_was_updated = false;
 
-	some_file_was_updated |=
-		install_tests(&tests.ok, "crates/biome_js_parser/test_data/inline/ok", mode)?;
+	some_file_was_updated |= install_tests(&tests.ok, "crates/biome_js_parser/test_data/inline/ok", mode)?;
 
-	some_file_was_updated |=
-		install_tests(&tests.err, "crates/biome_js_parser/test_data/inline/err", mode)?;
+	some_file_was_updated |= install_tests(&tests.err, "crates/biome_js_parser/test_data/inline/err", mode)?;
 
 	if some_file_was_updated {
 		fs::File::open("crates/biome_js_parser/src/tests.rs")?.set_modified(SystemTime::now())?;
@@ -110,11 +104,11 @@ pub fn generate_parser_tests(mode:Mode) -> Result<()> {
 
 #[derive(Debug)]
 struct Test {
-	pub name:String,
-	pub text:String,
-	pub ok:bool,
-	pub language:Language,
-	pub options:Option<String>,
+	pub name: String,
+	pub text: String,
+	pub ok: bool,
+	pub language: Language,
+	pub options: Option<String>,
 }
 
 #[derive(Debug)]
@@ -137,14 +131,12 @@ impl Language {
 		}
 	}
 
-	fn from_file_name(name:&str) -> Option<Language> {
+	fn from_file_name(name: &str) -> Option<Language> {
 		let language = match name.rsplit_once('.')? {
 			(_, "js") => Language::JavaScript,
-			(rest, "ts") => {
-				match rest.rsplit_once('.') {
-					Some((_, "d")) => Language::TypeScriptDefinition,
-					_ => Language::TypeScript,
-				}
+			(rest, "ts") => match rest.rsplit_once('.') {
+				Some((_, "d")) => Language::TypeScriptDefinition,
+				_ => Language::TypeScript,
 			},
 			(_, "jsx") => Language::Jsx,
 			(_, "tsx") => Language::Tsx,
@@ -159,11 +151,11 @@ impl Language {
 
 #[derive(Default, Debug)]
 struct Tests {
-	pub ok:HashMap<String, Test>,
-	pub err:HashMap<String, Test>,
+	pub ok: HashMap<String, Test>,
+	pub err: HashMap<String, Test>,
 }
 
-fn collect_tests(s:&str) -> Vec<Test> {
+fn collect_tests(s: &str) -> Vec<Test> {
 	let mut res = Vec::new();
 
 	for comment_block in extract_comment_blocks(s, false).into_iter().map(|(_, x)| x) {
@@ -190,7 +182,7 @@ fn collect_tests(s:&str) -> Vec<Test> {
 			_ => (suffix, None),
 		};
 
-		let text:String = comment_block[1..]
+		let text: String = comment_block[1..]
 			.iter()
 			.cloned()
 			.chain([String::new()])
@@ -199,13 +191,13 @@ fn collect_tests(s:&str) -> Vec<Test> {
 
 		assert!(!text.trim().is_empty() && text.ends_with('\n'));
 
-		res.push(Test { name:name.to_string(), options, text, ok, language })
+		res.push(Test { name: name.to_string(), options, text, ok, language })
 	}
 
 	res
 }
 
-fn tests_from_dir(dir:&Path) -> Result<Tests> {
+fn tests_from_dir(dir: &Path) -> Result<Tests> {
 	let mut res = Tests::default();
 
 	for entry in ::walkdir::WalkDir::new(dir) {
@@ -224,7 +216,7 @@ fn tests_from_dir(dir:&Path) -> Result<Tests> {
 
 	return Ok(res);
 
-	fn process_file(res:&mut Tests, path:&Path) -> Result<()> {
+	fn process_file(res: &mut Tests, path: &Path) -> Result<()> {
 		let text = fs::read_to_string(path)?;
 
 		for test in collect_tests(&text) {
@@ -241,21 +233,20 @@ fn tests_from_dir(dir:&Path) -> Result<Tests> {
 	}
 }
 
-fn existing_tests(dir:&Path, ok:bool) -> Result<HashMap<String, (PathBuf, Test)>> {
+fn existing_tests(dir: &Path, ok: bool) -> Result<HashMap<String, (PathBuf, Test)>> {
 	let mut res = HashMap::new();
 
 	for file in fs::read_dir(dir)? {
 		let path = file?.path();
 
-		let language =
-			path.extension().and_then(|ext| ext.to_str()).and_then(Language::from_file_name);
+		let language = path.extension().and_then(|ext| ext.to_str()).and_then(Language::from_file_name);
 
 		if let Some(language) = language {
 			let name = path.file_stem().map(|x| x.to_string_lossy().to_string()).unwrap();
 
 			let text = fs::read_to_string(&path)?;
 
-			let test = Test { name:name.clone(), options:None, text, ok, language };
+			let test = Test { name: name.clone(), options: None, text, ok, language };
 
 			if let Some(old) = res.insert(name, (path, test)) {
 				println!("Duplicate test: {old:?}");

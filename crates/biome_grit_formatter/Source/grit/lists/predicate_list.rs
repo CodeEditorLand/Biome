@@ -8,7 +8,7 @@ pub(crate) struct FormatGritPredicateList;
 impl FormatRule<GritPredicateList> for FormatGritPredicateList {
 	type Context = GritFormatContext;
 
-	fn fmt(&self, node:&GritPredicateList, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &GritPredicateList, f: &mut GritFormatter) -> FormatResult<()> {
 		f.join_with(&soft_line_break_or_space())
 			.entries(node.format_separated(",").with_trailing_separator(TrailingSeparator::Omit))
 			.finish()

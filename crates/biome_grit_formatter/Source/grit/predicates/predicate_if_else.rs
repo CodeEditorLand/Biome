@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritPredicateIfElse;
 impl FormatNodeRule<GritPredicateIfElse> for FormatGritPredicateIfElse {
-	fn fmt_fields(&self, node:&GritPredicateIfElse, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GritPredicateIfElse, f: &mut GritFormatter) -> FormatResult<()> {
 		let GritPredicateIfElseFields {
 			r_paren_token,
 			l_paren_token,

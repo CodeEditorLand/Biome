@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlUnionMemberTypes;
 impl FormatNodeRule<GraphqlUnionMemberTypes> for FormatGraphqlUnionMemberTypes {
-	fn fmt_fields(&self, node:&GraphqlUnionMemberTypes, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GraphqlUnionMemberTypes, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		let GraphqlUnionMemberTypesFields { eq_token, bitwise_or_token, members } = node.as_fields();
 
 		write!(
@@ -16,7 +16,7 @@ impl FormatNodeRule<GraphqlUnionMemberTypes> for FormatGraphqlUnionMemberTypes {
 				eq_token.format(),
 				if_group_fits_on_line(&space()),
 				soft_block_indent(&format_args![
-					FormatTypeLeadingSeparator { separator:"|", leading_separator:bitwise_or_token.as_ref() },
+					FormatTypeLeadingSeparator { separator: "|", leading_separator: bitwise_or_token.as_ref() },
 					members.format(),
 				])
 			]
@@ -25,12 +25,12 @@ impl FormatNodeRule<GraphqlUnionMemberTypes> for FormatGraphqlUnionMemberTypes {
 }
 
 pub struct FormatTypeLeadingSeparator<'a> {
-	separator:&'static str,
-	leading_separator:Option<&'a GraphqlSyntaxToken>,
+	separator: &'static str,
+	leading_separator: Option<&'a GraphqlSyntaxToken>,
 }
 
 impl Format<GraphqlFormatContext> for FormatTypeLeadingSeparator<'_> {
-	fn fmt(&self, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt(&self, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		match &self.leading_separator {
 			Some(token) => {
 				let content = format_with(|f| write!(f, [soft_line_break_or_space(), token.format(), space()]));

@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritPatternNot;
 impl FormatNodeRule<GritPatternNot> for FormatGritPatternNot {
-	fn fmt_fields(&self, node:&GritPatternNot, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GritPatternNot, f: &mut GritFormatter) -> FormatResult<()> {
 		let GritPatternNotFields { pattern, not } = node.as_fields();
 
 		write!(f, [not.format(), pattern.format()])

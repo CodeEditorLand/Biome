@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsDefaultImportSpecifier;
 
 impl FormatNodeRule<JsDefaultImportSpecifier> for FormatJsDefaultImportSpecifier {
-	fn fmt_fields(&self, node:&JsDefaultImportSpecifier, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsDefaultImportSpecifier, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsDefaultImportSpecifierFields { local_name } = node.as_fields();
 
 		write![f, [local_name.format()]]

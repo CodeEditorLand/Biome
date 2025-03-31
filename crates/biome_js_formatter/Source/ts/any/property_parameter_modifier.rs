@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyTsPropertyParameterModifier;
 impl FormatRule<AnyTsPropertyParameterModifier> for FormatAnyTsPropertyParameterModifier {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyTsPropertyParameterModifier, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyTsPropertyParameterModifier, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyTsPropertyParameterModifier::TsAccessibilityModifier(node) => node.format().fmt(f),
 			AnyTsPropertyParameterModifier::TsOverrideModifier(node) => node.format().fmt(f),

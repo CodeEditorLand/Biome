@@ -16,17 +16,23 @@ pub trait TextLen: Copy + Sealed {
 impl Sealed for &'_ str {}
 impl TextLen for &'_ str {
 	#[inline]
-	fn text_len(self) -> TextSize { self.len().try_into().unwrap() }
+	fn text_len(self) -> TextSize {
+		self.len().try_into().unwrap()
+	}
 }
 
 impl Sealed for &'_ String {}
 impl TextLen for &'_ String {
 	#[inline]
-	fn text_len(self) -> TextSize { self.as_str().text_len() }
+	fn text_len(self) -> TextSize {
+		self.as_str().text_len()
+	}
 }
 
 impl Sealed for char {}
 impl TextLen for char {
 	#[inline]
-	fn text_len(self) -> TextSize { (self.len_utf8() as u32).into() }
+	fn text_len(self) -> TextSize {
+		(self.len_utf8() as u32).into()
+	}
 }

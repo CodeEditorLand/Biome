@@ -7,7 +7,7 @@ use crate::{prelude::*, utils::FormatTypeMemberSeparator};
 pub struct FormatTsIndexSignatureTypeMember;
 
 impl FormatNodeRule<TsIndexSignatureTypeMember> for FormatTsIndexSignatureTypeMember {
-	fn fmt_fields(&self, node:&TsIndexSignatureTypeMember, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsIndexSignatureTypeMember, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsIndexSignatureTypeMemberFields {
 			readonly_token,
 			l_brack_token,

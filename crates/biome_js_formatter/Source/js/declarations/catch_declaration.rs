@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub(crate) struct FormatJsCatchDeclaration;
 
 impl FormatNodeRule<JsCatchDeclaration> for FormatJsCatchDeclaration {
-	fn fmt_fields(&self, node:&JsCatchDeclaration, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsCatchDeclarationFields { l_paren_token, binding, r_paren_token, type_annotation } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsCatchDeclaration, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsCatchDeclarationFields { l_paren_token, binding, r_paren_token, type_annotation } = node.as_fields();
 
 		let binding = binding?;
 

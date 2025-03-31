@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsVariableDeclaration;
 
 impl FormatNodeRule<JsVariableDeclaration> for FormatJsVariableDeclaration {
-	fn fmt_fields(&self, node:&JsVariableDeclaration, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsVariableDeclaration, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsVariableDeclarationFields { await_token, kind, declarators } = node.as_fields();
 
 		if let Some(await_token) = await_token {

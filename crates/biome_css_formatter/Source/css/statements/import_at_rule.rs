@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssImportAtRule;
 impl FormatNodeRule<CssImportAtRule> for FormatCssImportAtRule {
-	fn fmt_fields(&self, node:&CssImportAtRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssImportAtRule, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssImportAtRuleFields { import_token, url, layer, supports, media, semicolon_token } = node.as_fields();
 
 		write!(f, [import_token.format(), space()])?;

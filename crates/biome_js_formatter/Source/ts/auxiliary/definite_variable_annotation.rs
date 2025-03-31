@@ -7,11 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsDefiniteVariableAnnotation;
 
 impl FormatNodeRule<TsDefiniteVariableAnnotation> for FormatTsDefiniteVariableAnnotation {
-	fn fmt_fields(
-		&self,
-		node:&TsDefiniteVariableAnnotation,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsDefiniteVariableAnnotation, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsDefiniteVariableAnnotationFields { excl_token, type_annotation } = node.as_fields();
 
 		write![f, [excl_token.format(), type_annotation.format()]]

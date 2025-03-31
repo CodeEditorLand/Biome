@@ -15,7 +15,9 @@ use crate::{
 /// optional parameters, such as `@my-custom-rule param;` or `@unknown-rule { /*
 /// CSS content */ }`.
 #[inline]
-pub(crate) fn is_at_unknown_at_rule(p:&mut CssParser) -> bool { is_at_identifier(p) }
+pub(crate) fn is_at_unknown_at_rule(p: &mut CssParser) -> bool {
+	is_at_identifier(p)
+}
 
 /// Represents an unknown or unsupported CSS at-rule during parsing.
 ///
@@ -25,7 +27,7 @@ pub(crate) fn is_at_unknown_at_rule(p:&mut CssParser) -> bool { is_at_identifier
 /// graceful handling of CSS constructs that are not supported by the parser,
 /// ensuring that the stylesheet can still be processed without errors.
 #[inline]
-pub(crate) fn parse_unknown_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_unknown_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_unknown_at_rule(p) {
 		return Absent;
 	}

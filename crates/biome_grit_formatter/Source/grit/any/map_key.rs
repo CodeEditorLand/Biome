@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyGritMapKey;
 impl FormatRule<AnyGritMapKey> for FormatAnyGritMapKey {
 	type Context = GritFormatContext;
 
-	fn fmt(&self, node:&AnyGritMapKey, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyGritMapKey, f: &mut GritFormatter) -> FormatResult<()> {
 		match node {
 			AnyGritMapKey::GritName(node) => node.format().fmt(f),
 			AnyGritMapKey::GritVariable(node) => node.format().fmt(f),

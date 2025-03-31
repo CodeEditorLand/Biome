@@ -9,15 +9,9 @@ pub(crate) struct FormatAnyTsExternalModuleDeclarationBody;
 impl FormatRule<AnyTsExternalModuleDeclarationBody> for FormatAnyTsExternalModuleDeclarationBody {
 	type Context = JsFormatContext;
 
-	fn fmt(
-		&self,
-		node:&AnyTsExternalModuleDeclarationBody,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyTsExternalModuleDeclarationBody, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
-			AnyTsExternalModuleDeclarationBody::TsEmptyExternalModuleDeclarationBody(node) => {
-				node.format().fmt(f)
-			},
+			AnyTsExternalModuleDeclarationBody::TsEmptyExternalModuleDeclarationBody(node) => node.format().fmt(f),
 
 			AnyTsExternalModuleDeclarationBody::TsModuleBlock(node) => node.format().fmt(f),
 		}

@@ -2,31 +2,15 @@ use std::{cell::Cell, cmp::Ordering, collections::BTreeMap, iter};
 
 use biome_js_factory::make;
 use biome_js_syntax::{
-	AnyJsImportClause,
-	AnyJsModuleItem,
-	AnyJsNamedImportSpecifier,
-	JsImport,
-	JsLanguage,
-	JsModule,
-	JsSyntaxToken,
-	JsSyntaxTrivia,
-	T,
+	AnyJsImportClause, AnyJsModuleItem, AnyJsNamedImportSpecifier, JsImport, JsLanguage, JsModule, JsSyntaxToken,
+	JsSyntaxTrivia, T,
 };
 use biome_rowan::{
-	AstNode,
-	AstNodeExt,
-	AstNodeList,
-	AstSeparatedList,
-	BatchMutation,
-	SyntaxTriviaPiece,
-	TextRange,
-	TokenText,
-	TriviaPiece,
-	TriviaPieceKind,
-	chain_trivia_pieces,
+	AstNode, AstNodeExt, AstNodeList, AstSeparatedList, BatchMutation, SyntaxTriviaPiece, TextRange, TokenText,
+	TriviaPiece, TriviaPieceKind, chain_trivia_pieces,
 };
 
-pub(crate) fn run(root:&JsModule) -> Option<ImportGroups> {
+pub(crate) fn run(root: &JsModule) -> Option<ImportGroups> {
 	let mut groups = Vec::new();
 
 	let mut first_node = None;
@@ -38,28 +22,24 @@ pub(crate) fn run(root:&JsModule) -> Option<ImportGroups> {
 			// If we have pending nodes and encounter a non-import node, append the nodes to
 			// a new group
 			if let Some(first_node) = first_node.take() {
-				groups.push(ImportGroup { first_node, nodes:std::mem::take(&mut nodes) });
+				groups.push(ImportGroup { first_node, nodes: std::mem::take(&mut nodes) });
 			}
 
 			continue;
 		};
 
-		let is_side_effect_import =
-			matches!(import.import_clause(), Ok(AnyJsImportClause::JsImportBareClause(_)));
+		let is_side_effect_import = matches!(import.import_clause(), Ok(AnyJsImportClause::JsImportBareClause(_)));
 
 		if is_side_effect_import {
 			if let Some(first_node) = first_node.take() {
-				groups.push(ImportGroup { first_node, nodes:std::mem::take(&mut nodes) });
+				groups.push(ImportGroup { first_node, nodes: std::mem::take(&mut nodes) });
 			}
 			// A side effect import creates its own import group
 			let mut nodes = BTreeMap::new();
 
-			nodes.insert(
-				ImportKey(import.source_text().ok()?),
-				vec![ImportNode::from(import.clone())],
-			);
+			nodes.insert(ImportKey(import.source_text().ok()?), vec![ImportNode::from(import.clone())]);
 
-			groups.push(ImportGroup { first_node:import.clone(), nodes });
+			groups.push(ImportGroup { first_node: import.clone(), nodes });
 
 			continue;
 		}
@@ -67,7 +47,7 @@ pub(crate) fn run(root:&JsModule) -> Option<ImportGroups> {
 		// If this is not the first import in the group, check for a group break
 		if has_empty_line(&import.import_token().ok()?.leading_trivia()) {
 			if let Some(first_node) = first_node.take() {
-				groups.push(ImportGroup { first_node, nodes:std::mem::take(&mut nodes) });
+				groups.push(ImportGroup { first_node, nodes: std::mem::take(&mut nodes) });
 			}
 		}
 
@@ -91,11 +71,7 @@ pub(crate) fn run(root:&JsModule) -> Option<ImportGroups> {
 	groups.iter().any(|group| !group.is_sorted()).then_some(ImportGroups { groups })
 }
 
-pub(crate) fn action(
-	root:&JsModule,
-	groups:&ImportGroups,
-	mutation:&mut BatchMutation<JsLanguage>,
-) -> Option<()> {
+pub(crate) fn action(root: &JsModule, groups: &ImportGroups, mutation: &mut BatchMutation<JsLanguage>) -> Option<()> {
 	let mut groups_iter = groups.groups.iter();
 
 	let mut next_group = groups_iter.next().expect("state is empty");
@@ -131,7 +107,7 @@ pub(crate) fn action(
 
 		let mut prev_newline = None;
 
-		let mut group_leading_trivia:Vec<_> = group_leading_trivia
+		let mut group_leading_trivia: Vec<_> = group_leading_trivia
 			.pieces()
 			.enumerate()
 			.rev()
@@ -191,21 +167,22 @@ pub(crate) fn action(
 					saved_leading_trivia.push(piece);
 				}
 
-				node = node.with_import_token(first_token.with_leading_trivia_pieces(
-					chain_trivia_pieces(group_leading_trivia, token_leading_trivia),
-				));
+				node = node.with_import_token(
+					first_token
+						.with_leading_trivia_pieces(chain_trivia_pieces(group_leading_trivia, token_leading_trivia)),
+				);
 			} else if node_index > 0 && group_first_token == first_token {
 				// If this node used to be in the leading position but
 				// got moved, remove the group leading trivia from its
 				// first token
 				let saved_leading_trivia = saved_leading_trivia.drain(..);
 
-				let token_leading_trivia =
-					first_token.leading_trivia().pieces().skip(group_leading_pieces);
+				let token_leading_trivia = first_token.leading_trivia().pieces().skip(group_leading_pieces);
 
-				node = node.with_import_token(first_token.with_leading_trivia_pieces(
-					chain_trivia_pieces(saved_leading_trivia, token_leading_trivia),
-				));
+				node = node.with_import_token(
+					first_token
+						.with_leading_trivia_pieces(chain_trivia_pieces(saved_leading_trivia, token_leading_trivia)),
+				);
 			}
 
 			new_list.push(AnyJsModuleItem::JsImport(node));
@@ -233,16 +210,16 @@ pub(crate) fn action(
 #[derive(Debug)]
 pub struct ImportGroups {
 	/// The list of all the import groups in the file
-	groups:Vec<ImportGroup>,
+	groups: Vec<ImportGroup>,
 }
 
 #[derive(Debug)]
 struct ImportGroup {
 	/// The import that was at the start of the group before sorting
-	first_node:JsImport,
+	first_node: JsImport,
 	/// Multimap storing all the imports for each import source in the group,
 	/// sorted in natural order
-	nodes:BTreeMap<ImportKey, Vec<ImportNode>>,
+	nodes: BTreeMap<ImportKey, Vec<ImportNode>>,
 }
 
 impl ImportGroup {
@@ -275,17 +252,17 @@ impl ImportGroup {
 #[derive(Debug)]
 struct ImportNode {
 	/// The original `JsImport` node this import node was created from
-	node:JsImport,
+	node: JsImport,
 	/// The number of separators present in the named specifiers list of this
 	/// node if it has one
-	separator_count:usize,
+	separator_count: usize,
 	/// Map storing all the named import specifiers and their associated
 	/// trailing separator, sorted in natural order
-	specifiers:BTreeMap<ImportKey, (AnyJsNamedImportSpecifier, Option<JsSyntaxToken>)>,
+	specifiers: BTreeMap<ImportKey, (AnyJsNamedImportSpecifier, Option<JsSyntaxToken>)>,
 }
 
 impl From<JsImport> for ImportNode {
-	fn from(node:JsImport) -> Self {
+	fn from(node: JsImport) -> Self {
 		let import_clause = node.import_clause().ok();
 
 		let mut separator_count = 0;
@@ -314,7 +291,7 @@ impl From<JsImport> for ImportNode {
 			Some(result)
 		});
 
-		Self { node, separator_count, specifiers:specifiers.unwrap_or_default() }
+		Self { node, separator_count, specifiers: specifiers.unwrap_or_default() }
 	}
 }
 
@@ -356,7 +333,7 @@ impl ImportNode {
 
 		let separator_count = self.separator_count.max(last_element);
 
-		let needs_newline:Cell<Option<Option<JsSyntaxToken>>> = Cell::new(None);
+		let needs_newline: Cell<Option<Option<JsSyntaxToken>>> = Cell::new(None);
 
 		let items = self.specifiers.values().enumerate().map(|(index, (node, sep))| {
 			let is_last = index == last_element;
@@ -371,8 +348,7 @@ impl ImportNode {
 				if is_last && separator_count == last_element {
 					// If this is the last item and we are removing its trailing separator,
 					// move the trailing trivia from the separator to the node
-					let next_token =
-						prev_token.append_trivia_pieces(sep.trailing_trivia().pieces());
+					let next_token = prev_token.append_trivia_pieces(sep.trailing_trivia().pieces());
 
 					node = node
 						.replace_token_discard_trivia(prev_token, next_token)
@@ -455,8 +431,7 @@ impl ImportNode {
 			// iterator it will need to prepend a newline to the leading trivia of the
 			// next node, and provide it the token that followed this separator in the
 			// original source so the newline trivia can be cloned from there
-			let newline_source =
-				will_need_newline.then(|| sep.as_ref().and_then(|token| token.next_token()));
+			let newline_source = will_need_newline.then(|| sep.as_ref().and_then(|token| token.next_token()));
 
 			needs_newline.set(newline_source);
 
@@ -491,10 +466,7 @@ impl ImportNode {
 /// leading trivia if it didn't have one already. This function will try to copy
 /// the newline trivia piece from the leading trivia of `newline_source` if its
 /// set
-fn prepend_leading_newline(
-	prev_token:&JsSyntaxToken,
-	newline_source:Option<JsSyntaxToken>,
-) -> Option<JsSyntaxToken> {
+fn prepend_leading_newline(prev_token: &JsSyntaxToken, newline_source: Option<JsSyntaxToken>) -> Option<JsSyntaxToken> {
 	// Check if this node already starts with a newline,
 	// if it does we don't need to prepend anything
 	let leading_trivia = prev_token.leading_trivia();
@@ -536,9 +508,7 @@ fn prepend_leading_newline(
 ///
 /// The items of the iterator inherit their lifetime from the token,
 /// rather than the trivia pieces themselves
-fn leading_trivia_iter(
-	token:&JsSyntaxToken,
-) -> impl ExactSizeIterator<Item = (TriviaPieceKind, &str)> {
+fn leading_trivia_iter(token: &JsSyntaxToken) -> impl ExactSizeIterator<Item = (TriviaPieceKind, &str)> {
 	let token_text = token.text();
 
 	let token_range = token.text_range();
@@ -562,7 +532,7 @@ fn leading_trivia_iter(
 struct ImportKey(TokenText);
 
 impl Ord for ImportKey {
-	fn cmp(&self, other:&Self) -> Ordering {
+	fn cmp(&self, other: &Self) -> Ordering {
 		let own_category = ImportCategory::from(self.0.text());
 
 		let other_category = ImportCategory::from(other.0.text());
@@ -577,13 +547,17 @@ impl Ord for ImportKey {
 }
 
 impl PartialOrd for ImportKey {
-	fn partial_cmp(&self, other:&Self) -> Option<Ordering> { Some(self.cmp(other)) }
+	fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
+		Some(self.cmp(other))
+	}
 }
 
 impl Eq for ImportKey {}
 
 impl PartialEq for ImportKey {
-	fn eq(&self, other:&Self) -> bool { self.0 == other.0 }
+	fn eq(&self, other: &Self) -> bool {
+		self.0 == other.0
+	}
 }
 
 /// Imports get sorted by categories before being sorted on natural order.
@@ -623,7 +597,7 @@ enum ImportCategory {
 }
 
 impl From<&str> for ImportCategory {
-	fn from(value:&str) -> Self {
+	fn from(value: &str) -> Self {
 		if value.starts_with('.') {
 			Self::Relative
 		} else if let Some((protocol, _)) = value.split_once(':') {
@@ -648,13 +622,13 @@ impl From<&str> for ImportCategory {
 
 /// Returns true is this trivia piece is "ASCII whitespace" (newline or
 /// whitespace)
-fn is_ascii_whitespace(piece:&SyntaxTriviaPiece<JsLanguage>) -> bool {
+fn is_ascii_whitespace(piece: &SyntaxTriviaPiece<JsLanguage>) -> bool {
 	piece.is_newline() || piece.is_whitespace()
 }
 
 /// Returns true if the provided trivia contains an empty line (two consecutive
 /// newline pieces, ignoring whitespace)
-fn has_empty_line(trivia:&JsSyntaxTrivia) -> bool {
+fn has_empty_line(trivia: &JsSyntaxTrivia) -> bool {
 	let mut was_newline = false;
 
 	trivia.pieces().filter(|piece| !piece.is_whitespace()).any(|piece| {
@@ -667,7 +641,7 @@ fn has_empty_line(trivia:&JsSyntaxTrivia) -> bool {
 }
 
 /// Sorted array of Node builtin
-const NODE_BUILTINS:&[&str] = &[
+const NODE_BUILTINS: &[&str] = &[
 	"assert",
 	"buffer",
 	"child_process",

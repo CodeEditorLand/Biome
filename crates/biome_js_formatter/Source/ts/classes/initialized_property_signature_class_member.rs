@@ -8,14 +8,8 @@ use crate::{
 };
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatTsInitializedPropertySignatureClassMember;
-impl FormatNodeRule<TsInitializedPropertySignatureClassMember>
-	for FormatTsInitializedPropertySignatureClassMember
-{
-	fn fmt_fields(
-		&self,
-		node:&TsInitializedPropertySignatureClassMember,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+impl FormatNodeRule<TsInitializedPropertySignatureClassMember> for FormatTsInitializedPropertySignatureClassMember {
+	fn fmt_fields(&self, node: &TsInitializedPropertySignatureClassMember, f: &mut JsFormatter) -> FormatResult<()> {
 		let semicolon_token = node.semicolon_token();
 
 		write!(

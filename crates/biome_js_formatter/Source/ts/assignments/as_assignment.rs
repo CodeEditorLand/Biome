@@ -1,11 +1,5 @@
 use biome_formatter::{format_args, write};
-use biome_js_syntax::{
-	AnyJsAssignment,
-	AnyTsType,
-	JsLanguage,
-	TsAsAssignment,
-	parentheses::NeedsParentheses,
-};
+use biome_js_syntax::{AnyJsAssignment, AnyTsType, JsLanguage, TsAsAssignment, parentheses::NeedsParentheses};
 use biome_rowan::SyntaxToken;
 
 use crate::prelude::*;
@@ -14,18 +8,20 @@ use crate::prelude::*;
 pub struct FormatTsAsAssignment;
 
 impl FormatNodeRule<TsAsAssignment> for FormatTsAsAssignment {
-	fn fmt_fields(&self, node:&TsAsAssignment, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsAsAssignment, f: &mut JsFormatter) -> FormatResult<()> {
 		format_as_or_satisfies_assignment(f, node.assignment()?, node.as_token()?, node.ty()?)
 	}
 
-	fn needs_parentheses(&self, item:&TsAsAssignment) -> bool { item.needs_parentheses() }
+	fn needs_parentheses(&self, item: &TsAsAssignment) -> bool {
+		item.needs_parentheses()
+	}
 }
 
 pub(crate) fn format_as_or_satisfies_assignment(
-	f:&mut Formatter<JsFormatContext>,
-	assignment:AnyJsAssignment,
-	operation_token:SyntaxToken<JsLanguage>,
-	ty:AnyTsType,
+	f: &mut Formatter<JsFormatContext>,
+	assignment: AnyJsAssignment,
+	operation_token: SyntaxToken<JsLanguage>,
+	ty: AnyTsType,
 ) -> FormatResult<()> {
 	write![f, [assignment.format(), space(), operation_token.format()]]?;
 

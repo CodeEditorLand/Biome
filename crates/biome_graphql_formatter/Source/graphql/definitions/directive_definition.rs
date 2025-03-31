@@ -6,11 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlDirectiveDefinition;
 impl FormatNodeRule<GraphqlDirectiveDefinition> for FormatGraphqlDirectiveDefinition {
-	fn fmt_fields(
-		&self,
-		node:&GraphqlDirectiveDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GraphqlDirectiveDefinition, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		let GraphqlDirectiveDefinitionFields {
 			description,
 			directive_token,

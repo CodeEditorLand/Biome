@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssMediaAtRule;
 impl FormatNodeRule<CssMediaAtRule> for FormatCssMediaAtRule {
-	fn fmt_fields(&self, node:&CssMediaAtRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssMediaAtRule, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssMediaAtRuleFields { media_token, queries, block } = node.as_fields();
 
 		write!(

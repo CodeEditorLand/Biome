@@ -4,13 +4,7 @@ use biome_console::{
 	fmt::{Formatter, HTML},
 	markup,
 };
-use biome_diagnostics::{
-	DiagnosticExt,
-	LineIndexBuf,
-	PrintDiagnostic,
-	SourceCode,
-	serde::Diagnostic,
-};
+use biome_diagnostics::{DiagnosticExt, LineIndexBuf, PrintDiagnostic, SourceCode, serde::Diagnostic};
 use js_sys::Error;
 use wasm_bindgen::prelude::*;
 
@@ -29,39 +23,38 @@ pub(crate) fn set_panic_hook() {
 
 #[wasm_bindgen]
 pub struct DiagnosticPrinter {
-	file_name:String,
-	file_source:SourceCode<String, LineIndexBuf>,
-	buffer:Vec<u8>,
+	file_name: String,
+	file_source: SourceCode<String, LineIndexBuf>,
+	buffer: Vec<u8>,
 }
 
 #[wasm_bindgen]
 impl DiagnosticPrinter {
 	#[wasm_bindgen(constructor)]
-	pub fn new(file_name:String, file_source:String) -> Self {
+	pub fn new(file_name: String, file_source: String) -> Self {
 		let line_starts = LineIndexBuf::from_source_text(&file_source);
 
 		Self {
 			file_name,
-			file_source:SourceCode { text:file_source, line_starts:Some(line_starts) },
-			buffer:Vec::new(),
+			file_source: SourceCode { text: file_source, line_starts: Some(line_starts) },
+			buffer: Vec::new(),
 		}
 	}
 
-	pub fn print_simple(&mut self, diagnostic:IDiagnostic) -> Result<(), Error> {
+	pub fn print_simple(&mut self, diagnostic: IDiagnostic) -> Result<(), Error> {
 		self.print(diagnostic, |err| PrintDiagnostic::simple(err))
 	}
 
-	pub fn print_verbose(&mut self, diagnostic:IDiagnostic) -> Result<(), Error> {
+	pub fn print_verbose(&mut self, diagnostic: IDiagnostic) -> Result<(), Error> {
 		self.print(diagnostic, |err| PrintDiagnostic::verbose(err))
 	}
 
 	fn print(
 		&mut self,
-		diagnostic:IDiagnostic,
-		printer:fn(&biome_diagnostics::Error) -> PrintDiagnostic<biome_diagnostics::Error>,
+		diagnostic: IDiagnostic,
+		printer: fn(&biome_diagnostics::Error) -> PrintDiagnostic<biome_diagnostics::Error>,
 	) -> Result<(), Error> {
-		let diag:Diagnostic =
-			serde_wasm_bindgen::from_value(diagnostic.into()).map_err(into_error)?;
+		let diag: Diagnostic = serde_wasm_bindgen::from_value(diagnostic.into()).map_err(into_error)?;
 
 		let err = diag.with_file_path(&self.file_name).with_file_source_code(&self.file_source);
 
@@ -79,4 +72,6 @@ impl DiagnosticPrinter {
 	}
 }
 
-pub(crate) fn into_error<E:Display>(err:E) -> Error { Error::new(&err.to_string()) }
+pub(crate) fn into_error<E: Display>(err: E) -> Error {
+	Error::new(&err.to_string())
+}

@@ -7,7 +7,7 @@ use crate::{prelude::*, utils::FormatStatementSemicolon};
 pub(crate) struct FormatJsVariableStatement;
 
 impl FormatNodeRule<JsVariableStatement> for FormatJsVariableStatement {
-	fn fmt_fields(&self, node:&JsVariableStatement, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsVariableStatement, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsVariableStatementFields { declaration, semicolon_token } = node.as_fields();
 
 		write!(

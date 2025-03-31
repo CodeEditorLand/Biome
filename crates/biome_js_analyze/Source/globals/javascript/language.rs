@@ -1,7 +1,7 @@
 /// Sorted array of ES builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L2-L70>
-pub const ES_BUILTIN:&[&str] = &[
+pub const ES_BUILTIN: &[&str] = &[
 	"AggregateError",
 	"Array",
 	"ArrayBuffer",
@@ -74,7 +74,7 @@ pub const ES_BUILTIN:&[&str] = &[
 /// Sorted array of ES5 builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L71-L110>
-pub const ES_5:&[&str] = &[
+pub const ES_5: &[&str] = &[
 	"Array",
 	"Boolean",
 	"Date",
@@ -118,7 +118,7 @@ pub const ES_5:&[&str] = &[
 /// Sorted array of ES2015 builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L111-L170>
-pub const ES_2015:&[&str] = &[
+pub const ES_2015: &[&str] = &[
 	"Array",
 	"ArrayBuffer",
 	"Boolean",
@@ -182,7 +182,7 @@ pub const ES_2015:&[&str] = &[
 /// Sorted array of ES2017 builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L171-L232>
-pub const ES_2017:&[&str] = &[
+pub const ES_2017: &[&str] = &[
 	"Array",
 	"ArrayBuffer",
 	"Atomics",
@@ -248,7 +248,7 @@ pub const ES_2017:&[&str] = &[
 /// Sorted array of ES2020 builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L233-L298>
-pub const ES_2020:&[&str] = &[
+pub const ES_2020: &[&str] = &[
 	"Array",
 	"ArrayBuffer",
 	"Atomics",
@@ -318,7 +318,7 @@ pub const ES_2020:&[&str] = &[
 /// Sorted array of ES2021 builtin
 ///
 /// Source: <https://github.com/sindresorhus/globals/blob/9e2e2598dabdb845ff76c0c3acf5c52c812a64de/globals.json#L299-L367>
-pub const ES_2021:&[&str] = &[
+pub const ES_2021: &[&str] = &[
 	"AggregateError",
 	"Array",
 	"ArrayBuffer",
@@ -395,7 +395,9 @@ pub const ES_2021:&[&str] = &[
 ///
 /// assert!(is_global(&"Math"));
 /// ```
-pub fn is_global(name:&str) -> bool { ES_BUILTIN.binary_search(&name).is_ok() }
+pub fn is_global(name: &str) -> bool {
+	ES_BUILTIN.binary_search(&name).is_ok()
+}
 
 #[test]
 fn test_order() {

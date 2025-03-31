@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssSubSelector;
 impl FormatRule<AnyCssSubSelector> for FormatAnyCssSubSelector {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssSubSelector, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssSubSelector, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssSubSelector::CssAttributeSelector(node) => node.format().fmt(f),
 			AnyCssSubSelector::CssBogusSubSelector(node) => node.format().fmt(f),

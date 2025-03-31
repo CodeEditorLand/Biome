@@ -5,7 +5,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritPredicateLessEqual;
 impl FormatNodeRule<GritPredicateLessEqual> for FormatGritPredicateLessEqual {
-	fn fmt_fields(&self, node:&GritPredicateLessEqual, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GritPredicateLessEqual, f: &mut GritFormatter) -> FormatResult<()> {
 		let GritPredicateLessEqualFields { right, left, less_than_equal_token } = node.as_fields();
 
 		write!(

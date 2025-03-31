@@ -19,13 +19,21 @@ impl LanguageSrc for Source {
 		]
 	}
 
-	fn language_prefix(&self) -> &str { "mini" }
+	fn language_prefix(&self) -> &str {
+		"mini"
+	}
 
-	fn keywords(&self) -> &[&str] { &["complex", "simple"] }
+	fn keywords(&self) -> &[&str] {
+		&["complex", "simple"]
+	}
 
-	fn literals(&self) -> &[&str] { &["MINI_STRING_LITERAL"] }
+	fn literals(&self) -> &[&str] {
+		&["MINI_STRING_LITERAL"]
+	}
 
-	fn tokens(&self) -> &[&str] { &["NEWLINE", "WHITESPACE", "IDENT", "COMMENT", "COMMA"] }
+	fn tokens(&self) -> &[&str] {
+		&["NEWLINE", "WHITESPACE", "IDENT", "COMMENT", "COMMA"]
+	}
 
 	fn nodes(&self) -> &[&str] {
 		&[
@@ -39,9 +47,11 @@ impl LanguageSrc for Source {
 		]
 	}
 
-	fn prefixes(&self) -> &[&str] { &["mini_", "min_"] }
+	fn prefixes(&self) -> &[&str] {
+		&["mini_", "min_"]
+	}
 
-	fn to_method_name<'a>(&self, token_name:&'a str) -> &'a str {
+	fn to_method_name<'a>(&self, token_name: &'a str) -> &'a str {
 		match token_name {
 			"')'" => "l_bracket",
 			"'('" => "r_bracket",
@@ -53,11 +63,11 @@ impl LanguageSrc for Source {
 fn main() -> anyhow::Result<()> {
 	let current_dir = current_dir()?.join("examples");
 	let options = GrammarOptions {
-		syntax_crate_name:"crate".to_string(),
-		check_unions:false,
-		ungrammar_file_path:current_dir.join("mini.ungram"),
-		factory_dir_path:current_dir.join("./factory"),
-		syntax_dir_path:current_dir.join("./syntax"),
+		syntax_crate_name: "crate".to_string(),
+		check_unions: false,
+		ungrammar_file_path: current_dir.join("mini.ungram"),
+		factory_dir_path: current_dir.join("./factory"),
+		syntax_dir_path: current_dir.join("./syntax"),
 	};
 
 	generate_grammar(Source, options)?;

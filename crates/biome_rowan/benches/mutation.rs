@@ -1,6 +1,6 @@
 use biome_rowan::{
-    AstNode, AstNodeExt, BatchMutationExt, SyntaxNodeCast,
-    raw_language::{LiteralExpression, RawLanguageKind, RawLanguageRoot, RawSyntaxTreeBuilder},
+	AstNode, AstNodeExt, BatchMutationExt, SyntaxNodeCast,
+	raw_language::{LiteralExpression, RawLanguageKind, RawLanguageRoot, RawSyntaxTreeBuilder},
 };
 
 /// ```
@@ -8,7 +8,7 @@ use biome_rowan::{
 ///     0: LITERAL_EXPRESSION@0..1
 ///         0: STRING_TOKEN@0..1 "a" [] []
 /// ```
-fn tree_one(a:&str) -> (RawLanguageRoot, String) {
+fn tree_one(a: &str) -> (RawLanguageRoot, String) {
 	let mut builder = RawSyntaxTreeBuilder::new();
 
 	builder
@@ -24,7 +24,7 @@ fn tree_one(a:&str) -> (RawLanguageRoot, String) {
 	(root, s)
 }
 
-fn find(root:&RawLanguageRoot, name:&str) -> LiteralExpression {
+fn find(root: &RawLanguageRoot, name: &str) -> LiteralExpression {
 	root.syntax()
 		.descendants()
 		.find(|x| x.kind() == RawLanguageKind::LITERAL_EXPRESSION && x.text_trimmed() == name)
@@ -33,7 +33,7 @@ fn find(root:&RawLanguageRoot, name:&str) -> LiteralExpression {
 		.unwrap()
 }
 
-fn clone_detach(root:&RawLanguageRoot, name:&str) -> LiteralExpression {
+fn clone_detach(root: &RawLanguageRoot, name: &str) -> LiteralExpression {
 	root.syntax()
 		.descendants()
 		.find(|x| x.kind() == RawLanguageKind::LITERAL_EXPRESSION && x.text_trimmed() == name)

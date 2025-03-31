@@ -1,8 +1,6 @@
 use biome_formatter::write;
 use biome_js_syntax::{
-	AnyTsExternalModuleDeclarationBody,
-	TsExternalModuleDeclaration,
-	TsExternalModuleDeclarationFields,
+	AnyTsExternalModuleDeclarationBody, TsExternalModuleDeclaration, TsExternalModuleDeclarationFields,
 };
 
 use crate::prelude::*;
@@ -11,19 +9,13 @@ use crate::prelude::*;
 pub struct FormatTsExternalModuleDeclaration;
 
 impl FormatNodeRule<TsExternalModuleDeclaration> for FormatTsExternalModuleDeclaration {
-	fn fmt_fields(
-		&self,
-		node:&TsExternalModuleDeclaration,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsExternalModuleDeclaration, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsExternalModuleDeclarationFields { body, module_token, source } = node.as_fields();
 
 		write!(f, [module_token.format(), space(), source.format(),])?;
 
 		match body {
-			Some(AnyTsExternalModuleDeclarationBody::TsEmptyExternalModuleDeclarationBody(
-				body,
-			)) => {
+			Some(AnyTsExternalModuleDeclarationBody::TsEmptyExternalModuleDeclarationBody(body)) => {
 				body.format().fmt(f)?;
 			},
 

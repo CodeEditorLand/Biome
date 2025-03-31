@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyHtmlAttribute;
 impl FormatRule<AnyHtmlAttribute> for FormatAnyHtmlAttribute {
 	type Context = HtmlFormatContext;
 
-	fn fmt(&self, node:&AnyHtmlAttribute, f:&mut HtmlFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyHtmlAttribute, f: &mut HtmlFormatter) -> FormatResult<()> {
 		match node {
 			AnyHtmlAttribute::HtmlAttribute(node) => node.format().fmt(f),
 			AnyHtmlAttribute::HtmlBogusAttribute(node) => node.format().fmt(f),

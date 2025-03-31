@@ -6,7 +6,7 @@ pub(crate) struct FormatGraphqlEnumValueList;
 impl FormatRule<GraphqlEnumValueList> for FormatGraphqlEnumValueList {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(&self, node:&GraphqlEnumValueList, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &GraphqlEnumValueList, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		let mut join = f.join_nodes_with_hardline();
 
 		for definition in node {

@@ -329,7 +329,7 @@ use syn::{DeriveInput, parse_macro_input};
 /// is supported on enums too.
 #[proc_macro_derive(Deserializable, attributes(deserializable))]
 #[proc_macro_error]
-pub fn derive_deserializable(input:TokenStream) -> TokenStream {
+pub fn derive_deserializable(input: TokenStream) -> TokenStream {
 	let input = parse_macro_input!(input as DeriveInput);
 
 	let input = deserializable_derive::DeriveInput::parse(input);
@@ -347,7 +347,7 @@ pub fn derive_deserializable(input:TokenStream) -> TokenStream {
 /// struct.
 #[proc_macro_derive(Merge)]
 #[proc_macro_error]
-pub fn derive_mergeable(input:TokenStream) -> TokenStream {
+pub fn derive_mergeable(input: TokenStream) -> TokenStream {
 	let input = parse_macro_input!(input as DeriveInput);
 
 	let input = merge_derive::DeriveInput::parse(input);
@@ -420,7 +420,7 @@ pub fn derive_mergeable(input:TokenStream) -> TokenStream {
 /// so using `#[partial(type = "MyPartialType")]`.
 #[proc_macro_derive(Partial, attributes(partial))]
 #[proc_macro_error]
-pub fn derive_partial(input:TokenStream) -> TokenStream {
+pub fn derive_partial(input: TokenStream) -> TokenStream {
 	let input = parse_macro_input!(input as DeriveInput);
 
 	let input = partial_derive::DeriveInput::parse(input);

@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatCssFontFeatureValuesAtRule;
 
 impl FormatNodeRule<CssFontFeatureValuesAtRule> for FormatCssFontFeatureValuesAtRule {
-	fn fmt_fields(&self, node:&CssFontFeatureValuesAtRule, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssFontFeatureValuesAtRule, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssFontFeatureValuesAtRuleFields { font_feature_values_token, names, block } = node.as_fields();
 
 		write!(

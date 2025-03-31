@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssContainerStyleInParens;
 impl FormatRule<AnyCssContainerStyleInParens> for FormatAnyCssContainerStyleInParens {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssContainerStyleInParens, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssContainerStyleInParens, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssContainerStyleInParens::AnyCssContainerStyleQuery(node) => node.format().fmt(f),
 			AnyCssContainerStyleInParens::CssDeclaration(node) => node.format().fmt(f),

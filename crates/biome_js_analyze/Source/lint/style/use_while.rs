@@ -1,12 +1,4 @@
-use biome_analyze::{
-	Ast,
-	FixKind,
-	Rule,
-	RuleDiagnostic,
-	RuleSource,
-	context::RuleContext,
-	declare_lint_rule,
-};
+use biome_analyze::{Ast, FixKind, Rule, RuleDiagnostic, RuleSource, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_js_factory::make;
 use biome_js_syntax::{AnyJsStatement, JsForStatement, T};
@@ -59,7 +51,7 @@ impl Rule for UseWhile {
 	type Signals = Option<Self::State>;
 	type State = ();
 
-	fn run(ctx:&RuleContext<Self>) -> Option<Self::State> {
+	fn run(ctx: &RuleContext<Self>) -> Option<Self::State> {
 		let node = ctx.query();
 
 		if node.initializer().is_some() || node.test().is_none() || node.update().is_some() {
@@ -69,7 +61,7 @@ impl Rule for UseWhile {
 		}
 	}
 
-	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 
 		let for_range = node.for_token().ok()?.text_trimmed_range();
@@ -87,7 +79,7 @@ impl Rule for UseWhile {
         }))
 	}
 
-	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
+	fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
 		let node = ctx.query();
 
 		let mut mutation = ctx.root().begin();

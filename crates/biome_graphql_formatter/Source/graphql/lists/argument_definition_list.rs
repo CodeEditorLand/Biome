@@ -8,11 +8,7 @@ pub(crate) struct FormatGraphqlArgumentDefinitionList;
 impl FormatRule<GraphqlArgumentDefinitionList> for FormatGraphqlArgumentDefinitionList {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(
-		&self,
-		node:&GraphqlArgumentDefinitionList,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node: &GraphqlArgumentDefinitionList, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		let mut join = f.join_nodes_with_soft_line();
 
 		let last_index = node.len().saturating_sub(1);

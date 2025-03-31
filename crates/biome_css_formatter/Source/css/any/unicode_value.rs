@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssUnicodeValue;
 impl FormatRule<AnyCssUnicodeValue> for FormatAnyCssUnicodeValue {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssUnicodeValue, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssUnicodeValue, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssUnicodeValue::CssBogusUnicodeRangeValue(node) => node.format().fmt(f),
 			AnyCssUnicodeValue::CssUnicodeCodepoint(node) => node.format().fmt(f),

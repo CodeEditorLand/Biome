@@ -1,9 +1,6 @@
 use biome_formatter::{format_args, write};
 use biome_js_syntax::{
-	AnyJsComputedMember,
-	AnyJsExpression,
-	AnyJsLiteralExpression,
-	JsComputedMemberExpression,
+	AnyJsComputedMember, AnyJsExpression, AnyJsLiteralExpression, JsComputedMemberExpression,
 	parentheses::NeedsParentheses,
 };
 
@@ -13,17 +10,17 @@ use crate::prelude::*;
 pub(crate) struct FormatJsComputedMemberExpression;
 
 impl FormatNodeRule<JsComputedMemberExpression> for FormatJsComputedMemberExpression {
-	fn fmt_fields(&self, node:&JsComputedMemberExpression, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsComputedMemberExpression, f: &mut JsFormatter) -> FormatResult<()> {
 		AnyJsComputedMember::from(node.clone()).fmt(f)
 	}
 
-	fn needs_parentheses(&self, item:&JsComputedMemberExpression) -> bool {
+	fn needs_parentheses(&self, item: &JsComputedMemberExpression) -> bool {
 		item.needs_parentheses()
 	}
 }
 
 impl Format<JsFormatContext> for AnyJsComputedMember {
-	fn fmt(&self, f:&mut Formatter<JsFormatContext>) -> FormatResult<()> {
+	fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
 		write!(f, [self.object().format()])?;
 
 		FormatComputedMemberLookup(self).fmt(f)
@@ -35,15 +32,15 @@ impl Format<JsFormatContext> for AnyJsComputedMember {
 pub(crate) struct FormatComputedMemberLookup<'a>(&'a AnyJsComputedMember);
 
 impl<'a> FormatComputedMemberLookup<'a> {
-	pub(crate) fn new(member_like:&'a AnyJsComputedMember) -> Self { Self(member_like) }
+	pub(crate) fn new(member_like: &'a AnyJsComputedMember) -> Self {
+		Self(member_like)
+	}
 }
 
 impl Format<JsFormatContext> for FormatComputedMemberLookup<'_> {
-	fn fmt(&self, f:&mut Formatter<JsFormatContext>) -> FormatResult<()> {
+	fn fmt(&self, f: &mut Formatter<JsFormatContext>) -> FormatResult<()> {
 		match self.0.member()? {
-			AnyJsExpression::AnyJsLiteralExpression(
-				AnyJsLiteralExpression::JsNumberLiteralExpression(literal),
-			) => {
+			AnyJsExpression::AnyJsLiteralExpression(AnyJsLiteralExpression::JsNumberLiteralExpression(literal)) => {
 				write!(
 					f,
 					[

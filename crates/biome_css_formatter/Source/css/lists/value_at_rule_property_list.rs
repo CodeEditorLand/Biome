@@ -6,7 +6,7 @@ pub(crate) struct FormatCssValueAtRulePropertyList;
 impl FormatRule<CssValueAtRulePropertyList> for FormatCssValueAtRulePropertyList {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&CssValueAtRulePropertyList, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &CssValueAtRulePropertyList, f: &mut CssFormatter) -> FormatResult<()> {
 		f.join().entries(node.iter().formatted()).finish()
 	}
 }

@@ -9,7 +9,7 @@ pub struct FormatTsTypeParameterList;
 impl FormatRule<TsTypeParameterList> for FormatTsTypeParameterList {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&TsTypeParameterList, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &TsTypeParameterList, f: &mut JsFormatter) -> FormatResult<()> {
 		// Type parameter lists of arrow function expressions have to include at least
 		// one comma to avoid any ambiguity with JSX elements.
 		// Thus, we have to add a trailing comma when there is a single type parameter.

@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyGritListIndex;
 impl FormatRule<AnyGritListIndex> for FormatAnyGritListIndex {
 	type Context = GritFormatContext;
 
-	fn fmt(&self, node:&AnyGritListIndex, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyGritListIndex, f: &mut GritFormatter) -> FormatResult<()> {
 		match node {
 			AnyGritListIndex::AnyGritContainer(node) => node.format().fmt(f),
 			AnyGritListIndex::GritIntLiteral(node) => node.format().fmt(f),

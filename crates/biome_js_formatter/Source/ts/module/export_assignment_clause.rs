@@ -7,9 +7,8 @@ use crate::{prelude::*, utils::FormatStatementSemicolon};
 pub struct FormatTsExportAssignmentClause;
 
 impl FormatNodeRule<TsExportAssignmentClause> for FormatTsExportAssignmentClause {
-	fn fmt_fields(&self, node:&TsExportAssignmentClause, f:&mut JsFormatter) -> FormatResult<()> {
-		let TsExportAssignmentClauseFields { eq_token, expression, semicolon_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &TsExportAssignmentClause, f: &mut JsFormatter) -> FormatResult<()> {
+		let TsExportAssignmentClauseFields { eq_token, expression, semicolon_token } = node.as_fields();
 
 		write!(
 			f,

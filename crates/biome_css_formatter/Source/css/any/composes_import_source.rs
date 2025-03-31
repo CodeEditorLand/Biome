@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssComposesImportSource;
 impl FormatRule<AnyCssComposesImportSource> for FormatAnyCssComposesImportSource {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssComposesImportSource, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssComposesImportSource, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssComposesImportSource::CssIdentifier(node) => node.format().fmt(f),
 			AnyCssComposesImportSource::CssString(node) => node.format().fmt(f),

@@ -2,9 +2,7 @@
 
 use std::{
 	collections::{BTreeMap, BTreeSet},
-	env,
-	fs,
-	io,
+	env, fs, io,
 	path::PathBuf,
 };
 
@@ -13,11 +11,11 @@ use biome_string_case::Case;
 use proc_macro2::{Ident, Literal, Span, TokenStream};
 use quote::{format_ident, quote};
 
-const WAI_ARIA:&str = "../../packages/aria-data/wai-aria-1-3.json";
-const GRAPHICS_ARIA:&str = "../../packages/aria-data/graphics-aria-1-0.json";
-const DPUB_ARIA:&str = "../../packages/aria-data/dpub-aria-1-1.json";
+const WAI_ARIA: &str = "../../packages/aria-data/wai-aria-1-3.json";
+const GRAPHICS_ARIA: &str = "../../packages/aria-data/graphics-aria-1-0.json";
+const DPUB_ARIA: &str = "../../packages/aria-data/dpub-aria-1-1.json";
 
-const ISO_COUNTRIES:&[&str] = &[
+const ISO_COUNTRIES: &[&str] = &[
 	"AF", "AL", "DZ", "AS", "AD", "AO", "AI", "AQ", "AG", "AR", "AM", "AW", "AU", "AT", "AZ", "BS", "BH", "BD", "BB",
 	"BY", "BE", "BZ", "BJ", "BM", "BT", "BO", "BA", "BW", "BR", "IO", "VG", "BN", "BG", "BF", "MM", "BI", "KH", "CM",
 	"CA", "CV", "KY", "CF", "TD", "CL", "CN", "CX", "CC", "CO", "KM", "CK", "CR", "HR", "CU", "CY", "CZ", "CD", "DK",
@@ -33,7 +31,7 @@ const ISO_COUNTRIES:&[&str] = &[
 	"WF", "EH", "YE", "ZM", "ZW",
 ];
 
-const ISO_LANGUAGES:&[&str] = &[
+const ISO_LANGUAGES: &[&str] = &[
 	"ab", "aa", "af", "sq", "am", "ar", "an", "hy", "as", "ay", "az", "ba", "eu", "bn", "dz", "bh", "bi", "br", "bg",
 	"my", "be", "km", "ca", "zh", "zh-Hans", "zh-Hant", "co", "hr", "cs", "da", "nl", "en", "eo", "et", "fo", "fa",
 	"fj", "fi", "fr", "fy", "gl", "gd", "gv", "ka", "de", "el", "kl", "gn", "gu", "ht", "ha", "he", "iw", "hi", "hu",
@@ -46,12 +44,12 @@ const ISO_LANGUAGES:&[&str] = &[
 
 #[derive(Debug, Default, biome_deserialize_macros::Merge, serde::Deserialize)]
 struct Aria {
-	roles:BTreeMap<String, AriaRole>,
-	attributes:BTreeMap<String, AriaAttribute>,
+	roles: BTreeMap<String, AriaRole>,
+	attributes: BTreeMap<String, AriaAttribute>,
 }
 impl Aria {
 	/// Retuurns direct and indirect superclass roles.
-	fn superclass_roles(&self, role_name:&str) -> Result<BTreeSet<String>, String> {
+	fn superclass_roles(&self, role_name: &str) -> Result<BTreeSet<String>, String> {
 		let mut result = BTreeSet::new();
 
 		let mut stack = vec![role_name];
@@ -73,23 +71,23 @@ impl Aria {
 #[derive(Debug, Default, biome_deserialize_macros::Merge, serde::Deserialize)]
 #[serde(default, rename_all = "camelCase")]
 struct AriaRole {
-	description:String,
-	deprecated_in_version:Option<String>,
-	is_abstract:bool,
-	superclass_roles:BTreeSet<String>,
-	subclass_roles:BTreeSet<String>,
-	base_concepts:BTreeSet<Concept>,
-	related_concepts:BTreeSet<Concept>,
-	allowed_child_roles:BTreeSet<String>,
-	required_parent_roles:BTreeSet<String>,
-	required_attributes:BTreeSet<AriaAttributeReference>,
-	supported_attributes:BTreeSet<AriaAttributeReference>,
-	inherited_attributes:BTreeSet<AriaAttributeReference>,
-	prohibited_attributes:BTreeSet<AriaAttributeReference>,
-	name_from:BTreeSet<AriaNameFrom>,
-	is_accessible_name_required:bool,
-	has_presentational_children:bool,
-	implicit_values_for_role:BTreeMap<String, String>,
+	description: String,
+	deprecated_in_version: Option<String>,
+	is_abstract: bool,
+	superclass_roles: BTreeSet<String>,
+	subclass_roles: BTreeSet<String>,
+	base_concepts: BTreeSet<Concept>,
+	related_concepts: BTreeSet<Concept>,
+	allowed_child_roles: BTreeSet<String>,
+	required_parent_roles: BTreeSet<String>,
+	required_attributes: BTreeSet<AriaAttributeReference>,
+	supported_attributes: BTreeSet<AriaAttributeReference>,
+	inherited_attributes: BTreeSet<AriaAttributeReference>,
+	prohibited_attributes: BTreeSet<AriaAttributeReference>,
+	name_from: BTreeSet<AriaNameFrom>,
+	is_accessible_name_required: bool,
+	has_presentational_children: bool,
+	implicit_values_for_role: BTreeMap<String, String>,
 }
 impl AriaRole {
 	fn all_attributes(&self) -> BTreeSet<&AriaAttributeReference> {
@@ -114,25 +112,25 @@ enum AriaNameFrom {
 enum Concept {
 	/// An attribute or an element
 	Any {
-		name:String,
-		module:ConceptModule,
+		name: String,
+		module: ConceptModule,
 	},
 	Attribute {
-		name:String,
-		module:ConceptModule,
+		name: String,
+		module: ConceptModule,
 	},
 	Element {
-		name:String,
+		name: String,
 		#[serde(default)]
-		attributes:BTreeMap<String, String>,
-		module:ConceptModule,
+		attributes: BTreeMap<String, String>,
+		module: ConceptModule,
 	},
 	Role {
-		name:String,
-		module:ConceptModule,
+		name: String,
+		module: ConceptModule,
 	},
 	Text {
-		name:String,
+		name: String,
 	},
 }
 
@@ -152,20 +150,22 @@ enum ConceptModule {
 	Xhtml,
 }
 impl ConceptModule {
-	const fn is_html_like(self) -> bool { matches!(self, Self::Dom | Self::Html | Self::Xhtml) }
+	const fn is_html_like(self) -> bool {
+		matches!(self, Self::Dom | Self::Html | Self::Xhtml)
+	}
 }
 
 #[derive(Debug, Eq, Ord, PartialEq, PartialOrd, serde::Deserialize)]
 #[serde(from = "AriaAttributeReferenceShortcut")]
 struct AriaAttributeReference {
-	name:String,
-	deprecated_in_version:Option<String>,
+	name: String,
+	deprecated_in_version: Option<String>,
 }
 
 impl From<AriaAttributeReferenceShortcut> for AriaAttributeReference {
-	fn from(value:AriaAttributeReferenceShortcut) -> Self {
+	fn from(value: AriaAttributeReferenceShortcut) -> Self {
 		match value {
-			AriaAttributeReferenceShortcut::Active(name) => Self { name, deprecated_in_version:None },
+			AriaAttributeReferenceShortcut::Active(name) => Self { name, deprecated_in_version: None },
 			AriaAttributeReferenceShortcut::Deprecated { name, deprecated_in_version } => {
 				Self { name, deprecated_in_version }
 			},
@@ -177,20 +177,20 @@ impl From<AriaAttributeReferenceShortcut> for AriaAttributeReference {
 #[serde(untagged, rename_all_fields = "camelCase")]
 enum AriaAttributeReferenceShortcut {
 	Active(String),
-	Deprecated { name:String, deprecated_in_version:Option<String> },
+	Deprecated { name: String, deprecated_in_version: Option<String> },
 }
 
 #[derive(Debug, Default, biome_deserialize_macros::Merge, serde::Deserialize)]
 #[serde(default, rename_all = "camelCase")]
 struct AriaAttribute {
-	r#type:AriaAttributeType,
-	description:String,
-	deprecated_in_version:Option<String>,
-	related_concepts:BTreeSet<Concept>,
-	used_in_roles:BTreeSet<String>,
-	inherits_into_roles:BTreeSet<String>,
-	value_type:AriaValueType,
-	values:BTreeMap<String, ValueDefinition>,
+	r#type: AriaAttributeType,
+	description: String,
+	deprecated_in_version: Option<String>,
+	related_concepts: BTreeSet<Concept>,
+	used_in_roles: BTreeSet<String>,
+	inherits_into_roles: BTreeSet<String>,
+	value_type: AriaValueType,
+	values: BTreeMap<String, ValueDefinition>,
 }
 
 #[derive(Clone, Copy, Debug, Default, Eq, PartialEq, biome_deserialize_macros::Merge, serde::Deserialize)]
@@ -229,8 +229,8 @@ enum AriaAttributeType {
 #[derive(Debug, Default, biome_deserialize_macros::Merge, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 struct ValueDefinition {
-	description:String,
-	is_default:bool,
+	description: String,
+	is_default: bool,
 }
 
 fn main() -> io::Result<()> {
@@ -245,15 +245,15 @@ fn main() -> io::Result<()> {
 
 	let text = std::fs::read_to_string(WAI_ARIA)?;
 
-	let wair_aria:Aria = serde_json::from_str(&text)?;
+	let wair_aria: Aria = serde_json::from_str(&text)?;
 
 	let text = std::fs::read_to_string(DPUB_ARIA)?;
 
-	let dpub_aria:Aria = serde_json::from_str(&text)?;
+	let dpub_aria: Aria = serde_json::from_str(&text)?;
 
 	let text = std::fs::read_to_string(GRAPHICS_ARIA)?;
 
-	let graphics_aria:Aria = serde_json::from_str(&text)?;
+	let graphics_aria: Aria = serde_json::from_str(&text)?;
 
 	let mut aria = graphics_aria;
 
@@ -294,7 +294,7 @@ fn main() -> io::Result<()> {
 	Ok(())
 }
 
-fn generate_enums(array:impl IntoIterator<Item = impl AsRef<str>>, enum_name:&str) -> TokenStream {
+fn generate_enums(array: impl IntoIterator<Item = impl AsRef<str>>, enum_name: &str) -> TokenStream {
 	let iter = array.into_iter();
 
 	let enum_name = Ident::new(enum_name, Span::call_site());
@@ -359,7 +359,7 @@ fn generate_enums(array:impl IntoIterator<Item = impl AsRef<str>>, enum_name:&st
 	}
 }
 
-fn generate_aria_attributes(attributes:&BTreeMap<String, AriaAttribute>) -> TokenStream {
+fn generate_aria_attributes(attributes: &BTreeMap<String, AriaAttribute>) -> TokenStream {
 	let aria_attribute_enum = generate_enums(attributes.keys(), "AriaAttribute");
 
 	let mut deprecated_variants = Vec::new();
@@ -444,7 +444,7 @@ fn generate_aria_attributes(attributes:&BTreeMap<String, AriaAttribute>) -> Toke
 	}
 }
 
-fn generate_aria_roles(aria:&Aria) -> TokenStream {
+fn generate_aria_roles(aria: &Aria) -> TokenStream {
 	let aria_abstract_role_names = aria.roles.iter().filter(|(_, data)| data.is_abstract).map(|(name, _)| name);
 
 	let aria_abstarct_role_enum = generate_enums(aria_abstract_role_names, "AriaAbstractRole");

@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssPseudoElementFunctionIdentifier;
 impl FormatNodeRule<CssPseudoElementFunctionIdentifier> for FormatCssPseudoElementFunctionIdentifier {
-	fn fmt_fields(&self, node:&CssPseudoElementFunctionIdentifier, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssPseudoElementFunctionIdentifier, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssPseudoElementFunctionIdentifierFields { name, l_paren_token, ident, r_paren_token } = node.as_fields();
 
 		write!(

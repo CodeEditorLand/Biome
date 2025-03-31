@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsonRoot;
 
 impl FormatNodeRule<JsonRoot> for FormatJsonRoot {
-	fn fmt_fields(&self, node:&JsonRoot, f:&mut JsonFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsonRoot, f: &mut JsonFormatter) -> FormatResult<()> {
 		let JsonRootFields { bom_token, value, eof_token } = node.as_fields();
 
 		match &value {

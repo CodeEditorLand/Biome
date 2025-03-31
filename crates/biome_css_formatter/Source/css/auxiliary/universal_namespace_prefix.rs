@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssUniversalNamespacePrefix;
 impl FormatNodeRule<CssUniversalNamespacePrefix> for FormatCssUniversalNamespacePrefix {
-	fn fmt_fields(&self, node:&CssUniversalNamespacePrefix, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssUniversalNamespacePrefix, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssUniversalNamespacePrefixFields { star_token } = node.as_fields();
 
 		write!(f, [star_token.format()])

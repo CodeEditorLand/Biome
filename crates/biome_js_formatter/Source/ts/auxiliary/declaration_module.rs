@@ -7,14 +7,8 @@ use crate::{prelude::*, utils::FormatInterpreterToken};
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatTsDeclarationModule;
 impl FormatNodeRule<TsDeclarationModule> for FormatTsDeclarationModule {
-	fn fmt_fields(&self, node:&TsDeclarationModule, f:&mut JsFormatter) -> FormatResult<()> {
-		let TsDeclarationModuleFields {
-			bom_token,
-			interpreter_token,
-			directives,
-			items,
-			eof_token,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &TsDeclarationModule, f: &mut JsFormatter) -> FormatResult<()> {
+		let TsDeclarationModuleFields { bom_token, interpreter_token, directives, items, eof_token } = node.as_fields();
 
 		write![
 			f,
@@ -37,16 +31,12 @@ impl FormatNodeRule<TsDeclarationModule> for FormatTsDeclarationModule {
 		)
 	}
 
-	fn fmt_leading_comments(&self, _:&TsDeclarationModule, _:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_leading_comments(&self, _: &TsDeclarationModule, _: &mut JsFormatter) -> FormatResult<()> {
 		// Formatted as part of `fmt_fields`
 		Ok(())
 	}
 
-	fn fmt_dangling_comments(
-		&self,
-		module:&TsDeclarationModule,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, module: &TsDeclarationModule, f: &mut JsFormatter) -> FormatResult<()> {
 		debug_assert!(
 			!f.comments().has_dangling_comments(module.syntax()),
 			"Module should never have dangling comments."
@@ -55,11 +45,7 @@ impl FormatNodeRule<TsDeclarationModule> for FormatTsDeclarationModule {
 		Ok(())
 	}
 
-	fn fmt_trailing_comments(
-		&self,
-		_:&TsDeclarationModule,
-		_:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_trailing_comments(&self, _: &TsDeclarationModule, _: &mut JsFormatter) -> FormatResult<()> {
 		// Formatted as part of `fmt_fields`
 		Ok(())
 	}

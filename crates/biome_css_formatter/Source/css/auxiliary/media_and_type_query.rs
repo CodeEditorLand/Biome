@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssMediaAndTypeQuery;
 impl FormatNodeRule<CssMediaAndTypeQuery> for FormatCssMediaAndTypeQuery {
-	fn fmt_fields(&self, node:&CssMediaAndTypeQuery, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssMediaAndTypeQuery, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssMediaAndTypeQueryFields { left, and_token, right } = node.as_fields();
 
 		write!(f, [left.format(), space(), and_token.format(), space(), right.format()])

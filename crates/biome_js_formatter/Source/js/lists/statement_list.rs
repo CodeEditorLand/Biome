@@ -8,7 +8,7 @@ pub(crate) struct FormatJsStatementList;
 impl FormatRule<JsStatementList> for FormatJsStatementList {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&JsStatementList, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &JsStatementList, f: &mut JsFormatter) -> FormatResult<()> {
 		let mut join = f.join_nodes_with_hardline();
 
 		for statement in node.iter() {

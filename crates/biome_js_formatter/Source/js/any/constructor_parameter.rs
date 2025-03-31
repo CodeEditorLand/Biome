@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsConstructorParameter;
 impl FormatRule<AnyJsConstructorParameter> for FormatAnyJsConstructorParameter {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsConstructorParameter, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsConstructorParameter, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsConstructorParameter::AnyJsFormalParameter(node) => node.format().fmt(f),
 			AnyJsConstructorParameter::JsRestParameter(node) => node.format().fmt(f),

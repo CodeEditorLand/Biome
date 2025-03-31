@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsExtendsClause;
 
 impl FormatNodeRule<TsExtendsClause> for FormatTsExtendsClause {
-	fn fmt_fields(&self, node:&TsExtendsClause, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsExtendsClause, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsExtendsClauseFields { extends_token, types } = node.as_fields();
 
 		write!(f, [extends_token.format(), space()])?;

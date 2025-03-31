@@ -13,7 +13,7 @@ use crate::Parse;
 /// This check is used in the parser test to ensure it doesn't emit
 /// bogus nodes without diagnostics, and in the analyzer tests to
 /// check the syntax trees resulting from code actions are correct
-pub fn has_bogus_nodes_or_empty_slots(node:&JsSyntaxNode) -> bool {
+pub fn has_bogus_nodes_or_empty_slots(node: &JsSyntaxNode) -> bool {
 	node.descendants().any(|descendant| {
 		let kind = descendant.kind();
 
@@ -32,9 +32,10 @@ pub fn has_bogus_nodes_or_empty_slots(node:&JsSyntaxNode) -> bool {
 /// This function analyzes the parsing result of a file and panic with a
 /// detailed message if it contains any error-level diagnostic, bogus nodes,
 /// empty list slots or missing required children
-pub fn assert_errors_are_absent<T>(program:&Parse<T>, path:&Path)
+pub fn assert_errors_are_absent<T>(program: &Parse<T>, path: &Path)
 where
-	T: AstNode<Language = JsLanguage> + Debug, {
+	T: AstNode<Language = JsLanguage> + Debug,
+{
 	let syntax = program.syntax();
 
 	let debug_tree = format!("{:?}", program.tree());

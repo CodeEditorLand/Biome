@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyGritMaybeCurlyPattern;
 impl FormatRule<AnyGritMaybeCurlyPattern> for FormatAnyGritMaybeCurlyPattern {
 	type Context = GritFormatContext;
 
-	fn fmt(&self, node:&AnyGritMaybeCurlyPattern, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyGritMaybeCurlyPattern, f: &mut GritFormatter) -> FormatResult<()> {
 		match node {
 			AnyGritMaybeCurlyPattern::AnyGritPattern(node) => node.format().fmt(f),
 			AnyGritMaybeCurlyPattern::GritCurlyPattern(node) => node.format().fmt(f),

@@ -6,7 +6,7 @@ pub(crate) struct FormatGraphqlInputFieldList;
 impl FormatRule<GraphqlInputFieldList> for FormatGraphqlInputFieldList {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(&self, node:&GraphqlInputFieldList, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &GraphqlInputFieldList, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		let mut join = f.join_nodes_with_hardline();
 
 		for definition in node {

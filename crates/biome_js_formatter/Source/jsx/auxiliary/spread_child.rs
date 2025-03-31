@@ -1,18 +1,14 @@
 use biome_formatter::write;
 use biome_js_syntax::{JsxSpreadChild, JsxSpreadChildFields};
 
-use crate::{
-	prelude::*,
-	utils::format_node_without_comments::FormatAnyJsExpressionWithoutComments,
-};
+use crate::{prelude::*, utils::format_node_without_comments::FormatAnyJsExpressionWithoutComments};
 
 #[derive(Debug, Clone, Default)]
 pub struct FormatJsxSpreadChild;
 
 impl FormatNodeRule<JsxSpreadChild> for FormatJsxSpreadChild {
-	fn fmt_fields(&self, node:&JsxSpreadChild, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsxSpreadChildFields { l_curly_token, dotdotdot_token, expression, r_curly_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsxSpreadChild, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsxSpreadChildFields { l_curly_token, dotdotdot_token, expression, r_curly_token } = node.as_fields();
 
 		let expression = expression?;
 
@@ -20,10 +16,7 @@ impl FormatNodeRule<JsxSpreadChild> for FormatJsxSpreadChild {
 			if f.comments().is_suppressed(expression.syntax()) {
 				write!(f, [dotdotdot_token.format(), expression.format(), line_suffix_boundary()])
 			} else {
-				write!(
-					f,
-					[format_leading_comments(expression.syntax()), dotdotdot_token.format(),]
-				)?;
+				write!(f, [format_leading_comments(expression.syntax()), dotdotdot_token.format(),])?;
 
 				FormatAnyJsExpressionWithoutComments.fmt(&expression, f)?;
 

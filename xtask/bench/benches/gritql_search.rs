@@ -1,6 +1,5 @@
 use biome_grit_patterns::{
-    CompilePatternOptions, GritTargetFile, GritTargetLanguage, JsTargetLanguage,
-    compile_pattern_with_options,
+	CompilePatternOptions, GritTargetFile, GritTargetLanguage, JsTargetLanguage, compile_pattern_with_options,
 };
 use camino::Utf8Path;
 use criterion::measurement::WallTime;
@@ -19,18 +18,18 @@ use xtask_bench::TestCase;
 
 #[cfg(target_os = "windows")]
 #[global_allocator]
-static GLOBAL:mimalloc::MiMalloc = mimalloc::MiMalloc;
+static GLOBAL: mimalloc::MiMalloc = mimalloc::MiMalloc;
 
 #[cfg(all(any(target_os = "macos", target_os = "linux"), not(target_env = "musl"),))]
 #[global_allocator]
-static GLOBAL:tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
+static GLOBAL: tikv_jemallocator::Jemalloc = tikv_jemallocator::Jemalloc;
 
 // Jemallocator does not work on aarch64 with musl, so we'll use the system
 // allocator instead
 #[cfg(all(target_env = "musl", target_os = "linux", target_arch = "aarch64"))]
 #[global_allocator]
-static GLOBAL:std::alloc::System = std::alloc::System;
-fn bench_gritql_search(criterion:&mut Criterion) {
+static GLOBAL: std::alloc::System = std::alloc::System;
+fn bench_gritql_search(criterion: &mut Criterion) {
 	let mut all_suites = HashMap::new();
 
 	all_suites.insert("gritql", include_str!("libs-ts.txt"));
@@ -57,32 +56,27 @@ fn bench_gritql_search(criterion:&mut Criterion) {
 }
 
 pub fn bench_search_group(group: &mut BenchmarkGroup<WallTime>, test_case: TestCase) {
-    let target_language = GritTargetLanguage::JsTargetLanguage(JsTargetLanguage);
+	let target_language = GritTargetLanguage::JsTargetLanguage(JsTargetLanguage);
 
-    let query = compile_pattern_with_options(
-        "`getEntityNameForExtendingInterface(errorLocation)`",
-        CompilePatternOptions::default().with_path(Utf8Path::new("bench.grit")),
-    )
-    .unwrap();
+	let query = compile_pattern_with_options(
+		"`getEntityNameForExtendingInterface(errorLocation)`",
+		CompilePatternOptions::default().with_path(Utf8Path::new("bench.grit")),
+	)
+	.unwrap();
 
-    let code = test_case.code();
-    let target_file = GritTargetFile::parse(code, test_case.path().to_owned(), target_language);
+	let code = test_case.code();
+	let target_file = GritTargetFile::parse(code, test_case.path().to_owned(), target_language);
 
-    group.throughput(Throughput::Bytes(code.len() as u64));
-    group.sample_size(10);
-    group.bench_with_input(
-        BenchmarkId::new(test_case.filename(), "execute"),
-        &code,
-        |b, _| {
-            b.iter(|| {
-                let query_result =
-                    black_box(query.execute(target_file.clone())).expect("Couldn't execute query");
-                for log in query_result.logs.logs() {
-                    println!("{log}");
-                }
-            })
-        },
-    );
+	group.throughput(Throughput::Bytes(code.len() as u64));
+	group.sample_size(10);
+	group.bench_with_input(BenchmarkId::new(test_case.filename(), "execute"), &code, |b, _| {
+		b.iter(|| {
+			let query_result = black_box(query.execute(target_file.clone())).expect("Couldn't execute query");
+			for log in query_result.logs.logs() {
+				println!("{log}");
+			}
+		})
+	});
 }
 
 criterion_group!(gritql_search, bench_gritql_search);

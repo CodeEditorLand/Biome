@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsFunction;
 impl FormatRule<AnyJsFunction> for FormatAnyJsFunction {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsFunction, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsFunction, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsFunction::JsArrowFunctionExpression(node) => node.format().fmt(f),
 			AnyJsFunction::JsFunctionDeclaration(node) => node.format().fmt(f),

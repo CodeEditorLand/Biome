@@ -1,9 +1,5 @@
 use biome_formatter::{format_args, write};
-use biome_js_syntax::{
-	TsIntersectionType,
-	TsIntersectionTypeFields,
-	parentheses::NeedsParentheses,
-};
+use biome_js_syntax::{TsIntersectionType, TsIntersectionTypeFields, parentheses::NeedsParentheses};
 
 use crate::{prelude::*, utils::FormatTypeMemberSeparator};
 
@@ -11,7 +7,7 @@ use crate::{prelude::*, utils::FormatTypeMemberSeparator};
 pub struct FormatTsIntersectionType;
 
 impl FormatNodeRule<TsIntersectionType> for FormatTsIntersectionType {
-	fn fmt_fields(&self, node:&TsIntersectionType, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsIntersectionType, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsIntersectionTypeFields { leading_separator_token, types } = node.as_fields();
 
 		write!(
@@ -23,7 +19,9 @@ impl FormatNodeRule<TsIntersectionType> for FormatTsIntersectionType {
 		)
 	}
 
-	fn needs_parentheses(&self, item:&TsIntersectionType) -> bool { item.needs_parentheses() }
+	fn needs_parentheses(&self, item: &TsIntersectionType) -> bool {
+		item.needs_parentheses()
+	}
 }
 
 #[cfg(test)]

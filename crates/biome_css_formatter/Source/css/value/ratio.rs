@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssRatio;
 impl FormatNodeRule<CssRatio> for FormatCssRatio {
-	fn fmt_fields(&self, node:&CssRatio, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssRatio, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssRatioFields { numerator, slash_token, denominator } = node.as_fields();
 
 		write!(

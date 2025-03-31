@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyGraphqlOperationDefinition;
 impl FormatRule<AnyGraphqlOperationDefinition> for FormatAnyGraphqlOperationDefinition {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(&self, node:&AnyGraphqlOperationDefinition, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyGraphqlOperationDefinition, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		match node {
 			AnyGraphqlOperationDefinition::GraphqlOperationDefinition(node) => node.format().fmt(f),
 			AnyGraphqlOperationDefinition::GraphqlSelectionSet(node) => node.format().fmt(f),

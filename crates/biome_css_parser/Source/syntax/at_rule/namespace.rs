@@ -10,9 +10,7 @@ use crate::{
 	parser::CssParser,
 	syntax::{
 		at_rule::parse_error::expected_any_namespace_url,
-		is_at_string,
-		parse_regular_identifier,
-		parse_string,
+		is_at_string, parse_regular_identifier, parse_string,
 		value::url::{is_at_url_function, parse_url_function},
 	},
 };
@@ -21,7 +19,9 @@ use crate::{
 ///
 /// This function verifies if the current token matches the `@namespace` rule.
 #[inline]
-pub(crate) fn is_at_namespace_at_rule(p:&mut CssParser) -> bool { p.at(T![namespace]) }
+pub(crate) fn is_at_namespace_at_rule(p: &mut CssParser) -> bool {
+	p.at(T![namespace])
+}
 
 /// Parses a `@namespace` at-rule in a CSS stylesheet.
 /// For specification details, see [CSS Namespaces Module](https://www.w3.org/TR/css-namespaces-3/).
@@ -34,7 +34,7 @@ pub(crate) fn is_at_namespace_at_rule(p:&mut CssParser) -> bool { p.at(T![namesp
 /// This function identifies and parses these `@namespace` rules within CSS
 /// stylesheets.
 #[inline]
-pub(crate) fn parse_namespace_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_namespace_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_namespace_at_rule(p) {
 		return Absent;
 	}
@@ -73,9 +73,9 @@ impl ParseRecovery for NamespaceUrlParseRecovery {
 	type Kind = CssSyntaxKind;
 	type Parser<'source> = CssParser<'source>;
 
-	const RECOVERED_KIND:Self::Kind = CSS_BOGUS;
+	const RECOVERED_KIND: Self::Kind = CSS_BOGUS;
 
-	fn is_at_recovered(&self, p:&mut Self::Parser<'_>) -> bool {
+	fn is_at_recovered(&self, p: &mut Self::Parser<'_>) -> bool {
 		// @namespace  2131 ; <--- recovery point
 		// invalid url ^^^^
 		p.at(T![;]) || p.has_nth_preceding_line_break(1)
@@ -89,11 +89,13 @@ impl ParseRecovery for NamespaceUrlParseRecovery {
 /// URL in a CSS `@namespace` rule. It checks for either a URL function or a
 /// string token.
 #[inline]
-pub(crate) fn is_at_namespace_url(p:&mut CssParser) -> bool { is_at_url_function(p) || is_at_string(p) }
+pub(crate) fn is_at_namespace_url(p: &mut CssParser) -> bool {
+	is_at_url_function(p) || is_at_string(p)
+}
 
 /// Parses the URL of a namespace in a `@namespace` rule.
 #[inline]
-pub(crate) fn parse_namespace_url(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_namespace_url(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_namespace_url(p) {
 		return Absent;
 	}

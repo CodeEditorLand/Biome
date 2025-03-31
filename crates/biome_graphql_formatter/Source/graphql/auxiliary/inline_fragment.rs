@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlInlineFragment;
 impl FormatNodeRule<GraphqlInlineFragment> for FormatGraphqlInlineFragment {
-	fn fmt_fields(&self, node:&GraphqlInlineFragment, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GraphqlInlineFragment, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		let GraphqlInlineFragmentFields { dotdotdot_token, type_condition, directives, selection_set } =
 			node.as_fields();
 

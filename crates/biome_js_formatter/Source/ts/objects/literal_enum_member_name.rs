@@ -10,7 +10,7 @@ use crate::{
 pub(crate) struct FormatTsLiteralEnumMemberName;
 
 impl FormatNodeRule<TsLiteralEnumMemberName> for FormatTsLiteralEnumMemberName {
-	fn fmt_fields(&self, node:&TsLiteralEnumMemberName, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsLiteralEnumMemberName, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsLiteralEnumMemberNameFields { value } = node.as_fields();
 
 		let value = value?;

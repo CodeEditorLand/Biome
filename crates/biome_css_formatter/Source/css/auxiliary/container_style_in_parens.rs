@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssContainerStyleInParens;
 impl FormatNodeRule<CssContainerStyleInParens> for FormatCssContainerStyleInParens {
-	fn fmt_fields(&self, node:&CssContainerStyleInParens, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssContainerStyleInParens, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssContainerStyleInParensFields { l_paren_token, query, r_paren_token } = node.as_fields();
 
 		write!(

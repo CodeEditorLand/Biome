@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssDeclarationBlock;
 impl FormatRule<AnyCssDeclarationBlock> for FormatAnyCssDeclarationBlock {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssDeclarationBlock, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssDeclarationBlock, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssDeclarationBlock::CssBogusBlock(node) => node.format().fmt(f),
 			AnyCssDeclarationBlock::CssDeclarationBlock(node) => node.format().fmt(f),

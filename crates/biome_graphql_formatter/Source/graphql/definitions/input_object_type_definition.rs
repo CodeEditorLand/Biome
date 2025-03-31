@@ -1,26 +1,14 @@
 use biome_formatter::write;
-use biome_graphql_syntax::{
-	GraphqlInputObjectTypeDefinition,
-	GraphqlInputObjectTypeDefinitionFields,
-};
+use biome_graphql_syntax::{GraphqlInputObjectTypeDefinition, GraphqlInputObjectTypeDefinitionFields};
 
 use crate::prelude::*;
 
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlInputObjectTypeDefinition;
 impl FormatNodeRule<GraphqlInputObjectTypeDefinition> for FormatGraphqlInputObjectTypeDefinition {
-	fn fmt_fields(
-		&self,
-		node:&GraphqlInputObjectTypeDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
-		let GraphqlInputObjectTypeDefinitionFields {
-			description,
-			input_token,
-			name,
-			directives,
-			input_fields,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &GraphqlInputObjectTypeDefinition, f: &mut GraphqlFormatter) -> FormatResult<()> {
+		let GraphqlInputObjectTypeDefinitionFields { description, input_token, name, directives, input_fields } =
+			node.as_fields();
 
 		if let Some(description) = description {
 			write!(f, [description.format(), hard_line_break(),])?;

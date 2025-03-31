@@ -2,14 +2,8 @@ use std::fmt::Debug;
 
 use biome_formatter::write;
 use biome_js_syntax::{
-	JsCallExpression,
-	JsCallExpressionFields,
-	JsComputedMemberExpression,
-	JsImportCallExpression,
-	JsStaticMemberExpression,
-	JsStaticMemberExpressionFields,
-	JsSyntaxNode,
-	TsNonNullAssertionExpression,
+	JsCallExpression, JsCallExpressionFields, JsComputedMemberExpression, JsImportCallExpression,
+	JsStaticMemberExpression, JsStaticMemberExpressionFields, JsSyntaxNode, TsNonNullAssertionExpression,
 	TsNonNullAssertionExpressionFields,
 };
 use biome_rowan::AstNode;
@@ -37,22 +31,22 @@ pub(crate) enum CallExpressionPosition {
 pub(crate) enum ChainMember {
 	/// Holds onto a [biome_js_syntax::JsStaticMemberExpression]
 	StaticMember {
-		expression:JsStaticMemberExpression,
+		expression: JsStaticMemberExpression,
 	},
 
 	/// Holds onto a [biome_js_syntax::JsCallExpression]
 	CallExpression {
-		expression:JsCallExpression,
-		position:CallExpressionPosition,
+		expression: JsCallExpression,
+		position: CallExpressionPosition,
 	},
 
 	/// Holds onto a [biome_js_syntax::JsComputedMemberExpression]
 	ComputedMember {
-		expression:JsComputedMemberExpression,
+		expression: JsComputedMemberExpression,
 	},
 
 	TsNonNullAssertionExpression {
-		expression:TsNonNullAssertionExpression,
+		expression: TsNonNullAssertionExpression,
 	},
 
 	/// Any other node that are not  [biome_js_syntax::JsCallExpression] or
@@ -68,8 +62,7 @@ impl ChainMember {
 		match self {
 			ChainMember::CallExpression { .. } => true,
 			ChainMember::Node(node) => {
-				JsImportCallExpression::can_cast(node.kind())
-					| JsCallExpression::can_cast(node.kind())
+				JsImportCallExpression::can_cast(node.kind()) | JsCallExpression::can_cast(node.kind())
 			},
 
 			_ => false,
@@ -96,7 +89,7 @@ impl ChainMember {
 }
 
 impl Format<JsFormatContext> for ChainMember {
-	fn fmt(&self, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, f: &mut JsFormatter) -> FormatResult<()> {
 		match self {
 			ChainMember::StaticMember { expression } => {
 				let JsStaticMemberExpressionFields {
@@ -118,8 +111,7 @@ impl Format<JsFormatContext> for ChainMember {
 			},
 
 			ChainMember::TsNonNullAssertionExpression { expression } => {
-				let TsNonNullAssertionExpressionFields { expression: _, excl_token } =
-					expression.as_fields();
+				let TsNonNullAssertionExpressionFields { expression: _, excl_token } = expression.as_fields();
 
 				write!(
 					f,
@@ -156,14 +148,7 @@ impl Format<JsFormatContext> for ChainMember {
 					},
 
 					CallExpressionPosition::End => {
-						write!(
-							f,
-							[
-								optional_chain_token.format(),
-								type_arguments.format(),
-								arguments.format(),
-							]
-						)
+						write!(f, [optional_chain_token.format(), type_arguments.format(), arguments.format(),])
 					},
 				}
 			},

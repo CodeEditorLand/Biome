@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsxAttributeName;
 impl FormatRule<AnyJsxAttributeName> for FormatAnyJsxAttributeName {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsxAttributeName, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsxAttributeName, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsxAttributeName::JsxName(node) => node.format().fmt(f),
 			AnyJsxAttributeName::JsxNamespaceName(node) => node.format().fmt(f),

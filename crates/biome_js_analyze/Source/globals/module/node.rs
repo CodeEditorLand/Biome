@@ -1,7 +1,7 @@
 /// Sorted array of Node builtin modules
 ///
 /// Source: <https://github.com/inspect-js/is-core-module/blob/8317b311856a61935d7257ad5f31f9b0cfd13b5f/core.json#L1-L158>
-pub const BUILTIN_MODULES:&[&str] = &[
+pub const BUILTIN_MODULES: &[&str] = &[
 	"_debug_agent",
 	"_debugger",
 	"_http_agent",
@@ -167,7 +167,9 @@ pub const BUILTIN_MODULES:&[&str] = &[
 ///
 /// assert!(is_builtin_module(&"fs"));
 /// ```
-pub fn is_builtin_module(name:&str) -> bool { BUILTIN_MODULES.binary_search(&name).is_ok() }
+pub fn is_builtin_module(name: &str) -> bool {
+	BUILTIN_MODULES.binary_search(&name).is_ok()
+}
 
 #[test]
 fn test_order() {

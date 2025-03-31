@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsSwitchClause;
 impl FormatRule<AnyJsSwitchClause> for FormatAnyJsSwitchClause {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsSwitchClause, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsSwitchClause, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsSwitchClause::JsCaseClause(node) => node.format().fmt(f),
 			AnyJsSwitchClause::JsDefaultClause(node) => node.format().fmt(f),

@@ -12,10 +12,12 @@ use crate::{
 };
 
 #[inline]
-pub(crate) fn is_at_scope_at_rule(p:&mut CssParser) -> bool { p.at(T![scope]) }
+pub(crate) fn is_at_scope_at_rule(p: &mut CssParser) -> bool {
+	p.at(T![scope])
+}
 
 #[inline]
-pub(crate) fn parse_scope_at_rule(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_scope_at_rule(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_scope_at_rule(p) {
 		return Absent;
 	}
@@ -31,10 +33,10 @@ pub(crate) fn parse_scope_at_rule(p:&mut CssParser) -> ParsedSyntax {
 	Present(m.complete(p, CSS_SCOPE_AT_RULE))
 }
 
-const SCOPE_RANGE_RECOVERY_SET:TokenSet<CssSyntaxKind> = token_set![T!['{']];
+const SCOPE_RANGE_RECOVERY_SET: TokenSet<CssSyntaxKind> = token_set![T!['{']];
 
 #[inline]
-pub(crate) fn parse_any_scope_range(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_any_scope_range(p: &mut CssParser) -> ParsedSyntax {
 	if is_at_scope_range_start_or_interval(p) {
 		parse_scope_range_start_or_interval(p)
 	} else if is_at_scope_range_end(p) {
@@ -45,10 +47,12 @@ pub(crate) fn parse_any_scope_range(p:&mut CssParser) -> ParsedSyntax {
 }
 
 #[inline]
-pub(crate) fn is_at_scope_range_start_or_interval(p:&mut CssParser) -> bool { is_at_scope_edge(p) }
+pub(crate) fn is_at_scope_range_start_or_interval(p: &mut CssParser) -> bool {
+	is_at_scope_edge(p)
+}
 
 #[inline]
-pub(crate) fn parse_scope_range_start_or_interval(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_scope_range_start_or_interval(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_scope_range_start_or_interval(p) {
 		return Absent;
 	}
@@ -73,10 +77,12 @@ pub(crate) fn parse_scope_range_start_or_interval(p:&mut CssParser) -> ParsedSyn
 }
 
 #[inline]
-pub(crate) fn is_at_scope_range_end(p:&mut CssParser) -> bool { p.at(T![to]) }
+pub(crate) fn is_at_scope_range_end(p: &mut CssParser) -> bool {
+	p.at(T![to])
+}
 
 #[inline]
-pub(crate) fn parse_scope_range_end(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_scope_range_end(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_scope_range_end(p) {
 		return Absent;
 	}
@@ -92,9 +98,9 @@ pub(crate) fn parse_scope_range_end(p:&mut CssParser) -> ParsedSyntax {
 	Present(m.complete(p, CSS_SCOPE_RANGE_END))
 }
 
-const SCOPE_EDGE_RECOVERY_SET:TokenSet<CssSyntaxKind> = SCOPE_RANGE_RECOVERY_SET.union(token_set![T!['{']]);
+const SCOPE_EDGE_RECOVERY_SET: TokenSet<CssSyntaxKind> = SCOPE_RANGE_RECOVERY_SET.union(token_set![T!['{']]);
 #[inline]
-pub(crate) fn parse_or_recover_scope_edge(p:&mut CssParser) -> RecoveryResult {
+pub(crate) fn parse_or_recover_scope_edge(p: &mut CssParser) -> RecoveryResult {
 	parse_scope_edge(p).or_recover_with_token_set(
 		p,
 		&ParseRecoveryTokenSet::new(CSS_BOGUS, SCOPE_EDGE_RECOVERY_SET).enable_recovery_on_line_break(),
@@ -102,10 +108,12 @@ pub(crate) fn parse_or_recover_scope_edge(p:&mut CssParser) -> RecoveryResult {
 	)
 }
 #[inline]
-pub(crate) fn is_at_scope_edge(p:&mut CssParser) -> bool { p.at(T!['(']) }
+pub(crate) fn is_at_scope_edge(p: &mut CssParser) -> bool {
+	p.at(T!['('])
+}
 
 #[inline]
-pub(crate) fn parse_scope_edge(p:&mut CssParser) -> ParsedSyntax {
+pub(crate) fn parse_scope_edge(p: &mut CssParser) -> ParsedSyntax {
 	if !is_at_scope_edge(p) {
 		return Absent;
 	}
@@ -123,4 +131,4 @@ pub(crate) fn parse_scope_edge(p:&mut CssParser) -> ParsedSyntax {
 	Present(m.complete(p, CSS_SCOPE_EDGE))
 }
 
-const SCOPE_EDGE_SELECTOR_LIST_END_SET:TokenSet<CssSyntaxKind> = token_set![T![')'], T!['{']];
+const SCOPE_EDGE_SELECTOR_LIST_END_SET: TokenSet<CssSyntaxKind> = token_set![T![')'], T!['{']];

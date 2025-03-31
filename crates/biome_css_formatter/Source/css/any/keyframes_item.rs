@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssKeyframesItem;
 impl FormatRule<AnyCssKeyframesItem> for FormatAnyCssKeyframesItem {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssKeyframesItem, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssKeyframesItem, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssKeyframesItem::CssBogusKeyframesItem(node) => node.format().fmt(f),
 			AnyCssKeyframesItem::CssKeyframesItem(node) => node.format().fmt(f),

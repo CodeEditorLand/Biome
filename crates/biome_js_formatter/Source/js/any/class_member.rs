@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsClassMember;
 impl FormatRule<AnyJsClassMember> for FormatAnyJsClassMember {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsClassMember, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsClassMember, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsClassMember::JsBogusMember(node) => node.format().fmt(f),
 			AnyJsClassMember::JsConstructorClassMember(node) => node.format().fmt(f),
@@ -23,9 +23,7 @@ impl FormatRule<AnyJsClassMember> for FormatAnyJsClassMember {
 			AnyJsClassMember::TsConstructorSignatureClassMember(node) => node.format().fmt(f),
 			AnyJsClassMember::TsGetterSignatureClassMember(node) => node.format().fmt(f),
 			AnyJsClassMember::TsIndexSignatureClassMember(node) => node.format().fmt(f),
-			AnyJsClassMember::TsInitializedPropertySignatureClassMember(node) => {
-				node.format().fmt(f)
-			},
+			AnyJsClassMember::TsInitializedPropertySignatureClassMember(node) => node.format().fmt(f),
 
 			AnyJsClassMember::TsMethodSignatureClassMember(node) => node.format().fmt(f),
 			AnyJsClassMember::TsPropertySignatureClassMember(node) => node.format().fmt(f),

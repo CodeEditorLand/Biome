@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssValue;
 impl FormatRule<AnyCssValue> for FormatAnyCssValue {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssValue, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssValue, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssValue::AnyCssDimension(node) => node.format().fmt(f),
 			AnyCssValue::AnyCssFunction(node) => node.format().fmt(f),

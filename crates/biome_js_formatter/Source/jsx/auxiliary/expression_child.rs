@@ -1,9 +1,6 @@
 use biome_formatter::{CstFormatContext, FormatResult};
 use biome_js_syntax::{
-	AnyJsExpression,
-	JsxExpressionChild,
-	JsxExpressionChildFields,
-	binary_like_expression::AnyJsBinaryLikeExpression,
+	AnyJsExpression, JsxExpressionChild, JsxExpressionChildFields, binary_like_expression::AnyJsBinaryLikeExpression,
 };
 
 use crate::{
@@ -15,21 +12,18 @@ use crate::{
 pub struct FormatJsxExpressionChild;
 
 impl FormatNodeRule<JsxExpressionChild> for FormatJsxExpressionChild {
-	fn fmt_fields(&self, node:&JsxExpressionChild, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsxExpressionChildFields { l_curly_token, expression, r_curly_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsxExpressionChild, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsxExpressionChildFields { l_curly_token, expression, r_curly_token } = node.as_fields();
 
 		match expression {
 			Some(expression) => {
 				let comments = f.context().comments();
 
-				let is_conditional_or_binary =
-					matches!(expression, AnyJsExpression::JsConditionalExpression(_))
-						|| AnyJsBinaryLikeExpression::can_cast(expression.syntax().kind());
+				let is_conditional_or_binary = matches!(expression, AnyJsExpression::JsConditionalExpression(_))
+					|| AnyJsBinaryLikeExpression::can_cast(expression.syntax().kind());
 
 				let should_inline = !comments.has_comments(expression.syntax())
-					&& (is_conditional_or_binary
-						|| should_inline_jsx_expression(&expression, comments));
+					&& (is_conditional_or_binary || should_inline_jsx_expression(&expression, comments));
 
 				if should_inline {
 					write!(
@@ -65,10 +59,7 @@ impl FormatNodeRule<JsxExpressionChild> for FormatJsxExpressionChild {
 				if has_line_comment {
 					write!(
 						f,
-						[
-							format_dangling_comments(node.syntax()).with_block_indent(),
-							hard_line_break()
-						]
+						[format_dangling_comments(node.syntax()).with_block_indent(), hard_line_break()]
 					)?;
 				} else {
 					write!(f, [format_dangling_comments(node.syntax())])?;
@@ -79,7 +70,7 @@ impl FormatNodeRule<JsxExpressionChild> for FormatJsxExpressionChild {
 		}
 	}
 
-	fn fmt_dangling_comments(&self, _:&JsxExpressionChild, _:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &JsxExpressionChild, _: &mut JsFormatter) -> FormatResult<()> {
 		// Formatted inside of `fmt_fields`
 		Ok(())
 	}

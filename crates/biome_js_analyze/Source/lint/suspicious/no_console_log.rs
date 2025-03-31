@@ -1,11 +1,6 @@
 use biome_analyze::{FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
-use biome_js_syntax::{
-	AnyJsMemberExpression,
-	JsCallExpression,
-	JsExpressionStatement,
-	global_identifier,
-};
+use biome_js_syntax::{AnyJsMemberExpression, JsCallExpression, JsExpressionStatement, global_identifier};
 use biome_rowan::{AstNode, BatchMutationExt};
 
 use crate::{JsRuleAction, services::semantic::Semantic};
@@ -49,7 +44,7 @@ impl Rule for NoConsoleLog {
 	type Signals = Option<Self::State>;
 	type State = ();
 
-	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let call_expression = ctx.query();
 
 		let model = ctx.model();
@@ -73,29 +68,29 @@ impl Rule for NoConsoleLog {
 		model.binding(&reference).is_none().then_some(())
 	}
 
-	fn diagnostic(ctx:&RuleContext<Self>, _:&Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx: &RuleContext<Self>, _: &Self::State) -> Option<RuleDiagnostic> {
 		let node = ctx.query();
 
 		let node = JsExpressionStatement::cast(node.syntax().parent()?)?;
 
 		Some(
-            RuleDiagnostic::new(
-                rule_category!(),
-                node.syntax().text_trimmed_range(),
-                markup! {
-                    "Don't use "<Emphasis>"console.log"</Emphasis>
-                },
-            )
-            .note(markup! {
-                <Emphasis>"console.log"</Emphasis>" is usually a tool for debugging and you don't want to have that in production."
-            })
-            .note(markup! {
-                "If it is not for debugging purpose then using "<Emphasis>"console.info"</Emphasis>" might be more appropriate."
-            }),
-        )
+			RuleDiagnostic::new(
+				rule_category!(),
+				node.syntax().text_trimmed_range(),
+				markup! {
+					"Don't use "<Emphasis>"console.log"</Emphasis>
+				},
+			)
+			.note(markup! {
+				<Emphasis>"console.log"</Emphasis>" is usually a tool for debugging and you don't want to have that in production."
+			})
+			.note(markup! {
+				"If it is not for debugging purpose then using "<Emphasis>"console.info"</Emphasis>" might be more appropriate."
+			}),
+		)
 	}
 
-	fn action(ctx:&RuleContext<Self>, _:&Self::State) -> Option<JsRuleAction> {
+	fn action(ctx: &RuleContext<Self>, _: &Self::State) -> Option<JsRuleAction> {
 		let call_expression = ctx.query();
 
 		let mut mutation = ctx.root().begin();

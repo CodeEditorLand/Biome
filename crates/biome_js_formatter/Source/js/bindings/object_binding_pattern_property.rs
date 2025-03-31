@@ -7,13 +7,8 @@ use crate::prelude::*;
 pub(crate) struct FormatJsObjectBindingPatternProperty;
 
 impl FormatNodeRule<JsObjectBindingPatternProperty> for FormatJsObjectBindingPatternProperty {
-	fn fmt_fields(
-		&self,
-		node:&JsObjectBindingPatternProperty,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
-		let JsObjectBindingPatternPropertyFields { member, colon_token, pattern, init } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsObjectBindingPatternProperty, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsObjectBindingPatternPropertyFields { member, colon_token, pattern, init } = node.as_fields();
 
 		let group_id = f.group_id("assignment");
 

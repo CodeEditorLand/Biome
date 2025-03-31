@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub(crate) struct FormatJsFunctionBody;
 
 impl FormatNodeRule<JsFunctionBody> for FormatJsFunctionBody {
-	fn fmt_fields(&self, node:&JsFunctionBody, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsFunctionBodyFields { l_curly_token, directives, statements, r_curly_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsFunctionBody, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsFunctionBodyFields { l_curly_token, directives, statements, r_curly_token } = node.as_fields();
 
 		let r_curly_token = r_curly_token?;
 
@@ -34,7 +33,7 @@ impl FormatNodeRule<JsFunctionBody> for FormatJsFunctionBody {
 		}
 	}
 
-	fn fmt_dangling_comments(&self, _:&JsFunctionBody, _:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &JsFunctionBody, _: &mut JsFormatter) -> FormatResult<()> {
 		// Formatted as part of `fmt_fields`
 		Ok(())
 	}

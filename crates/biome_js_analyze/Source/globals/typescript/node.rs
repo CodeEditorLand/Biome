@@ -1,7 +1,7 @@
 /// Sorted array of TypeScript Node globals
 ///
 /// Source: <https://github.com/DefinitelyTyped/DefinitelyTyped/blob/8279710799f3c39d5cd129cac5705b809b66022a/types/node/globals.d.ts#L17-L411>
-pub const NODE:&[&str] = &[
+pub const NODE: &[&str] = &[
 	"AbortController",
 	"AbortSignal",
 	"Array",
@@ -53,7 +53,9 @@ pub const NODE:&[&str] = &[
 ///
 /// assert!(is_global(&"RelativeIndexable"));
 /// ```
-pub fn is_global(name:&str) -> bool { NODE.binary_search(&name).is_ok() }
+pub fn is_global(name: &str) -> bool {
+	NODE.binary_search(&name).is_ok()
+}
 
 #[test]
 fn test_order() {

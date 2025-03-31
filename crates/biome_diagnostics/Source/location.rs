@@ -11,23 +11,27 @@ use serde::{Deserialize, Serialize};
 #[derive(Debug, Default, Clone, Copy)]
 pub struct Location<'a> {
 	/// The resource this diagnostic is associated with.
-	pub resource:Option<Resource<&'a str>>,
+	pub resource: Option<Resource<&'a str>>,
 	/// An optional range of text within the resource associated with the
 	/// diagnostic.
-	pub span:Option<TextRange>,
+	pub span: Option<TextRange>,
 	/// The optional source code of the resource.
-	pub source_code:Option<BorrowedSourceCode<'a>>,
+	pub source_code: Option<BorrowedSourceCode<'a>>,
 }
 
 impl<'a> Location<'a> {
 	/// Creates a new instance of [LocationBuilder].
-	pub fn builder() -> LocationBuilder<'a> { LocationBuilder { resource:None, span:None, source_code:None } }
+	pub fn builder() -> LocationBuilder<'a> {
+		LocationBuilder { resource: None, span: None, source_code: None }
+	}
 }
 
 /// The implementation of [PartialEq] for [Location] only compares the `path`
 /// and `span` fields
 impl PartialEq for Location<'_> {
-	fn eq(&self, other:&Self) -> bool { self.resource == other.resource && self.span == other.span }
+	fn eq(&self, other: &Self) -> bool {
+		self.resource == other.resource && self.span == other.span
+	}
 }
 
 impl Eq for Location<'_> {}
@@ -50,14 +54,16 @@ impl<P> Resource<P> {
 	/// `None` otherwise.
 	pub fn as_file(&self) -> Option<&<P as Deref>::Target>
 	where
-		P: Deref, {
+		P: Deref,
+	{
 		if let Resource::File(file) = self { Some(file) } else { None }
 	}
 
 	/// Converts a `Path<P>` to `Path<&P::Target>`.
 	pub fn as_deref(&self) -> Resource<&<P as Deref>::Target>
 	where
-		P: Deref, {
+		P: Deref,
+	{
 		match self {
 			Resource::Argv => Resource::Argv,
 			Resource::Memory => Resource::Memory,
@@ -84,10 +90,10 @@ pub(crate) type BorrowedSourceCode<'a> = SourceCode<&'a str, &'a LineIndex>;
 #[derive(Debug, Clone, Copy)]
 pub struct SourceCode<T, L> {
 	/// The text content of the file.
-	pub text:T,
+	pub text: T,
 	/// An optional "line index" for the file, a list of byte offsets for the
 	/// start of each line in the file.
-	pub line_starts:Option<L>,
+	pub line_starts: Option<L>,
 }
 
 impl<T, L> SourceCode<T, L> {
@@ -95,8 +101,9 @@ impl<T, L> SourceCode<T, L> {
 	pub(crate) fn as_deref(&self) -> SourceCode<&<T as Deref>::Target, &<L as Deref>::Target>
 	where
 		T: Deref,
-		L: Deref, {
-		SourceCode { text:&self.text, line_starts:self.line_starts.as_deref() }
+		L: Deref,
+	{
+		SourceCode { text: &self.text, line_starts: self.line_starts.as_deref() }
 	}
 }
 
@@ -104,7 +111,7 @@ impl BorrowedSourceCode<'_> {
 	/// Converts a `SourceCode<&str, &LineIndex>` to `SourceCode<String,
 	/// LineIndexBuf>`.
 	pub(crate) fn to_owned(self) -> OwnedSourceCode {
-		SourceCode { text:self.text.to_owned(), line_starts:self.line_starts.map(ToOwned::to_owned) }
+		SourceCode { text: self.text.to_owned(), line_starts: self.line_starts.map(ToOwned::to_owned) }
 	}
 }
 
@@ -112,7 +119,7 @@ impl BorrowedSourceCode<'_> {
 pub struct LineIndex([TextSize]);
 
 impl LineIndex {
-	pub fn new(slice:&'_ [TextSize]) -> &'_ Self {
+	pub fn new(slice: &'_ [TextSize]) -> &'_ Self {
 		// SAFETY: Transmuting `&[TextSize]` to `&LineIndex` is safe since
 		// `LineIndex` is a `repr(transparent)` struct containing a `[TextSize]`
 		// and thus has the same memory layout
@@ -123,20 +130,24 @@ impl LineIndex {
 impl Deref for LineIndex {
 	type Target = [TextSize];
 
-	fn deref(&self) -> &Self::Target { &self.0 }
+	fn deref(&self) -> &Self::Target {
+		&self.0
+	}
 }
 
 impl ToOwned for LineIndex {
 	type Owned = LineIndexBuf;
 
-	fn to_owned(&self) -> Self::Owned { LineIndexBuf(self.0.to_owned()) }
+	fn to_owned(&self) -> Self::Owned {
+		LineIndexBuf(self.0.to_owned())
+	}
 }
 
 #[derive(Debug, Clone)]
 pub struct LineIndexBuf(Vec<TextSize>);
 
 impl LineIndexBuf {
-	pub fn from_source_text(source:&str) -> Self {
+	pub fn from_source_text(source: &str) -> Self {
 		Self(
 			std::iter::once(0)
 				.chain(source.match_indices(&['\n', '\r']).filter_map(|(i, _)| {
@@ -157,41 +168,45 @@ impl LineIndexBuf {
 impl Deref for LineIndexBuf {
 	type Target = LineIndex;
 
-	fn deref(&self) -> &Self::Target { LineIndex::new(self.0.as_slice()) }
+	fn deref(&self) -> &Self::Target {
+		LineIndex::new(self.0.as_slice())
+	}
 }
 
 impl Borrow<LineIndex> for LineIndexBuf {
-	fn borrow(&self) -> &LineIndex { self }
+	fn borrow(&self) -> &LineIndex {
+		self
+	}
 }
 
 /// Builder type for the [Location] struct
 pub struct LocationBuilder<'a> {
-	resource:Option<Resource<&'a str>>,
-	span:Option<TextRange>,
-	source_code:Option<BorrowedSourceCode<'a>>,
+	resource: Option<Resource<&'a str>>,
+	span: Option<TextRange>,
+	source_code: Option<BorrowedSourceCode<'a>>,
 }
 
 impl<'a> LocationBuilder<'a> {
-	pub fn resource<P:AsResource>(mut self, resource:&'a P) -> Self {
+	pub fn resource<P: AsResource>(mut self, resource: &'a P) -> Self {
 		self.resource = resource.as_resource();
 
 		self
 	}
 
-	pub fn span<S:AsSpan>(mut self, span:&'a S) -> Self {
+	pub fn span<S: AsSpan>(mut self, span: &'a S) -> Self {
 		self.span = span.as_span();
 
 		self
 	}
 
-	pub fn source_code<S:AsSourceCode>(mut self, source_code:&'a S) -> Self {
+	pub fn source_code<S: AsSourceCode>(mut self, source_code: &'a S) -> Self {
 		self.source_code = source_code.as_source_code();
 
 		self
 	}
 
 	pub fn build(self) -> Location<'a> {
-		Location { resource:self.resource, span:self.span, source_code:self.source_code }
+		Location { resource: self.resource, span: self.span, source_code: self.source_code }
 	}
 }
 
@@ -200,24 +215,34 @@ pub trait AsResource {
 	fn as_resource(&self) -> Option<Resource<&'_ str>>;
 }
 
-impl<T:AsResource> AsResource for Option<T> {
-	fn as_resource(&self) -> Option<Resource<&'_ str>> { self.as_ref().and_then(T::as_resource) }
+impl<T: AsResource> AsResource for Option<T> {
+	fn as_resource(&self) -> Option<Resource<&'_ str>> {
+		self.as_ref().and_then(T::as_resource)
+	}
 }
 
-impl<T:AsResource + ?Sized> AsResource for &'_ T {
-	fn as_resource(&self) -> Option<Resource<&'_ str>> { T::as_resource(*self) }
+impl<T: AsResource + ?Sized> AsResource for &'_ T {
+	fn as_resource(&self) -> Option<Resource<&'_ str>> {
+		T::as_resource(*self)
+	}
 }
 
-impl<T:Deref<Target = str>> AsResource for Resource<T> {
-	fn as_resource(&self) -> Option<Resource<&'_ str>> { Some(self.as_deref()) }
+impl<T: Deref<Target = str>> AsResource for Resource<T> {
+	fn as_resource(&self) -> Option<Resource<&'_ str>> {
+		Some(self.as_deref())
+	}
 }
 
 impl AsResource for String {
-	fn as_resource(&self) -> Option<Resource<&'_ str>> { Some(Resource::File(self)) }
+	fn as_resource(&self) -> Option<Resource<&'_ str>> {
+		Some(Resource::File(self))
+	}
 }
 
 impl AsResource for str {
-	fn as_resource(&self) -> Option<Resource<&'_ str>> { Some(Resource::File(self)) }
+	fn as_resource(&self) -> Option<Resource<&'_ str>> {
+		Some(Resource::File(self))
+	}
 }
 
 /// Utility trait for types that can be converted into `Option<TextRange>`
@@ -225,19 +250,25 @@ pub trait AsSpan {
 	fn as_span(&self) -> Option<TextRange>;
 }
 
-impl<T:AsSpan> AsSpan for Option<T> {
-	fn as_span(&self) -> Option<TextRange> { self.as_ref().and_then(T::as_span) }
+impl<T: AsSpan> AsSpan for Option<T> {
+	fn as_span(&self) -> Option<TextRange> {
+		self.as_ref().and_then(T::as_span)
+	}
 }
 
-impl<T:AsSpan + ?Sized> AsSpan for &'_ T {
-	fn as_span(&self) -> Option<TextRange> { T::as_span(*self) }
+impl<T: AsSpan + ?Sized> AsSpan for &'_ T {
+	fn as_span(&self) -> Option<TextRange> {
+		T::as_span(*self)
+	}
 }
 
 impl AsSpan for TextRange {
-	fn as_span(&self) -> Option<TextRange> { Some(*self) }
+	fn as_span(&self) -> Option<TextRange> {
+		Some(*self)
+	}
 }
 
-impl<T:Copy> AsSpan for Range<T>
+impl<T: Copy> AsSpan for Range<T>
 where
 	TextSize: TryFrom<T>,
 	<TextSize as TryFrom<T>>::Error: Debug,
@@ -255,30 +286,40 @@ pub trait AsSourceCode {
 	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>>;
 }
 
-impl<T:AsSourceCode> AsSourceCode for Option<T> {
-	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> { self.as_ref().and_then(T::as_source_code) }
+impl<T: AsSourceCode> AsSourceCode for Option<T> {
+	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> {
+		self.as_ref().and_then(T::as_source_code)
+	}
 }
 
-impl<T:AsSourceCode + ?Sized> AsSourceCode for &'_ T {
-	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> { T::as_source_code(*self) }
+impl<T: AsSourceCode + ?Sized> AsSourceCode for &'_ T {
+	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> {
+		T::as_source_code(*self)
+	}
 }
 
 impl AsSourceCode for BorrowedSourceCode<'_> {
-	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> { Some(*self) }
+	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> {
+		Some(*self)
+	}
 }
 
 impl AsSourceCode for OwnedSourceCode {
 	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> {
-		Some(SourceCode { text:self.text.as_str(), line_starts:self.line_starts.as_deref() })
+		Some(SourceCode { text: self.text.as_str(), line_starts: self.line_starts.as_deref() })
 	}
 }
 
 impl AsSourceCode for str {
-	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> { Some(SourceCode { text:self, line_starts:None }) }
+	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> {
+		Some(SourceCode { text: self, line_starts: None })
+	}
 }
 
 impl AsSourceCode for String {
-	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> { Some(SourceCode { text:self, line_starts:None }) }
+	fn as_source_code(&self) -> Option<BorrowedSourceCode<'_>> {
+		Some(SourceCode { text: self, line_starts: None })
+	}
 }
 
 #[cfg(test)]

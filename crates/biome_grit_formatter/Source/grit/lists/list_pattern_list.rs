@@ -8,7 +8,7 @@ pub(crate) struct FormatGritListPatternList;
 impl FormatRule<GritListPatternList> for FormatGritListPatternList {
 	type Context = GritFormatContext;
 
-	fn fmt(&self, node:&GritListPatternList, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &GritListPatternList, f: &mut GritFormatter) -> FormatResult<()> {
 		let mut filler = f.fill();
 
 		for (element, formatted) in node.iter().zip(node.format_separated(",")) {

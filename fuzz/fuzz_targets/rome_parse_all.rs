@@ -9,7 +9,7 @@ mod rome_parse_typescript;
 
 use libfuzzer_sys::{Corpus, fuzz_target};
 
-fn do_fuzz(data:&[u8]) -> Corpus {
+fn do_fuzz(data: &[u8]) -> Corpus {
 	let mut keep = Corpus::Reject;
 
 	if let Corpus::Keep = rome_parse_d_ts::do_fuzz(data) {
@@ -39,4 +39,4 @@ fn do_fuzz(data:&[u8]) -> Corpus {
 	keep
 }
 
-fuzz_target!(|case:&[u8]| -> Corpus { do_fuzz(case) });
+fuzz_target!(|case: &[u8]| -> Corpus { do_fuzz(case) });

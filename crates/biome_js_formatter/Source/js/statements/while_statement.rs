@@ -7,9 +7,8 @@ use crate::{prelude::*, utils::FormatStatementBody};
 pub(crate) struct FormatJsWhileStatement;
 
 impl FormatNodeRule<JsWhileStatement> for FormatJsWhileStatement {
-	fn fmt_fields(&self, node:&JsWhileStatement, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsWhileStatementFields { while_token, l_paren_token, test, r_paren_token, body } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsWhileStatement, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsWhileStatementFields { while_token, l_paren_token, test, r_paren_token, body } = node.as_fields();
 
 		write!(
 			f,

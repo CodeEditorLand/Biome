@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssMediaQuery;
 impl FormatRule<AnyCssMediaQuery> for FormatAnyCssMediaQuery {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssMediaQuery, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssMediaQuery, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssMediaQuery::AnyCssMediaTypeQuery(node) => node.format().fmt(f),
 			AnyCssMediaQuery::CssBogusMediaQuery(node) => node.format().fmt(f),

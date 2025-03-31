@@ -8,7 +8,7 @@ pub(crate) struct FormatGraphqlObjectValueMemberList;
 impl FormatRule<GraphqlObjectValueMemberList> for FormatGraphqlObjectValueMemberList {
 	type Context = GraphqlFormatContext;
 
-	fn fmt(&self, node:&GraphqlObjectValueMemberList, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &GraphqlObjectValueMemberList, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		f.join_with(&format_args!(
 			if_group_fits_on_line(&format_args![text(","), space()]),
 			soft_line_break(),

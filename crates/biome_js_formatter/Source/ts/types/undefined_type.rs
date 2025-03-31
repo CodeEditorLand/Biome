@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsUndefinedType;
 
 impl FormatNodeRule<TsUndefinedType> for FormatTsUndefinedType {
-	fn fmt_fields(&self, node:&TsUndefinedType, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsUndefinedType, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsUndefinedTypeFields { undefined_token } = node.as_fields();
 
 		write![f, [undefined_token.format()]]

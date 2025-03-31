@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssQueryFeatureRangeInterval;
 impl FormatNodeRule<CssQueryFeatureRangeInterval> for FormatCssQueryFeatureRangeInterval {
-	fn fmt_fields(&self, node:&CssQueryFeatureRangeInterval, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssQueryFeatureRangeInterval, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssQueryFeatureRangeIntervalFields { left, left_comparison, name, right_comparison, right } =
 			node.as_fields();
 

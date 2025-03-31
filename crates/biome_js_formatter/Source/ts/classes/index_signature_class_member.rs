@@ -7,11 +7,7 @@ use crate::{prelude::*, utils::FormatOptionalSemicolon};
 pub struct FormatTsIndexSignatureClassMember;
 
 impl FormatNodeRule<TsIndexSignatureClassMember> for FormatTsIndexSignatureClassMember {
-	fn fmt_fields(
-		&self,
-		node:&TsIndexSignatureClassMember,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsIndexSignatureClassMember, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsIndexSignatureClassMemberFields {
 			modifiers,
 			l_brack_token,

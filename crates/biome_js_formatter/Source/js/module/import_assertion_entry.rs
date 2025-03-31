@@ -10,7 +10,7 @@ use crate::{
 pub(crate) struct FormatJsImportAssertionEntry;
 
 impl FormatNodeRule<JsImportAssertionEntry> for FormatJsImportAssertionEntry {
-	fn fmt_fields(&self, node:&JsImportAssertionEntry, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsImportAssertionEntry, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsImportAssertionEntryFields { key, colon_token, value_token } = node.as_fields();
 
 		let key = key?;
@@ -43,11 +43,7 @@ impl FormatNodeRule<JsImportAssertionEntry> for FormatJsImportAssertionEntry {
 		)
 	}
 
-	fn fmt_dangling_comments(
-		&self,
-		_:&JsImportAssertionEntry,
-		_:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &JsImportAssertionEntry, _: &mut JsFormatter) -> FormatResult<()> {
 		// Handled inside `fmt_fields`
 		Ok(())
 	}

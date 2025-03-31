@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsObjectBindingPatternRest;
 
 impl FormatNodeRule<JsObjectBindingPatternRest> for FormatJsObjectBindingPatternRest {
-	fn fmt_fields(&self, node:&JsObjectBindingPatternRest, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsObjectBindingPatternRest, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsObjectBindingPatternRestFields { dotdotdot_token, binding } = node.as_fields();
 
 		write![f, [dotdotdot_token.format(), binding.format(),]]

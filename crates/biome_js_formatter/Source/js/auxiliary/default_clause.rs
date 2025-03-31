@@ -8,7 +8,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsDefaultClause;
 
 impl FormatNodeRule<JsDefaultClause> for FormatJsDefaultClause {
-	fn fmt_fields(&self, node:&JsDefaultClause, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsDefaultClause, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsDefaultClauseFields { default_token, colon_token, consequent } = node.as_fields();
 
 		// Whether the first statement in the clause is a BlockStatement, and
@@ -16,12 +16,11 @@ impl FormatNodeRule<JsDefaultClause> for FormatJsDefaultClause {
 		// parsing depending on if the input code includes certain newlines.
 		//
 		// See the comments in `case_clause.rs` for a detailed example.
-		let is_single_block_statement =
-			matches!(consequent.iter().next(), Some(AnyJsStatement::JsBlockStatement(_)))
-				&& consequent
-					.iter()
-					.filter(|statement| !matches!(statement, AnyJsStatement::JsEmptyStatement(_)))
-					.count() == 1;
+		let is_single_block_statement = matches!(consequent.iter().next(), Some(AnyJsStatement::JsBlockStatement(_)))
+			&& consequent
+				.iter()
+				.filter(|statement| !matches!(statement, AnyJsStatement::JsEmptyStatement(_)))
+				.count() == 1;
 
 		write!(f, [default_token.format(), colon_token.format()])?;
 
@@ -42,7 +41,7 @@ impl FormatNodeRule<JsDefaultClause> for FormatJsDefaultClause {
 		}
 	}
 
-	fn fmt_dangling_comments(&self, _:&JsDefaultClause, _:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_dangling_comments(&self, _: &JsDefaultClause, _: &mut JsFormatter) -> FormatResult<()> {
 		// Handled inside of `fmt_fields`
 		Ok(())
 	}

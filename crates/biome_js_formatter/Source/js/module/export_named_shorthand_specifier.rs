@@ -7,11 +7,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsExportNamedShorthandSpecifier;
 
 impl FormatNodeRule<JsExportNamedShorthandSpecifier> for FormatJsExportNamedShorthandSpecifier {
-	fn fmt_fields(
-		&self,
-		node:&JsExportNamedShorthandSpecifier,
-		f:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsExportNamedShorthandSpecifier, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsExportNamedShorthandSpecifierFields { type_token, name } = node.as_fields();
 
 		if let Some(type_token) = type_token {

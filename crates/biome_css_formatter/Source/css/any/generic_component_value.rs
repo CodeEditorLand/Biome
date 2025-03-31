@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssGenericComponentValue;
 impl FormatRule<AnyCssGenericComponentValue> for FormatAnyCssGenericComponentValue {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssGenericComponentValue, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssGenericComponentValue, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssGenericComponentValue::AnyCssValue(node) => node.format().fmt(f),
 			AnyCssGenericComponentValue::CssGenericDelimiter(node) => node.format().fmt(f),

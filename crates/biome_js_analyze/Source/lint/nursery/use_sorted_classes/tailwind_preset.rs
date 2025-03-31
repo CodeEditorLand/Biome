@@ -4,9 +4,9 @@
 
 use super::sort_config::UtilityLayer;
 
-const COMPONENTS_LAYER_CLASSES:[&str; 1] = ["container$"];
+const COMPONENTS_LAYER_CLASSES: [&str; 1] = ["container$"];
 
-const UTILITIES_LAYER_CLASSES:[&str; 578] = [
+const UTILITIES_LAYER_CLASSES: [&str; 578] = [
 	"sr-only$",
 	"not-sr-only$",
 	"pointer-events-none$",
@@ -587,7 +587,7 @@ const UTILITIES_LAYER_CLASSES:[&str; 578] = [
 	"forced-color-adjust-none$",
 ];
 
-pub const VARIANT_CLASSES:[&str; 165] = [
+pub const VARIANT_CLASSES: [&str; 165] = [
 	"*",
 	"first-letter",
 	"first-line",
@@ -755,7 +755,7 @@ pub const VARIANT_CLASSES:[&str; 165] = [
 	"print",
 ];
 
-pub const TAILWIND_LAYERS:[UtilityLayer; 2] = [
-	UtilityLayer { name:"components", classes:COMPONENTS_LAYER_CLASSES.as_slice() },
-	UtilityLayer { name:"utilities", classes:UTILITIES_LAYER_CLASSES.as_slice() },
+pub const TAILWIND_LAYERS: [UtilityLayer; 2] = [
+	UtilityLayer { name: "components", classes: COMPONENTS_LAYER_CLASSES.as_slice() },
+	UtilityLayer { name: "utilities", classes: UTILITIES_LAYER_CLASSES.as_slice() },
 ];

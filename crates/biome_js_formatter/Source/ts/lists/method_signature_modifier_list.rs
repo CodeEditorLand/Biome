@@ -8,7 +8,7 @@ pub struct FormatTsMethodSignatureModifierList;
 impl FormatRule<TsMethodSignatureModifierList> for FormatTsMethodSignatureModifierList {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&TsMethodSignatureModifierList, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &TsMethodSignatureModifierList, f: &mut JsFormatter) -> FormatResult<()> {
 		FormatModifiers::from(node.clone()).fmt(f)
 	}
 }

@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsStatement;
 impl FormatRule<AnyJsStatement> for FormatAnyJsStatement {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsStatement, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsStatement, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsStatement::JsBlockStatement(node) => node.format().fmt(f),
 			AnyJsStatement::JsBogusStatement(node) => node.format().fmt(f),

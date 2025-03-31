@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlVariableDefinitions;
 impl FormatNodeRule<GraphqlVariableDefinitions> for FormatGraphqlVariableDefinitions {
-	fn fmt_fields(&self, node:&GraphqlVariableDefinitions, f:&mut GraphqlFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GraphqlVariableDefinitions, f: &mut GraphqlFormatter) -> FormatResult<()> {
 		let GraphqlVariableDefinitionsFields { l_paren_token, elements, r_paren_token } = node.as_fields();
 
 		write!(

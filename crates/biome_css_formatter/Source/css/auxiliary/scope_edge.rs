@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssScopeEdge;
 impl FormatNodeRule<CssScopeEdge> for FormatCssScopeEdge {
-	fn fmt_fields(&self, node:&CssScopeEdge, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssScopeEdge, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssScopeEdgeFields { l_paren_token, selectors, r_paren_token } = node.as_fields();
 
 		write!(

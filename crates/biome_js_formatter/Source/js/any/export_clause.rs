@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsExportClause;
 impl FormatRule<AnyJsExportClause> for FormatAnyJsExportClause {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsExportClause, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsExportClause, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsExportClause::AnyJsDeclarationClause(node) => node.format().fmt(f),
 			AnyJsExportClause::JsExportDefaultDeclarationClause(node) => node.format().fmt(f),

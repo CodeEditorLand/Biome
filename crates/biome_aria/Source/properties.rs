@@ -344,7 +344,7 @@ define_property! {
 pub struct AriaProperties;
 
 impl AriaProperties {
-	pub fn get_property<'a>(&self, property_name:&str) -> Option<&'a dyn AriaPropertyDefinition> {
+	pub fn get_property<'a>(&self, property_name: &str) -> Option<&'a dyn AriaPropertyDefinition> {
 		Some(match property_name {
 			"aria-activedescendant" => &AriaActivedescendant as &dyn AriaPropertyDefinition,
 			"aria-autocomplete" => &AriaAutocomplete as &dyn AriaPropertyDefinition,
@@ -424,7 +424,7 @@ pub trait AriaPropertyDefinition: Debug {
 	/// assert!(aria_current.contains_correct_value("step"));
 	/// assert!(!aria_current.contains_correct_value("something_not_allowed"));
 	/// ```
-	fn contains_correct_value(&self, input_value:&str) -> bool {
+	fn contains_correct_value(&self, input_value: &str) -> bool {
 		if input_value.is_empty() {
 			return false;
 		}
@@ -438,11 +438,9 @@ pub trait AriaPropertyDefinition: Debug {
 			AriaPropertyTypeEnum::Number => input_value.parse::<f32>().is_ok(),
 			AriaPropertyTypeEnum::Boolean => matches!(input_value, "false" | "true"),
 			AriaPropertyTypeEnum::Token => self.values().any(|allowed_token| *allowed_token == input_value),
-			AriaPropertyTypeEnum::Tokenlist => {
-				input_value
-					.split_ascii_whitespace()
-					.all(|input_token| self.values().any(|allowed_token| allowed_token.trim() == input_token))
-			},
+			AriaPropertyTypeEnum::Tokenlist => input_value
+				.split_ascii_whitespace()
+				.all(|input_token| self.values().any(|allowed_token| allowed_token.trim() == input_token)),
 
 			AriaPropertyTypeEnum::Tristate => matches!(input_value, "false" | "true" | "mixed"),
 		}
@@ -457,4 +455,6 @@ pub trait AriaPropertyDefinition: Debug {
 /// Whitespaces are usedd to separate two identifier in a list of identifiers.
 ///
 /// See https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/id#syntax
-fn is_valid_html_id(id:&str) -> bool { !id.is_empty() && !id.bytes().any(|b| b.is_ascii_whitespace()) }
+fn is_valid_html_id(id: &str) -> bool {
+	!id.is_empty() && !id.bytes().any(|b| b.is_ascii_whitespace())
+}

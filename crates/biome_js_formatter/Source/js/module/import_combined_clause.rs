@@ -7,15 +7,9 @@ use crate::prelude::*;
 pub(crate) struct FormatJsImportCombinedClause;
 
 impl FormatNodeRule<JsImportCombinedClause> for FormatJsImportCombinedClause {
-	fn fmt_fields(&self, node:&JsImportCombinedClause, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsImportCombinedClauseFields {
-			default_specifier,
-			comma_token,
-			specifier,
-			from_token,
-			source,
-			assertion,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &JsImportCombinedClause, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsImportCombinedClauseFields { default_specifier, comma_token, specifier, from_token, source, assertion } =
+			node.as_fields();
 
 		write![
 			f,

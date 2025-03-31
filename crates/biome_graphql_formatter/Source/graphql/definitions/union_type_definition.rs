@@ -6,18 +6,9 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGraphqlUnionTypeDefinition;
 impl FormatNodeRule<GraphqlUnionTypeDefinition> for FormatGraphqlUnionTypeDefinition {
-	fn fmt_fields(
-		&self,
-		node:&GraphqlUnionTypeDefinition,
-		f:&mut GraphqlFormatter,
-	) -> FormatResult<()> {
-		let GraphqlUnionTypeDefinitionFields {
-			description,
-			union_token,
-			name,
-			directives,
-			union_members,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &GraphqlUnionTypeDefinition, f: &mut GraphqlFormatter) -> FormatResult<()> {
+		let GraphqlUnionTypeDefinitionFields { description, union_token, name, directives, union_members } =
+			node.as_fields();
 
 		write!(
 			f,

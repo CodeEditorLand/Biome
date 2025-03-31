@@ -6,9 +6,8 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritPredicateCall;
 impl FormatNodeRule<GritPredicateCall> for FormatGritPredicateCall {
-	fn fmt_fields(&self, node:&GritPredicateCall, f:&mut GritFormatter) -> FormatResult<()> {
-		let GritPredicateCallFields { name, l_paren_token, named_args, r_paren_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &GritPredicateCall, f: &mut GritFormatter) -> FormatResult<()> {
+		let GritPredicateCallFields { name, l_paren_token, named_args, r_paren_token } = node.as_fields();
 
 		write!(
 			f,

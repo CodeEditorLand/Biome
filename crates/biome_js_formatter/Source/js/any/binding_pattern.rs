@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyJsBindingPattern;
 impl FormatRule<AnyJsBindingPattern> for FormatAnyJsBindingPattern {
 	type Context = JsFormatContext;
 
-	fn fmt(&self, node:&AnyJsBindingPattern, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyJsBindingPattern, f: &mut JsFormatter) -> FormatResult<()> {
 		match node {
 			AnyJsBindingPattern::AnyJsBinding(node) => node.format().fmt(f),
 			AnyJsBindingPattern::JsArrayBindingPattern(node) => node.format().fmt(f),

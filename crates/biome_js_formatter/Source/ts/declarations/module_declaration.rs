@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsModuleDeclaration;
 
 impl FormatNodeRule<TsModuleDeclaration> for FormatTsModuleDeclaration {
-	fn fmt_fields(&self, node:&TsModuleDeclaration, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsModuleDeclaration, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsModuleDeclarationFields { module_or_namespace, name, body } = node.as_fields();
 
 		write![

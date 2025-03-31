@@ -4,13 +4,9 @@ use biome_grit_syntax::{GritJavascriptBodyWrapper, GritJavascriptBodyWrapperFiel
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritJavascriptBodyWrapper;
 impl FormatNodeRule<GritJavascriptBodyWrapper> for FormatGritJavascriptBodyWrapper {
-    fn fmt_fields(
-        &self,
-        node: &GritJavascriptBodyWrapper,
-        f: &mut GritFormatter,
-    ) -> FormatResult<()> {
-        let GritJavascriptBodyWrapperFields { value_token } = node.as_fields();
+	fn fmt_fields(&self, node: &GritJavascriptBodyWrapper, f: &mut GritFormatter) -> FormatResult<()> {
+		let GritJavascriptBodyWrapperFields { value_token } = node.as_fields();
 
-        write!(f, [value_token.format()])
-    }
+		write!(f, [value_token.format()])
+	}
 }

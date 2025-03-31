@@ -9,7 +9,7 @@ use crate::{
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssAttributeMatcherValue;
 impl FormatNodeRule<CssAttributeMatcherValue> for FormatCssAttributeMatcherValue {
-	fn fmt_fields(&self, node:&CssAttributeMatcherValue, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssAttributeMatcherValue, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssAttributeMatcherValueFields { name } = node.as_fields();
 
 		// All attribute values get quoted, no matter what. Strings already

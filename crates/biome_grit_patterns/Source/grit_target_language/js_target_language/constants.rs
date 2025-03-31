@@ -4,7 +4,7 @@ use biome_js_syntax::JsSyntaxKind::{self, *};
 
 use crate::grit_target_language::DisregardedSlotCondition::{self, *};
 
-pub(crate) const DISREGARDED_SNIPPET_SLOTS:&[(JsSyntaxKind, u32, DisregardedSlotCondition)] = &[
+pub(crate) const DISREGARDED_SNIPPET_SLOTS: &[(JsSyntaxKind, u32, DisregardedSlotCondition)] = &[
 	(JS_ARROW_FUNCTION_EXPRESSION, 0, OnlyIf(&[""])),
 	(JS_BREAK_STATEMENT, 2, Always),
 	(JS_CONTINUE_STATEMENT, 2, Always),

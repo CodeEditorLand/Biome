@@ -6,7 +6,8 @@ import type {
 	ProjectKey,
 	Workspace,
 } from "@biomejs/wasm-nodejs";
-import { Distribution, loadModule, type WasmModule, wrapError } from "./wasm";
+
+import { Distribution, loadModule, wrapError, type WasmModule } from "./wasm";
 
 // Re-export of some useful types for users
 export type { Diagnostic, Configuration };
@@ -297,21 +298,26 @@ export class Biome {
 				})
 			: content;
 
-		return this.withFile(projectKey, filePath, maybeFixedContent, (path) => {
-			const { diagnostics } = this.workspace.pullDiagnostics({
-				projectKey,
-				path,
-				categories: ["syntax", "lint"],
-				maxDiagnostics: Number.MAX_SAFE_INTEGER,
-				only: [],
-				skip: [],
-			});
+		return this.withFile(
+			projectKey,
+			filePath,
+			maybeFixedContent,
+			(path) => {
+				const { diagnostics } = this.workspace.pullDiagnostics({
+					projectKey,
+					path,
+					categories: ["syntax", "lint"],
+					maxDiagnostics: Number.MAX_SAFE_INTEGER,
+					only: [],
+					skip: [],
+				});
 
-			return {
-				content: maybeFixedContent,
-				diagnostics,
-			};
-		});
+				return {
+					content: maybeFixedContent,
+					diagnostics,
+				};
+			},
+		);
 	}
 
 	/**

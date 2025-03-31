@@ -8,7 +8,7 @@ use crate::prelude::*;
 pub(crate) struct FormatJsCaseClause;
 
 impl FormatNodeRule<JsCaseClause> for FormatJsCaseClause {
-	fn fmt_fields(&self, node:&JsCaseClause, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &JsCaseClause, f: &mut JsFormatter) -> FormatResult<()> {
 		let JsCaseClauseFields { case_token, test, colon_token, consequent } = node.as_fields();
 
 		write!(f, [case_token.format(), space(), test.format(), colon_token.format()])?;
@@ -16,12 +16,11 @@ impl FormatNodeRule<JsCaseClause> for FormatJsCaseClause {
 		// Whether the first statement in the clause is a BlockStatement, and
 		// there are no other non-empty statements. Empties may show up when
 		// parsing depending on if the input code includes certain newlines.
-		let is_single_block_statement =
-			matches!(consequent.iter().next(), Some(AnyJsStatement::JsBlockStatement(_)))
-				&& consequent
-					.iter()
-					.filter(|statement| !matches!(statement, AnyJsStatement::JsEmptyStatement(_)))
-					.count() == 1;
+		let is_single_block_statement = matches!(consequent.iter().next(), Some(AnyJsStatement::JsBlockStatement(_)))
+			&& consequent
+				.iter()
+				.filter(|statement| !matches!(statement, AnyJsStatement::JsEmptyStatement(_)))
+				.count() == 1;
 
 		// When the case block is empty, the case becomes a fallthrough, so it
 		// is collapsed directly on top of the next case (just a single

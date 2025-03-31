@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub(crate) struct FormatJsRestParameter;
 
 impl FormatNodeRule<JsRestParameter> for FormatJsRestParameter {
-	fn fmt_fields(&self, node:&JsRestParameter, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsRestParameterFields { decorators, dotdotdot_token, binding, type_annotation } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &JsRestParameter, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsRestParameterFields { decorators, dotdotdot_token, binding, type_annotation } = node.as_fields();
 
 		write![
 			f,

@@ -1,19 +1,11 @@
-use biome_analyze::{
-	Ast,
-	Rule,
-	RuleDiagnostic,
-	RuleSource,
-	RuleSourceKind,
-	context::RuleContext,
-	declare_lint_rule,
-};
+use biome_analyze::{Ast, Rule, RuleDiagnostic, RuleSource, RuleSourceKind, context::RuleContext, declare_lint_rule};
 use biome_console::markup;
 use biome_js_syntax::JsModuleSource;
 use biome_rowan::{AstNode, TokenText};
 
-const INDEX_BASENAMES:&[&str] = &["index", "mod"];
+const INDEX_BASENAMES: &[&str] = &["index", "mod"];
 
-const SOURCE_EXTENSIONS:&[&str] = &["js", "ts", "cjs", "cts", "mjs", "mts", "jsx", "tsx"];
+const SOURCE_EXTENSIONS: &[&str] = &["js", "ts", "cjs", "cts", "mjs", "mts", "jsx", "tsx"];
 
 declare_lint_rule! {
 	/// Disallows package private imports.
@@ -95,7 +87,7 @@ impl Rule for UseImportRestrictions {
 	type Signals = Option<Self::State>;
 	type State = ImportRestrictionsState;
 
-	fn run(ctx:&RuleContext<Self>) -> Self::Signals {
+	fn run(ctx: &RuleContext<Self>) -> Self::Signals {
 		let binding = ctx.query();
 
 		let Ok(path) = binding.inner_string_text() else {
@@ -105,7 +97,7 @@ impl Rule for UseImportRestrictions {
 		get_restricted_import(&path)
 	}
 
-	fn diagnostic(ctx:&RuleContext<Self>, state:&Self::State) -> Option<RuleDiagnostic> {
+	fn diagnostic(ctx: &RuleContext<Self>, state: &Self::State) -> Option<RuleDiagnostic> {
 		let ImportRestrictionsState { path, suggestion } = state;
 
 		let diagnostic = RuleDiagnostic::new(
@@ -126,18 +118,18 @@ impl Rule for UseImportRestrictions {
 
 pub struct ImportRestrictionsState {
 	/// The path that is being restricted.
-	path:String,
+	path: String,
 
 	/// Suggestion from which to import instead.
-	suggestion:String,
+	suggestion: String,
 }
 
-fn get_restricted_import(module_path:&TokenText) -> Option<ImportRestrictionsState> {
+fn get_restricted_import(module_path: &TokenText) -> Option<ImportRestrictionsState> {
 	if !module_path.starts_with('.') {
 		return None;
 	}
 
-	let mut path_parts:Vec<_> = module_path.text().split('/').collect();
+	let mut path_parts: Vec<_> = module_path.text().split('/').collect();
 
 	let mut index_filename = None;
 
@@ -179,29 +171,20 @@ fn get_restricted_import(module_path:&TokenText) -> Option<ImportRestrictionsSta
 		suggestion_parts.push(index_filename);
 	}
 
-	Some(ImportRestrictionsState {
-		path:path_parts.join("/"),
-		suggestion:suggestion_parts.join("/"),
+	Some(ImportRestrictionsState { path: path_parts.join("/"), suggestion: suggestion_parts.join("/") })
+}
+
+fn get_basename<'a>(path_parts: &'_ [&'a str]) -> Option<&'a str> {
+	path_parts.last().map(|&part| match part.find('.') {
+		Some(dot_index) if dot_index > 0 && dot_index < part.len() - 1 => &part[..dot_index],
+		_ => part,
 	})
 }
 
-fn get_basename<'a>(path_parts:&'_ [&'a str]) -> Option<&'a str> {
-	path_parts.last().map(|&part| {
-		match part.find('.') {
-			Some(dot_index) if dot_index > 0 && dot_index < part.len() - 1 => &part[..dot_index],
-			_ => part,
-		}
-	})
-}
+fn get_extension<'a>(path_parts: &'_ [&'a str]) -> Option<&'a str> {
+	path_parts.last().and_then(|part| match part.find('.') {
+		Some(dot_index) if dot_index > 0 && dot_index < part.len() - 1 => Some(&part[dot_index + 1..]),
 
-fn get_extension<'a>(path_parts:&'_ [&'a str]) -> Option<&'a str> {
-	path_parts.last().and_then(|part| {
-		match part.find('.') {
-			Some(dot_index) if dot_index > 0 && dot_index < part.len() - 1 => {
-				Some(&part[dot_index + 1..])
-			},
-
-			_ => None,
-		}
+		_ => None,
 	})
 }

@@ -1,11 +1,6 @@
 use biome_formatter::{FormatError::SyntaxError, format_args, write};
 use biome_js_syntax::{
-	AnyJsExpression,
-	AnyTsType,
-	JsSyntaxKind,
-	JsVariableDeclarator,
-	TsTypeArguments,
-	TsTypeArgumentsFields,
+	AnyJsExpression, AnyTsType, JsSyntaxKind, JsVariableDeclarator, TsTypeArguments, TsTypeArgumentsFields,
 };
 
 use crate::{
@@ -17,9 +12,8 @@ use crate::{
 pub struct FormatTsTypeArguments;
 
 impl FormatNodeRule<TsTypeArguments> for FormatTsTypeArguments {
-	fn fmt_fields(&self, node:&TsTypeArguments, f:&mut JsFormatter) -> FormatResult<()> {
-		let TsTypeArgumentsFields { l_angle_token, ts_type_argument_list, r_angle_token } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &TsTypeArguments, f: &mut JsFormatter) -> FormatResult<()> {
+		let TsTypeArgumentsFields { l_angle_token, ts_type_argument_list, r_angle_token } = node.as_fields();
 
 		if ts_type_argument_list.is_empty() {
 			return Err(SyntaxError);
@@ -34,9 +28,7 @@ impl FormatNodeRule<TsTypeArguments> for FormatTsTypeArguments {
 		let is_arrow_function_variables = {
 			match ts_type_argument_list.first() {
 				// first argument is not mapped type or object type
-				Some(Ok(ty)) if is_object_like_type(&ty) && ts_type_argument_list.len() == 1 => {
-					false
-				},
+				Some(Ok(ty)) if is_object_like_type(&ty) && ts_type_argument_list.len() == 1 => false,
 
 				Some(Ok(ty)) => {
 					// we then go up until we can find a potential type annotation,

@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssComposesImportSpecifier;
 impl FormatNodeRule<CssComposesImportSpecifier> for FormatCssComposesImportSpecifier {
-	fn fmt_fields(&self, node:&CssComposesImportSpecifier, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssComposesImportSpecifier, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssComposesImportSpecifierFields { from_token, source } = node.as_fields();
 
 		write![f, [space(), from_token.format(), space(), source.format()]]

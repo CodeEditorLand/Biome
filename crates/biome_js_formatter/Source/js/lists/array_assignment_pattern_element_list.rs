@@ -8,11 +8,7 @@ pub(crate) struct FormatJsArrayAssignmentPatternElementList;
 impl FormatRule<JsArrayAssignmentPatternElementList> for FormatJsArrayAssignmentPatternElementList {
 	type Context = JsFormatContext;
 
-	fn fmt(
-		&self,
-		node:&JsArrayAssignmentPatternElementList,
-		formatter:&mut JsFormatter,
-	) -> FormatResult<()> {
+	fn fmt(&self, node: &JsArrayAssignmentPatternElementList, formatter: &mut JsFormatter) -> FormatResult<()> {
 		write_array_node(node, formatter)
 	}
 }

@@ -2,7 +2,7 @@ use std::fs;
 
 use xtask::*;
 
-fn cargo_template(name:&str) -> String {
+fn cargo_template(name: &str) -> String {
 	format!(
 		r#"
 [package]
@@ -23,7 +23,7 @@ workspace = true
 	)
 }
 
-fn knope_template(name:&str) -> String {
+fn knope_template(name: &str) -> String {
 	format!(
 		r#"
 [packages.{name}]
@@ -33,7 +33,7 @@ changelog = "crates/{name}/CHANGELOG.md"
 	)
 }
 
-pub fn generate_crate(crate_name:String) -> Result<()> {
+pub fn generate_crate(crate_name: String) -> Result<()> {
 	let crate_root = project_root().join("crates").join(crate_name.as_str());
 
 	let cargo_file = crate_root.join("Cargo.toml");
@@ -66,7 +66,7 @@ pub fn generate_crate(crate_name:String) -> Result<()> {
 
 	let template = knope_template(crate_name.as_str());
 
-	let new_crates_text:Vec<_> = crates_text.lines().chain(Some(&template[..])).collect();
+	let new_crates_text: Vec<_> = crates_text.lines().chain(Some(&template[..])).collect();
 
 	let new_crates_text = new_crates_text.join("\n");
 

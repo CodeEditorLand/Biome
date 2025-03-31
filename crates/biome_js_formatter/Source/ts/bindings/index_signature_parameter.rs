@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsIndexSignatureParameter;
 
 impl FormatNodeRule<TsIndexSignatureParameter> for FormatTsIndexSignatureParameter {
-	fn fmt_fields(&self, node:&TsIndexSignatureParameter, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsIndexSignatureParameter, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsIndexSignatureParameterFields { binding, type_annotation } = node.as_fields();
 
 		let binding = binding.format();

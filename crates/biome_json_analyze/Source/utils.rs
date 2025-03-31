@@ -2,7 +2,7 @@ use biome_json_syntax::{JsonMember, JsonMemberList, JsonMemberName, JsonObjectVa
 use biome_rowan::AstNode;
 
 /// Matches a JSON member name node against a path
-pub fn matches_path(optional_node:Option<&JsonMemberName>, path:&[&str]) -> bool {
+pub fn matches_path(optional_node: Option<&JsonMemberName>, path: &[&str]) -> bool {
 	if path.is_empty() {
 		return true;
 	}

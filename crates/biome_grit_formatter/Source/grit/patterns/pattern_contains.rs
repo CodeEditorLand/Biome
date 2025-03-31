@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatGritPatternContains;
 impl FormatNodeRule<GritPatternContains> for FormatGritPatternContains {
-	fn fmt_fields(&self, node:&GritPatternContains, f:&mut GritFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &GritPatternContains, f: &mut GritFormatter) -> FormatResult<()> {
 		let GritPatternContainsFields { contains, contains_token, until_clause } = node.as_fields();
 
 		write!(f, [contains_token.format(), space(), contains.format()])?;

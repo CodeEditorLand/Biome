@@ -9,7 +9,7 @@ pub(crate) struct FormatAnyCssScopeRange;
 impl FormatRule<AnyCssScopeRange> for FormatAnyCssScopeRange {
 	type Context = CssFormatContext;
 
-	fn fmt(&self, node:&AnyCssScopeRange, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt(&self, node: &AnyCssScopeRange, f: &mut CssFormatter) -> FormatResult<()> {
 		match node {
 			AnyCssScopeRange::CssBogusScopeRange(node) => node.format().fmt(f),
 			AnyCssScopeRange::CssScopeRangeEnd(node) => node.format().fmt(f),

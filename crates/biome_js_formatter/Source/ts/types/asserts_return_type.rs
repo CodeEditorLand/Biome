@@ -7,9 +7,8 @@ use crate::prelude::*;
 pub struct FormatTsAssertsReturnType;
 
 impl FormatNodeRule<TsAssertsReturnType> for FormatTsAssertsReturnType {
-	fn fmt_fields(&self, node:&TsAssertsReturnType, f:&mut JsFormatter) -> FormatResult<()> {
-		let TsAssertsReturnTypeFields { parameter_name, asserts_token, predicate } =
-			node.as_fields();
+	fn fmt_fields(&self, node: &TsAssertsReturnType, f: &mut JsFormatter) -> FormatResult<()> {
+		let TsAssertsReturnTypeFields { parameter_name, asserts_token, predicate } = node.as_fields();
 
 		write![
 			f,

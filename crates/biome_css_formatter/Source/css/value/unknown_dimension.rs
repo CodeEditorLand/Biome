@@ -6,7 +6,7 @@ use crate::{prelude::*, utils::string_utils::FormatTokenAsLowercase};
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssUnknownDimension;
 impl FormatNodeRule<CssUnknownDimension> for FormatCssUnknownDimension {
-	fn fmt_fields(&self, node:&CssUnknownDimension, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssUnknownDimension, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssUnknownDimensionFields { value_token, unit_token } = node.as_fields();
 
 		let var_name = write!(

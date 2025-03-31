@@ -5,7 +5,7 @@ use biome_json_syntax::JsonStringValue;
 pub(crate) struct FormatJsonStringValue;
 
 impl FormatNodeRule<JsonStringValue> for FormatJsonStringValue {
-    fn fmt_fields(&self, node: &JsonStringValue, f: &mut JsonFormatter) -> FormatResult<()> {
-        node.value_token()?.format().fmt(f)
-    }
+	fn fmt_fields(&self, node: &JsonStringValue, f: &mut JsonFormatter) -> FormatResult<()> {
+		node.value_token()?.format().fmt(f)
+	}
 }

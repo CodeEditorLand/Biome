@@ -7,7 +7,7 @@ use crate::prelude::*;
 pub struct FormatTsTypeParameter;
 
 impl FormatNodeRule<TsTypeParameter> for FormatTsTypeParameter {
-	fn fmt_fields(&self, node:&TsTypeParameter, f:&mut JsFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &TsTypeParameter, f: &mut JsFormatter) -> FormatResult<()> {
 		let TsTypeParameterFields { name, constraint, default, modifiers } = node.as_fields();
 
 		if !modifiers.is_empty() {

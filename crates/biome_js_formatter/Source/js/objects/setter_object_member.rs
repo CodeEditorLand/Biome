@@ -7,16 +7,9 @@ use crate::prelude::*;
 pub(crate) struct FormatJsSetterObjectMember;
 
 impl FormatNodeRule<JsSetterObjectMember> for FormatJsSetterObjectMember {
-	fn fmt_fields(&self, node:&JsSetterObjectMember, f:&mut JsFormatter) -> FormatResult<()> {
-		let JsSetterObjectMemberFields {
-			set_token,
-			name,
-			l_paren_token,
-			parameter,
-			comma_token,
-			r_paren_token,
-			body,
-		} = node.as_fields();
+	fn fmt_fields(&self, node: &JsSetterObjectMember, f: &mut JsFormatter) -> FormatResult<()> {
+		let JsSetterObjectMemberFields { set_token, name, l_paren_token, parameter, comma_token, r_paren_token, body } =
+			node.as_fields();
 
 		write![
 			f,

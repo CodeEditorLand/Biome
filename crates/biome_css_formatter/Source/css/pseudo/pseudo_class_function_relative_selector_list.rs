@@ -6,7 +6,7 @@ use crate::prelude::*;
 #[derive(Debug, Clone, Default)]
 pub(crate) struct FormatCssPseudoClassFunctionRelativeSelectorList;
 impl FormatNodeRule<CssPseudoClassFunctionRelativeSelectorList> for FormatCssPseudoClassFunctionRelativeSelectorList {
-	fn fmt_fields(&self, node:&CssPseudoClassFunctionRelativeSelectorList, f:&mut CssFormatter) -> FormatResult<()> {
+	fn fmt_fields(&self, node: &CssPseudoClassFunctionRelativeSelectorList, f: &mut CssFormatter) -> FormatResult<()> {
 		let CssPseudoClassFunctionRelativeSelectorListFields {
 			name_token,
 			l_paren_token,

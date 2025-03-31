@@ -9,7 +9,7 @@ fn main() {
 
 	let stdout = String::from_utf8(result.unwrap().stdout).unwrap();
 
-	let mut tests:HashMap<&str, (isize, isize, isize, isize, isize)> = HashMap::new();
+	let mut tests: HashMap<&str, (isize, isize, isize, isize, isize)> = HashMap::new();
 
 	for capture in re.captures_iter(stdout.as_str()) {
 		let name = capture.name("NAME").unwrap().as_str();
