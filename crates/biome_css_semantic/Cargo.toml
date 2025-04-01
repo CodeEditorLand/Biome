@@ -1,19 +1,36 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "Biome's semantic model for CSS"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_css_semantic"
-repository.workspace = true
-version = "0.0.0"
-
 [dependencies]
 biome_css_syntax = { workspace = true }
 biome_rowan = { workspace = true }
 rustc-hash = { workspace = true }
 
+[lib]
+path = "Source/lib.rs"
+
 [lints]
+workspace = true
+
+[package]
+description = "Biome's semantic model for CSS"
+name = "biome_css_semantic"
+version = "0.0.0"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.repository]
 workspace = true

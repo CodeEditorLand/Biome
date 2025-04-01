@@ -1,15 +1,3 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "Biome's JavaScript parser"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_js_parser"
-repository.workspace = true
-version = "0.5.7"
-
 [dependencies]
 biome_console = { workspace = true }
 biome_diagnostics = { workspace = true }
@@ -18,37 +6,66 @@ biome_js_syntax = { workspace = true }
 biome_parser = { workspace = true }
 biome_rowan = { workspace = true }
 biome_unicode_table = { workspace = true }
-drop_bomb           = "0.1.5"
-enumflags2          = { workspace = true }
-indexmap            = { workspace = true }
-rustc-hash          = { workspace = true }
-schemars            = { workspace = true, optional = true }
-serde               = { workspace = true, features = ["derive"], optional = true }
-serde_json          = { workspace = true }
-smallvec            = { workspace = true }
-tracing             = { workspace = true }
+drop_bomb = "0.1.5"
+enumflags2 = { workspace = true }
+indexmap = { workspace = true }
+rustc-hash = { workspace = true }
+schemars = { workspace = true, optional = true }
+serde = { workspace = true, features = ["derive"], optional = true }
+serde_json = { workspace = true }
+smallvec = { workspace = true }
+tracing = { workspace = true }
 
 [dev-dependencies]
 biome_configuration = { workspace = true }
-biome_deserialize   = { workspace = true }
-biome_fs            = { workspace = true }
-biome_service       = { workspace = true }
-biome_test_utils    = { workspace = true }
-camino              = { workspace = true }
-insta               = { workspace = true }
-quickcheck          = { workspace = true }
-quickcheck_macros   = { workspace = true }
-tests_macros        = { path = "../tests_macros" }
-
+biome_deserialize = { workspace = true }
+biome_fs = { workspace = true }
+biome_service = { workspace = true }
+biome_test_utils = { workspace = true }
+camino = { workspace = true }
+insta = { workspace = true }
+quickcheck = { workspace = true }
+quickcheck_macros = { workspace = true }
+tests_macros = { path = "../tests_macros" }
 
 [features]
 schema = ["dep:schemars", "serde"]
-serde  = ["dep:serde", "biome_js_syntax/schema"]
-tests  = []
+serde = ["dep:serde", "biome_js_syntax/schema"]
+tests = []
 
-# cargo-workspaces metadata
+[lib]
+path = "Source/lib.rs"
+
+[lints]
+workspace = true
+
+[package]
+description = "Biome's JavaScript parser"
+name = "biome_js_parser"
+version = "0.5.7"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.metadata]
+
 [package.metadata.workspaces]
 independent = true
 
-[lints]
+[package.repository]
 workspace = true

@@ -1,17 +1,3 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "SyntaxKind and common rowan definitions for biome_markdown_parser"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_markdown_syntax"
-repository.workspace = true
-version = "0.0.1"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 biome_rowan = { workspace = true, features = ["serde"] }
 schemars = { workspace = true, optional = true }
@@ -20,5 +6,34 @@ serde = { workspace = true, features = ["derive"] }
 [features]
 schema = ["biome_rowan/serde", "schemars"]
 
+[lib]
+path = "Source/lib.rs"
+
 [lints]
+workspace = true
+
+[package]
+description = "SyntaxKind and common rowan definitions for biome_markdown_parser"
+name = "biome_markdown_syntax"
+version = "0.0.1"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.repository]
 workspace = true

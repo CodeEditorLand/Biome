@@ -1,18 +1,35 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "Unicode table for JavaScript IDs"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_unicode_table"
-repository.workspace = true
-version = "0.5.7"
-
 [dependencies]
 
 [dev-dependencies]
 
+[lib]
+path = "Source/lib.rs"
+
 [lints]
+workspace = true
+
+[package]
+description = "Unicode table for JavaScript IDs"
+name = "biome_unicode_table"
+version = "0.5.7"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.repository]
 workspace = true

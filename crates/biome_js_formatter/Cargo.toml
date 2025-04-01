@@ -1,34 +1,20 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "Biome's JavaScript formatter"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_js_formatter"
-repository.workspace = true
-version = "0.5.7"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 biome_deserialize = { workspace = true }
 biome_deserialize_macros = { workspace = true }
 biome_diagnostics_categories = { workspace = true }
-biome_formatter              = { workspace = true }
-biome_js_factory             = { workspace = true }
-biome_js_syntax              = { workspace = true }
-biome_rowan                  = { workspace = true }
-biome_string_case            = { workspace = true }
-biome_suppression            = { workspace = true }
-biome_text_size              = { workspace = true }
-biome_unicode_table          = { workspace = true }
-camino                       = { workspace = true }
-schemars                     = { workspace = true, optional = true }
-serde                        = { workspace = true, features = ["derive"], optional = true }
-smallvec                     = { workspace = true }
-unicode-width                = { workspace = true }
+biome_formatter = { workspace = true }
+biome_js_factory = { workspace = true }
+biome_js_syntax = { workspace = true }
+biome_rowan = { workspace = true }
+biome_string_case = { workspace = true }
+biome_suppression = { workspace = true }
+biome_text_size = { workspace = true }
+biome_unicode_table = { workspace = true }
+camino = { workspace = true }
+schemars = { workspace = true, optional = true }
+serde = { workspace = true, features = ["derive"], optional = true }
+smallvec = { workspace = true }
+unicode-width = { workspace = true }
 
 [dev-dependencies]
 biome_formatter_test = { path = "../biome_formatter_test" }
@@ -45,11 +31,41 @@ tests_macros = { path = "../tests_macros" }
 
 [features]
 schema = ["dep:schemars", "serde"]
-serde  = ["dep:serde"]
+serde = ["dep:serde"]
 
-# cargo-workspaces metadata
+[lib]
+path = "Source/lib.rs"
+
+[lints]
+workspace = true
+
+[package]
+description = "Biome's JavaScript formatter"
+name = "biome_js_formatter"
+version = "0.5.7"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.metadata]
+
 [package.metadata.workspaces]
 independent = true
 
-[lints]
+[package.repository]
 workspace = true

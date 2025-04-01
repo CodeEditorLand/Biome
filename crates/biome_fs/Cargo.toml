@@ -1,40 +1,55 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "A small wrapper around std::path::PathBuf contains additional information and convenient methods"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_fs"
-repository.workspace = true
-version = "0.5.7"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 biome_diagnostics = { workspace = true, features = ["std"] }
-camino            = { workspace = true }
-crossbeam         = { workspace = true }
-directories       = "6.0.0"
-enumflags2        = { workspace = true, features = ["serde"] }
-oxc_resolver      = { workspace = true }
-papaya            = { workspace = true }
-parking_lot       = { version = "0.12.3", features = ["arc_lock"] }
-path-absolutize   = { workspace = true }
-rayon             = { workspace = true }
-rustc-hash        = { workspace = true }
-schemars          = { workspace = true, optional = true }
-serde             = { workspace = true }
-smallvec          = { workspace = true }
-tracing           = { workspace = true }
+camino = { workspace = true }
+crossbeam = { workspace = true }
+directories = "6.0.0"
+enumflags2 = { workspace = true, features = ["serde"] }
+oxc_resolver = { workspace = true }
+papaya = { workspace = true }
+parking_lot = { version = "0.12.3", features = ["arc_lock"] }
+path-absolutize = { workspace = true }
+rayon = { workspace = true }
+rustc-hash = { workspace = true }
+schemars = { workspace = true, optional = true }
+serde = { workspace = true }
+smallvec = { workspace = true }
+tracing = { workspace = true }
 
 [dev-dependencies]
 serde_json = { workspace = true }
 
 [features]
 schema = ["dep:schemars", "serde", "biome_diagnostics/schema"]
-serde  = ["camino/serde1"]
+serde = ["camino/serde1"]
+
+[lib]
+path = "Source/lib.rs"
 
 [lints]
+workspace = true
+
+[package]
+description = "A small wrapper around std::path::PathBuf contains additional information and convenient methods"
+name = "biome_fs"
+version = "0.5.7"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.repository]
 workspace = true

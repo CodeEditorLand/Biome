@@ -1,37 +1,54 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "Biome's custom Rowan definition"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_rowan"
-repository.workspace = true
-version = "0.5.7"
+[[bench]]
+harness = false
+name = "mutation"
 
 [dependencies]
 biome_text_edit = { workspace = true }
 biome_text_size = { workspace = true }
-countme         = { workspace = true }
-hashbrown       = { version = "0.15.2", features = ["inline-more", "raw-entry"], default-features = false }
-rustc-hash      = { workspace = true }
-schemars        = { workspace = true, optional = true }
-serde           = { workspace = true, optional = true }
+countme = { workspace = true }
+hashbrown = { version = "0.15.2", features = ["inline-more", "raw-entry"], default-features = false }
+rustc-hash = { workspace = true }
+schemars = { workspace = true, optional = true }
+serde = { workspace = true, optional = true }
 
 [dev-dependencies]
-iai               = "=0.1.1"
-quickcheck        = { workspace = true }
+iai = "=0.1.1"
+quickcheck = { workspace = true }
 quickcheck_macros = { workspace = true }
 serde_json = { workspace = true }
 
 [features]
 schema = ["dep:schemars", "serde"]
-serde  = ["dep:serde", "biome_text_size/serde", "biome_text_size/serde"]
+serde = ["dep:serde", "biome_text_size/serde", "biome_text_size/serde"]
 
-[[bench]]
-harness = false
-name = "mutation"
+[lib]
+path = "Source/lib.rs"
 
 [lints]
+workspace = true
+
+[package]
+description = "Biome's custom Rowan definition"
+name = "biome_rowan"
+version = "0.5.7"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.repository]
 workspace = true

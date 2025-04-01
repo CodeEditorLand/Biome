@@ -1,18 +1,3 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "Biome's language server protocol"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_lsp"
-publish = false
-repository.workspace = true
-version = "0.0.0"
-
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
-
 [dependencies]
 anyhow = { workspace = true }
 biome_analyze = { workspace = true }
@@ -22,23 +7,53 @@ biome_deserialize = { workspace = true }
 biome_diagnostics = { workspace = true }
 biome_fs = { workspace = true }
 biome_lsp_converters = { workspace = true }
-biome_rowan          = { workspace = true }
-biome_service        = { workspace = true }
-biome_text_edit      = { workspace = true }
-camino               = { workspace = true }
-crossbeam            = { workspace = true }
-futures              = "0.3.31"
-papaya               = { workspace = true }
-rustc-hash           = { workspace = true }
-serde                = { workspace = true, features = ["derive"] }
-serde_json           = { workspace = true }
-tokio                = { workspace = true, features = ["rt", "io-std"] }
-tower-lsp            = { version = "0.20.0" }
-tracing              = { workspace = true, features = ["attributes"] }
+biome_rowan = { workspace = true }
+biome_service = { workspace = true }
+biome_text_edit = { workspace = true }
+camino = { workspace = true }
+crossbeam = { workspace = true }
+futures = "0.3.31"
+papaya = { workspace = true }
+rustc-hash = { workspace = true }
+serde = { workspace = true, features = ["derive"] }
+serde_json = { workspace = true }
+tokio = { workspace = true, features = ["rt", "io-std"] }
+tower-lsp = { version = "0.20.0" }
+tracing = { workspace = true, features = ["attributes"] }
 
 [dev-dependencies]
 tokio = { workspace = true, features = ["rt", "rt-multi-thread", "macros"] }
 tower = { version = "0.4.13", features = ["timeout"] }
 
+[lib]
+path = "Source/lib.rs"
+
 [lints]
+workspace = true
+
+[package]
+description = "Biome's language server protocol"
+name = "biome_lsp"
+publish = false
+version = "0.0.0"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.repository]
 workspace = true

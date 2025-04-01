@@ -1,10 +1,3 @@
-[package]
-description = "Internal script to make sure that the metadata or the rules are correct"
-edition     = "2024"
-name        = "rules_check"
-publish     = false
-version     = "0.0.0"
-
 [dependencies]
 anyhow = { workspace = true }
 biome_analyze = { workspace = true }
@@ -17,20 +10,29 @@ biome_deserialize = { workspace = true }
 biome_diagnostics = { workspace = true }
 biome_fs = { workspace = true }
 biome_graphql_analyze = { workspace = true }
-biome_graphql_parser  = { workspace = true }
-biome_graphql_syntax  = { workspace = true }
-biome_js_analyze      = { workspace = true }
-biome_js_parser       = { workspace = true }
-biome_js_syntax       = { workspace = true }
-biome_json_analyze    = { workspace = true }
-biome_json_factory    = { workspace = true }
-biome_json_parser     = { workspace = true }
-biome_json_syntax     = { workspace = true }
-biome_rowan           = { workspace = true }
-biome_service         = { workspace = true }
-camino                = { workspace = true }
-pulldown-cmark        = "0.13.0"
+biome_graphql_parser = { workspace = true }
+biome_graphql_syntax = { workspace = true }
+biome_js_analyze = { workspace = true }
+biome_js_parser = { workspace = true }
+biome_js_syntax = { workspace = true }
+biome_json_analyze = { workspace = true }
+biome_json_factory = { workspace = true }
+biome_json_parser = { workspace = true }
+biome_json_syntax = { workspace = true }
+biome_rowan = { workspace = true }
+biome_service = { workspace = true }
+camino = { workspace = true }
+pulldown-cmark = "0.13.0"
 
+[lib]
+path = "Source/lib.rs"
 
 [lints]
 workspace = true
+
+[package]
+description = "Internal script to make sure that the metadata or the rules are correct"
+edition = "2024"
+name = "rules_check"
+publish = false
+version = "0.0.0"

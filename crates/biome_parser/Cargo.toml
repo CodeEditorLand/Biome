@@ -1,15 +1,3 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "Biome's parser shared infrastructure"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_parser"
-repository.workspace = true
-version = "0.5.7"
-
 [dependencies]
 biome_console = { workspace = true }
 biome_diagnostics = { workspace = true }
@@ -19,5 +7,34 @@ drop_bomb = { version = "0.1.5" }
 enumflags2 = { workspace = true }
 unicode-bom = { workspace = true }
 
+[lib]
+path = "Source/lib.rs"
+
 [lints]
+workspace = true
+
+[package]
+description = "Biome's parser shared infrastructure"
+name = "biome_parser"
+version = "0.5.7"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.repository]
 workspace = true

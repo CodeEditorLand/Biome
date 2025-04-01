@@ -1,20 +1,3 @@
-[package]
-edition = "2024"
-name    = "xtask_libs_bench"
-publish = false
-version = "0.0.0"
-
-[dependencies]
-regex = { workspace = true }
-
-[dev-dependencies]
-criterion    = "=0.5.1"
-fastbloom-rs = "=0.5.9"
-fst          = "=0.4.7"
-iai          = "=0.1.1"
-memchr       = "=2.7.4"
-qp-trie      = "=0.8.2"
-
 [[bench]]
 harness = false
 name = "contains_iai"
@@ -29,5 +12,22 @@ name = "contains_iai"
 path = "bins/contains_iai.rs"
 test = false
 
+[dependencies]
+regex = { workspace = true }
+
+[dev-dependencies]
+criterion = "=0.5.1"
+fastbloom-rs = "=0.5.9"
+fst = "=0.4.7"
+iai = "=0.1.1"
+memchr = "=2.7.4"
+qp-trie = "=0.8.2"
+
 [lints]
 workspace = true
+
+[package]
+edition = "2024"
+name = "xtask_libs_bench"
+publish = false
+version = "0.0.0"

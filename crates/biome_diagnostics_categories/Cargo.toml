@@ -1,25 +1,42 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "Diagnostic categories for biome_diagnostics"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_diagnostics_categories"
-repository.workspace = true
-version = "0.5.7"
+[build-dependencies]
+quote = { version = "1.0.14" }
 
 [dependencies]
 schemars = { workspace = true, optional = true }
 serde = { workspace = true, optional = true }
 
-[build-dependencies]
-quote = { version = "1.0.14" }
-
 [features]
 schema = ["dep:schemars", "serde"]
-serde  = ["dep:serde"]
+serde = ["dep:serde"]
+
+[lib]
+path = "Source/lib.rs"
 
 [lints]
+workspace = true
+
+[package]
+description = "Diagnostic categories for biome_diagnostics"
+name = "biome_diagnostics_categories"
+version = "0.5.7"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.repository]
 workspace = true

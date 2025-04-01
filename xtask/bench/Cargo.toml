@@ -1,55 +1,7 @@
-[package]
-edition = "2024"
-name    = "xtask_bench"
-publish = false
-version = "0.0.0"
-
-[dependencies]
-biome_analyze = { workspace = true }
-biome_css_analyze = { workspace = true }
-biome_css_formatter = { workspace = true }
-biome_css_parser = { workspace = true }
-biome_css_syntax = { workspace = true }
-biome_diagnostics = { workspace = true }
-biome_formatter = { workspace = true }
-biome_graphql_formatter = { workspace = true }
-biome_graphql_parser    = { workspace = true }
-biome_graphql_syntax    = { workspace = true }
-biome_grit_patterns     = { workspace = true }
-biome_html_formatter    = { workspace = true }
-biome_html_parser       = { workspace = true }
-biome_html_syntax       = { workspace = true }
-biome_js_analyze        = { workspace = true }
-biome_js_formatter      = { workspace = true }
-biome_js_parser         = { workspace = true }
-biome_js_syntax         = { workspace = true }
-biome_json_formatter    = { workspace = true }
-biome_json_parser       = { workspace = true }
-biome_json_syntax       = { workspace = true }
-biome_parser            = { workspace = true }
-biome_rowan             = { workspace = true }
-camino                  = { workspace = true }
-
-ansi_rgb                  = "0.2.0"
-codspeed-criterion-compat = { version = "2.8.1", optional = true }
-criterion                 = "0.5.1"
-ureq                      = "3.0.8"
-url                       = "2.5.4"
-
-[target.'cfg(target_os = "windows")'.dependencies]
-mimalloc = { version = "0.1.43" }
-
-[target.'cfg(all(target_family="unix", not(all(target_arch = "aarch64", target_env = "musl"))))'.dependencies]
-tikv-jemallocator = "0.6.0"
-
-[features]
-codspeed = ["codspeed-criterion-compat"]
-
 [[bench]]
 harness = false
 name = "js_analyzer"
 
-# JavaScript benches
 [[bench]]
 harness = false
 name = "js_parser"
@@ -58,7 +10,6 @@ name = "js_parser"
 harness = false
 name = "js_formatter"
 
-# JSON benches
 [[bench]]
 harness = false
 name = "json_parser"
@@ -67,7 +18,6 @@ name = "json_parser"
 harness = false
 name = "json_formatter"
 
-# CSS benches
 [[bench]]
 harness = false
 name = "css_parser"
@@ -80,7 +30,6 @@ name = "css_formatter"
 harness = false
 name = "css_analyzer"
 
-# GraphQL benchs
 [[bench]]
 harness = false
 name = "graphql_parser"
@@ -89,19 +38,72 @@ name = "graphql_parser"
 harness = false
 name = "graphql_formatter"
 
-# GritQL benches
 [[bench]]
 harness = false
 name = "gritql_search"
 
-# HTML benches
 [[bench]]
 harness = false
-name    = "html_parser"
+name = "html_parser"
 
 [[bench]]
 harness = false
-name    = "html_formatter"
+name = "html_formatter"
+
+[dependencies]
+ansi_rgb = "0.2.0"
+biome_analyze = { workspace = true }
+biome_css_analyze = { workspace = true }
+biome_css_formatter = { workspace = true }
+biome_css_parser = { workspace = true }
+biome_css_syntax = { workspace = true }
+biome_diagnostics = { workspace = true }
+biome_formatter = { workspace = true }
+biome_graphql_formatter = { workspace = true }
+biome_graphql_parser = { workspace = true }
+biome_graphql_syntax = { workspace = true }
+biome_grit_patterns = { workspace = true }
+biome_html_formatter = { workspace = true }
+biome_html_parser = { workspace = true }
+biome_html_syntax = { workspace = true }
+biome_js_analyze = { workspace = true }
+biome_js_formatter = { workspace = true }
+biome_js_parser = { workspace = true }
+biome_js_syntax = { workspace = true }
+biome_json_formatter = { workspace = true }
+biome_json_parser = { workspace = true }
+biome_json_syntax = { workspace = true }
+biome_parser = { workspace = true }
+biome_rowan = { workspace = true }
+camino = { workspace = true }
+codspeed-criterion-compat = { version = "2.8.1", optional = true }
+criterion = "0.5.1"
+ureq = "3.0.8"
+url = "2.5.4"
+
+[features]
+codspeed = ["codspeed-criterion-compat"]
+
+[lib]
+path = "Source/lib.rs"
 
 [lints]
 workspace = true
+
+[package]
+edition = "2024"
+name = "xtask_bench"
+publish = false
+version = "0.0.0"
+
+[target]
+
+[target.'cfg(all(target_family="unix", not(all(target_arch = "aarch64", target_env = "musl"))))']
+
+[target.'cfg(all(target_family="unix", not(all(target_arch = "aarch64", target_env = "musl"))))'.dependencies]
+tikv-jemallocator = "0.6.0"
+
+[target.'cfg(target_os = "windows")']
+
+[target.'cfg(target_os = "windows")'.dependencies]
+mimalloc = { version = "0.1.43" }

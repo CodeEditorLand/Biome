@@ -1,15 +1,3 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "Biome's semantic model for JavaScript"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_js_semantic"
-repository.workspace = true
-version = "0.5.7"
-
 [dependencies]
 biome_js_syntax = { workspace = true }
 biome_rowan = { workspace = true }
@@ -22,5 +10,34 @@ biome_console = { path = "../biome_console" }
 biome_diagnostics = { path = "../biome_diagnostics" }
 biome_js_parser = { path = "../biome_js_parser" }
 
+[lib]
+path = "Source/lib.rs"
+
 [lints]
+workspace = true
+
+[package]
+description = "Biome's semantic model for JavaScript"
+name = "biome_js_semantic"
+version = "0.5.7"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.repository]
 workspace = true

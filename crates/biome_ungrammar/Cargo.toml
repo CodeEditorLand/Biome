@@ -1,14 +1,31 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "A DSL for describing concrete syntax trees"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_ungrammar"
-repository.workspace = true
-version = "0.3.1"
+[lib]
+path = "Source/lib.rs"
 
 [lints]
+workspace = true
+
+[package]
+description = "A DSL for describing concrete syntax trees"
+name = "biome_ungrammar"
+version = "0.3.1"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.repository]
 workspace = true

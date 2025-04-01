@@ -1,11 +1,14 @@
-[package]
-edition = "2024"
-name    = "xtask"
-publish = false
-version = "0.0.0"
-
 [dependencies]
 anyhow = { workspace = true }
 
+[lib]
+path = "Source/lib.rs"
+
 [lints]
 workspace = true
+
+[package]
+edition = "2024"
+name = "xtask"
+publish = false
+version = "0.0.0"

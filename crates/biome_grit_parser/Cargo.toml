@@ -1,15 +1,3 @@
-[package]
-authors.workspace = true
-categories.workspace = true
-description = "Biome's GritQL parser"
-edition.workspace = true
-homepage.workspace = true
-keywords.workspace = true
-license-file.workspace = true
-name = "biome_grit_parser"
-repository.workspace = true
-version = "0.1.0"
-
 [dependencies]
 biome_console = { workspace = true }
 biome_diagnostics = { workspace = true }
@@ -33,9 +21,39 @@ tests_macros = { workspace = true }
 [features]
 schemars = ["dep:schemars", "biome_grit_syntax/schema"]
 
-# cargo-workspaces metadata
+[lib]
+path = "Source/lib.rs"
+
+[lints]
+workspace = true
+
+[package]
+description = "Biome's GritQL parser"
+name = "biome_grit_parser"
+version = "0.1.0"
+
+[package.authors]
+workspace = true
+
+[package.categories]
+workspace = true
+
+[package.edition]
+workspace = true
+
+[package.homepage]
+workspace = true
+
+[package.keywords]
+workspace = true
+
+[package.license-file]
+workspace = true
+
+[package.metadata]
+
 [package.metadata.workspaces]
 independent = true
 
-[lints]
+[package.repository]
 workspace = true
