@@ -1,6 +1,6 @@
 [[bin]]
 name = "biome"
-path = "src/main.rs"
+path = "Source/main.rs"
 
 [dependencies]
 anyhow = { workspace = true }

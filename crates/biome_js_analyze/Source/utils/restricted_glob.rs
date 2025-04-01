@@ -139,8 +139,8 @@ impl biome_deserialize::Deserializable for RestrictedGlob {
 impl schemars::JsonSchema for RestrictedGlob {
 	fn schema_name() -> String { "Regex".to_string() }
 
-	fn json_schema(gen:&mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-		String::json_schema(gen)
+	fn json_schema(r#gen:&mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+		String::json_schema(r#gen)
 	}
 }
 

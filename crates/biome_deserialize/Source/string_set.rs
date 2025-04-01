@@ -32,8 +32,8 @@ impl StringSet {
 impl schemars::JsonSchema for StringSet {
 	fn schema_name() -> String { String::from("StringSet") }
 
-	fn json_schema(gen:&mut schemars::gen::SchemaGenerator) -> schemars::schema::Schema {
-		<std::collections::HashSet<String>>::json_schema(gen)
+	fn json_schema(r#gen:&mut schemars::r#gen::SchemaGenerator) -> schemars::schema::Schema {
+		<std::collections::HashSet<String>>::json_schema(r#gen)
 	}
 }
 
