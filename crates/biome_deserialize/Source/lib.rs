@@ -427,10 +427,10 @@ pub trait DeserializationVisitor: Sized {
 /// A small type to interrogate the result of a JSON deserialization
 #[derive(Debug, Default)]
 pub struct Deserialized<T> {
-	/// Diagnostics emitted during the parsing and deserialization phase
-	diagnostics: Vec<Error>,
-	/// The deserialized result, or `None` if the deserialization failed
-	deserialized: Option<T>,
+    /// Diagnostics emitted during the parsing and deserialization phase
+    diagnostics: Vec<Error>,
+    /// The deserialized result, or `None` if the deserialization failed
+    pub deserialized: Option<T>,
 }
 
 impl<T> Deserialized<T> {

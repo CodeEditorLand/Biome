@@ -10,8 +10,9 @@ tracing = { workspace = true }
 unicode-bom = { workspace = true }
 
 [dev-dependencies]
-insta = { workspace = true }
-quickcheck = { workspace = true }
+biome_test_utils  = { workspace = true }
+insta             = { workspace = true }
+quickcheck        = { workspace = true }
 quickcheck_macros = { workspace = true }
 tests_macros = { path = "../tests_macros" }
 

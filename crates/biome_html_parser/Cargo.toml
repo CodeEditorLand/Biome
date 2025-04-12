@@ -29,20 +29,9 @@ version = "0.0.1"
 [package.authors]
 workspace = true
 
-[package.categories]
-workspace = true
-
-[package.edition]
-workspace = true
-
-[package.homepage]
-workspace = true
-
-[package.keywords]
-workspace = true
-
-[package.license-file]
-workspace = true
-
-[package.repository]
-workspace = true
+[dev-dependencies]
+biome_test_utils  = { workspace = true }
+insta             = { workspace = true }
+quickcheck        = { workspace = true }
+quickcheck_macros = { workspace = true }
+tests_macros      = { path = "../tests_macros" }

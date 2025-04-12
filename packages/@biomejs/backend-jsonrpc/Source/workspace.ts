@@ -101,7 +101,7 @@ export interface AssistConfiguration {
 	 */
 	actions?: Actions;
 	/**
-	 * Whether Biome should enable assist via LSP.
+	 * Whether Biome should enable assist via LSP and CLI.
 	 */
 	enabled?: Bool;
 	/**
@@ -554,6 +554,10 @@ export interface HtmlFormatterConfiguration {
 	 */
 	lineWidth?: LineWidth;
 	/**
+	 * Whether void elements should be self-closed. Defaults to never.
+	 */
+	selfCloseVoidElements?: SelfCloseVoidElements;
+	/**
 	 * Whether to account for whitespace sensitivity when formatting HTML (and its super languages). Defaults to "css".
 	 */
 	whitespaceSensitivity?: WhitespaceSensitivity;
@@ -827,6 +831,10 @@ When true, the content of `<script>` and `<style>` tags will be indented one lev
 	 */
 export type IndentScriptAndStyle = boolean;
 /**
+ * Controls whether void-elements should be self closed
+ */
+export type SelfCloseVoidElements = "never" | "always";
+/**
 	* Whitespace sensitivity for HTML formatting.
 
 The following two cases won't produce the same output:
@@ -965,10 +973,6 @@ export interface A11y {
 	 * Enforce that autoFocus prop is not used on elements.
 	 */
 	noAutofocus?: RuleFixConfiguration_for_Null;
-	/**
-	 * Disallow target="_blank" attribute without rel="noreferrer"
-	 */
-	noBlankTarget?: RuleFixConfiguration_for_AllowDomainOptions;
 	/**
 	 * Enforces that no distracting elements are used.
 	 */
@@ -1320,7 +1324,7 @@ export interface Correctness {
 	 */
 	noPrecisionLoss?: RuleConfiguration_for_Null;
 	/**
-	 * Restricts imports of private exports.
+	 * Restrict imports of private exports.
 	 */
 	noPrivateImports?: RuleConfiguration_for_NoPrivateImportsOptions;
 	/**
@@ -1545,6 +1549,10 @@ export interface Nursery {
 	 */
 	noImportCycles?: RuleConfiguration_for_Null;
 	/**
+	 * Disallow the use of the !important style.
+	 */
+	noImportantStyles?: RuleFixConfiguration_for_Null;
+	/**
 	 * Disallows the use of irregular whitespace characters.
 	 */
 	noIrregularWhitespace?: RuleConfiguration_for_Null;
@@ -1572,6 +1580,10 @@ export interface Nursery {
 	 * Disallow the use of process global.
 	 */
 	noProcessGlobal?: RuleFixConfiguration_for_Null;
+	/**
+	 * Disallow the use of configured elements.
+	 */
+	noRestrictedElements?: RuleConfiguration_for_NoRestrictedElementsOptions;
 	/**
 	 * Disallow specified modules when loaded by import or require.
 	 */
@@ -1616,6 +1628,10 @@ export interface Nursery {
 	 * Disallow unknown type selectors.
 	 */
 	noUnknownTypeSelector?: RuleConfiguration_for_Null;
+	/**
+	 * Warn when importing non-existing exports.
+	 */
+	noUnresolvedImports?: RuleConfiguration_for_Null;
 	/**
 	 * Prevent duplicate polyfills from Polyfill.io.
 	 */
@@ -1770,6 +1786,10 @@ export interface Performance {
  * A list of rules that belong to this group
  */
 export interface Security {
+	/**
+	 * Disallow target="_blank" attribute without rel="noopener".
+	 */
+	noBlankTarget?: RuleFixConfiguration_for_NoBlankTargetOptions;
 	/**
 	 * Prevent the usage of dangerous JSX props
 	 */
@@ -2289,11 +2309,6 @@ export interface RuleAssistWithOptions_for_Null {
 export type RuleFixConfiguration_for_Null =
 	| RulePlainConfiguration
 	| RuleWithFixOptions_for_Null;
-
-export type RuleFixConfiguration_for_AllowDomainOptions =
-	| RulePlainConfiguration
-	| RuleWithFixOptions_for_AllowDomainOptions;
-
 export type RuleConfiguration_for_NoLabelWithoutControlOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_NoLabelWithoutControlOptions;
@@ -2338,6 +2353,9 @@ export type RuleFixConfiguration_for_UseImportExtensionsOptions =
 export type RuleConfiguration_for_NoBitwiseOperatorsOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_NoBitwiseOperatorsOptions;
+export type RuleConfiguration_for_NoRestrictedElementsOptions =
+	| RulePlainConfiguration
+	| RuleWithOptions_for_NoRestrictedElementsOptions;
 export type RuleConfiguration_for_RestrictedImportsOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_RestrictedImportsOptions;
@@ -2367,7 +2385,9 @@ export type RuleFixConfiguration_for_UtilityClassSortingOptions =
 export type RuleConfiguration_for_UseValidAutocompleteOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_UseValidAutocompleteOptions;
-
+export type RuleFixConfiguration_for_NoBlankTargetOptions =
+	| RulePlainConfiguration
+	| RuleWithFixOptions_for_NoBlankTargetOptions;
 export type RuleConfiguration_for_RestrictedGlobalsOptions =
 	| RulePlainConfiguration
 	| RuleWithOptions_for_RestrictedGlobalsOptions;
@@ -2399,6 +2419,7 @@ export type RuleFixConfiguration_for_NoDoubleEqualsOptions =
 	| RuleWithFixOptions_for_NoDoubleEqualsOptions;
 export interface Options {
 	groups?: ImportGroups;
+	typePlacement?: TypePlacement;
 }
 export type RulePlainConfiguration = "off" | "on" | "info" | "warn" | "error";
 export interface RuleWithFixOptions_for_Null {
@@ -2414,20 +2435,6 @@ export interface RuleWithFixOptions_for_Null {
 	 * Rule's options
 	 */
 	options: null;
-}
-export interface RuleWithFixOptions_for_AllowDomainOptions {
-	/**
-	 * The kind of the code actions emitted by the rule
-	 */
-	fix?: FixKind;
-	/**
-	 * The severity of the emitted diagnostics by the rule
-	 */
-	level: RulePlainConfiguration;
-	/**
-	 * Rule's options
-	 */
-	options: AllowDomainOptions;
 }
 export interface RuleWithOptions_for_NoLabelWithoutControlOptions {
 	/**
@@ -2575,6 +2582,16 @@ export interface RuleWithOptions_for_NoBitwiseOperatorsOptions {
 	 */
 	options: NoBitwiseOperatorsOptions;
 }
+export interface RuleWithOptions_for_NoRestrictedElementsOptions {
+	/**
+	 * The severity of the emitted diagnostics by the rule
+	 */
+	level: RulePlainConfiguration;
+	/**
+	 * Rule's options
+	 */
+	options: NoRestrictedElementsOptions;
+}
 export interface RuleWithOptions_for_RestrictedImportsOptions {
 	/**
 	 * The severity of the emitted diagnostics by the rule
@@ -2662,6 +2679,20 @@ export interface RuleWithOptions_for_UseValidAutocompleteOptions {
 	 * Rule's options
 	 */
 	options: UseValidAutocompleteOptions;
+}
+export interface RuleWithFixOptions_for_NoBlankTargetOptions {
+	/**
+	 * The kind of the code actions emitted by the rule
+	 */
+	fix?: FixKind;
+	/**
+	 * The severity of the emitted diagnostics by the rule
+	 */
+	level: RulePlainConfiguration;
+	/**
+	 * Rule's options
+	 */
+	options: NoBlankTargetOptions;
 }
 export interface RuleWithOptions_for_RestrictedGlobalsOptions {
 	/**
@@ -2764,17 +2795,11 @@ export interface RuleWithFixOptions_for_NoDoubleEqualsOptions {
 	options: NoDoubleEqualsOptions;
 }
 export type ImportGroups = ImportGroup[];
+export type TypePlacement = "mixed" | "typesFirst";
 /**
  * Used to identify the kind of code action emitted by a rule
  */
 export type FixKind = "none" | "safe" | "unsafe";
-
-export interface AllowDomainOptions {
-	/**
-	 * List of domains to allow `target="_blank"` without `rel="noreferrer"`
-	 */
-	allowDomains: string[];
-}
 export interface NoLabelWithoutControlOptions {
 	/**
 	 * Array of component names that should be considered the same as an `input` element.
@@ -2885,6 +2910,12 @@ export interface NoBitwiseOperatorsOptions {
 	 */
 	allow: string[];
 }
+export interface NoRestrictedElementsOptions {
+	/**
+	 * Elements to restrict. Each key is the element name, and the value is the message to show when the element is used.
+	 */
+	elements: CustomRestrictedElements;
+}
 /**
  * Options for the rule `noRestrictedImports`.
  */
@@ -2937,6 +2968,16 @@ export interface UseValidAutocompleteOptions {
 	 * `input` like custom components that should be checked.
 	 */
 	inputComponents?: string[];
+}
+export interface NoBlankTargetOptions {
+	/**
+	 * List of domains where `target="_blank"` is allowed without `rel="noopener"`.
+	 */
+	allowDomains: string[];
+	/**
+	 * Whether `noreferrer` is allowed in addition to `noopener`.
+	 */
+	allowNoReferrer?: boolean;
 }
 /**
  * Options for the rule `noRestrictedGlobals`.
@@ -3050,6 +3091,7 @@ For example, for React's `useRef()` hook the value would be `true`, while for `u
 	 */
 	stableResult?: StableHookResult;
 }
+export type CustomRestrictedElements = Record<string, string>;
 export type CustomRestrictedImport = string | CustomRestrictedImportOptions;
 export type CustomRestrictedType = string | CustomRestrictedTypeOptions;
 export type Accessibility = "noPublic" | "explicit" | "none";
@@ -3219,7 +3261,6 @@ export type Category =
 	| "lint/a11y/noAriaHiddenOnFocusable"
 	| "lint/a11y/noAriaUnsupportedElements"
 	| "lint/a11y/noAutofocus"
-	| "lint/a11y/noBlankTarget"
 	| "lint/a11y/noDistractingElements"
 	| "lint/a11y/noHeaderScope"
 	| "lint/a11y/noInteractiveElementToNoninteractiveRole"
@@ -3249,13 +3290,13 @@ export type Category =
 	| "lint/a11y/useValidAriaRole"
 	| "lint/a11y/useValidAriaValues"
 	| "lint/a11y/useValidLang"
+	| "lint/complexity/noAdjacentSpacesInRegex"
 	| "lint/complexity/noBannedTypes"
 	| "lint/complexity/noEmptyTypeParameters"
 	| "lint/complexity/noExcessiveCognitiveComplexity"
 	| "lint/complexity/noExcessiveNestedTestSuites"
 	| "lint/complexity/noExtraBooleanCast"
 	| "lint/complexity/noForEach"
-	| "lint/complexity/noAdjacentSpacesInRegex"
 	| "lint/complexity/noStaticOnlyClass"
 	| "lint/complexity/noThisInStatic"
 	| "lint/complexity/noUselessCatch"
@@ -3316,7 +3357,6 @@ export type Category =
 	| "lint/correctness/noUnknownProperty"
 	| "lint/correctness/noUnknownUnit"
 	| "lint/correctness/noUnmatchableAnbSelector"
-	| "lint/correctness/noUselessContinue"
 	| "lint/correctness/noUnreachable"
 	| "lint/correctness/noUnreachableSuper"
 	| "lint/correctness/noUnsafeFinally"
@@ -3326,6 +3366,7 @@ export type Category =
 	| "lint/correctness/noUnusedLabels"
 	| "lint/correctness/noUnusedPrivateClassMembers"
 	| "lint/correctness/noUnusedVariables"
+	| "lint/correctness/noUselessContinue"
 	| "lint/correctness/noVoidElementsWithChildren"
 	| "lint/correctness/noVoidTypeReturn"
 	| "lint/correctness/useArrayLiterals"
@@ -3351,9 +3392,10 @@ export type Category =
 	| "lint/nursery/noDuplicateAtImportRules"
 	| "lint/nursery/noDuplicateCustomProperties"
 	| "lint/nursery/noDuplicateElseIf"
-	| "lint/nursery/noDuplicateProperties"
 	| "lint/nursery/noDuplicateFields"
+	| "lint/nursery/noDuplicateProperties"
 	| "lint/nursery/noDynamicNamespaceImportAccess"
+	| "lint/nursery/noRestrictedElements"
 	| "lint/nursery/noEnum"
 	| "lint/nursery/noExportedImports"
 	| "lint/nursery/noFloatingPromises"
@@ -3363,6 +3405,7 @@ export type Category =
 	| "lint/nursery/noImgElement"
 	| "lint/nursery/noImportCycles"
 	| "lint/nursery/noImportantInKeyframe"
+	| "lint/nursery/noImportantStyles"
 	| "lint/nursery/noInvalidDirectionInLinearGradient"
 	| "lint/nursery/noInvalidGridAreas"
 	| "lint/nursery/noInvalidPositionAtImportRule"
@@ -3395,6 +3438,7 @@ export type Category =
 	| "lint/nursery/noUnknownTypeSelector"
 	| "lint/nursery/noUnknownUnit"
 	| "lint/nursery/noUnmatchableAnbSelector"
+	| "lint/nursery/noUnresolvedImports"
 	| "lint/nursery/noUnusedFunctionParameters"
 	| "lint/nursery/noUnwantedPolyfillio"
 	| "lint/nursery/noUselessEscapeInRegex"
@@ -3435,6 +3479,7 @@ export type Category =
 	| "lint/performance/noDelete"
 	| "lint/performance/noReExportAll"
 	| "lint/performance/useTopLevelRegex"
+	| "lint/security/noBlankTarget"
 	| "lint/security/noDangerouslySetInnerHtml"
 	| "lint/security/noDangerouslySetInnerHtmlWithChildren"
 	| "lint/security/noGlobalEval"
@@ -3578,8 +3623,7 @@ export type Category =
 	| "internalError/panic"
 	| "reporter/parse"
 	| "reporter/format"
-	| "reporter/assist"
-	| "reporter/linter"
+	| "reporter/violations"
 	| "parse"
 	| "lint"
 	| "lint/a11y"

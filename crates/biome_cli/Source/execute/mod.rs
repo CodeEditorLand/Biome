@@ -15,7 +15,9 @@ use crate::reporter::json::{JsonReporter, JsonReporterVisitor};
 use crate::reporter::junit::{JunitReporter, JunitReporterVisitor};
 use crate::reporter::summary::{SummaryReporter, SummaryReporterVisitor};
 use crate::reporter::terminal::{ConsoleReporter, ConsoleReporterVisitor};
-use crate::{CliDiagnostic, CliSession, DiagnosticsPayload, Reporter};
+use crate::{
+    CliDiagnostic, CliSession, DiagnosticsPayload, Reporter, TEMPORARY_INTERNAL_REPORTER_FILE,
+};
 use biome_configuration::analyzer::RuleSelector;
 use biome_console::{ConsoleExt, markup};
 use biome_diagnostics::SerdeJsonError;
@@ -24,8 +26,8 @@ use biome_fs::BiomePath;
 use biome_grit_patterns::GritTargetLanguage;
 use biome_service::projects::ProjectKey;
 use biome_service::workspace::{
-    FeatureName, FeaturesBuilder, FileContent, FixFileMode, FormatFileParams, OpenFileParams,
-    PatternId,
+    CloseFileParams, FeatureName, FeaturesBuilder, FileContent, FixFileMode, FormatFileParams,
+    OpenFileParams, PatternId,
 };
 use camino::{Utf8Path, Utf8PathBuf};
 use std::ffi::OsString;
@@ -105,6 +107,9 @@ pub enum TraversalMode {
         stdin: Option<Stdin>,
         /// A flag to know vcs integrated options such as `--staged` or `--changed` are enabled
         vcs_targeted: VcsTargeted,
+
+        /// Whether assist diagnostics should be promoted to error, and fail the CLI
+        enforce_assist: bool,
     },
     /// This mode is enabled when running the command `biome lint`
     Lint {
@@ -141,6 +146,8 @@ pub enum TraversalMode {
         environment: Option<ExecutionEnvironment>,
         /// A flag to know vcs integrated options such as `--staged` or `--changed` are enabled
         vcs_targeted: VcsTargeted,
+        /// Whether assist diagnostics should be promoted to error, and fail the CLI
+        enforce_assist: bool,
     },
     /// This mode is enabled when running the command `biome format`
     Format {
@@ -279,7 +286,11 @@ impl Execution {
         }
     }
 
-    pub(crate) fn new_ci(project_key: ProjectKey, vcs_targeted: VcsTargeted) -> Self {
+    pub(crate) fn new_ci(
+        project_key: ProjectKey,
+        vcs_targeted: VcsTargeted,
+        enforce_assist: bool,
+    ) -> Self {
         // Ref: https://docs.github.com/actions/learn-github-actions/variables#default-environment-variables
         let is_github = std::env::var("GITHUB_ACTIONS")
             .ok()
@@ -295,6 +306,7 @@ impl Execution {
                     None
                 },
                 vcs_targeted,
+                enforce_assist,
             },
             max_diagnostics: 20,
         }
@@ -485,6 +497,14 @@ impl Execution {
 
         result
     }
+
+    pub(crate) fn should_enforce_assist(&self) -> bool {
+        match self.traversal_mode {
+            TraversalMode::CI { enforce_assist, .. } => enforce_assist,
+            TraversalMode::Check { enforce_assist, .. } => enforce_assist,
+            _ => false,
+        }
+    }
 }
 
 /// Based on the [mode](TraversalMode), the function might launch a traversal of the file system
@@ -604,7 +624,7 @@ pub fn execute_mode(
                         error,
                     )))
                 })?;
-                let report_file = BiomePath::new("_report_output.json");
+                let report_file = BiomePath::new(TEMPORARY_INTERNAL_REPORTER_FILE);
                 session.app.workspace.open_file(OpenFileParams {
                     project_key,
                     content: FileContent::from_client(content),
@@ -619,6 +639,10 @@ pub fn execute_mode(
                 console.log(markup! {
                     {code.as_code()}
                 });
+                session.app.workspace.close_file(CloseFileParams {
+                    project_key,
+                    path: report_file,
+                })?;
             } else {
                 console.log(markup! {
                     {buffer}
