@@ -31,7 +31,7 @@
 	"dependencies": {},
 	"devDependencies": {
 		"@playform/build": "0.2.3",
-		"@types/node": "22.14.0",
+		"@types/node": "22.14.1",
 		"read-package-up": "11.0.0"
 	},
 	"publishConfig": {
