@@ -31,7 +31,7 @@
 	"dependencies": {},
 	"devDependencies": {
 		"@changesets/changelog-github": "0.5.1",
-		"@changesets/cli": "2.29.0",
+		"@changesets/cli": "2.29.2",
 		"@playform/build": "0.2.3"
 	},
 	"publishConfig": {
