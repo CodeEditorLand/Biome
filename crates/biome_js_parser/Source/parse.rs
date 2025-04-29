@@ -16,17 +16,21 @@ pub struct Parse<T> {
 }
 
 impl<T> Parse<T> {
-	pub fn new_module(root: JsSyntaxNode, errors: Vec<ParseDiagnostic>) -> Parse<T> {
-		Self::new(root, errors)
-	}
+    pub fn new_module(root: JsSyntaxNode, errors: Vec<ParseDiagnostic>) -> Self {
+        Self::new(root, errors)
+    }
 
-	pub fn new_script(root: JsSyntaxNode, errors: Vec<ParseDiagnostic>) -> Parse<T> {
-		Self::new(root, errors)
-	}
+    pub fn new_script(root: JsSyntaxNode, errors: Vec<ParseDiagnostic>) -> Self {
+        Self::new(root, errors)
+    }
 
-	pub fn new(root: JsSyntaxNode, errors: Vec<ParseDiagnostic>) -> Parse<T> {
-		Parse { root, errors, _ty: PhantomData }
-	}
+    pub fn new(root: JsSyntaxNode, errors: Vec<ParseDiagnostic>) -> Self {
+        Self {
+            root,
+            errors,
+            _ty: PhantomData,
+        }
+    }
 
 	pub fn cast<N: AstNode<Language = JsLanguage>>(self) -> Option<Parse<N>> {
 		if N::can_cast(self.syntax().kind()) {

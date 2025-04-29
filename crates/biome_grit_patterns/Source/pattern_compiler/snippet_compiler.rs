@@ -509,13 +509,13 @@ enum SnippetValue {
 }
 
 impl From<SnippetValue> for Pattern<GritQueryContext> {
-	fn from(value:SnippetValue) -> Self {
-		match value {
-			SnippetValue::Dots => Pattern::Dots,
-			SnippetValue::Underscore => Pattern::Underscore,
-			SnippetValue::Variable(v) => Pattern::Variable(v),
-		}
-	}
+    fn from(value: SnippetValue) -> Self {
+        match value {
+            SnippetValue::Dots => Self::Dots,
+            SnippetValue::Underscore => Self::Underscore,
+            SnippetValue::Variable(v) => Self::Variable(v),
+        }
+    }
 }
 
 fn text_to_var(

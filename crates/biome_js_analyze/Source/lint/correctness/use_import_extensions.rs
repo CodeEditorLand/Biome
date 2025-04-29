@@ -1,8 +1,10 @@
-use biome_module_graph::JsResolvedPath;
+use biome_module_graph::ResolvedPath;
 use camino::{Utf8Component, Utf8Path};
 use serde::{Deserialize, Serialize};
 
-use biome_analyze::{FixKind, Rule, RuleDiagnostic, context::RuleContext, declare_lint_rule};
+use biome_analyze::{
+    FixKind, Rule, RuleDiagnostic, RuleDomain, context::RuleContext, declare_lint_rule,
+};
 use biome_console::markup;
 use biome_deserialize_macros::Deserializable;
 use biome_js_factory::make;
@@ -117,6 +119,7 @@ declare_lint_rule! {
         language: "js",
         recommended: false,
         fix_kind: FixKind::Safe,
+        domains: &[RuleDomain::Project],
     }
 }
 
@@ -152,7 +155,7 @@ impl Rule for UseImportExtensions {
         let node = ctx.query();
         let resolved_path = module_info
             .get_import_path_by_js_node(node)
-            .and_then(JsResolvedPath::as_path)?;
+            .and_then(ResolvedPath::as_path)?;
 
         get_extensionless_import(node, resolved_path, force_js_extensions)
     }
@@ -227,6 +230,11 @@ fn get_extensionless_import(
         .file_stem()
         .is_some_and(|stem| stem.contains('.'));
     let existing_extension = path.extension();
+
+    if resolved_path_has_sub_extension && path.file_name()?.starts_with(resolved_path.file_name()?)
+    {
+        return None;
+    }
 
     if !resolved_path_has_sub_extension && existing_extension.is_some() {
         return None;

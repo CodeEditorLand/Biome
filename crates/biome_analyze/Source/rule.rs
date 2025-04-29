@@ -6,7 +6,6 @@ use crate::{
 };
 use biome_console::fmt::{Display, Formatter};
 use biome_console::{MarkupBuf, Padding, markup};
-use biome_diagnostics::advice::CodeSuggestionAdvice;
 use biome_diagnostics::location::AsSpan;
 use biome_diagnostics::{
     Advices, Category, Diagnostic, DiagnosticTags, Location, LogCategory, MessageAndDescription,
@@ -222,9 +221,9 @@ pub enum FixKind {
 impl Display for FixKind {
     fn fmt(&self, fmt: &mut biome_console::fmt::Formatter) -> std::io::Result<()> {
         match self {
-            FixKind::None => fmt.write_markup(markup!("none")),
-            FixKind::Safe => fmt.write_markup(markup!(<Success>"safe"</Success>)),
-            FixKind::Unsafe => fmt.write_markup(markup!(<Warn>"unsafe"</Warn>)),
+            Self::None => fmt.write_markup(markup!("none")),
+            Self::Safe => fmt.write_markup(markup!(<Success>"safe"</Success>)),
+            Self::Unsafe => fmt.write_markup(markup!(<Warn>"unsafe"</Warn>)),
         }
     }
 }
@@ -234,8 +233,8 @@ impl TryFrom<FixKind> for Applicability {
     fn try_from(value: FixKind) -> Result<Self, Self::Error> {
         match value {
             FixKind::None => Err("The fix kind is None"),
-            FixKind::Safe => Ok(Applicability::Always),
-            FixKind::Unsafe => Ok(Applicability::MaybeIncorrect),
+            FixKind::Safe => Ok(Self::Always),
+            FixKind::Unsafe => Ok(Self::MaybeIncorrect),
         }
     }
 }
@@ -340,7 +339,7 @@ impl PartialOrd for RuleSource {
 
 impl Ord for RuleSource {
     fn cmp(&self, other: &Self) -> Ordering {
-        if let (RuleSource::Eslint(self_rule), RuleSource::Eslint(other_rule)) = (self, other) {
+        if let (Self::Eslint(self_rule), Self::Eslint(other_rule)) = (self, other) {
             self_rule.cmp(other_rule)
         } else if self.is_eslint() {
             Ordering::Greater
@@ -499,16 +498,19 @@ pub enum RuleDomain {
     Solid,
     /// Next.js framework rules
     Next,
+    /// For rules that require querying multiple files inside a project
+    Project,
 }
 
 impl Display for RuleDomain {
     fn fmt(&self, fmt: &mut Formatter) -> std::io::Result<()> {
         // use lower case naming, it needs to match the name of the configuration
         match self {
-            RuleDomain::React => fmt.write_str("react"),
-            RuleDomain::Test => fmt.write_str("test"),
-            RuleDomain::Solid => fmt.write_str("solid"),
-            RuleDomain::Next => fmt.write_str("next"),
+            Self::React => fmt.write_str("react"),
+            Self::Test => fmt.write_str("test"),
+            Self::Solid => fmt.write_str("solid"),
+            Self::Next => fmt.write_str("next"),
+            Self::Project => fmt.write_str("project"),
         }
     }
 }
@@ -532,23 +534,24 @@ impl RuleDomain {
     /// If the array is empty, it means that the rules that belong to a certain domain won't enable themselves automatically.
     pub const fn manifest_dependencies(self) -> &'static [&'static (&'static str, &'static str)] {
         match self {
-            RuleDomain::React => &[&("react", ">=16.0.0")],
-            RuleDomain::Test => &[
+            Self::React => &[&("react", ">=16.0.0")],
+            Self::Test => &[
                 &("jest", ">=26.0.0"),
                 &("mocha", ">=8.0.0"),
                 &("ava", ">=2.0.0"),
                 &("vitest", ">=1.0.0"),
             ],
-            RuleDomain::Solid => &[&("solid", ">=1.0.0")],
-            RuleDomain::Next => &[&("next", ">=14.0.0")],
+            Self::Solid => &[&("solid", ">=1.0.0")],
+            Self::Next => &[&("next", ">=14.0.0")],
+            Self::Project => &[],
         }
     }
 
     /// Global identifiers that should be added to the `globals` of the [crate::AnalyzerConfiguration] type
     pub const fn globals(self) -> &'static [&'static str] {
         match self {
-            RuleDomain::React => &[],
-            RuleDomain::Test => &[
+            Self::React => &[],
+            Self::Test => &[
                 "after",
                 "afterAll",
                 "afterEach",
@@ -560,8 +563,9 @@ impl RuleDomain {
                 "expect",
                 "test",
             ],
-            RuleDomain::Solid => &[],
-            RuleDomain::Next => &[],
+            Self::Solid => &[],
+            Self::Next => &[],
+            Self::Project => &[],
         }
     }
 }
@@ -1283,7 +1287,6 @@ pub struct RuleAdvice {
     pub(crate) details: Vec<Detail>,
     pub(crate) notes: Vec<(LogCategory, MarkupBuf)>,
     pub(crate) suggestion_list: Option<SuggestionList>,
-    pub(crate) code_suggestion_list: Vec<CodeSuggestionAdvice<MarkupBuf>>,
 }
 
 #[derive(Clone, Debug, Default)]
@@ -1319,11 +1322,6 @@ impl Advices for RuleAdvice {
             visitor.record_list(&list)?;
         }
 
-        // finally, we print possible code suggestions on how to fix the issue
-        for suggestion in &self.code_suggestion_list {
-            suggestion.record(visitor)?;
-        }
-
         Ok(())
     }
 }
@@ -1349,12 +1347,6 @@ impl RuleDiagnostic {
             rule_advice: RuleAdvice::default(),
             severity: Severity::default(),
         }
-    }
-
-    /// Set an explicit plain-text summary for this diagnostic.
-    pub fn description(mut self, summary: impl Into<String>) -> Self {
-        self.message.set_description(summary.into());
-        self
     }
 
     /// Marks this diagnostic as deprecated code, which will
@@ -1385,7 +1377,7 @@ impl RuleDiagnostic {
 
     /// Attaches a label to this [`RuleDiagnostic`].
     ///
-    /// The given span has to be in the file that was provided while creating this [`RuleDiagnostic`].
+    /// The given span has to be in the file provided while creating this [`RuleDiagnostic`].
     pub fn label(mut self, span: impl AsSpan, msg: impl Display) -> Self {
         self.rule_advice.details.push(Detail {
             log_category: LogCategory::Info,
@@ -1449,11 +1441,11 @@ impl RuleDiagnostic {
         self
     }
 
-    /// Assigns an explicit severity.
+    /// Assigns explicit severity.
     ///
     /// In most cases, severity should _not_ be explicitly assigned, since rule
-    /// categories and configuration define the severity. Currently this is only
-    /// used for plugins to allow plugin authors to assign an explicit severity.
+    /// categories and configuration define the severity. Currently, this is only
+    /// used for plugins to allow plugin authors to assign explicit severity.
     pub fn with_severity(mut self, severity: Severity) -> Self {
         self.severity = severity;
         self

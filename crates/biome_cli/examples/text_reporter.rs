@@ -12,23 +12,39 @@ struct TextReport {
 }
 
 impl Reporter for TextReport {
-	fn write(self, visitor: &mut dyn ReporterVisitor) -> std::io::Result<()> {
-		let execution = Execution::new_format(self.project_key, VcsTargeted { staged: false, changed: false });
-		visitor.report_summary(&execution, self.summary)?;
-		Ok(())
-	}
+    fn write(self, visitor: &mut dyn ReporterVisitor) -> std::io::Result<()> {
+        let execution = Execution::new_format(
+            self.project_key,
+            VcsTargeted {
+                staged: false,
+                changed: false,
+            },
+        );
+        visitor.report_summary(&execution, self.summary, false)?;
+        Ok(())
+    }
 }
 
 impl ReporterVisitor for BufferVisitor {
-	fn report_summary(&mut self, _execution: &Execution, summary: TraversalSummary) -> std::io::Result<()> {
-		self.0.push_str(&format!("Total is {}", summary.changed + summary.unchanged));
+    fn report_summary(
+        &mut self,
+        _execution: &Execution,
+        summary: TraversalSummary,
+        _verbose: bool,
+    ) -> std::io::Result<()> {
+        self.0
+            .push_str(&format!("Total is {}", summary.changed + summary.unchanged));
+        Ok(())
+    }
 
-		Ok(())
-	}
-
-	fn report_diagnostics(&mut self, _execution: &Execution, _payload: DiagnosticsPayload) -> std::io::Result<()> {
-		todo!()
-	}
+    fn report_diagnostics(
+        &mut self,
+        _execution: &Execution,
+        _payload: DiagnosticsPayload,
+        _verbose: bool,
+    ) -> std::io::Result<()> {
+        todo!()
+    }
 }
 
 pub fn main() {

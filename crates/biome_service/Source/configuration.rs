@@ -1,8 +1,10 @@
 use crate::WorkspaceError;
 use crate::settings::Settings;
 use biome_analyze::AnalyzerRules;
-use biome_configuration::diagnostics::{CantLoadExtendFile, EditorConfigDiagnostic};
-use biome_configuration::editorconfig::parse_str;
+use biome_configuration::diagnostics::{
+    CantLoadExtendFile, EditorConfigDiagnostic, ParseFailedDiagnostic,
+};
+use biome_configuration::editorconfig::EditorConfig;
 use biome_configuration::{
     BiomeDiagnostic, ConfigurationPathHint, ConfigurationPayload, push_to_analyzer_rules,
 };
@@ -28,6 +30,7 @@ use std::io::ErrorKind;
 use std::iter::FusedIterator;
 use std::ops::Deref;
 use std::path::Path;
+use std::str::FromStr;
 use tracing::instrument;
 
 /// Information regarding the configuration that was found.
@@ -108,7 +111,7 @@ impl LoadedConfiguration {
         fs: &dyn FileSystem,
     ) -> Result<Self, WorkspaceError> {
         let Some(value) = value else {
-            return Ok(LoadedConfiguration::default());
+            return Ok(Self::default());
         };
 
         let ConfigurationPayload {
@@ -322,10 +325,17 @@ pub fn load_editorconfig(
     if let Some(auto_search_result) = fs.auto_search_files(&workspace_root, &[".editorconfig"]) {
         let AutoSearchResult {
             content,
+            file_path,
             directory_path,
-            ..
         } = auto_search_result;
-        let editorconfig = parse_str(&content)?;
+        let editorconfig = EditorConfig::from_str(&content).map_err(|err| {
+            EditorConfigDiagnostic::ParseFailed(ParseFailedDiagnostic {
+                kind: err.kind,
+                path: file_path.into_string(),
+                source_code: content,
+                span: err.span,
+            })
+        })?;
         if let Some(config_path) = config_path {
             // if `.edirotconfig` is higher than `biome.json`
             if is_parent_of(directory_path, config_path) {
@@ -555,7 +565,7 @@ impl ConfigurationExt for Configuration {
                     }
                 )
             })?;
-            let deserialized = deserialize_from_json_str::<Configuration>(
+            let deserialized = deserialize_from_json_str::<Self>(
                 content.as_str(),
                 match extend_configuration_file_path.extension() {
                     Some("json") => JsonParserOptions::default(),

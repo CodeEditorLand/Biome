@@ -1,3 +1,4 @@
+mod ad_hoc_scope_resolver;
 mod binding;
 mod collector;
 mod scope;
@@ -5,15 +6,19 @@ mod visitor;
 
 use std::{collections::BTreeMap, ops::Deref, sync::Arc};
 
-use binding::JsBindingData;
-use biome_js_semantic::{BindingId, ScopeId};
-use biome_js_syntax::AnyJsImportLike;
-use biome_js_type_info::Type;
-use biome_rowan::{Text, TokenText};
-use camino::{Utf8Path, Utf8PathBuf};
-use scope::{JsScope, JsScopeData};
+use biome_js_semantic::ScopeId;
+use biome_js_syntax::{AnyJsExpression, AnyJsImportLike};
+use biome_js_type_info::{
+    GLOBAL_RESOLVER, GLOBAL_UNKNOWN_ID, ImportSymbol, ResolvedPath, ResolvedTypeId, Type, TypeData,
+    TypeId, TypeReference, TypeReferenceQualifier, TypeResolver, TypeResolverLevel,
+};
+use biome_rowan::{AstNode, Text, TextRange, TokenText};
 
 use crate::{ModuleGraph, jsdoc_comment::JsdocComment};
+
+use ad_hoc_scope_resolver::AdHocScopeResolver;
+use binding::{BindingId, JsBindingData};
+use scope::{JsScope, JsScopeData};
 
 pub(crate) use visitor::JsModuleVisitor;
 
@@ -32,12 +37,16 @@ impl Deref for JsModuleInfo {
 impl JsModuleInfo {
     /// Returns an iterator over all the static and dynamic imports in this
     /// module.
-    pub fn all_import_paths(&self) -> impl Iterator<Item = JsResolvedPath> + use<> {
+    pub fn all_import_paths(&self) -> impl Iterator<Item = ResolvedPath> + use<> {
         let module_info = self.0.as_ref();
         ImportPathIterator {
             static_import_paths: module_info.static_import_paths.clone(),
             dynamic_import_paths: module_info.dynamic_import_paths.clone(),
         }
+    }
+
+    pub fn as_resolver(&self) -> &impl TypeResolver {
+        self.0.as_ref()
     }
 
     /// Finds an exported symbol by `name`, using the `module_graph` to
@@ -58,6 +67,40 @@ impl JsModuleInfo {
             id: ScopeId::new(0),
         }
     }
+
+    /// Returns the resolved type of the given expression within this module.
+    pub fn resolved_type_for_expression(
+        &self,
+        expr: &AnyJsExpression,
+        module_graph: Arc<ModuleGraph>,
+    ) -> Type {
+        let scope = self.scope_for_range(expr.range());
+        let mut resolver =
+            AdHocScopeResolver::from_scope_in_module(scope, self.clone(), module_graph);
+        let ty = TypeData::from_any_js_expression(&mut resolver, expr);
+        resolver.run_inference();
+
+        let ty = ty.inferred(&mut resolver);
+        Type::from_data(Box::new(resolver), ty)
+    }
+
+    /// Returns the scope to be used for the given `range`.
+    pub fn scope_for_range(&self, range: TextRange) -> JsScope {
+        let start = range.start().into();
+        let end = range.end().into();
+        self.0
+            .scope_by_range
+            .find(start, end)
+            .filter(|interval| !(start < interval.start || end > interval.stop))
+            .max_by_key(|interval| interval.val)
+            .map_or_else(
+                || self.global_scope(),
+                |interval| JsScope {
+                    info: self.0.clone(),
+                    id: ScopeId::new(interval.val.index()),
+                },
+            )
+    }
 }
 
 #[derive(Debug)]
@@ -73,7 +116,7 @@ pub struct JsModuleInfoInner {
     /// import another module and immediately re-export from that module.
     /// Re-exports are tracked as part of [Self::exports] and
     /// [Self::blanket_reexports].
-    pub static_imports: BTreeMap<Text, JsImport>,
+    pub static_imports: Imports,
 
     /// Map of all the paths from static imports in the module.
     ///
@@ -81,7 +124,7 @@ pub struct JsModuleInfoInner {
     /// absolute path it resolves to. The resolved path may be looked up as key
     /// in the [ModuleGraph::data] map, although it is not required to exist
     /// (for instance, if the path is outside the project's scope).
-    pub static_import_paths: BTreeMap<Text, JsResolvedPath>,
+    pub static_import_paths: BTreeMap<Text, ResolvedPath>,
 
     /// Map of all dynamic import paths found in the module for which the import
     /// specifier could be statically determined.
@@ -97,17 +140,17 @@ pub struct JsModuleInfoInner {
     ///
     /// Paths found in `require()` expressions in CommonJS sources are also
     /// included with the dynamic import paths.
-    pub dynamic_import_paths: BTreeMap<Text, JsResolvedPath>,
+    pub dynamic_import_paths: BTreeMap<Text, ResolvedPath>,
 
     /// Map of exports from the module.
     ///
     /// The keys are the names of the exports, where "default" is used for the
     /// default export. See [JsExport] for information tracked per export.
     ///
-    /// Re-exports are tracked in this map as well. The exception are "blanket"
+    /// Re-exports are tracked in this map as well. The exception is "blanket"
     /// re-exports, such as `export * from "other-module"`. Those are tracked in
     /// [Self::forwarding_exports] instead.
-    pub exports: BTreeMap<Text, JsExport>,
+    pub exports: Exports,
 
     /// Re-exports that apply to all symbols from another module, without
     /// assigning a name to them.
@@ -120,6 +163,33 @@ pub struct JsModuleInfoInner {
     ///
     /// The first entry is expected to be the global scope.
     pub(crate) scopes: Box<[JsScopeData]>,
+
+    /// Lookup tree to find scopes by text range.
+    pub(crate) scope_by_range: rust_lapper::Lapper<u32, ScopeId>,
+
+    /// Collection of all types in the module.
+    pub(crate) types: Box<[TypeData]>,
+}
+
+#[derive(Debug)]
+pub struct Exports(pub(crate) BTreeMap<Text, JsExport>);
+
+impl Deref for Exports {
+    type Target = BTreeMap<Text, JsExport>;
+
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
+}
+
+#[derive(Debug)]
+pub struct Imports(pub(crate) BTreeMap<Text, JsImport>);
+
+impl Deref for Imports {
+    type Target = BTreeMap<Text, JsImport>;
+    fn deref(&self) -> &Self::Target {
+        &self.0
+    }
 }
 
 static_assertions::assert_impl_all!(JsModuleInfo: Send, Sync);
@@ -131,7 +201,7 @@ impl JsModuleInfoInner {
     }
 
     /// Returns the information about a given import by its syntax node.
-    pub fn get_import_path_by_js_node(&self, node: &AnyJsImportLike) -> Option<&JsResolvedPath> {
+    pub fn get_import_path_by_js_node(&self, node: &AnyJsImportLike) -> Option<&ResolvedPath> {
         let specifier_text = node.inner_string_text()?;
         let specifier = specifier_text.text();
         if node.is_static_import() {
@@ -139,6 +209,76 @@ impl JsModuleInfoInner {
         } else {
             self.dynamic_import_paths.get(specifier)
         }
+    }
+}
+
+impl TypeResolver for JsModuleInfoInner {
+    fn level(&self) -> TypeResolverLevel {
+        TypeResolverLevel::Module
+    }
+
+    fn find_type(&self, type_data: &TypeData) -> Option<TypeId> {
+        self.types
+            .iter()
+            .position(|data| data == type_data)
+            .map(TypeId::new)
+    }
+
+    fn get_by_id(&self, id: TypeId) -> &TypeData {
+        &self.types[id.index()]
+    }
+
+    fn get_by_resolved_id(&self, id: ResolvedTypeId) -> Option<&TypeData> {
+        match id.level() {
+            TypeResolverLevel::Module => Some(self.get_by_id(id.id())),
+            TypeResolverLevel::Global => Some(GLOBAL_RESOLVER.get_by_id(id.id())),
+            TypeResolverLevel::AdHoc | TypeResolverLevel::Project => None,
+        }
+    }
+
+    fn register_type(&mut self, _type_data: TypeData) -> TypeId {
+        panic!("Cannot register new types after the module has been constructed");
+    }
+
+    fn resolve_reference(&self, ty: &TypeReference) -> Option<ResolvedTypeId> {
+        match ty {
+            TypeReference::Qualifier(qualifier) => self.resolve_qualifier(qualifier),
+            TypeReference::Resolved(resolved_id) => Some(*resolved_id),
+            TypeReference::Imported(_) => None,
+            TypeReference::Unknown => Some(GLOBAL_UNKNOWN_ID),
+        }
+    }
+
+    fn resolve_qualifier(&self, qualifier: &TypeReferenceQualifier) -> Option<ResolvedTypeId> {
+        if qualifier.path.len() == 1 {
+            self.resolve_type_of(&qualifier.path[0])
+                .or_else(|| GLOBAL_RESOLVER.resolve_qualifier(qualifier))
+        } else {
+            // TODO: Resolve nested qualifiers
+            None
+        }
+    }
+
+    fn resolve_type_of(&self, identifier: &Text) -> Option<ResolvedTypeId> {
+        if let Some(export) = self.exports.get(identifier) {
+            export
+                .as_own_export()
+                .and_then(|own_export| self.resolve_reference(&own_export.ty))
+        } else {
+            GLOBAL_RESOLVER.resolve_type_of(identifier)
+        }
+    }
+
+    fn registered_types(&self) -> &[TypeData] {
+        &self.types
+    }
+
+    fn resolve_all(&mut self) {
+        panic!("Types must already be resolved");
+    }
+
+    fn flatten_all(&mut self) {
+        panic!("Types must already be flattened");
     }
 }
 
@@ -168,6 +308,22 @@ pub enum JsExport {
     ReexportType(JsReexport),
 }
 
+impl JsExport {
+    pub fn as_own_export(&self) -> Option<&JsOwnExport> {
+        match self {
+            Self::Own(own_export) | Self::OwnType(own_export) => Some(own_export),
+            Self::Reexport(_) | Self::ReexportType(_) => None,
+        }
+    }
+
+    pub fn as_own_export_mut(&mut self) -> Option<&mut JsOwnExport> {
+        match self {
+            Self::Own(own_export) | Self::OwnType(own_export) => Some(own_export),
+            Self::Reexport(_) | Self::ReexportType(_) => None,
+        }
+    }
+}
+
 /// Represents an import to one or more symbols from an external path.
 ///
 /// It could point to any kind of resource, such as JavaScript files, CSS files,
@@ -183,35 +339,10 @@ pub struct JsImport {
     /// point towards the resolved entry point of the package.
     ///
     /// If `None`, import resolution failed.
-    pub resolved_path: JsResolvedPath,
+    pub resolved_path: ResolvedPath,
 
     /// The symbol(s) being imported.
-    pub symbol: JsImportSymbol,
-}
-
-#[derive(Clone, Debug, Default, PartialEq)]
-pub enum JsImportSymbol {
-    /// Imports the `default` export.
-    #[default]
-    Default,
-
-    /// Imports a named symbol.
-    Named(Text),
-
-    /// Imports all symbols, including the `default` export.
-    All,
-}
-
-impl From<Text> for JsImportSymbol {
-    fn from(name: Text) -> Self {
-        Self::Named(name)
-    }
-}
-
-impl From<&'static str> for JsImportSymbol {
-    fn from(name: &'static str) -> Self {
-        Self::Named(name.into())
-    }
+    pub symbol: ImportSymbol,
 }
 
 /// Information tracked for every "own" export.
@@ -224,7 +355,7 @@ pub struct JsOwnExport {
     pub local_name: Option<TokenText>,
 
     /// Type of the exported symbol.
-    pub ty: Type,
+    pub ty: TypeReference,
 }
 
 /// Information about an export statement that re-exports all symbols from
@@ -238,41 +369,13 @@ pub struct JsReexport {
     pub import: JsImport,
 }
 
-/// Reference-counted resolved path wrapped in a [Result] that contains a string
-/// message if resolution failed.
-#[derive(Clone, Debug, PartialEq)]
-pub struct JsResolvedPath(Arc<Result<Utf8PathBuf, String>>);
-
-impl Deref for JsResolvedPath {
-    type Target = Result<Utf8PathBuf, String>;
-
-    fn deref(&self) -> &Self::Target {
-        self.0.as_ref()
-    }
-}
-
-impl JsResolvedPath {
-    pub(super) fn new(resolved_path: Result<Utf8PathBuf, String>) -> Self {
-        Self(Arc::new(resolved_path))
-    }
-
-    pub fn as_path(&self) -> Option<&Utf8Path> {
-        self.as_deref().ok()
-    }
-
-    #[cfg(test)]
-    pub(super) fn from_path(path: impl Into<Utf8PathBuf>) -> Self {
-        Self::new(Ok(path.into()))
-    }
-}
-
 struct ImportPathIterator {
-    static_import_paths: BTreeMap<Text, JsResolvedPath>,
-    dynamic_import_paths: BTreeMap<Text, JsResolvedPath>,
+    static_import_paths: BTreeMap<Text, ResolvedPath>,
+    dynamic_import_paths: BTreeMap<Text, ResolvedPath>,
 }
 
 impl Iterator for ImportPathIterator {
-    type Item = JsResolvedPath;
+    type Item = ResolvedPath;
 
     fn next(&mut self) -> Option<Self::Item> {
         if self.static_import_paths.is_empty() {

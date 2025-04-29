@@ -1,3 +1,5 @@
+#![deny(clippy::use_self)]
+
 pub mod documentation;
 pub mod file_handlers;
 
@@ -27,13 +29,14 @@ pub use workspace_watcher::{WatcherInstruction, WorkspaceWatcher};
 /// Path entries that should be ignored in the workspace, even by the scanner.
 ///
 /// These cannot (yet) be configured.
-const IGNORE_ENTRIES: &[&[u8]] = &[
+pub const IGNORE_ENTRIES: &[&[u8]] = &[
     b".cache",
     b".git",
     b".hg",
     b".netlify",
     b".output",
     b".svn",
+    b".yarn",
     b".timestamp",
     b".turbo",
     b".vercel",

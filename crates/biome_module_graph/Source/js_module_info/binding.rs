@@ -1,23 +1,53 @@
 use std::sync::Arc;
 
-use biome_js_semantic::{BindingId, ScopeId};
+use biome_js_semantic::ScopeId;
 use biome_js_syntax::{AnyJsDeclaration, JsImport, JsSyntaxNode, JsVariableKind, TextRange};
-use biome_js_type_info::Type;
-use biome_rowan::{AstNode, TextSize};
+use biome_js_type_info::{TypeId, TypeReference};
+use biome_rowan::{AstNode, Text, TextSize};
 
 use crate::jsdoc_comment::JsdocComment;
 
 use super::{JsModuleInfoInner, scope::JsScope};
 
+#[derive(Copy, Clone, Debug, Eq, Hash, PartialEq)]
+pub struct BindingId(u32);
+
+impl BindingId {
+    pub const fn new(index: usize) -> Self {
+        // SAFETY: We don't handle files exceeding `u32::MAX` bytes.
+        // Thus, it isn't possible to exceed `u32::MAX` bindings.
+        Self(index as u32)
+    }
+
+    pub const fn index(self) -> usize {
+        self.0 as usize
+    }
+}
+
+// We allow conversion from `BindingId` into `TypeId`, and vice versa, because
+// for project-level `ResolvedTypeId` instances, the `TypeId` is an indirection
+// that is resolved through a binding.
+impl From<BindingId> for TypeId {
+    fn from(id: BindingId) -> Self {
+        Self::new(id.0 as usize)
+    }
+}
+
+impl From<TypeId> for BindingId {
+    fn from(id: TypeId) -> Self {
+        Self::new(id.index())
+    }
+}
+
 /// Internal type with all the semantic data of a specific binding
 #[derive(Debug)]
 pub struct JsBindingData {
+    pub name: Text,
     pub range: TextRange,
     pub references: Vec<JsBindingReference>,
     pub scope_id: ScopeId,
-    #[expect(unused)] // TODO: I expect we'll start using this in a bit (famous last words)...
     pub declaration_kind: JsDeclarationKind,
-    pub ty: Type,
+    pub ty: TypeReference,
     pub jsdoc: Option<JsdocComment>,
     pub export_ranges: Vec<TextRange>,
 }
@@ -68,6 +98,18 @@ impl JsBinding {
         !binding.export_ranges.is_empty()
     }
 
+    /// Returns whether the binding is imported.
+    pub fn is_imported(&self) -> bool {
+        let binding = self.data.binding(self.id);
+        binding.declaration_kind.is_import_declaration()
+    }
+
+    /// Returns the binding's name.
+    pub fn name(&self) -> Text {
+        let binding = self.data.binding(self.id);
+        binding.name.clone()
+    }
+
     /// Returns the scope of this binding.
     pub fn scope(&self) -> JsScope {
         let binding = self.data.binding(self.id);
@@ -75,6 +117,11 @@ impl JsBinding {
             info: self.data.clone(),
             id: binding.scope_id,
         }
+    }
+
+    /// Returns a reference to the binding's type.
+    pub fn ty(&self) -> &TypeReference {
+        &self.data.binding(self.id).ty
     }
 }
 
@@ -150,7 +197,7 @@ impl JsDeclarationKind {
                 // TODO: Handle this
                 Self::Unknown
             }
-            AnyJsDeclaration::TsInterfaceDeclaration(_) => JsDeclarationKind::Interface,
+            AnyJsDeclaration::TsInterfaceDeclaration(_) => Self::Interface,
             AnyJsDeclaration::TsModuleDeclaration(decl) => {
                 if decl
                     .module_or_namespace()
@@ -163,5 +210,9 @@ impl JsDeclarationKind {
             }
             AnyJsDeclaration::TsTypeAliasDeclaration(_) => Self::Type,
         }
+    }
+
+    pub fn is_import_declaration(&self) -> bool {
+        matches!(self, Self::Import | Self::ImportType)
     }
 }

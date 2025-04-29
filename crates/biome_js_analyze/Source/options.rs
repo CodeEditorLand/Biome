@@ -381,6 +381,7 @@ pub type UseImportType =
     <lint::style::use_import_type::UseImportType as biome_analyze::Rule>::Options;
 pub type UseIsArray = <lint::suspicious::use_is_array::UseIsArray as biome_analyze::Rule>::Options;
 pub type UseIsNan = <lint::correctness::use_is_nan::UseIsNan as biome_analyze::Rule>::Options;
+pub type UseIterableCallbackReturn = < lint :: nursery :: use_iterable_callback_return :: UseIterableCallbackReturn as biome_analyze :: Rule > :: Options ;
 pub type UseJsxKeyInIterable = < lint :: correctness :: use_jsx_key_in_iterable :: UseJsxKeyInIterable as biome_analyze :: Rule > :: Options ;
 pub type UseKeyWithClickEvents =
     <lint::a11y::use_key_with_click_events::UseKeyWithClickEvents as biome_analyze::Rule>::Options;
@@ -404,6 +405,8 @@ pub type UseNumberNamespace =
 pub type UseNumberToFixedDigitsArgument = < lint :: suspicious :: use_number_to_fixed_digits_argument :: UseNumberToFixedDigitsArgument as biome_analyze :: Rule > :: Options ;
 pub type UseNumericLiterals =
     <lint::style::use_numeric_literals::UseNumericLiterals as biome_analyze::Rule>::Options;
+pub type UseNumericSeparators =
+    <lint::nursery::use_numeric_separators::UseNumericSeparators as biome_analyze::Rule>::Options;
 pub type UseOptionalChain =
     <lint::complexity::use_optional_chain::UseOptionalChain as biome_analyze::Rule>::Options;
 pub type UseParseIntRadix =

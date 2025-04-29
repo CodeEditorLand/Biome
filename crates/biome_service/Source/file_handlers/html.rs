@@ -47,7 +47,7 @@ pub struct HtmlFormatterSettings {
 
 impl From<HtmlFormatterConfiguration> for HtmlFormatterSettings {
     fn from(config: HtmlFormatterConfiguration) -> Self {
-        HtmlFormatterSettings {
+        Self {
             enabled: config.enabled,
             line_ending: config.line_ending,
             line_width: config.line_width,
@@ -206,6 +206,8 @@ impl ExtensionHandler for HtmlFileHandler {
                 debug_syntax_tree: Some(debug_syntax_tree),
                 debug_control_flow: None,
                 debug_formatter_ir: Some(debug_formatter_ir),
+                debug_type_info: None,
+                debug_registered_types: None,
             },
             analyzer: AnalyzerCapabilities {
                 lint: Some(lint),

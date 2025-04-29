@@ -11,8 +11,17 @@ syn = "2.0.76"
 
 [dependencies]
 
-[lib]
-path = "Source/lib.rs"
+
+[build-dependencies]
+biome_deserialize        = { workspace = true }
+biome_deserialize_macros = { workspace = true }
+biome_string_case        = { workspace = true }
+prettyplease             = "0.2.32"
+proc-macro2              = { workspace = true, features = ["span-locations"] }
+quote                    = { workspace = true }
+serde                    = { workspace = true }
+serde_json               = { workspace = true }
+syn                      = "2.0.76"
 
 [lints]
 workspace = true

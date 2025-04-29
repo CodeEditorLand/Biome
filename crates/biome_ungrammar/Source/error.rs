@@ -27,9 +27,12 @@ impl fmt::Display for Error {
 impl std::error::Error for Error {}
 
 impl Error {
-	pub(crate) fn with_location(self, location: Location) -> Error {
-		Error { location: Some(location), ..self }
-	}
+    pub(crate) fn with_location(self, location: Location) -> Self {
+        Self {
+            location: Some(location),
+            ..self
+        }
+    }
 }
 
 macro_rules! _format_err {

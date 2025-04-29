@@ -7,7 +7,7 @@ use biome_configuration::{Configuration, FilesConfiguration};
 use biome_fs::{BiomePath, MemoryFileSystem};
 use biome_js_syntax::{JsFileSource, TextSize};
 use camino::Utf8PathBuf;
-use insta::assert_debug_snapshot;
+use insta::{assert_debug_snapshot, assert_snapshot};
 
 use crate::file_handlers::DocumentFileSource;
 use crate::projects::ProjectKey;
@@ -16,7 +16,7 @@ use crate::{Workspace, WorkspaceError};
 use super::{
     CloseFileParams, CloseProjectParams, FileContent, FileFeaturesResult, FileGuard,
     GetFileContentParams, GetSyntaxTreeParams, OpenFileParams, OpenProjectParams,
-    PullDiagnosticsParams, ScanProjectFolderParams, UpdateSettingsParams, server,
+    PullDiagnosticsParams, ScanKind, ScanProjectFolderParams, UpdateSettingsParams, server,
 };
 
 fn create_server() -> (Box<dyn Workspace>, ProjectKey) {
@@ -266,12 +266,12 @@ fn correctly_pulls_lint_diagnostics() {
     .unwrap();
     let result = graphql_file.pull_diagnostics(
         RuleCategories::all(),
-        10,
         vec![RuleSelector::Rule(
             RuleGroup::Nursery.as_str(),
             "useDeprecatedReason",
         )],
         vec![],
+        true,
     );
     assert!(result.is_ok());
     let diagnostics = result.unwrap().diagnostics;
@@ -327,6 +327,7 @@ fn files_loaded_by_the_scanner_are_only_unloaded_when_the_project_is_unregistere
             path: None,
             watch: false,
             force: false,
+            scan_kind: ScanKind::Project,
         })
         .unwrap();
 
@@ -416,6 +417,7 @@ fn too_large_files_are_tracked_but_not_parsed() {
             path: None,
             watch: false,
             force: false,
+            scan_kind: ScanKind::Project,
         })
         .unwrap();
 
@@ -473,6 +475,7 @@ fn plugins_are_loaded_and_used_during_analysis() {
             path: None,
             watch: false,
             force: false,
+            scan_kind: ScanKind::Project,
         })
         .unwrap();
 
@@ -481,10 +484,10 @@ fn plugins_are_loaded_and_used_during_analysis() {
             project_key,
             path: BiomePath::new("/project/a.ts"),
             categories: RuleCategories::default(),
-            max_diagnostics: 10,
             only: Vec::new(),
             skip: Vec::new(),
             enabled_rules: Vec::new(),
+            pull_code_actions: true,
         })
         .unwrap();
     assert_debug_snapshot!(result.diagnostics);
@@ -539,6 +542,7 @@ language css;
             path: None,
             watch: false,
             force: false,
+            scan_kind: ScanKind::Project,
         })
         .unwrap();
 
@@ -547,10 +551,10 @@ language css;
             project_key,
             path: BiomePath::new("/project/a.css"),
             categories: RuleCategories::default(),
-            max_diagnostics: 10,
             only: Vec::new(),
             skip: Vec::new(),
             enabled_rules: Vec::new(),
+            pull_code_actions: true,
         })
         .unwrap();
     assert_debug_snapshot!(result.diagnostics);
@@ -601,6 +605,7 @@ fn plugins_may_use_invalid_span() {
             path: None,
             watch: false,
             force: false,
+            scan_kind: ScanKind::Project,
         })
         .unwrap();
 
@@ -609,10 +614,10 @@ fn plugins_may_use_invalid_span() {
             project_key,
             path: BiomePath::new("/project/a.ts"),
             categories: RuleCategories::default(),
-            max_diagnostics: 10,
             only: Vec::new(),
             skip: Vec::new(),
             enabled_rules: Vec::new(),
+            pull_code_actions: true,
         })
         .unwrap();
     assert_debug_snapshot!(result.diagnostics);
@@ -624,4 +629,72 @@ fn test_order() {
     for items in FileFeaturesResult::PROTECTED_FILES.windows(2) {
         assert!(items[0] < items[1], "{} < {}", items[0], items[1]);
     }
+}
+
+#[test]
+fn debug_type_info() {
+    let (workspace, project_key) = create_server();
+
+    let file = FileGuard::open(
+        workspace.as_ref(),
+        OpenFileParams {
+            project_key,
+            path: BiomePath::new("file.ts"),
+            content: FileContent::from_client(
+                r#"
+function foo(name: string, age: number): Person {
+    return new Person(string, age)
+}
+class Person {
+    #name: string
+    #age: number
+    constructor(name: string, age: number) {
+        this.#name = name;
+        this.#age = age;
+    }
+}
+"#,
+            ),
+            document_file_source: None,
+            persist_node_cache: false,
+        },
+    )
+    .unwrap();
+    let result = file.get_type_info();
+    assert!(result.is_ok());
+    assert_snapshot!(result.unwrap());
+}
+
+#[test]
+fn debug_registered_types() {
+    let (workspace, project_key) = create_server();
+
+    let file = FileGuard::open(
+        workspace.as_ref(),
+        OpenFileParams {
+            project_key,
+            path: BiomePath::new("file.ts"),
+            content: FileContent::from_client(
+                r#"
+function foo(name: string, age: number): Person {
+    return new Person(string, age)
+}
+class Person {
+    #name: string
+    #age: number
+    constructor(name: string, age: number) {
+        this.#name = name;
+        this.#age = age;
+    }
+}
+"#,
+            ),
+            document_file_source: None,
+            persist_node_cache: false,
+        },
+    )
+    .unwrap();
+    let result = file.get_registered_types();
+    assert!(result.is_ok());
+    assert_snapshot!(result.unwrap());
 }

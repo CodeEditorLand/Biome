@@ -31,47 +31,47 @@ impl fmt::Debug for TextSize {
 }
 
 impl TextSize {
-	/// The text size of some primitive text-like object.
-	///
-	/// Accepts `char`, `&str`, and `&String`.
-	///
-	/// # Examples
-	///
-	/// ```rust
-	/// # use biome_text_size::*;
-	/// let char_size = TextSize::of('🦀');
-	/// assert_eq!(char_size, TextSize::from(4));
-	///
-	/// let str_size = TextSize::of("rust-analyzer");
-	/// assert_eq!(str_size, TextSize::from(13));
-	/// ```
-	#[inline]
-	pub fn of<T: TextLen>(text: T) -> TextSize {
-		text.text_len()
-	}
+    /// The text size of some primitive text-like object.
+    ///
+    /// Accepts `char`, `&str`, and `&String`.
+    ///
+    /// # Examples
+    ///
+    /// ```rust
+    /// # use biome_text_size::*;
+    /// let char_size = TextSize::of('🦀');
+    /// assert_eq!(char_size, TextSize::from(4));
+    ///
+    /// let str_size = TextSize::of("rust-analyzer");
+    /// assert_eq!(str_size, TextSize::from(13));
+    /// ```
+    #[inline]
+    pub fn of<T: TextLen>(text: T) -> Self {
+        text.text_len()
+    }
 }
 
 /// Methods to act like a primitive integer type, where reasonably applicable.
 //  Last updated for parity with Rust 1.42.0.
 impl TextSize {
-	/// Checked addition. Returns `None` if overflow occurred.
-	#[inline]
-	pub fn checked_add(self, rhs: TextSize) -> Option<TextSize> {
-		self.raw.checked_add(rhs.raw).map(|raw| TextSize { raw })
-	}
+    /// Checked addition. Returns `None` if overflow occurred.
+    #[inline]
+    pub fn checked_add(self, rhs: Self) -> Option<Self> {
+        self.raw.checked_add(rhs.raw).map(|raw| Self { raw })
+    }
 
-	/// Checked subtraction. Returns `None` if overflow occurred.
-	#[inline]
-	pub fn checked_sub(self, rhs: TextSize) -> Option<TextSize> {
-		self.raw.checked_sub(rhs.raw).map(|raw| TextSize { raw })
-	}
+    /// Checked subtraction. Returns `None` if overflow occurred.
+    #[inline]
+    pub fn checked_sub(self, rhs: Self) -> Option<Self> {
+        self.raw.checked_sub(rhs.raw).map(|raw| Self { raw })
+    }
 }
 
 impl From<u32> for TextSize {
-	#[inline]
-	fn from(raw: u32) -> Self {
-		TextSize { raw }
-	}
+    #[inline]
+    fn from(raw: u32) -> Self {
+        Self { raw }
+    }
 }
 
 impl From<TextSize> for u32 {
@@ -91,10 +91,10 @@ impl TryFrom<usize> for TextSize {
 }
 
 impl From<TextSize> for usize {
-	#[inline]
-	fn from(value: TextSize) -> Self {
-		value.raw as usize
-	}
+    #[inline]
+    fn from(value: TextSize) -> Self {
+        value.raw as Self
+    }
 }
 
 macro_rules! ops {
@@ -133,7 +133,7 @@ ops!(impl Sub for TextSize by fn sub = -);
 
 impl<A> AddAssign<A> for TextSize
 where
-	TextSize: Add<A, Output = TextSize>,
+    Self: Add<A, Output = Self>,
 {
 	#[inline]
 	fn add_assign(&mut self, rhs: A) {
@@ -143,7 +143,7 @@ where
 
 impl<S> SubAssign<S> for TextSize
 where
-	TextSize: Sub<S, Output = TextSize>,
+    Self: Sub<S, Output = Self>,
 {
 	#[inline]
 	fn sub_assign(&mut self, rhs: S) {
@@ -153,10 +153,10 @@ where
 
 impl<A> iter::Sum<A> for TextSize
 where
-	TextSize: Add<A, Output = TextSize>,
+    Self: Add<A, Output = Self>,
 {
-	#[inline]
-	fn sum<I: Iterator<Item = A>>(iter: I) -> TextSize {
-		iter.fold(0.into(), Add::add)
-	}
+    #[inline]
+    fn sum<I: Iterator<Item = A>>(iter: I) -> Self {
+        iter.fold(0.into(), Add::add)
+    }
 }

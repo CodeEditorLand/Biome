@@ -59,7 +59,8 @@ impl JsdocComment {
     /// JSDoc comments must start with exactly `/**` and with `*/`. Either more
     /// or less asterisks in the opening are ignored.
     pub fn text_is_jsdoc_comment(text: &str) -> bool {
-        text.starts_with("/**")
+        text.len() >= 6
+            && text.starts_with("/**")
             && text.as_bytes().get(3).is_some_and(|c| *c != b'*')
             && text.ends_with("*/")
     }
@@ -106,11 +107,29 @@ impl TryFrom<JsSyntaxToken> for JsdocComment {
             .find_map(|trivia| match trivia.kind() {
                 TriviaPieceKind::MultiLineComment | TriviaPieceKind::SingleLineComment => {
                     let text = trivia.text();
-                    JsdocComment::text_is_jsdoc_comment(text)
-                        .then(|| JsdocComment::from_comment_text(text))
+                    Self::text_is_jsdoc_comment(text).then(|| Self::from_comment_text(text))
                 }
                 _ => None,
             })
             .ok_or(())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_text_is_jsdoc_comment() {
+        assert!(JsdocComment::text_is_jsdoc_comment("/** yes */"));
+        assert!(JsdocComment::text_is_jsdoc_comment("/**\n* yes\n*/"));
+        assert!(JsdocComment::text_is_jsdoc_comment("/**\nyes\n*/"));
+        assert!(JsdocComment::text_is_jsdoc_comment("/**\n** yes\n*/"));
+        assert!(JsdocComment::text_is_jsdoc_comment("/** */"));
+
+        assert!(!JsdocComment::text_is_jsdoc_comment("/* no */"));
+        assert!(!JsdocComment::text_is_jsdoc_comment("/*** no */"));
+        assert!(!JsdocComment::text_is_jsdoc_comment("/***/"));
+        assert!(!JsdocComment::text_is_jsdoc_comment("/**/"));
     }
 }

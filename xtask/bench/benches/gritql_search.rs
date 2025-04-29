@@ -3,17 +3,8 @@ use biome_grit_patterns::{
 };
 use camino::Utf8Path;
 use criterion::measurement::WallTime;
+pub use criterion::*;
 use std::collections::HashMap;
-use xtask_bench::TestCase;
-
-#[cfg(not(feature = "codspeed"))]
-pub use criterion::*;
-
-#[cfg(feature = "codspeed")]
-pub use codspeed_criterion_compat::*;
-use criterion::measurement::WallTime;
-#[cfg(not(feature = "codspeed"))]
-pub use criterion::*;
 use xtask_bench::TestCase;
 
 #[cfg(target_os = "windows")]

@@ -1,7 +1,7 @@
-use crate::{
-	bytes::DISPATCHER,
-	tables::derived_property::{ID_Continue, ID_Start},
-};
+#![deny(clippy::use_self)]
+
+use crate::bytes::DISPATCHER;
+use crate::tables::derived_property::{ID_Continue, ID_Start};
 
 mod bytes;
 mod tables;

@@ -9,7 +9,7 @@ use std::{collections::BTreeSet, sync::Arc};
 
 use biome_fs::{BiomePath, FileSystem, PathKind};
 use biome_js_syntax::AnyJsRoot;
-use biome_js_type_info::{Namespace, Type};
+use biome_js_type_info::{ImportSymbol, TypeReference};
 use biome_project_layout::ProjectLayout;
 use camino::{Utf8Path, Utf8PathBuf};
 use oxc_resolver::{EnforceExtension, ResolveOptions, ResolverGeneric};
@@ -17,7 +17,7 @@ use papaya::{HashMap, HashMapRef, LocalGuard};
 use rustc_hash::FxBuildHasher;
 
 use crate::{
-    JsExport, JsImportSymbol, JsModuleInfo, JsOwnExport, js_module_info::JsModuleVisitor,
+    JsExport, JsModuleInfo, JsOwnExport, js_module_info::JsModuleVisitor,
     resolver_cache::ResolverCache,
 };
 
@@ -59,6 +59,11 @@ impl ModuleGraph {
     /// for the given `path`.
     pub fn module_info_for_path(&self, path: &Utf8Path) -> Option<JsModuleInfo> {
         self.data.pin().get(path).cloned()
+    }
+
+    /// Returns the data of the module graph in test
+    pub fn data(&self) -> HashMapRef<Utf8PathBuf, JsModuleInfo, FxBuildHasher, LocalGuard> {
+        self.data.pin()
     }
 
     /// Updates the module graph to add, update, or remove files.
@@ -155,11 +160,15 @@ impl ModuleGraph {
                     Some(own_export.clone())
                 }
                 Some(JsExport::Reexport(reexport) | JsExport::ReexportType(reexport)) => {
-                    if reexport.import.symbol == JsImportSymbol::All {
+                    if reexport.import.symbol == ImportSymbol::All {
                         Some(JsOwnExport {
                             jsdoc_comment: reexport.jsdoc_comment.clone(),
                             local_name: None,
-                            ty: Type::Namespace(Box::new(Namespace(Box::new([])))),
+                            // TODO: Register namespace
+                            // TypeData::Namespace(Box::new(Namespace::from_type_members(
+                            //    Box::new([...]),
+                            // )))
+                            ty: TypeReference::Unknown,
                         })
                     } else {
                         match reexport.import.resolved_path.as_deref() {
@@ -196,7 +205,3 @@ impl ModuleGraph {
         find_exported_symbol_with_seen_paths(&data, module, symbol_name, &mut seen_paths)
     }
 }
-
-#[cfg(test)]
-#[path = "module_graph.tests.rs"]
-mod tests;

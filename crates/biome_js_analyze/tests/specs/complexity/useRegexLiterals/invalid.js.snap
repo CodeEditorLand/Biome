@@ -1,0 +1,181 @@
+---
+source: crates/biome_js_analyze/tests/spec_tests.rs
+expression: invalid.js
+---
+# Input
+```js
+// https://github.com/biomejs/biome/issues/5487
+new RegExp("\/pattern$");
+
+new RegExp("\🙂pattern");
+
+// https://github.com/biomejs/biome/issues/5693#issuecomment-2816096167
+new RegExp(`a\*b`);
+
+// The backspace escape is not supported in regexes.
+new RegExp("\b");
+
+new RegExp("a\
+b");
+
+new RegExp(`a
+b`);
+
+```
+
+# Diagnostics
+```
+invalid.js:2:1 lint/complexity/useRegexLiterals  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Use a regular expression literal instead of the RegExp constructor.
+  
+    1 │ // https://github.com/biomejs/biome/issues/5487
+  > 2 │ new RegExp("\/pattern$");
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^
+    3 │ 
+    4 │ new RegExp("\🙂pattern");
+  
+  i Regular expression literals avoid some escaping required in a string literal, and are easier to analyze statically.
+  
+  i Safe fix: Use a literal notation instead.
+  
+     1  1 │   // https://github.com/biomejs/biome/issues/5487
+     2    │ - new·RegExp("\/pattern$");
+        2 │ + /\/pattern$/;
+     3  3 │   
+     4  4 │   new RegExp("\🙂pattern");
+  
+
+```
+
+```
+invalid.js:4:1 lint/complexity/useRegexLiterals  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Use a regular expression literal instead of the RegExp constructor.
+  
+    2 │ new RegExp("\/pattern$");
+    3 │ 
+  > 4 │ new RegExp("\🙂pattern");
+      │ ^^^^^^^^^^^^^^^^^^^^^^^^
+    5 │ 
+    6 │ // https://github.com/biomejs/biome/issues/5693#issuecomment-2816096167
+  
+  i Regular expression literals avoid some escaping required in a string literal, and are easier to analyze statically.
+  
+  i Safe fix: Use a literal notation instead.
+  
+     2  2 │   new RegExp("\/pattern$");
+     3  3 │   
+     4    │ - new·RegExp("\🙂pattern");
+        4 │ + /🙂pattern/;
+     5  5 │   
+     6  6 │   // https://github.com/biomejs/biome/issues/5693#issuecomment-2816096167
+  
+
+```
+
+```
+invalid.js:7:1 lint/complexity/useRegexLiterals  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Use a regular expression literal instead of the RegExp constructor.
+  
+    6 │ // https://github.com/biomejs/biome/issues/5693#issuecomment-2816096167
+  > 7 │ new RegExp(`a\*b`);
+      │ ^^^^^^^^^^^^^^^^^^
+    8 │ 
+    9 │ // The backspace escape is not supported in regexes.
+  
+  i Regular expression literals avoid some escaping required in a string literal, and are easier to analyze statically.
+  
+  i Safe fix: Use a literal notation instead.
+  
+     5  5 │   
+     6  6 │   // https://github.com/biomejs/biome/issues/5693#issuecomment-2816096167
+     7    │ - new·RegExp(`a\*b`);
+        7 │ + /a*b/;
+     8  8 │   
+     9  9 │   // The backspace escape is not supported in regexes.
+  
+
+```
+
+```
+invalid.js:10:1 lint/complexity/useRegexLiterals  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Use a regular expression literal instead of the RegExp constructor.
+  
+     9 │ // The backspace escape is not supported in regexes.
+  > 10 │ new RegExp("\b");
+       │ ^^^^^^^^^^^^^^^^
+    11 │ 
+    12 │ new RegExp("a\
+  
+  i Regular expression literals avoid some escaping required in a string literal, and are easier to analyze statically.
+  
+  i Safe fix: Use a literal notation instead.
+  
+     8  8 │   
+     9  9 │   // The backspace escape is not supported in regexes.
+    10    │ - new·RegExp("\b");
+       10 │ + /\x08/;
+    11 11 │   
+    12 12 │   new RegExp("a\
+  
+
+```
+
+```
+invalid.js:12:1 lint/complexity/useRegexLiterals  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Use a regular expression literal instead of the RegExp constructor.
+  
+    10 │ new RegExp("\b");
+    11 │ 
+  > 12 │ new RegExp("a\
+       │ ^^^^^^^^^^^^^^
+  > 13 │ b");
+       │ ^^^
+    14 │ 
+    15 │ new RegExp(`a
+  
+  i Regular expression literals avoid some escaping required in a string literal, and are easier to analyze statically.
+  
+  i Safe fix: Use a literal notation instead.
+  
+    10 10 │   new RegExp("\b");
+    11 11 │   
+    12    │ - new·RegExp("a\
+    13    │ - b");
+       12 │ + /ab/;
+    14 13 │   
+    15 14 │   new RegExp(`a
+  
+
+```
+
+```
+invalid.js:15:1 lint/complexity/useRegexLiterals  FIXABLE  ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  × Use a regular expression literal instead of the RegExp constructor.
+  
+    13 │ b");
+    14 │ 
+  > 15 │ new RegExp(`a
+       │ ^^^^^^^^^^^^^
+  > 16 │ b`);
+       │ ^^^
+    17 │ 
+  
+  i Regular expression literals avoid some escaping required in a string literal, and are easier to analyze statically.
+  
+  i Safe fix: Use a literal notation instead.
+  
+    13 13 │   b");
+    14 14 │   
+    15    │ - new·RegExp(`a
+    16    │ - b`);
+       15 │ + /a\nb/;
+    17 16 │   
+  
+
+```

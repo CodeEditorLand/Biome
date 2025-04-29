@@ -1,3 +1,6 @@
+#![deny(clippy::use_self)]
+
+pub use crate::generated::CssSyntaxFactory;
 use biome_css_syntax::CssLanguage;
 use biome_rowan::TreeBuilder;
 

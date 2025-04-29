@@ -81,7 +81,6 @@ pub(crate) fn traverse(
     let fs = workspace.fs();
 
     let max_diagnostics = execution.get_max_diagnostics();
-    let remaining_diagnostics = AtomicU32::new(max_diagnostics);
 
     let working_directory = fs.working_directory();
     let printer = DiagnosticsPrinter::new(execution, working_directory.as_deref())
@@ -111,7 +110,6 @@ pub(crate) fn traverse(
                 unchanged: &unchanged,
                 skipped: &skipped,
                 messages: sender,
-                remaining_diagnostics: &remaining_diagnostics,
                 evaluated_paths: RwLock::default(),
             },
         );
@@ -141,6 +139,7 @@ pub(crate) fn traverse(
             changed,
             unchanged,
             duration,
+            scanner_duration: None,
             errors,
             matches,
             warnings,
@@ -514,10 +513,6 @@ pub(crate) struct TraversalOptions<'ctx, 'app> {
     skipped: &'ctx AtomicUsize,
     /// Channel sending messages to the display thread
     pub(crate) messages: Sender<Message>,
-    /// The approximate number of diagnostics the console will print before
-    /// folding the rest into the "skipped diagnostics" counter
-    pub(crate) remaining_diagnostics: &'ctx AtomicU32,
-
     /// List of paths that should be processed
     pub(crate) evaluated_paths: RwLock<BTreeSet<BiomePath>>,
 }
@@ -557,6 +552,17 @@ impl TraversalOptions<'_, '_> {
     }
 }
 
+/// Path entries that we want to ignore during the OS traversal.
+pub const IGNORE_ENTRIES: &[&[u8]] = &[
+    b".cache",
+    b".git",
+    b".hg",
+    b".svn",
+    b".yarn",
+    b".timestamp",
+    b".DS_Store",
+];
+
 impl TraversalContext for TraversalOptions<'_, '_> {
     fn interner(&self) -> &PathInterner {
         &self.interner
@@ -572,6 +578,12 @@ impl TraversalContext for TraversalOptions<'_, '_> {
 
     #[instrument(level = "trace", skip(self, biome_path), fields(can_handle))]
     fn can_handle(&self, biome_path: &BiomePath) -> bool {
+        if biome_path
+            .file_name()
+            .is_some_and(|file_name| IGNORE_ENTRIES.contains(&file_name.as_bytes()))
+        {
+            return false;
+        }
         let path = biome_path.as_path();
         if self.fs.path_is_dir(path) || self.fs.path_is_symlink(path) {
             // handle:

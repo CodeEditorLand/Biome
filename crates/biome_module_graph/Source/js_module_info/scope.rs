@@ -1,11 +1,14 @@
 use std::{collections::VecDeque, iter::FusedIterator, sync::Arc};
 
-use biome_js_semantic::{BindingId, ReferenceId, ScopeId};
+use biome_js_semantic::ScopeId;
 use biome_js_syntax::TextRange;
 use biome_rowan::TokenText;
 use rustc_hash::FxHashMap;
 
-use super::{JsModuleInfoInner, binding::JsBinding};
+use super::{
+    JsModuleInfoInner,
+    binding::{BindingId, JsBinding},
+};
 
 #[derive(Debug)]
 pub struct JsScopeData {
@@ -19,12 +22,6 @@ pub struct JsScopeData {
     pub bindings: Vec<BindingId>,
     // Map pointing to the [bindings] vec of each bindings by its name
     pub bindings_by_name: FxHashMap<TokenText, BindingId>,
-    // All read references of a scope
-    pub read_references: Vec<ReferenceId>,
-    // All write references of a scope
-    pub _write_references: Vec<ReferenceId>,
-    // Identify if this scope is from a closure or not
-    pub _is_closure: bool,
 }
 
 /// Provides all information regarding a specific scope.
@@ -50,13 +47,13 @@ impl JsScope {
 
     /// Returns all parents of this scope. Starting with the current
     /// [Scope].
-    pub fn ancestors(&self) -> impl Iterator<Item = JsScope> + use<> {
+    pub fn ancestors(&self) -> impl Iterator<Item = Self> + use<> {
         std::iter::successors(Some(self.clone()), |scope| scope.parent())
     }
 
     /// Returns all descendents of this scope in breadth-first order. Starting with the current
     /// [Scope].
-    pub fn descendents(&self) -> impl Iterator<Item = JsScope> + use<> {
+    pub fn descendents(&self) -> impl Iterator<Item = Self> + use<> {
         let mut q = VecDeque::new();
         q.push_back(self.id);
 
@@ -67,13 +64,13 @@ impl JsScope {
     }
 
     /// Returns this scope parent.
-    pub fn parent(&self) -> Option<JsScope> {
+    pub fn parent(&self) -> Option<Self> {
         // id will always be a valid scope because
         // it was created by [SemanticModel::scope] method.
         debug_assert!((self.id.index()) < self.info.scopes.len());
 
         let parent = self.info.scopes[self.id.index()].parent?;
-        Some(JsScope {
+        Some(Self {
             info: self.info.clone(),
             id: parent,
         })
@@ -110,7 +107,7 @@ impl JsScope {
     /// ```rust,ignore
     /// assert!(scope.is_ancestor_of(scope));
     /// ```
-    pub fn is_ancestor_of(&self, other: &JsScope) -> bool {
+    pub fn is_ancestor_of(&self, other: &Self) -> bool {
         other.ancestors().any(|s| s == *self)
     }
 
